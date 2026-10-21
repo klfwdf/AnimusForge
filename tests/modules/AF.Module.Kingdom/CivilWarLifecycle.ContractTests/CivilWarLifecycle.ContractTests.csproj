@@ -10,6 +10,9 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="../../../../src/modules/AF.Module.Kingdom/CivilWar/*.cs" Exclude="../../../../src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Kingdom/Runtime/KingdomCivilWarTexts.cs" />
+    <Content Include="../../../../content/modules/AF.Module.Kingdom/ModuleData/KingdomCivilWarCompatibility.json" Link="KingdomCivilWarCompatibility.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AF.Module.Kingdom/ModuleData/KingdomCivilWarPromptTexts.json" Link="KingdomCivilWarPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="../../../../src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs" />
     <Compile Include="../../../../src/AF.Contracts/Internal/InteractionContracts.cs" />
     <Compile Include="../../../../src/AF.Contracts/Internal/LlmContracts.cs" />

@@ -41,8 +41,10 @@ foreach(var tierCase in new[]{(0,"Extremely poor"),(9,"Extremely poor"),(10,"Ver
  Check(KingdomStabilityUiText.Tier(tierCase.Item1)==tierCase.Item2,"production display tier boundary "+tierCase.Item1);
 lab.OpenDevEditKingdomStability(kingdom);InformationManager.Text.Confirm("bad");Check(stabilityWrites==0,"invalid stability text does not mutate");InformationManager.Text.Confirm("999");Check(stabilityWrites==1&&lastStability==100,"stability clamp retains core policy");
 lab.OpenDevEditKingdomStability(kingdom);var oldStability=InformationManager.Text.Confirm;generation++;oldStability("20");Check(stabilityWrites==1,"late stability text rejected");
-lab.RunDevKingdomRebellionTest(kingdom);Check(resolutions==1&&!executeFlag&&!forceFlag&&forced==0,"test remains nonexecuting normal probability mode");
-lab.ConfirmForceDevKingdomRebellion(kingdom);confirm=InformationManager.Inquiry;Check(forced==0,"forced action requires explicit confirmation");confirm.Cancel();confirm.Confirm();Check(forced==0&&resolutions==1,"forced cancel retires ticket without evaluation");
-lab.ConfirmForceDevKingdomRebellion(kingdom);confirm=InformationManager.Inquiry;generation++;confirm.Confirm();Check(forced==0,"load retires forced action ticket");lab.ConfirmForceDevKingdomRebellion(kingdom);confirm=InformationManager.Inquiry;confirm.Confirm();confirm.Confirm();Check(forced==1&&resolutions==2&&!executeFlag&&forceFlag,"forced dispatch once via true domain with original flags");
+lab.OpenDevKingdomStabilityDetailMenu(kingdom);
+Check(!MBInformationManager.Last.Options.Any(x=>Equals(x.Identifier,"test_roll")||Equals(x.Identifier,"force_rebellion")),"retired dice and forced-split entries are removed");
+lab.RunDevKingdomRebellionTest(kingdom); lab.ConfirmForceDevKingdomRebellion(kingdom);
+Check(resolutions==0&&forced==0&&evaluations==0,"compatibility callbacks cannot roll, scan candidates or dispatch an independent split");
+Check(lab.BuildDevKingdomStabilityDetailText(kingdom).Contains("civil-war factions")&&!lab.BuildDevKingdomStabilityLabel(kingdom).Contains("weekly rebellion chance"),"real UI describes faction ownership without obsolete random chance");
 PlayerKingdomRebellionImmunity.Protected=true;evaluations=0;Check(lab.BuildDevKingdomStabilityDetailText(kingdom).Contains("immunity")&&evaluations==0,"immune display does not evaluate candidates");
 Console.WriteLine($"PASS: {assertions} actual Event / Stability Lab UI lifecycle assertions (stubbed game and domain capabilities, no live data writes).");

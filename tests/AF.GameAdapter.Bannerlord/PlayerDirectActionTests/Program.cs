@@ -13,7 +13,7 @@ foreach (var entry in new[] { ("AFSceneSessionScroll.xml", "ExecuteDirectActions
     Check(buttons.Count == 1, "actual displayed panel has exactly one manual-tag button: " + entry.Item1);
     var manual = buttons.Single();
     Check((string)manual.Attribute("IsEnabled") == "@CanOpenDirectActions", "manual-tag button enable binding: " + entry.Item1);
-    Check(manual.Attribute("IsVisible") == null || (string)manual.Attribute("IsVisible") == "@IsToolbarVisible", "button not gated by AI/Hero/developer/illustration: " + entry.Item1);
+    Check((string)manual.Attribute("IsVisible") == "@IsDirectActionsVisible", "manual-tag button follows developer visibility: " + entry.Item1);
     Check((string)manual.Attribute("DoNotPassEventsToChildren") == "true" && (string)manual.Descendants("TextWidget").Single().Attribute("DoNotAcceptEvents") == "true", "manual-tag button owns clicks: " + entry.Item1);
     string id = (string)manual.Attribute("Id");
     double N(System.Xml.Linq.XElement element, string attr) => double.TryParse((string)element.Attribute(attr), out var value) ? value : 0;
@@ -148,6 +148,10 @@ Check(xml.Descendants("ButtonWidget").Count()==7,"all six original buttons retai
 var scene=File.ReadAllText(Path.Combine(root.FullName,"src/AF.GameAdapter.Bannerlord/Scene/SceneShoutInputController.cs"));
 var menuStart=scene.IndexOf("internal void TriggerShout()",StringComparison.Ordinal);
 var directBranch=scene.IndexOf("if (text2 == \"direct_actions\")",menuStart,StringComparison.Ordinal);
+var devGate=scene.IndexOf("if (MyBehavior.IsDevDataManagementEnabledForExternal())",menuStart,StringComparison.Ordinal);
+var directEntry=scene.IndexOf("new InquiryElement(\"direct_actions\"",menuStart,StringComparison.Ordinal);
+var rawTagEntry=scene.IndexOf("new InquiryElement(\"tag_test\"",menuStart,StringComparison.Ordinal);
+Check(devGate>menuStart && directEntry>devGate && rawTagEntry>directEntry && scene.Substring(devGate,rawTagEntry-devGate).Count(c=>c=='}')==0,"scene wheel places manual tags and raw tag test under the same developer gate");
 Check(scene.IndexOf("requireSetupReady: false",menuStart,StringComparison.Ordinal)<directBranch,"Y menu available without API setup");
 Check(scene.IndexOf("EnsureSetupReady()",directBranch,StringComparison.Ordinal)>scene.IndexOf("OpenScenePlayerDirectActions",directBranch,StringComparison.Ordinal),"direct branch returns before original setup gate");
 var host=File.ReadAllText(Path.Combine(root.FullName,"src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PlayerDirectActions.cs"));

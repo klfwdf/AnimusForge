@@ -72,6 +72,8 @@ json_dll = next(path / 'Newtonsoft.Json.dll' for path in directories if (path / 
 project = out / 'Checks.csproj'
 project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Compile Include="' + escape(str(source.with_name('RuntimeLanguageChecks.cs'))) + '"/></ItemGroup>'), encoding='utf-8')
 project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Compile Include="' + escape(str(source.with_name('TerminalSettingsChecks.cs'))) + '"/></ItemGroup>'), encoding='utf-8')
+project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Compile Include="' + escape(str(source.with_name('RequestPromptAuditChecks.cs'))) + '"/></ItemGroup>'), encoding='utf-8')
+project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Compile Include="' + escape(str(ROOT / 'tests/modules/AF.Module.Kingdom/StabilityRebellionRetirementChecks.cs')) + '"/></ItemGroup>'), encoding='utf-8')
 project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Reference Include="netstandard"><HintPath>' + escape(str(framework / 'Facades/netstandard.dll')) + '</HintPath></Reference></ItemGroup>'), encoding='utf-8')
 build = subprocess.run([str(dotnet), 'build', str(project), '-c', 'Release', '--nologo', '-p:RestoreConfigFile=' + str(out / 'NuGet.Config')], cwd=out, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=180)
 run = None

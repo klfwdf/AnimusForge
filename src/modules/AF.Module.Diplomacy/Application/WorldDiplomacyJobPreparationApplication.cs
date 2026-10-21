@@ -156,7 +156,7 @@ public static bool HasStaleDiplomaticActionPresentation(
 		job.CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey;
 		job.ProfiledKingdomId = "";
 		job.StrategicProfileKingdomId = job.AuthorKingdomId;
-		job.MaxTokens = generationMaxTokens;
+		job.MaxTokens = WorldDiplomacyPromptContractRules.GetDeclarationOutputTokenBudget(maximumCharacters, generationMaxTokens);
 		job.PresentedLegalActionSignature = buildLegalActionSignature?.Invoke(job);
 		captureCanonicalHistory?.Invoke(job);
 		return !string.IsNullOrWhiteSpace(job.UserPrompt);

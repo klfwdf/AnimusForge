@@ -86,10 +86,18 @@ internal static class CampaignSystemFactProjection
     private static readonly Template ExecutionSentence = new Template("campaign_fact_execution_sentence", new string[] { "name", "name", "method" });
     private static readonly Template ExecutionQuote = new Template("campaign_fact_execution_quote", new string[] { "name", "quote" });
     private static readonly string[] Methods = { PromptComposerTexts.Raw("campaign_fact_method_0_source"), PromptComposerTexts.Raw("campaign_fact_method_1_source"), PromptComposerTexts.Raw("campaign_fact_method_2_source"), PromptComposerTexts.Raw("campaign_fact_method_3_source"), PromptComposerTexts.Raw("campaign_fact_method_4_source"), PromptComposerTexts.Raw("campaign_fact_method_5_source"), PromptComposerTexts.Raw("campaign_fact_method_6_source") };
-    internal static bool IsSupported(string kind) => kind == "civil_war" || kind == "civil_war_politics" || kind == "civil_war_resolution" || kind == "execution_last_words";
+    internal static bool IsSupported(string kind) => kind == "civil_war" || kind == "civil_war_politics" || kind == "civil_war_resolution" || kind == "execution_last_words" || kind == "noble_gathering" || kind == "tournament_finished" || PolicyWeeklyFactPromptProjection.IsPolicyKind(kind);
     internal static string Project(string kind, string raw)
     {
         if (string.IsNullOrEmpty(raw) || !IsSupported(kind) || PromptComposerTexts.Get("campaign_fact_language") == "zh-CN") return raw;
+        if (kind == "noble_gathering") return NobleGatheringTextProjection.ProjectWeeklyMaterialForPrompt(kind, "", raw);
+        if (kind == "tournament_finished") return ProjectTournament(raw);
+        if (PolicyWeeklyFactPromptProjection.IsPolicyKind(kind))
+        {
+            string policy = PolicyWeeklyFactPromptProjection.Snapshot(kind, raw);
+            // Civil-news capture historically normalizes the vassal kind to ruler_policy.
+            return policy != raw || kind != "ruler_policy" ? policy : PolicyWeeklyFactPromptProjection.Snapshot("player_vassal_policy", raw);
+        }
         if (kind == "execution_last_words") return ProjectExecution(raw);
         string body=Apply(Civil,raw);
         if (body != raw) return body;
@@ -298,6 +306,75 @@ internal static class CampaignSystemFactProjection
         // Quotation/body fields are inserted once, never searched or translated.
         if (!Extract(quoted,ExecutionQuote.Parts,out string[] speech)) return raw;
         return projectedSentence+Expand("campaign_fact_execution_quote",speech);
+    }
+
+    private static readonly Lazy<Template[]> TournamentSections = new Lazy<Template[]>(() => new[] {
+        new Template("campaign_tournament_open", new[] { "name", "name" }),
+        new Template("campaign_tournament_winner", new[] { "person" }),
+        new Template("campaign_tournament_status", new[] { "name", "name", "name", "number" }),
+        new Template("campaign_tournament_prize", new[] { "name" }),
+        new Template("campaign_tournament_guests", new[] { "people" }),
+        new Template("campaign_tournament_status_nonhero", Array.Empty<string>()),
+        new Template("campaign_tournament_status_noclan", Array.Empty<string>())
+    });
+    private static readonly Lazy<Template[]> TournamentRoles = new Lazy<Template[]>(() => new[] {
+        new Template("campaign_tournament_role_player", new[] { "name" }),
+        new Template("campaign_tournament_role_ruler", new[] { "name" }),
+        new Template("campaign_tournament_role_leader", new[] { "name" }),
+        new Template("campaign_tournament_role_noble", new[] { "name" }),
+        new Template("campaign_tournament_role_wanderer", new[] { "name" }),
+        new Template("campaign_tournament_role_hero", new[] { "name" }),
+        new Template("campaign_tournament_role_arena", new[] { "name" })
+    });
+
+    private static string TournamentPerson(string value)
+    {
+        int marker = value.LastIndexOf('\u00d7');
+        if (marker > 0 && int.TryParse(value.Substring(marker + 1), out int count) && count > 1)
+            return Apply(TournamentRoles.Value, value.Substring(0, marker)) + value.Substring(marker);
+        return Apply(TournamentRoles.Value, value);
+    }
+
+    private static string ProjectTournament(string raw)
+    {
+        // Only the complete ordered producer frame is accepted. Never translate arbitrary prose.
+        string separator = PromptComposerTexts.Raw("campaign_tournament_period");
+        if (!raw.EndsWith(separator, StringComparison.Ordinal)) return raw;
+        string[] sections = raw.Substring(0, raw.Length - separator.Length).Split(new[] { separator }, StringSplitOptions.None);
+        var output = new System.Text.StringBuilder();
+        int previous = -1;
+        foreach (string section in sections)
+        {
+            bool found = false;
+            for (int i = 0; i < TournamentSections.Value.Length; i++)
+            {
+                Template template = TournamentSections.Value[i];
+                if (!Extract(section.TrimStart(), template.Parts, out string[] values)) continue;
+                int order = i >= 5 ? 2 : i;
+                if (order <= previous || (previous < 0 && order != 0)) return raw;
+                previous = order;
+                if (i == 1) values[0] = TournamentPerson(values[0]);
+                if (i == 2)
+                {
+                    if (!int.TryParse(values[3], out int tier) || tier < 0) return raw;
+                    string standing = tier == 0 ? "humble" : tier == 1 ? "known" : tier == 2 ? "rising" : tier == 3 ? "respected" : tier == 4 ? "highborn" : tier == 5 ? "powerful" : "exalted";
+                    if (values[2] == PromptComposerTexts.Raw("campaign_tournament_standing_" + standing))
+                        values[2] = PromptComposerTexts.Get("reputation_" + standing);
+                }
+                if (i == 4)
+                {
+                    string[] people = values[0].Split(new[] { PromptComposerTexts.Raw("campaign_tournament_list_separator") }, StringSplitOptions.None);
+                    for (int p = 0; p < people.Length; p++) people[p] = TournamentPerson(people[p]);
+                    values[0] = string.Join(PromptComposerTexts.Get("campaign_tournament_list_separator"), people);
+                }
+                if (output.Length > 0) output.Append(' ');
+                output.Append(Expand(template.Key, values));
+                found = true;
+                break;
+            }
+            if (!found) return raw;
+        }
+        return previous >= 1 ? output.ToString() : raw;
     }
     private static string Apply(Template[] templates,string raw)
     {

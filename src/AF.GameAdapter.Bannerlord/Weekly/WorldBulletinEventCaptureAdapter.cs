@@ -982,7 +982,7 @@ internal void CaptureCivilNewsMaterial(string kind, string stableKey, string lab
             && kind != "noble_gathering" && kind != "tournament_finished") return;
         if (!WorldBulletinStateOwner.IsWorldBulletinEnabled() || day != GetCurrentGameDayIndexSafe() || string.IsNullOrWhiteSpace(stableKey)) return;
         string newsKind = kind == "player_vassal_policy" ? "ruler_policy" : kind;
-        string sentence = WorldBulletinPolicy.Truncate(snapshot, 650);
+        string sentence = WorldBulletinPolicy.Truncate(CampaignSystemFactProjection.ProjectWeeklyMaterial(kind, stableKey, snapshot), 650);
         string detail = AdapterRecordTexts.Prompt("AF_REC_Bulletin_NoExtraEffects");
         try
         {

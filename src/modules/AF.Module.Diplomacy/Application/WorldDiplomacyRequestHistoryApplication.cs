@@ -151,7 +151,7 @@ internal static class WorldDiplomacyRequestHistoryApplication
 
                 || !selected.Add(doc.DocumentId ?? "")) return;
 
-            string line = Text("History_DocPrefix", "[Document ") + Clip(doc.DocumentId, 96) + "; " + Clip(doc.GameDate, 80)
+            string line = Text("History_DocPrefix", "[Document ") + Clip(doc.DocumentId, 96) + "; " + Clip(DiplomacyDateProjection.ForPrompt(doc.GameDate, localize ?? DiplomacyPromptTexts.Get), 80)
 
                 + "; " + Clip(doc.AuthorKingdomId, 96) + "→" + Clip(doc.TargetKingdomId, 96)
 

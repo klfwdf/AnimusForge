@@ -3,15 +3,17 @@ using System.Diagnostics;
 
 namespace AnimusForge;
 
-// The imported core uses the existing AF settings owner. It has no second MCM/JSON owner.
+// Built-in cache policy. It has no editable MCM/terminal/JSON settings.
 internal sealed class PromptCacheSettings
 {
+    internal const int MaxTranscriptCharacters = 150000;
+    internal const int DefaultSessionTtlMinutes = 10;
     internal static readonly PromptCacheSettings Instance = new PromptCacheSettings();
     internal bool EnableHierarchicalPromptSplit => true;
     internal bool EnableSceneCardSplit => true;
     internal bool EnableDynamicBlockDedup => true;
     internal int SceneTranscriptKeepTurns => 2;
-    internal int SessionTtlMinutes => DuelSettings.GetSettings()?.ConversationPromptCacheTtlMinutes ?? 10;
+    internal int SessionTtlMinutes => DefaultSessionTtlMinutes;
     internal int DumpRawDynamicBlockCount { get; set; }
 }
 

@@ -25,6 +25,8 @@ namespace AnimusForge
         internal string WorldDiplomacyPrompt = "简明冷峻";
         internal int MainApiMaxTokens = 12000, EventAndRebellionApiMaxTokens = 4000;
         internal float MainTemperature = 0.7f, EventTemperature = 0.4f;
+        internal bool MainApiThinkingEnabled = true, EventAndRebellionApiThinkingEnabled;
+        internal string MainEffort = "medium", EventEffort = "high";
         internal int MinChars = 40, MaxChars = 200;
         internal static int Reads;
         internal static bool StrictThread = true;
@@ -41,11 +43,13 @@ namespace AnimusForge
         internal string GetEffectiveMainModelName() => ModelName;
         internal float GetEventAndRebellionApiTemperature() => EventTemperature;
         internal float GetMainApiTemperature() => MainTemperature;
+        internal string GetMainApiReasoningEffort() => MainEffort;
+        internal string GetEventAndRebellionApiReasoningEffort() => EventEffort;
         internal static string GetEffectiveApiUrl(string value) => LlmApiCompat.GetEffectiveChatApiUrl(value);
         internal static int ClampApiMaxTokens(int value, int fallback) => Math.Max(512, Math.Min(64000, value > 0 ? value : fallback));
         internal static float ClampApiTemperature(float value) => Math.Max(0, Math.Min(2, value));
         internal static void ApplyThinkingControls(JObject body, string url, string model, bool thinkingEnabled, string effort, out string mode)
-        { body["reasoning_effort"] = "none"; mode = "fixture_disabled"; }
+        { body["reasoning_effort"] = thinkingEnabled ? effort : "none"; mode = "fixture_" + (thinkingEnabled ? effort : "disabled"); }
         internal static void RemoveThinkingControls(JObject body) => body.Remove("reasoning_effort");
     }
 
@@ -84,7 +88,8 @@ namespace AnimusForge
             string file = package == "en" ? System.IO.Path.GetFileNameWithoutExtension(name) + ".en.json"
                 : name == "PromptComposerTexts.json" ? "PromptComposerTexts.zh-CN.json" : name;
             return System.IO.Path.Combine(dir ?? "", name == "PromptComposerTexts.json"
-                ? "content/modules/AF.Module.Prompt/ModuleData" : "content/modules/AF.Module.Diplomacy/ModuleData", file);
+                ? "content/modules/AF.Module.Prompt/ModuleData" : name == "LlmPromptTexts.json"
+                ? "content/modules/AF.Module.Llm/ModuleData" : "content/modules/AF.Module.Diplomacy/ModuleData", file);
         }
     }
 

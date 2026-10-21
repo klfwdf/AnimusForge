@@ -831,5 +831,20 @@
   "memory_fact_intimacy_player_pregnant": "The player and {0} had an intimate encounter. The system confirmed that the player is pregnant; the father is {1}.",
   "memory_fact_intimacy_npc_pregnant": "The player and {0} had an intimate encounter. The system confirmed that {1} is pregnant; the father is the player.",
   "native_text_language": "en",
-  "scene_action_rule_template": "[ACTION:SCENE_ACT:action_sequence]"
+  "scene_action_rule_template": "[ACTION:SCENE_ACT:action_sequence]",
+  "campaign_tournament_open": "A tournament concluded at {0}, in {1}.",
+  "campaign_tournament_winner": "The champion was {0}.",
+  "campaign_tournament_status": "The champion belongs to clan {0}, affiliated with {1}; clan standing: {2} (tier {3}).",
+  "campaign_tournament_prize": "The tournament prize was {0}.",
+  "campaign_tournament_guests": "All participants, including the champion: {0}.",
+  "campaign_tournament_status_nonhero": "The champion is not a hero with a clan record; clan, kingdom and clan tier are not identified.",
+  "campaign_tournament_status_noclan": "The champion has no identified clan; kingdom and clan tier are not identified.",
+  "campaign_tournament_role_player": "{0} (player)",
+  "campaign_tournament_role_ruler": "{0} (ruler)",
+  "campaign_tournament_role_leader": "{0} (clan leader)",
+  "campaign_tournament_role_noble": "{0} (noble)",
+  "campaign_tournament_role_wanderer": "{0} (wanderer)",
+  "campaign_tournament_role_hero": "{0} (hero)",
+  "campaign_tournament_role_arena": "{0} (arena participant)",
+  "campaign_tournament_list_separator": ", "
 }

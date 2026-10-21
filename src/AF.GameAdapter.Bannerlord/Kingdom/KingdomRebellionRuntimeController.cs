@@ -155,121 +155,28 @@ internal static string BuildRebelKingdomNamingFailureExecutionMessage(RebelKingd
 		return text + KingdomUiText.T("AF_UI_KingdomRebellion_NamingFailureRetrySuffix", " Please fill in the event/rebellion API settings again and retry.");
 	}
 
+internal static string LegacyRebellionRetiredMessage => KingdomUiText.T("AF_UI_KingdomRebellion_LegacyRetired", "The standalone stability rebellion system has been retired. Uprisings are managed by civil-war factions.");
+
+// Compatibility entry points remain callable, but no longer roll, select clans or request names.
 internal KingdomRebellionResolutionResult ResolveKingdomRebellion(Kingdom kingdom, int weekIndex, bool executeAction, bool forceTrigger)
-	{
-		KingdomRebellionResolutionResult kingdomRebellionResolutionResult = new KingdomRebellionResolutionResult
-		{
-			Kingdom = kingdom,
-			WeekIndex = weekIndex,
-			Forced = forceTrigger
-		};
-		if (kingdom == null)
-		{
-			kingdomRebellionResolutionResult.Message = KingdomUiText.T("AF_UI_KingdomRebellion_ResolutionTargetMissing", "The target kingdom could not be found.");
-			return kingdomRebellionResolutionResult;
-		}
-		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
-		{
-			kingdomRebellionResolutionResult.Message = KingdomUiText.T("AF_UI_KingdomRebellion_ResolutionDisabled", "Kingdom stability and rebellion are disabled in MCM; the rebellion check was skipped.");
-			return kingdomRebellionResolutionResult;
-		}
-		int kingdomStabilityValue = _stability().GetKingdomStabilityValue(kingdom);
-		kingdomRebellionResolutionResult.StabilityValue = kingdomStabilityValue;
-		kingdomRebellionResolutionResult.StabilityTierText = KingdomStabilityGameAdapter.GetKingdomStabilityTierText(kingdomStabilityValue);
-		kingdomRebellionResolutionResult.TriggerChance = KingdomStabilityPolicy.GetKingdomRebellionWeeklyChance(kingdomStabilityValue);
-		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
-		{
-			kingdomRebellionResolutionResult.TriggerChance = 0f;
-			kingdomRebellionResolutionResult.Message = KingdomUiText.F("AF_UI_KingdomRebellion_ResolutionPlayerImmune", "{KINGDOM} is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled; the stability rebellion check was skipped.", ("KINGDOM", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"))));
-			return kingdomRebellionResolutionResult;
-		}
-		if (kingdom.IsEliminated)
-		{
-			kingdomRebellionResolutionResult.Message = KingdomUiText.F("AF_UI_KingdomRebellion_ResolutionEliminated", "{KINGDOM} has been eliminated; the rebellion check was skipped.", ("KINGDOM", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"))));
-			return kingdomRebellionResolutionResult;
-		}
-		if (kingdom.Leader == null)
-		{
-			kingdomRebellionResolutionResult.Message = KingdomUiText.F("AF_UI_KingdomRebellion_ResolutionLeaderMissing", "{KINGDOM} has no valid leader; the rebellion check was skipped.", ("KINGDOM", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"))));
-			return kingdomRebellionResolutionResult;
-		}
-		var captured = new Dictionary<Clan, RebellionClanFacts>();
-		kingdomRebellionResolutionResult.Candidates = _game().EvaluateKingdomRebellionCandidates(kingdom, forceTrigger: false, captured: captured);
-		foreach (KingdomRebellionCandidateInfo item in kingdomRebellionResolutionResult.Candidates.Where((KingdomRebellionCandidateInfo x) => x != null && x.Clan != null))
-		{
-			item.PreviewFollowerClanNames = _game().EvaluateKingdomRebellionFollowers(kingdom, item.Clan, forceTrigger: false, captured: captured).Where((KingdomRebellionFollowerInfo x) => x != null && x.Eligible && x.Clan != null).Select((KingdomRebellionFollowerInfo x) => MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(x.Clan)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		}
-		if (!forceTrigger)
-		{
-			if (kingdomRebellionResolutionResult.TriggerChance <= 0f)
-			{
-				kingdomRebellionResolutionResult.Message = KingdomUiText.F("AF_UI_KingdomRebellion_ResolutionNoChance", "{KINGDOM} currently has {TIER} stability; there is no rebellion chance this week.", ("KINGDOM", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"))), ("TIER", kingdomRebellionResolutionResult.StabilityTierText));
-				return kingdomRebellionResolutionResult;
-			}
-			bool passed = RebellionRules.PassChance(false, kingdomRebellionResolutionResult.TriggerChance, () => MBRandom.RandomFloat, out float randomFloat);
-			kingdomRebellionResolutionResult.Roll = randomFloat;
-			kingdomRebellionResolutionResult.PassedChanceGate = passed;
-			if (!kingdomRebellionResolutionResult.PassedChanceGate)
-			{
-				kingdomRebellionResolutionResult.Message = KingdomUiText.F("AF_UI_KingdomRebellion_ResolutionChanceMissed", "{KINGDOM}'s rebellion roll missed this week. Stability tier: {TIER}; chance: {CHANCE}; roll: {ROLL}.", ("KINGDOM", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"))), ("TIER", kingdomRebellionResolutionResult.StabilityTierText), ("CHANCE", KingdomStabilityGameAdapter.FormatKingdomRebellionChance(kingdomRebellionResolutionResult.TriggerChance)), ("ROLL", randomFloat.ToString("0.000")));
-				return kingdomRebellionResolutionResult;
-			}
-		}
-		else
-		{
-			kingdomRebellionResolutionResult.PassedChanceGate = true;
-		}
-		KingdomRebellionCandidateInfo kingdomRebellionCandidateInfo = RebellionRules.FirstEligible(kingdomRebellionResolutionResult.Candidates, x => x != null && x.Eligible && x.Clan != null);
-		if (kingdomRebellionCandidateInfo == null)
-		{
-			kingdomRebellionResolutionResult.Message = KingdomUiText.F("AF_UI_KingdomRebellion_ResolutionNoCandidate", "{KINGDOM} has no eligible clan with a town or castle for rebellion.", ("KINGDOM", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"))));
-			return kingdomRebellionResolutionResult;
-		}
-		kingdomRebellionResolutionResult.SelectedClan = kingdomRebellionCandidateInfo.Clan;
-		kingdomRebellionResolutionResult.FollowerCandidates = _game().EvaluateKingdomRebellionFollowers(kingdom, kingdomRebellionCandidateInfo.Clan, forceTrigger: false, captured: captured);
-		kingdomRebellionResolutionResult.SelectedFollowerClans = kingdomRebellionResolutionResult.FollowerCandidates.Where((KingdomRebellionFollowerInfo x) => x != null && x.Eligible && x.Clan != null).Select((KingdomRebellionFollowerInfo x) => x.Clan).ToList();
-		if (!executeAction)
-		{
-			string followerText = (kingdomRebellionResolutionResult.SelectedFollowerClans.Count > 0)
-				? KingdomUiText.F("AF_UI_KingdomRebellion_ResolutionExpectedFollowers", "; expected follower clans: {FOLLOWERS}.", ("FOLLOWERS", string.Join(KingdomUiText.T("AF_UI_KingdomRebellion_ClanSeparator", ", "), kingdomRebellionResolutionResult.SelectedFollowerClans.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName))))
-				: KingdomUiText.T("AF_UI_KingdomRebellion_ResolutionNoExpectedFollowers", "; no other clans are expected to join the coalition.");
-			kingdomRebellionResolutionResult.Message = KingdomUiText.F("AF_UI_KingdomRebellion_ResolutionPreview", "The most likely rebel clan is {CLAN} (relation {RELATION}, score {SCORE}){FOLLOWERS}", ("CLAN", kingdomRebellionCandidateInfo.ClanName), ("RELATION", kingdomRebellionCandidateInfo.RelationToKing), ("SCORE", kingdomRebellionCandidateInfo.Score.ToString("0.0")), ("FOLLOWERS", followerText));
-			return kingdomRebellionResolutionResult;
-		}
-		kingdomRebellionResolutionResult.Executed = TryExecuteKingdomRebellion(kingdomRebellionCandidateInfo.Clan, kingdom, weekIndex, forceTrigger, kingdomRebellionResolutionResult.SelectedFollowerClans, out var message);
-		kingdomRebellionResolutionResult.Message = message;
-		return kingdomRebellionResolutionResult;
-	}
+    => new KingdomRebellionResolutionResult { Kingdom = kingdom, WeekIndex = weekIndex, Forced = forceTrigger, Message = LegacyRebellionRetiredMessage };
 
 internal bool TryExecuteKingdomRebellion(Clan clan, Kingdom kingdom, int weekIndex, bool forceTrigger, List<Clan> followerClans, out string message)
-	{
-		message = "";
-		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
-		{
-			message = KingdomUiText.T("AF_UI_KingdomRebellion_ExecutionPlayerImmune", "Rebellion execution failed: the kingdom is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled.");
-			return false;
-		}
-		if (!_game().TryValidateClanForKingdomRebellion(clan, kingdom, forceTrigger: true, out var note, out var relationToKing, out var townCount, out var castleCount))
-		{
-			message = KingdomUiText.T("AF_UI_KingdomRebellion_ExecutionFailedPrefix", "Rebellion execution failed: ") + note;
-			return false;
-		}
-		try
-		{
-			RebelKingdomNamingResult rebelKingdomNamingResult = GenerateRebelKingdomNaming(clan, kingdom, weekIndex, followerClans);
-			return TryExecuteKingdomRebellionWithNaming(clan, kingdom, weekIndex, forceTrigger, relationToKing, townCount, castleCount, rebelKingdomNamingResult, followerClans, out message);
-		}
-		catch (Exception ex)
-		{
-			message = KingdomUiText.T("AF_UI_KingdomRebellion_ExecutionFailedPrefix", "Rebellion execution failed: ") + ex.Message;
-			Logger.Log("KingdomRebellion", "[ERROR] TryExecuteKingdomRebellion failed: " + ex);
-			return false;
-		}
-	}
+{
+    message = LegacyRebellionRetiredMessage;
+    return false;
+}
 
-internal bool TryExecuteKingdomRebellionWithNaming(Clan clan, Kingdom kingdom, int weekIndex, bool forceTrigger, int relationToKing, int townCount, int castleCount, RebelKingdomNamingResult rebelKingdomNamingResult, List<Clan> followerClans, out string message)
-	{
-		message = "";
+internal bool TryExecuteKingdomRebellionWithNaming(Clan clan, Kingdom kingdom, int weekIndex, bool forceTrigger, int relationToKing, int townCount, int castleCount, RebelKingdomNamingResult rebelKingdomNamingResult, List<Clan> followerClans, out string message, string civilWarFactionId = null)
+    {
+        // Physical founding is shared with faction wars. An untracked legacy request has no authority.
+        if (string.IsNullOrWhiteSpace(civilWarFactionId) || !TeamModuleServices.CivilWar.IsRebellionRequestActive(civilWarFactionId))
+        {
+            message = LegacyRebellionRetiredMessage;
+            return false;
+        }
+
+        message = "";
 		string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"));
 		string clanDisplayName = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan);
 		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
@@ -407,15 +314,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, _stabilit
 									int before = _stability().GetKingdomStabilityValue(target);
 									_stability().SetKingdomStabilityValue(target, before + delta);
 								}, _pump.RecentFacts(MemoryEntityIdentityBannerlordAdapter.GetKingdomId(devEditableKingdom), 8));
-								if (TeamModuleServices.CivilWar.HasTrackedKingdom(devEditableKingdom) || TeamModuleServices.CivilWar.BlocksNewOffensiveWar(devEditableKingdom))
-							{
-								return _pump.Maintenance().Complete && CompleteWeeklyKingdomRebellionMaintenance(weekIndex);
-							}
-							KingdomRebellionResolutionResult kingdomRebellionResolutionResult = ResolveKingdomRebellion(devEditableKingdom, weekIndex, executeAction: false, forceTrigger: false);
-						if (kingdomRebellionResolutionResult != null && kingdomRebellionResolutionResult.PassedChanceGate && kingdomRebellionResolutionResult.SelectedClan != null)
-						{
-							QueueAutomaticKingdomRebellion(kingdomRebellionResolutionResult);
-						}
+
 					}
 				}
 				catch (Exception ex)
@@ -452,6 +351,12 @@ internal void ResetPendingWeeklyKingdomRebellionMaintenance()
 
 internal void QueueAutomaticKingdomRebellion(KingdomRebellionResolutionResult result, string civilWarFactionId = null)
 	{
+        if (string.IsNullOrWhiteSpace(civilWarFactionId))
+        {
+            Logger.Log("KingdomRebellion", "[SKIP] retired standalone rebellion queue");
+            return;
+        }
+
 		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
 			return;
@@ -600,7 +505,7 @@ internal void ProcessPendingAutomaticKingdomRebellionResult()
             WorldBulletinEventCaptureAdapter.CivilWarRebellionExecuting = !string.IsNullOrWhiteSpace(pendingAutomaticKingdomRebellionContext.CivilWarFactionId);
             try
             {
-			success = TryExecuteKingdomRebellionWithNaming(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, forceTrigger: false, pendingAutomaticKingdomRebellionContext.RelationToKing, pendingAutomaticKingdomRebellionContext.TownCount, pendingAutomaticKingdomRebellionContext.CastleCount, pendingAutomaticKingdomRebellionContext.NamingResult, list, out executionMessage);
+			success = TryExecuteKingdomRebellionWithNaming(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, forceTrigger: false, pendingAutomaticKingdomRebellionContext.RelationToKing, pendingAutomaticKingdomRebellionContext.TownCount, pendingAutomaticKingdomRebellionContext.CastleCount, pendingAutomaticKingdomRebellionContext.NamingResult, list, out executionMessage, pendingAutomaticKingdomRebellionContext.CivilWarFactionId);
             }
             finally { WorldBulletinEventCaptureAdapter.CivilWarRebellionExecuting = false; }
 			if (success && !string.IsNullOrWhiteSpace(pendingAutomaticKingdomRebellionContext.CivilWarFactionId))
@@ -650,7 +555,7 @@ private void ShowPlayerRebelKingdomNamingInquiry(PendingAutomaticKingdomRebellio
 internal static bool IsStaleCivilWarRebellion(PendingAutomaticKingdomRebellionContext context)
 	{
 		string factionId = context?.CivilWarFactionId;
-		if (string.IsNullOrWhiteSpace(factionId) || TeamModuleServices.CivilWar.IsRebellionRequestActive(factionId)) return false;
+		if (!string.IsNullOrWhiteSpace(factionId) && TeamModuleServices.CivilWar.IsRebellionRequestActive(factionId)) return false;
 		Logger.Log("KingdomCivilWar", "[SKIP] stale civil war rebellion request faction=" + factionId);
 		return true;
 	}

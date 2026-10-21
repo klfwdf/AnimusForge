@@ -205,6 +205,8 @@ internal static class MemorySystemFactProjection
     internal static string ProjectNpcFact(string fact)
     {
         if (string.IsNullOrEmpty(fact)) return fact;
+        string siege = AnimusForge.SiegeAftermathIntervention.SiegeSceneMemoryPromptProjection.ProjectFact(fact, PromptComposerTexts.Get("campaign_fact_language") == "en");
+        if (siege != fact) return siege;
         if (fact.IndexOf('\n') >= 0)
         {
             string[] lines = fact.Split('\n');
@@ -233,6 +235,8 @@ internal static class MemorySystemFactProjection
     internal static string ProjectBody(string body)
     {
         if (string.IsNullOrEmpty(body)) return body;
+        string siege = AnimusForge.SiegeAftermathIntervention.SiegeSceneMemoryPromptProjection.ProjectFact(body, PromptComposerTexts.Get("campaign_fact_language") == "en");
+        if (siege != body) return siege;
         string social = SocialFactPromptProjection.ProjectForPrompt(body);
         if (social != body) return social;
         string economy = EconomyActionFactProjection.ProjectForPrompt(body);

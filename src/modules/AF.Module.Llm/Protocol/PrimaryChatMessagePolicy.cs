@@ -32,11 +32,14 @@ internal static class PrimaryChatMessagePolicy
     private static readonly System.Text.RegularExpressions.Regex LegacyRuleHeader = new System.Text.RegularExpressions.Regex(
         LlmSourceTexts.Get("LegacyRuleHeaderPattern"), System.Text.RegularExpressions.RegexOptions.Compiled);
 
+    private static readonly string LegacyCivilWarFactMarker = LlmSourceTexts.Get("LegacyCivilWarFactMarker");
+
     internal static string ProjectFixedTransportText(string text, bool english)
     {
         if (string.IsNullOrEmpty(text)) return text;
         string projected = text.IndexOf("AFEF", StringComparison.Ordinal) < 0 ? text : LegacyFactMarker.Replace(text, match => match.Groups["actor"].Value == LlmSourceTexts.Get("LegacyAfefPlayerActor")
             ? "[AFEF PLAYER_ACTION]" : match.Groups["actor"].Value == "NPC" ? "[AFEF NPC_ACTION]" : "[AFEF NPC_ACTION] / [AFEF PLAYER_ACTION]");
+        projected = projected.Replace(LegacyCivilWarFactMarker, "[Civil war fact]");
         return english && projected.IndexOf(LlmSourceTexts.Get("LegacyRuleHeaderPrefix"), StringComparison.Ordinal) >= 0 ? LegacyRuleHeader.Replace(projected, match => "[Additional rule:" + match.Groups[1].Value + "]") : projected;
     }
 

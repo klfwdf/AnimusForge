@@ -234,6 +234,8 @@ internal static class RuntimeLanguageChecks
         Check(Prompt(product,"ProjectOpeningTextForPrompt","edited {NAME} $1") == "edited {NAME} $1", "edited opening title is preserved in prompt");
         AfefReaderCompatibility(product);
         FixedWireProjection(product);
+        RequestPromptAuditChecks.Run(product);
+        StabilityRebellionRetirementChecks.Run(product);
         Console.WriteLine("PASS actual runtime language/UI checks=" + checks);
     }
     private static void AfefReaderCompatibility(Assembly product)

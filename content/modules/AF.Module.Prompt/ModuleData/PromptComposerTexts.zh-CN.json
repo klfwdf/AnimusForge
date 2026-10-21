@@ -831,5 +831,20 @@
   "memory_fact_intimacy_player_pregnant": "玩家与{0}发生了亲密关系。系统已确认玩家怀孕，父亲是{1}。",
   "memory_fact_intimacy_npc_pregnant": "玩家与{0}发生了亲密关系。系统已确认{1}怀孕，父亲是玩家。",
   "native_text_language": "zh-CN",
-  "scene_action_rule_template": "[ACTION:SCENE_ACT:动作程序]"
+  "scene_action_rule_template": "[ACTION:SCENE_ACT:动作程序]",
+  "campaign_tournament_open": "{0}完成了一场竞技大会结算，举办地隶属于{1}。",
+  "campaign_tournament_winner": "冠军是{0}。",
+  "campaign_tournament_status": "冠军出身于{0}家族，所属王国是{1}，家族等级评价为{2}（{3} level）。",
+  "campaign_tournament_prize": "本次大会奖品是{0}。",
+  "campaign_tournament_guests": "全部参赛者（含冠军）：{0}。",
+  "campaign_tournament_status_nonhero": "冠军不是有家族档案的英雄，无法识别其家族、所属王国与家族等级。",
+  "campaign_tournament_status_noclan": "冠军没有可识别的家族，无法识别其所属王国与家族等级。",
+  "campaign_tournament_role_player": "{0}（玩家）",
+  "campaign_tournament_role_ruler": "{0}（王国领袖）",
+  "campaign_tournament_role_leader": "{0}（家族族长）",
+  "campaign_tournament_role_noble": "{0}（贵族）",
+  "campaign_tournament_role_wanderer": "{0}（流浪者）",
+  "campaign_tournament_role_hero": "{0}（英雄）",
+  "campaign_tournament_role_arena": "{0}（竞技场人物）",
+  "campaign_tournament_list_separator": "、"
 }

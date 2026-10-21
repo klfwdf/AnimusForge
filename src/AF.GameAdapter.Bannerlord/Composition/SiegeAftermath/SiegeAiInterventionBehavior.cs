@@ -15158,7 +15158,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						regularActions.Contains(SiegeCastleActionKind.TreatPrisoners),
 						regularActions.Contains(SiegeCastleActionKind.ReceiveArmaments),
 						lordOutcomeSummary,
-						settlementResult.ConstructionSpeedBonusPercent)));
+						settlementResult.ConstructionSpeedBonusPercent), isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface));
 				GcczDiagnosticLog.Log("CastleOutcome", "summary settlement=" + (settlement?.StringId ?? _completedSettlementId ?? "N/A")
 					+ " outcomes=" + string.Join(",", regularOutcomes.Select(entry => entry.Action + ":" + entry.AffectedCount))
 					+ " remainingRegular=" + remainingRegularPrisoners

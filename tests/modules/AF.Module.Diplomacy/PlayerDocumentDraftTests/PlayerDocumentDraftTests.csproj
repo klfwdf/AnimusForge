@@ -7,6 +7,7 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" />
     <Compile Include="../../../../src/AF.Contracts/Internal/InteractionContracts.cs" />
     <Compile Include="../../../../src/AF.Contracts/Internal/LlmContracts.cs" />
     <Compile Include="../../../../src/AF.Contracts/Internal/FeatureBridgeContracts.cs" />

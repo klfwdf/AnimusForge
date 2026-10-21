@@ -25,6 +25,7 @@ internal static class PreparedDiplomacyGatewayReplay
     internal static void Run(bool legacyWorkerNegativeControl = false)
     {
         var handler = Handler();
+        DuelSettings.Current.EventAndRebellionApiThinkingEnabled = true;
         var request = Request();
         int sends = 0;
         Func<bool> admit = () => { Interlocked.Increment(ref sends); return true; };
@@ -34,11 +35,14 @@ internal static class PreparedDiplomacyGatewayReplay
         var task = Task.Run(() => gateway.GenerateAsync(request, CancellationToken.None));
         Test.Until(() => handler.Get(0) != null || task.IsCompleted, "prepared worker starts");
         Test.That(handler.Get(0) != null, "main-thread prepared gateway must reach HTTP with strict MCM thread checks enabled");
+        Test.That((string)handler.Get(0).Body["reasoning_effort"] == "high", "prepared diplomacy honors enabled event API reasoning");
         DuelSettings.Current.EventAndRebellionApiUrl = "https://changed.example/v1/chat/completions";
         DuelSettings.Current.EventAndRebellionApiKey = "changed-fixture";
         DuelSettings.Current.EventAndRebellionModelName = "changed-model";
         DuelSettings.Current.EventAndRebellionApiMaxTokens = 512;
         DuelSettings.Current.EventTemperature = 1.9f;
+        DuelSettings.Current.EventAndRebellionApiThinkingEnabled = false;
+        DuelSettings.Current.EventEffort = "minimal";
         handler.Finish(0, "retry", status: HttpStatusCode.InternalServerError);
         Test.Until(() => handler.Get(1) != null || task.IsCompleted, "retry after asynchronous provider failure");
         Test.That(handler.Get(1) != null, "original retry policy survives an asynchronous failure");
@@ -52,6 +56,47 @@ internal static class PreparedDiplomacyGatewayReplay
         CheckFallbackBudget();
         CheckCancellation();
         CheckPreparationFailure();
+        CheckReasoningRoutes();
+    }
+
+    private static void CheckReasoningRoutes()
+    {
+        foreach (bool prepared in new[] { true, false })
+        foreach (bool eventRoute in new[] { true, false })
+        foreach (bool enabled in new[] { true, false })
+        {
+            var handler = Handler();
+            var settings = DuelSettings.Current;
+            settings.EventAndRebellionApiThinkingEnabled = eventRoute ? enabled : !enabled;
+            settings.MainApiThinkingEnabled = eventRoute ? !enabled : enabled;
+            settings.EventEffort = "high";
+            settings.MainEffort = "medium";
+            if (!eventRoute) settings.EventAndRebellionApiKey = "";
+            var messages = new JArray(new JObject { ["role"] = "user", ["content"] = "Frozen English diplomatic material" });
+            Task<WorldDiplomacyApiCallResult> task;
+            if (prepared)
+            {
+                Test.That(WorldDiplomacyLlmClient.TryPrepareSingleCall(messages, 1200, 90000,
+                    "reasoning-route-test", SaveRuntimeGuard.CaptureGeneration(), out var call, out _), "reasoning route preparation succeeds");
+                settings.EventAndRebellionApiThinkingEnabled = !settings.EventAndRebellionApiThinkingEnabled;
+                settings.MainApiThinkingEnabled = !settings.MainApiThinkingEnabled;
+                settings.EventEffort = settings.MainEffort = "minimal";
+                task = Task.Run(() => call(CancellationToken.None));
+            }
+            else
+            {
+                task = WorldDiplomacyLlmClient.CallMessagesWithRetriesAsync(messages, 1200, 90000,
+                    "legacy-reasoning-route-test", SaveRuntimeGuard.CaptureGeneration(), maxAttempts: 1);
+            }
+            Test.Until(() => handler.Get(0) != null || task.IsCompleted, "configured reasoning reaches sender");
+            var sent = handler.Get(0);
+            Test.That(sent != null && sent.Url.Contains(eventRoute ? "event.example" : "main.example"), "reasoning follows actual API route");
+            Test.That((string)sent.Body["reasoning_effort"] == (enabled ? eventRoute ? "high" : "medium" : "none"),
+                "prepared and legacy diplomacy honor selected route's frozen reasoning switch and effort");
+            Test.That(JToken.DeepEquals(sent.Body["messages"], messages), "reasoning selection adds no language instruction or message changes");
+            handler.Finish(0, "configured-output");
+            Test.That(task.GetAwaiter().GetResult().Success, "configured reasoning keeps successful provider output");
+        }
     }
 
     private static void CheckFallbackBudget()

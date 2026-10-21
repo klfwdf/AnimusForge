@@ -22,7 +22,7 @@ namespace AnimusForge.Refactor.Domain
         StringBuilder sb = new StringBuilder();
         sb.Append("[seq=").Append(entry.Sequence.ToString(CultureInfo.InvariantCulture))
             .Append("|kind=").Append(entry.Kind ?? "")
-            .Append("|date=").Append(entry.GameDate ?? "")
+            .Append("|date=").Append(DiplomacyDateProjection.ForPrompt(entry.GameDate, localize) ?? "")
             .Append("|source=").Append(entry.SourceId ?? "");
         if (!string.IsNullOrWhiteSpace(entry.RespondingToOfferDocumentId))
         {
@@ -192,7 +192,7 @@ namespace AnimusForge.Refactor.Domain
             {
                 sb.Append("[kind=response_link|source=").Append(fact.SourceId)
                     .Append("|responding_to=").Append(fact.RelatedSourceId)
-                    .Append("|date=").Append(fact.GameDate ?? "")
+                    .Append("|date=").Append(DiplomacyDateProjection.ForPrompt(fact.GameDate, localize) ?? "")
                     .Append("|author=").Append(fact.AuthorKingdomId ?? "")
                     .Append("|targets=").Append(string.Join(",", fact.TargetKingdomIds ?? new List<string>()))
                     .Append("|intent=").Append(fact.Intent ?? "")
@@ -200,7 +200,7 @@ namespace AnimusForge.Refactor.Domain
                 continue;
             }
             sb.Append("[kind=diplomatic_result|source=").Append(fact.SourceId)
-                .Append("|date=").Append(fact.GameDate ?? "")
+                .Append("|date=").Append(DiplomacyDateProjection.ForPrompt(fact.GameDate, localize) ?? "")
                 .Append("|author=").Append(fact.AuthorKingdomId ?? "")
                 .Append("|targets=").Append(string.Join(",", fact.TargetKingdomIds ?? new List<string>()))
                 .Append("|intent=").Append(fact.Intent ?? "")

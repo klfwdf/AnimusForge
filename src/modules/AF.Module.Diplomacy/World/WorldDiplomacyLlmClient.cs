@@ -74,8 +74,7 @@ internal static class WorldDiplomacyLlmClient
 		if (frozenMessages.Count == 0) { error = "messages are empty"; return false; }
 		PromptLanguageAudit.Log("world_diplomacy", frozenMessages);
 		JObject body = BuildRequestBody(model, frozenMessages, effectiveTokens, ResolveTemperature(settings, route));
-		DuelSettings.ApplyThinkingControls(body, url, model, thinkingEnabled: false,
-			DuelSettings.ReasoningEffortHigh, out string thinking);
+		ApplyConfiguredThinkingControls(settings, body, url, model, route, out string thinking);
 		string requestBody = LlmApiCompat.PrepareChatRequestJson(url, body);
 		call = token => CallPreparedOnceAsync(url, key, model, route, frozenMessages, body,
 			requestBody, thinking, Math.Max(1000, timeoutMilliseconds), source, generation, token, admitRequest);
@@ -192,7 +191,7 @@ internal static class WorldDiplomacyLlmClient
 			int effectiveMaxTokens = Math.Min(Math.Max(1, maxTokens), configuredOutputTokenLimit);
 			JArray messages = (JArray)stableMessages.DeepClone();
 			JObject body = BuildRequestBody(modelName, messages, effectiveMaxTokens, ResolveTemperature(settings, route));
-			DuelSettings.ApplyThinkingControls(body, apiUrl, modelName, thinkingEnabled: false, DuelSettings.ReasoningEffortHigh, out string thinkingMode);
+			ApplyConfiguredThinkingControls(settings, body, apiUrl, modelName, route, out string thinkingMode);
 			string requestBody = LlmApiCompat.PrepareChatRequestJson(apiUrl, body);
 			Log(source, "request route=" + route
 				+ " model=" + modelName
@@ -536,6 +535,16 @@ internal static class WorldDiplomacyLlmClient
 			return true;
 		}
 		return false;
+	}
+
+	private static void ApplyConfiguredThinkingControls(DuelSettings settings, JObject body,
+		string apiUrl, string modelName, string route, out string thinkingMode)
+	{
+		bool dedicated = (route ?? "").StartsWith("event_rebellion_dedicated", StringComparison.OrdinalIgnoreCase);
+		DuelSettings.ApplyThinkingControls(body, apiUrl, modelName,
+			dedicated ? settings.EventAndRebellionApiThinkingEnabled : settings.MainApiThinkingEnabled,
+			dedicated ? settings.GetEventAndRebellionApiReasoningEffort() : settings.GetMainApiReasoningEffort(),
+			out thinkingMode);
 	}
 
 	private static float ResolveTemperature(DuelSettings settings, string route)

@@ -1472,11 +1472,11 @@ internal sealed class SceneShoutInputController
 			new InquiryElement("show", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeShow", "Show items and talk"), null, isEnabled: true, ""),
 			new InquiryElement("give_troops", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeTroops", "Give troops and talk"), null, isEnabled: true, ""),
 			new InquiryElement("give_prisoners", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModePrisoners", "Give prisoners and talk"), null, isEnabled: true, ""),
-			new InquiryElement("give_settlements", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeAssets", "Transfer fixed assets and talk"), null, isEnabled: true, ""),
-            new InquiryElement("direct_actions", ConversationUiLocalization.Text("AF_CONV_UI_Direct_Button", "Trigger tags manually"), null, isEnabled: true, ConversationUiLocalization.Text("AF_CONV_UI_Direct_Description", "Execute existing tags only for the selected primary target, without calling AI."))
+			new InquiryElement("give_settlements", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeAssets", "Transfer fixed assets and talk"), null, isEnabled: true, "")
 		};
 		if (MyBehavior.IsDevDataManagementEnabledForExternal())
 		{
+            inquiryElements.Add(new InquiryElement("direct_actions", ConversationUiLocalization.Text("AF_CONV_UI_Direct_Button", "Trigger tags manually"), null, isEnabled: true, ConversationUiLocalization.Text("AF_CONV_UI_Direct_Description", "Execute existing tags only for the selected primary target, without calling AI.")));
 			inquiryElements.Add(new InquiryElement("tag_test", ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagTest", "Tag test"), null, isEnabled: true, ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagTestDescription", "Enter NPC-visible text and post-processing tags without calling the API; execute them immediately for the current target.")));
 		}
 		if (battleSpeechMenu)

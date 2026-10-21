@@ -49,10 +49,9 @@ internal static class ConversationPromptCache
             var prepared = new List<object>(original.Count);
             foreach (var part in original) prepared.Add(new ConversationPromptMessage(part.Role, part.Content, part.HistoryGroup, part.Revision));
             // Required-only input can exceed management targets and still continues unchanged.
-            // Disabling caching never disables context selection or its budget.
+            // Built-in caching never disables context selection or its budget.
             if (prepared.Count != messages.Count) messages = prepared;
-            if (settings?.ConversationPromptCacheEnabled != true)
-            { Store.Clear(); return new Request(messages, null, generation); }
+            if (settings == null) return new Request(messages, null, generation);
             if (options.Enabled && !ConversationRequestBudget.Fits(original, options.InputChars, options.ContextTokens, outputTokens))
                 return new Request(messages, null, generation);
             var text = new PromptCacheText
@@ -74,9 +73,9 @@ internal static class ConversationPromptCache
             string key = channel + "\n" + sessionId.ToString(CultureInfo.InvariantCulture) + "\n" + provider
                 + (sceneTranscript ? "" : "\n" + actor);
             lease = Store.Begin(generation, key, actor, original, globalRule, text,
-                options.Enabled ? Math.Min(options.InputChars, Math.Max(20000, Math.Min(1000000, settings.ConversationPromptCacheMaxChars)))
-                    : Math.Max(20000, Math.Min(1000000, settings.ConversationPromptCacheMaxChars)),
-                Math.Max(1, Math.Min(60, settings.ConversationPromptCacheTtlMinutes)), DateTime.UtcNow,
+                options.Enabled ? Math.Min(options.InputChars, PromptCacheSettings.MaxTranscriptCharacters)
+                    : PromptCacheSettings.MaxTranscriptCharacters,
+                PromptCacheSettings.DefaultSessionTtlMinutes, DateTime.UtcNow,
                 options.Enabled ? options.ContextTokens : int.MaxValue, options.Enabled ? outputTokens : 0, sceneTranscript);
             var built = new List<object>(lease.Messages.Count);
             foreach (var message in lease.Messages) built.Add(new { role = message.Role, content = message.Content });

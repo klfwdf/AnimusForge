@@ -253,7 +253,7 @@ public static class SiegeCastleRuntimePromptProfile
 
         {
 
-            sb.Append(text.GetRuntimeText("CastleRuntime_042")).Append(facts.RegularDispositionPlan.Trim())
+            sb.Append(text.GetRuntimeText("CastleRuntime_042")).Append(SiegeSceneMemoryPromptProjection.ProjectRegularPlan(facts.RegularDispositionPlan.Trim(), text))
 
                 .Append(text.GetRuntimeText("CastleRuntime_043"));
 

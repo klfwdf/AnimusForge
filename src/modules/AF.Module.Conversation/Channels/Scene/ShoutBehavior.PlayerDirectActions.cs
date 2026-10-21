@@ -78,6 +78,7 @@ public partial class ShoutBehavior
     private bool OpenPlayerDirectActions(Hero hero, CharacterObject character, int index, string name, bool native, Action onFinished,
         Func<bool> isEntryCurrent = null)
     {
+        if (!MyBehavior.IsDevDataManagementEnabledForExternal()) return false;
         var mission = Mission.Current;
         var campaign = Campaign.Current;
         var settlement = Settlement.CurrentSettlement;
@@ -91,7 +92,8 @@ public partial class ShoutBehavior
         bool mapRuleExcluded = PromptRuleCaptureBannerlordAdapter.ShouldExcludeWorldMapCommandRuleForTarget(hero, character, index);
         bool Current()
         {
-            if (!IsBannerlordMainThreadForNativeActions() || !ReferenceEquals(CurrentInstance, this)
+            if (!MyBehavior.IsDevDataManagementEnabledForExternal()
+                || !IsBannerlordMainThreadForNativeActions() || !ReferenceEquals(CurrentInstance, this)
                 || !ReferenceEquals(campaign, Campaign.Current) || !ReferenceEquals(mission, Mission.Current)
                 || mission?.IsMissionEnding == true || !ReferenceEquals(settlement, Settlement.CurrentSettlement)
                 || !SaveRuntimeGuard.IsCurrentGeneration(generation) || epoch != _sceneConversationEpoch

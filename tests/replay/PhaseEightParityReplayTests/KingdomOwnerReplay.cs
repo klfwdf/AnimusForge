@@ -18,14 +18,14 @@ internal static class KingdomOwnerReplay
         int[] tiers = { 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6 };
         int[][] loyalty = { new[]{-9,-6,-3,-2,-1,0}, new[]{-6,-4,-2,-1,0,0}, new[]{-3,-2,-1,0,0,0}, new[]{0,0,0,0,0,0}, new[]{3,2,1,0,0,0}, new[]{6,4,2,1,0,0}, new[]{9,6,3,2,1,0} };
         int[] balance = { 5,3,0,0,0,-3,-5 };
-        float[] chances = { .25f,.05f,.005f,0,0,0,0 };
+        float[] chances = { 0,0,0,0,0,0,0 };
         for (int index = 0; index < bounds.Length; index++)
         {
             int value = bounds[index], tier = tiers[index];
             Check(Convert.ToInt32(Call(policy, null, "GetKingdomStabilityTier", value)) == tier, "tier boundary " + value);
             int expectedBalance = tier >= 2 && tier <= 4 ? Math.Sign(50 - Math.Max(0, Math.Min(100, value))) : balance[tier];
             Check((int)Call(policy, null, "GetKingdomStabilityWeeklyBalancingDelta", value) == expectedBalance, "weekly balancing");
-            Check((float)Call(policy, null, "GetKingdomRebellionWeeklyChance", value) == chances[tier], "rebellion chance");
+            Check((float)Call(policy, null, "GetKingdomRebellionWeeklyChance", value) == chances[tier], "standalone rebellion retired at every stability tier");
             for (int clans = -1; clans <= 6; clans++)
                 Check((int)Call(policy, null, "GetLowClanCountRoyalDomainLoyaltyAdjustment", value, clans) == loyalty[tier][Math.Max(0, Math.Min(5, clans))], "royal loyalty boundaries");
         }

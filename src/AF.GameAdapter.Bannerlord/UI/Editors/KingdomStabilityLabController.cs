@@ -11,7 +11,6 @@ using static AnimusForge.MyBehavior;
 namespace AnimusForge;
 internal sealed class KingdomStabilityLabController
 {
- private long _confirmationTicket;
  private readonly KingdomStabilityLabPort _port;
  internal KingdomStabilityLabController(KingdomStabilityLabPort port) { _port = port; }
  private static string Ui(string id, string fallback) => new TextObject("{=" + id + "}" + fallback).ToString();
@@ -37,7 +36,7 @@ internal sealed class KingdomStabilityLabController
 			list.Add(new InquiryElement(item.StringId ?? "", BuildDevKingdomStabilityLabel(item), null));
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_LabDescription", "Use this lab to test kingdom stability and town-holding clan rebellion logic."));
+		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_LabDescription", "Use this lab to inspect and adjust kingdom stability. Uprisings are handled by civil-war factions."));
 		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DefaultDescription", "All kingdoms start at stability 50 (Average) and do not rebel automatically by default."));
 		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_WeeklyReportDescription", "STAB_* ratings in weekly reports also change kingdom stability; manual adjustments and weekly ratings affect later weekly resolution."));
 		stringBuilder.AppendLine(" ");
@@ -83,71 +82,33 @@ internal sealed class KingdomStabilityLabController
 		int kingdomStabilityValue = _port.GetKingdomStabilityValue(kingdom);
 		bool protectedByImmunity = PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom);
 		string immunityText = protectedByImmunity ? Ui("AF_UI_KingdomStability_PlayerImmunitySuffix", " (player-kingdom stability rebellion immunity)") : "";
-		return Ui("AF_UI_KingdomStability_Label", "{KINGDOM} [{TIER}/{VALUE}] weekly rebellion chance {CHANCE}{IMMUNITY}",
+		return Ui("AF_UI_KingdomStability_Label", "{KINGDOM} [{TIER}/{VALUE}]{IMMUNITY}",
 			("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom"))),
 			("TIER", KingdomStabilityUiText.Tier(kingdomStabilityValue)),
 			("VALUE", kingdomStabilityValue.ToString()),
-			("CHANCE", _port.FormatKingdomRebellionChance(protectedByImmunity ? 0f : _port.GetKingdomRebellionWeeklyChance(kingdomStabilityValue))),
 			("IMMUNITY", immunityText));
 	}
 
-	internal string BuildDevKingdomStabilityDetailText(Kingdom kingdom)
-	{
-		if (kingdom == null)
-		{
-			return Ui("AF_UI_KingdomStability_KingdomNotFound", "The selected kingdom could not be found.");
-		}
-		int kingdomStabilityValue = _port.GetKingdomStabilityValue(kingdom);
-		bool protectedByImmunity = PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom);
-		float kingdomRebellionWeeklyChance = _port.GetKingdomRebellionWeeklyChance(kingdomStabilityValue);
-		int kingdomStabilityRelationTargetOffset = _port.GetKingdomStabilityRelationTargetOffset(kingdomStabilityValue);
-		int kingdomStabilityWeeklyBalancingDelta = _port.GetKingdomStabilityWeeklyBalancingDelta(kingdomStabilityValue);
-		int lowClanCountRuleClanCount = _port.CountActiveKingdomClansForLowClanCountRule(kingdom);
-		int lowClanCountRoyalDomainLoyaltyAdjustment = _port.GetLowClanCountRoyalDomainLoyaltyAdjustment(kingdomStabilityValue, lowClanCountRuleClanCount);
-		if (protectedByImmunity)
-		{
-			kingdomRebellionWeeklyChance = 0f;
-			kingdomStabilityRelationTargetOffset = 0;
-			lowClanCountRoyalDomainLoyaltyAdjustment = 0;
-		}
-		List<KingdomRebellionCandidateInfo> list = protectedByImmunity ? new List<KingdomRebellionCandidateInfo>() : _port.EvaluateKingdomRebellionCandidates(kingdom, forceTrigger: false);
-		List<KingdomRebellionCandidateInfo> list2 = list.Where((KingdomRebellionCandidateInfo x) => x != null && x.Eligible).Take(5).ToList();
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailKingdom", "Kingdom: {KINGDOM}", ("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom")))));
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailStability", "Current stability: {VALUE} ({TIER})", ("VALUE", kingdomStabilityValue.ToString()), ("TIER", KingdomStabilityUiText.Tier(kingdomStabilityValue))));
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailWeeklyBalance", "Dynamic weekly balance modifier: {VALUE}", ("VALUE", _port.FormatKingdomStabilityRelationOffsetText(kingdomStabilityWeeklyBalancingDelta))));
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailRelation", "Current non-royal relation modifier: {VALUE} (applies to the king and adult non-royal clan members in this kingdom)", ("VALUE", _port.FormatKingdomStabilityRelationOffsetText(kingdomStabilityRelationTargetOffset))));
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailClanCount", "Effective non-royal clans: {COUNT}; royal-domain daily loyalty modifier: {VALUE}", ("COUNT", lowClanCountRuleClanCount.ToString()), ("VALUE", _port.FormatKingdomStabilityRelationOffsetText(lowClanCountRoyalDomainLoyaltyAdjustment))));
-		if (protectedByImmunity)
-		{
-			stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailImmuneChance", "This week's rebellion chance: 0% (player-kingdom stability rebellion immunity is enabled)"));
-		}
-		else
-		{
-			stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailChance", "This week's rebellion chance: {CHANCE}", ("CHANCE", _port.FormatKingdomRebellionChance(kingdomRebellionWeeklyChance))));
-		}
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailKing", "Current king: {HERO}", ("HERO", _port.GetHeroDisplayName(kingdom.Leader))));
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailRulingClan", "Ruling clan: {CLAN}", ("CLAN", _port.GetClanDisplayName(kingdom.RulingClan))));
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine(" ");
-		if (protectedByImmunity)
-		{
-			stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailImmuneCandidates", "Automatic rebellion candidates: the mod's stability rebellion check is skipped while immunity is active."));
-		}
-		else if (list2.Count > 0)
-		{
-			stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailCandidates", "Automatic rebellion candidates:"));
-			foreach (KingdomRebellionCandidateInfo item in list2)
-			{
-				stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailCandidate", "- {CLAN} | Relation {RELATION} | Towns {TOWNS} | Castles {CASTLES} | Score {SCORE}", ("CLAN", item.ClanName), ("RELATION", item.RelationToKing.ToString()), ("TOWNS", item.TownCount.ToString()), ("CASTLES", item.CastleCount.ToString()), ("SCORE", item.Score.ToString("0.0"))));
-			}
-		}
-		else
-		{
-			stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailNoCandidates", "No clans currently meet the automatic rebellion requirements."));
-		}
-		return stringBuilder.ToString().TrimEnd();
-	}
+    internal string BuildDevKingdomStabilityDetailText(Kingdom kingdom)
+    {
+        if (kingdom == null) return Ui("AF_UI_KingdomStability_KingdomNotFound", "The selected kingdom could not be found.");
+        int value = _port.GetKingdomStabilityValue(kingdom);
+        bool immune = PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom);
+        int relation = immune ? 0 : _port.GetKingdomStabilityRelationTargetOffset(value);
+        int count = _port.CountActiveKingdomClansForLowClanCountRule(kingdom);
+        int loyalty = immune ? 0 : _port.GetLowClanCountRoyalDomainLoyaltyAdjustment(value, count);
+        var text = new StringBuilder();
+        text.AppendLine(Ui("AF_UI_KingdomStability_DetailKingdom", "Kingdom: {KINGDOM}", ("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom")))));
+        text.AppendLine(Ui("AF_UI_KingdomStability_DetailStability", "Current stability: {VALUE} ({TIER})", ("VALUE", value.ToString()), ("TIER", KingdomStabilityUiText.Tier(value))));
+        text.AppendLine(Ui("AF_UI_KingdomStability_DetailWeeklyBalance", "Dynamic weekly balance modifier: {VALUE}", ("VALUE", _port.FormatKingdomStabilityRelationOffsetText(_port.GetKingdomStabilityWeeklyBalancingDelta(value)))));
+        text.AppendLine(Ui("AF_UI_KingdomStability_DetailRelation", "Current non-royal relation modifier: {VALUE} (applies to the king and adult non-royal clan members in this kingdom)", ("VALUE", _port.FormatKingdomStabilityRelationOffsetText(relation))));
+        text.AppendLine(Ui("AF_UI_KingdomStability_DetailClanCount", "Effective non-royal clans: {COUNT}; royal-domain daily loyalty modifier: {VALUE}", ("COUNT", count.ToString()), ("VALUE", _port.FormatKingdomStabilityRelationOffsetText(loyalty))));
+        text.AppendLine(Ui("AF_UI_KingdomStability_FactionRoute", "Uprisings are handled by civil-war factions through demands, responses and the shared war cap; stability does not trigger a separate random rebellion."));
+        if (immune) text.AppendLine(Ui("AF_UI_KingdomStability_FactionImmunity", "Player-kingdom immunity prevents faction uprisings."));
+        text.AppendLine(Ui("AF_UI_KingdomStability_DetailKing", "Current king: {HERO}", ("HERO", _port.GetHeroDisplayName(kingdom.Leader))));
+        text.AppendLine(Ui("AF_UI_KingdomStability_DetailRulingClan", "Ruling clan: {CLAN}", ("CLAN", _port.GetClanDisplayName(kingdom.RulingClan))));
+        return text.ToString().TrimEnd();
+    }
 
 	internal void OpenDevKingdomStabilityDetailMenu(Kingdom kingdom)
 	{
@@ -161,8 +122,6 @@ internal sealed class KingdomStabilityLabController
 		List<InquiryElement> list = new List<InquiryElement>
 		{
 			new InquiryElement("set_value", Ui("AF_UI_KingdomStability_Adjust", "Adjust stability"), null),
-			new InquiryElement("test_roll", Ui("AF_UI_KingdomStability_TestRoll", "Test this week's rebellion check"), null),
-			new InquiryElement("force_rebellion", Ui("AF_UI_KingdomStability_ForceRebellion", "Force rebellion for this kingdom"), null),
 			new InquiryElement("back", Ui("AF_UI_KingdomStability_BackToList", "Back to kingdom list"), null)
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(Ui("AF_UI_KingdomStability_DetailTitle", "Kingdom stability details - {KINGDOM}", ("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom")))), BuildDevKingdomStabilityDetailText(kingdom), list, isExitShown: true, 0, 1, Ui("AF_UI_KingdomStability_Execute", "Execute"), Ui("AF_UI_KingdomStability_Back", "Back"), delegate(List<InquiryElement> selected)
@@ -177,12 +136,6 @@ internal sealed class KingdomStabilityLabController
 			{
 			case "set_value":
 				OpenDevEditKingdomStability(kingdom);
-				break;
-			case "test_roll":
-				RunDevKingdomRebellionTest(kingdom);
-				break;
-			case "force_rebellion":
-				ConfirmForceDevKingdomRebellion(kingdom);
 				break;
 			default:
 				OpenDevKingdomStabilityLabMenu();
@@ -227,58 +180,9 @@ internal sealed class KingdomStabilityLabController
 		}));
 	}
 
-	internal void RunDevKingdomRebellionTest(Kingdom kingdom)
-	{
-		long generation = _port.CaptureGeneration();
-		if (!_port.IsCurrent(generation)) return;
-		if (kingdom == null)
-		{
-			OpenDevKingdomStabilityLabMenu();
-			return;
-		}
-		int num = Math.Max(1, _port.GetCurrentGameDayIndexSafe() / 7);
-		KingdomRebellionResolutionResult result = _port.ResolveKingdomRebellion(kingdom, num, executeAction: false, forceTrigger: false);
-		InformationManager.ShowInquiry(new InquiryData(Ui("AF_UI_KingdomStability_TestResultTitle", "Rebellion test result - {KINGDOM}", ("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom")))), EventEditorProjection.BuildKingdomRebellionResolutionText(_port, result), isAffirmativeOptionShown: true, isNegativeOptionShown: false, Ui("AF_UI_KingdomStability_BackToDetails", "Back to details"), "", delegate
-		{
-    if (!_port.IsCurrent(generation)) return;
-			OpenDevKingdomStabilityDetailMenu(kingdom);
-		}, null));
-	}
+    internal void RunDevKingdomRebellionTest(Kingdom kingdom)
+        => InformationManager.DisplayMessage(new InformationMessage(KingdomRebellionRuntimeController.LegacyRebellionRetiredMessage));
 
-	internal void ConfirmForceDevKingdomRebellion(Kingdom kingdom)
-	{
-		long generation = _port.CaptureGeneration();
-		if (!_port.IsCurrent(generation)) return;
-		if (kingdom == null)
-		{
-			OpenDevKingdomStabilityLabMenu();
-			return;
-		}
-		long ticket = ++_confirmationTicket;
-		bool completed = false;
-		InformationManager.ShowInquiry(new InquiryData(Ui("AF_UI_KingdomStability_ForceTitle", "Force kingdom rebellion"), Ui("AF_UI_KingdomStability_ForceBody", "This skips the stability probability check but does not relax relation requirements. The system will still choose the best town-holding clan from those that currently meet the automatic rebellion requirements.\n\nIf no clan meets the relation requirements, no rebellion will occur.\n\nThis action will permanently change the kingdom structure in the save. Continue?"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, Ui("AF_UI_KingdomStability_ForceExecute", "Force execution"), Ui("AF_UI_KingdomStability_Cancel", "Cancel"), delegate
-		{
-    if (completed || ticket != _confirmationTicket || !_port.IsCurrent(generation)) return;
-    completed = true;
-			int num = Math.Max(1, _port.GetCurrentGameDayIndexSafe() / 7);
-			KingdomRebellionResolutionResult kingdomRebellionResolutionResult = _port.ResolveKingdomRebellion(kingdom, num, executeAction: false, forceTrigger: true);
-			Clan selectedClan = kingdomRebellionResolutionResult?.SelectedClan;
-			KingdomRebellionCandidateInfo kingdomRebellionCandidateInfo = kingdomRebellionResolutionResult?.Candidates?.FirstOrDefault((KingdomRebellionCandidateInfo x) => x != null && x.Clan == selectedClan);
-			if (selectedClan == null || kingdomRebellionCandidateInfo == null)
-			{
-				InformationManager.ShowInquiry(new InquiryData(Ui("AF_UI_KingdomStability_ForceResultTitle", "Forced rebellion result - {KINGDOM}", ("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom")))), EventEditorProjection.BuildKingdomRebellionResolutionText(_port, kingdomRebellionResolutionResult), isAffirmativeOptionShown: true, isNegativeOptionShown: false, Ui("AF_UI_KingdomStability_BackToDetails", "Back to details"), "", delegate
-				{
-    if (!_port.IsCurrent(generation)) return;
-					OpenDevKingdomStabilityDetailMenu(kingdom);
-				}, null));
-				return;
-			}
-			_port.StartDevForcedKingdomRebellionAsync(kingdom, selectedClan, num, kingdomRebellionCandidateInfo.RelationToKing, kingdomRebellionCandidateInfo.TownCount, kingdomRebellionCandidateInfo.CastleCount, kingdomRebellionResolutionResult.SelectedFollowerClans);
-		}, delegate
-		{
-    if (completed || ticket != _confirmationTicket || !_port.IsCurrent(generation)) return;
-    completed = true;
-			OpenDevKingdomStabilityDetailMenu(kingdom);
-		}));
-	}
+    internal void ConfirmForceDevKingdomRebellion(Kingdom kingdom)
+        => InformationManager.DisplayMessage(new InformationMessage(KingdomRebellionRuntimeController.LegacyRebellionRetiredMessage));
 }

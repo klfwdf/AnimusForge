@@ -43,3 +43,6 @@ persona-constructor parameter mismatch. Logs retain that attempted suite failure
 
 These checks do not establish real provider cache hits, prices, model compliance,
 native MCM rendering, in-game conversation acceptance or old-save compatibility.
+
+
+The cache settings group was retired on 2026-10-21. Conversation caching is a built-in mechanism with the existing 150000-character storage cap and 10-minute lifetime. Native MCM and terminal metadata no longer expose the three cache fields; old JSON/preset fields cannot change these defaults. Context-management settings remain independent. The settings probe checks retirement with the actual MCM formatter as well as the remaining context options.

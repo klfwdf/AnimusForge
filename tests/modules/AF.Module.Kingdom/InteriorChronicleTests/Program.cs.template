@@ -1,0 +1,68 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+
+namespace Bannerlord.UIExtenderEx.Attributes {
+    [AttributeUsage(AttributeTargets.Class)] class PrefabExtensionAttribute : Attribute { public PrefabExtensionAttribute(string a,string b){} }
+    [AttributeUsage(AttributeTargets.Method)] class PrefabExtensionXmlDocumentAttribute : Attribute { public PrefabExtensionXmlDocumentAttribute(bool a){} }
+}
+namespace Bannerlord.UIExtenderEx.Prefabs2 {
+    abstract class PrefabExtensionInsertPatch { public enum InsertType { None } public abstract InsertType Type {get;} }
+}
+namespace AnimusForge {
+class CivilWarPanelKingdom { public List<string> Chronicle=new(); }
+class KingdomCivilWarHistoryEntry { public int Week; public string Text; }
+static class CivilWarWorld { public static string Limit(string text,int max)=>text.Length>max?text.Substring(0,max):text; }
+static class CivilWarUiText {
+    internal static bool Chinese;
+    internal static string T(string key,string fallback,params (string Name,object Value)[] values) {
+        string text=Chinese?"第 {WEEK} 周 · {TEXT}":fallback;
+        foreach(var pair in values) text=text.Replace("{"+pair.Name+"}",pair.Value.ToString());
+        return text;
+    }
+}
+class Projection {
+    @@PROJECTION@@
+    public static List<string> Render(List<KingdomCivilWarHistoryEntry> history){var panel=new CivilWarPanelKingdom();AddRecentChronicle(panel,history);return panel.Chronicle;}
+}
+class Program {
+    static int checks,failed;
+    static void Check(bool ok,string message){checks++;if(!ok){failed++;Console.WriteLine("FAIL "+message);}}
+    static KingdomCivilWarHistoryEntry E(int week,string text)=>new(){Week=week,Text=text};
+    static int Main() {
+        foreach(bool chinese in new[]{false,true}) {
+            CivilWarUiText.Chinese=chinese;
+            var history=new List<KingdomCivilWarHistoryEntry>{E(13011,"Earlier treaty"),E(13012,"A distinct event"),E(13012,"帕尔托斯的领地遭到劫掠"),E(13012,"帕尔托斯的领地遭到劫掠")};
+            var original=history.Select(x=>(entry:x,week:x.Week,text:x.Text)).ToArray();
+            var lines=Projection.Render(history);
+            Check(lines.Count==3&&lines.Distinct().Count()==3,"duplicate week/text does not consume another visible slot");
+            Check(lines[0].Contains("劫掠")&&lines[1].Contains("distinct")&&lines[2].Contains("Earlier"),"latest unique events retain newest-first order and refill slots");
+            Check(history.Count==original.Length&&history.Select((x,i)=>ReferenceEquals(x,original[i].entry)&&x.Week==original[i].week&&x.Text==original[i].text).All(x=>x),"saved event objects/text/weeks remain unchanged");
+            Check(Projection.Render(new(){E(1,"raid"),E(2,"raid")}).Count==2,"same text in different weeks retained");
+            Check(Projection.Render(new(){E(2,"raid"),E(2,"Raid")}).Count==2,"ordinally distinct records retained");
+            Check(Projection.Render(new(){null,E(2," "),E(2,"valid")}).Single().Contains("valid"),"null and empty records ignored");
+            Check(Projection.Render(null).Count==0,"missing history is empty");
+            string prefix=new('a',46);
+            Check(Projection.Render(new(){E(2,prefix+" first"),E(2,prefix+" second")}).Count==2,"identity checked before display clipping; different facts preserved");
+            Check(Projection.Render(Enumerable.Range(0,12).Select(i=>E(2,"same event")).ToList()).Count==1,"legacy repeated records collapsed only in projection");
+        }
+        var xml=new KingdomInteriorPanelPatch().GetPrefabExtension();
+        var conditions=(XmlElement)xml.SelectSingleNode("//*[@DataSource='{Conditions}']");
+        Check(conditions!=null,"actual prefab contains conditions binding");
+        string direction=conditions.GetAttribute("StackLayout.LayoutMethod");
+        Check(direction.StartsWith("Vertical",StringComparison.Ordinal),"formation conditions use separate vertical rows instead of overflowing a horizontal strip");
+        Check(conditions.GetAttribute("HeightSizePolicy")=="CoverChildren","all condition rows contribute to measured height");
+        var band=(XmlElement)xml.SelectSingleNode("//*[@IsVisible='@IsLedgerTab']");
+        Check(band.GetAttribute("HeightSizePolicy")=="CoverChildren","ledger band grows before clan table");
+        foreach(string name in new[]{"SourceLine1","SourceLine2","FigureSource1","FigureSource2"}) {
+            var labels=xml.SelectNodes("//*[@Text='@"+name+"']");
+            Check(labels.Count==1,"one actual label for "+name);
+            Check(((XmlElement)labels[0]).GetAttribute("HeightSizePolicy")=="CoverChildren","wrapped chronicle line measures full height: "+name);
+        }
+        Check(conditions.ParentNode.ParentNode.Attributes["ClipContents"]?.Value=="true","condition column cannot paint over chronicle");
+        Console.WriteLine($"{(failed==0?"PASS":"FAIL")} interior chronicle: {checks} checks, {failed} failures; actual generated XML and production projection; native rendering NOT RUN.");
+        return failed==0?0:1;
+    }
+}
+}

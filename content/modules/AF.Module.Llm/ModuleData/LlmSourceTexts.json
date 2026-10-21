@@ -259,6 +259,7 @@
   "CacheLegacyYearMarker": "年",
   "CacheLegacyDayMarker": "日",
   "LegacyAfefMarkerPattern": "(?:\\[AFEF\\s*(?<actor>NPC|玩家)?\\s*行为补充\\]|【AFEF\\s*(?<actor>NPC|玩家)?\\s*行为补充】)",
+  "LegacyCivilWarFactMarker": "[AFEF内战事实]",
   "LegacyAfefPlayerActor": "玩家",
   "LegacyRuleHeaderPattern": "(?m)^【附加规则:([A-Za-z0-9_.-]+)】",
   "LegacyRuleHeaderPrefix": "【附加规则:"

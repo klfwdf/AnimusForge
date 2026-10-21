@@ -16,12 +16,10 @@ internal sealed class DuelSettings
 {
     internal static readonly DuelSettings Settings = new DuelSettings();
     internal static DuelSettings GetSettings() => Settings;
-    internal bool ConversationPromptCacheEnabled = true;
     internal bool ConversationContextEnabled = true;
     internal int ConversationContextRecentTurns = 12, ConversationContextRecentChars = 20000, ConversationContextInputChars = 100000, ConversationContextEstimatedTokens = 128000;
     internal int GetAuxiliaryApiMaxTokens() => 12000;
     internal int GetMainApiMaxTokens() => 12000;
-    internal int ConversationPromptCacheMaxChars = 150000, ConversationPromptCacheTtlMinutes = 10;
     internal string ApiUrl = "https://relay.test/v1/chat/completions", Model = "gemini-test";
     internal string AuxiliaryApiUrl = "https://auxiliary.test/v1/chat/completions";
     internal string GetEffectiveAuxiliaryModelName() => "auxiliary-model";

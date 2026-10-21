@@ -70,7 +70,7 @@ namespace AnimusForge.Illustrator
         private bool _enableImageGeneration = true;
 
         [SettingPropertyBool("{=AF_ILL_ENABLED}Enable image generation", HintText = "{=AF_ILL_ENABLED_HINT}Master switch for all image-generation paths. When disabled, encyclopedia, conversation, bulletin, and gallery entries will not send image requests.", Order = 0, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_BASIC}1. Basic Settings", GroupOrder = 1)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool EnableImageGeneration
         {
             get => _enableImageGeneration;
@@ -88,11 +88,11 @@ namespace AnimusForge.Illustrator
         // Character portraits are always rendered offscreen (required references); this switch only covers
         // the scene panorama of Mission conversations. Field (map) conversations never use a panorama.
         [SettingPropertyBool("{=AF_ILL_OFFSCREEN_ENV}Enable off-screen scene rendering (environment panorama)", HintText = "{=AF_ILL_OFFSCREEN_ENV_HINT}When enabled, conversation illustrations render a panorama within 30 meters of the player in the background for buildings, furnishings, and materials. Capture takes a few seconds and uses some GPU. When disabled, the environment uses the current screenshot and textual facts. Character portraits always render off-screen. World-map conversations do not use panoramas.", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_BASIC}1. Basic Settings", GroupOrder = 1)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool EnableSceneOffscreenRendering { get; set; } = true;
 
         [SettingPropertyBool("{=AF_ILL_CLEAN_TEMP}Clean temporary files after generation", HintText = "{=AF_ILL_CLEAN_TEMP_HINT}Each extraction task cleans only its own off-screen exports when it finishes. When disabled, heraldry exports are kept for troubleshooting; loaded portrait files still follow the normal release flow. Gallery caches and default illustrations are unaffected.", Order = 3, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_BASIC}1. Basic Settings", GroupOrder = 1)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool AutoCleanTempFiles { get; set; } = true;
 
         [SettingPropertyText("{=AF_ILL_IMAGE_BASE_URL}Image API endpoint (Base URL)", HintText = "{=AF_ILL_IMAGE_BASE_URL_HINT}For compatible APIs, enter the service root or /v1. Google native APIs accept the v1beta root or a complete /models/name:generateContent URL. Player2 is detected automatically at http://127.0.0.1:4315 and chooses its model in the Player2 app. With a reference image, /images/edits is preferred; without one, /images/generations is used. The model must support the selected channel.", Order = 1, RequireRestart = false)]
@@ -398,23 +398,23 @@ namespace AnimusForge.Illustrator
 
 
         [SettingPropertyInteger("{=AF_ILL_DIRECTOR_MAX_TOKENS}Director maximum output tokens", 512, 64000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_MAX_TOKENS_HINT}max_tokens sent to the director API, default 25000. This is an output budget, not a target length; configure it within the API limits.", Order = 6, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director (uses main API)", GroupOrder = 3)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int DirectorApiMaxTokens { get; set; } = 25000;
 
         [SettingPropertyInteger("{=AF_ILL_DIRECTOR_REFERENCE_TOKENS}Director prompt reference length (approx. tokens)", 600, 4000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT}A soft length reference, not the API output limit. When forced reduction is enabled, the character budget takes priority; otherwise the complete reply may contain at most 30000 characters. The full four sections are retained without padding.", Order = 9, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director (uses main API)", GroupOrder = 3)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int DirectorMaxTokens { get; set; } = 2000;
 
         [SettingPropertyButton("{=AF_ILL_CUSTOM_DIRECTOR}Custom director prompt", Content = "{=AF_ILL_OPEN_EDITOR}Open editor", Order = 10, RequireRestart = false,
             HintText = "{=AF_ILL_CUSTOM_DIRECTOR_HINT}Set composition, action, shot, and narrative preferences for encyclopedia, meetings, and bulletins. Blank keeps defaults. Sent only to the Visual Director and cannot override known facts or output format.")]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director (uses main API)", GroupOrder = 3)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Action EditCustomDirectorPrompt { get; set; }
 
         // Hidden editor text is persisted by IllustratorPromptSettingsPersistence in the existing MCM JSON.
         public string CustomDirectorPrompt { get; set; } = "";
 
         [SettingPropertyBool("{=AF_ILL_AUTO_GENERATE}Generate images automatically", HintText = "{=AF_ILL_AUTO_GENERATE_HINT}Active only when image generation is enabled. When on, illustrations are generated during bulletin creation; when off, they are generated when the panel opens and the cache misses.", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DISPLAY}4. Bulletins and Display Scenes", GroupOrder = 4)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool AutoGenerateWeeklyReportIllustration { get; set; } = true;
 
         private bool _enableEncyclopediaIllustration = true;
@@ -445,7 +445,7 @@ namespace AnimusForge.Illustrator
         }
 
         [SettingPropertyBool("{=AF_ILL_AUTO_REDRAW}Redraw scene illustration after NPC replies", HintText = "{=AF_ILL_AUTO_REDRAW_HINT}After the player generates the first illustration, each NPC reply redraws one automatically. Later requests reuse the initial panorama, references, and stable facts while updating the latest two dialogue turns and actions.", Order = 4, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DISPLAY}4. Bulletins and Display Scenes", GroupOrder = 4)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool AutoGenerateConversationIllustrationFullscreen { get; set; } = false;
 
         private static readonly List<string> _conversationDisplayOptions = new List<string>
@@ -456,7 +456,7 @@ namespace AnimusForge.Illustrator
         private Dropdown<string> _conversationDisplayDropdown;
 
         [SettingPropertyDropdown("{=AF_ILL_DISPLAY_MODE}Illustration display mode", Order = 5, RequireRestart = false, HintText = "{=AF_ILL_DISPLAY_MODE_HINT}Standalone panel uses the scene illustration panel. Fullscreen overlay fills the conversation background while preserving controls and input. It hides automatically for encyclopedia and menus. Automatic redraw uses this choice.")]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DISPLAY}4. Bulletins and Display Scenes", GroupOrder = 4)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Dropdown<string> ConversationDisplayDropdown
         {
             get
@@ -479,7 +479,7 @@ namespace AnimusForge.Illustrator
 
         [SettingPropertyInteger("{=AF_ILL_PORTRAIT_TIMEOUT}Character portrait export timeout", 10, 60, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 2, RequireRestart = false,
             HintText = "{=AF_ILL_PORTRAIT_TIMEOUT_HINT}Maximum wait for each off-screen portrait, default 20 seconds. Applies to the next extraction and does not affect AI API timeouts.")]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_STORAGE}5. Storage and Performance", GroupOrder = 5)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int PortraitExportTimeoutSeconds
         {
             get => _portraitExportTimeoutSeconds;
@@ -488,7 +488,7 @@ namespace AnimusForge.Illustrator
 
         [SettingPropertyInteger("{=AF_ILL_PANORAMA_DIRECTION_TIMEOUT}Panorama direction export timeout", 3, 15, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 3, RequireRestart = false,
             HintText = "{=AF_ILL_PANORAMA_DIRECTION_TIMEOUT_HINT}Maximum wait for each panorama direction PNG, default 6 seconds. Six directions are captured sequentially and remain subject to the total timeout.")]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_STORAGE}5. Storage and Performance", GroupOrder = 5)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int PanoramaFaceExportTimeoutSeconds
         {
             get => _panoramaFaceExportTimeoutSeconds;
@@ -497,7 +497,7 @@ namespace AnimusForge.Illustrator
 
         [SettingPropertyInteger("{=AF_ILL_PANORAMA_TOTAL_TIMEOUT}Environment panorama total timeout", 30, 120, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 4, RequireRestart = false,
             HintText = "{=AF_ILL_PANORAMA_TOTAL_TIMEOUT_HINT}Total budget for stage extraction, environment copy construction, and six-direction capture, default 40 seconds. Stops when the budget is reached and does not send missing or duplicate images.")]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_STORAGE}5. Storage and Performance", GroupOrder = 5)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int PanoramaCaptureTimeoutSeconds
         {
             get => _panoramaCaptureTimeoutSeconds;
@@ -505,7 +505,7 @@ namespace AnimusForge.Illustrator
         }
 
         [SettingPropertyInteger("{=AF_ILL_CACHE_LIMIT}Maximum local cache images", 20, 1000, "{=AF_ILL_UNIT_IMAGES}0 images", HintText = "{=AF_ILL_CACHE_LIMIT_HINT}Maximum number of generated images kept in the persistent local cache to avoid duplicate requests.", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_STORAGE}5. Storage and Performance", GroupOrder = 5)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int MaxCacheCount { get; set; } = 200;
 
         // 提示词扩写：底层永久自动开启，无 MCM 开关

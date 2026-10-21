@@ -299,7 +299,7 @@ internal static class WorldDiplomacyGenerationTaskApplication
 			UserPrompt = userPrompt,
 			CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey,
 			ProfiledKingdomId = "",
-			MaxTokens = generationMaxTokens
+			MaxTokens = WorldDiplomacyPromptContractRules.GetDeclarationOutputTokenBudget(maximumCharacters, generationMaxTokens)
 		};
 		job.PresentedLegalActionSignature = buildLegalSignature?.Invoke(job);
 		if (ensureStrategicProfile?.Invoke(job) != true)

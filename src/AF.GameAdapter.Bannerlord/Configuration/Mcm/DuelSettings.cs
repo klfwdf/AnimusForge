@@ -2060,11 +2060,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private Dropdown<string> _worldDiplomacyRoundLengthDropdown = BuildFixedDisplayDropdown(null, 1,
 		"{=AF_MCM_Option_DiplomacyCompact}Compact (about 15 days)", "{=AF_MCM_Option_DiplomacyStandard}Standard (about 21 days)", "{=AF_MCM_Option_DiplomacyRelaxed}Relaxed (about 28 days)");
 
-	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMin}Suggested declaration length lower bound", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMin_Hint}Suggested length for AI declarations, replies, and scribe drafting, including punctuation. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing.")]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMin}Suggested declaration length lower bound", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMin_Hint}Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMinCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMinCharacters;
 
-	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMax}Suggested declaration length upper bound", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMax_Hint}Suggested length for AI declarations, replies, and scribe drafting, not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects scribe generation capacity. If a long draft is truncated, increase this value and the API output limit. Does not limit player editing.")]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMax}Suggested declaration length upper bound", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMax_Hint}Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. This is not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects generation capacity, subject to the API output limit. The editor capacity remains 6000 characters.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMaxCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMaxCharacters;
 
@@ -2156,7 +2156,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Weekly}Weekly reports", GroupOrder = 0)]
 	public bool AutoGenerateWeeklyReports { get; set; } = true;
 
-	[SettingPropertyInteger("{=AF_MCM_News_PopupFont}Report popup body font size", 12, 36, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_News_PopupFont_Hint}Affects only the large popup body for the latest kingdom weekly report. Default: 18.")]
+	[SettingPropertyInteger("{=AF_MCM_News_PopupFont}Report popup body font size", 12, 36, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_News_PopupFont_Hint}Sets the body and other-news text size in bulletin and weekly-report popups. Range: 12-36; default: 18. Reopen the report after changing it.")]
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public int WeeklyReportPopupBodyFontSize { get; set; } = 18;
 
@@ -2176,7 +2176,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public int WeeklyReportReadingXpSkillCap { get; set; } = 100;
 
-	[SettingPropertyBool("{=AF_MCM_News_StabilityRebellion}Enable kingdom stability and rebellion", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_News_StabilityRebellion_Hint}When disabled, this mod no longer triggers kingdom rebellions; kingdom stability no longer affects ruler fief loyalty or applies stability relation modifiers.")]
+	[SettingPropertyBool("{=AF_MCM_News_StabilityRebellion}Enable kingdom stability and rebellion", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_News_StabilityRebellion_Hint}Controls stability effects and the civil-war faction system. Stability affects relations, royal-domain loyalty and faction decisions; it never triggers an independent random kingdom split. Disable civil-war factions to stop faction uprisings. Native town rebellions follow native rules.")]
 	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public bool EnableKingdomStabilityAndRebellion { get; set; } = true;
 

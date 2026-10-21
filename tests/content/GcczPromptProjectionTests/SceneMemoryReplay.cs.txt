@@ -1,0 +1,71 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using AnimusForge.SiegeAftermathIntervention;
+
+static class SceneMemoryReplay
+{
+    internal static void Run(TownPromptTextCatalog catalog, Action<bool,string> check)
+    {
+        var cn = TownPromptCatalogResources.Get(false);
+        var en = TownPromptCatalogResources.Get(true);
+        string Fill(string template) => Regex.Replace(template, @"\{([a-zA-Z_][a-zA-Z_0-9]*)\}", m => m.Groups[1].Value switch {
+            "count" => "13", "otherCount" => "7", "thirdCount" => "5", "value" => "231",
+            "action" => SiegeCastleRegularDispositionStagingProfile.Describe(SiegeCastleActionKind.ReleasePrisoners),
+            "branch" => SiegeCastleLordRecruitmentBranchProfile.Describe(SiegeCastleLordRecruitmentBranch.ClanLeaderRequestRulerAudience),
+            "status" => CastleAftermathCompatibilityTexts.Raw("status_audience"),
+            "pool" => SiegeSharedReliefPoolFormatter.DescribeForContext(new SiegeSharedReliefPoolFacts(42,3,5,170)),
+            "refund" => SiegeSharedReliefPoolFormatter.JoinAmountParts(SiegeSharedReliefPoolFormatter.BuildGoldAmountText(13),SiegeSharedReliefPoolFormatter.BuildItemAmountText(7,"Grain {0} $1")),
+            "plan" => SiegeCastleRegularDispositionStagingProfile.Describe(SiegeCastleActionKind.ReleasePrisoners)+" 13"+CastleAftermathCompatibilityTexts.Raw("count_unit"),
+            _ => "Literal {0} $1" });
+        foreach(var row in cn.RuntimeText.Where(p=>p.Key.StartsWith("SceneMemoryFrame.",StringComparison.Ordinal))) {
+            string raw="7. "+Fill(row.Value);
+            string projected=SiegeSceneMemoryPromptProjection.Project(raw,catalog);
+            check(catalog.IsEnglish ? !Regex.IsMatch(projected,@"[\u3400-\u4dbf\u4e00-\u9fff]") : raw==projected,"complete canonical scene frame "+row.Key);
+            check(projected.StartsWith("7. ",StringComparison.Ordinal),"sequence retained");
+            check(!projected.Contains("{name}")&&!projected.Contains("{count}"),"no unexpanded template slot");
+        }
+        var soldier=new SiegeSoldierAppeasementProfile();
+        var events=new List<string>{SiegeInterventionMemoryEventFormatter.FormatEntry(soldier.AppeasementMemoryTitle,soldier.AppeasementMemoryText)};
+        string original=events[0];
+        string actual=SiegeInterventionMemoryContextBuilder.Build(events,SiegeInterventionMemoryAudience.AlliedSoldier,catalog);
+        check(events[0]==original,"context never rewrites canonical store");
+        check(catalog.IsEnglish ? actual.Contains(soldier.AppeasementMemoryTextEn) : actual.Contains(soldier.AppeasementMemoryText),"real producer through context boundary");
+        check(actual.Contains(catalog.SoldierAppeasementMemoryPerspective),"audience still interprets original fact");
+        string name="Lord {0} $1 中文原名";
+        string hit=SiegeInterventionMemoryEventFormatter.FormatEntry(SiegeLocalAttackProfile.MemoryTitle,SiegeLocalAttackProfile.BuildPlayerHitMemoryText(name,false));
+        string rendered=SiegeSceneMemoryPromptProjection.Project(hit,catalog);
+        check(rendered.Contains(name),"dynamic name retained byte for byte");
+        check(!catalog.IsEnglish||rendered==SiegeInterventionMemoryEventFormatter.FormatEntry(SiegeLocalAttackProfile.MemoryTitleEn,SiegeLocalAttackProfile.BuildPlayerHitMemoryText(name,false,true),true),"real player hit frame semantics");
+        string unknown="8. 自定义：未知中文原文 $1 {0}";
+        check(SiegeSceneMemoryPromptProjection.Project(unknown,catalog)==unknown,"unknown dynamic record preserved");
+        check(SiegeSceneMemoryPromptProjection.Project(hit+" trailing extra",catalog)==hit+" trailing extra","incomplete or modified frame not guessed");
+        string staged=cn.GetRuntimeText("SceneMemoryFrame.castle_staged_True");
+        string plan=SiegeCastleRegularDispositionStagingProfile.Describe(SiegeCastleActionKind.ReleasePrisoners)+" 13"+CastleAftermathCompatibilityTexts.Raw("count_unit")+CastleAftermathCompatibilityTexts.Raw("list_separator")+SiegeCastleRegularDispositionStagingProfile.Describe(SiegeCastleActionKind.SellPrisoners)+" 7"+CastleAftermathCompatibilityTexts.Raw("count_unit");
+        string stagedRaw=Fill(staged.Replace("{plan}",plan));
+        string stagedResult=SiegeSceneMemoryPromptProjection.Project(stagedRaw,catalog);
+        check(!catalog.IsEnglish||(!Regex.IsMatch(stagedResult,@"[\u3400-\u4dbf\u4e00-\u9fff]")&&stagedResult.Contains("provisionally")&&stagedResult.Contains("remain in the scene")),"multi-group plan retains deferred semantics");
+        foreach(var row in cn.RuntimeText.Where(p=>p.Key.StartsWith("SceneFactFrame.",StringComparison.Ordinal))) {
+            string raw=Fill(row.Value);
+            string projected=SiegeSceneMemoryPromptProjection.ProjectFact(raw,catalog.IsEnglish);
+            check(catalog.IsEnglish ? !Regex.IsMatch(projected,@"[\u3400-\u4dbf\u4e00-\u9fff]") : raw==projected,"canonical AFEF/reaction frame "+row.Key);
+            string request=AnimusForge.MemorySystemFactProjection.ProjectNpcFact("[AFEF NPC_ACTION] "+raw);
+            check(!catalog.IsEnglish || !Regex.IsMatch(request,@"[\u3400-\u4dbf\u4e00-\u9fff]"),"real AFEF request consumer "+row.Key);
+        }
+        string castle=SiegeCastleRuntimePromptProfile.Build(new SiegeCastleRuntimePromptFacts("Castle","Player",true,false,false,"","",regularDispositionPlan:plan),catalog);
+        check(!catalog.IsEnglish||!Regex.IsMatch(castle,@"[\u3400-\u4dbf\u4e00-\u9fff]"),"real castle runtime projects canonical staged plan");
+        foreach(string status in new[]{"A 已成为玩家家族成员，并加入玩家队伍（已解除其在 Town 的总督职位；OldClan 已由 Heir 接任族长）。", "执行成功：Clan 已作为领主加入 Kingdom（KingdomId=kingdom_id）（OldKingdom 已按原版逻辑解散）。"}) {
+            string raw=cn.GetRuntimeText("SceneMemoryFrame.castle_lord_recruit").Replace("{name}","Lord").Replace("{branch}",SiegeCastleLordRecruitmentBranchProfile.Describe(SiegeCastleLordRecruitmentBranch.JoinPlayerAsCompanion)).Replace("{status}",status);
+            string result=SiegeSceneMemoryPromptProjection.Project(raw,catalog);
+            check(!catalog.IsEnglish||!Regex.IsMatch(result,@"[\u3400-\u4dbf\u4e00-\u9fff]"),"nested recruitment status and transition notes: "+result);
+        }
+        string lordOutcomes="Lord：已按原版酒馆赎卖价贩卖，获得 13 金币；Other：已由玩家确认处决";
+        string completion=SiegeCastleCompletedInterventionSummaryBuilder.Build(new SiegeCastleCompletedInterventionSummaryFacts("Castle","Player",null,3,1,0,0,0,0,0,0,0,false,false,0,lordOutcomeSummary:lordOutcomes),catalog.IsEnglish);
+        check(catalog.IsEnglish ? !Regex.IsMatch(completion,@"[\u3400-\u4dbf\u4e00-\u9fff]") : completion.Contains(lordOutcomes),"castle completion projects confirmed lord outcomes and preserves CN");
+        string refund=SiegeSharedReliefPoolFormatter.JoinAmountParts(SiegeSharedReliefPoolFormatter.BuildGoldAmountText(13),SiegeSharedReliefPoolFormatter.BuildItemAmountText(7,"Grain {0} $1"));
+        string refundRaw=SiegeInterventionMemoryEventFormatter.FormatEntry(SiegeSharedReliefPoolFormatter.ReturnedToPlayerMemoryTitle,SiegeSharedReliefPoolFormatter.BuildReturnedToPlayerMemoryText(refund));
+        string refundResult=SiegeSceneMemoryPromptProjection.Project(refundRaw,catalog);
+        check(catalog.IsEnglish ? !Regex.IsMatch(refundResult,@"[\u3400-\u4dbf\u4e00-\u9fff]")&&refundResult.Contains("13 denars, 7 Grain {0} $1") : refundResult==refundRaw,"real refund producer projects fixed units and retains item names");
+    }
+}

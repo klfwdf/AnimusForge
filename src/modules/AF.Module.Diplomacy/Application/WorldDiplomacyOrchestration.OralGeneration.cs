@@ -146,7 +146,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             _host.PartyNameOrEmpty(item.TargetKingdomId)));
         job.UserPrompt = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(sb.ToString(), DiplomacyPromptTexts.Get);
         job.CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey;
-        job.MaxTokens = _host.GenerationMaxTokens(); job.LlmMessages?.Clear(); job.SemanticRepairAttempts = 0;
+        job.MaxTokens = WorldDiplomacyPromptContractRules.GetDeclarationOutputTokenBudget(range.maximum, _host.GenerationMaxTokens()); job.LlmMessages?.Clear(); job.SemanticRepairAttempts = 0;
         job.RoundConversationRevision = ResolveRound(item.RoundId).ConversationRevision;
         job.PresentedLegalActionSignature = BuildOralDeclarationSignature(job);
         if (string.IsNullOrEmpty(job.SuspendedReason)) job.OralDraftingContractVersion = CurrentOralDraftingContractVersion;

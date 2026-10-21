@@ -45,7 +45,9 @@ public static class SiegeInterventionMemoryContextBuilder
                 ? SiegeAftermathCompatibilityTexts.Raw("compat_siege_intervention_memory_context_builder_d75205474b7e")
                 : ". These are committed facts that occurred during this town entry disposition; subsequent NPCs must acknowledge the overall situation and not act as though the player never gave these orders or civilians were never assembled.");
 
-        string baseContext = heading + string.Join(delimiter, memoryEvents) + instruction;
+        var projectedEvents = new List<string>(memoryEvents.Count);
+        foreach (string entry in memoryEvents) projectedEvents.Add(SiegeSceneMemoryPromptProjection.Project(entry, catalog));
+        string baseContext = heading + string.Join(delimiter, projectedEvents) + instruction;
         string perspective = BuildPerspective(
             memoryEvents,
             audience,

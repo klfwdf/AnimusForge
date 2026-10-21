@@ -18,6 +18,7 @@ internal static class Integration
         check(RewardSystemBehavior.Instance.TransferGold(ordinaryGiver,ordinaryReceiver,10,true)==5 && ordinaryReceiver.Gold==5,"forceComplete still NPC-to-player only");
         check(RewardSystemBehavior.Instance.TransferGold(null,Hero.MainHero,10,true)==0,"normal gold invalid giver unchanged");
         void Reset() {
+            MyBehavior.DeveloperEnabled = true;
             Campaign.Current=new(); Mission.Current=new(){Mode=TaleWorlds.Core.MissionMode.StartUp}; Settlement.CurrentSettlement=new(){IsTown=true};
             ShoutBehavior.Target=new(); ShoutBehavior.TargetCharacter=new(){HeroObject=ShoutBehavior.Target};
             Mission.Current.Agents.Add(new(){Index=7,Character=ShoutBehavior.TargetCharacter});
@@ -27,7 +28,7 @@ internal static class Integration
         void StartMoney() { check(ShoutBehavior.OpenNativePlayerDirectActions(()=>{}),"native direct without API setup"); Select(PlayerDirectActionKind.Gold); }
         Reset(); StartMoney(); var money=(TextInquiryData)InformationManager.Popup; money.AffirmativeAction("100000");
         check(ShoutBehavior.CurrentInstance._nativeGameEffects.Tags.Single()=="[ACTION:GIVE_ASSET:GOLD:100000]","normal executor receives exact tag only");
-        foreach (var mutation in new Action[]{()=>Campaign.Current=new(),()=>Mission.Current=new(),()=>Campaign.Current.ConversationManager.ActiveToken++,
+        foreach (var mutation in new Action[]{()=>MyBehavior.DeveloperEnabled=false,()=>Campaign.Current=new(),()=>Mission.Current=new(),()=>Campaign.Current.ConversationManager.ActiveToken++,
             ()=>SaveRuntimeGuard.Generation++,()=>ShoutBehavior.CurrentInstance.NextEpoch(),()=>ShoutBehavior.CurrentInstance=new(),
             ()=>ShoutBehavior.TargetCharacter=new(){HeroObject=ShoutBehavior.Target},()=>Mission.Current.Agents[0].Active=false,
             ()=>Mission.Current.Agents[0]=new(){Index=7,Character=ShoutBehavior.TargetCharacter},()=>Mission.Current.IsMissionEnding=true,
@@ -36,6 +37,10 @@ internal static class Integration
             check(owner._nativeGameEffects.Tags.Count==0,"stale campaign/mission/token/generation/epoch/owner/target/agent/main thread denies");
         }
         Reset(); ShoutBehavior.Busy=true; check(!ShoutBehavior.OpenNativePlayerDirectActions(()=>{}),"busy native admission rejected");
+        Reset(); MyBehavior.DeveloperEnabled=false;
+        check(!ShoutBehavior.OpenNativePlayerDirectActions(()=>{}),"developer disabled rejects native manual tags before opening");
+        Campaign.Current.ConversationManager.IsConversationInProgress=false;
+        check(!ShoutBehavior.CurrentInstance.OpenScenePlayerDirectActions(new(){AgentIndex=7,Name="NPC"},Mission.Current.Agents[0],()=>{}),"developer disabled rejects scene wheel manual tags before opening");
         Reset(); check(ShoutBehavior.OpenNativePlayerDirectActions(()=>{}),"native follow open");Select(PlayerDirectActionKind.Follow);
         check(ShoutBehavior.CurrentInstance.QueueCalls==1 && ShoutBehavior.CurrentInstance.CloseCalls==1 && ShoutBehavior.CurrentInstance._sceneMovement.Calls==0,"native follow queue then close, not synchronous movement");
         Reset(); Campaign.Current.ConversationManager.IsConversationInProgress=false;
@@ -91,6 +96,8 @@ internal static class Integration
             Mission.Current.Agents.Add(other);
             p.Members.Add(new() { Agent = other, Character = other.Character, AgentIndex = 9, Name = "Bystander" });
         }
+        PresentationSession(); MyBehavior.DeveloperEnabled = false;
+        check(!ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(() => {}), "developer disabled rejects persistent scene manual tags before opening");
         PresentationSession(); int finishes = 0;
         check(ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(() => finishes++), "persistent panel opens manual tags without API setup");
         var panelMenu = (MultiSelectionInquiryData)InformationManager.Popup;
@@ -101,6 +108,7 @@ internal static class Integration
         check(finishes == 1 && ShoutBehavior.CurrentInstance._nativeGameEffects.Tags.SequenceEqual(new[] {"[ACTION:GIVE_ASSET:GOLD:23]"}), "persistent panel confirmation consumed once");
         check(ReferenceEquals(ShoutBehavior.CurrentInstance._nativeGameEffects.LastHero, ShoutBehavior.Target), "money applied only to selected headman, not bystander");
         foreach (var mutate in new Action[] {
+            () => MyBehavior.DeveloperEnabled = false,
             () => ShoutBehavior.CurrentInstance.Presentation._presentationAddresseeIndex = 9,
             () => ShoutBehavior.CurrentInstance.Presentation.Active = false,
             () => ShoutBehavior.CurrentInstance.Presentation.Members.Clear(),

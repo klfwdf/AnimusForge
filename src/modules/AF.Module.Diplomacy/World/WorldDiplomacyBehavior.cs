@@ -92,7 +92,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int UltimatumComplianceRoyalRelationPenalty = -20;
 	private const int DecisionArchitectureVersion = 1;
 	private const int HistoryMemorySchemaVersion = 4;
-	private const int DiplomacyPromptContractVersion = 30;
+	private const int DiplomacyPromptContractVersion = 31;
 	private const int RelaySchemaVersion = 23;
 	private const int RelayPassDurationDays = 7;
 	private const int RelayTargetDurationDays = 21;

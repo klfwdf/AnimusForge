@@ -77,11 +77,15 @@ public sealed class WorldBulletinMinorItemVM : ViewModel
 	[DataSourceProperty]
 	public string Text { get; }
 
-	public WorldBulletinMinorItemVM(string tag, string text, Action<string> onLink)
+	[DataSourceProperty]
+	public int BodyFontSize { get; }
+
+	public WorldBulletinMinorItemVM(string tag, string text, Action<string> onLink, int bodyFontSize = 18)
 	{
 		TagText = tag ?? "";
 		Text = text ?? "";
 		_onLink = onLink;
+		BodyFontSize = Math.Max(12, Math.Min(36, bodyFontSize));
 	}
 
 	public void ExecuteOpenEncyclopediaLink(string link)
@@ -289,6 +293,12 @@ public sealed class WorldBulletinPanelVM : ViewModel
 	private readonly List<KeyValuePair<string, string>> _minors;
 	private readonly EncyclopediaEntityLinkFormatter.DisplaySession _links;
 	private float _minorScrollPosition;
+	private float _bodyScrollPosition;
+	[DataSourceProperty] public float BodyScrollPosition
+	{
+		get => _bodyScrollPosition;
+		set { _bodyScrollPosition = value; OnPropertyChangedWithValue(value, nameof(BodyScrollPosition)); }
+	}
 	[DataSourceProperty] public float MinorScrollPosition
 	{
 		get => _minorScrollPosition;
@@ -359,7 +369,7 @@ public sealed class WorldBulletinPanelVM : ViewModel
 		KindText = Sanitize(data.KindText);
 		HeadlineText = Sanitize(data.HeadlineText);
 		MetaText = Sanitize(data.MetaText);
-		BodyFontSize = Math.Max(14, Math.Min(18, bodyFontSize));
+		BodyFontSize = Math.Max(12, Math.Min(36, bodyFontSize));
 		_links = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
 		string body = (data.BodyText ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		if (body.Length == 0)
@@ -395,7 +405,7 @@ public sealed class WorldBulletinPanelVM : ViewModel
 		for (int i = 0; i < count; i++)
 		{
 			var minor = _minors[i];
-			WorldBulletinMinorItemVM item = new WorldBulletinMinorItemVM("¶ " + Sanitize(minor.Key), _links.Format((minor.Value ?? "").Trim()), HandleLink);
+			WorldBulletinMinorItemVM item = new WorldBulletinMinorItemVM("¶ " + Sanitize(minor.Key), _links.Format((minor.Value ?? "").Trim()), HandleLink, BodyFontSize);
 			(i < leftCount ? LeftMinors : RightMinors).Add(item);
 		}
 		MinorScrollPosition = 0;

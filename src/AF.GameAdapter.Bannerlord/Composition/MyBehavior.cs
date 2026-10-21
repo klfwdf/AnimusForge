@@ -3113,30 +3113,9 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 
 	private void ResetPendingWeeklyKingdomRebellionMaintenance() => _kingdomRebellionRuntime.ResetPendingWeeklyKingdomRebellionMaintenance();
 
-	public static void QueueCivilWarSplitForExternal(Kingdom kingdom, Clan clan)
-		{
-			try
-			{
-				MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-				if (behavior == null || kingdom == null || clan == null) return;
-				int week = Math.Max(1, GetCurrentGameDayIndexSafe() / 7);
-				var result = new KingdomRebellionResolutionResult
-				{
-					Kingdom = kingdom,
-					WeekIndex = week,
-					Forced = true,
-					SelectedClan = clan,
-					PassedChanceGate = true,
-					StabilityValue = behavior.GetKingdomStabilityValue(kingdom)
-				};
-				behavior.QueueAutomaticKingdomRebellion(result);
-				behavior.TryStartNextAutomaticKingdomRebellionAsync();
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("KingdomCivilWar", "[ERROR] split queue failed: " + ex.Message);
-			}
-		}
+    // Historical external signature retained; callers must submit a tracked faction through the faction owner.
+    public static void QueueCivilWarSplitForExternal(Kingdom kingdom, Clan clan)
+        => Logger.Log("KingdomCivilWar", "[SKIP] retired untracked kingdom split request");
 
 		public static void QueueCivilWarRebellionForExternal(Kingdom kingdom, Clan leader, List<Clan> followers, string factionId, bool startNow)
 		{

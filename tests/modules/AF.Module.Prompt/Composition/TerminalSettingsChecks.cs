@@ -149,7 +149,7 @@ internal static class TerminalSettingsChecks
                     (language == "简体中文" ? "事件驱动的 NPC 人设演变" : "Event-driven NPC persona evolution"), "persona evolution title follows UI language");
                 foreach (string id in new[] { "ScreenNotifications", "DiagnosticsEnabled", "EnemyInterruptRadiusMeters" })
                     Check(defs.ContainsKey(id) && !visible.ContainsKey(id), "hidden UI setting still exists for persistence " + id);
-                foreach (string id in new[] { "TownAmbientAiShowUsageNotifications", "Illustrator.UseExactEndpointUrl", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.DirectorModelDropdown", "Illustrator.FetchDirectorModelList" })
+                foreach (string id in new[] { "ConversationPromptCacheEnabled", "ConversationPromptCacheMaxChars", "ConversationPromptCacheTtlMinutes", "TownAmbientAiShowUsageNotifications", "Illustrator.UseExactEndpointUrl", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.DirectorModelDropdown", "Illustrator.FetchDirectorModelList" })
                     Check(!defs.ContainsKey(id) && !visible.ContainsKey(id), "retired API setting absent from metadata and frontend " + id);
                 foreach (string id in new[] { "Illustrator.ApiBaseUrl", "Illustrator.ApiKey", "Illustrator.ModelName", "Illustrator.FetchModelList" })
                 {
@@ -159,9 +159,23 @@ internal static class TerminalSettingsChecks
                 }
                 string directorId = "Illustrator.EditCustomDirectorPrompt";
                 Check(visible.ContainsKey(directorId) && (string)Property(visible[directorId], "TabCategory") ==
-                    (string)product.GetType("AnimusForge.TerminalCategories", true).GetField("Prompt", S).GetValue(null), "director rule editor on Prompt page");
+                    (string)product.GetType("AnimusForge.TerminalCategories", true).GetField("Ai", S).GetValue(null), "director rule editor on image API page");
+                var imageDefinitions = defs.Where(pair => pair.Key.StartsWith("Illustrator.", StringComparison.Ordinal)).ToList();
+                string imageApiCategory = (string)Property(defs["MainApiMaxTokens"], "TabCategory");
+                string imageApiGroup = (string)Property(defs["Illustrator.ApiBaseUrl"], "GroupName");
+                Type imageOwner = product.GetType("AnimusForge.Illustrator.IllustratorSettings", true);
+                Type mcmVisibility = product.GetType("AnimusForge.AnimusForgeMcmVisibility", true);
+                foreach (var pair in imageDefinitions)
+                {
+                    Check(visible.ContainsKey(pair.Key) && (string)Property(pair.Value, "TabCategory") == imageApiCategory
+                        && (string)Property(pair.Value, "GroupName") == imageApiGroup, "all image settings visible in one image API group: " + pair.Key);
+                    PropertyInfo property = imageOwner.GetProperty(pair.Key.Substring("Illustrator.".Length));
+                    object groupAttribute = property.GetCustomAttributes(true).Single(a => a.GetType().Name == "SettingPropertyGroupAttribute");
+                    string rawGroup = (string)Property(groupAttribute, "GroupName");
+                    Check(rawGroup.Contains("AF_ILL_GROUP_IMAGE_API") && (bool)Call(mcmVisibility,"IsVisibleProperty","AnimusForge_Illustrator_v1",property.Name,rawGroup),"native MCM image API admission: " + property.Name);
+                }
                 Check(visible.Where(pair => pair.Key.StartsWith("Coup.")).Select(pair => Property(pair.Value, "GroupName")).Distinct().Count() == 1, "one armed coup item");
-                Check(visible.Where(pair => pair.Key.Contains("WeeklyReport") || pair.Key.Contains("WorldBulletin")).Select(pair => Property(pair.Value, "GroupName")).Distinct().Count() == 1, "one weekly and bulletin item");
+                Check(visible.Where(pair => !pair.Key.StartsWith("Illustrator.", StringComparison.Ordinal) && (pair.Key.Contains("WeeklyReport") || pair.Key.Contains("WorldBulletin"))).Select(pair => Property(pair.Value, "GroupName")).Distinct().Count() == 1, "one weekly and bulletin item, image options belong to image API");
                 Check(visible.Where(pair => pair.Key.StartsWith("WorldDiplomacy") || pair.Key.StartsWith("EnableWorldDiplomacy") || pair.Key.StartsWith("EditWorldDiplomacy")).Select(pair => Property(pair.Value, "GroupName")).Distinct().Count() == 2, "two AI diplomacy items");
                 Check((string)Property(visible["NaturalLanguageReplyActionsEnabled"], "GroupName") == (string)Property(visible["BattleSpeechEnabled"], "GroupName")
                     && (string)Property(visible["AudienceRepliesEnabled"], "GroupName") == (string)Property(visible["BattleSpeechEnabled"], "GroupName"), "natural actions share one root item");

@@ -48,11 +48,26 @@ internal static class PromptCacheSettingsProbe
             var logger = typeof(BaseSettings).Assembly.GetType("BUTR.DependencyInjection.Logger.DefaultBUTRLogger`1", true).MakeGenericType(formatterType);
             var formatter = Activator.CreateInstance(formatterType, Activator.CreateInstance(logger));
             string Save() => (string)formatterType.GetMethod("SaveJson").Invoke(formatter, new object[] { duel });
+            string[] retiredIds = { "ConversationPromptCacheEnabled", "ConversationPromptCacheMaxChars", "ConversationPromptCacheTtlMinutes" };
+            foreach (string id in retiredIds)
+                Check(!native.Contains(id) && !definitions.ContainsKey(id) && duel.GetType().GetProperty(id)==null,
+                    "retired cache setting absent from owner, native MCM and terminal " + id);
+            var legacy = JObject.Parse(Save());
+            legacy[retiredIds[0]]=false; legacy[retiredIds[1]]=20000; legacy[retiredIds[2]]=1;
+            string legacyPath = Path.Combine(args[1], "legacy-cache-settings.json");
+            File.WriteAllText(legacyPath,legacy.ToString());
+            var oldLoaded = (BaseSettings)Activator.CreateInstance(duel.GetType());
+            formatterType.GetMethod("LoadFromJson").Invoke(formatter,new object[]{oldLoaded,File.ReadAllText(legacyPath)});
+            var resaved=JObject.Parse((string)formatterType.GetMethod("SaveJson").Invoke(formatter,new object[]{oldLoaded}));
+            Check(!resaved.Descendants().OfType<JProperty>().Any(p=>retiredIds.Contains(p.Name)),"actual MCM formatter ignores and does not resave retired cache fields");
+            Type core=af.GetType("AnimusForge.PromptCacheSettings",true);
+            object cache=core.GetField("Instance",All).GetValue(null);
+            Check((int)core.GetField("MaxTranscriptCharacters",All).GetRawConstantValue()==150000
+                && (int)core.GetProperty("SessionTtlMinutes",All).GetValue(cache)==10,"built-in capacity and TTL ignore old JSON values");
+            foreach(string name in new[]{"EnableHierarchicalPromptSplit","EnableSceneCardSplit","EnableDynamicBlockDedup"})
+                Check((bool)core.GetProperty(name,All).GetValue(cache),"built-in cache core remains enabled: "+name);
             foreach (var item in new[]
             {
-                (Id: "ConversationPromptCacheEnabled", Default: (object)true, Changed: (object)false, Min: 0f, Max: 0f),
-                (Id: "ConversationPromptCacheMaxChars", Default: (object)150000, Changed: (object)240000, Min: 20000f, Max: 1000000f),
-                (Id: "ConversationPromptCacheTtlMinutes", Default: (object)10, Changed: (object)17, Min: 1f, Max: 60f),
                 (Id: "ConversationContextEnabled", Default: (object)true, Changed: (object)false, Min: 0f, Max: 0f),
                 (Id: "ConversationContextRecentTurns", Default: (object)12, Changed: (object)7, Min: 2f, Max: 50f),
                 (Id: "ConversationContextRecentChars", Default: (object)20000, Changed: (object)9000, Min: 2000f, Max: 100000f),

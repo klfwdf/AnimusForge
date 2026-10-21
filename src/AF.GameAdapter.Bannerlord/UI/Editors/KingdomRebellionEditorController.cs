@@ -66,73 +66,12 @@ internal void ProcessKingdomRebellionApiRepairResume()
 		}
 	}
 internal void ProcessPendingDevForcedKingdomRebellionResult()
-	{
-		if (!PendingDevReady)
-		{
-			return;
-		}
-		PendingDevForcedKingdomRebellionContext pendingDevForcedKingdomRebellionContext = PendingDevContext;
-		PendingDevReady = false;
-		PendingDevContext = null;
-		DevForcedInProgress = false;
-		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
-		{
-			InformationManager.HideInquiry();
-			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_DisabledForced", "Kingdom stability and rebellion are disabled in MCM. This forced rebellion was cancelled.")));
-			return;
-		}
-		if (pendingDevForcedKingdomRebellionContext == null)
-		{
-			return;
-		}
-		Kingdom kingdom = MemoryEntityIdentityBannerlordAdapter.FindKingdomById(pendingDevForcedKingdomRebellionContext.KingdomId);
-		Clan clan = MemoryEntityIdentityBannerlordAdapter.FindClanById(pendingDevForcedKingdomRebellionContext.ClanId);
-		List<Clan> list = (pendingDevForcedKingdomRebellionContext.FollowerClanIds ?? new List<string>()).Select(MemoryEntityIdentityBannerlordAdapter.FindClanById).Where((Clan x) => x != null).ToList();
-		string text;
-		bool flag;
-		if (kingdom == null || clan == null)
-		{
-			flag = false;
-			text = Ui("AF_UI_KingdomRebellion_TargetChanged", "The rebellion name was generated, but the target kingdom or clan changed before execution could continue.");
-		}
-		else if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
-		{
-			flag = false;
-			text = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom")) + Ui("AF_UI_KingdomRebellion_PlayerImmunitySkipped", " is ruled by the player, and MCM player-kingdom rebellion immunity is enabled. This forced stability rebellion was skipped.");
-		}
-		else
-		{
-			if (!KingdomRebellionRuntimeController.IsRebelKingdomNamingSuccess(pendingDevForcedKingdomRebellionContext.NamingResult))
-			{
-				ShowDevForcedKingdomRebellionNamingFailurePopup(pendingDevForcedKingdomRebellionContext, kingdom, clan, list, afterApiRepair: false);
-				return;
-			}
-			flag = _runtime().TryExecuteKingdomRebellionWithNaming(clan, kingdom, pendingDevForcedKingdomRebellionContext.WeekIndex, forceTrigger: true, pendingDevForcedKingdomRebellionContext.RelationToKing, pendingDevForcedKingdomRebellionContext.TownCount, pendingDevForcedKingdomRebellionContext.CastleCount, pendingDevForcedKingdomRebellionContext.NamingResult, list, out text);
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		if (pendingDevForcedKingdomRebellionContext.NamingResult != null)
-		{
-			if (!flag)
-			{
-				ReportRebelKingdomNamingFailure(pendingDevForcedKingdomRebellionContext.NamingResult);
-			}
-			AppendRebelKingdomNamingResultLines(stringBuilder, pendingDevForcedKingdomRebellionContext.NamingResult);
-			stringBuilder.AppendLine();
-		}
-		if (list.Count > 0)
-		{
-			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_FollowerClans", "Coalition clans:"));
-			stringBuilder.AppendLine("- " + string.Join(Ui("AF_UI_KingdomRebellion_ClanSeparator", ", "), list.Select(MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName)));
-			stringBuilder.AppendLine();
-		}
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_ExecutionResult", "Execution result:"));
-		stringBuilder.AppendLine((text ?? "").Trim());
-		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData(flag ? Ui("AF_UI_KingdomRebellion_ForcedCompleted", "Forced rebellion completed") : Ui("AF_UI_KingdomRebellion_ForcedFailed", "Forced rebellion failed"), stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, Ui("AF_UI_KingdomRebellion_BackToDetails", "Back to details"), "", delegate
-		{
-			_openStabilityDetail(kingdom ?? MemoryEntityIdentityBannerlordAdapter.FindKingdomById(pendingDevForcedKingdomRebellionContext.KingdomId));
-		}, null));
-	}
+{
+    if (!PendingDevReady) return;
+    PendingDevReady = false; PendingDevContext = null; DevForcedInProgress = false;
+    InformationManager.HideInquiry();
+    InformationManager.DisplayMessage(new InformationMessage(KingdomRebellionRuntimeController.LegacyRebellionRetiredMessage));
+}
 internal void ShowDevForcedKingdomRebellionNamingFailurePopup(PendingDevForcedKingdomRebellionContext context, Kingdom kingdom, Clan clan, List<Clan> followerClans, bool afterApiRepair)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
@@ -205,65 +144,7 @@ internal void RetryBlockedDevForcedKingdomRebellionNaming()
 		StartDevForcedKingdomRebellionAsync(kingdom, clan, context.WeekIndex, context.RelationToKing, context.TownCount, context.CastleCount, list);
 	}
 internal void StartDevForcedKingdomRebellionAsync(Kingdom kingdom, Clan clan, int weekIndex, int relationToKing, int townCount, int castleCount, List<Clan> followerClans)
-	{
-		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
-		{
-			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_DisabledStart", "Kingdom stability and rebellion are disabled in MCM. The forced rebellion cannot start.")));
-			return;
-		}
-		if (DevForcedInProgress)
-		{
-			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_AlreadyRunning", "A forced rebellion task is already running in the background. Please wait.")));
-			return;
-		}
-		if (kingdom == null || clan == null)
-		{
-			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_TargetMissing", "The forced rebellion cannot start: the target kingdom or clan was not found.")));
-			return;
-		}
-		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
-		{
-			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomRebellion_PlayerImmuneStart", "The kingdom is ruled by the player, and MCM player-kingdom rebellion immunity is enabled. The forced stability rebellion cannot start.")));
-			return;
-		}
-		List<Clan> list = followerClans?.Where((Clan x) => x != null && x != clan).GroupBy((Clan x) => MemoryEntityIdentityBannerlordAdapter.GetClanId(x), StringComparer.OrdinalIgnoreCase).Select((IGrouping<string, Clan> x) => x.First()).ToList() ?? new List<Clan>();
-		string[] rebellionExistingNames = KingdomRebellionRuntimeController.CaptureRebellionExistingNames();
-		_runtime().BuildRebelKingdomNamingRequest(clan, kingdom, weekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
-		DevForcedInProgress = true;
-		PendingDevReady = false;
-		PendingDevContext = null;
-		InformationManager.ShowInquiry(new InquiryData(Ui("AF_UI_KingdomRebellion_GeneratingTitle", "Generating rebel kingdom name"), Ui("AF_UI_KingdomRebellion_GeneratingBody", "The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.\n\nThe clan departure and kingdom founding will run only after this step finishes.\nPlease wait; the result will open automatically."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
-		long runtimeGeneration = _captureGeneration();
-		string logTarget = "Rebellion kingdom naming - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
-		PendingDevForcedKingdomRebellionContext pendingContext = new PendingDevForcedKingdomRebellionContext
-		{
-			KingdomId = MemoryEntityIdentityBannerlordAdapter.GetKingdomId(kingdom),
-			ClanId = MemoryEntityIdentityBannerlordAdapter.GetClanId(clan),
-			WeekIndex = weekIndex,
-			RelationToKing = relationToKing,
-			TownCount = townCount,
-			CastleCount = castleCount,
-			FollowerClanIds = list.Select(MemoryEntityIdentityBannerlordAdapter.GetClanId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
-		};
-		Task.Run(delegate
-		{
-			RebelKingdomNamingResult namingResult;
-			try
-			{
-				namingResult = _runtime().GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts, rebellionExistingNames);
-			}
-			catch (Exception ex)
-			{
-				namingResult = KingdomRebellionRuntimeController.BuildFailedRebelKingdomNamingResult(KingdomRebellionRuntimeController.ForcedNamingFailurePrefix + ex.Message);
-			}
-			_runtime().EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
-			{
-				pendingContext.NamingResult = namingResult;
-				PendingDevContext = pendingContext;
-				PendingDevReady = true;
-			}, "dev_forced_rebellion_naming");
-		});
-	}
+    => InformationManager.DisplayMessage(new InformationMessage(KingdomRebellionRuntimeController.LegacyRebellionRetiredMessage));
 internal void ShowAutomaticKingdomRebellionCompletionPopup(PendingAutomaticKingdomRebellionContext context, Kingdom kingdom, Clan clan, List<Clan> followerClans, bool success, string executionMessage)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

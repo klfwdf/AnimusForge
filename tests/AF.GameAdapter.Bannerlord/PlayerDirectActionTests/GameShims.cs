@@ -46,6 +46,8 @@ namespace AnimusForge
     }
     public static class MyBehavior
     {
+        public static bool DeveloperEnabled = true;
+        public static bool IsDevDataManagementEnabledForExternal() => DeveloperEnabled;
         public static void AppendExternalDialogueHistory(Hero h,object a,object b,string fact) { }
         public static void AppendExternalNonHeroDialogueHistory(string id,string name,object a,object b,string fact) { }
         public class PartyTransferPromptEntry { public int PromptIndex,Count; public string DisplayName; public CharacterObject Character; public object OwnerParty,VolunteerOwner,SourceSettlement; }
@@ -55,6 +57,7 @@ namespace AnimusForge
         public static bool IsSettlementTransferEntryValidForExternal(SettlementTransferPromptEntry e)=>true;
         public static string GetSettlementTransferAssetIdForExternal(SettlementTransferPromptEntry e)=>e.AssetId;
     }
+    internal static class PlayerCaptivityConversation { internal static bool HasSession => false; }
     public partial class RewardSystemBehavior
     {
         public static RewardSystemBehavior Instance=new();

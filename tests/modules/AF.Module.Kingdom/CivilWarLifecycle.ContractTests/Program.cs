@@ -237,7 +237,7 @@ Check(supporter.Side == KingdomCivilWarSide.Crown, "mixed grievances remain loya
 f.Owner.AddGrievance(f.Home, "peace_imposed", new[] { f.Follower }, 37, 100, "peace");
 Check(supporter.Side == KingdomCivilWarSide.Middle && supporter.FactionId == "" && supporter.SideSinceWeek == 100, "event immediately withdraws support to neutral");
 Check(f.State.Factions.Count == 0 && f.State.LastAdvancedWeek == 0, "withdrawal neither needs a weekly tick nor invents a faction");
-Check(f.State.History.Any(h => h.Text.Contains("撤回对王室的支持")) && CivilWarCampaignBehavior.MaterialWrites == 1, "withdrawal is recorded as an actual political event");
+Check(f.State.History.Any(h => h.Text.Contains("withdraw their support for the crown")) && CivilWarCampaignBehavior.MaterialWrites == 1, "localized withdrawal is recorded as an actual political event");
 f.Owner.AddGrievance(f.Home, "war_imposed", new[] { f.Follower }, 8, 100, "war");
 Check(CivilWarCampaignBehavior.MaterialWrites == 1, "already neutral clan does not publish duplicate withdrawal");
 f.Reload();

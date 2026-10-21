@@ -143,20 +143,8 @@ internal static class KingdomStabilityPolicy
 		}
 	}
 
-	internal static float GetKingdomRebellionWeeklyChance(int stabilityValue)
-	{
-		switch (GetKingdomStabilityTier(stabilityValue))
-		{
-		case KingdomStabilityTier.Poor:
-			return 0.005f;
-		case KingdomStabilityTier.VeryPoor:
-			return 0.05f;
-		case KingdomStabilityTier.ExtremelyPoor:
-			return 0.25f;
-		default:
-			return 0f;
-		}
-	}
+    // Kept for old editor/API readers. Stability no longer rolls an independent kingdom split.
+    internal static float GetKingdomRebellionWeeklyChance(int stabilityValue) => 0f;
 
 	internal static int GetKingdomStabilityWeeklyBalancingDelta(int stabilityValue)
 	{

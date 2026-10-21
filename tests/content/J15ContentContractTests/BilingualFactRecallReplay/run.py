@@ -76,6 +76,7 @@ paths = [
     'src/modules/AF.Module.WorldMap/Runtime/WorldMapFactPromptProjection.cs',
     'src/modules/AF.Module.WorldMap/Runtime/WorldMapSourceTexts.cs',
 ]
+paths.extend(str(p.relative_to(ROOT)).replace('\\','/') for p in sorted((ROOT/'AnimusForge.SiegeAftermathIntervention').glob('*.cs')))
 inputs.extend(paths)
 inputs.append('content/modules/AF.Module.WorldMap/ModuleData/WorldMapCompatibility.json')
 items = ''.join('<Compile Include="' + escape(str(ROOT / path)) + '" />' for path in paths)
@@ -89,6 +90,10 @@ for path, logical in [
 ]:
     inputs.append(path)
     items += '<EmbeddedResource Include="' + escape(str(ROOT / path)) + '" LogicalName="' + logical + '" />'
+for name in ['GcczTownPrompt.zh-CN.json','GcczTownPrompt.en.json','CastleAftermathCompatibility.json','SiegeAftermathCompatibility.json']:
+    path=ROOT/'content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData'/name
+    inputs.append(str(path.relative_to(ROOT)))
+    items += '<EmbeddedResource Include="' + escape(str(path)) + '" LogicalName="AnimusForge.Defaults.' + name + '" WithCulture="false" />'
 for name in ('TaleWorlds.Library', 'TaleWorlds.Localization', 'Newtonsoft.Json'):
     items += '<Reference Include="' + name + '"><HintPath>' + escape(str(refs / (name + '.dll'))) + '</HintPath></Reference>'
 items += '<Reference Include="netstandard"><HintPath>' + escape(str(framework / 'Facades/netstandard.dll')) + '</HintPath></Reference>'

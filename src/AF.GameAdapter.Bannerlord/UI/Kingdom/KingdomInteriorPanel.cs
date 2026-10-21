@@ -361,8 +361,8 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 			Box("*", "*", "#D3C3A1FF")
 			+ Col("*", "~",
 				T("@InteriorRecentChronicleText", "*", "22", 15, Brown3)
-				+ T("@FigureSource1", "*", "22", 15, Ink, extra: "MarginTop='4'")
-				+ T("@FigureSource2", "*", "22", 15, Brown), "MarginLeft='16' MarginRight='16' MarginTop='8'")),
+				+ T("@FigureSource1", "*", "~", 15, Ink, extra: "MarginTop='4'")
+				+ T("@FigureSource2", "*", "~", 15, Brown), "MarginLeft='16' MarginRight='16' MarginTop='8'")),
 		"IsVisible='@IsFactionTab' MarginTop='10'");
 
 	private static string Figure(string label, string value, string unit, string note, bool red) => Layer("*", "*",
@@ -375,21 +375,21 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 			+ (note.Length > 0 ? T(note, "*", "20", 14, Brown3) : ""), "MarginLeft='16' MarginRight='16' MarginTop='8'"),
 		"MarginRight='16'");
 
-	// Formation conditions + recent chronicle (ledger entry only).
-	private static string LedgerBand() => Row("*", "80",
-		Col("*", "*",
+	// Conditions have independent rows; their natural widths must not spill into the chronicle.
+	private static string LedgerBand() => Row("*", "~",
+		Col("*", "~",
 			T("@InteriorFormationConditionsText", "*", "28", 19, Ink2, heading: true)
-			+ Items("Conditions", "*", "28", "HorizontalLeftToRight",
-				Row("~", "*",
+			+ Items("Conditions", "*", "~", "VerticalBottomToTop",
+				Row("*", "28",
 					Box("9", "9", "@MarkColor", "VerticalAlignment='Center'")
 					+ T("@Name", "~", "*", 16, Brown, extra: "MarginLeft='8'")
-					+ T("@Value", "~", "*", 16, Ink2, extra: "IsVisible='@IsMet' MarginLeft='6'")
-					+ T("@Value", "~", "*", 16, Red, extra: "IsHidden='@IsMet' MarginLeft='6'"), "MarginRight='28'"), "MarginTop='10'"))
-		+ Box("1", "56", PaperLine, "VerticalAlignment='Center' MarginRight='36'")
-		+ Col("560", "*",
+					+ T("@Value", "*", "*", 16, Ink2, extra: "IsVisible='@IsMet' MarginLeft='6' ClipContents='true'")
+					+ T("@Value", "*", "*", 16, Red, extra: "IsHidden='@IsMet' MarginLeft='6' ClipContents='true'"), "ClipContents='true'"), "MarginTop='6'"), "MarginRight='24' ClipContents='true'")
+		+ Box("1", "80", PaperLine, "VerticalAlignment='Top' MarginRight='36'")
+		+ Col("560", "~",
 			T("@InteriorRecentChronicleText", "*", "28", 19, Ink2, heading: true)
-			+ T("@SourceLine1", "*", "24", 15, Brown, extra: "MarginTop='4'")
-			+ T("@SourceLine2", "*", "24", 15, Brown3)),
+			+ T("@SourceLine1", "*", "~", 15, Brown, extra: "MarginTop='4'")
+			+ T("@SourceLine2", "*", "~", 15, Brown3)),
 		"IsVisible='@IsLedgerTab' MarginTop='10'");
 
 	// Clan table: name stretches; the other columns are fixed so header and rows line up.

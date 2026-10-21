@@ -47,11 +47,10 @@ internal static class TerminalSettingsCoverage
 
     internal static string CategoryFor(string owner, string property, string fallback, string group = "")
     {
-        if (property.StartsWith("ConversationPromptCache", StringComparison.Ordinal)) return TerminalCategories.Ai;
+        if (owner == nameof(IllustratorSettings) || property.StartsWith("Illustrator.", StringComparison.Ordinal)) return TerminalCategories.Ai;
         if (property.StartsWith("ConversationContext", StringComparison.Ordinal)) return TerminalCategories.Ai;
         if (property.IndexOf("WeeklyReport", StringComparison.Ordinal) >= 0 || property.IndexOf("WorldBulletin", StringComparison.Ordinal) >= 0)
             return TerminalCategories.Diplomacy;
-        if (property == "EditCustomDirectorPrompt" || property == "Illustrator.EditCustomDirectorPrompt") return TerminalCategories.Prompt;
         if (property.StartsWith("WorldDiplomacy", StringComparison.Ordinal) || property.StartsWith("EditWorldDiplomacy", StringComparison.Ordinal)
             || property.StartsWith("EnableWorldDiplomacy", StringComparison.Ordinal)) return TerminalCategories.Diplomacy;
         if (group.IndexOf("AF_MCM_Diplomacy_", StringComparison.Ordinal) >= 0) return TerminalCategories.Diplomacy;
@@ -59,13 +58,6 @@ internal static class TerminalSettingsCoverage
         if (owner == nameof(DialogueUiSettings) || (owner == nameof(DuelSettings) && UiProperties.Contains(property)))
             return TerminalCategories.Ui;
         if (owner == nameof(CoupSettings)) return TerminalCategories.Diplomacy;
-        if (owner == nameof(IllustratorSettings))
-            return group.IndexOf("AF_ILL_GROUP_IMAGE_API", StringComparison.Ordinal) >= 0 ||
-                   group.IndexOf("AF_ILL_GROUP_DIRECTOR_API", StringComparison.Ordinal) >= 0 ||
-                   property == "ApiBaseUrl" || property == "ApiKey" ||
-                   property == "ModelName" || property == "ModelDropdown" || property == "FetchModelList" ||
-                   property == "TestImageApi" || property == "ImageGenerationTimeoutSeconds"
-                ? TerminalCategories.Ai : TerminalCategories.Ui;
         if (group.IndexOf("AF_MCM_CivilWar_Group", StringComparison.Ordinal) >= 0 ||
             property.StartsWith("PolicyVote", StringComparison.Ordinal) || property == "EditSettlementBalance" ||
             property == "DisableProsperityFoodConsumption") return TerminalCategories.Diplomacy;
@@ -80,14 +72,13 @@ internal static class TerminalSettingsCoverage
         if (id == "ScreenNotifications"
             || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled"
             || id == "TerminalHotkeyEnabled" || id == "TerminalMapIconEnabled") return false;
-        if (id.StartsWith("Illustrator.Director", StringComparison.Ordinal)) return false;
         return true;
     }
 
     internal static string ViewGroup(string id, string fallback)
     {
+        if (id.StartsWith("Illustrator.", StringComparison.Ordinal)) return Label("AF_TERMINAL_GROUP_IMAGE_API", "Image generation API");
         if (id.StartsWith("Coup.", StringComparison.Ordinal)) return Label("AF_TERMINAL_GROUP_COUP", "Armed coup");
-        if (id == "Illustrator.EditCustomDirectorPrompt") return Label("AF_TERMINAL_GROUP_DIRECTOR_RULES", "Illustration director rules");
         if (id.StartsWith("WorldDiplomacy", StringComparison.Ordinal) || id.StartsWith("EnableWorldDiplomacy", StringComparison.Ordinal)
             || id.StartsWith("EditWorldDiplomacy", StringComparison.Ordinal))
             return id.StartsWith("Edit", StringComparison.Ordinal) || id.EndsWith("Prompt", StringComparison.Ordinal)
@@ -105,8 +96,6 @@ internal static class TerminalSettingsCoverage
                     : Label("AF_TERMINAL_GROUP_DIPLOMACY_SETTINGS", "AI diplomacy settings");
             if (binding.Group.IndexOf("SAX_MCM_Group", StringComparison.Ordinal) >= 0)
                 return Label("AF_TERMINAL_GROUP_NATURAL", "Natural-language actions and battle speech");
-            if (binding.Owner == nameof(IllustratorSettings) && binding.Group.IndexOf("AF_ILL_GROUP_IMAGE_API", StringComparison.Ordinal) >= 0)
-                return Label("AF_TERMINAL_GROUP_IMAGE_API", "Image generation API");
             if (binding.Group.IndexOf("AF_MCM_Group_News", StringComparison.Ordinal) >= 0)
                 return Label("AF_TERMINAL_GROUP_NEWS", "Weekly reports and bulletins");
         }

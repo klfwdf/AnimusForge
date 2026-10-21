@@ -59,7 +59,7 @@ public static class SiegeCastleCompletedInterventionSummaryBuilder
                 sb.Append("Lords: ");
                 if (!string.IsNullOrWhiteSpace(facts.LordOutcomeSummary))
                 {
-                    sb.Append(facts.LordOutcomeSummary.Trim());
+                    sb.Append(SiegeSceneMemoryPromptProjection.ProjectLordOutcomes(facts.LordOutcomeSummary.Trim(), true));
                     if (facts.RetainedLordPrisoners > 0)
                     {
                         sb.Append("; ");

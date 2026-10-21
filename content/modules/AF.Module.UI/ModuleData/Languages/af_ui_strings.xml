@@ -686,7 +686,7 @@ Produces a very large log and is intended for developers only." />
     <string id="AF_UI_Terminal_Prefab_022" text="Close" />
     <string id="AF_MCM_CivilWar_Group" text="Civil war factions" />
     <string id="AF_MCM_CivilWar_Enable" text="Enable civil war factions" />
-    <string id="AF_MCM_CivilWar_Enable_Hint" text="When enabled, executions, fief decisions, forced policies/wars/peace, raids, and similar events build discontent inside kingdoms. Opposition factions can petition the king, and rejected demands may escalate into a civil war (a temporary rebel kingdom and an actual war). Kingdom Stability and Rebellion must also be enabled." />
+    <string id="AF_MCM_CivilWar_Enable_Hint" text="Executions, fief decisions, imposed policies, wars, peace and raids build discontent. Opposition factions make demands and may rise after rejected demands, subject to cooldowns and the world war cap. This is the sole AF kingdom-uprising route; stability has no separate random rebellion. Kingdom Stability and Rebellion must also be enabled." />
     <string id="AF_MCM_CivilWar_PlayerKingdom" text="Allow factions when the player is king" />
     <string id="AF_MCM_CivilWar_PlayerKingdom_Hint" text="When enabled, kingdoms ruled by the player can also form opposition factions and deliver ultimatums. New ultimatums allow four weeks for a reply. Disabled by default. If player immunity to stability rebellions is enabled, these factions cannot escalate into civil war." />
     <string id="AF_MCM_CivilWar_Randomness" text="Outcome randomness" />
@@ -1523,7 +1523,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Hint" text="1 = 200–400 characters; 2 = 200–800 characters; 3 = 200–1200 characters; 4 = 200–1500 characters. Shared by world and kingdom weekly reports. Default: 2." />
   <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Group" text="Weekly reports / bulletins/Weekly report" />
   <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Title" text="Weekly Report Popup Body Font Size" />
-  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Hint" text="Affects only the body of the large popup for the latest kingdom weekly report, not other interfaces. Default: 18." />
+  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Hint" text="Sets the body and other-news text size in bulletin and weekly-report popups. Range: 12-36; default: 18. Reopen the report after changing it." />
   <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Group" text="Weekly reports / bulletins" />
   <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Title" text="Weekly Report Reading XP Per Hundred Chars" />
   <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Hint" text="Length multiplier for weekly-report reading rewards. Default: 20, meaning 20 experience in the corresponding skill per 100 valid characters/words in each column." />
@@ -1544,10 +1544,10 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="Allocates court delivery times by distance. Controls delivery to the farthest court and the relay pace for one round of a new event; not every kingdom waits this fixed number of days. Default: 7 days; lower values produce more frequent replies." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="17. AI diplomacy (testing)/3. Distribution" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="Suggested declaration length upper bound" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="Suggested length for AI declarations, replies, and scribe drafting, not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects scribe generation capacity. If a long draft is truncated, increase this value and the API output limit. Does not limit player editing." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. This is not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects generation capacity, subject to the API output limit. The editor capacity remains 6000 characters." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="Suggested declaration length lower bound" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="Suggested length for AI declarations, replies, and scribe drafting, including punctuation. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Title" text="World Diplomacy History Compression Target Thousands" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Hint" text="Combined target for the long-term snapshot and protected facts after each compression batch. Default: 48, about 48k tokens; cap: 60k. Declarations take only relevant material, not the whole snapshot. Actual summaries are also limited by the selected API maximum output tokens." />
@@ -1663,7 +1663,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_KingdomRebellion_DefaultName" text="{CLAN} League" />
   <string id="AF_UI_KingdomStability_NoKingdoms" text="No kingdoms are available for testing." />
   <string id="AF_UI_KingdomStability_Back" text="Back" />
-  <string id="AF_UI_KingdomStability_LabDescription" text="Use this lab to test kingdom stability and town-holding clan rebellion logic." />
+  <string id="AF_UI_KingdomStability_LabDescription" text="Use this lab to inspect and adjust kingdom stability. Uprisings are handled by civil-war factions." />
   <string id="AF_UI_KingdomStability_DefaultDescription" text="All kingdoms start at stability 50 (Average) and do not rebel automatically by default." />
   <string id="AF_UI_KingdomStability_WeeklyReportDescription" text="STAB_* ratings in weekly reports also change kingdom stability; manual adjustments and weekly ratings affect later weekly resolution." />
   <string id="AF_UI_KingdomStability_SelectKingdom" text="Select a kingdom to open its details." />
@@ -1672,7 +1672,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_KingdomStability_KingdomNotFound" text="The selected kingdom could not be found." />
   <string id="AF_UI_KingdomStability_UnknownKingdom" text="unknown kingdom" />
   <string id="AF_UI_KingdomStability_PlayerImmunitySuffix" text=" (player-kingdom stability rebellion immunity)" />
-  <string id="AF_UI_KingdomStability_Label" text="{KINGDOM} [{TIER}/{VALUE}] weekly rebellion chance {CHANCE}{IMMUNITY}" />
+  <string id="AF_UI_KingdomStability_Label" text="{KINGDOM} [{TIER}/{VALUE}]{IMMUNITY}" />
   <string id="AF_UI_KingdomStability_KingdomFallback" text="kingdom" />
   <string id="AF_UI_KingdomStability_DetailKingdom" text="Kingdom: {KINGDOM}" />
   <string id="AF_UI_KingdomStability_DetailStability" text="Current stability: {VALUE} ({TIER})" />
@@ -2775,9 +2775,9 @@ Choose how to proceed:" />
   <string id="AF_MCM_Diplomacy_RoundLength" text="Diplomacy event target duration" />
   <string id="AF_MCM_Diplomacy_RoundLength_Hint" text="Typical event closing time: compact about 15 days, standard about 21, and relaxed about 28. Results may end it early or briefly extend cleanup. Default: standard; affects new events only." />
   <string id="AF_MCM_Diplomacy_DeclarationMin" text="Suggested declaration length lower bound" />
-  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="Suggested length for AI declarations, replies, and scribe drafting, including punctuation. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing." />
+  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing." />
   <string id="AF_MCM_Diplomacy_DeclarationMax" text="Suggested declaration length upper bound" />
-  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="Suggested length for AI declarations, replies, and scribe drafting, not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects scribe generation capacity. If a long draft is truncated, increase this value and the API output limit. Does not limit player editing." />
+  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. This is not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects generation capacity, subject to the API output limit. The editor capacity remains 6000 characters." />
   <string id="AF_MCM_Diplomacy_WarCooldown" text="Proactive-war cooldown (days)" />
   <string id="AF_MCM_Diplomacy_WarCooldown_Hint" text="After a kingdom starts a proactive war, wait at least this many days before starting another. Default: 42; does not limit other diplomatic declarations." />
   <string id="AF_MCM_Diplomacy_PeaceProtection" text="Peace protection period (days)" />
@@ -2822,7 +2822,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_News_AutoWeekly" text="Generate weekly reports automatically" />
   <string id="AF_MCM_News_AutoWeekly_Hint" text="At the start of each new week, settle the previous week and generate the world and kingdom weekly reports. Day 0 writes the opening summary as week 0." />
   <string id="AF_MCM_News_PopupFont" text="Report popup body font size" />
-  <string id="AF_MCM_News_PopupFont_Hint" text="Affects only the large popup body for the latest kingdom weekly report. Default: 18." />
+  <string id="AF_MCM_News_PopupFont_Hint" text="Sets the body and other-news text size in bulletin and weekly-report popups. Range: 12-36; default: 18. Reopen the report after changing it." />
   <string id="AF_MCM_News_MapNotice" text="Weekly/bulletin map notice" />
   <string id="AF_MCM_News_MapNotice_Hint" text="When enabled, a clickable notice appears at the lower right of the campaign map after a report is generated. Disabled reports do not queue notices." />
   <string id="AF_MCM_News_ReadingXp" text="Enable report-reading experience" />
@@ -2832,7 +2832,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_News_XpCap" text="Per-skill report experience cap" />
   <string id="AF_MCM_News_XpCap_Hint" text="Maximum experience each skill gains from one report. Default: 100; 0 disables report-reading experience." />
   <string id="AF_MCM_News_StabilityRebellion" text="Enable kingdom stability and rebellion" />
-  <string id="AF_MCM_News_StabilityRebellion_Hint" text="When disabled, this mod no longer triggers kingdom rebellions; kingdom stability no longer affects ruler fief loyalty or applies stability relation modifiers." />
+  <string id="AF_MCM_News_StabilityRebellion_Hint" text="Controls stability effects and the civil-war faction system. Stability affects relations, royal-domain loyalty and faction decisions; it never triggers an independent random kingdom split. Disable civil-war factions to stop faction uprisings. Native town rebellions follow native rules." />
   <string id="AF_MCM_News_PlayerImmunity" text="Player-as-ruler stability rebellion immunity" />
   <string id="AF_MCM_News_PlayerImmunity_Hint" text="When enabled, if the player clan rules a kingdom or the player is its leader, this mod stops applying stability relation, ruler-fief loyalty, and kingdom-rebellion checks to that kingdom. Native low-loyalty settlement rebellions still follow native rules." />
   <string id="AF_MCM_Gccz_EnableLog" text="Write GCCZ log" />
@@ -3417,5 +3417,8 @@ Choose how to proceed:" />
   <string id="AF_UI_Weekly_OpeningKingdomTitle" text="{KINGDOM} Day 0 opening summary" />
   <string id="AF_UI_Weekly_MajorHeading" text="[Major event]" />
   <string id="AF_UI_Weekly_MinorHeading" text="[Minor news]" />
+  <string id="AF_UI_KingdomRebellion_LegacyRetired" text="The standalone stability rebellion system has been retired. Uprisings are managed by civil-war factions." />
+  <string id="AF_UI_KingdomStability_FactionRoute" text="Uprisings are handled by civil-war factions through demands, responses and the shared war cap; stability does not trigger a separate random rebellion." />
+  <string id="AF_UI_KingdomStability_FactionImmunity" text="Player-kingdom immunity prevents faction uprisings." />
 </strings>
 </base>

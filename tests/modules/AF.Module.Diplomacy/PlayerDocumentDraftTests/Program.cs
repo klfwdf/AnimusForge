@@ -87,6 +87,8 @@ internal static class Program
         string preferenceHeader = english ? "[Applying diplomacy MCM writing preferences, valid only when faithful to player intent]\n" : "【沿用外交MCM写作偏好，仅在忠实于玩家原意时适用】\n";
         Test.That(messages.Count == 2 && (string)messages[1]["content"] == userHeader + "与瓦兰迪亚议和", "Only current player material");
         string system = (string)messages[0]["content"];
+        Test.That(system.Contains(english ? "40 to 200 words" : "40—200个可见字符")
+            && (!english || !system.Contains("visible characters")), "Scribe uses the selected package's length unit");
         Test.That(system.Contains(preferenceHeader + "简明冷峻"), "Shared preference verbatim");
         Test.That(system.Contains(english ? "about 120" : "约120字")
             && system.Contains(english ? "Simple replies may be shorter" : "简单答复可以更短")

@@ -60,7 +60,7 @@ internal static class WeeklyReportArchivePolicy
 
     internal static EventMaterialReference FactMaterial(WorldBulletinEvent fact, string nation, string type = RecentMaterialType)
         => new EventMaterialReference {
-            MaterialType=type, KingdomId=nation, SnapshotText=WorldBulletinCampaignMaterialPolicy.ProjectRecordedBattle(fact.Sentence, fact.Kind) + (string.IsNullOrWhiteSpace(fact.Detail) ? "" : "\n" + Localize("AF_UI_Weekly_Browser_AdditionalFact", "Additional fact") + ": " + WorldBulletinCampaignMaterialPolicy.ProjectRecordedBattle(fact.Detail, fact.Kind)), Label=fact.GameDate,
+            MaterialType=type, KingdomId=nation, SnapshotText=ProjectFact(fact.Kind, fact.Key, fact.Sentence) + (string.IsNullOrWhiteSpace(fact.Detail) ? "" : "\n" + Localize("AF_UI_Weekly_Browser_AdditionalFact", "Additional fact") + ": " + ProjectFact(fact.Kind, fact.Key, fact.Detail)), Label=fact.GameDate,
             ActionDay=fact.Day, ActionKind=fact.Kind, SourceStableKeys=new List<string> { fact.Key }
         };
     internal static EventMaterialReference RegionalMaterial(EventRecordEntry entry) => new EventMaterialReference {
@@ -250,12 +250,41 @@ internal static class WeeklyReportArchivePolicy
     private static EventMaterialReference ArchiveMaterial(EventRecordEntry source, EventMaterialReference material, int index, bool legacy)
         => new EventMaterialReference {
             MaterialType=material.MaterialType, KingdomId=material.KingdomId,
-            SnapshotText=WorldBulletinCampaignMaterialPolicy.ProjectRecordedBattle(material.SnapshotText, material.ActionKind), ActionDay=material.ActionDay ?? source.CreatedDay, ActionKind=material.ActionKind,
+            SnapshotText=ProjectArchivedFact(material), ActionDay=material.ActionDay ?? source.CreatedDay, ActionKind=material.ActionKind,
             Label=legacy ? (material.ActionDay == null || material.ActionDay == source.CreatedDay ? source.CreatedDate : "") : material.Label,
             SourceStableKeys=material.SourceStableKeys?.Any(k => !string.IsNullOrWhiteSpace(k)) == true
                 ? material.SourceStableKeys.Where(k => !string.IsNullOrWhiteSpace(k)).ToList()
                 : new List<string> { "historical:" + source.EventId + ":material:" + index }
         };
+
+    private static string ProjectFact(string kind, string key, string raw)
+    {
+        if (kind == "coup_success" || kind == "coup_failure")
+            return AnimusForge.CoupSystem.CoupSourceTexts.TimeForPrompt(AnimusForge.CoupSystem.CoupSourceTexts.ReportForPrompt(raw ?? ""));
+        return CampaignSystemFactProjection.ProjectWeeklyMaterial(kind, key,
+            WorldBulletinCampaignMaterialPolicy.ProjectRecordedBattle(raw, kind));
+    }
+
+    private static string ProjectArchivedFact(EventMaterialReference material)
+    {
+        string raw = material.SnapshotText ?? "";
+        string kind = material.ActionKind;
+        if (material.MaterialType != RecentMaterialType && material.MaterialType != ReportedMaterialType) return raw;
+        string key = material.SourceStableKeys?.FirstOrDefault() ?? "";
+        string divider = "\n" + Localize("AF_UI_Weekly_Browser_AdditionalFact", "Additional fact") + ": ";
+        int at = raw.IndexOf(divider, StringComparison.Ordinal);
+        string sourceDivider = divider;
+        if (at < 0)
+        {
+            foreach (string known in new[] { "\nAdditional fact: ", PromptComposerTexts.Raw("campaign_news_additional_source") })
+            {
+                at = raw.IndexOf(known, StringComparison.Ordinal);
+                if (at >= 0) { sourceDivider = known; break; }
+            }
+        }
+        if (at < 0) return ProjectFact(kind, key, raw);
+        return ProjectFact(kind, key, raw.Substring(0, at)) + divider + ProjectFact(kind, key, raw.Substring(at + sourceDivider.Length));
+    }
 
     internal static EventRecordEntry CloneForArchive(EventRecordEntry e) => new EventRecordEntry {
         EventId=e.EventId, EventKind=e.EventKind, ScopeKingdomId=e.ScopeKingdomId, WeekIndex=e.WeekIndex,

@@ -1,0 +1,70 @@
+using System;
+
+struct Vec2 { public float x,y; public Vec2(float x,float y){this.x=x;this.y=y;} }
+struct Vec3 {
+    public float x,y,z;
+    public Vec3(float x,float y,float z){this.x=x;this.y=y;this.z=z;}
+    public static Vec3 operator -(Vec3 a,Vec3 b)=>new(a.x-b.x,a.y-b.y,a.z-b.z);
+    public static float DotProduct(Vec3 a,Vec3 b)=>a.x*b.x+a.y*b.y+a.z*b.z;
+}
+static class Screen { public static float RealScreenResolutionWidth=2560,RealScreenResolutionHeight=1440; }
+class Camera { public Vec3 Position; public Vec3 Direction=new(0,1,0); }
+class SceneView { public Vec2 WorldPointToScreenPoint(Vec3 anchor)=>new(MBWindowManager.X/Screen.RealScreenResolutionWidth,MBWindowManager.Y/Screen.RealScreenResolutionHeight); }
+class SceneLayer { public SceneView SceneView=new(); }
+class MissionScreen { public Camera CombatCamera=new(); public SceneLayer SceneLayer=new(); }
+class Context { public float CustomInverseScale=1; }
+class Layer { public Context UIContext=new(); public Vec2 UsableArea=new(1,1); }
+class Agent { public int Index=7; public Vec3 Anchor=new(0,5,2); }
+class VM { public float X,Y,BubbleWidth=220; public int FontSize=20; }
+static class Logger { public static void Log(string category,string message){} }
+static class MBWindowManager {
+    public static float X=1280,Y=288,Depth=1;
+    public static void WorldToScreen(Camera camera,Vec3 anchor,ref float x,ref float y,ref float w){x=X;y=Y;w=Depth;}
+}
+class Probe {
+    class FloatingTextItemState { public Agent Agent=new(); public VM VM=new(); public string CurrentDisplayedText="Short line",FullTargetText="Short line"; }
+    Layer _layer=new(); MissionScreen _screen=new(); bool _debugLoggedOnce;
+    const float BUBBLE_MIN_WIDTH=140f,SCREEN_ANCHOR_VERTICAL_PADDING=18f;
+    MissionScreen GetMissionScreen()=>_screen;
+    static Vec3 GetBubbleAnchorWorldPosition(Agent agent)=>agent.Anchor;
+    @@METHODS@@
+
+    static int checks,failed;
+    static void Check(bool value,string message){checks++;if(!value){failed++;Console.WriteLine("FAIL "+message);}}
+    static bool Near(float a,float b)=>Math.Abs(a-b)<0.02f;
+    void CheckPosition(int width,int height,float scale,float usableX,float usableY,float nx,float ny,string text) {
+        Screen.RealScreenResolutionWidth=width;Screen.RealScreenResolutionHeight=height;
+        _layer.UIContext.CustomInverseScale=1/scale;_layer.UsableArea=new(usableX,usableY);
+        MBWindowManager.X=nx*width;MBWindowManager.Y=ny*height;MBWindowManager.Depth=1;
+        var state=new FloatingTextItemState { CurrentDisplayedText=text,FullTargetText=text };
+        UpdatePosition(state);
+        // Gauntlet Widget.Layout multiplies offsets and dimensions by CustomScale,
+        // then EventManager adds the centered usable-area origin in framebuffer pixels.
+        float left=width*(1-usableX)/2,top=height*(1-usableY)/2;
+        float center=(state.VM.X+state.VM.BubbleWidth/2)*scale+left;
+        float bottom=(state.VM.Y+EstimateBubbleHeight(state,state.VM.BubbleWidth))*scale+top;
+        string label=$"{width}x{height} scale={scale} safe={usableX},{usableY} point={nx},{ny}";
+        Check(Near(center,MBWindowManager.X),"horizontal center follows head "+label);
+        Check(Near(bottom,MBWindowManager.Y-SCREEN_ANCHOR_VERTICAL_PADDING*scale),"bubble bottom stays above head "+label);
+    }
+    static int Main() {
+        var p=new Probe();
+        foreach(var size in new[]{(1920,1080),(2560,1440),(3840,2160),(3440,1440)})
+        foreach(float multiplier in new[]{0.8f,1f,1.2f})
+        foreach(var safe in new[]{(1f,1f),(.9f,.85f)})
+        foreach(var point in new[]{(.2f,.2f),(.5f,.35f),(.8f,.25f)})
+        foreach(string text in new[]{"Short line","An English sentence wrapping over several lines above the speaker.","中文多行气泡\n第二行内容"})
+            p.CheckPosition(size.Item1,size.Item2,size.Item2/1080f*multiplier,safe.Item1,safe.Item2,point.Item1,point.Item2,text);
+        p.CheckPosition(2560,1440,1.3333334f,1,1,.5f,.2f,"");
+        var state=new FloatingTextItemState();
+        Action<string> hidden=label=>{state.VM.X=100;state.VM.Y=100;p.UpdatePosition(state);Check(state.VM.X<=-10000&&state.VM.Y<=-10000,label);};
+        p._screen.CombatCamera=null;hidden("missing camera hides stale position");p._screen.CombatCamera=new();
+        state.Agent.Anchor=new(0,-5,2);hidden("behind-camera head hidden");state.Agent.Anchor=new(0,5,2);
+        MBWindowManager.Depth=-1;hidden("negative projection depth hidden");MBWindowManager.Depth=1;
+        MBWindowManager.X=float.NaN;hidden("nonfinite projection hidden");MBWindowManager.X=1280;
+        p._layer.UIContext.CustomInverseScale=0;hidden("invalid scale hidden");p._layer.UIContext.CustomInverseScale=.75f;
+        MBWindowManager.Y=10000;hidden("far-offscreen head hidden");MBWindowManager.Y=288;
+        Console.WriteLine($"{(failed==0?"PASS":"FAIL")} production bubble position: {checks} checks, {failed} failures; engine projection stub, live Gauntlet NOT RUN.");
+        return failed==0?0:1;
+    }
+}

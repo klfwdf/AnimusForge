@@ -12,6 +12,7 @@ namespace TaleWorlds.Library {
 }
 namespace TaleWorlds.Core { public static class MBInformationManager { public static TaleWorlds.Library.MultiSelectionInquiryData Last; public static void ShowMultiSelectionInquiry(TaleWorlds.Library.MultiSelectionInquiryData data){Last=data;} } }
 namespace AnimusForge {
+ internal static class KingdomRebellionRuntimeController { internal static string LegacyRebellionRetiredMessage => "Standalone stability rebellion retired; use civil-war factions."; }
  internal static class Logger {internal static void Log(string a,string b){} }
  internal sealed class NpcActionEntry {}
  internal sealed class WorldBulletinPanelData { internal string EventId; }

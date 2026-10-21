@@ -21,13 +21,6 @@
     <string id="AF_RUNTIME_ApiTest_PostprocessPrompt" text="Output only [ACTION:MOOD:NEUTRAL]" />
     <string id="AF_RUNTIME_ApiTest_EventSystem" text="You are a test echo assistant. Output only one short reply." />
     <string id="AF_RUNTIME_ApiTest_EventPrompt" text="Please reply: Event and rebellion endpoint connected" />
-    <string id="AF_MCM_Cache_Group" text="Conversation prompt cache" />
-    <string id="AF_MCM_Cache_Enabled" text="Cache-friendly conversation prompts" />
-    <string id="AF_MCM_Cache_Enabled_Hint" text="Use a stable prefix and append-only transcript for free conversation and scene shout. Only accepted replies enter the cache. Provider cache hits and prices remain provider-dependent. Applies to the next request." />
-    <string id="AF_MCM_Cache_MaxChars" text="Maximum cached transcript characters" />
-    <string id="AF_MCM_Cache_MaxChars_Hint" text="Counts the complete cached request, including system, references and current input. Rebuilds a complete snapshot before this limit; an oversized snapshot uses the original request subject to the final context budget. This is a cache-storage limit, not the model token limit. Default: 150000." />
-    <string id="AF_MCM_Cache_Ttl" text="Cache lifetime in minutes" />
-    <string id="AF_MCM_Cache_Ttl_Hint" text="Reuse within the same runtime, channel and scene or native conversation identity. Expired sessions restart with a complete snapshot. No Tick scanning or save data. Default: 10 minutes." />
     <string id="AF_CONTEXT_Enabled" text="Automatic conversation context management" />
     <string id="AF_CONTEXT_Enabled_Hint" text="Use recent original speech, intraday segment summaries and relevant earlier quotes across scene shout, free conversation and courier. Originals remain saved. Applies to future requests." />
     <string id="AF_CONTEXT_Group" text="Conversation context" />

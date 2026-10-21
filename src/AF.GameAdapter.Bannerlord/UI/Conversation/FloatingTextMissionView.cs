@@ -310,73 +310,48 @@ public class FloatingTextMissionView : MissionView
 	private void UpdatePosition(FloatingTextItemState state)
 	{
 		MissionScreen missionScreen = GetMissionScreen();
-		if (missionScreen == null)
+		Camera camera = missionScreen?.CombatCamera;
+		if (camera == null || _layer?.UIContext == null)
 		{
-			return;
-		}
-		SceneView sceneView = null;
-		try
-		{
-			if (missionScreen.SceneLayer != null)
-			{
-				sceneView = missionScreen.SceneLayer.SceneView;
-			}
-		}
-		catch
-		{
-		}
-		if (sceneView == null)
-		{
+			HideBubble(state);
 			return;
 		}
 		Vec3 bubbleAnchor = GetBubbleAnchorWorldPosition(state.Agent);
-		if (!IsFinite(bubbleAnchor))
+		if (!IsFinite(bubbleAnchor) || Vec3.DotProduct(camera.Direction, bubbleAnchor - camera.Position) < 0.1f)
 		{
 			HideBubble(state);
 			return;
 		}
-		bool flag = false;
-		if (missionScreen.CombatCamera != null)
-		{
-			Vec3 direction = missionScreen.CombatCamera.Direction;
-			Vec3 position = missionScreen.CombatCamera.Position;
-			Vec3 v = bubbleAnchor - position;
-			if (Vec3.DotProduct(direction, v) < 0.1f)
-			{
-				flag = true;
-			}
-		}
-		if (flag)
-		{
-			state.VM.X = -10000f;
-			state.VM.Y = -10000f;
-			return;
-		}
-		Vec2 vec = sceneView.WorldPointToScreenPoint(bubbleAnchor);
-		if (!IsFinite(vec) || vec.x < -0.25f || vec.x > 1.25f || vec.y < -0.25f || vec.y > 1.25f)
+		// Native agent markers use top-left framebuffer pixels. Gauntlet offsets
+		// are layout units: subtract this layer's safe-area origin, then undo scale.
+		float screenX = 0f, screenY = 0f, depth = 0f;
+		MBWindowManager.WorldToScreen(camera, bubbleAnchor, ref screenX, ref screenY, ref depth);
+		float width = Screen.RealScreenResolutionWidth;
+		float height = Screen.RealScreenResolutionHeight;
+		float inverseScale = _layer.UIContext.CustomInverseScale;
+		Vec2 usableArea = _layer.UsableArea;
+		if (!IsFinite(screenX) || !IsFinite(screenY) || !IsFinite(depth) || depth < 0f
+			|| !IsFinite(inverseScale) || inverseScale <= 0f || width <= 0f || height <= 0f
+			|| !IsFinite(usableArea) || usableArea.x <= 0f || usableArea.y <= 0f
+			|| screenX < -0.25f * width || screenX > 1.25f * width
+			|| screenY < -0.25f * height || screenY > 1.25f * height)
 		{
 			HideBubble(state);
 			return;
 		}
-		// Restore the original framebuffer mapping for this screen-space overlay.
-		// Keep the normalized Y direction and world-space anchor unchanged.
-		float num = Screen.RealScreenResolutionWidth;
-		float num2 = Screen.RealScreenResolutionHeight;
-		float num3 = state.VM.BubbleWidth;
-		if (num3 <= 0f)
+		float left = width * (1f - usableArea.x) * 0.5f;
+		float top = height * (1f - usableArea.y) * 0.5f;
+		float bubbleWidth = state.VM.BubbleWidth;
+		if (bubbleWidth <= 0f) bubbleWidth = BUBBLE_MIN_WIDTH;
+		float bubbleHeight = EstimateBubbleHeight(state, bubbleWidth);
+		state.VM.X = (screenX - left) * inverseScale - bubbleWidth * 0.5f;
+		state.VM.Y = (screenY - top) * inverseScale - bubbleHeight - SCREEN_ANCHOR_VERTICAL_PADDING;
+		if (!_debugLoggedOnce)
 		{
-			num3 = 140f;
-		}
-		float bubbleHeight = EstimateBubbleHeight(state, num3);
-		state.VM.X = vec.x * num - num3 * 0.5f;
-		state.VM.Y = vec.y * num2 - bubbleHeight - 18f;
-		if (!_debugLoggedOnce && state.VM.X > 0f && state.VM.Y > 0f)
-		{
-			Logger.Log("FloatingText", $"[Position] First valid position: normalized=({vec.x:F3},{vec.y:F3}) -> ui=({state.VM.X:F0},{state.VM.Y:F0}), screenRes=({num:F0},{num2:F0})");
+			Logger.Log("FloatingText", $"[Position] agent={state.Agent.Index} anchor=({bubbleAnchor.x:F2},{bubbleAnchor.y:F2},{bubbleAnchor.z:F2}) pixel=({screenX:F1},{screenY:F1}) ui=({state.VM.X:F1},{state.VM.Y:F1}) inverseScale={inverseScale:F4} safeOrigin=({left:F1},{top:F1}) screenRes=({width:F0},{height:F0})");
 			_debugLoggedOnce = true;
 		}
 	}
-
 	private static Vec3 GetBubbleAnchorWorldPosition(Agent agent)
 	{
 		if (agent == null)

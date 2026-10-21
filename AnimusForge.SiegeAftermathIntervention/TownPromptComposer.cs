@@ -24,7 +24,7 @@ public static class TownPromptComposer
         AppendSection(
             prompt,
             text.SceneSectionTitle,
-            ApplyTemplate(text.SceneSummaryTemplate, "settlement", NormalizeSettlementName(facts.SettlementName)));
+            ApplyTemplate(text.SceneSummaryTemplate, "settlement", NormalizeSettlementName(facts.SettlementName, text)));
 
         AppendSection(
             prompt,
@@ -124,7 +124,7 @@ public static class TownPromptComposer
             return string.Empty;
         }
 
-        string scene = ApplyTemplate(text.AmbientReactionSceneTemplate, "settlement", NormalizeSettlementName(settlementName));
+        string scene = ApplyTemplate(text.AmbientReactionSceneTemplate, "settlement", NormalizeSettlementName(settlementName, text));
         scene = ApplyTemplate(scene, "action", text.GetSuggestionActionLabel(action));
         scene = ApplyTemplate(scene, "focus", string.IsNullOrWhiteSpace(speakerFocus) ? role.ToString() : speakerFocus.Trim());
         return string.Join(
@@ -151,7 +151,7 @@ public static class TownPromptComposer
         }
 
         TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
-        string scene = ApplyTemplate(text.AmbientReactionSceneTemplate, "settlement", NormalizeSettlementName(settlementName));
+        string scene = ApplyTemplate(text.AmbientReactionSceneTemplate, "settlement", NormalizeSettlementName(settlementName, text));
         scene = ApplyTemplate(scene, "action", text.GetSuggestionActionLabel(action));
         scene = ApplyTemplate(
             scene,
@@ -560,11 +560,11 @@ public static class TownPromptComposer
         return string.IsNullOrWhiteSpace(fallbackValue) ? (unknown ?? string.Empty).Trim() : fallbackValue;
     }
 
-    private static string NormalizeSettlementName(string settlementName)
+    private static string NormalizeSettlementName(string settlementName, TownPromptTextCatalog text)
     {
         string normalized = (settlementName ?? string.Empty).Trim();
         return string.IsNullOrWhiteSpace(normalized)
-            ? SiegeRuntimePromptProfile.DefaultSettlementName
+            ? text.GetRuntimeText("DefaultSettlementName")
             : normalized;
     }
 

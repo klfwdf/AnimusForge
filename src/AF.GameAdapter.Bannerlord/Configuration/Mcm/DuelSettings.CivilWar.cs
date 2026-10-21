@@ -8,7 +8,7 @@ public partial class DuelSettings
 {
 	private const string CivilWarGroup = "{=AF_MCM_CivilWar_Group}Civil war factions";
 
-	[SettingPropertyBool("{=AF_MCM_CivilWar_Enable}Enable civil war factions", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_Enable_Hint}When enabled, executions, fief decisions, forced policies/wars/peace, raids, and similar events build discontent inside kingdoms. Opposition factions can petition the king, and rejected demands may escalate into a civil war (a temporary rebel kingdom and an actual war). Kingdom Stability and Rebellion must also be enabled.")]
+	[SettingPropertyBool("{=AF_MCM_CivilWar_Enable}Enable civil war factions", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_CivilWar_Enable_Hint}Executions, fief decisions, imposed policies, wars, peace and raids build discontent. Opposition factions make demands and may rise after rejected demands, subject to cooldowns and the world war cap. This is the sole AF kingdom-uprising route; stability has no separate random rebellion. Kingdom Stability and Rebellion must also be enabled.")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public bool EnableCivilWarFactions { get; set; } = true;
 

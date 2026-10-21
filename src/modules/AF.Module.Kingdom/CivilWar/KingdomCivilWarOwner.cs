@@ -1095,11 +1095,23 @@ internal sealed partial class KingdomCivilWarOwner
 		panel.Conditions.Add(Condition(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionOrWeariness", "or war weariness {VALUE}", ("VALUE", CivilWarWearinessRules.FormationThreshold.ToString("0"))), weariness.ToString("0") + " " + (CivilWarWearinessRules.MeetsFormation(weariness) ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionReached", "Reached") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionNotReached", "Not reached")), CivilWarWearinessRules.MeetsFormation(weariness)));
 		panel.Conditions.Add(Condition(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionPostWarCooldown", "Post-war cooldown"), day < cooldownDay ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_UntilDay", "until day {DAY}", ("DAY", cooldownDay.ToString())) : CivilWarUiText.T("AF_KINGDOM_CW_Panel_None", "None"), day >= cooldownDay));
 		if (CivilWarWorld.IsPlayerRuled(kingdom)) panel.Conditions.Add(Condition(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionPlayerKingdomFactions", "Player-kingdom factions"), DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed() ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_Enabled", "Enabled") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_SettingDisabled", "Disabled in settings"), DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed()));
-		List<KingdomCivilWarHistoryEntry> history = state?.History ?? new List<KingdomCivilWarHistoryEntry>();
-		for (int i = history.Count - 1; i >= 0 && panel.Chronicle.Count < 3; i--)
-			if (!string.IsNullOrWhiteSpace(history[i]?.Text)) panel.Chronicle.Add(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ChronicleWeek", "Week {WEEK}  ·  {TEXT}", ("WEEK", history[i].Week.ToString()), ("TEXT", CivilWarWorld.Limit(history[i].Text, 46))));
+		AddRecentChronicle(panel, state?.History);
 		PlayerPanelFigures(kingdom, state, panel, day);
 		return panel;
+	}
+
+	// Display-only projection of the bounded history (12 entries); never alters saved events or effects.
+	private static void AddRecentChronicle(CivilWarPanelKingdom panel, List<KingdomCivilWarHistoryEntry> history)
+	{
+		if (history == null) return;
+		var seen = new HashSet<string>(StringComparer.Ordinal);
+		for (int i = history.Count - 1; i >= 0 && panel.Chronicle.Count < 3; i--)
+		{
+			KingdomCivilWarHistoryEntry entry = history[i];
+			if (string.IsNullOrWhiteSpace(entry?.Text) || !seen.Add(entry.Week.ToString() + "\n" + entry.Text)) continue;
+			panel.Chronicle.Add(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ChronicleWeek", "Week {WEEK}  ·  {TEXT}",
+				("WEEK", entry.Week.ToString()), ("TEXT", CivilWarWorld.Limit(entry.Text, 46))));
+		}
 	}
 
 	private static CivilWarPanelCondition Condition(string name, string value, bool met) => new CivilWarPanelCondition { Name = name, Value = value, Met = met };

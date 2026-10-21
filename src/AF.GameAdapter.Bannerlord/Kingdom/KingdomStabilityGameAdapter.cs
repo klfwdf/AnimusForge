@@ -835,21 +835,7 @@ internal string BuildKingdomStabilityEncyclopediaText(Kingdom kingdom)
 
 		}
 
-		if (protectedByImmunity)
-
-		{
-
-			stringBuilder.AppendLine(DisplayText("AF_UI_KingdomStability_DetailImmuneChance", "This week's rebellion chance: 0% (player-kingdom stability rebellion immunity is enabled)"));
-
-		}
-
-		else
-
-		{
-
-			stringBuilder.AppendLine(DisplayText("AF_UI_KingdomStability_DetailChance", "This week's rebellion chance: {CHANCE}", ("CHANCE", FormatKingdomRebellionChance(rebellionChance))));
-
-		}
+        stringBuilder.AppendLine(DisplayText("AF_UI_KingdomStability_FactionRoute", "Uprisings are handled by civil-war factions through demands, responses and the shared war cap; stability does not trigger a separate random rebellion."));
 
 		List<string> effects = new List<string>();
 

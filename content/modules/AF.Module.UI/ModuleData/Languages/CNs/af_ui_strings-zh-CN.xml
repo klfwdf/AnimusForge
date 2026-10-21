@@ -684,7 +684,7 @@
     <string id="AF_UI_Terminal_Prefab_022" text="关闭" />
     <string id="AF_MCM_CivilWar_Group" text="内战派系" />
     <string id="AF_MCM_CivilWar_Enable" text="启用内战派系" />
-    <string id="AF_MCM_CivilWar_Enable_Hint" text="开启后，王国内部会因处决、封地落选、强推政策/战争/和约、领地遭劫等事件积累不满，形成反对派并向国王提出诉求；诉求被拒可能升级为内战（临时叛军王国 + 真实战争）。需要同时开启“启用王国稳定度与叛乱”。" />
+    <string id="AF_MCM_CivilWar_Enable_Hint" text="处决、分封、强推政策、战争、议和与劫掠会积累不满。反对派提出诉求，遭拒后才可能起兵，并受冷却和世界战争上限约束。这是 AF 王国起兵的唯一通路，稳定度不再独立随机触发叛乱。仍需开启“王国稳定度与叛乱”。" />
     <string id="AF_MCM_CivilWar_PlayerKingdom" text="玩家为国王时也形成派系" />
     <string id="AF_MCM_CivilWar_PlayerKingdom_Hint" text="开启后，玩家统治的王国同样会形成反对派并向玩家递交最后通牒。新通牒答复期限为4周。默认关闭。若“玩家为国王时免疫稳定度叛乱”开启，派系不会升级为内战。" />
     <string id="AF_MCM_CivilWar_Randomness" text="结果随机度" />
@@ -1537,7 +1537,7 @@
   <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Hint" text="1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位；默认 2。" />
   <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Group" text="周报／快报//周报" />
   <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Title" text="报刊弹窗正文字号" />
-  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Hint" text="仅影响最近王国周报的大弹窗正文，不影响别的界面。默认 18。" />
+  <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Hint" text="调整快报和周报弹窗的正文及其他消息字号。范围12—36，默认18。修改后重新打开报刊生效。" />
   <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Group" text="周报／快报" />
   <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Title" text="报刊每百字经验" />
   <string id="AF_TERMINAL_UI_WeeklyReportReadingXpPerHundredChars_Hint" text="周报阅读奖励的字数倍率。默认 20，表示每栏每 100 个有效字/词给 20 点对应技能经验。" />
@@ -1558,10 +1558,10 @@
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="按距离分配王庭送达时间，本值控制最远王庭的传递时长，也用于新事件一轮接力的传递节奏。不是每个国家都固定等待这么多天。默认7天；数值较低时回复更密集。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="17. AI外交（测试中）/3. 传播" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="建议篇幅上限" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅，非正文裁切线；完整条款优先。默认上限300字，可调1—1000，低于下限时按下限处理。此值也影响书记官生成容量；长稿截断时可提高本项及API最大输出量。不限制玩家手写编辑。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅。CN内容包按字符计（含标点），EN内容包按单词计；不是正文裁切线。默认上限300，可调1—1000，低于下限时按下限处理。生成容量随本项调整，并受API最大输出量限制；编辑器容量仍为6000字符。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="建议篇幅下限" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅，标点计入。简单回答可以更短，复杂条款可以更长，完整条件优先。默认下限100字，可调1—1000；不限制玩家手写编辑。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅。CN内容包按字符计（含标点），EN内容包按单词计；不随游戏界面语言改变。简单回答可更短，复杂条款可更长，完整条件优先。默认下限100，可调1—1000；不限制玩家手写编辑。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Title" text="外交档案压缩后目标（千估算Tokens）" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Hint" text="每批压缩后，长期快照和受保护事实的合计目标。默认48，即约48k Tokens，上限60k；宣言只取相关材料，不整份携带快照。实际摘要还受所选API最大输出Tokens限制。" />
@@ -1677,7 +1677,7 @@
   <string id="AF_UI_KingdomRebellion_DefaultName" text="{CLAN}同盟" />
   <string id="AF_UI_KingdomStability_NoKingdoms" text="当前没有可测试的王国。" />
   <string id="AF_UI_KingdomStability_Back" text="返回" />
-  <string id="AF_UI_KingdomStability_LabDescription" text="这里用于实验王国稳定度与带城反出逻辑。" />
+  <string id="AF_UI_KingdomStability_LabDescription" text="可在此查看、调整王国稳定度；王国起兵由内战派系处理。" />
   <string id="AF_UI_KingdomStability_DefaultDescription" text="默认所有王国稳定度都是 50（一般），不会自动叛乱。" />
   <string id="AF_UI_KingdomStability_WeeklyReportDescription" text="周报中的 STAB_* 评级标签也会改变王国稳定度；手动调整与周报评级都会影响后续周结算。" />
   <string id="AF_UI_KingdomStability_SelectKingdom" text="请选择一个王国进入详情。" />
@@ -1686,7 +1686,7 @@
   <string id="AF_UI_KingdomStability_KingdomNotFound" text="找不到对应的王国。" />
   <string id="AF_UI_KingdomStability_UnknownKingdom" text="未知王国" />
   <string id="AF_UI_KingdomStability_PlayerImmunitySuffix" text="（玩家王国稳定度叛乱免疫）" />
-  <string id="AF_UI_KingdomStability_Label" text="{KINGDOM} [{TIER}/{VALUE}] 叛乱周概率 {CHANCE}{IMMUNITY}" />
+  <string id="AF_UI_KingdomStability_Label" text="{KINGDOM} [{TIER}/{VALUE}]{IMMUNITY}" />
   <string id="AF_UI_KingdomStability_KingdomFallback" text="王国" />
   <string id="AF_UI_KingdomStability_DetailKingdom" text="王国：{KINGDOM}" />
   <string id="AF_UI_KingdomStability_DetailStability" text="当前稳定度：{VALUE}（{TIER}）" />
@@ -2808,9 +2808,9 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Diplomacy_RoundLength" text="单场外交目标时长" />
   <string id="AF_MCM_Diplomacy_RoundLength_Hint" text="决定新事件通常何时收尾：紧凑约15天、标准约21天、从容约28天。可因达成结果提前结束，也可短暂延长完成收尾。默认标准，只影响新事件。" />
   <string id="AF_MCM_Diplomacy_DeclarationMin" text="建议篇幅下限" />
-  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅，标点计入。简单回答可以更短，复杂条款可以更长，完整条件优先。默认下限100字，可调1—1000；不限制玩家手写编辑。" />
+  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅。CN内容包按字符计（含标点），EN内容包按单词计；不随游戏界面语言改变。简单回答可更短，复杂条款可更长，完整条件优先。默认下限100，可调1—1000；不限制玩家手写编辑。" />
   <string id="AF_MCM_Diplomacy_DeclarationMax" text="建议篇幅上限" />
-  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅，非正文裁切线；完整条款优先。默认上限300字，可调1—1000，低于下限时按下限处理。此值也影响书记官生成容量；长稿截断时可提高本项及API最大输出量。不限制玩家手写编辑。" />
+  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅。CN内容包按字符计（含标点），EN内容包按单词计；不是正文裁切线。默认上限300，可调1—1000，低于下限时按下限处理。生成容量随本项调整，并受API最大输出量限制；编辑器容量仍为6000字符。" />
   <string id="AF_MCM_Diplomacy_WarCooldown" text="再次主动开战间隔（天）" />
   <string id="AF_MCM_Diplomacy_WarCooldown_Hint" text="一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认42天；不限制其他外交宣言的发布频率。" />
   <string id="AF_MCM_Diplomacy_PeaceProtection" text="和平保护期（天）" />
@@ -2855,7 +2855,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_News_AutoWeekly" text="每周自动生成周报" />
   <string id="AF_MCM_News_AutoWeekly_Hint" text="开启后，系统会在每个新周开始时自动结算上一周，并生成世界周报与各王国周报。第0天会自动写入开局概要作为 week 0 事件。" />
   <string id="AF_MCM_News_PopupFont" text="报刊弹窗正文字号" />
-  <string id="AF_MCM_News_PopupFont_Hint" text="仅影响最近王国周报的大弹窗正文，不影响别的界面。默认 18。" />
+  <string id="AF_MCM_News_PopupFont_Hint" text="调整快报和周报弹窗的正文及其他消息字号。范围12—36，默认18。修改后重新打开报刊生效。" />
   <string id="AF_MCM_News_MapNotice" text="周报／快报消息提示" />
   <string id="AF_MCM_News_MapNotice_Hint" text="开启后，周报生成完成时会在大地图右下角显示可点击消息；关闭后不显示，且关闭期间新生成的周报不会排队提示。默认开启。" />
   <string id="AF_MCM_News_ReadingXp" text="启用报刊阅读经验奖励" />
@@ -2865,7 +2865,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_News_XpCap" text="报刊单技能经验上限" />
   <string id="AF_MCM_News_XpCap_Hint" text="单份周报每个技能最多获得多少经验。默认 100；设置为 0 表示不发放周报阅读经验。" />
   <string id="AF_MCM_News_StabilityRebellion" text="启用王国稳定度与叛乱" />
-  <string id="AF_MCM_News_StabilityRebellion_Hint" text="关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。" />
+  <string id="AF_MCM_News_StabilityRebellion_Hint" text="控制稳定度效果及内战派系系统。稳定度影响关系、王室领地忠诚度与派系决策，不再独立随机分裂王国。关闭内战派系可停止派系起兵。原版城镇叛乱仍按原版规则运行。" />
   <string id="AF_MCM_News_PlayerImmunity" text="玩家为国王时免疫稳定度叛乱" />
   <string id="AF_MCM_News_PlayerImmunity_Hint" text="开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。" />
   <string id="AF_MCM_Gccz_EnableLog" text="写入 GCCZ 日志" />
@@ -3451,5 +3451,8 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Weekly_OpeningKingdomTitle" text="{KINGDOM}第0天开局概要" />
   <string id="AF_UI_Weekly_MajorHeading" text="【大事件】" />
   <string id="AF_UI_Weekly_MinorHeading" text="【小消息】" />
+  <string id="AF_UI_KingdomRebellion_LegacyRetired" text="旧版独立稳定度叛乱已取消。王国起兵由内战派系统一处理。" />
+  <string id="AF_UI_KingdomStability_FactionRoute" text="王国起兵由内战派系通过诉求、回应与统一战争上限处理；稳定度不再单独随机触发叛乱。" />
+  <string id="AF_UI_KingdomStability_FactionImmunity" text="玩家王国叛乱免疫会阻止派系起兵。" />
 </strings>
 </base>
