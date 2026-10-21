@@ -1,8 +1,11 @@
-# AF-GPTSOVITS-U 源码分支 / Source publication (2026-10-21, ACTIVE)
+# AF-GPTSOVITS-U 源码与归档 / Verified source and archive (2026-10-21)
 
-- 本分支从公开 main `d2d05f0c` 开始，仅接入 U/V5 运行源码、必要 AF 识别/教程、测试和既有公开 V2Pro/L 参考源码；不导入私人融合 Git 历史。
-- This branch publishes source/documentation only; it does not contain portable runtimes, weights, recordings, logs or game-save data. No game deployment or change to remote main is authorized by this publication.
-- 详见[本次唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gptsovits-u-source-publication-20261021)。下方为公开基线历史，不构成本次部署指令。
+- 用户指定发布目标：`AF-GPTSOVITS-U`。新提交从公开 main `d2d05f0c` 派生；包含 U/V5 源码、必要 AF 识别/双语教程、测试和明确区分的 V2Pro/L 参考源码，不导入私人融合历史。
+- New commits add source/docs/tests only; no portable runtime, weights, recordings, private logs or saves. The inherited public AF baseline is not a newly uploaded binary distribution.
+- 最终本地包为 **U 0.1.1**：补齐非 16kHz 参考音频所需的 resampy，重打包不携带旧校验索引。完整归档、便携解压、48 项运行生命周期、6 组 handler、3 组打包回归、双 API/Bootstrap 及 CN/EN MCM/终端检查通过。
+- 本轮不写游戏、GCCZ、远端 main 或旧 L/U 目录；无新 GPU 或游戏实机验收。发布以实际 Git 远端核验为准，不把下方历史交接当成本轮部署授权。
+- [唯一台账与源码责任](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gptsovits-u-source-publication-20261021) · [模型家族区别、源代码与 ZIP 校验值](docs/tts/AF-GPTSOVITS-U-SOURCE.md)。
+
 # 当前交付：环境 AI 退役与 EN 部署（2026-10-20，离线通过 / EN 已部署 / 实机未验）
 
 - 产品 `5689b6937` 删除环境独立 API、自动闲聊与内置预设，预设和恢复副本已备份到仓库外并逐项核验；MCM/终端、两套资源与内容映射同步清理，旧环境配置不能重新启用。保留玩家主动喊话及动作反应。

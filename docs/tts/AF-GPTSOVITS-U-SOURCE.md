@@ -63,6 +63,16 @@ Primary-speaker filtering, peaceful-meeting/combat rules, encyclopedia voice ass
 - 旧 U ZIP 的完整性复核已通过，但它缺少上述依赖；使用新 `AF-GPTSOVITS-U_0.1.1-local-evaluation.zip`，不要继续分发旧 0.1.0。最终大小和 SHA 见下面的归档记录。 / The old archive passed integrity checks but lacked the dependency. Use the corrected 0.1.1 archive, not the old 0.1.0; its final receipt follows below.
 - 本次不运行 GPU 模型或游戏。此前 RTX 5070 Ti、无游戏并行的九例实测峰值为 2303.5 MiB 专用显存、5176.8 MiB 进程 RSS；不是本次新压测，不能作为 8GB 显卡游戏同开保证。 / Earlier nine-case measurements are retained evidence, not a new benchmark or 8GB gaming guarantee.
 
+## 最终归档记录 / Final local archive receipt
+
+- File: `AF-GPTSOVITS-U_0.1.1-local-evaluation.zip`
+- Bytes: **5,857,638,151** (about **5.46 GiB**)
+- SHA-256: `fcaa9212284757085f15df3d9ba0a47c83f6046f53851547b468cfb3b966e25b`
+- ZIP entries: **25,367**; protected runtime files: **30**; reference WAVs: **55**.
+- Voices: **5 Male + 5 Female + 1 Custom (Sparkle)**; neutral/happy/angry/sad references verified.
+- 每个条目的 CRC/大小/SHA-256、唯一安全路径、运行清单及参考文本/语言/录音引用通过；解压后的便携 Python 和六种采样率检查通过。服务源码与 Git 文本仅存在 CRLF/LF 差异，正文逐字一致；归档本身按原始字节严格校验。 / Every entry and reference is verified; relocated Python/resampling passes. Git/runtime source differs only in line endings, while archive hashes always validate raw bytes.
+- 不含 AF 主 DLL、游戏配置、存档或聊天记录。此校验不证明任何网盘副本已上传或相同，不是新的 GPU/游戏实机验收。 / No AF host DLL, game settings, saves or chats. This receipt certifies neither a cloud upload nor new GPU/native-game acceptance.
+
 **目前没有在此分支提供 U 网盘链接。** 权重与角色录音再分发许可仍未核实；源码发布不会赋予这些资源的分发权。本地 ZIP 保持评估版标识，不应伪装成已经许可的公开音色发行包。
 
 **No U cloud-download link is provided here.** Weight/recording redistribution clearance is still unverified. Publishing adaptation source grants no rights to redistribute those assets; the local ZIP remains an evaluation candidate.
