@@ -1,3 +1,14 @@
+<a id="marriage-audience-delivery-20261022"></a>
+## 婚配消歧、全家族联姻与场景听众默认值（2026-10-22）
+
+- 用户授权安全合并推送。本交付以远端 `b4e5331d0` 为基线，仅选择产品/测试 `f8d80afeb`、测试传输修正 `9f1fa70c9` 和默认值 `522429e74`；保留最近上游对话历史/缓存修复，不发布本地累计历史或测试现场。不部署、不打包、不修改玩家现有 MCM 文件。
+- 婚配区分提议者、双方和批准者；新增 `MARRIAGE_CLAN` 给其他玩家家族成员安排婚事，合并实际归属的族长/Heroes/Companions 名单及已知亲属事实。保留双 ID FORMAL，停止旧单 ID 实时执行；私奔只能当前说话者。身份/存活/成年/归属/批准者轻校验失败不换人执行，不加统一确认 UI、额外业务模型调用或自然语言硬判婚。CN/EN、共享后处理、标签清理、记忆显示和周报同步。
+- 既有 `AutoExcludeUnframedShoutParticipants` 默认值及无可用 MCM 回退改为 true；明确保存的 false 保持。终端和 MCM 复用原 owner；只允许框选/手动邀请人物，非全场静音。无新 Tick 扫描、缓存或 IO；婚配名单仅婚姻上下文捕获时读取两家族。
+- 本交付源码验证：生产婚配方法 47 项、实际 1.4 DLL 合成 Hero/Clan/归一化/显示 92 项、原后处理 20 项及 Native 历史回放、原设置编译回放 10 项通过。原统一构建函数 Release 双 API 和 Bootstrap 通过；复制自身 DLL/PDB/marker 到全新无依赖候选目录后，两 API Coup 注册/记忆准入门禁通过。初次直接使用完整构建输出被门禁拒绝跨版本依赖回退，未放宽门禁或删除依赖；失败输出保留。
+- 既有婚配候选的真实模型合成 CN/EN 各 14 项共 28/28；获准独立 1.4 自由对话实机验证玩家娶族长女儿、同伴娶其女儿、另一同伴娶族长本人，实际双方互为配偶且玩家未被代换。该实机证据早于本交付重新合并及默认值调整，并非最终候选完整实机复验；进程退出 -1/ERC1965 尚未修复，历史观察器未确认完整提交、精确 AFEF 文本未验。信使/喊话实机、1.3 实机和旧档不在通过范围。
+- 验证边界：完整场景生命周期 runner 因既有夹具缺少 TtsSpeechSegment/LocalTtsSpeech 编译失败；CourierPostprocessOwnerRegressionTests 被既有 J17 PolicySystem owner 哈希门禁阻止，未改无关源码/测试门禁。设置专项和 PostprocessTagRepairReplay 通过不代替这些全量入口。旧 Social P006/P020 基线失败仍保留，不声称全仓全绿。
+- 代码范围（以上产品修订）：`src/modules/AF.Module.Social/Host/RomanceSystemBehavior.cs` 的 `GetMarriageClanMembers` 2104 起、`CanExecuteFormalMarriageTagPair` 2560 起、`CaptureMarriagePostprocessContextForExternal` 3443 起及 `ApplyMarriageTags` 3558–3686；`src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs` 614–620、818–824、915–921 接通脱离对象快照；`src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.SceneAudience.cs` 12–24 控制默认和回退，`UI/Terminal/TerminalSettingsCoverage.cs` 66 为既有同源终端路由，`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePlayerExecution.cs` 129 为实际听众消费者。Prompt/UI/事实资源及新增 MarriageTagTests 随相同提交，完整差异可按修订审查。回滚用上述提交的 focused inverse，不 reset/force-push，不覆盖其他作者改动。
+
 <a id="diplomacy-chain-localization-20261020"></a>
 ## 外交链路、王国解析及双语边界（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
