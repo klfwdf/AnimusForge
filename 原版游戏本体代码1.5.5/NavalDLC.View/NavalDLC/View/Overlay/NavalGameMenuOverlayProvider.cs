@@ -1,0 +1,25 @@
+using NavalDLC.ViewModelCollection.Map;
+using TaleWorlds.CampaignSystem.GameMenus;
+using TaleWorlds.CampaignSystem.ViewModelCollection.GameMenu.Overlay;
+using TaleWorlds.Library;
+
+namespace NavalDLC.View.Overlay;
+
+public class NavalGameMenuOverlayProvider : IGameMenuOverlayProvider
+{
+	public GameMenuOverlay GetOverlay(GameMenu.MenuOverlayType menuOverlayType)
+	{
+		switch (menuOverlayType)
+		{
+		case GameMenu.MenuOverlayType.Encounter:
+			return new EncounterMenuOverlayVM();
+		case GameMenu.MenuOverlayType.SettlementWithParties:
+		case GameMenu.MenuOverlayType.SettlementWithCharacters:
+		case GameMenu.MenuOverlayType.SettlementWithBoth:
+			return new NavalSettlementMenuOverlayVM(menuOverlayType);
+		default:
+			Debug.FailedAssert("Game menu overlay: " + menuOverlayType.ToString() + " could not be found", "C:\\BuildAgent\\work\\mb3\\Source\\Bannerlord\\NavalDLC.View\\Overlay\\NavalGameMenuOverlayProvider.cs", "GetOverlay", 23);
+			return null;
+		}
+	}
+}

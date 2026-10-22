@@ -1,0 +1,1464 @@
+{
+  "GameVersion": "v1.5.5.124170",
+  "Api": "1.5",
+  "SourceRoot": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord",
+  "Destination": "F:\\AnimusForge-main\\原版游戏本体代码1.5.5",
+  "Decompiler": "ilspycmd: 11.0.0.9375\r\nICSharpCode.Decompiler: 11.0.0.9375",
+  "DecompilerExeSHA256": "C8AD8B34238A7EB5B4CF95ED7E2E433C2D52AED0F99DC64DFC99A0456D471312",
+  "AssemblyCount": 81,
+  "CSharpFileCount": 8115,
+  "Status": "DECOMPILED_WITH_KNOWN_PLATFORM_DIAGNOSTICS",
+  "Assemblies": [
+    {
+      "Assembly": "TaleWorlds.AchievementSystem",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.AchievementSystem.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.AchievementSystem.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.4132863Z",
+      "Length": 19808,
+      "SHA256": "CFAE872BAF03235CEA257289ED000DDE668D46DE1A3E4084BD4A150F0E034847"
+    },
+    {
+      "Assembly": "TaleWorlds.ActivitySystem",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.ActivitySystem.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.ActivitySystem.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:54.9327931Z",
+      "Length": 17760,
+      "SHA256": "2450F6B50F673DC94C6970A2CAA23A0ACEC6BC67106D7E5E048B124306747405"
+    },
+    {
+      "Assembly": "TaleWorlds.CampaignSystem",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.CampaignSystem.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.CampaignSystem.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3468671Z",
+      "Length": 5663584,
+      "SHA256": "94B8C191356AA4C789B8513910B73893EEA5946F6519C6A8F7D9A8F3D5233E67"
+    },
+    {
+      "Assembly": "TaleWorlds.CampaignSystem.ViewModelCollection",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.CampaignSystem.ViewModelCollection.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.CampaignSystem.ViewModelCollection.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3478920Z",
+      "Length": 1565024,
+      "SHA256": "5989C53C492AADF1E278B2B71AA09355C2E0501F39C0BC1D3CCF52D5DB50F8B5"
+    },
+    {
+      "Assembly": "TaleWorlds.Core",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Core.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Core.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3488911Z",
+      "Length": 501600,
+      "SHA256": "6F853CF457B19B9540B8F8A073C6F8FFC08B32F27D5A4DC89D8892015726F83D"
+    },
+    {
+      "Assembly": "TaleWorlds.Core.ViewModelCollection",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Core.ViewModelCollection.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Core.ViewModelCollection.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:54.9839310Z",
+      "Length": 75616,
+      "SHA256": "F1DD6DC9D29A2ED3746B1B4899CEBD2878E5B0DB4206BA9AF242EB62B4F6C241"
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond.AccessProvider.GDK",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.AccessProvider.GDK.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.AccessProvider.GDK.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3904131Z",
+      "Length": 17248,
+      "SHA256": "2E7C50CF7200C14B698409AF525420B1B0EBF1B57AE7C70354C3133A4382D66B"
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond.AccessProvider.GOG",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.AccessProvider.GOG.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.AccessProvider.GOG.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3711361Z",
+      "Length": 18272,
+      "SHA256": "9063399E3B4A3C060F5A528644D157965AAFA304225405F3B4C3D7978A91BEA4"
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond.AccessProvider.Steam",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.AccessProvider.Steam.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.AccessProvider.Steam.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3195992Z",
+      "Length": 17760,
+      "SHA256": "85777CF7B723DCDDF0E11FA451CCB7F09F2CF1912385FD1C287724F579E2ABE8"
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond.AccessProvider.Test",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.AccessProvider.Test.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.AccessProvider.Test.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.2072186Z",
+      "Length": 17248,
+      "SHA256": "53CC965D9DBED16384388E848805DD13A74696DD8E2FF65FB502A4982E78B48E"
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Diamond.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3396229Z",
+      "Length": 78688,
+      "SHA256": "620D6AA42E5806F343D8B4B167DBDACFFA2C8E2F5D65BACCA6CAA6F33FDD9970"
+    },
+    {
+      "Assembly": "TaleWorlds.DotNet.AutoGenerated",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.DotNet.AutoGenerated.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.DotNet.AutoGenerated.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:54.9189704Z",
+      "Length": 46944,
+      "SHA256": "26396C3BE518E1845198E7EE38A4348796A65993188E6C2CE1084DA6CFDA6BD9"
+    },
+    {
+      "Assembly": "TaleWorlds.DotNet",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.DotNet.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.DotNet.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.2387310Z",
+      "Length": 74592,
+      "SHA256": "7142207B10364A3857C1E6FBC561B84C37BB5D32A77EA6F565421592BC121D81"
+    },
+    {
+      "Assembly": "TaleWorlds.Engine.AutoGenerated",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Engine.AutoGenerated.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Engine.AutoGenerated.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3498909Z",
+      "Length": 751968,
+      "SHA256": "93CBF77F00EF70C836E4CEF6753499CA8DC80EA95C7564B019818DAAC0E602FC"
+    },
+    {
+      "Assembly": "TaleWorlds.Engine",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Engine.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Engine.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3498909Z",
+      "Length": 489312,
+      "SHA256": "AD58B042D5D1CD11EBD0A14AA3F61D45D8142D585A1087E120FB1B99266457A5"
+    },
+    {
+      "Assembly": "TaleWorlds.Engine.GauntletUI",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Engine.GauntletUI.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Engine.GauntletUI.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.0275024Z",
+      "Length": 40288,
+      "SHA256": "45F0C0275FAD1C0C648664A8349DFA1438FF89ED71F1642E9C22645E50538C40"
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI.CodeGenerator",
+      "AssemblyVersion": "0.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.CodeGenerator.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.CodeGenerator.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3406291Z",
+      "Length": 82784,
+      "SHA256": "27C99B1BEBC71D353E8F4D0A25B6C0449519EE30078A66CC6F30B445C79DF3A4"
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI.Data",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.Data.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.Data.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3550625Z",
+      "Length": 44384,
+      "SHA256": "3CB7A6A8FC2CF7380EC989E85C472CF7DF4AD99BC8A82CB5CF6D30A81C4ECE40"
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3510718Z",
+      "Length": 333152,
+      "SHA256": "4E2B8C224B200822B463A028F0AD196C368D7E8BADDEDDE4733BD76A721EAF21"
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI.ExtraWidgets",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.ExtraWidgets.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.ExtraWidgets.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3732741Z",
+      "Length": 74080,
+      "SHA256": "8C408FC8A51E48955FF7BFBB3C4FE1D89541DABA9ED46EC5471C0A68B32BF7D4"
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI.PrefabSystem",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.PrefabSystem.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.PrefabSystem.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:54.9340326Z",
+      "Length": 60256,
+      "SHA256": "D45F8F3EE28C2C1865C581A2487849F1D2831596C5392A3998F17347B2567F31"
+    },
+    {
+      "Assembly": "TaleWorlds.InputSystem",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.InputSystem.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.InputSystem.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:54.9189704Z",
+      "Length": 64352,
+      "SHA256": "1B1BD27C58A2EFAEFF6C0EDC1A9023B2141CA01B78AAC67D2D1855F6BC5B7802"
+    },
+    {
+      "Assembly": "TaleWorlds.Library",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Library.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Library.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3510718Z",
+      "Length": 274784,
+      "SHA256": "D4883934C5175F83EE4EE49092B81875B9FAB8B79BB1C245929214F934D8635A"
+    },
+    {
+      "Assembly": "TaleWorlds.LinQuick",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.LinQuick.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.LinQuick.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:54.9850643Z",
+      "Length": 37216,
+      "SHA256": "4EFA07B7C0ED604C0485E95C24790D0A8185139B56DDFD625485EE11007D38F1"
+    },
+    {
+      "Assembly": "TaleWorlds.Localization",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Localization.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Localization.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.1318484Z",
+      "Length": 210272,
+      "SHA256": "CC642B42FDEE62DE6946656E24D71E9DC75CC839B8F555B81CEB3ECD9BE5E45C"
+    },
+    {
+      "Assembly": "TaleWorlds.ModuleManager",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.ModuleManager.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.ModuleManager.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3721513Z",
+      "Length": 40800,
+      "SHA256": "D09BCFA95702E5A8A7ADF079F669F5A407ACEC1C46F55B7D02B4B3D3ABAAA36D"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.AutoGenerated",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.AutoGenerated.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.AutoGenerated.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3531735Z",
+      "Length": 386400,
+      "SHA256": "053DECF1EA07C95918B797BBA1423681FBF6CE2CB0573802D133939E6DC85F3B"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Diamond",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Diamond.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Diamond.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3531735Z",
+      "Length": 379744,
+      "SHA256": "1FDA7F382E6FB33D2E44DA05AE528BBF6071298DC7CF463C232C6B4309BBC6E9"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3541769Z",
+      "Length": 2644832,
+      "SHA256": "1B86B8C4C1275322C063825D31709C5D4459AC7C778E4E762E8572FC3C8B4E44"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.GauntletUI.Widgets",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3551440Z",
+      "Length": 687456,
+      "SHA256": "7B434984BA8DDE7BD2BBF03352CDD102497781F910FC574D4AE6EC15DFC71511"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Helpers",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Helpers.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Helpers.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.4111370Z",
+      "Length": 18272,
+      "SHA256": "30685D2CFAA08B91922CD2E046A72C80778B70D49096EEA53CFD5F508960EC72"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Launcher.Library",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Launcher.Library.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Launcher.Library.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:54.9498521Z",
+      "Length": 89952,
+      "SHA256": "89007C26191241B342EB88539B409EB6A15AEB5B0C896C138B9B45FFFB8730D1"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Launcher.Steam",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Launcher.Steam.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Launcher.Steam.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.1218986Z",
+      "Length": 17760,
+      "SHA256": "5AC2E1E30F038414549283F0AA236F42AD9D1C50CE5B3E4BD6B319318C728EA5"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.Test",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.Test.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.Test.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.2694226Z",
+      "Length": 16224,
+      "SHA256": "A5C6A9885320D2C0BE69697BE4221B6C573280D35DFEF509C15B87E3DC269569"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.ViewModelCollection",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.ViewModelCollection.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.ViewModelCollection.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3562170Z",
+      "Length": 499040,
+      "SHA256": "E3569693304A31851877082F6581A509D4EFC3B5DA36DA2919423108827F472A"
+    },
+    {
+      "Assembly": "TaleWorlds.NavigationSystem",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.NavigationSystem.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.NavigationSystem.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.2094023Z",
+      "Length": 15200,
+      "SHA256": "9FC4B3C9A1661BF2AD2105B2258A685C64130D62DF018C507D4634BA5463C5F5"
+    },
+    {
+      "Assembly": "TaleWorlds.Network",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Network.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Network.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.0423165Z",
+      "Length": 66400,
+      "SHA256": "78E7A63C5C744DCDEE0D1BB70C191F4B9C9F48CCC21495CD59131554BDAC528E"
+    },
+    {
+      "Assembly": "TaleWorlds.ObjectSystem",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.ObjectSystem.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.ObjectSystem.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.2660017Z",
+      "Length": 61792,
+      "SHA256": "E249D236C22EAF8BFE7D343C0FB92EBB4258D7520B36528E850E1AC9E27C2693"
+    },
+    {
+      "Assembly": "TaleWorlds.PlatformService",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.PlatformService.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.PlatformService.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:54.9498521Z",
+      "Length": 39776,
+      "SHA256": "71BAE6FD4F98497A725F7433E9A29625B9AC9357269D105A6C25EC868791900E"
+    },
+    {
+      "Assembly": "TaleWorlds.PlatformService.Epic",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.PlatformService.Epic.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.PlatformService.Epic.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.1913203Z",
+      "Length": 46432,
+      "SHA256": "CCA9E4563F997151C553B847872C5EA7D53DB8A8BAF0C5F09793540F7C89631C"
+    },
+    {
+      "Assembly": "TaleWorlds.PlatformService.GOG",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.PlatformService.GOG.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.PlatformService.GOG.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.2831907Z",
+      "Length": 45408,
+      "SHA256": "CB132ECA3333E94897295DBDD211F1A54EE9CEE8813062EDFAA1DA793B6AC13D"
+    },
+    {
+      "Assembly": "TaleWorlds.PlatformService.Steam",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.PlatformService.Steam.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.PlatformService.Steam.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.0285791Z",
+      "Length": 41312,
+      "SHA256": "29859F6AABD693F34380961053B91130DC2828357E07F62E3EC9A75DBF92A374"
+    },
+    {
+      "Assembly": "TaleWorlds.PlayerServices",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.PlayerServices.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.PlayerServices.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.0993129Z",
+      "Length": 37216,
+      "SHA256": "E28C59CF90E178CA2BA2F5D759F1B7697FC536AA5043EFF38F8C4622664B7233"
+    },
+    {
+      "Assembly": "TaleWorlds.PSAI",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.PSAI.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.PSAI.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3019400Z",
+      "Length": 98656,
+      "SHA256": "D46A1B4FB051BF50BE3443C8D42E62038382142323488842975E1D453F2EF93E"
+    },
+    {
+      "Assembly": "TaleWorlds.SaveSystem",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.SaveSystem.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.SaveSystem.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:01:03.1587048Z",
+      "Length": 177504,
+      "SHA256": "FDCDABEE467B28A5202D009FA91A389F020FD32AB1066E18A360CE799E3D5F0E"
+    },
+    {
+      "Assembly": "TaleWorlds.ScreenSystem",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.ScreenSystem.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.ScreenSystem.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.1668801Z",
+      "Length": 46944,
+      "SHA256": "0EFDF009FB4D1E0F91305F6EDDD990EE0DBE09B73DC2A03682E0F94EC7BECA99"
+    },
+    {
+      "Assembly": "TaleWorlds.ServiceDiscovery.Client",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.ServiceDiscovery.Client.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.ServiceDiscovery.Client.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.4282926Z",
+      "Length": 25952,
+      "SHA256": "749510A9EE1DDEF3C8C5E52D3F7386FAE610763D9F9CB4646B9AD95EBB26C904"
+    },
+    {
+      "Assembly": "TaleWorlds.Starter.Library",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Starter.Library.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.Starter.Library.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.0110021Z",
+      "Length": 18784,
+      "SHA256": "B613A9255A049C840B3EBBB2057A74C615790A661E904730689C762765558F64"
+    },
+    {
+      "Assembly": "TaleWorlds.TwoDimension",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.TwoDimension.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.TwoDimension.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.3173038Z",
+      "Length": 102752,
+      "SHA256": "F141910FA0D962BD7F2A847036AC1DA588DB23A873260F453283BE56E70C971E"
+    },
+    {
+      "Assembly": "TaleWorlds.TwoDimension.Standalone",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.TwoDimension.Standalone.dll",
+      "RelativeSourcePath": "bin\\Win64_Shipping_Client\\TaleWorlds.TwoDimension.Standalone.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.1668801Z",
+      "Length": 93024,
+      "SHA256": "D397036F600D2B9CC9BBD956C9F2BFAEF81AD93D16AF43DB7E656973E9DD57D7"
+    },
+    {
+      "Assembly": "TaleWorlds.CampaignSystem.ViewModelCollection.BirthAndDeath",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\BirthAndDeath\\bin\\Win64_Shipping_Client\\TaleWorlds.CampaignSystem.ViewModelCollection.BirthAndDeath.dll",
+      "RelativeSourcePath": "Modules\\BirthAndDeath\\bin\\Win64_Shipping_Client\\TaleWorlds.CampaignSystem.ViewModelCollection.BirthAndDeath.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.7373789Z",
+      "Length": 19808,
+      "SHA256": "DEDE7169B15A6870DDC88EF458CF909BBCE4A9669951579F005CD2A8AD498004"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.CustomBattle",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\CustomBattle\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.CustomBattle.dll",
+      "RelativeSourcePath": "Modules\\CustomBattle\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.CustomBattle.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.7394680Z",
+      "Length": 139616,
+      "SHA256": "2D5E274FD3612BDDCA278823C04C78FDBA733CADCF63BE4F60C0C18198584393"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\CustomBattle\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.dll",
+      "RelativeSourcePath": "Modules\\CustomBattle\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:40:03.2331588Z",
+      "Length": 251232,
+      "SHA256": "01B3C97419537A6E35346C52320AD1FBCFC1C2A8209B3F5045535DA271278CC9"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.DedicatedCustomServer.ClientHelper",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.DedicatedCustomServer.ClientHelper.dll",
+      "RelativeSourcePath": "Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.DedicatedCustomServer.ClientHelper.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.7028444Z",
+      "Length": 54112,
+      "SHA256": "5C76BA9A66717E222CEE79E674D59D4D2AB566B6DA19DE9D8D7103E738DC7DFA"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.GauntletUI.AutoGenerated",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.GauntletUI.AutoGenerated.dll",
+      "RelativeSourcePath": "Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.GauntletUI.AutoGenerated.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3630621Z",
+      "Length": 1629024,
+      "SHA256": "CD9290882FCAB8440E766F985AFF0FEB8C0E7BF01A55A9AA98E4AAB36A1F49AC"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.GauntletUI",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.GauntletUI.dll",
+      "RelativeSourcePath": "Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.GauntletUI.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.7585802Z",
+      "Length": 103776,
+      "SHA256": "6E7CB51C036416A18372AB8ACC94250CDA03285D9C38311DBDFD469314B83D0E"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.View",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.View.dll",
+      "RelativeSourcePath": "Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.View.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:39:55.7597223Z",
+      "Length": 32096,
+      "SHA256": "492F7730F0B07E3C3FFA37D69F87D98AA6604115F5B4110886F3E865CDE27D1F"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.ViewModelCollection",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.ViewModelCollection.dll",
+      "RelativeSourcePath": "Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.ViewModelCollection.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.3641165Z",
+      "Length": 747872,
+      "SHA256": "7C5DF85D9B77E710B88519F4427F81790611FEF69DA2CE6E767B7F9A7D6BF762"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.GauntletUI.AutoGenerated.0",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.AutoGenerated.0.dll",
+      "RelativeSourcePath": "Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.AutoGenerated.0.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.4038892Z",
+      "Length": 817504,
+      "SHA256": "33455C48B6454E3A3CA18D18BFEF8E37BF921994FD3B45CD2722A859446C2B33"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.GauntletUI.AutoGenerated.1",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.AutoGenerated.1.dll",
+      "RelativeSourcePath": "Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.AutoGenerated.1.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.4049247Z",
+      "Length": 1382240,
+      "SHA256": "8F912A4D620D3FD48C359142FB0EBE3CA1D2837F8C16DE9788B1652C7BD09305"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.GauntletUI",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.dll",
+      "RelativeSourcePath": "Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:03:24.5893643Z",
+      "Length": 213344,
+      "SHA256": "C14BE87A6E4351F2074D32B190D75E714D863A0A753771603E4D46FC2D744018"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Platform.PC",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Platform.PC.dll",
+      "RelativeSourcePath": "Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Platform.PC.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:50:15.6663485Z",
+      "Length": 16224,
+      "SHA256": "A83A6C6EC7EC8EE6430DEC698A363A09E68F0360F792B3E2EFD6CE72D533CFB9"
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.View",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.View.dll",
+      "RelativeSourcePath": "Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.View.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:01.4059421Z",
+      "Length": 409440,
+      "SHA256": "5FEE125B906CACDB6FCA5CE228338ABDDC185A1D4D787AD42050BF8E105FB3BA"
+    },
+    {
+      "Assembly": "NavalDLC.CustomBattle",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.CustomBattle.dll",
+      "RelativeSourcePath": "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.CustomBattle.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:13:21.6214948Z",
+      "Length": 133984,
+      "SHA256": "1AF75CAC96D384D202905FBA0D9BB1C1D727C508D697FB463C513466AAC4057F"
+    },
+    {
+      "Assembly": "NavalDLC",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.dll",
+      "RelativeSourcePath": "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:03.1069910Z",
+      "Length": 2081120,
+      "SHA256": "7B75FB960384F9179019B7BFFFE47482CEC158886DE3A54159947EDEC59EA176"
+    },
+    {
+      "Assembly": "NavalDLC.GauntletUI.AutoGenerated",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.GauntletUI.AutoGenerated.dll",
+      "RelativeSourcePath": "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.GauntletUI.AutoGenerated.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:03.1080659Z",
+      "Length": 791904,
+      "SHA256": "F76FDFAA63F3AA3224AA5DA035C917E648C98084C09C8113319DBCD5562F7C46"
+    },
+    {
+      "Assembly": "NavalDLC.GauntletUI",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.GauntletUI.dll",
+      "RelativeSourcePath": "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.GauntletUI.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:13:21.6854513Z",
+      "Length": 114016,
+      "SHA256": "129AA8282B848F4ADCBE7A30705C67941425A16137D95F4A09121CCC2AB0F9F9"
+    },
+    {
+      "Assembly": "NavalDLC.GauntletUI.Widgets",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.GauntletUI.Widgets.dll",
+      "RelativeSourcePath": "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.GauntletUI.Widgets.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:13:21.4802221Z",
+      "Length": 34656,
+      "SHA256": "EC57D95715F26487C1B83F93CCC9741F55885BC194C954A316D7CEF75615314B"
+    },
+    {
+      "Assembly": "NavalDLC.View",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.View.dll",
+      "RelativeSourcePath": "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.View.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:13:21.6214948Z",
+      "Length": 159072,
+      "SHA256": "75F94D9F79CD7548F4DA60036A3AC5852354FE87E35C8270E8CBA6E16AA1FC3B"
+    },
+    {
+      "Assembly": "NavalDLC.ViewModelCollection",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.ViewModelCollection.dll",
+      "RelativeSourcePath": "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.ViewModelCollection.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:13:21.5825406Z",
+      "Length": 236896,
+      "SHA256": "079136AF015CFBA32FDD724CAA1DD9FDCF4E09CC08F475B834131EBE62811B79"
+    },
+    {
+      "Assembly": "SandBox",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.dll",
+      "RelativeSourcePath": "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:02.8291538Z",
+      "Length": 1345376,
+      "SHA256": "632F567901CA28D0A4DB464534728E3068D8A2BDF2FE5B6EA3F14B151AAB07BC"
+    },
+    {
+      "Assembly": "SandBox.GauntletUI.AutoGenerated.0",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.GauntletUI.AutoGenerated.0.dll",
+      "RelativeSourcePath": "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.GauntletUI.AutoGenerated.0.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:02.8291538Z",
+      "Length": 6628192,
+      "SHA256": "3823F92A2ED7D62599CFB81D3F36868B53090D972211ADE711CFAE2D5444C4F6"
+    },
+    {
+      "Assembly": "SandBox.GauntletUI.AutoGenerated.1",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.GauntletUI.AutoGenerated.1.dll",
+      "RelativeSourcePath": "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.GauntletUI.AutoGenerated.1.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:02.8306470Z",
+      "Length": 2587488,
+      "SHA256": "CB2B1BEB37ED07D071D17D6307450595E05484D45E381C0C2A9B4C8BD2DC4E09"
+    },
+    {
+      "Assembly": "SandBox.GauntletUI",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.GauntletUI.dll",
+      "RelativeSourcePath": "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.GauntletUI.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:05:08.8669539Z",
+      "Length": 253280,
+      "SHA256": "FF4946B5D3D9DBCCEAE56E885B930C48234111AA8C97380758A1FA51C43726AA"
+    },
+    {
+      "Assembly": "SandBox.View",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.View.dll",
+      "RelativeSourcePath": "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.View.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:02.8306470Z",
+      "Length": 436576,
+      "SHA256": "0FFBE4DA0E308AA8688CC7937F7A617002B9356AD30C5215044C99C8923DF295"
+    },
+    {
+      "Assembly": "SandBox.ViewModelCollection",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.ViewModelCollection.dll",
+      "RelativeSourcePath": "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.ViewModelCollection.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:02.8318689Z",
+      "Length": 299360,
+      "SHA256": "EFC60E941AAB113B95D8FA39E75694749752ABD7F6507EF41431DC4AD340EBAB"
+    },
+    {
+      "Assembly": "StoryMode",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.dll",
+      "RelativeSourcePath": "Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.dll",
+      "LastWriteTimeUtc": "2026-10-21T12:38:03.0622234Z",
+      "Length": 536416,
+      "SHA256": "7F1E4E58C19DFB97B0CE3B8F40B869E97998513E22D5B3B7DFEFBA0DD2CCEAD9"
+    },
+    {
+      "Assembly": "StoryMode.GauntletUI.AutoGenerated",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.GauntletUI.AutoGenerated.dll",
+      "RelativeSourcePath": "Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.GauntletUI.AutoGenerated.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:07:29.1210450Z",
+      "Length": 66912,
+      "SHA256": "87E6CBFB20557D21E0A014C0B97C8542DF1C2B029429B89F437CB4CA6EF5CCF0"
+    },
+    {
+      "Assembly": "StoryMode.GauntletUI",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.GauntletUI.dll",
+      "RelativeSourcePath": "Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.GauntletUI.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:07:30.4326529Z",
+      "Length": 58720,
+      "SHA256": "92F5F57DD79F354B7FAE2744E7CB34CF10CBCD36CB4A3FDCBB571F369AB8A767"
+    },
+    {
+      "Assembly": "StoryMode.View",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.View.dll",
+      "RelativeSourcePath": "Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.View.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:07:32.7043434Z",
+      "Length": 27488,
+      "SHA256": "4D8F486ECE28422431A0DD276631A10FA73FD112FF56DA13068423AB5205D497"
+    },
+    {
+      "Assembly": "StoryMode.ViewModelCollection",
+      "AssemblyVersion": "1.0.0.0",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.ViewModelCollection.dll",
+      "RelativeSourcePath": "Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.ViewModelCollection.dll",
+      "LastWriteTimeUtc": "2026-10-21T13:07:33.1754416Z",
+      "Length": 25952,
+      "SHA256": "B047FEE9C41E7ACD7E83138D0106FB5A79342A08574E5A64A48276E58D73B0C0"
+    }
+  ],
+  "Exports": [
+    {
+      "Assembly": "NavalDLC",
+      "ExitCode": 0,
+      "CSharpFiles": 384,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "NavalDLC.CustomBattle",
+      "ExitCode": 0,
+      "CSharpFiles": 39,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "NavalDLC.GauntletUI",
+      "ExitCode": 0,
+      "CSharpFiles": 35,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "NavalDLC.GauntletUI.AutoGenerated",
+      "ExitCode": 0,
+      "CSharpFiles": 39,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "NavalDLC.GauntletUI.Widgets",
+      "ExitCode": 0,
+      "CSharpFiles": 13,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "NavalDLC.View",
+      "ExitCode": 0,
+      "CSharpFiles": 62,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "NavalDLC.ViewModelCollection",
+      "ExitCode": 0,
+      "CSharpFiles": 61,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "SandBox",
+      "ExitCode": 0,
+      "CSharpFiles": 279,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "SandBox.GauntletUI",
+      "ExitCode": 0,
+      "CSharpFiles": 78,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "SandBox.GauntletUI.AutoGenerated.0",
+      "ExitCode": 0,
+      "CSharpFiles": 389,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "SandBox.GauntletUI.AutoGenerated.1",
+      "ExitCode": 0,
+      "CSharpFiles": 234,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "SandBox.View",
+      "ExitCode": 0,
+      "CSharpFiles": 126,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "SandBox.ViewModelCollection",
+      "ExitCode": 0,
+      "CSharpFiles": 99,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "StoryMode",
+      "ExitCode": 0,
+      "CSharpFiles": 87,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "StoryMode.GauntletUI",
+      "ExitCode": 0,
+      "CSharpFiles": 77,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "StoryMode.GauntletUI.AutoGenerated",
+      "ExitCode": 0,
+      "CSharpFiles": 7,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "StoryMode.View",
+      "ExitCode": 0,
+      "CSharpFiles": 8,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "StoryMode.ViewModelCollection",
+      "ExitCode": 0,
+      "CSharpFiles": 5,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.AchievementSystem",
+      "ExitCode": 0,
+      "CSharpFiles": 5,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.ActivitySystem",
+      "ExitCode": 0,
+      "CSharpFiles": 7,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.CampaignSystem",
+      "ExitCode": 0,
+      "CSharpFiles": 1246,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.CampaignSystem.ViewModelCollection",
+      "ExitCode": 0,
+      "CSharpFiles": 356,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.CampaignSystem.ViewModelCollection.BirthAndDeath",
+      "ExitCode": 0,
+      "CSharpFiles": 3,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Core",
+      "ExitCode": 0,
+      "CSharpFiles": 232,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Core.ViewModelCollection",
+      "ExitCode": 0,
+      "CSharpFiles": 47,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond",
+      "ExitCode": 0,
+      "CSharpFiles": 70,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond.AccessProvider.GDK",
+      "ExitCode": 0,
+      "CSharpFiles": 2,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond.AccessProvider.GOG",
+      "ExitCode": 0,
+      "CSharpFiles": 3,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond.AccessProvider.Steam",
+      "ExitCode": 0,
+      "CSharpFiles": 2,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Diamond.AccessProvider.Test",
+      "ExitCode": 0,
+      "CSharpFiles": 2,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.DotNet",
+      "ExitCode": 0,
+      "CSharpFiles": 50,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.DotNet.AutoGenerated",
+      "ExitCode": 0,
+      "CSharpFiles": 12,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Engine",
+      "ExitCode": 0,
+      "CSharpFiles": 175,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Engine.AutoGenerated",
+      "ExitCode": 0,
+      "CSharpFiles": 49,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Engine.GauntletUI",
+      "ExitCode": 0,
+      "CSharpFiles": 9,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI",
+      "ExitCode": 0,
+      "CSharpFiles": 108,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI.CodeGenerator",
+      "ExitCode": 0,
+      "CSharpFiles": 19,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI.Data",
+      "ExitCode": 0,
+      "CSharpFiles": 18,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI.ExtraWidgets",
+      "ExitCode": 0,
+      "CSharpFiles": 27,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.GauntletUI.PrefabSystem",
+      "ExitCode": 0,
+      "CSharpFiles": 29,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.InputSystem",
+      "ExitCode": 0,
+      "CSharpFiles": 16,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Library",
+      "ExitCode": 0,
+      "CSharpFiles": 199,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.LinQuick",
+      "ExitCode": 0,
+      "CSharpFiles": 4,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Localization",
+      "ExitCode": 0,
+      "CSharpFiles": 55,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.ModuleManager",
+      "ExitCode": 0,
+      "CSharpFiles": 9,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade",
+      "ExitCode": 0,
+      "CSharpFiles": 1031,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.AutoGenerated",
+      "ExitCode": 0,
+      "CSharpFiles": 34,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.CustomBattle",
+      "ExitCode": 0,
+      "CSharpFiles": 41,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.DedicatedCustomServer.ClientHelper",
+      "ExitCode": 0,
+      "CSharpFiles": 7,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Diamond",
+      "ExitCode": 0,
+      "CSharpFiles": 386,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.GauntletUI",
+      "ExitCode": 0,
+      "CSharpFiles": 64,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.GauntletUI.AutoGenerated.0",
+      "ExitCode": 0,
+      "CSharpFiles": 63,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.GauntletUI.AutoGenerated.1",
+      "ExitCode": 0,
+      "CSharpFiles": 84,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.GauntletUI.Widgets",
+      "ExitCode": 0,
+      "CSharpFiles": 406,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Helpers",
+      "ExitCode": 0,
+      "CSharpFiles": 2,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Launcher.Library",
+      "ExitCode": 0,
+      "CSharpFiles": 38,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Launcher.Steam",
+      "ExitCode": 0,
+      "CSharpFiles": 2,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer",
+      "ExitCode": 0,
+      "CSharpFiles": 117,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.GauntletUI",
+      "ExitCode": 0,
+      "CSharpFiles": 28,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.GauntletUI.AutoGenerated",
+      "ExitCode": 0,
+      "CSharpFiles": 97,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.Test",
+      "ExitCode": 0,
+      "CSharpFiles": 2,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.View",
+      "ExitCode": 0,
+      "CSharpFiles": 29,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer.ViewModelCollection",
+      "ExitCode": 0,
+      "CSharpFiles": 187,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Platform.PC",
+      "ExitCode": 0,
+      "CSharpFiles": 2,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.View",
+      "ExitCode": 0,
+      "CSharpFiles": 168,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.ViewModelCollection",
+      "ExitCode": 0,
+      "CSharpFiles": 135,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.NavigationSystem",
+      "ExitCode": 0,
+      "CSharpFiles": 1,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Network",
+      "ExitCode": 0,
+      "CSharpFiles": 42,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.ObjectSystem",
+      "ExitCode": 0,
+      "CSharpFiles": 19,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.PlatformService",
+      "ExitCode": 0,
+      "CSharpFiles": 19,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.PlatformService.Epic",
+      "ExitCode": 0,
+      "CSharpFiles": 6,
+      "DiagnosticComments": 101,
+      "KnownEpicDiagnostics": true
+    },
+    {
+      "Assembly": "TaleWorlds.PlatformService.GOG",
+      "ExitCode": 0,
+      "CSharpFiles": 13,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.PlatformService.Steam",
+      "ExitCode": 0,
+      "CSharpFiles": 7,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.PlayerServices",
+      "ExitCode": 0,
+      "CSharpFiles": 16,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.PSAI",
+      "ExitCode": 0,
+      "CSharpFiles": 38,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.SaveSystem",
+      "ExitCode": 0,
+      "CSharpFiles": 112,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.ScreenSystem",
+      "ExitCode": 0,
+      "CSharpFiles": 9,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.ServiceDiscovery.Client",
+      "ExitCode": 0,
+      "CSharpFiles": 6,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.Starter.Library",
+      "ExitCode": 0,
+      "CSharpFiles": 3,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.TwoDimension",
+      "ExitCode": 0,
+      "CSharpFiles": 56,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    },
+    {
+      "Assembly": "TaleWorlds.TwoDimension.Standalone",
+      "ExitCode": 0,
+      "CSharpFiles": 69,
+      "DiagnosticComments": 0,
+      "KnownEpicDiagnostics": false
+    }
+  ],
+  "Skipped": [
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\amd_ags_x64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\d3dcompiler_47.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\dbgcore.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\dbghelp.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\dxgi.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\EOSSDK-Win64-Shipping.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\fmod_output_controller.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\Galaxy64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\GalaxyCSharpGlue.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\GfeSDK.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\GFSDK_Aftermath_Lib.x64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\grCore.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\grGranite.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\grGraniteDX11.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\grGraniteDX12.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\grGraniteQuartzFast.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\mono-2.0-sgen.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\MonoPosixHelper.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\msdia140.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\nrchain_nvngx.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\nvngx_dlss.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\nvngx_dlssnr.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\PhysX_64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\PhysXCommon_64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\PhysXCooking_64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\PhysXDevice64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\PhysXFoundation_64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\PhysXGpu_64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\steam_api64.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\symsrv.dll",
+    "SKIP native/non-managed: F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.Native.dll"
+  ],
+  "Failures": [],
+  "DuplicateSources": [
+    {
+      "Assembly": "TaleWorlds.MountAndBlade.Multiplayer",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.dll",
+      "RelativeSourcePath": "Modules\\Multiplayer\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Multiplayer.dll",
+      "Length": 251232,
+      "SHA256": "CED0F34AB059901BCA9B5BEEB2A3AE946062E8571B76C45240D908FAA3D84F9F",
+      "CanonicalSHA256": "01B3C97419537A6E35346C52320AD1FBCFC1C2A8209B3F5045535DA271278CC9",
+      "ExportComparison": "IDENTICAL_ALL_EXPORTED_FILES",
+      "ComparedFiles": 118
+    }
+  ],
+  "KnownDiagnostics": [
+    "KNOWN missing Epic SDK/provider: TaleWorlds.PlatformService.Epic, diagnosticComments=101",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:207: //IL_00aa: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:208: //IL_00b4: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:209: //IL_00b6: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:210: //IL_00d1: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:211: //IL_00db: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:287: //IL_0016: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:288: //IL_0031: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:289: //IL_0056: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:290: //IL_005b: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:291: //IL_0086: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:292: //IL_0090: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:293: //IL_00b0: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:294: //IL_00bc: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:295: //IL_00be: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:296: //IL_00d4: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:297: //IL_00de: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:298: //IL_011e: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:299: //IL_013f: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:300: //IL_0149: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:322: //IL_0001: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:324: //IL_0059: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:325: //IL_000b: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:326: //IL_001e: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:327: //IL_001f: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:328: //IL_0045: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:329: //IL_004a: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:330: //IL_004c: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:331: //IL_0051: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:343: //IL_0001: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:386: //IL_0020: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:430: //IL_001e: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:431: //IL_0028: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:530: //IL_0013: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:531: //IL_0033: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:532: //IL_0034: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:533: //IL_004a: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:534: //IL_0054: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:542: //IL_0001: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:556: //IL_0026: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:557: //IL_0039: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:558: //IL_003a: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:559: //IL_0050: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:560: //IL_005a: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:568: //IL_0001: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:569: //IL_000d: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:570: //IL_0025: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:571: //IL_0026: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:572: //IL_0045: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:573: //IL_0065: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:574: //IL_0067: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:607: //IL_000d: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:608: //IL_0020: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:609: //IL_0021: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:610: //IL_0039: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:611: //IL_003e: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:612: //IL_0044: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:641: //IL_000d: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:642: //IL_002d: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:643: //IL_002e: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:644: //IL_0033: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:645: //IL_003c: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:646: //IL_0041: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:673: //IL_00d2: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:674: //IL_0104: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:675: //IL_0106: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:676: //IL_0113: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:677: //IL_011d: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:678: //IL_0094: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:679: //IL_00bb: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:706: //IL_0001: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:707: //IL_0018: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:708: //IL_001d: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:739: //IL_0021: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:740: //IL_0041: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:741: //IL_0042: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:742: //IL_0058: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:743: //IL_0062: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:751: //IL_0001: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:752: //IL_000a: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:753: //IL_002f: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:754: //IL_0030: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:755: //IL_0045: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:776: //IL_0021: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:777: //IL_0041: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:778: //IL_0042: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:779: //IL_0058: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:780: //IL_0062: Expected O, but got Unknown",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:788: //IL_0001: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:789: //IL_000d: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:790: //IL_0032: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:791: //IL_0033: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:792: //IL_004f: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:793: //IL_0074: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:794: //IL_0076: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:795: //IL_008b: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:827: //IL_0002: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:828: //IL_0022: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:829: //IL_0023: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:830: //IL_0046: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:831: //IL_004b: Unknown result type (might be due to invalid IL or missing references)",
+    "TaleWorlds.PlatformService.Epic\\TaleWorlds\\PlatformService\\Epic\\EpicPlatformServices.cs:832: //IL_0051: Expected O, but got Unknown"
+  ],
+  "AllowKnownEpicDiagnostics": true,
+  "GameCompatibility": "NOT_TESTED",
+  "OriginalDirectoriesChanged": false
+}
