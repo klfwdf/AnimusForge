@@ -1,9 +1,3 @@
-# 当前交付：婚配消歧与场景听众默认屏蔽（2026-10-22）
-
-- 基于最新远端 `b4e5331d0` 干净选择本轮婚配修复和场景听众默认开启，不带本地累计历史；保留已有玩家明确关闭设置，不部署或打包。
-- 当前交付双 API/Bootstrap、双 Coup 门禁、婚配方法 47 项/实际 DLL 92 项、后处理 20 项及设置 10 项通过。婚配旧候选有 28/28 真实模型和三种配偶结果实机证据；最终合并候选未重做实机，退出错误未修。完整场景夹具缺 TTS 类型、旧 J17 哈希门禁及 Social 既有失败不隐瞒。
-- [唯一主台账、验证范围与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#marriage-audience-delivery-20261022)。以下为历史记录，不延续部署授权。
-
 # 当前交付：环境 AI 退役与 EN 部署（2026-10-20，离线通过 / EN 已部署 / 实机未验）
 
 - 产品 `5689b6937` 删除环境独立 API、自动闲聊与内置预设，预设和恢复副本已备份到仓库外并逐项核验；MCM/终端、两套资源与内容映射同步清理，旧环境配置不能重新启用。保留玩家主动喊话及动作反应。
@@ -154,7 +148,6 @@
 
 - 按用户要求复用现成F盘游戏，不创建89.5GiB副本。导入工具并增加显式 --installed-game、适配编译依赖；现有游戏会话强制HTTP预算0，保留原数据/归属/退出守卫。
 - 双桥1.3.15/1.4.8构建与285项C#、100项Python通过；安装目录5组prefab及四类observer冷元数据通过。没有部署、启动、模型请求、产品源码/默认入口/全局skill变更；实机句柄、运行时守卫与原生退出未验。
-- [主台账、源码范围与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#afrt-existing-game-20261018)；本机 artifacts/afrt-existing-game-20261018/receipt.json；使用说明 artifacts/bannerlord-runtime-bridge-20261013/LOCAL_INTEGRATION.md。后续部署和启动沿用用户授权边界，不能将离线接入视为实机已连接。以下交付历史保持。
 
 # 当前交付：EN 世界书目录与文件名英文化（2026-10-18）
 

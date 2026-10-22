@@ -1,14 +1,3 @@
-<a id="marriage-audience-delivery-20261022"></a>
-## 婚配消歧、全家族联姻与场景听众默认值（2026-10-22）
-
-- 用户授权安全合并推送。本交付以远端 `b4e5331d0` 为基线，仅选择产品/测试 `f8d80afeb`、测试传输修正 `9f1fa70c9` 和默认值 `522429e74`；保留最近上游对话历史/缓存修复，不发布本地累计历史或测试现场。不部署、不打包、不修改玩家现有 MCM 文件。
-- 婚配区分提议者、双方和批准者；新增 `MARRIAGE_CLAN` 给其他玩家家族成员安排婚事，合并实际归属的族长/Heroes/Companions 名单及已知亲属事实。保留双 ID FORMAL，停止旧单 ID 实时执行；私奔只能当前说话者。身份/存活/成年/归属/批准者轻校验失败不换人执行，不加统一确认 UI、额外业务模型调用或自然语言硬判婚。CN/EN、共享后处理、标签清理、记忆显示和周报同步。
-- 既有 `AutoExcludeUnframedShoutParticipants` 默认值及无可用 MCM 回退改为 true；明确保存的 false 保持。终端和 MCM 复用原 owner；只允许框选/手动邀请人物，非全场静音。无新 Tick 扫描、缓存或 IO；婚配名单仅婚姻上下文捕获时读取两家族。
-- 本交付源码验证：生产婚配方法 47 项、实际 1.4 DLL 合成 Hero/Clan/归一化/显示 92 项、原后处理 20 项及 Native 历史回放、原设置编译回放 10 项通过。原统一构建函数 Release 双 API 和 Bootstrap 通过；复制自身 DLL/PDB/marker 到全新无依赖候选目录后，两 API Coup 注册/记忆准入门禁通过。初次直接使用完整构建输出被门禁拒绝跨版本依赖回退，未放宽门禁或删除依赖；失败输出保留。
-- 既有婚配候选的真实模型合成 CN/EN 各 14 项共 28/28；获准独立 1.4 自由对话实机验证玩家娶族长女儿、同伴娶其女儿、另一同伴娶族长本人，实际双方互为配偶且玩家未被代换。该实机证据早于本交付重新合并及默认值调整，并非最终候选完整实机复验；进程退出 -1/ERC1965 尚未修复，历史观察器未确认完整提交、精确 AFEF 文本未验。信使/喊话实机、1.3 实机和旧档不在通过范围。
-- 验证边界：完整场景生命周期 runner 因既有夹具缺少 TtsSpeechSegment/LocalTtsSpeech 编译失败；CourierPostprocessOwnerRegressionTests 被既有 J17 PolicySystem owner 哈希门禁阻止，未改无关源码/测试门禁。设置专项和 PostprocessTagRepairReplay 通过不代替这些全量入口。旧 Social P006/P020 基线失败仍保留，不声称全仓全绿。
-- 代码范围（以上产品修订）：`src/modules/AF.Module.Social/Host/RomanceSystemBehavior.cs` 的 `GetMarriageClanMembers` 2104 起、`CanExecuteFormalMarriageTagPair` 2560 起、`CaptureMarriagePostprocessContextForExternal` 3443 起及 `ApplyMarriageTags` 3558–3686；`src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs` 614–620、818–824、915–921 接通脱离对象快照；`src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.SceneAudience.cs` 12–24 控制默认和回退，`UI/Terminal/TerminalSettingsCoverage.cs` 66 为既有同源终端路由，`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePlayerExecution.cs` 129 为实际听众消费者。Prompt/UI/事实资源及新增 MarriageTagTests 随相同提交，完整差异可按修订审查。回滚用上述提交的 focused inverse，不 reset/force-push，不覆盖其他作者改动。
-
 <a id="diplomacy-chain-localization-20261020"></a>
 ## 外交链路、王国解析及双语边界（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
@@ -214,7 +203,6 @@
 - EN两份规则安装与源码逐hash一致；inventory.json记录75行/72不同模板。当前只有首轮MOOD:NEUTRAL取得真实模型/生产归一化/历史证据；线程标记待复核，其他71项NOT_RUN。不可把本条或工具构建当作全量验收。
 - 必要工具适配：默认0请求保持，installed-game显式unlimited模式接通当前Documents MCM原owner（不复制配置）；新增主线程绑定与gameThreadId观测；共享有限协议族词法提取，不再只观察Gold/Mood；assets新增有界、仅测试前一次的renown/relation前置，使用原生动作，PRECONDITION_ONLY与被测结果分开。C#双桥1.3.15/1.4.8及307项契约通过；Python101项中100原通过、缺BindMainThread的宿主fake已补转发断言后单项重跑PASS。性能仅冷启动/每次明确请求，不增加Tick IO/扫描。
 - 首轮run69e61f247ad74fc7984e78c4a46857f8/PID37220已真实创建战役并对Lucon提交英文消息。4次真实HTTP均200，provider计56782 tokens，Postprocess输出[ACTION:MOOD:NEUTRAL]，生产consumer/dispatch/mood及COMPLETED_WITH_HISTORY已观察；不将neutral无状态变化/错误线程标记算完整执行PASS。正常退出仍ERC4/0xFFFFFFFF。冻结构建/请求/回执/trace/费用分页/语言shape均在本机artifacts/en-postprocess-alltags-20261018，私有descriptor/token不提交。
-- 最新测试桥已部署AFRuntimeTestBridge_6e9b0284a023（原module仍保留，不默认加载），frozen a15d16eaff513675a2c3d94539e4eaeac0ed0401453217764c5e28e8371e2ac9；该版线程绑定尚未实机复核。源图为artifacts/bannerlord-runtime-bridge-20261013的SessionSafety.ConfigureNetwork、bridge_tool.session_preflight/api_settings_path、SessionProtocol.ExtractProtocolTags/FixtureSpec.Parse、CampaignFixture.Prepare、SessionResultObservers.BindMainThread、SessionStateReader.BindMainThread、SessionGameAdapter.InitializeMainThread；精确范围在本机source-spans.json。剩余场景/业务回读能力需继续，不把源图覆盖范围扩张为已测游戏责任。
 - 用户自定义PlayerCustomPromptRule约6万字符，含明确中文输出要求；首次NPC因该上下文回复中文。已询问是否仅测试进程临时采用EN包默认，等待回答，未覆盖或翻译原文件。保持用户内容与包语言边界，测试默认profile不增加强制语言system规则。
 - 后续run1f4bf8d0457046d88e407d52287cadcc实测：gameThreadId26，ANNOYED实际provider→consumer→主线程Patience 80→78、relationDelta=-1、history SHA一致；NEUTRAL预期NO_CHANGE。赠金/借款/入雇佣兵三轮被NPC拒绝或延后，只有负向证据，绝不算对应正向标签通过。接受NPC挑战后真实provider输出DUEL/DUEL_LINE_WIN/DUEL_LINE_LOSE/ANNOYED，进入Mission；DuelOutcome显示OpponentWon、PartiallyCompleted，同时PlayerNotorietySummary被测试来源门拦截，不升级完整链路PASS。场景切换还使旧trace丢失。退出请求被Mission阻塞，result=NORMAL_EXIT_TRANSITION_TIMEOUT，最终session-result保护未变、lifecycle FAIL；当前检查PID40752已不存在，不声称原生正常退出。
 - 用户随后明确同意只在测试进程采用EN包默认，原文件/设置保留，并同意仅清理PID40752再继续；检查时该PID已无，因此没有发送强杀。平台修复仅位于测试工具：SessionGameAdapter.Owner在同一所属campaign的Mission转换保留有界观察，generation仍变化/旧动作仍拒绝；SessionSafety.EnterNotorietySummary与SessionNetworkBudget.TryAcquire仅给unlimited/所属campaign/确切PlayerNotorietySummary/Memory/配置端点的摘要授权；SessionLifecycle.Request/Tick捕获所属campaign和Mission，只对相同对象至多一次调用原生EndMission，替换/异常不吞掉。此前失败证据保留。
@@ -253,22 +241,18 @@
 - 用户明确授权“部署并测试”，在此前复用现有游戏/不复制引擎/模型HTTP预算0的决定下执行。工作区 F:/AnimusForge-main/main，开工8d67aca84，意图检查点d6c2f3d；其他会话的content-map/ContentLayout改动与Microsoft/、NuGet/保留，不纳入本轮提交。未push、未打包、未更新AF产品DLL/版本或默认启动模块选择。
 - 原deploy入口只新增 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AFRuntimeTestBridge_3c39a11d225d/，安装DLL/XML/support三份SHA均与冻结构建匹配。复用前轮已验证1.3.15/1.4.8桥构建与285项C#/100项Python；本轮只改probe启动弹窗适配，不重建产品。没有89.5GiB引擎复制。
 - 首轮cae3e7efe23f4cfc8df53a7d639fc865/PID36976被原版“Mod change detected”着色器缓存通知阻塞；初始observer拒绝该未知弹窗，保留失败。核实精确PID/进程创建时刻/标题/原文/唯一按钮后仅确认该通知，未强杀或重启该活动进程。首轮status握手成功，接近会话到期后的runtime读为OUTCOME_UNKNOWN；按原commandId查询回执，未盲重放。进程随后原生退出，但已有observer失败与ERC4仍保留。
-- 本轮必要修复：probe.py增加精确mod_change_ok_button匹配和一次性ModChange_IDOK分支，仅在原decline_safe_mode显式测试路径生效；其他/重复弹窗仍拒绝。test_probe.py保留原断言并新增错PID/错标题/错正文/重复或禁用按钮负例，42项通过。一次启动边界检查，不新增Tick IO、反射、全局输入或轮询。核实代码：artifacts/bannerlord-runtime-probe-20261013/probe.py:79-88（匹配器）、run:150-534（现有observer，新增对话分支）；test_probe.py:6起；SHA和精确范围见live-receipt。
 - 第二轮be911462a2c84b0db891a7f1a946429e/PID34712在同一已部署模块中新建独立会话。control bind成功，session.status、state.read(runtime)、state.read(cost)、session.end均为SUCCEEDED/MAIN_THREAD_OBSERVATION。guardsVerified=true，save/load/http守卫自检均命中，networkMode=DISABLED、sent=0。开场VideoPlaybackState上的observe正确返回UNSUPPORTED_CURRENT_SURFACE，原ID回执恢复确认拒绝；没有进入campaign或对政策/UI业务成功作断言。手工8项连接/守卫/预算/页面拒绝检查PASS；原control report的command=FAIL（含该预期拒绝）、business=UNKNOWN、protection=PASS、lifecycle=FAIL等原始结果完整保留，不能将smoke PASS升级为全套PASS。
 - session.end返回正常退出请求，进程确已退出（processExitVerified=true/nativeShutdownObserved=true），无force/job kill/WM_CLOSE回退。但原版日志仍报Non-Zero Device Reference Count! (ERC4)，真实退出码4294967295/0xFFFFFFFF，lifecycle=FAIL（NATIVE_DEVICE_REFERENCES_REMAIN、NATIVE_SHUTDOWN_NOT_CLEAN）。这与技能交接中的已知原生退出问题相符，本轮未定位/修复引擎问题；不再反复启动制造通过。
 - 第二轮3189项受保护文件包含16个.sav，前后SHA/大小/mtime及存档集合不变；paidRequests=0。该保护证据仅覆盖实际清单，不宣称所有系统目录/网络被沙箱隔离。当前没有保留游戏进程；测试桥模块留在安装目录，默认启动不自动选中。
-- 唯一本机证据入口 artifacts/afrt-existing-game-20261018/live-receipt.json；deployment.log、live-run[-2].json、control-bind[-2].json、status/runtime/cost/observe/end回执与control-report-2.json均在同目录；原生日志、process.json、session-result.json在 artifacts/bannerlord-runtime-bridge-20261013/runs/<实际runId>/。私有会话token/descriptor/journal不提交或外发。
 - 此条替代[前轮](#afrt-existing-game-20261018)“未部署/未实机连接”的状态，保留其离线证据。NOT_RUN：真实campaign内终端/政策/对话正向UI、真实付费provider、旧档业务兼容；原生退出修复未完成。回退源码只revert本轮probe/文档提交；部署回退只在无游戏进程时移除上述确切新增测试桥目录，不触碰AnimusForge/原版DLL/玩家存档；没有自动回滚或清理。
 
 <a id="afrt-existing-game-20261018"></a>
 ## 测试平台复用现有游戏接入（2026-10-18，OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN）
 
 - 用户否定创建游戏副本，明确复用现有游戏并要求直接接入；沿用本轮暂不部署、不启动、模型预算0的边界。工作区 F:/AnimusForge-main/main，开工 bcb0fe1d4，本轮意图检查点361c089；其他会话的 EN 世界书/打包改动独立保留，不回滚、不纳入本轮提交。本轮没有 push、部署、打包或产品版本变化。
-- 导入原包 sourceRevision 597c76df17cf17bbfa4e2bfac0970cfd1b8508c8 的35个工具源码/声明文件到 artifacts/bannerlord-runtime-bridge-20261013 与 artifacts/bannerlord-runtime-probe-20261013。相对原包只改 bridge_tool.py、test_session_control.py，另加 test_installed_game.py 与 LOCAL_INTEGRATION.md。项目 csproj 原有 artifacts 排除保持，测试 C# 不进入产品DLL。
 - 工具增加显式 --installed-game；预检/部署/会话选择与候选入口互斥，现有游戏会话强制模型HTTP预算0；未显式选择时仍拒绝正式安装连续会话和部署。路径适配到本机F盘游戏与已有NuGet net472 facade。保留存档/加载/MCM保存守卫、文件保护、主线程/会话归属、幂等恢复和原生退出路径。只在启动/命令边界读取有限文件，不新增 Tick IO/反射/轮询；候选复制路径与旧helper不在本轮使用范围。
 - 实际双桥构建：1.3.15.110062 / 1.4.8.119303，285项C#契约断言通过；100项Python（原bridge/control/platform及新existing-game）通过。首次90项中原delivery目录prefab fixture缺失导致1项失败，改为本机已安装prefab后保留原正负断言重跑通过。10个Python文件语法通过。现有游戏DLL冷反射与5组真实prefab绑定通过，四类observer policies/captivity/conversation/actionTrace全部可用，liveBindings仍NOT_ASSERTED。
 - 实际构建/预检/测试输出与冻结路径见本机 artifacts/afrt-existing-game-20261018/{bridge-build.log,preflight.log,observer-preflight.json,python-tests.log,receipt.json}；bridge frozen manifest由日志指向。未写入游戏测试模块、未复制引擎、未启动进程、未读取凭据或发出模型请求。游戏中已安装AF仍为其原版本，不将桥编译/元数据检查当作最新产品DLL已部署或实机兼容完成。
-- 核实代码图：artifacts/bannerlord-runtime-bridge-20261013/bridge_tool.py 的 use_installed_game、preflight、deploy、session_preflight、session_start 精确一基行范围见receipt.sourceSpans；CLI为1750行起。新回归为 test_installed_game.py:11-49；本轮代码修订由本节随附的本地提交绑定。真实owner仍是原Bridge/SessionSafety/SessionRuntime和现有AF UI VM，未更改业务实现。
 - NOT_RUN：实际部署/游戏启动、UI句柄/输入、运行时守卫、原生退出、玩家旧档及生产双实现重建/Stage/发行；不存在已运行session可接管。后续按明确授权仅在现有游戏 Modules/AFRuntimeTestBridge_<hash>/ 新建独立测试桥，再沿用 session-start + control。全局skill与默认启动模块列表未改。源码回退聚焦revert本轮实现提交，保留其他作者与本机输出；本轮无游戏文件需要回滚。
 
 <a id="sets-damage-publication-20261018"></a>
