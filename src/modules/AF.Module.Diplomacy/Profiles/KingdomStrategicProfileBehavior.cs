@@ -286,6 +286,8 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			HashSet<string> preservedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			List<string> skippedLabels = new List<string>();
 			int skippedCount = 0;
+			int skippedStaticCount = 0;
+			var skippedStaticLabels = new List<string>();
 			foreach (KingdomStrategicProfileRecord entry in entries)
 			{
 				if (!TryResolveImportTarget(entry, kingdomImportTargetIndex, out Kingdom kingdom, out string warning) || kingdom == null)
@@ -298,8 +300,15 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 						skippedCount++;
 						continue;
 					}
-					errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_CannotMatchWorld", "A kingdom in the package could not be safely matched to the current world: {REASON}", ("REASON", string.IsNullOrWhiteSpace(warning) ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_UnknownReason", "unknown reason") : warning));
-					return false;
+					string unmatchedId = NormalizeId(entry.KingdomId);
+					skippedStaticLabels.Add(unmatchedId + " (" + (entry.KingdomName ?? "") + ")");
+					if (++skippedStaticCount > 3)
+					{
+						errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_UnmatchedLimitExceeded", "More than 3 non-dynamic kingdom profiles could not be matched. Import stopped without changing the save. First unmatched entries: {PROFILES}", ("PROFILES", string.Join(", ", skippedStaticLabels)));
+						return false;
+					}
+					preservedIds.Add(unmatchedId);
+					continue;
 				}
 				string text = NormalizeId(kingdom.StringId);
 				if (string.IsNullOrWhiteSpace(text) || dictionary.ContainsKey(text))
@@ -309,7 +318,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 				}
 				dictionary[text] = CloneForExport(entry);
 			}
-			if (dictionary.Count <= 0 && skippedCount == 0)
+			if (dictionary.Count <= 0 && skippedCount == 0 && skippedStaticCount == 0)
 			{
 				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NoReloadableProfiles", "The package contains no kingdom profiles that can be reloaded.");
 				return false;
@@ -323,7 +332,9 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 				CurrentProfilesResetToDefaultCount = num,
 				PreservedProfileIds = preservedIds,
 				SkippedDynamicProfileCount = skippedCount,
-				SkippedDynamicProfileLabels = skippedLabels
+				SkippedDynamicProfileLabels = skippedLabels,
+				SkippedStaticProfileCount = skippedStaticCount,
+				SkippedStaticProfileLabels = skippedStaticLabels
 			};
 			return true;
 		}
@@ -393,7 +404,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		detailMessage = "";
 		try
 		{
-			if (plan?.SourceProfilesByTargetId == null || (plan.SourceProfilesByTargetId.Count <= 0 && plan.SkippedDynamicProfileCount <= 0))
+			if (plan?.SourceProfilesByTargetId == null || (plan.SourceProfilesByTargetId.Count <= 0 && plan.SkippedDynamicProfileCount <= 0 && plan.SkippedStaticProfileCount <= 0))
 			{
 				detailMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ReloadPlanEmpty", "The kingdom reload plan is empty.");
 				return false;
@@ -424,6 +435,8 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			detailMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ReloadComplete", "Reloaded {IMPORTED} kingdom profile(s); the other {RESET} current kingdom profile(s) returned to their defaults.", ("IMPORTED", plan.SourceProfilesByTargetId.Count.ToString(CultureInfo.InvariantCulture)), ("RESET", plan.CurrentProfilesResetToDefaultCount.ToString(CultureInfo.InvariantCulture)));
 			if (plan.SkippedDynamicProfileCount > 0)
 				detailMessage += " " + DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ReloadSkippedDynamic", "Skipped {COUNT} unmatched dynamic kingdom profile(s); existing save profiles for those IDs were preserved. First entries: {PROFILES}", ("COUNT", plan.SkippedDynamicProfileCount.ToString(CultureInfo.InvariantCulture)), ("PROFILES", string.Join(", ", plan.SkippedDynamicProfileLabels)));
+			if (plan.SkippedStaticProfileCount > 0)
+				detailMessage += " " + DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ReloadSkippedStatic", "Skipped {COUNT} unmatched non-dynamic kingdom profile(s) (maximum 3): {PROFILES}", ("COUNT", plan.SkippedStaticProfileCount.ToString(CultureInfo.InvariantCulture)), ("PROFILES", string.Join(", ", plan.SkippedStaticProfileLabels)));
 			return true;
 		}
 		catch (Exception ex)
@@ -2039,6 +2052,10 @@ internal sealed class KingdomDatabaseReloadPlan
 	public int CurrentProfilesResetToDefaultCount { get; set; }
 
 	public HashSet<string> PreservedProfileIds { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	public int SkippedStaticProfileCount { get; set; }
+
+	public List<string> SkippedStaticProfileLabels { get; set; } = new List<string>();
 
 	public int SkippedDynamicProfileCount { get; set; }
 

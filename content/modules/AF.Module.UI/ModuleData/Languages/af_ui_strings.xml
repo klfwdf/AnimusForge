@@ -3420,5 +3420,6 @@ Choose how to proceed:" />
   <string id="AF_UI_KingdomRebellion_LegacyRetired" text="The standalone stability rebellion system has been retired. Uprisings are managed by civil-war factions." />
   <string id="AF_UI_KingdomStability_FactionRoute" text="Uprisings are handled by civil-war factions through demands, responses and the shared war cap; stability does not trigger a separate random rebellion." />
   <string id="AF_UI_KingdomStability_FactionImmunity" text="Player-kingdom immunity prevents faction uprisings." />
+  <string id="AF_UI_Developer_Reload_SkippedStaticKingdoms" text="• Skip {COUNT} unmatched non-dynamic kingdom profiles (maximum 3): {PROFILES}" />
 </strings>
 </base>

@@ -1192,5 +1192,7 @@
     <string id="AF_DIP_UI_Presentation_ReparsingPending" text="宣言已公开；正在重新解析原文，尚未执行外交动作。" />
     <string id="AF_DIP_UI_Vassalage_SubjectWarSyncPrefix" text="宗主国战争状态已同步：" />
     <string id="AF_DIP_UI_Vassalage_SubjectWarConfirmedPrefix" text="宗主国战争状态已确认：" />
+    <string id="AF_DIP_UI_KingdomProfile_UnmatchedLimitExceeded" text="超过 3 个普通国家资料无法匹配，已停止导入，未修改存档。前几个不匹配国家：{PROFILES}" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadSkippedStatic" text="已跳过 {COUNT} 个无法匹配的普通国家资料（最多允许 3 个）：{PROFILES}" />
   </strings>
 </base>

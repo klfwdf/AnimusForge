@@ -12,3 +12,7 @@ Checks cover mixed/all-skipped plans, all dynamic prefixes, missing saved profil
 normal dynamic imports, unchanged hard validation, failed apply without partial state,
 detached package inputs, original resets for other kingdoms and eight-entry UI bounds.
 No actual Campaign, player save, renderer or network request is used.
+
+Ordinary unmatched kingdom profiles now allow up to three skips; the fourth rejects the
+whole preflight. Boundary, ambiguous-name, mixed dynamic/static and all-static-skipped
+cases exercise the actual production methods. Existing dynamic allowance is unchanged.

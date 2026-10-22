@@ -1192,5 +1192,7 @@
     <string id="AF_DIP_UI_Presentation_ReparsingPending" text="Declaration published; reparsing original text, diplomatic action not yet executed." />
     <string id="AF_DIP_UI_Vassalage_SubjectWarSyncPrefix" text="Suzerain war status synchronized:" />
     <string id="AF_DIP_UI_Vassalage_SubjectWarConfirmedPrefix" text="Suzerain war status confirmed:" />
+    <string id="AF_DIP_UI_KingdomProfile_UnmatchedLimitExceeded" text="More than 3 non-dynamic kingdom profiles could not be matched. Import stopped without changing the save. First unmatched entries: {PROFILES}" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadSkippedStatic" text="Skipped {COUNT} unmatched non-dynamic kingdom profile(s) (maximum 3): {PROFILES}" />
   </strings>
 </base>

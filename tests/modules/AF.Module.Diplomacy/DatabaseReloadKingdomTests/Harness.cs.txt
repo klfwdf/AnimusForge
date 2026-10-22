@@ -69,7 +69,38 @@ class Host
             Check(h.TryBuildDatabaseReloadPlan("fixture",out var plan,out _)&&Skipped(plan)==0,"same ID/name dynamic still imports");
             Check(h.TryApplyDatabaseReloadPlan(plan,out _)&&h._storage.Profiles["new_kingdom"].NationalPersonality=="match","matched dynamic source applied normally");
         }
-        foreach(string kind in new[]{"static-missing","duplicate-target","invalid","empty","read-failure"})
+        foreach(int count in new[]{1,2,3,4})
+        {
+            var h=Setup();h.Entries=new(){Profile("empire","Empire","imported")};
+            h.Entries.AddRange(Enumerable.Range(0,count).Select(i=>Profile("absent_static_"+i,"Missing "+i)));
+            string before=Snapshot(h._storage);
+            bool built=h.TryBuildDatabaseReloadPlan("fixture",out var plan,out var error);
+            Check(built==(count<=3),"ordinary unmatched boundary: "+count);
+            Check(Snapshot(h._storage)==before,"ordinary preflight never mutates live save: "+count);
+            if(count<=3)
+            {
+                Check(plan.SkippedStaticProfileCount==count&&plan.SkippedStaticProfileLabels.Count==count,"ordinary skip count and labels: "+count);
+                Check(h.TryApplyDatabaseReloadPlan(plan,out var detail)&&h._storage.Profiles["empire"].NationalPersonality=="imported","matched record still applied: "+count);
+                Check(detail.Contains("Missing 0"),"ordinary skipped identity reported: "+count);
+            }
+            else Check(plan==null&&error.Contains("More than 3")&&error.Contains("absent_static_3"),"fourth unmatched rejects with identities");
+        }
+        {
+            var h=Setup();h.Entries=new(){Profile("absent_static","Unknown")};
+            Check(h.TryBuildDatabaseReloadPlan("fixture",out var plan,out _)&&h.TryApplyDatabaseReloadPlan(plan,out _),"all ordinary skipped allows other package domains to continue");
+        }
+        {
+            var h=Setup();World.Add(new(){StringId="other_empire",Name="Empire"});
+            h.Entries=new(){Profile("missing_id","Empire"),Profile("sturgia","Sturgia","imported")};
+            Check(h.TryBuildDatabaseReloadPlan("fixture",out var plan,out _)&&plan.SkippedStaticProfileCount==1,"ambiguous name skipped within allowance");
+            Check(!plan.SourceProfilesByTargetId.ContainsKey("empire")&&!plan.SourceProfilesByTargetId.ContainsKey("other_empire"),"ambiguous names never assigned arbitrarily");
+        }
+        {
+            var h=Setup();h.Entries=Enumerable.Range(0,100).Select(i=>Profile("new_kingdom"+i,"Unknown"+i)).ToList();
+            h.Entries.AddRange(Enumerable.Range(0,3).Select(i=>Profile("absent_static_"+i,"Missing"+i)));
+            Check(h.TryBuildDatabaseReloadPlan("fixture",out var plan,out _)&&Skipped(plan)==100&&plan.SkippedStaticProfileCount==3,"dynamic skips do not consume ordinary allowance");
+        }
+        foreach(string kind in new[]{"duplicate-target","invalid","empty","read-failure"})
         {
             var h=Setup();string before=Snapshot(h._storage);
             h.Entries=kind=="empty"?new():new(){Profile("empire","Empire")};
