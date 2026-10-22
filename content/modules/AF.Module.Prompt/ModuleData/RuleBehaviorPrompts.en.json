@@ -237,11 +237,15 @@
       "Code": "MARRIAGE",
       "PreprocessExcludedInstruction": "You are only an ordinary civilian and cannot agree to any marriage request from the player; guide the player to seek a notable or noble NPC. (MARRIAGE)",
       "NonHeroInstruction": "If the player mentions marriage alliances, guide the player to seek a lord or the ruler of a kingdom.",
-      "Instruction": "[Marriage Rules] Only three matters are handled: formal marriage, elopement, and divorce. Polygamy is permitted, so having an existing spouse is not a reason to refuse; however, the same pair cannot marry twice. Who has authority to consent, which path is currently available, whether conditions are met, and whether bride price must be discussed all follow this turn's runtime rules. When the player asks about eligible marriage candidates, you may answer strictly from the two eligible-member fact lists provided by the system and must never fabricate anyone outside the lists.",
+      "Instruction": "[Marriage Rules] Handle formal marriage, elopement, and divorce. Multiple spouses are permitted; an existing spouse is not grounds for refusal, but the same pair cannot marry twice. The player may negotiate for themselves or any eligible member of their clan, including companions. Distinguish proposer, actual partners, and approver: a leader may approve their own or a clan member's marriage, but is not automatically a partner. A non-leader cannot approve formal marriage or consent for others: refer the player to the leader, or personally agree to elope only when the player explicitly seeks union with you and the existing conditions are met. Resolve partners from both factual lists and their kinship. \"My daughter\" is not the speaker; \"your brother\" is not the player. A brief acceptance may refer to a pair already established in recent dialogue. If several candidates remain possible, ask which person in normal dialogue; never guess, substitute, or invent candidates. Authority, rank, trust, and bride price follow this turn's runtime rules. Reply naturally without action tags.",
       "PostprocessRules": [
         {
           "Tag": "[ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]",
-          "Description": "Output when the NPC in <latest_reply> explicitly agrees to a formal betrothal, clan marriage alliance, or having the specified pair marry, and both IDs can be uniquely determined from the candidate lists. Do not output mood-only merely because a ceremony is still mentioned."
+          "Description": "Use for the player personally entering a formal marriage. The speaking NPC must lead the other clan and explicitly approve this pair. playerClanHeroId is the player hero ID; targetHeroId is the actual spouse, never automatically the speaker. If a leader agrees to marry off a daughter to the player, choose the daughter; choose the leader only when the leader personally is the intended spouse. Both IDs must be uniquely resolved from their respective lists. A brief acceptance may confirm a pair already established in recent dialogue. Do not output for a mere quote, unmet conditions, or ambiguous partners. A later ceremony alone does not negate an agreed marriage. An explicitly agreed bride price may be appended under the existing rules."
+        },
+        {
+          "Tag": "[ACTION:MARRIAGE_CLAN:playerClanHeroId:targetHeroId]",
+          "Description": "Use only when the player arranges formal marriage for another player-clan member, including siblings, children, companions, or other eligible listed members. playerClanHeroId is the actual clan partner, not the player; never substitute the player for an omitted person. targetHeroId is the actual other partner: either the speaking leader personally or a member of that leader's clan. The speaking NPC must lead the other clan and explicitly approve this pair. In \"let my daughter marry your brother\", the partners are the brother and daughter, not the player or leader. A brief acceptance may refer to a pair already established in recent dialogue; both IDs must be uniquely resolved from their respective lists. Do not output for a non-leader consenting for others, a mere quote, unmet conditions, or ambiguous partners; never substitute personal elopement. An explicitly agreed bride price may be appended under the existing rules."
         },
         {
           "Tag": "[ACTION:MARRIAGE_ELOPE:targetHeroId]",
@@ -282,7 +286,9 @@
         "Have you considered my marriage proposal?",
         "An alliance by marriage would benefit both our families.",
         "I am seeking a suitable spouse from your clan.",
-        "Let our houses unite in marriage."
+        "Let our houses unite in marriage.",
+        "I want my brother to marry your daughter.",
+        "I want to arrange a marriage between my clan companion and you."
       ]
     },
     {

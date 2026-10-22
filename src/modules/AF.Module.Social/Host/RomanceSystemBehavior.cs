@@ -44,6 +44,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	private static readonly Regex MarriageFormalPairRegex = new Regex("\\[ACTION:MARRIAGE_FORMAL:([^\\]:]+):([^\\]:]+)(?::(\\d+))?\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+	private static readonly Regex MarriageClanPairRegex = new Regex("\\[ACTION:MARRIAGE_CLAN:([^\\]:]+):([^\\]:]+)(?::(\\d+))?\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
 	private static readonly Regex MarriageFormalLegacyRegex = new Regex("\\[ACTION:MARRIAGE_FORMAL:([^\\]:]+)(?::(\\d+))?\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private static readonly Regex MarriageElopeRegex = new Regex("\\[ACTION:MARRIAGE_ELOPE:([^\\]:]+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -474,7 +476,27 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return string.Format((forPrompt ? SocialPromptTexts.Get("P087") : SocialSourceTexts.Get("S115")), text, text2, record.BridePriceAmount);
 	}
 
-	private static string BuildMarriageHeroFactLine(Hero hero, string tokenName)
+	private static string GetMarriageRelationLabel(Hero hero, Hero reference)
+	{
+		if (hero == null || reference == null) return SocialPromptTexts.Get("MarriageRelationUnknown");
+		if (hero == reference) return SocialPromptTexts.Get("MarriageRelationSelf");
+		if (hero == reference.Father) return SocialPromptTexts.Get("MarriageRelationFather");
+		if (hero == reference.Mother) return SocialPromptTexts.Get("MarriageRelationMother");
+		if (hero.Father == reference || hero.Mother == reference)
+			return SocialPromptTexts.Get(hero.IsFemale ? "MarriageRelationDaughter" : "MarriageRelationSon");
+		if (hero.Spouse == reference || reference.Spouse == hero)
+			return SocialPromptTexts.Get("MarriageRelationSpouse");
+		if ((hero.Father != null && hero.Father == reference.Father) || (hero.Mother != null && hero.Mother == reference.Mother))
+		{
+			if (hero.Age == reference.Age) return SocialPromptTexts.Get(hero.IsFemale ? "MarriageRelationSister" : "MarriageRelationBrother");
+			return SocialPromptTexts.Get(hero.IsFemale
+				? (hero.Age > reference.Age ? "MarriageRelationOlderSister" : "MarriageRelationYoungerSister")
+				: (hero.Age > reference.Age ? "MarriageRelationOlderBrother" : "MarriageRelationYoungerBrother"));
+		}
+		return SocialPromptTexts.Get(hero.Clan != null && hero.Clan == reference.Clan ? "MarriageRelationClanMember" : "MarriageRelationUnknown");
+	}
+
+	private static string BuildMarriageHeroFactLine(Hero hero, string tokenName, Hero speaker)
 	{
 		if (hero == null)
 		{
@@ -491,7 +513,17 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return "- " + GetHeroDisplayWithClan(hero) + string.Format(SocialPromptTexts.Get("P035"), tokenName, hero.StringId, GetMarriageGenderLabel(hero), hero.Age, text);
+		return "- " + GetHeroDisplayWithClan(hero) + string.Format(SocialPromptTexts.Get("P035"), tokenName, hero.StringId, GetMarriageGenderLabel(hero), hero.Age, text)
+			+ string.Format(SocialPromptTexts.Get("MarriageCandidateRelations"), GetMarriageRelationLabel(hero, Hero.MainHero), GetMarriageRelationLabel(hero, speaker));
+	}
+
+	private static string BuildMarriageIdentityBlock(Hero speaker)
+	{
+		Hero player = Hero.MainHero;
+		Hero leader = speaker?.Clan?.Leader;
+		return string.Format(SocialPromptTexts.Get("MarriageIdentity"), player?.Name, player?.StringId,
+			speaker?.Name, speaker?.StringId, leader?.Name, leader?.StringId,
+			speaker != null && speaker == leader ? SocialPromptTexts.Get("MarriageSpeakerLeader") : SocialPromptTexts.Get("MarriageSpeakerMember"));
 	}
 
 	private static string BuildFactBlock(string title, List<string> lines, string emptyText = null)
@@ -580,9 +612,10 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			List<string> list = EnumerateActiveMarriageSituationLines(speaker).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			List<string> list2 = GetClanMembersCompat(Clan.PlayerClan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "playerClanHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			List<string> list3 = ((speaker?.Clan != null) ? GetClanMembersCompat(speaker.Clan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "targetHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>());
+			List<string> list2 = GetMarriageClanMembers(Clan.PlayerClan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "playerClanHeroId", speaker)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			List<string> list3 = ((speaker?.Clan != null) ? GetMarriageClanMembers(speaker.Clan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "targetHeroId", speaker)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>());
 			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.AppendLine(BuildMarriageIdentityBlock(speaker));
 			stringBuilder.AppendLine(SocialPromptTexts.Get("P038"));
 			stringBuilder.AppendLine(SocialPromptTexts.Get("P039"));
 			if (list2.Count <= 0)
@@ -634,8 +667,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			List<string> list = GetClanMembersCompat(Clan.PlayerClan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "playerClanHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			return BuildFactBlock(SocialPromptTexts.Get("P038"), list);
+			List<string> list = GetMarriageClanMembers(Clan.PlayerClan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "playerClanHeroId", speaker)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			return BuildMarriageIdentityBlock(speaker) + Environment.NewLine + BuildFactBlock(SocialPromptTexts.Get("P038"), list);
 		}
 		catch
 		{
@@ -647,7 +680,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			List<string> list = ((speaker?.Clan != null) ? GetClanMembersCompat(speaker.Clan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "targetHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>());
+			List<string> list = ((speaker?.Clan != null) ? GetMarriageClanMembers(speaker.Clan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "targetHeroId", speaker)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>());
 			return BuildFactBlock(SocialPromptTexts.Get("P040"), list);
 		}
 		catch
@@ -907,6 +940,16 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		if (left == right)
 		{
 			reason = SocialSourceTexts.Get("S117");
+			return false;
+		}
+		if (!IsMarriageableHero(left))
+		{
+			reason = SocialSourceTexts.Get("S151");
+			return false;
+		}
+		if (!IsMarriageableHero(right))
+		{
+			reason = SocialSourceTexts.Get("S152");
 			return false;
 		}
 		if (HasExistingMarriageBetween(left, right))
@@ -2057,6 +2100,21 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// Marriage-only enumeration: never change the family-harmony/relation consumers above.
+	private static IEnumerable<Hero> GetMarriageClanMembers(Clan clan)
+	{
+		if (clan == null) yield break;
+		HashSet<Hero> seen = new HashSet<Hero>();
+		Hero leader = clan.Leader;
+		if (leader != null && leader.Clan == clan && seen.Add(leader)) yield return leader;
+		if (clan.Heroes != null)
+			foreach (Hero hero in clan.Heroes)
+				if (hero != null && hero.Clan == clan && seen.Add(hero)) yield return hero;
+		if (clan.Companions != null)
+			foreach (Hero hero in clan.Companions)
+				if (hero != null && hero.Clan == clan && seen.Add(hero)) yield return hero;
+	}
+
 	private static bool IsMarriageAuthorityHero(Hero hero)
 	{
 		if (hero == null)
@@ -2181,13 +2239,13 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			reason = SocialSourceTexts.Get("S156");
 			return false;
 		}
-		List<Hero> list = GetClanMembersCompat(playerClan).Where(IsFormalMarriageCandidate).ToList();
+		List<Hero> list = GetMarriageClanMembers(playerClan).Where(IsFormalMarriageCandidate).ToList();
 		if (list.Count <= 0)
 		{
 			reason = SocialSourceTexts.Get("S157");
 			return false;
 		}
-		List<Hero> list2 = GetClanMembersCompat(targetClan).Where(IsFormalMarriageCandidate).ToList();
+		List<Hero> list2 = GetMarriageClanMembers(targetClan).Where(IsFormalMarriageCandidate).ToList();
 		if (list2.Count <= 0)
 		{
 			reason = SocialSourceTexts.Get("S158");
@@ -2292,6 +2350,14 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			return speaker;
 		}
 		return null;
+	}
+
+	private static Hero ResolveMarriageHeroId(string token)
+	{
+		string id = (token ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id)) return null;
+		try { return Hero.Find(id); }
+		catch { return null; }
 	}
 
 	private Hero ResolvePlayerClanHeroToken(string token)
@@ -2491,7 +2557,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private static bool CanExecuteFormalMarriageTagPair(Hero playerClanHero, Hero targetHero, out string reason)
+	private static bool CanExecuteFormalMarriageTagPair(Hero speaker, Hero playerClanHero, Hero targetHero, bool clanMarriage, out string reason)
 	{
 		if (!CanExecuteMarriageTagPair(playerClanHero, targetHero, out reason))
 		{
@@ -2501,6 +2567,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		if (mainHero == null)
 		{
 			reason = SocialSourceTexts.Get("S175");
+			return false;
+		}
+		if (clanMarriage && playerClanHero == mainHero)
+		{
+			reason = SocialPromptTexts.Get("MarriageInvalidClanSubject");
 			return false;
 		}
 		if (playerClanHero.Clan == null || playerClanHero.Clan != mainHero.Clan)
@@ -2518,13 +2589,28 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			reason = SocialSourceTexts.Get("S156");
 			return false;
 		}
+		if (speaker == null || targetHero.Clan != speaker.Clan || speaker.Clan?.Leader != speaker)
+		{
+			reason = SocialPromptTexts.Get("MarriageInvalidApprover");
+			return false;
+		}
 		return true;
 	}
 
-	private bool TryExecuteFormalMarriage(Hero speaker, Hero playerClanHero, Hero targetHero, int? bridePrice, out string status)
+	private static bool CanExecuteElopeMarriageTagPair(Hero speaker, Hero targetHero, out string reason)
+	{
+		if (speaker == null || targetHero != speaker)
+		{
+			reason = SocialPromptTexts.Get("MarriageInvalidElopeSubject");
+			return false;
+		}
+		return CanExecuteMarriageTagPair(Hero.MainHero, targetHero, out reason);
+	}
+
+	private bool TryExecuteFormalMarriage(Hero speaker, Hero playerClanHero, Hero targetHero, int? bridePrice, out string status, bool clanMarriage = false)
 	{
 		status = "";
-		if (!CanExecuteFormalMarriageTagPair(playerClanHero, targetHero, out var reason))
+		if (!CanExecuteFormalMarriageTagPair(speaker, playerClanHero, targetHero, clanMarriage, out var reason))
 		{
 			status = SocialSourceTexts.Get("S177") + reason;
 			return false;
@@ -2615,7 +2701,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	private bool TryExecuteElopeMarriage(Hero speaker, Hero targetHero, out string status)
 	{
 		status = "";
-		if (!CanExecuteMarriageTagPair(Hero.MainHero, targetHero, out var reason))
+		if (!CanExecuteElopeMarriageTagPair(speaker, targetHero, out var reason))
 		{
 			status = SocialSourceTexts.Get("S188") + reason;
 			return false;
@@ -3193,6 +3279,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		string text2 = text ?? "";
 		text2 = LoveDeltaRegex.Replace(text2, "");
 		text2 = MarriageFormalPairRegex.Replace(text2, "");
+		text2 = MarriageClanPairRegex.Replace(text2, "");
 		text2 = MarriageFormalLegacyRegex.Replace(text2, "");
 		text2 = MarriageElopeRegex.Replace(text2, "");
 		text2 = DivorcePairRegex.Replace(text2, "");
@@ -3202,7 +3289,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	private static bool ContainsMarriageActionTags(string text)
 	{
 		string text2 = text ?? "";
-		return LoveDeltaRegex.IsMatch(text2) || MarriageFormalPairRegex.IsMatch(text2) || MarriageFormalLegacyRegex.IsMatch(text2) || MarriageElopeRegex.IsMatch(text2) || DivorcePairRegex.IsMatch(text2);
+		return LoveDeltaRegex.IsMatch(text2) || MarriageClanPairRegex.IsMatch(text2) || MarriageFormalPairRegex.IsMatch(text2) || MarriageFormalLegacyRegex.IsMatch(text2) || MarriageElopeRegex.IsMatch(text2) || DivorcePairRegex.IsMatch(text2);
 	}
 
 	private List<PostprocessRuleEntry> BuildRuntimeMarriagePostprocessRules(Hero speaker)
@@ -3227,7 +3314,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				bool isFormal = text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase);
+				bool isFormal = text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:MARRIAGE_CLAN:", StringComparison.OrdinalIgnoreCase);
 				bool isElope = text.StartsWith("[ACTION:MARRIAGE_ELOPE:", StringComparison.OrdinalIgnoreCase);
 				bool isDivorce = text.StartsWith("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase);
 				if (isFormal && !allowFormal)
@@ -3341,52 +3428,76 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return BuildMarriagePostprocessTargetCandidatesBlock(speaker);
 	}
 
-	private string NormalizeMarriagePostprocessTags(string raw, List<PostprocessRuleEntry> rules, Hero speaker)
+	// Captured on the game thread; normalization after HTTP must not read live Heroes.
+	internal sealed class MarriagePostprocessContext
 	{
-		List<string> ruleTags = (rules ?? new List<PostprocessRuleEntry>()).Select((PostprocessRuleEntry x) => (x?.Tag ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		bool allowFormal = ruleTags.Any((string x) => x.IndexOf("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase) >= 0);
-		bool allowElope = ruleTags.Any((string x) => x.IndexOf("[ACTION:MARRIAGE_ELOPE:", StringComparison.OrdinalIgnoreCase) >= 0);
-		bool allowDivorce = ruleTags.Any((string x) => x.IndexOf("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase) >= 0);
-		List<string> list = new List<string>();
-		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in MarriageFormalPairRegex.Matches(raw ?? ""))
+		internal string PlayerHeroId = "";
+		internal string SpeakerHeroId = "";
+		internal bool FormalAllowed;
+		internal HashSet<string> PlayerHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		internal HashSet<string> TargetHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		internal string PlayerCandidates = "";
+		internal string TargetCandidates = "";
+	}
+
+	internal MarriagePostprocessContext CaptureMarriagePostprocessContextForExternal(Hero speaker)
+	{
+		MarriagePostprocessContext context = new MarriagePostprocessContext();
+		Hero player = Hero.MainHero;
+		Clan playerClan = Clan.PlayerClan ?? player?.Clan;
+		context.PlayerHeroId = player?.StringId ?? "";
+		context.SpeakerHeroId = IsMarriageableHero(speaker) ? (speaker.StringId ?? "") : "";
+		context.FormalAllowed = speaker != null && speaker.Clan != null && speaker.Clan != playerClan && speaker.Clan.Leader == speaker;
+		List<string> playerLines = new List<string>();
+		List<string> targetLines = new List<string>();
+		foreach (Hero hero in GetMarriageClanMembers(playerClan))
+			if (IsFormalMarriageCandidate(hero) && !string.IsNullOrWhiteSpace(hero.StringId) && context.PlayerHeroIds.Add(hero.StringId))
+				playerLines.Add(BuildMarriageHeroFactLine(hero, "playerClanHeroId", speaker));
+		foreach (Hero hero in GetMarriageClanMembers(speaker?.Clan))
+			if (IsFormalMarriageCandidate(hero) && !string.IsNullOrWhiteSpace(hero.StringId) && context.TargetHeroIds.Add(hero.StringId))
+				targetLines.Add(BuildMarriageHeroFactLine(hero, "targetHeroId", speaker));
+		context.PlayerCandidates = BuildMarriageIdentityBlock(speaker) + Environment.NewLine + BuildFactBlock(SocialPromptTexts.Get("P038"), playerLines);
+		context.TargetCandidates = BuildFactBlock(SocialPromptTexts.Get("P040"), targetLines);
+		return context;
+	}
+
+	private string NormalizeMarriagePostprocessTags(string raw, List<PostprocessRuleEntry> rules, MarriagePostprocessContext context)
+	{
+		List<string> ruleTags = (rules ?? new List<PostprocessRuleEntry>()).Select(x => (x?.Tag ?? "").Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+		bool allowFormal = ruleTags.Any(x => x.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase));
+		bool allowClan = ruleTags.Any(x => x.StartsWith("[ACTION:MARRIAGE_CLAN:", StringComparison.OrdinalIgnoreCase));
+		bool allowElope = ruleTags.Any(x => x.StartsWith("[ACTION:MARRIAGE_ELOPE:", StringComparison.OrdinalIgnoreCase));
+		bool allowDivorce = ruleTags.Any(x => x.StartsWith("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase));
+		List<string> tags = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (Match match in MarriageFormalPairRegex.Matches(raw ?? "").Cast<Match>().Concat(MarriageClanPairRegex.Matches(raw ?? "").Cast<Match>()))
 		{
-			string text = (item?.Value ?? "").Trim();
-			if (allowFormal && hashSet2.Add(text))
-			{
-				list.Add(text);
-			}
+			bool clan = match.Value.StartsWith("[ACTION:MARRIAGE_CLAN:", StringComparison.OrdinalIgnoreCase);
+			string left = match.Groups[1].Value.Trim();
+			string right = match.Groups[2].Value.Trim();
+			if ((clan ? allowClan : allowFormal) && context?.FormalAllowed == true
+				&& context.PlayerHeroIds.Contains(left) && context.TargetHeroIds.Contains(right)
+				&& !string.Equals(left, right, StringComparison.OrdinalIgnoreCase)
+				&& (!clan || !string.Equals(left, context.PlayerHeroId, StringComparison.OrdinalIgnoreCase))
+				&& seen.Add(match.Value)) tags.Add(match.Value);
 		}
-		foreach (Match item2 in MarriageFormalLegacyRegex.Matches(raw ?? ""))
-		{
-			string text2 = (item2?.Value ?? "").Trim();
-			if (allowFormal && hashSet2.Add(text2))
-			{
-				list.Add(text2);
-			}
-		}
-		foreach (Match item3 in MarriageElopeRegex.Matches(raw ?? ""))
-		{
-			string text3 = (item3?.Value ?? "").Trim();
-			if (allowElope && hashSet2.Add(text3))
-			{
-				list.Add(text3);
-			}
-		}
-		foreach (Match item4 in DivorcePairRegex.Matches(raw ?? ""))
-		{
-			string text4 = (item4?.Value ?? "").Trim();
-			if (allowDivorce && hashSet2.Add(text4))
-			{
-				list.Add(text4);
-			}
-		}
-		return string.Join("\n", list.Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
+		foreach (Match match in MarriageElopeRegex.Matches(raw ?? ""))
+			if (allowElope && !string.IsNullOrWhiteSpace(context?.SpeakerHeroId)
+				&& string.Equals(match.Groups[1].Value.Trim(), context.SpeakerHeroId, StringComparison.OrdinalIgnoreCase)
+				&& seen.Add(match.Value)) tags.Add(match.Value);
+		foreach (Match match in DivorcePairRegex.Matches(raw ?? ""))
+			if (allowDivorce && seen.Add(match.Value)) tags.Add(match.Value);
+		return string.Join("\n", tags);
+	}
+
+	internal string NormalizeMarriagePostprocessTagsWithContextForExternal(string raw, List<PostprocessRuleEntry> rules, MarriagePostprocessContext context)
+	{
+		return NormalizeMarriagePostprocessTags(raw, rules, context);
 	}
 
 	public string NormalizeMarriagePostprocessTagsForExternal(string raw, List<PostprocessRuleEntry> rules, Hero speaker = null)
 	{
-		return NormalizeMarriagePostprocessTags(raw, rules, speaker);
+		return NormalizeMarriagePostprocessTags(raw, rules, CaptureMarriagePostprocessContextForExternal(speaker));
 	}
 
 	private string TryRunMarriageActionPostprocess(Hero speaker, string replyText)
@@ -3423,9 +3534,10 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		string text2 = BuildMarriagePostprocessRuleText(list);
 		string text3 = BuildMarriagePostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
+		MarriagePostprocessContext marriageContext = CaptureMarriagePostprocessContextForExternal(speaker);
 		bool injectClanFacts = IsMarriagePostprocessClanLeaderSpeaker(speaker);
-		string text4 = injectClanFacts ? BuildMarriagePostprocessPlayerCandidatesBlock(speaker) : null;
-		string text5 = injectClanFacts ? BuildMarriagePostprocessTargetCandidatesBlock(speaker) : null;
+		string text4 = injectClanFacts ? marriageContext.PlayerCandidates : null;
+		string text5 = injectClanFacts ? marriageContext.TargetCandidates : null;
 		string text7 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text2, text3, speaker?.Name?.ToString() ?? "NPC", null, null, null, text4, text5);
 		string text8 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text2, speaker?.Name?.ToString() ?? "NPC", SocialPromptTexts.Get("P014"), text, null, null, null, text4, text5);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text7, text8, 5000, 0f, out var content, out var error))
@@ -3433,7 +3545,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			Logger.Log("Romance", "[MarriagePostprocess] Request failed: " + error);
 			return text.Trim();
 		}
-		string text9 = NormalizeMarriagePostprocessTags(content, list, speaker);
+		string text9 = NormalizeMarriagePostprocessTags(content, list, marriageContext);
 		if (string.IsNullOrWhiteSpace(text9))
 		{
 			return text.Trim();
@@ -3475,12 +3587,12 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					AdjustPrivateLove(hero, result, "llm_tag");
 				}
 			}
-			MatchCollection matchCollection2 = MarriageFormalPairRegex.Matches(text);
-			for (int j = 0; j < matchCollection2.Count; j++)
+			foreach (Match match2 in MarriageFormalPairRegex.Matches(text).Cast<Match>().Concat(MarriageClanPairRegex.Matches(text).Cast<Match>()))
 			{
-				Match match2 = matchCollection2[j];
-				Hero hero2 = ResolvePlayerClanHeroToken(match2.Groups[1].Value);
-				Hero hero3 = ResolveTargetHeroToken(speaker, match2.Groups[2].Value);
+				bool clanMarriage = match2.Value.StartsWith("[ACTION:MARRIAGE_CLAN:", StringComparison.OrdinalIgnoreCase);
+				bool executed = false;
+				Hero hero2 = ResolveMarriageHeroId(match2.Groups[1].Value);
+				Hero hero3 = ResolveMarriageHeroId(match2.Groups[2].Value);
 				int? bridePrice = null;
 				if (match2.Groups.Count > 3 && int.TryParse(match2.Groups[3].Value, out var result2))
 				{
@@ -3489,51 +3601,30 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				string status = "";
 				if (hero2 == null)
 				{
-					status = SocialSourceTexts.Get("S209");
+					value = status = SocialSourceTexts.Get("S209");
 				}
 				else if (hero3 == null)
 				{
-					status = SocialSourceTexts.Get("S210");
-				}
-				else if (TryExecuteFormalMarriage(speaker, hero2, hero3, bridePrice, out status))
-				{
-					value = status;
+					value = status = SocialSourceTexts.Get("S210");
 				}
 				else
 				{
+					executed = TryExecuteFormalMarriage(speaker, hero2, hero3, bridePrice, out status, clanMarriage);
 					value = status;
 				}
+				Logger.Log("Romance", "[MarriageTagExecution] family=" + (clanMarriage ? "CLAN" : "FORMAL")
+					+ " approver=" + (speaker?.StringId ?? "") + " left=" + (hero2?.StringId ?? "")
+					+ " right=" + (hero3?.StringId ?? "") + " executed=" + executed);
 			}
-			string text2 = MarriageFormalPairRegex.Replace(text, "");
-			MatchCollection matchCollection3 = MarriageFormalLegacyRegex.Matches(text2);
-			for (int k = 0; k < matchCollection3.Count; k++)
-			{
-				Match match3 = matchCollection3[k];
-				Hero hero4 = ResolveTargetHeroToken(speaker, match3.Groups[1].Value);
-				int? bridePrice2 = null;
-				if (match3.Groups.Count > 2 && int.TryParse(match3.Groups[2].Value, out var result3))
-				{
-					bridePrice2 = result3;
-				}
-				string status2 = "";
-				if (hero4 == null)
-				{
-					status2 = SocialSourceTexts.Get("S210");
-				}
-				else if (TryExecuteFormalMarriage(speaker, Hero.MainHero, hero4, bridePrice2, out status2))
-				{
-					value = status2;
-				}
-				else
-				{
-					value = status2;
-				}
-			}
+			string text2 = MarriageClanPairRegex.Replace(MarriageFormalPairRegex.Replace(text, ""), "");
+			if (MarriageFormalLegacyRegex.IsMatch(text2))
+				Logger.Log("Romance", "[MarriageTagRejected] reason=legacy_missing_initiator");
+
 			MatchCollection matchCollection4 = MarriageElopeRegex.Matches(text2);
 			for (int l = 0; l < matchCollection4.Count; l++)
 			{
 				Match match4 = matchCollection4[l];
-				Hero hero5 = ResolveTargetHeroToken(speaker, match4.Groups[1].Value);
+				Hero hero5 = ResolveMarriageHeroId(match4.Groups[1].Value);
 				string status3 = "";
 				if (hero5 == null)
 				{
@@ -3579,6 +3670,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			}
 			text = LoveDeltaRegex.Replace(text, "");
 			text = MarriageFormalPairRegex.Replace(text, "");
+			text = MarriageClanPairRegex.Replace(text, "");
 			text = MarriageFormalLegacyRegex.Replace(text, "");
 			text = MarriageElopeRegex.Replace(text, "");
 			text = DivorcePairRegex.Replace(text, "");

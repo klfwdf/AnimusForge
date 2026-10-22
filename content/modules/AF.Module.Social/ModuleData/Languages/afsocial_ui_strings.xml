@@ -144,6 +144,9 @@
     <string id="AF_SOCIAL_UI_ProactiveNeed_30" text="Discussion of diplomacy" />
     <string id="AF_SOCIAL_UI_ProactiveNeed_31" text="A specific request" />
     <string id="AF_SOCIAL_UI_Century" text="Century {NUMBER}" />
+    <string id="AF_SOCIAL_UI_MarriageInvalidClanSubject" text="A clan-arranged marriage must name a player-clan member other than the player." />
+    <string id="AF_SOCIAL_UI_MarriageInvalidApprover" text="The speaking NPC must lead the actual marriage partner's clan." />
+    <string id="AF_SOCIAL_UI_MarriageInvalidElopeSubject" text="Only the speaking NPC may personally elope with the player." />
   </strings>
 </base>
 

@@ -1,0 +1,87 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+class Hero {
+ public static Hero MainHero; public string StringId; public Clan Clan; public Hero Father,Mother,Spouse;
+ public bool IsFemale,IsAlive=true; public float Age=25; public int Gold=100000; public string Name=>StringId;
+ public Hero(string id,Clan clan=null){StringId=id;Clan=clan; All[id]=this;}
+ public static Dictionary<string,Hero> All=new(StringComparer.OrdinalIgnoreCase);
+ public static Hero Find(string id)=>All.TryGetValue(id,out var h)?h:null;
+}
+class Clan {public static Clan PlayerClan;public Hero Leader;public int Tier;public List<Hero> Heroes=new(),Companions=new();}
+class RewardSystemBehavior {public static RewardSystemBehavior Instance=new();public int GetEffectiveTrust(Hero h)=>100;public int GetNpcTrust(Hero h)=>100;public int GetPlayerPrepaidGoldForExternal(Hero h)=>0;public int ConsumePlayerPrepaidGoldForExternal(Hero h,int n)=>0;public void AdjustTrustForExternal(Hero h,int a,int b,string why){}}
+static class GiveGoldAction {public static void ApplyBetweenCharacters(Hero a,Hero b,int n){}}
+static class ChangeRelationAction {public static void ApplyRelationChangeBetweenHeroes(Hero a,Hero b,int n){}}
+static class MyBehavior {public static void AppendExternalNpcFact(Hero h,string s){}public static void AppendExternalPlayerFact(Hero h,string s){}}
+class PostprocessRuleEntry {public string Tag,Description;}
+static class SocialSourceTexts {public static string Get(string id)=>id;}
+static class SocialPromptTexts {public static string Get(string id)=>id;}
+static class Logger {public static void Log(string area,string text){}}
+static class SocialUiLocalization {public static string MarriageStatusForDisplay(string v)=>v;public static string Format(string k,string fallback,params (string,object)[] v)=>k;}
+class InformationMessage {public InformationMessage(string v,Color c){}}
+class Color {public static Color FromUint(uint v)=>new();}
+static class InformationManager {public static void DisplayMessage(InformationMessage v){}}
+class Replay {
+ /* PRODUCTION */
+ static bool IsMarriageableHero(Hero h)=>h!=null&&h.IsAlive&&h.Age>=18;
+ static bool HasExistingMarriageBetween(Hero a,Hero b)=>a!=null&&b!=null&&(a.Spouse==b||b.Spouse==a);
+ static Hero ResolveTargetHeroToken(Hero speaker,string id)=>Hero.Find(id);
+ static Hero ResolvePlayerClanHeroToken(string id){var h=Hero.Find(id);return h?.Clan==Clan.PlayerClan?h:null;}
+ void AdjustPrivateLove(Hero h,int n,string reason){}
+ string TryRunMarriageActionPostprocess(Hero speaker,string text)=>text;
+ public List<string> Effects=new();
+ static Replay Instance; bool NativeSucceeds=true; int Facts;
+ static int GetClanRelationWithPlayer(Hero h)=>100;
+ int GetPrivateLove(Hero h)=>100;int ComputeTargetFamilyHarmony(Hero h)=>0;
+ static bool TryGetPrivateLoveAsPlayerRelation(Hero h,out int value){value=0;return false;}
+ bool TryApplyMarriageAction(Hero left,Hero right,out string reason,bool bypassMarriageEligibilityForAuthorizedTag=false){reason="";if(!NativeSucceeds)return false;Effects.Add(left.StringId+":"+right.StringId);return true;}
+ bool TryForceApplyMarriageAction(Hero left,Hero right,out string reason){reason="";return false;}
+ static bool ShouldUseAnimusForgeMultiMarriage(Hero left,Hero right)=>false;
+ void RecordFormalMarriageFacts(Hero leader,Hero left,Hero right,Clan payer,Clan receiver,int n){Facts++;}
+ void RecordElopeMarriageFacts(Hero right){Facts++;}
+ bool TryExecuteDivorce(Hero speaker,Hero left,Hero right,int? price,out string status){status="";return false;}
+ static int checks;
+ static void Check(bool v,string label){checks++;if(!v)throw new Exception(label);}
+ static void Main(){
+  var pc=new Clan();var tc=new Clan();var other=new Clan();Clan.PlayerClan=pc;
+  var player=new Hero("player",pc);Hero.MainHero=player;pc.Leader=player;
+  var father=new Hero("father",tc);tc.Leader=father;
+  var daughter=new Hero("daughter",tc){Father=father,IsFemale=true};
+  var second=new Hero("second_daughter",tc){Father=father,IsFemale=true};
+  var brother=new Hero("brother",pc);var companion=new Hero("companion",pc);
+  var outsider=new Hero("outsider",other);
+  pc.Heroes.AddRange(new[]{player,brother});pc.Companions.AddRange(new[]{companion,brother,outsider});
+  var members=GetMarriageClanMembers(pc).ToList();
+  Check(members.Count==3&&members.Contains(companion)&&members.Contains(brother),"all members including remote companion, deduplicated, foreign excluded");
+  Check(GetMarriageClanMembers(null).Count()==0,"null clan");
+  Check(GetMarriageRelationLabel(daughter,father)==SocialPromptTexts.Get("MarriageRelationDaughter"),"daughter is not speaker");
+  Check(GetMarriageRelationLabel(father,daughter)==SocialPromptTexts.Get("MarriageRelationFather"),"father relationship");
+  var mother=new Hero("mother");player.Mother=mother;brother.Mother=mother;brother.Age=30;
+  Check(GetMarriageRelationLabel(brother,player)==SocialPromptTexts.Get("MarriageRelationOlderBrother"),"older brother");
+  Check(GetMarriageRelationLabel(companion,player)==SocialPromptTexts.Get("MarriageRelationClanMember"),"non-relative clan member");
+  var context=new MarriagePostprocessContext {PlayerHeroId="player",SpeakerHeroId="father",FormalAllowed=true,PlayerHeroIds=new(StringComparer.OrdinalIgnoreCase){"player","brother","companion"},TargetHeroIds=new(StringComparer.OrdinalIgnoreCase){"father","daughter","second_daughter"}};
+  var rules=new List<PostprocessRuleEntry>{new(){Tag="[ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]"},new(){Tag="[ACTION:MARRIAGE_CLAN:playerClanHeroId:targetHeroId]"},new(){Tag="[ACTION:MARRIAGE_ELOPE:targetHeroId]"},new(){Tag="[ACTION:DIVORCE:playerClanHeroId:targetHeroId]"}};
+  var owner=new Replay();
+  string Normalize(string t)=>owner.NormalizeMarriagePostprocessTags(t,rules,context);
+  foreach(var t in new[]{"[ACTION:MARRIAGE_FORMAL:player:father]","[ACTION:MARRIAGE_FORMAL:player:daughter]","[ACTION:MARRIAGE_CLAN:brother:father]","[ACTION:MARRIAGE_CLAN:brother:daughter:12000]","[ACTION:MARRIAGE_CLAN:companion:second_daughter]","[ACTION:MARRIAGE_FORMAL:brother:daughter]"}){
+   Check(Normalize(t)==t,"valid pair: "+t);string text="reply\n"+t;int before=owner.Effects.Count;owner.ApplyMarriageTags(father,player,ref text,false);Check(owner.Effects.Count==before+1&&text=="reply","route once and strip: "+t);
+  }
+  foreach(var t in new[]{"[ACTION:MARRIAGE_FORMAL:daughter]","[ACTION:MARRIAGE_FORMAL:daughter:12000]","[ACTION:MARRIAGE_CLAN:player:daughter]","[ACTION:MARRIAGE_CLAN:outsider:daughter]","[ACTION:MARRIAGE_FORMAL:player:outsider]","[ACTION:MARRIAGE_FORMAL:player:self]","[ACTION:MARRIAGE_ELOPE:daughter]"})Check(Normalize(t)=="","reject ambiguous or wrong identity: "+t);
+  Check(Normalize("[ACTION:MARRIAGE_FORMAL:player:daughter]\n[ACTION:MARRIAGE_FORMAL:player:daughter]")=="[ACTION:MARRIAGE_FORMAL:player:daughter]","dedup");
+  context.FormalAllowed=false;Check(Normalize("[ACTION:MARRIAGE_FORMAL:player:daughter]")=="","nonleader cannot approve");
+  context.SpeakerHeroId="daughter";Check(Normalize("[ACTION:MARRIAGE_ELOPE:daughter]")=="[ACTION:MARRIAGE_ELOPE:daughter]","personal elopement");
+  Check(owner.NormalizeMarriagePostprocessTags("[ACTION:MARRIAGE_CLAN:brother:daughter]",new(),context)=="","unoffered family");
+  foreach(var t in new[]{"[ACTION:MARRIAGE_FORMAL:daughter]","[ACTION:MARRIAGE_CLAN:player:daughter]","[ACTION:MARRIAGE_FORMAL:player:outsider]","[ACTION:MARRIAGE_ELOPE:daughter]"}){string text="reply\n"+t;int before=owner.Effects.Count;owner.ApplyMarriageTags(father,player,ref text,false);Check(owner.Effects.Count==before,"executor rejects: "+t);Check(text=="reply","rejected tags stripped");}
+  string nonleader="[ACTION:MARRIAGE_CLAN:brother:second_daughter]";int count=owner.Effects.Count;owner.ApplyMarriageTags(daughter,player,ref nonleader,false);Check(owner.Effects.Count==count,"nonleader execution rejected");
+  daughter.Age=17;Check(!CanExecuteFormalMarriageTagPair(father,brother,daughter,true,out _),"underage rejected");daughter.Age=25;
+  daughter.IsAlive=false;Check(!CanExecuteFormalMarriageTagPair(father,brother,daughter,true,out _),"dead rejected");daughter.IsAlive=true;
+  brother.Spouse=daughter;Check(!CanExecuteFormalMarriageTagPair(father,brother,daughter,true,out _),"duplicate pair rejected");brother.Spouse=companion;
+  Check(CanExecuteFormalMarriageTagPair(father,brother,daughter,true,out _),"existing other spouse and same gender preserved");
+  Check(!CanExecuteElopeMarriageTagPair(father,daughter,out _),"elopement speaker mismatch");
+  owner.NativeSucceeds=false;int factsBefore=owner.Facts;Check(!owner.TryExecuteFormalMarriage(father,brother,second,null,out _,true)&&owner.Facts==factsBefore,"failed native marriage never writes success facts");
+  Check(!owner.TryExecuteElopeMarriage(daughter,daughter,out _)&&owner.Facts==factsBefore,"failed native elopement never writes success facts");
+  Check(ContainsMarriageActionTags("[ACTION:MARRIAGE_CLAN:brother:daughter]"),"family tag detection");Check(StripMarriageActionTags("reply [ACTION:MARRIAGE_CLAN:brother:daughter]")=="reply","family tag cleanup");
+  Console.WriteLine("PASS marriage production-method replay checks="+checks+"; game mutation is a test double; native/model/save acceptance NOT RUN");
+ }
+}

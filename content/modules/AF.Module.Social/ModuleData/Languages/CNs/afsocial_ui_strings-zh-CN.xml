@@ -144,5 +144,8 @@
     <string id="AF_SOCIAL_UI_ProactiveNeed_30" text="讨论外交局势" />
     <string id="AF_SOCIAL_UI_ProactiveNeed_31" text="具体请求" />
     <string id="AF_SOCIAL_UI_Century" text="{NUMBER}世纪" />
+    <string id="AF_SOCIAL_UI_MarriageInvalidClanSubject" text="家族联姻须指定玩家之外的实际家族成员。" />
+    <string id="AF_SOCIAL_UI_MarriageInvalidApprover" text="当前NPC必须是实际婚配对象所属家族的族长。" />
+    <string id="AF_SOCIAL_UI_MarriageInvalidElopeSubject" text="私奔只能由当前NPC本人与玩家本人结合。" />
   </strings>
 </base>

@@ -317,7 +317,7 @@ internal static class WeeklyMemoryMaterialPolicy
 		{
 			return true;
 		}
-		if (Regex.IsMatch(text, "^\\[ACTION:(?:MARRIAGE_FORMAL|MARRIAGE_ELOPE|DIVORCE):[^\\]]+\\]$", RegexOptions.IgnoreCase))
+		if (Regex.IsMatch(text, "^\\[ACTION:(?:MARRIAGE_FORMAL|MARRIAGE_CLAN|MARRIAGE_ELOPE|DIVORCE):[^\\]]+\\]$", RegexOptions.IgnoreCase))
 		{
 			return true;
 		}
@@ -391,7 +391,7 @@ internal static class WeeklyMemoryMaterialPolicy
 		{
 			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0403");
 		}
-		if (text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:MARRIAGE_CLAN:", StringComparison.OrdinalIgnoreCase))
 		{
 			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0404");
 		}

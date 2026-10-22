@@ -111,6 +111,9 @@ internal static class SocialUiLocalization
 
 	private static string TranslateMarriageReason(string reason)
 	{
+		if (reason == SocialPromptTexts.Get("MarriageInvalidClanSubject")) return Text("AF_SOCIAL_UI_MarriageInvalidClanSubject", "A clan-arranged marriage must name a player-clan member other than the player.");
+		if (reason == SocialPromptTexts.Get("MarriageInvalidApprover")) return Text("AF_SOCIAL_UI_MarriageInvalidApprover", "The speaking NPC must lead the actual marriage partner's clan.");
+		if (reason == SocialPromptTexts.Get("MarriageInvalidElopeSubject")) return Text("AF_SOCIAL_UI_MarriageInvalidElopeSubject", "Only the speaking NPC may personally elope with the player.");
 		if (string.IsNullOrWhiteSpace(reason)) return string.Empty;
 		if (reason == SocialSourceTexts.Get("S116")) return Text("AF_SOCIAL_UI_MarriageReasonMissingPair", "The marriage pair could not be found.");
 		if (reason == SocialSourceTexts.Get("S230")) return Text("AF_SOCIAL_UI_MarriageReasonMissingDivorcePair", "The divorce pair could not be found.");

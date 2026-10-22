@@ -614,6 +614,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 		string text7 = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0317");
 		string marriagePlayerCandidates = null;
 		string marriageTargetCandidates = null;
+		RomanceSystemBehavior.MarriagePostprocessContext marriageContext = null;
 		string runtimeContext = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0318");
 		runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, resolvedChainName == "native_conversation" ? PlayerCaptivityConversation.BuildRuntimeContext(targetHero ?? targetCharacter?.HeroObject) : "");
 		List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null;
@@ -817,8 +818,9 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 		}
 		if (marriageRuleInjected && RomanceSystemBehavior.Instance != null)
 		{
-			marriagePlayerCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessPlayerCandidatesBlockForExternal(marriageSpeaker);
-			marriageTargetCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessTargetCandidatesBlockForExternal(marriageSpeaker);
+			marriageContext = RomanceSystemBehavior.Instance.CaptureMarriagePostprocessContextForExternal(marriageSpeaker);
+			marriagePlayerCandidates = marriageContext.PlayerCandidates;
+			marriageTargetCandidates = marriageContext.TargetCandidates;
 		}
 		if (nobleGatheringRuleInjected)
 		{
@@ -913,7 +915,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 			string proposeAgendaTags = "";
 			string worldMapPartyCommandTags = worldMapPartyCommandRuleInjected ? NormalizeWorldMapPartyCommandPostprocessTagsForScene(content) : "";
 			string nobleGatheringTags = nobleGatheringRuleInjected ? TeamModuleServices.Gathering.NormalizeNobleGatheringPostprocessTagsForExternal(content) : "";
-			string marriageTags = (marriageRuleInjected && RomanceSystemBehavior.Instance != null) ? RomanceSystemBehavior.Instance.NormalizeMarriagePostprocessTagsForExternal(content, marriageRules, marriageSpeaker) : "";
+			string marriageTags = (marriageRuleInjected && RomanceSystemBehavior.Instance != null) ? RomanceSystemBehavior.Instance.NormalizeMarriagePostprocessTagsWithContextForExternal(content, marriageRules, marriageContext) : "";
 			string siegeSurrenderTags = NormalizeSiegeSurrenderPostprocessTagsForScene(content, siegeSurrenderRules, siegeSurrenderPostprocessEnabled);
 			string npcSurrenderTags = NormalizeNpcSurrenderPostprocessTagsForScene(content, npcSurrenderRules, npcSurrenderPostprocessEnabled);
 			string siegeInterventionTags = siegeInterventionPostprocessEnabled ? TeamModuleServices.Siege.NormalizePostprocessTags(siegeInterventionPostprocessEnabled, content, siegeInterventionRules) : "";

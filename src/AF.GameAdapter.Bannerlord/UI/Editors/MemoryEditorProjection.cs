@@ -116,7 +116,7 @@ internal static class MemoryEditorProjection
 
 		if (text.StartsWith("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagService", "Kingdom service change");
 
-		if (text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagMarriage", "Formal marriage");
+		if (text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:MARRIAGE_CLAN:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagMarriage", "Formal marriage");
 
 		if (text.StartsWith("[ACTION:MARRIAGE_ELOPE:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagElopement", "Marriage by elopement");
 
