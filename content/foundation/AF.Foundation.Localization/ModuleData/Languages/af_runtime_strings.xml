@@ -29,8 +29,8 @@
     <string id="AF_CONTEXT_RecentChars" text="Recent original dialogue character budget" />
     <string id="AF_CONTEXT_RecentChars_Hint" text="Select complete recent dialogue groups within this character budget. The current group is never silently cut. Earlier relevant quotes have a separate 6000-character budget. Default: 20000." />
     <string id="AF_CONTEXT_InputChars" text="Input character management target" />
-    <string id="AF_CONTEXT_InputChars_Hint" text="Automatically reduces older optional dialogue groups and rebuilds the cache toward this target. Required rules, facts and current input remain intact and continue even if they alone exceed the target. No local budget-error interruption. Default: 100000." />
+    <string id="AF_CONTEXT_InputChars_Hint" text="Input-size diagnostic target only. Exceeding it does not remove selected dialogue or skip prompt-cache reuse. Recent dialogue, intraday summaries and quote recall still manage conversation history. Default: 100000." />
     <string id="AF_CONTEXT_Tokens" text="Estimated context token target" />
-    <string id="AF_CONTEXT_Tokens_Hint" text="Target for estimated input tokens plus the configured output allowance. Automatically reduces optional history; required-only input continues above the target. This estimate is not the provider tokenizer or automatic model-capacity detection. Default: 128000." />
+    <string id="AF_CONTEXT_Tokens_Hint" text="Diagnostic target for estimated input tokens plus the configured output allowance. Exceeding it does not remove selected dialogue or skip prompt-cache reuse. This estimate is not the provider tokenizer or automatic model-capacity detection. Default: 128000." />
   </strings>
 </base>

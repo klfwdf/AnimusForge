@@ -379,7 +379,6 @@ public static class ShoutNetwork
 	private static JObject BuildPrimaryChatPayload(List<object> messages, DuelSettings settings, string apiUrl, string modelName, int actualMaxTokens, bool stream, out string thinkingMode, bool forceDisableThinking = false)
 	{
 		messages = PrimaryChatMessagePolicy.EnsureFinalUserTurn(messages, out _);
-        messages = ConversationContextSettingsCapture.PrepareOptionalHistory(messages, Math.Max(16, actualMaxTokens));
 		JObject jObject = new JObject
 		{
 			["model"] = modelName ?? "",

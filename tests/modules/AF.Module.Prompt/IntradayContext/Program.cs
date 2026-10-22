@@ -38,8 +38,7 @@ internal static class Program
                 request.Add(P(speech.Role, speech.Content, group < 12 ? group : 0));
             }
             request.Add(P("user", "Current question " + turn));
-            request = ConversationRequestBudget.Prepare(request, options.InputChars, options.ContextTokens, 12000);
-            using var lease = cache.Begin(1, "scene:Alice", "Alice", request, "", text, options.InputChars, 10, Now.AddSeconds(turn), options.ContextTokens, 12000);
+            using var lease = cache.Begin(1, "scene:Alice", "Alice", request, "", text, PromptCacheSettings.MaxTranscriptCharacters, 10, Now.AddSeconds(turn));
             if (!ConversationRequestBudget.Fits(lease.Messages, options.InputChars, options.ContextTokens, 12000)) throw new Exception("final budget failed");
             peakMessages = Math.Max(peakMessages, lease.Messages.Count); peakChars = Math.Max(peakChars, lease.Chars);
             lease.Commit("Accepted reply " + turn, true, Now.AddSeconds(turn));
@@ -79,12 +78,12 @@ internal static class Program
         var staleResult = stale.Build("stale", history, "琥珀口令", options, _ => { current = false; return "LATE_RESULT"; }, () => current);
         Check(staleResult.Context.Length == 0, "late cancelled summary never published");
         var oversized = new List<PromptCacheMessage> { P("system", new string('S', 30000)), P("user", "OLD_USER", 1), P("assistant", new string('A', 30000), 1), P("user", "CURRENT") };
-        var reduced = ConversationRequestBudget.Prepare(oversized, 35000, 128000, 12000);
-        Check(reduced.Count == 2 && All(reduced).EndsWith("CURRENT") && oversized.Count == 4, "whole optional turn removed without mutating source or current input");
-        Check(!ConversationRequestBudget.Fits(reduced, 10000, 128000, 12000), "required input can be identified as above management target");
-        var requiredFloor = ConversationRequestBudget.Prepare(reduced, 10000, 128000, 12000);
-        Check(requiredFloor.SequenceEqual(reduced) && All(requiredFloor).EndsWith("CURRENT"), "required-only input survives over-target preparation unchanged");
-        Check(!ConversationRequestBudget.Fits(reduced, 50000, 10000, 9000), "output allowance included in estimated context budget");
+        using var overTarget = cache.Begin(1, "over-target", "Alice", oversized, "", text, 35000, 10, Now);
+        Check(overTarget.Messages.SequenceEqual(oversized) && oversized.Count == 4,
+            "over-target cache fallback preserves selected user/assistant turns and current input");
+        Check(!ConversationRequestBudget.Fits(oversized, 10000, 128000, 12000), "complete input can be identified as above management target");
+        Check(!overTarget.Commit("NOT_RETAINED", true, Now), "oversized complete request does not grow retained cache");
+        Check(!ConversationRequestBudget.Fits(oversized, 100000, 10000, 9000), "output allowance included in estimated context diagnostics");
         var resetting = new ConversationPromptCacheStore();
         var seed = new List<PromptCacheMessage> { P("system", "SYS", revision:"summary1"), P("user", "OLD_HISTORY", 1), P("user", "Q") };
         using (var first = resetting.Begin(1, "actor", "Alice", seed, "", text, 100000, 10, Now)) first.Commit("A", true, Now);

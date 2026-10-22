@@ -21,18 +21,7 @@ internal static class ConversationRequestBudget
     internal static bool Fits(IEnumerable<PromptCacheMessage> messages, int chars, int totalTokens, int outputTokens)
         => Characters(messages) <= chars && Estimate(messages) + Math.Max(0, outputTokens) <= totalTokens;
 
-    internal static List<PromptCacheMessage> Prepare(List<PromptCacheMessage> original, int chars, int totalTokens, int outputTokens)
-    {
-        var result = new List<PromptCacheMessage>(original);
-        // Only whole optional historical turns can leave a request. Fixed rules, current facts,
-        // and the current input are never trimmed, rewritten, or promoted to executed facts.
-        // Targets do not reject required-only requests: the caller preserves that floor and
-        // continues, while the bounded cache can fall back to this freshly prepared request.
-        foreach (int group in result.Where(x => x.HistoryGroup > 0).Select(x => x.HistoryGroup).Distinct().ToArray())
-        {
-            if (Fits(result, chars, totalTokens, outputTokens)) break;
-            result.RemoveAll(x => x.HistoryGroup == group);
-        }
-        return result;
-    }
+    // Final targets only govern diagnostics. The shared
+    // recent-window / intraday-summary pipeline has already selected this request's history;
+    // exceeding a final target must not discard any of those selected turns.
 }

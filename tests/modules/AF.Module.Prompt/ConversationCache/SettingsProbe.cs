@@ -146,10 +146,12 @@ internal static class PromptCacheSettingsProbe
         var courier = new System.Collections.Generic.List<object>();
         af.GetType("AnimusForge.MainPromptMessageAssemblyOwner", true).GetMethod("AppendCourierPersistentMemoryRoleMessages", All)
             .Invoke(null, new object[] { courier, list, "Alice", "Player" });
-        var boundedCourier = (System.Collections.Generic.List<object>)capture.GetMethod("PrepareOptionalHistory", All)
-            .Invoke(null, new object[] { courier, 12000 });
-        Check(boundedCourier.Count < courier.Count && ((string)Get(boundedCourier.Last(), "content")).Contains("dialogue-299"),
-            "actual courier shares whole-turn budget reduction and preserves latest speech");
+        var courierArguments = new object[] { courier, duel, "https://relay.test/v1/chat/completions", "plain-model", 12000, false, null, true };
+        var completeCourier = (JObject)af.GetType("AnimusForge.ShoutNetwork", true).GetMethod("BuildPrimaryChatPayload", All)
+            .Invoke(null, courierArguments);
+        string courierJson = completeCourier.ToString();
+        Check(completeCourier["messages"].Count() >= courier.Count && courierJson.Contains("AMBER_PASSWORD_NORTH_GATE")
+            && courierJson.Contains("dialogue-299"), "actual courier preserves all selected history above final character target");
         const string cacheSystem = "[AF_PROMPT_CACHE_V1]\n";
         JObject Payload(int totalCharacters) => new JObject { ["model"] = "gemini-test", ["max_tokens"] = 1000,
             ["messages"] = new JArray(new JObject { ["role"] = "system", ["content"] = cacheSystem },
@@ -166,21 +168,68 @@ internal static class PromptCacheSettingsProbe
 
         object RequiredMessage(string role, string content, int group) => Activator.CreateInstance(
             af.GetType("AnimusForge.ConversationPromptMessage", true), All, null, new object[] { role, content, group, "" }, null);
-        var boundaryInput = new System.Collections.Generic.List<object> { RequiredMessage("system", new string('s', 30000), 0),
-            RequiredMessage("user", "OLD_OMIT", 1), RequiredMessage("assistant", "OLD_REPLY_OMIT", 1), RequiredMessage("user", "CURRENT_KEEP", 0) };
+        var boundaryInput = new System.Collections.Generic.List<object> { RequiredMessage("system", new string('规', 50000), 0),
+            RequiredMessage("user", "Buy noble prisoner Leosios for 2000.", 1),
+            RequiredMessage("assistant", "Agreed. Pay 2000 and take Leosios.", 1),
+            RequiredMessage("user", "[AFEF PLAYER_ACTION] Paid 2000.", 0), RequiredMessage("user", "CURRENT_KEEP", 0) };
         duel.GetType().GetProperty("ConversationContextEstimatedTokens").SetValue(duel, 16000);
         var projectedInput = (System.Collections.Generic.List<object>)af.GetType("AnimusForge.ShoutNetwork", true)
             .GetMethod("ApplyPlayerDisplayNameToOutgoingMessages", All).Invoke(null, new object[] { boundaryInput });
         Check((int)projectedInput[1].GetType().GetField("HistoryGroup", All).GetValue(projectedInput[1]) == 1,
             "actual display-name projection retains optional-history provenance");
-        var boundaryArguments = new object[] { projectedInput, duel, "https://relay.test/v1/chat/completions", "plain-model", 12000, false, null, true };
+        var boundaryArguments = new object[] { projectedInput, duel, "https://relay.test/v1/chat/completions", "plain-model", 64000, false, null, true };
         var boundaryPayload = (JObject)af.GetType("AnimusForge.ShoutNetwork", true).GetMethod("BuildPrimaryChatPayload", All).Invoke(null, boundaryArguments);
-        Check(boundaryPayload["messages"].Count() == 2 && boundaryPayload["messages"][0]["content"].Value<string>().Length == 30000
-            && boundaryPayload["messages"][1]["content"].Value<string>() == "CURRENT_KEEP" && boundaryInput.Count == 4 && boundaryPayload["max_tokens"].Value<int>() == 12000,
-            "actual primary boundary drops optional turns then preserves required floor and source");
+        Check(boundaryPayload["messages"].Count() == 5 && boundaryPayload["messages"][0]["content"].Value<string>().Length == 50000
+            && boundaryPayload["messages"][2]["role"].Value<string>() == "assistant"
+            && boundaryPayload["messages"][2]["content"].Value<string>().Contains("take Leosios")
+            && boundaryPayload["messages"][3]["content"].Value<string>().Contains("Paid 2000")
+            && boundaryPayload["messages"][4]["content"].Value<string>() == "CURRENT_KEEP"
+            && boundaryInput.Count == 5 && boundaryPayload["max_tokens"].Value<int>() == 64000,
+            "actual primary boundary preserves agreed deal, payment, roles and output above final target");
         var sentFloor = JObject.Parse((string)prepare.Invoke(null, new object[] { "https://relay.test/v1/chat/completions", boundaryPayload }));
-        Check(sentFloor["messages"][0]["content"].Value<string>().Length == 30000 && sentFloor["max_tokens"].Value<int>() == 12000,
-            "actual token target overflow continues with required content and configured output allowance");
+        string sentText = sentFloor.ToString();
+        Check(sentFloor["messages"][0]["content"].Value<string>().Length == 50000 && sentFloor["max_tokens"].Value<int>() == 64000
+            && sentText.Contains("take Leosios") && sentText.Contains("Paid 2000") && sentText.Contains("CURRENT_KEEP"),
+            "actual Gemini wire retains agreed transaction above final target after protocol conversion");
+        // Exercise the actual product cache adapter, not just the store fixture. Both targets
+        // are exceeded; stable system/prefix and dynamic dedup must still work on turn two.
+        var cacheType = af.GetType("AnimusForge.ConversationPromptCache", true);
+        var beginCache = cacheType.GetMethod("Begin", All);
+        long generation = (long)af.GetType("AnimusForge.SaveRuntimeGuard", true).GetProperty("CurrentGeneration", All).GetValue(null);
+        foreach (string channel in new[] { "native", "scene", "courier" })
+        {
+            cacheType.GetMethod("Clear", All).Invoke(null, null);
+            var firstInput = new System.Collections.Generic.List<object>(boundaryInput);
+            firstInput.Insert(1, RequiredMessage("user", "[State]\nUNCHANGED_CACHE_SENTINEL\nOLD_CACHE_STATE", 0));
+            object firstCache = beginCache.Invoke(null, new object[] { firstInput, channel, generation, 123, "Alice" });
+            var firstMessages = (System.Collections.Generic.List<object>)firstCache.GetType().GetField("Messages", All).GetValue(firstCache);
+            var firstJson = JArray.FromObject(firstMessages);
+            Check(firstJson.ToString().Contains("[AF_PROMPT_CACHE_V1]"), channel + " actual over-target request enters prefix cache");
+            firstCache.GetType().GetMethod("Accept", All).Invoke(firstCache, new object[] { "CACHE_ACCEPTED_REPLY_SENTINEL", true });
+            ((IDisposable)firstCache).Dispose();
+            var secondInput = new System.Collections.Generic.List<object>(firstInput);
+            secondInput[1] = RequiredMessage("user", "[State]\nUNCHANGED_CACHE_SENTINEL\nNEW_CACHE_STATE", 0);
+            secondInput[secondInput.Count - 1] = RequiredMessage("user", "SECOND_TURN_INPUT", 0);
+            object secondCache = beginCache.Invoke(null, new object[] { secondInput, channel, generation, 123, "Alice" });
+            var secondMessages = (System.Collections.Generic.List<object>)secondCache.GetType().GetField("Messages", All).GetValue(secondCache);
+            var secondJson = JArray.FromObject(secondMessages);
+            string secondText = secondJson.ToString();
+            Check(firstJson.Select((part, i) => JToken.DeepEquals(part, secondJson[i])).All(x => x)
+                && secondText.Contains("CACHE_ACCEPTED_REPLY_SENTINEL")
+                && secondText.Split(new[] { new string('规', 50000) }, StringSplitOptions.None).Length == 2,
+                channel + " actual second turn retains exact prefix, one system copy and accepted reply above both targets");
+            string tail = secondJson.Last["content"].Value<string>();
+            Check(!tail.Contains("UNCHANGED_CACHE_SENTINEL") && tail.Contains("OLD_CACHE_STATE")
+                && tail.Contains("NEW_CACHE_STATE") && tail.Contains("SECOND_TURN_INPUT"),
+                channel + " actual dynamic dedup skips unchanged state and preserves additions/removals/current input");
+            var cachedArguments = new object[] { secondMessages, duel, "https://relay.test/v1/chat/completions", "gemini-test", 64000, false, null, true };
+            var cachedPayload = (JObject)af.GetType("AnimusForge.ShoutNetwork", true).GetMethod("BuildPrimaryChatPayload", All).Invoke(null, cachedArguments);
+            string cachedWire = (string)prepare.Invoke(null, new object[] { "https://relay.test/v1/chat/completions", cachedPayload });
+            Check(cachedWire.Contains("CACHE_ACCEPTED_REPLY_SENTINEL") && cachedWire.Contains("take Leosios")
+                && cachedWire.Contains("Paid 2000") && cachedWire.Contains("SECOND_TURN_INPUT"),
+                channel + " actual final Gemini wire retains cached reply, deal, payment and current input");
+            ((IDisposable)secondCache).Dispose();
+        }
         duel.GetType().GetProperty("ConversationContextEstimatedTokens").SetValue(duel, 128000);
         string json = (string)prepare.Invoke(null, new object[] { "https://api.anthropic.com/v1/messages", Payload(11000) });
         Check(JObject.Parse(json)["system"] is JArray && JObject.Parse(json)["messages"] is JArray,

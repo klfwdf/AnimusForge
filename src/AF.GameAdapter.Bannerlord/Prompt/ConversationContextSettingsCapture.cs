@@ -18,24 +18,6 @@ internal static class ConversationContextSettingsCapture
             ContextTokens = Math.Max(16000, Math.Min(1000000, settings?.ConversationContextEstimatedTokens ?? 128000))
         };
     }
-    internal static List<object> PrepareOptionalHistory(List<object> messages, int outputTokens)
-    {
-        var options = Capture();
-        if (!options.Enabled) return messages;
-        var original = new List<PromptCacheMessage>();
-        foreach (object message in messages)
-        {
-            if (!PrimaryChatMessagePolicy.TryReadMessage(message, out string role, out string content)) return messages;
-            var metadata = message as ConversationPromptMessage;
-            original.Add(new PromptCacheMessage(role, content ?? "", metadata?.HistoryGroup ?? 0, metadata?.Revision ?? ""));
-        }
-        var prepared = ConversationRequestBudget.Prepare(original, options.InputChars, options.ContextTokens, outputTokens);
-        if (prepared.Count == original.Count) return messages;
-        var result = new List<object>(prepared.Count);
-        foreach (var part in prepared) result.Add(new ConversationPromptMessage(part.Role, part.Content, part.HistoryGroup, part.Revision));
-        return result;
-    }
-
     internal static string PreparePrimaryJson(string apiUrl, JObject original)
     {
         JObject payload = LlmApiCompat.PrepareChatRequestPayload(apiUrl, original);
@@ -61,8 +43,7 @@ internal static class ConversationContextSettingsCapture
             int output = payload["max_tokens"]?.Value<int>() ?? 0;
             long characters = ConversationRequestBudget.Characters(parts), tokens = ConversationRequestBudget.Estimate(parts);
             bool fits = characters <= options.InputChars && tokens + Math.Max(0, output) <= options.ContextTokens;
-            // This is a local management target, not a discovered provider capacity. Protocol
-            // separators or an irreducible required input must not terminate the conversation.
+            // Local diagnostic/cache targets never remove selected history or block sending.
             Logger.Log("ConversationBudget", "mode=" + (fits ? "within_target" : "continue_over_target")
                 + " wire_chars=" + characters
                 + " estimated_input_tokens=" + tokens + " reserved_output_tokens=" + output

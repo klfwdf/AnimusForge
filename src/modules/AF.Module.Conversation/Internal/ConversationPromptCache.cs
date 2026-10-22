@@ -33,7 +33,6 @@ internal static class ConversationPromptCache
         try
         {
             DuelSettings settings = DuelSettings.GetSettings();
-            var options = ConversationContextSettingsCapture.Capture();
             if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) return new Request(messages, null, generation);
             var original = new List<PromptCacheMessage>();
             foreach (object message in messages)
@@ -44,16 +43,9 @@ internal static class ConversationPromptCache
                 var metadata = message as ConversationPromptMessage;
                 original.Add(new PromptCacheMessage(role, content, metadata?.HistoryGroup ?? 0, metadata?.Revision ?? ""));
             }
-            int outputTokens = channel == "scene_auxiliary" ? settings?.GetAuxiliaryApiMaxTokens() ?? 12000 : settings?.GetMainApiMaxTokens() ?? 12000;
-            if (options.Enabled) original = ConversationRequestBudget.Prepare(original, options.InputChars, options.ContextTokens, outputTokens);
-            var prepared = new List<object>(original.Count);
-            foreach (var part in original) prepared.Add(new ConversationPromptMessage(part.Role, part.Content, part.HistoryGroup, part.Revision));
-            // Required-only input can exceed management targets and still continues unchanged.
-            // Built-in caching never disables context selection or its budget.
-            if (prepared.Count != messages.Count) messages = prepared;
+            // History selection/compression is upstream. Final request estimates are
+            // diagnostics only and must not prevent reuse of this stable prompt prefix.
             if (settings == null) return new Request(messages, null, generation);
-            if (options.Enabled && !ConversationRequestBudget.Fits(original, options.InputChars, options.ContextTokens, outputTokens))
-                return new Request(messages, null, generation);
             var text = new PromptCacheText
             {
                 Policy = "[AF_PROMPT_CACHE_V1]\n" + ConversationRuntimeTexts.Prompt("AF_CONV_Cache_Policy"),
@@ -73,10 +65,9 @@ internal static class ConversationPromptCache
             string key = channel + "\n" + sessionId.ToString(CultureInfo.InvariantCulture) + "\n" + provider
                 + (sceneTranscript ? "" : "\n" + actor);
             lease = Store.Begin(generation, key, actor, original, globalRule, text,
-                options.Enabled ? Math.Min(options.InputChars, PromptCacheSettings.MaxTranscriptCharacters)
-                    : PromptCacheSettings.MaxTranscriptCharacters,
+                PromptCacheSettings.MaxTranscriptCharacters,
                 PromptCacheSettings.DefaultSessionTtlMinutes, DateTime.UtcNow,
-                options.Enabled ? options.ContextTokens : int.MaxValue, options.Enabled ? outputTokens : 0, sceneTranscript);
+                sceneTranscript: sceneTranscript);
             var built = new List<object>(lease.Messages.Count);
             foreach (var message in lease.Messages) built.Add(new { role = message.Role, content = message.Content });
             Logger.Log("PromptCache", "channel=" + channel + " session=" + sessionId + " actor=" + actor

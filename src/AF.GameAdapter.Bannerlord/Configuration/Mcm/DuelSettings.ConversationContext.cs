@@ -21,12 +21,12 @@ public partial class DuelSettings
     public int ConversationContextRecentChars { get; set; } = 20000;
 
     [SettingPropertyInteger("{=AF_CONTEXT_InputChars}Input character management target", 20000, 1000000, "0", Order = 33, RequireRestart = false,
-        HintText = "{=AF_CONTEXT_InputChars_Hint}Automatically reduces older optional dialogue groups and rebuilds the cache toward this target. Required rules, facts and current input remain intact and continue even if they alone exceed the target. No local budget-error interruption. Default: 100000.")]
+        HintText = "{=AF_CONTEXT_InputChars_Hint}Input-size diagnostic target only. Exceeding it does not remove selected dialogue or skip prompt-cache reuse. Recent dialogue, intraday summaries and quote recall still manage conversation history. Default: 100000.")]
     [SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_CONTEXT_Group}Conversation context", GroupOrder = -289)]
     public int ConversationContextInputChars { get; set; } = 100000;
 
     [SettingPropertyInteger("{=AF_CONTEXT_Tokens}Estimated context token target", 16000, 1000000, "0", Order = 34, RequireRestart = false,
-        HintText = "{=AF_CONTEXT_Tokens_Hint}Target for estimated input tokens plus the configured output allowance. Automatically reduces optional history; required-only input continues above the target. This estimate is not the provider tokenizer or automatic model-capacity detection. Default: 128000.")]
+        HintText = "{=AF_CONTEXT_Tokens_Hint}Diagnostic target for estimated input tokens plus the configured output allowance. Exceeding it does not remove selected dialogue or skip prompt-cache reuse. This estimate is not the provider tokenizer or automatic model-capacity detection. Default: 128000.")]
     [SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_CONTEXT_Group}Conversation context", GroupOrder = -289)]
     public int ConversationContextEstimatedTokens { get; set; } = 128000;
 }

@@ -29,8 +29,8 @@
     <string id="AF_CONTEXT_RecentChars" text="近期原始对话字符预算" />
     <string id="AF_CONTEXT_RecentChars_Hint" text="在预算内选择完整的近期对话组，不静默截断当前组。相关旧对话另有6000字符预算。默认20000。" />
     <string id="AF_CONTEXT_InputChars" text="输入字符整理目标" />
-    <string id="AF_CONTEXT_InputChars_Hint" text="朝此目标自动减少较早的可选对话组并重建缓存。必要规则、事实和当前输入完整保留；即使它们本身超出目标也继续请求，不因本地预算报错打断。默认100000。" />
+    <string id="AF_CONTEXT_InputChars_Hint" text="仅用于输入大小诊断。超过目标不删除已选对话，也不跳过提示词缓存复用。聊天历史仍由近期原文、当日分段摘要与相关原话召回管理。默认100000。" />
     <string id="AF_CONTEXT_Tokens" text="上下文token估算目标" />
-    <string id="AF_CONTEXT_Tokens_Hint" text="估算输入token加已配置输出额度的整理目标。自动减少可选历史；只剩必要输入时超出目标也继续。这不是服务商分词器，也不会自动识别模型容量。默认128000。" />
+    <string id="AF_CONTEXT_Tokens_Hint" text="估算输入token加已配置输出额度的诊断目标。超过目标不删除已选对话，也不跳过提示词缓存复用。这不是服务商分词器，也不会自动识别模型容量。默认128000。" />
   </strings>
 </base>
