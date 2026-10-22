@@ -122,12 +122,53 @@ internal static class Program
         Check(PromptCacheSettings.MaxTranscriptCharacters == 150000 && PromptCacheSettings.Instance.SessionTtlMinutes == 10, "built-in cache retains original capacity and lifetime defaults");
         DuelSettings.Settings.ConversationContextInputChars = 20000;
         var huge = new List<object> { new ConversationPromptMessage("system", "GLOBAL"), new ConversationPromptMessage("user", new string('X', 21000), 1), new ConversationPromptMessage("assistant", "DROP", 1), new ConversationPromptMessage("user", "KEEP") };
-        using var trimmed = ConversationPromptCache.Begin(huge, "native", 1, 9, "Alice");
-        string trimmedJson = Newtonsoft.Json.JsonConvert.SerializeObject(trimmed.Messages);
-        Check(!trimmedJson.Contains(new string('X', 21000)) && !trimmedJson.Contains("DROP") && trimmedJson.Contains("KEEP") && huge.Count == 4, "built-in caching retains whole-group context selection and original source");
+        using var overTarget = ConversationPromptCache.Begin(huge, "native", 1, 9, "Alice");
+        string hugeJson = Newtonsoft.Json.JsonConvert.SerializeObject(overTarget.Messages);
+        Check(hugeJson.Contains(new string('X', 21000)) && hugeJson.Contains("DROP") && hugeJson.Contains("KEEP") && huge.Count == 4,
+            "character target overflow keeps every selected history message and role");
+        Check(hugeJson.Contains("[AF_PROMPT_CACHE_V1]"), "character target does not bypass stable-prefix caching");
+        overTarget.Accept("CHARACTER_OVER_TARGET_REPLY");
+        using var hugeNext = ConversationPromptCache.Begin(huge, "native", 1, 9, "Alice");
+        Check(Newtonsoft.Json.JsonConvert.SerializeObject(hugeNext.Messages).Contains("CHARACTER_OVER_TARGET_REPLY"),
+            "character-over-target second turn reuses accepted cached reply");
+        DuelSettings.Settings.ConversationContextInputChars = 100000;
+        DuelSettings.Settings.MainApiMaxTokens = 64000;
+        var purchase = new List<object> {
+            new ConversationPromptMessage("system", new string('规', 50000)),
+            new ConversationPromptMessage("user", "[State]\nDEDUPE_UNCHANGED_KEEP\nDEDUPE_OLD_STATE"),
+            new ConversationPromptMessage("user", "Buy the noble prisoner Leosios for 2000.", 1),
+            new ConversationPromptMessage("assistant", "Agreed. Pay 2000 and take Leosios.", 1),
+            new ConversationPromptMessage("user", "[AFEF PLAYER_ACTION] Paid 2000."),
+            new ConversationPromptMessage("user", "Here you are.") };
+        foreach (string channel in new[] { "native", "scene", "courier" })
+        {
+            using var payment = ConversationPromptCache.Begin(purchase, channel, 1, 10, "Alice");
+            string paymentJson = Newtonsoft.Json.JsonConvert.SerializeObject(payment.Messages);
+            Check(paymentJson.Contains("Buy the noble prisoner Leosios") && paymentJson.Contains("Agreed. Pay 2000")
+                && paymentJson.Contains("Paid 2000") && paymentJson.Contains("Here you are."),
+                channel + " keeps the agreed prisoner deal above input/output token target");
+            Check(paymentJson.Contains("[AF_PROMPT_CACHE_V1]"), channel + " reuses cache regardless of final input/output token target");
+            payment.Accept("Accepted without losing the deal.");
+            var followup = purchase.Take(purchase.Count - 1).Concat(new object[] { new ConversationPromptMessage("user", "Continue the deal.") }).ToList();
+            followup[1] = new ConversationPromptMessage("user", "[State]\nDEDUPE_UNCHANGED_KEEP\nDEDUPE_NEW_STATE");
+            using var paymentNext = ConversationPromptCache.Begin(followup, channel, 1, 10, "Alice");
+            var firstWire = JArray.Parse(paymentJson);
+            var secondWire = JArray.Parse(Newtonsoft.Json.JsonConvert.SerializeObject(paymentNext.Messages));
+            Check(JToken.DeepEquals(firstWire[0], secondWire[0]) && secondWire.ToString().Contains("Accepted without losing the deal.")
+                && secondWire.ToString().Split(new[] { new string('规', 50000) }, StringSplitOptions.None).Length == 2,
+                channel + " second turn keeps identical single system prefix and prior accepted reply above final target");
+            Check(firstWire.Select((part, i) => JToken.DeepEquals(part, secondWire[i])).All(x => x),
+                channel + " retains the complete sent prefix byte-for-byte above final target");
+            string nextTail = secondWire.Last["content"].Value<string>();
+            Check(!nextTail.Contains("DEDUPE_UNCHANGED_KEEP") && nextTail.Contains("DEDUPE_NEW_STATE")
+                && nextTail.Contains("DEDUPE_OLD_STATE") && nextTail.Contains("Continue the deal."),
+                channel + " deduplicates unchanged state and appends changed state plus removal and current input");
+        }
+        DuelSettings.Settings.MainApiMaxTokens = 12000;
         var required = new List<object> { new ConversationPromptMessage("system", new string('S', 30000)), new ConversationPromptMessage("user", "KEEP") };
         using var continuing = ConversationPromptCache.Begin(required, "native", 1, 9, "Alice");
-        Check(continuing.Messages.Count == 2, "mandatory floor continues over local target without an error");
+        Check(Newtonsoft.Json.JsonConvert.SerializeObject(continuing.Messages).Contains(new string('S', 30000)),
+            "mandatory floor continues over local target without an error");
         Console.WriteLine("Checks=" + checks);
     }
 }

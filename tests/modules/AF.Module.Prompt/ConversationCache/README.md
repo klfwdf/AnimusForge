@@ -22,6 +22,14 @@ scope/provider/generation isolation, TTL, bounded retained storage, whole-snapsh
 budget reset and lossless fallback, native/auxiliary isolation, private actor
 isolation with a common public prefix, and final Gemini/Anthropic wire shape.
 
+Final character/token targets govern diagnostics only. Above-target
+requests preserve all history already selected by the shared recent-window and intraday
+summary pipeline, including a just-agreed prisoner purchase followed by payment with a
+50,000-character system prompt and a 64,000-token output allowance. These targets never
+bypass prefix caching: consecutive requests retain the same single system prefix and
+accepted reply. The separate built-in 150000-character retained-storage cap still rebuilds
+or falls back to the complete selected request without removing dialogue groups.
+
 The runtime deliberately does not put different NPCs' private context into a
 shared transcript. Scene visibility and authoritative history still select the
 public dialogue each NPC can receive. Characters share the stable public prefix;

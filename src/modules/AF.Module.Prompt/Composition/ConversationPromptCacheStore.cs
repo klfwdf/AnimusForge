@@ -118,7 +118,7 @@ internal sealed class ConversationPromptCacheStore
 
     internal Lease Begin(long generation, string key, string actor, List<PromptCacheMessage> original,
         string globalRule, PromptCacheText text, int budget, int ttlMinutes, DateTime now,
-        int tokenBudget = int.MaxValue, int outputTokens = 0, bool sceneTranscript = false)
+        bool sceneTranscript = false)
     {
         lock (_gate)
         {
@@ -148,13 +148,13 @@ internal sealed class ConversationPromptCacheStore
             long ticket = session.Ticket = ++_ticket;
             ConversationSessionCache candidate = session.Core.Copy();
             List<PromptCacheMessage> built = Build(candidate, original, actor);
-            if (!ConversationRequestBudget.Fits(built, budget, tokenBudget, outputTokens))
+            if (ConversationRequestBudget.Characters(built) > budget)
             {
                 session = Fresh(); session.Ticket = ticket; _sessions[key] = session;
                 candidate = session.Core.Copy(); built = Build(candidate, original, actor);
                 warm = false; reason = "budget_reset";
             }
-            if (!ConversationRequestBudget.Fits(built, budget, tokenBudget, outputTokens))
+            if (ConversationRequestBudget.Characters(built) > budget)
             { _sessions.Remove(key); return Passthrough("snapshot_over_budget"); }
             return new Lease(this, key, actor, session, candidate, generation, ticket, built, budget, warm, reason, revision, history);
         }
