@@ -67,3 +67,11 @@ Modules\AnimusForge\bin\Win64_Shipping_Client\
 Deployment stages and validates a complete module beside `Modules\AnimusForge`, then swaps directories on the same volume and restores the old module if replacement fails. On the first unified deployment only, legacy module `PlayerExports` are read as migration candidates; legacy module folders are never modified or deleted.
 
 Build-only commands never deploy. Only `一键编译并覆盖.bat` and `一键覆盖.bat` write `Modules\AnimusForge`. `一键编译.bat` and the packaging BAT use the project-local staged module; the development pull/build/push BAT files also do not deploy.
+
+## Source Delivery Checks
+
+Auxiliary source entries are reviewed explicitly in `scripts/source_delivery.json` and mirrored in `.gitignore`. New entries require a deliberate policy update; an ignore rule alone is not a delivery check and does not affect tracked files or earlier commits.
+
+Run `python -B scripts/validate_source_delivery.py --ref <candidate>` before source delivery. To enable the repository hook, use `git config --local core.hooksPath .githooks`; delivery approval is stored separately in the ignored `local/source-delivery-policy.json`. Without valid local approval the hook refuses a push. It checks the destination, approved ancestry, all introduced commit trees and the corresponding objects, not only the final file tree. Do not bypass the hook or publish accumulated workstation history.
+
+These checks do not build, stage, deploy or push anything. The existing game build and packaging entry points are unchanged. After a repository-history change, use a freshly reviewed checkout rather than merging an older clone into the delivery branch.
