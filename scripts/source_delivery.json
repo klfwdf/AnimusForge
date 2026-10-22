@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "reviewedTools": [
+    "Coup.RuntimeProbe",
+    "Export-VanillaIssueAudit.ps1",
+    "PersistenceIdentityAudit.py",
+    "PersistenceTypedRef.cs",
+    "PersistenceTypedRef.py",
+    "PhaseEightReadiness",
+    "PlayerExportsEditor",
+    "RerankerCpuCudaBenchmark",
+    "RerankerCudaWorker",
+    "af2_migrate.py",
+    "af-gptsovits-l",
+    "af-gptsovits-u",
+    "deploy_illustrator.ps1",
+    "dump_banner_api.ps1",
+    "export_bannerlord_reference.ps1",
+    "export_vanilla_text_index.py",
+    "generate_bannerlord_history_culture_study.py",
+    "generate_bannerlord_research_grade_study.py",
+    "localization",
+    "package_policy_system_source_overlay.py",
+    "repository_source_inventory.py",
+    "verify_gccz_town_refactor.ps1"
+  ],
+  "reservedRoots": ["local", "_codex_tmp", ".codex_tmp"]
+}

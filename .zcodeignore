@@ -66,3 +66,31 @@ pip-wheel-metadata/
 wheels/
 # ----- ↑ 以上为 ZCode 默认排除规则（自定义规则请写在本行下方，不会被同步/恢复改动）-----
 # 自定义规则写在下方（本行提示可删除）
+
+# Auxiliary source entries are opt-in; keep this list aligned with scripts/source_delivery.json.
+/tools/*
+!/tools/Coup.RuntimeProbe/
+!/tools/Export-VanillaIssueAudit.ps1
+!/tools/PersistenceIdentityAudit.py
+!/tools/PersistenceTypedRef.cs
+!/tools/PersistenceTypedRef.py
+!/tools/PhaseEightReadiness/
+!/tools/PlayerExportsEditor/
+!/tools/RerankerCpuCudaBenchmark/
+!/tools/RerankerCudaWorker/
+!/tools/af2_migrate.py
+!/tools/af-gptsovits-l/
+!/tools/af-gptsovits-u/
+!/tools/deploy_illustrator.ps1
+!/tools/dump_banner_api.ps1
+!/tools/export_bannerlord_reference.ps1
+!/tools/export_vanilla_text_index.py
+!/tools/generate_bannerlord_history_culture_study.py
+!/tools/generate_bannerlord_research_grade_study.py
+!/tools/localization/
+!/tools/package_policy_system_source_overlay.py
+!/tools/repository_source_inventory.py
+!/tools/verify_gccz_town_refactor.ps1
+tools/*/runs/
+tools/*/local.settings.json
+/local/
