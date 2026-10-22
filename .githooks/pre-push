@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+root=$(git rev-parse --show-toplevel) || exit 1
+exec python -B "$root/scripts/validate_source_delivery.py" \
+    --repo "$root" --pre-push --remote-url "$2" \
+    --local-rules "$root/local/source-delivery-policy.json"
