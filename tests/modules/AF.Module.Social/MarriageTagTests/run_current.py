@@ -41,6 +41,9 @@ bootstrap = '''using System;using System.IO;using System.Linq;using System.Refle
 class Bootstrap{static int Main(string[] args){string[] dirs=args.Take(6).ToArray();AppDomain.CurrentDomain.AssemblyResolve+=(_,e)=>{string n=new AssemblyName(e.Name).Name+".dll";foreach(string d in dirs){string p=Path.Combine(d,n);if(File.Exists(p))return Assembly.LoadFrom(p);}return null;};try{return (int)Assembly.LoadFrom(args[6]).GetType("CurrentDllReplay").GetMethod("Main",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{args.Skip(7).ToArray()});}catch(Exception e){Console.WriteLine("FAIL bootstrap "+e.GetType().Name+": "+e.Message);return 1;}}}'''
 (out/'Bootstrap.cs').write_text(bootstrap, 'utf-8')
 subprocess.run([str(csc), '/nologo', '/out:'+str(out/'Replay.exe'), str(out/'Bootstrap.cs')], check=True, capture_output=True)
+# csc's unannotated executable otherwise uses the CLR 4.0 TLS defaults. Match
+# the product's net472 target without changing machine TLS or certificate policy.
+(out/'Replay.exe.config').write_text('<configuration><startup><supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.7.2"/></startup><runtime><AppContextSwitchOverrides value="Switch.System.Net.DontEnableSystemDefaultTlsVersions=false;Switch.System.Net.DontEnableSchUseStrongCrypto=false"/></runtime></configuration>', 'utf-8')
 command = [str(out/'Replay.exe')] + [str(d) for d in directories] + [str(worker), str(ROOT), str(out)]
 if args.live:
     assert args.settings and args.model_cache, 'live requests require explicit settings and model cache'

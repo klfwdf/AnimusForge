@@ -172,7 +172,9 @@ class CurrentDllReplay
                 record["normalized"] = normalized; record["expected"] = expected; record["passed"] = passed; results.Add(record);
                 File.WriteAllText(Path.Combine(output, "live-results.json"), results.ToString(), new UTF8Encoding(false));
                 Console.WriteLine(lang + " " + (string)test["id"] + " " + generated.Status + " " + (passed ? "PASS" : "FAIL") + " normalized=" + normalized);
-                if (generated.ErrorCode == "http_401" || generated.ErrorCode == "http_403") return 1;
+                // Transport failure is not a semantic result; diagnose it before
+                // sending the rest of the corpus. Semantic mismatches keep running.
+                if (generated.Status != LlmResultStatus.Succeeded) return 1;
             }
         }
         Console.WriteLine("PASS actual DLL fixture/normalization checks=" + checks + "; native campaign not started; save/marriage mutation not tested");
