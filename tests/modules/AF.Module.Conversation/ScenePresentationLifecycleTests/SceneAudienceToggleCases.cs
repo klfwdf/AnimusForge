@@ -17,16 +17,18 @@ internal static class SceneAudienceToggleCases
         }
         DuelSettings settings = new();
         GlobalSettings<DuelSettings>.Loaded = settings;
-        Require(!DuelSettings.ShouldAutoExcludeUnframedShoutParticipants(), "default off");
-        Require(!JsonSerializer.Deserialize<DuelSettings>("{}").AutoExcludeUnframedShoutParticipants, "legacy missing key stays off");
+        Require(DuelSettings.ShouldAutoExcludeUnframedShoutParticipants(), "default on");
+        Require(JsonSerializer.Deserialize<DuelSettings>("{}").AutoExcludeUnframedShoutParticipants, "legacy missing key defaults on");
         settings.AutoExcludeUnframedShoutParticipants = true;
         Require(JsonSerializer.Deserialize<DuelSettings>(JsonSerializer.Serialize(settings)).AutoExcludeUnframedShoutParticipants, "enabled JSON round trip");
         settings.AutoExcludeUnframedShoutParticipants = false;
         Require(!JsonSerializer.Deserialize<DuelSettings>(JsonSerializer.Serialize(settings)).AutoExcludeUnframedShoutParticipants, "disabled JSON round trip");
+        Require(!DuelSettings.ShouldAutoExcludeUnframedShoutParticipants(), "explicit loaded false retained");
+        Require(!JsonSerializer.Deserialize<DuelSettings>("{\"AutoExcludeUnframedShoutParticipants\":false}").AutoExcludeUnframedShoutParticipants, "explicit persisted false retained");
         GlobalSettings<DuelSettings>.Loaded = null;
-        Require(!DuelSettings.ShouldAutoExcludeUnframedShoutParticipants(), "missing MCM defaults off");
+        Require(DuelSettings.ShouldAutoExcludeUnframedShoutParticipants(), "missing MCM defaults on");
         GlobalSettings<DuelSettings>.ThrowOnRead = true;
-        Require(!DuelSettings.ShouldAutoExcludeUnframedShoutParticipants(), "unavailable MCM defaults off");
+        Require(DuelSettings.ShouldAutoExcludeUnframedShoutParticipants(), "unavailable MCM defaults on");
         GlobalSettings<DuelSettings>.ThrowOnRead = false;
         GlobalSettings<DuelSettings>.Loaded = settings;
         var property = typeof(DuelSettings).GetProperty(nameof(DuelSettings.AutoExcludeUnframedShoutParticipants));
