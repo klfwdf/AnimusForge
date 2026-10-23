@@ -2,6 +2,9 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
+#if BANNERLORD_1_4_OR_GREATER
+using TaleWorlds.CampaignSystem.Settlements;
+#endif
 using TaleWorlds.Library;
 
 namespace AnimusForge;
@@ -20,6 +23,9 @@ public sealed class CourierMobilePartyAIModel : DefaultMobilePartyAIModel
 	public override float FleeToNearbySettlementRadius => _inner.FleeToNearbySettlementRadius;
 	public override float HideoutPatrolDistanceAsDays => _inner.HideoutPatrolDistanceAsDays;
 	public override float FortificationPatrolDistanceAsDays => _inner.FortificationPatrolDistanceAsDays;
+#if BANNERLORD_1_4_OR_GREATER
+	public override float FortificationPortPatrolDistanceAsDays => _inner.FortificationPortPatrolDistanceAsDays;
+#endif
 	public override float VillagePatrolDistanceAsDays => _inner.VillagePatrolDistanceAsDays;
 	public override float SettlementDefendingNearbyPartyCheckRadius => _inner.SettlementDefendingNearbyPartyCheckRadius;
 	public override float SettlementDefendingWaitingPositionRadius => _inner.SettlementDefendingWaitingPositionRadius;
@@ -66,6 +72,13 @@ public sealed class CourierMobilePartyAIModel : DefaultMobilePartyAIModel
 	{
 		return _inner.GetPatrolRadius(mobileParty, patrolPoint);
 	}
+
+#if BANNERLORD_1_4_OR_GREATER
+	public override float GetSettlementNearbyThreatAndAllyCheckRadius(Settlement settlement, bool isPort)
+	{
+		return _inner.GetSettlementNearbyThreatAndAllyCheckRadius(settlement, isPort);
+	}
+#endif
 
 	public override bool ShouldPartyCheckInitiativeBehavior(MobileParty mobileParty)
 	{
