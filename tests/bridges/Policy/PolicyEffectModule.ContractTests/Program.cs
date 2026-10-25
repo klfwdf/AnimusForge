@@ -487,6 +487,15 @@ internal static partial class Program
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
+			if (args.Contains("--policy-daily-failure-isolation-only"))
+			{
+				TestDailyFailureIsolationContracts();
+				TestDailyRetryWindowPreservesActiveInstance();
+				TestDailyCompensationPendingResume();
+				TestActivePolicyEffectRecoverySyncDataContracts();
+				Console.WriteLine("PASS policyDailyFailureIsolationAssertions=" + _assertionCount);
+				return 0;
+			}
 			TestCatalogAndLegacyIds();
 			TestPolicyEffectRetrievalSettingsContracts();
 			TestPolicyEffectMultiIntentRoutingContracts();
@@ -560,6 +569,7 @@ internal static partial class Program
 			TestClanLeaderRelationScheduledModuleAndCasContracts();
 			TestMalformedScheduledCompensationReceiptsFailClosed();
 			TestScheduledCompensationPendingResume();
+			TestDailyFailureIsolationContracts();
 			TestDailyRetryWindowPreservesActiveInstance();
 			TestDailyCompensationPendingResume();
 			TestPendingCompensationSurvivesTrimAndScheduler();
@@ -19141,6 +19151,357 @@ internal static partial class Program
 		Check(influenceFailedClosed,
 			"A missing influence targets array must fail closed instead of reporting a zero-target rollback: "
 				+ influenceCompensationError);
+	}
+
+	private static int _dailyFailureProbeDay;
+	private static TaleWorlds.CampaignSystem.Kingdom _dailyFailureProbeKingdom;
+	private static TaleWorlds.CampaignSystem.PolicyObject _dailyFailureProbePolicy;
+
+	private static bool DailyFailureDayPrefix(ref int __result)
+	{
+		__result = _dailyFailureProbeDay;
+		return false;
+	}
+
+	private static bool DailyFailureKingdomsPrefix(ref TaleWorlds.Library.MBReadOnlyList<TaleWorlds.CampaignSystem.Kingdom> __result)
+	{
+		__result = new TaleWorlds.Library.MBList<TaleWorlds.CampaignSystem.Kingdom>(
+			_dailyFailureProbeKingdom == null ? Array.Empty<TaleWorlds.CampaignSystem.Kingdom>() : new[] { _dailyFailureProbeKingdom });
+		return false;
+	}
+
+	private static bool DailyFailurePolicyPrefix(ref TaleWorlds.CampaignSystem.PolicyObject __result)
+	{
+		__result = _dailyFailureProbePolicy;
+		return false;
+	}
+
+	private static void TestDailyFailureIsolationContracts()
+	{
+		// These are real outer/persistence/load methods; only clock, realm lookup and
+		// daily module mutations are managed fixtures, not a running game/provider.
+		Type behavior = typeof(CustomPolicyBehavior);
+		object previousInstance = behavior.GetProperty("Instance", All).GetValue(null);
+		Type harmonyType = Type.GetType("HarmonyLib.Harmony, 0Harmony", throwOnError: true);
+		Type harmonyMethodType = Type.GetType("HarmonyLib.HarmonyMethod, 0Harmony", throwOnError: true);
+		const string patchId = "AnimusForge.PolicyEffectModule.ContractTests.DailyFailureIsolation";
+		object harmony = Activator.CreateInstance(harmonyType, patchId);
+		MethodInfo patch = harmonyType.GetMethods(All).Single(method => method.Name == "Patch" && method.GetParameters().Length == 5);
+		try
+		{
+			foreach (var item in new[]
+			{
+				(Target: behavior.GetMethod("GetCurrentCampaignDay", All), Prefix: nameof(DailyFailureDayPrefix)),
+				(Target: typeof(TaleWorlds.CampaignSystem.Kingdom).GetProperty("All", All).GetGetMethod(), Prefix: nameof(DailyFailureKingdomsPrefix)),
+				(Target: behavior.GetMethod("EnsureDynamicPolicyObject", All), Prefix: nameof(DailyFailurePolicyPrefix))
+			})
+			{
+				patch.Invoke(harmony, new[] { (object)item.Target,
+					Activator.CreateInstance(harmonyMethodType, typeof(Program).GetMethod(item.Prefix, All)), null, null, null });
+			}
+			List<Exception> failures = new List<Exception>();
+			void Run(string name, Action test)
+			{
+				try { _dailyFailureProbeDay = 11; test(); }
+				catch (Exception ex)
+				{
+					Exception root = Unwrap(ex);
+					Console.WriteLine("FAIL case=" + name + ": " + root.GetType().Name + ": " + root.Message);
+					failures.Add(new InvalidOperationException(name, root));
+				}
+			}
+			foreach (bool settlement in new[] { false, true })
+			foreach (bool linked in new[] { false, true })
+			foreach (bool retryable in new[] { false, true })
+			{
+				Run("outer settlement=" + settlement + " linked=" + linked + " retryable=" + retryable,
+					() => TestDailyOuterFailureIsolation(settlement, linked, retryable));
+			}
+			Run("failed bundle save/load/membership", TestDailyFailureSaveLoadIsolation);
+			Run("linked partial mutation compensation", TestDailyLinkedPartialFailureCompensation);
+			if (failures.Count > 0) throw new AggregateException(failures);
+		}
+		finally
+		{
+			harmonyType.GetMethod("UnpatchAll", All).Invoke(harmony, new object[] { patchId });
+			behavior.GetProperty("Instance", All).SetValue(null, previousInstance);
+			_dailyFailureProbeKingdom = null;
+			_dailyFailureProbePolicy = null;
+		}
+	}
+
+	private static void TestDailyOuterFailureIsolation(bool settlement, bool linked, bool retryable)
+	{
+		PolicyEffectInstanceSaveData failing = BuildSoldierTroopXpDaily("failure-leg", 20, "clan-a");
+		PolicyEffectInstanceSaveData sibling = BuildSoldierTroopXpDaily("sibling-leg", 20, "clan-b");
+		if (linked)
+		{
+			failing.MechanismKind = sibling.MechanismKind = PolicyEffectMechanismKind.Linked;
+			failing.MechanismId = sibling.MechanismId = "linked-failure";
+			failing.MechanismRole = PolicyEffectMechanismRole.Source;
+			sibling.MechanismRole = PolicyEffectMechanismRole.Beneficiary;
+			FreezeLinkedMechanismContract(new[] { failing, sibling });
+		}
+		int calls = 0;
+		bool fail = true;
+		DailyFailureProbeModule module = new DailyFailureProbeModule();
+		module.Execute = _ =>
+		{
+			calls++;
+			return new PolicyEffectExecutionResult
+			{
+				Status = fail ? PolicyEffectExecutionStatus.Failed : PolicyEffectExecutionStatus.Skipped,
+				Retryable = retryable,
+				Error = fail ? "injected daily failure" : string.Empty
+			};
+		};
+		DailyFailureFixture fixture = new DailyFailureFixture(failing, sibling);
+		fixture.Add(failing, module, settlement ? PolicyEffectTargetKind.Settlement : PolicyEffectTargetKind.Clan,
+			settlement ? "town-1" : "clan-a");
+		if (linked && !settlement) fixture.Add(sibling, new DailyFailureProbeModule(), PolicyEffectTargetKind.Clan, "clan-b");
+		Check(!fixture.Run(settlement, 11), "A failed daily outer call must retain the pending batch.");
+		Check(failing.LifecycleState == (retryable ? PolicyEffectLifecycleState.Active : PolicyEffectLifecycleState.Failed),
+			"The daily outer call must not turn a retryable failure into a terminal instance.");
+		Check(sibling.LifecycleState == (!retryable && linked ? PolicyEffectLifecycleState.Failed : PolicyEffectLifecycleState.Active),
+			"Only a fatal Linked failure may disable a sibling leg; independent instances must remain active.");
+		Check(fixture.Effect.PendingApplication.Day == 11 && fixture.Effect.PendingApplication.NextNonSettlementIndex == 0,
+			"Failure must preserve the logical day and the pending batch cursor.");
+		if (!retryable) return;
+		Check(calls == 3, "The outer call must honor the existing three-attempt window.");
+		Check(!fixture.Run(settlement, 11) && calls == 3, "Repeating the same window must not execute three more attempts.");
+		fail = false;
+		_dailyFailureProbeDay = 12;
+		Check(fixture.Run(settlement, 12) && calls == 4, "The next actual day must retry the pending logical day.");
+		JObject progress = (JObject)failing.RuntimeState[PolicyEffectRuntimeStateEnvelope.FrameworkProperty]["daily"]["targets"];
+		JObject targetProgress = (JObject)progress.Properties().Single().Value;
+		Check(targetProgress.Value<int>("logicalDay") == 11 && targetProgress.Value<int>("attemptWindowDay") == 12
+			&& targetProgress.Value<int>("lastSucceededDay") == 11,
+			"The settlement and non-settlement entries must use actual retry day without changing logical execution day.");
+		Check(fixture.Run(settlement, 12) && calls == 4, "A completed logical target/day must remain idempotent.");
+	}
+
+	private static void TestDailyFailureSaveLoadIsolation()
+	{
+		PolicyEffectInstanceSaveData failing = BuildSoldierTroopXpDaily("failed-daily", 20, "clan-a");
+		PolicyEffectInstanceSaveData healthy = new PolicyEffectInstanceSaveData
+		{
+			EffectPlanVersion = PolicyEffectPlanVersions.CurrentVersion, MechanismId = "healthy",
+			MechanismKind = PolicyEffectMechanismKind.Independent, MechanismRole = PolicyEffectMechanismRole.Subject,
+			InstanceId = "healthy-model", PolicyId = failing.PolicyId, ModuleId = "prosperityPerDay", SourceModuleId = "prosperityPerDay",
+			PayloadSchemaVersion = 1, Payload = new JObject { ["moduleId"] = "prosperityPerDay", ["schemaVersion"] = 1, ["value"] = 1f },
+			TargetSet = new PolicyEffectCanonicalTargetSet { TownIds = new List<string> { "town-1" } },
+			LifecycleState = PolicyEffectLifecycleState.Active, StateSchemaVersion = 1, StartDay = 10, EndDay = 20,
+			SourceScope = PolicyEffectScopes.Kingdom
+		};
+		DailyFailureFixture fixture = new DailyFailureFixture(failing, healthy);
+		DailyFailureProbeModule module = new DailyFailureProbeModule
+		{
+			Execute = _ => new PolicyEffectExecutionResult { Status = PolicyEffectExecutionStatus.Failed, Error = "injected fatal failure" }
+		};
+		fixture.Add(failing, module, PolicyEffectTargetKind.Clan, "clan-a");
+		Check(!fixture.Run(false, 11) && failing.LifecycleState == PolicyEffectLifecycleState.Failed,
+			"The save/load fixture must first fail through the real daily outer call.");
+		Type behavior = typeof(CustomPolicyBehavior);
+		InvokeInstance(behavior, fixture.Owner, "PersistActivePolicyEffect", new object[] { fixture.Effect.EffectId, fixture.Effect, false }, 3);
+		Dictionary<string, string> registry = (Dictionary<string, string>)behavior.GetField("_dynamicPolicyRegistry", All).GetValue(fixture.Owner);
+		JObject binding = new JObject
+		{
+			["Version"] = 4, ["PolicyObjectId"] = "af_policy:daily-failure", ["RecordId"] = fixture.Effect.RecordId,
+			["ActiveEffectId"] = fixture.Effect.EffectId, ["RequiresEffectBundle"] = true, ["CommitState"] = "active",
+			["OwnerKingdomId"] = "failure-kingdom", ["PolicyName"] = "Daily failure isolation", ["Source"] = "player", ["Status"] = "active"
+		};
+		registry[binding.Value<string>("PolicyObjectId")] = binding.ToString(Formatting.None);
+		foreach (bool allFailed in new[] { false, true })
+		{
+			if (allFailed)
+			{
+				healthy.LifecycleState = PolicyEffectLifecycleState.Failed;
+				InvokeInstance(behavior, fixture.Owner, "PersistActivePolicyEffect", new object[] { fixture.Effect.EffectId, fixture.Effect, true }, 3);
+			}
+			CustomPolicyBehavior reloaded = RoundTripDailyFailureBehavior(fixture.Owner);
+			HashSet<string> quarantined = (HashSet<string>)behavior.GetField("_quarantinedActivePolicyEffectIds", All).GetValue(reloaded);
+			Check(!quarantined.Contains(fixture.Effect.EffectId), "A valid bundle containing failed instances must not be quarantined on load.");
+			Dictionary<string, string> effects = (Dictionary<string, string>)behavior.GetField("_activePolicyEffects", All).GetValue(reloaded);
+			CustomPolicyBehavior.ActivePolicyEffectSaveData loaded = JsonConvert.DeserializeObject<CustomPolicyBehavior.ActivePolicyEffectSaveData>(effects[fixture.Effect.EffectId]);
+			Check(loaded.ModuleEffects.First().LifecycleState == PolicyEffectLifecycleState.Failed,
+				"Loading must not resurrect the old failed daily instance.");
+			object contributions = InvokeStatic(behavior, "BuildModulePolicyEffectRuntimeContributions", new object[] { loaded }, 1);
+			Check(Items(contributions).Count() == (allFailed ? 0 : 1), "Only the healthy sibling must contribute; an all-failed shell must remain inert.");
+			AnimusForge.PolicyEffectRuntimeIndex runtimeIndex = (AnimusForge.PolicyEffectRuntimeIndex)behavior.GetField("_policyEffectRuntimeIndex", All).GetValue(reloaded);
+			Check(runtimeIndex.ContributionCount == (allFailed ? 0 : 1),
+				"Load must publish only the healthy sibling into the real model runtime index.");
+			registry = (Dictionary<string, string>)behavior.GetField("_dynamicPolicyRegistry", All).GetValue(reloaded);
+			CustomPolicyBehavior.DynamicPolicySaveData data = JsonConvert.DeserializeObject<CustomPolicyBehavior.DynamicPolicySaveData>(registry[binding.Value<string>("PolicyObjectId")]);
+			Check(data.CommitState == "active" && (bool)InvokeInstance(behavior, reloaded, "IsDynamicPolicyEffectBindingExecutable", new object[] { data }, 1),
+				"A failed instance must not invalidate the persisted policy binding.");
+			_dailyFailureProbePolicy = new TaleWorlds.CampaignSystem.PolicyObject(data.PolicyObjectId);
+			_dailyFailureProbeKingdom = (TaleWorlds.CampaignSystem.Kingdom)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(TaleWorlds.CampaignSystem.Kingdom));
+			_dailyFailureProbeKingdom.StringId = data.OwnerKingdomId;
+			typeof(TaleWorlds.CampaignSystem.Kingdom).GetField("_activePolicies", All).SetValue(_dailyFailureProbeKingdom,
+				new TaleWorlds.Library.MBList<TaleWorlds.CampaignSystem.PolicyObject>(new[] { _dailyFailureProbePolicy }));
+			typeof(TaleWorlds.CampaignSystem.Kingdom).GetField("_unresolvedDecisions", All).SetValue(_dailyFailureProbeKingdom,
+				new TaleWorlds.Library.MBList<TaleWorlds.CampaignSystem.Election.KingdomDecision>());
+			InvokeInstance(behavior, reloaded, "EnsureDynamicPoliciesRegistered", new object[] { true }, 1);
+			Check(_dailyFailureProbeKingdom.ActivePolicies.Contains(_dailyFailureProbePolicy)
+				&& JObject.Parse(registry[data.PolicyObjectId]).Value<string>("Status") == "active",
+				"Real membership reconciliation must not remove or abolish a policy because its effects failed.");
+			CustomPolicyBehavior again = RoundTripDailyFailureBehavior(reloaded);
+			Check(!((HashSet<string>)behavior.GetField("_quarantinedActivePolicyEffectIds", All).GetValue(again)).Contains(fixture.Effect.EffectId),
+				"Repeated save/load must not quarantine the same valid failed bundle.");
+		}
+		_dailyFailureProbeKingdom = null;
+		_dailyFailureProbePolicy = null;
+		foreach (string state in new[] { "quarantinedBlocked", "abolished" })
+		{
+			JObject stopped = (JObject)binding.DeepClone();
+			stopped[state == "abolished" ? "Status" : "CommitState"] = state;
+			((Dictionary<string, string>)behavior.GetField("_dynamicPolicyRegistry", All).GetValue(fixture.Owner))[binding.Value<string>("PolicyObjectId")] = stopped.ToString(Formatting.None);
+			CustomPolicyBehavior reloaded = RoundTripDailyFailureBehavior(fixture.Owner);
+			JObject retained = JObject.Parse(((Dictionary<string, string>)behavior.GetField("_dynamicPolicyRegistry", All).GetValue(reloaded))[binding.Value<string>("PolicyObjectId")]);
+			Check(retained.Value<string>(state == "abolished" ? "Status" : "CommitState") == state,
+				"Previously abolished or quarantinedBlocked policies must not be automatically revived.");
+		}
+		foreach (string invalid in new[] { "wrong-record", "wrong-key", "schema", "module", "missing-linked-leg" })
+		{
+			CustomPolicyBehavior owner = new CustomPolicyBehavior();
+			CustomPolicyBehavior.ActivePolicyEffectSaveData bad = JsonConvert.DeserializeObject<CustomPolicyBehavior.ActivePolicyEffectSaveData>(JsonConvert.SerializeObject(fixture.Effect));
+			if (invalid == "schema") bad.Version = 99;
+			if (invalid == "module") bad.ModuleEffects[0].ModuleId = "unknown.future.module";
+			if (invalid == "wrong-record") bad.RecordId = "wrong-record";
+			if (invalid == "missing-linked-leg")
+			{
+				bad.ModuleEffects[0].MechanismKind = PolicyEffectMechanismKind.Linked;
+				bad.ModuleEffects[0].MechanismRole = PolicyEffectMechanismRole.Source;
+				FreezeLinkedMechanismContract(new[] { bad.ModuleEffects[0] });
+				bad.ModuleEffects[0].ExpectedMechanismLegIds.Add("missing-leg");
+			}
+			((Dictionary<string, string>)behavior.GetField("_activePolicyEffects", All).GetValue(owner))[invalid == "wrong-key" ? "wrong-key" : bad.EffectId] = JsonConvert.SerializeObject(bad);
+			((Dictionary<string, string>)behavior.GetField("_dynamicPolicyRegistry", All).GetValue(owner))[binding.Value<string>("PolicyObjectId")] = binding.ToString(Formatting.None);
+			CustomPolicyBehavior reloaded = RoundTripDailyFailureBehavior(owner);
+			JObject blocked = JObject.Parse(((Dictionary<string, string>)behavior.GetField("_dynamicPolicyRegistry", All).GetValue(reloaded))[binding.Value<string>("PolicyObjectId")]);
+			Check(blocked.Value<string>("CommitState") == "quarantinedBlocked", "Structural and binding errors must still fail closed: " + invalid);
+		}
+	}
+
+	private static CustomPolicyBehavior RoundTripDailyFailureBehavior(CustomPolicyBehavior owner)
+	{
+		Dictionary<string, string> persisted = new Dictionary<string, string>(StringComparer.Ordinal);
+		Type store = RequireType("TaleWorlds.CampaignSystem.IDataStore, TaleWorlds.CampaignSystem");
+		InvokeInstance(typeof(CustomPolicyBehavior), owner, "SyncData", new[] { new ContractDataStoreProxy(store, persisted, true).GetTransparentProxy() }, 1);
+		CustomPolicyBehavior reloaded = new CustomPolicyBehavior();
+		InvokeInstance(typeof(CustomPolicyBehavior), reloaded, "SyncData", new[] { new ContractDataStoreProxy(store, persisted, false).GetTransparentProxy() }, 1);
+		return reloaded;
+	}
+
+	private static void TestDailyLinkedPartialFailureCompensation()
+	{
+		PolicyEffectInstanceSaveData source = BuildSoldierTroopXpDaily("partial-source", 20, "clan-a");
+		PolicyEffectInstanceSaveData destination = BuildSoldierTroopXpDaily("partial-destination", 20, "clan-b");
+		source.MechanismKind = destination.MechanismKind = PolicyEffectMechanismKind.Linked;
+		source.MechanismId = destination.MechanismId = "partial-linked";
+		source.MechanismRole = PolicyEffectMechanismRole.Source;
+		destination.MechanismRole = PolicyEffectMechanismRole.Beneficiary;
+		FreezeLinkedMechanismContract(new[] { source, destination });
+		GameBridgeProxy proxy = new GameBridgeProxy(typeof(IPolicyEffectGameBridge)) { FailTroopXpApplyAfterStacks = 1 };
+		proxy.SetClanTroopXpPlan(JObject.Parse("{\"v\":1,\"x\":20,\"p\":[{\"c\":\"clan-a\",\"i\":\"party-a\",\"k\":\"l\",\"r\":\"hero-a\",\"s\":[{\"i\":\"troop-a\",\"n\":10,\"b\":0,\"a\":200},{\"i\":\"troop-b\",\"n\":5,\"b\":100,\"a\":200}]}]}"));
+		IPolicyEffectGameBridge bridge = (IPolicyEffectGameBridge)proxy.GetTransparentProxy();
+		Check(PolicyEffectModuleCatalog.TryGet(source.ModuleId, out IPolicyEffectModule realModule), "Partial failure fixture requires the real XP module.");
+		PolicyEffectExecutionContext WithBridge(PolicyEffectExecutionContext context) => new PolicyEffectExecutionContext
+		{
+			PreparedInstance = context.PreparedInstance, CampaignDay = context.CampaignDay, GameBridge = bridge,
+			ExistingReceipt = context.ExistingReceipt, IdempotencyKey = context.IdempotencyKey,
+			TargetKind = context.TargetKind, TargetId = context.TargetId, Attempt = context.Attempt, RuntimeState = context.RuntimeState
+		};
+		DailyFailureProbeModule adapter = new DailyFailureProbeModule
+		{
+			Execute = context => ((IDailyPolicyEffectModule)realModule).ExecuteDaily(WithBridge(context)),
+			Compensate = context => ((ICompensatingDailyPolicyEffectModule)realModule).CompensateDaily(WithBridge(context))
+		};
+		DailyFailureFixture fixture = new DailyFailureFixture(source, destination);
+		fixture.Add(source, adapter, PolicyEffectTargetKind.Clan, "clan-a");
+		fixture.Add(destination, new DailyFailureProbeModule(), PolicyEffectTargetKind.Clan, "clan-b");
+		Check(!fixture.Run(false, 11) && proxy.TroopXpApplyCallCount == 1 && proxy.ReadTroopXp("party-a", "troop-a") == 200,
+			"The real outer call must retain the partial XP mutation and stop the Linked daily batch.");
+		Check(source.LifecycleState == PolicyEffectLifecycleState.Active && destination.LifecycleState == PolicyEffectLifecycleState.Active,
+			"A retryable partial mutation must not terminally fail the Linked group.");
+		object[] compensate = { fixture.Effect.EffectId, fixture.Effect, null };
+		Check((bool)InvokeInstance(typeof(CustomPolicyBehavior), fixture.Owner, "TryCompensatePendingDailyPolicyEffects", compensate, 3)
+			&& proxy.TroopXpRestoreCallCount == 1 && proxy.ReadTroopXp("party-a", "troop-a") == 0 && proxy.ReadTroopXp("party-a", "troop-b") == 100,
+			"The outer persistence transaction must compensate the exact partial receipt: " + compensate[2]);
+		Check((bool)InvokeInstance(typeof(CustomPolicyBehavior), fixture.Owner, "TryCompensatePendingDailyPolicyEffects", new object[] { fixture.Effect.EffectId, fixture.Effect, null }, 3)
+			&& proxy.TroopXpRestoreCallCount == 1, "Repeating the compensation transaction must not restore XP twice.");
+	}
+
+	private sealed class DailyFailureProbeModule : PolicyEffectModuleBase<AnimusForge.PolicyEffects.Modules.SoldierTroopXpDailyPayload>,
+		IDailyPolicyEffectModule, ICompensatingDailyPolicyEffectModule
+	{
+		private readonly PolicyEffectModuleDescriptor _descriptor;
+		internal DailyFailureProbeModule()
+		{
+			if (!PolicyEffectModuleCatalog.TryGet("soldierTroopXpPerDay", out IPolicyEffectModule module))
+				throw new InvalidOperationException("The daily XP module is unavailable.");
+			_descriptor = module.Descriptor;
+		}
+		public override PolicyEffectModuleDescriptor Descriptor => _descriptor;
+		internal Func<PolicyEffectExecutionContext, PolicyEffectExecutionResult> Execute;
+		internal Func<PolicyEffectExecutionContext, PolicyEffectExecutionResult> Compensate;
+		public PolicyEffectExecutionResult ExecuteDaily(PolicyEffectExecutionContext context)
+			=> Execute?.Invoke(context) ?? new PolicyEffectExecutionResult { Status = PolicyEffectExecutionStatus.Skipped };
+		public PolicyEffectExecutionResult CompensateDaily(PolicyEffectExecutionContext context)
+			=> Compensate?.Invoke(context) ?? new PolicyEffectExecutionResult { Status = PolicyEffectExecutionStatus.RolledBack };
+	}
+
+	private sealed class DailyFailureFixture
+	{
+		internal readonly CustomPolicyBehavior Owner = new CustomPolicyBehavior();
+		internal readonly CustomPolicyBehavior.ActivePolicyEffectSaveData Effect;
+		private readonly Type _entryType = typeof(CustomPolicyBehavior).GetNestedType("PolicyEffectDailyRuntimePlanEntry", All);
+		private readonly object _plan = Activator.CreateInstance(typeof(CustomPolicyBehavior).GetNestedType("PolicyEffectDailyRuntimePlan", All), true);
+		private readonly List<object> _entries = new List<object>();
+
+		internal DailyFailureFixture(params PolicyEffectInstanceSaveData[] instances)
+		{
+			Effect = new CustomPolicyBehavior.ActivePolicyEffectSaveData
+			{
+				EffectId = "daily-failure-bundle", RecordId = instances[0].PolicyId, ScopeKind = PolicyEffectScopes.Kingdom,
+				SubmittedDay = 10, LastAppliedDay = 10, RemainingDays = 5, TotalDurationDays = 5,
+				ModuleEffects = instances.ToList(),
+				PendingApplication = new CustomPolicyBehavior.PendingActivePolicyApplicationSaveData { Day = 11 }
+			};
+			((IDictionary)typeof(CustomPolicyBehavior).GetField("_policyEffectDailyRuntimePlans", All).GetValue(Owner))[Effect.EffectId] = _plan;
+		}
+
+		internal void Add(PolicyEffectInstanceSaveData instance, IPolicyEffectModule module, PolicyEffectTargetKind kind, string id)
+		{
+			Check(AnimusForge.PolicyEffectActivationCoordinator.TryPrepareSavedInstance(instance, out _, out PolicyEffectPreparedInstance prepared, out string error),
+				"Daily outer fixture must prepare a real persisted module instance: " + error);
+			object entry = Activator.CreateInstance(_entryType, true);
+			foreach (var pair in new[] { ("Instance", (object)instance), ("Module", (object)module), ("Prepared", (object)prepared), ("TargetKind", (object)kind), ("TargetId", (object)id) })
+				_entryType.GetField(pair.Item1, All).SetValue(entry, pair.Item2);
+			_entries.Add(entry);
+			Array array = Array.CreateInstance(_entryType, _entries.Count);
+			for (int i = 0; i < _entries.Count; i++) array.SetValue(_entries[i], i);
+			if (kind == PolicyEffectTargetKind.Settlement)
+			{
+				string key = (string)InvokeStatic(typeof(CustomPolicyBehavior), "BuildDailyPolicyEffectTargetKey", new object[] { kind, id }, 2);
+				((IDictionary)_plan.GetType().GetField("SettlementEntries", All).GetValue(_plan))[key] = array;
+			}
+			else
+			{
+				_plan.GetType().GetField("NonSettlementEntries", All).SetValue(_plan, array);
+				string key = (string)InvokeStatic(typeof(CustomPolicyBehavior), "BuildDailyPolicyEffectPlanEntryKey", new[] { entry }, 1);
+				((IDictionary)_plan.GetType().GetField("NonSettlementEntriesByKey", All).GetValue(_plan))[key] = entry;
+			}
+		}
+
+		internal bool Run(bool settlement, int actualDay)
+		{
+			object[] arguments = settlement
+				? new object[] { Effect, _plan, PolicyEffectTargetKind.Settlement, "town-1", 11, null }
+				: new object[] { Effect, Effect.PendingApplication, actualDay, Stopwatch.GetTimestamp(), 1000d, null, null };
+			return (bool)InvokeInstance(typeof(CustomPolicyBehavior), Owner,
+				settlement ? "ExecuteDailyPolicyEffectTargetEntries" : "TryExecuteNonSettlementDailyPolicyEffects", arguments, arguments.Length);
+		}
 	}
 
 	private static void TestDailyRetryWindowPreservesActiveInstance()

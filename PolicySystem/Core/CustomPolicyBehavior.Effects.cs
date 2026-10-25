@@ -5068,7 +5068,10 @@ public sealed partial class CustomPolicyBehavior
 				= ExecuteDailyPolicyEffectPlanEntry(activeEffect, entries[index], campaignDay);
 			if (outcome?.Failed == true)
 			{
-				MarkDailyMechanismBundleFailed(activeEffect, entries[index].Instance);
+				if (!outcome.Retryable)
+				{
+					MarkDailyMechanismBundleFailed(activeEffect, entries[index].Instance);
+				}
 				error = FirstNonEmpty(outcome.Error, "settlement daily mechanism execution failed");
 				return false;
 			}
@@ -5193,7 +5196,10 @@ public sealed partial class CustomPolicyBehavior
 				attemptWindowDay);
 			if (outcome?.Failed == true)
 			{
-				MarkDailyMechanismBundleFailed(activeEffect, entry.Instance);
+				if (!outcome.Retryable)
+				{
+					MarkDailyMechanismBundleFailed(activeEffect, entry.Instance);
+				}
 				error = FirstNonEmpty(outcome.Error, "non-settlement daily effect failed");
 				compensateBatch = true;
 				pending.NextNonSettlementIndex = batchStartIndex;
@@ -5409,7 +5415,7 @@ public sealed partial class CustomPolicyBehavior
 			entry.TargetId,
 			BannerlordPolicyEffectGameBridge.Instance,
 			campaignDay,
-			attemptWindowDay);
+			attemptWindowDay >= 0 ? attemptWindowDay : GetCurrentCampaignDay());
 		if (outcome?.AppliedReceipt != null
 			&& outcome.Module is ICompensatingDailyPolicyEffectModule
 			&& !string.IsNullOrWhiteSpace(activeEffect?.EffectId))

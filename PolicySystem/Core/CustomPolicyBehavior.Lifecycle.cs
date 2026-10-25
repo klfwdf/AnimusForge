@@ -1156,7 +1156,7 @@ public sealed partial class CustomPolicyBehavior
 				|| string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase)
 				|| (string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase)
 					&& string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase));
-			if (!live)
+			if (!live || string.Equals(data.CommitState, PolicyCommitStateQuarantinedBlocked, StringComparison.Ordinal))
 			{
 				continue;
 			}
@@ -1255,11 +1255,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return false;
 		}
-		if (effect.ModuleEffects.Any(instance => instance.LifecycleState == PolicyEffectLifecycleState.Failed))
-		{
-			error = "active effect contains a failed executable instance";
-			return false;
-		}
+		// Terminal instances remain persisted; runtime indexes exclude them without invalidating the bundle.
 		return true;
 	}
 
@@ -1345,9 +1341,7 @@ public sealed partial class CustomPolicyBehavior
 			ActivePolicyEffectSaveData effect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(raw ?? string.Empty);
 			return effect != null && effect.Version == 8
 				&& string.Equals(effect.EffectId, effectId, StringComparison.OrdinalIgnoreCase)
-				&& string.Equals(effect.RecordId ?? string.Empty, data.RecordId ?? string.Empty, StringComparison.OrdinalIgnoreCase)
-				&& !(effect.ModuleEffects ?? new List<PolicyEffectInstanceSaveData>())
-					.Any(instance => instance?.LifecycleState == PolicyEffectLifecycleState.Failed);
+				&& string.Equals(effect.RecordId ?? string.Empty, data.RecordId ?? string.Empty, StringComparison.OrdinalIgnoreCase);
 		}
 		catch
 		{
