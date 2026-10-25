@@ -1,3 +1,14 @@
+<a id="policy-fixes-delivery-20261025"></a>
+## 每日失败隔离与 NPC 续期退避交付（2026-10-25，FOCUSED_PASS / DUAL_BUILD_PASS / EXISTING_GATES_FAIL）
+
+- 用户授权安全合并远端后推送；基线 `672722b710e310da8f81afdc95a298f9de13f318`，产品提交 `ea31d53c4` / `41a4f9758`，只修改5份政策partial及既有Program测试。远端数据库导入容错、婚配回放回退与海军AI转发改动逐文件保留；不合并累计开发历史，不恢复已移除的本地记录。
+- 每日执行仅在不可重试失败时标记机制失败；失败实例仍保留持久化但不使整个bundle加载失效，隔离阻塞的commit不被重建激活。未指定attempt window时使用当前campaign day，防止未到重试窗口的检查消耗重试。保持存档类型/键及其他独立机制，不声称恢复旧坏档。
+- NPC Active续期缺失权威快照时保留原业务阶段/结果，仅增加30秒单调时钟退避；原队列1ms软预算内有界巡回，缓存最早唤醒并以入队版本防止并发发布旧唤醒。首次、原因变化或5分钟后写脱敏诊断，不增加Tick IO、线程、定时器或永久暂停，不修复缺失快照本身。
+- 代码坐标绑定产品提交 `41a4f9758`：`PolicySystem/Core/CustomPolicyBehavior.Effects.cs:5068–5079,5193–5207,5410–5420` 每日外层/窗口；`CustomPolicyBehavior.Lifecycle.cs:1156–1166,1245–1259,1337–1349` 加载与重建；`PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs:651–781,5726–5844` 入队、退避、公平选择与真实续期准备；`NpcRulerPolicyBehavior.Persistence.cs:1917–1939` 瞬态context；`NpcRulerPolicyBehavior.cs:721–763,1262–1296` 审批入队和加载重置；`tests/bridges/Policy/PolicyEffectModule.ContractTests/Program.cs` 对应专项模式。以上不覆盖原生存档文件、实际每日故障和NPC实机恢复。
+- 最终合并源码原build-only入口：双API、Bootstrap及双Coup seam/registration通过；引用1.3.15/1.4.6，既有编译警告保留。最终实现SHA256：1.3 `efb41ffba36cd7c0780209349125daf642d1f0368af2ad99fc917c222cf412b7`；1.4 `674ad066d4a01fcbea1ff53fae62e13b0620898fe0a33a11849c68dcd7ea55c2`。
+- 两API各通过：daily-failure-isolation 322、npc-renewal-retry 87、lifecycle-recovery 2668、all-modules 1491、soldier-troop-xp 43；沿用隔离CN模块夹具，无测试断言修改。初次测试输出缺少模块初始化前必需的运行依赖而启动失败，补齐测试目录缺失依赖后重跑通过；失败日志保留，不改产品加载契约。远端新增CourierAiForwarding真实候选DLL回归1.3/1.4各17/26项通过。
+- 保留原门禁失败：NPC orchestration的冻结目标验证、日志契约的Management直接sink调用；专项成功不等于全仓全绿。开发候选此前实机仅发布政策15项断言通过，原生退出检查失败且进程已退；最终合并候选未再实机、未测试真实sav往返或故障注入，不以此前发布证明真实每日/NPC故障通过。未部署、Stage、打包或覆盖玩家资料；发布只限审核后的源码和测试及本条交接。
+
 <a id="diplomacy-chain-localization-20261020"></a>
 ## 外交链路、王国解析及双语边界（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
