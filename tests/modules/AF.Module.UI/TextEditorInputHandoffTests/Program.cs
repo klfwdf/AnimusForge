@@ -4,7 +4,7 @@ using AnimusForge;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
-static class Program {
+static partial class Program {
  static int checks;static void C(bool value,string msg){checks++;if(!value)throw new Exception(msg);}
  static (ScreenBase Screen,ScreenLayer Parent) Host(string name,int order,bool mouse=true){var screen=new ScreenBase();ScreenManager.TopScreen=screen;var layer=new GauntletLayer(name,order,false){IsFocusLayer=true};screen.AddLayer(layer);layer.InputRestrictions.SetInputRestrictions(mouse,InputUsageMask.All);ScreenManager.FocusedLayer=layer;ScreenManager.FirstHitLayer=layer;return(screen,layer);}
  static GauntletLayer Editor(ScreenBase s)=>s.Layers.OfType<GauntletLayer>().Single(x=>!x.IsFinalized&&x.MovieViewModel is DevHistoryEditPopupVM);
@@ -70,6 +70,8 @@ static class Program {
    DevHistoryEditPopup.Show("appearance","","","",_=>{},()=>{});var child=Editor(screen);ScreenManager.SetSuspendLayer(scene,true);Vm(child).ExecuteCancel();
    C(!scene.IsActive&&!scene.LastActiveState&&scene.Deactivations==1,"map externally suspended during editor is not reactivated on close");
   }
-  Console.WriteLine("PASS TextEditorInputHandoff assertions="+checks+" production helper/popup/VM/lease; native dispatch and scene render ordering modeled; live=NOT_RUN");
+  C(!Logger.Messages.Any(x=>x.Contains("[ERROR] Save callback failed")),"original callbacks did not hide failed assertions");
+  RunLongTextSafetyCases();
+  Console.WriteLine("PASS TextEditorInputHandoff assertions="+checks+" production helper/popup/VM/lease/sanitizer; paste methods source-extracted; native dispatch and scene render ordering modeled; live=NOT_RUN");
  }
 }

@@ -24,6 +24,9 @@ public class DevHistoryEditPopupVM : ViewModel
 
 	private string _saveText;
 
+    private string _lengthStatusText;
+    private bool _inputWasTruncated;
+
 	[DataSourceProperty]
 	public string TitleText
 	{
@@ -101,12 +104,14 @@ public class DevHistoryEditPopupVM : ViewModel
 		}
 		set
 		{
-			string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxLongEditorChars);
+			string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxLongEditorChars, out bool wasTruncated);
+            _inputWasTruncated |= wasTruncated;
 			if (text != _editedText)
 			{
 				_editedText = text;
 				OnPropertyChangedWithValue(text, "EditedText");
 			}
+            UpdateLengthStatus();
 		}
 	}
 
@@ -157,9 +162,37 @@ public class DevHistoryEditPopupVM : ViewModel
 		SaveText = (string.IsNullOrWhiteSpace(saveText) ? new TextObject("{=AF_UI_Common_Save}Save").ToString() : saveText);
 	}
 
+    [DataSourceProperty]
+    public string LengthStatusText
+    {
+        get => _lengthStatusText;
+        private set
+        {
+            if (_lengthStatusText == value) return;
+            _lengthStatusText = value;
+            OnPropertyChangedWithValue(value, nameof(LengthStatusText));
+        }
+    }
+
+    // The widget may truncate before its RealText reaches this VM; preserve that signal.
+    public void NotifyInputTruncated()
+    {
+        if (_inputWasTruncated) return;
+        _inputWasTruncated = true;
+        UpdateLengthStatus();
+    }
+
+    private void UpdateLengthStatus()
+    {
+        string status = new TextObject("{=AF_UI_Editor_LengthStatus}Characters: {CURRENT} / {MAX}")
+            .SetTextVariable("CURRENT", (_editedText ?? "").Length)
+            .SetTextVariable("MAX", AnimusForgeTextInputSanitizer.MaxLongEditorChars).ToString();
+        LengthStatusText = _inputWasTruncated ? status + "  " + DevTextEditorHelper.GetInputTruncatedText() : status;
+    }
+
 	public void ExecuteSave()
 	{
-		_onSave?.Invoke(AnimusForgeTextInputSanitizer.SanitizeMultiline(EditedText, AnimusForgeTextInputSanitizer.MaxLongEditorChars));
+		DevTextEditorHelper.InvokeSaveSafely(_onSave, EditedText);
 	}
 
 	public void ExecuteCancel()

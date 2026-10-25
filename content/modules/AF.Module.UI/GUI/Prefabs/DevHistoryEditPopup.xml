@@ -17,7 +17,8 @@
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="15" VerticalAlignment="Top" MarginTop="84" Sprite="StdAssets\Popup\divider" />
                 <RichTextWidget Text="@DateText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Top" MarginTop="102" MarginLeft="8" MarginRight="8" Brush="Popup.Description.Text" />
                 <RichTextWidget Text="@InputHintText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="142" MarginLeft="8" MarginRight="8" Brush="Popup.Description.Text" />
-                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="500" VerticalAlignment="Top" MarginTop="190" Sprite="BlankWhite" Color="#000000FF" AlphaFactor="0.18">
+                <TextWidget Text="@LengthStatusText" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" VerticalAlignment="Top" MarginTop="190" MarginLeft="8" MarginRight="8" Brush="Popup.Description.Text" Brush.FontSize="14" />
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="430" VerticalAlignment="Top" MarginTop="220" Sprite="BlankWhite" Color="#000000FF" AlphaFactor="0.18">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="5" ExtendTop="5" ExtendRight="5" ExtendBottom="5" AlphaFactor="0.25" />
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="10" MarginRight="10" MarginTop="10" MarginBottom="10" Sprite="General\CharacterCreation\name_input_area">
@@ -26,9 +27,9 @@
                           <Children>
                             <Widget Id="EditorClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                               <Children>
-                                <Widget Id="EditorInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="440">
+                                <Widget Id="EditorInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="370">
                                   <Children>
-                                    <DevMultilineEditableTextWidget DoNotAcceptEvents="false" AutoFocus="true" AutoScrollToCaret="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="440" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="12" MarginRight="12" MarginTop="12" MarginBottom="12" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" MaxLength="60000" RealText="@EditedText" IsObfuscationEnabled="false" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                                    <DevMultilineEditableTextWidget DoNotAcceptEvents="false" AutoFocus="true" AutoScrollToCaret="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="370" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="12" MarginRight="12" MarginTop="12" MarginBottom="12" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" MaxLength="60000" RealText="@EditedText" IsObfuscationEnabled="false" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" Command.InputTruncated="NotifyInputTruncated" />
                                   </Children>
                                 </Widget>
                               </Children>

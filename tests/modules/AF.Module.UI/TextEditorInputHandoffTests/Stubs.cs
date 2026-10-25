@@ -7,7 +7,8 @@ namespace TaleWorlds.Library {
  public sealed class DataSourcePropertyAttribute:Attribute{}
  public class ViewModel {public void OnPropertyChangedWithValue<T>(T value,string property){}public virtual void OnFinalize(){}}
  public sealed class TextInquiryData {public readonly Action<string> Save;public readonly Action Cancel;public TextInquiryData(string title,string desc,bool isAffirmativeOptionShown,bool isNegativeOptionShown,string affirmativeText,string negativeText,Action<string> affirmativeAction,Action negativeAction,bool shouldInputBeObfuscated=false,Func<string,Tuple<bool,string>> isInputValid=null,string soundEventPath="",string defaultInputText=""){Save=affirmativeAction;Cancel=negativeAction;}}
- public static class InformationManager {public static TextInquiryData Inquiry;public static void ShowTextInquiry(TextInquiryData inquiry){Inquiry=inquiry;}}
+ public sealed class InformationMessage {public string Information; public InformationMessage(string text){Information=text;}}
+ public static class InformationManager {public static readonly List<string> Messages=new(); public static bool FailNotify; public static void DisplayMessage(InformationMessage message){if(FailNotify)throw new InvalidOperationException("notification failure");Messages.Add(message.Information);} public static TextInquiryData Inquiry;public static void ShowTextInquiry(TextInquiryData inquiry){Inquiry=inquiry;}}
 }
 namespace TaleWorlds.InputSystem {public sealed class InputContext {public void RegisterHotKeyCategory(object category){}}public static class HotKeyManager {public static object GetCategory(string id)=>null;}}
 namespace TaleWorlds.ScreenSystem {
@@ -42,6 +43,5 @@ namespace TaleWorlds.Engine.GauntletUI {
  public sealed class GauntletLayer:ScreenLayer {public object MovieViewModel;public static bool FailLoad;public GauntletLayer(string name,int order,bool isFocus):base(name,order){IsFocusLayer=isFocus;}public void LoadMovie(string name,object vm){if(FailLoad)throw new InvalidOperationException("load failure");MovieViewModel=vm;}}
 }
 namespace AnimusForge {
- public static class AnimusForgeTextInputSanitizer {public const int MaxLongEditorChars=60000;public static string SanitizeMultiline(string text,int max)=>text??"";}
- public static class Logger {public static void Log(string owner,string message){}}
+ public static class Logger {public static readonly System.Collections.Generic.List<string> Messages=new();public static bool FailLog;public static void Log(string owner,string message){if(FailLog)throw new System.InvalidOperationException("log failure");Messages.Add(owner+":"+message);}}
 }

@@ -3421,5 +3421,9 @@ Choose how to proceed:" />
   <string id="AF_UI_KingdomStability_FactionRoute" text="Uprisings are handled by civil-war factions through demands, responses and the shared war cap; stability does not trigger a separate random rebellion." />
   <string id="AF_UI_KingdomStability_FactionImmunity" text="Player-kingdom immunity prevents faction uprisings." />
   <string id="AF_UI_Developer_Reload_SkippedStaticKingdoms" text="• Skip {COUNT} unmatched non-dynamic kingdom profiles (maximum 3): {PROFILES}" />
+  <string id="AF_UI_Editor_LengthStatus" text="Characters: {CURRENT} / {MAX}" />
+  <string id="AF_UI_Editor_LengthLimit" text="Maximum: {MAX} characters." />
+  <string id="AF_UI_Editor_InputTruncated" text="Some input was truncated at the limit; check the end of your text." />
+  <string id="AF_UI_Editor_SaveFailed" text="Could not complete saving. Check the log and verify the saved text before trying again." />
 </strings>
 </base>

@@ -582,12 +582,27 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	private int FindBestLineLength(string text, int start, int paragraphEnd, float availableWidth)
 	{
+		int remaining = Math.Max(1, paragraphEnd - start);
 		int low = 1;
-		int high = Math.Max(1, paragraphEnd - start);
+		int high = Math.Min(32, remaining);
 		int best = 1;
+        // Bound the search near one visual row, rather than measuring half of the
+        // entire remaining paragraph for every row. Keep the same font measurement.
+        while (true)
+        {
+            if (!(MeasureWidth(text.Substring(start, high)) <= availableWidth))
+            {
+                high--;
+                break;
+            }
+            best = high;
+            if (high == remaining) return best;
+            low = high + 1;
+            high = (int)Math.Min(remaining, (long)high * 2);
+        }
 		while (low <= high)
 		{
-			int mid = (low + high) / 2;
+			int mid = low + (high - low) / 2;
 			if (MeasureWidth(text.Substring(start, mid)) <= availableWidth)
 			{
 				best = mid;
@@ -854,10 +869,12 @@ public class DevMultilineEditableTextWidget : BrushWidget
 		if (allowedExtraLength == 0 && replacement.Length > 0)
 		{
 			replacement = string.Empty;
+            EventFired("InputTruncated");
 		}
 		else if (allowedExtraLength > 0 && replacement.Length > allowedExtraLength)
 		{
 			replacement = replacement.Substring(0, allowedExtraLength);
+            EventFired("InputTruncated");
 		}
 		string text = _realText.Remove(selectionStart, selectionEnd - selectionStart).Insert(selectionStart, replacement);
 		ApplyTextChange(text, selectionStart + replacement.Length, -1, recordUndo: true);
@@ -1233,7 +1250,10 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	private string NormalizeText(string text)
 	{
-		return AnimusForgeTextInputSanitizer.SanitizeMultiline(text, AnimusForgeTextInputSanitizer.ResolveUnboundedMaxChars(MaxLength));
+		string result = AnimusForgeTextInputSanitizer.SanitizeMultiline(text,
+            AnimusForgeTextInputSanitizer.ResolveUnboundedMaxChars(MaxLength), out bool wasTruncated);
+        if (wasTruncated) EventFired("InputTruncated");
+        return result;
 	}
 
 	private string SanitizeClipboardText(string text)

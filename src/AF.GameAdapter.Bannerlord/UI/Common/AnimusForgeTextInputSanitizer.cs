@@ -25,14 +25,28 @@ public static class AnimusForgeTextInputSanitizer
 		return Sanitize(text, allowNewLines: true, maxChars);
 	}
 
+	internal static string SanitizeMultiline(string text, int maxChars, out bool wasTruncated)
+	{
+		return Sanitize(text, allowNewLines: true, maxChars, out wasTruncated);
+	}
+
 	public static string Sanitize(string text, bool allowNewLines, int maxChars)
 	{
+		return Sanitize(text, allowNewLines, maxChars, out _);
+	}
+
+	private static string Sanitize(string text, bool allowNewLines, int maxChars, out bool wasTruncated)
+	{
+        wasTruncated = false;
 		if (string.IsNullOrEmpty(text) || maxChars == 0)
 		{
+            wasTruncated = maxChars == 0 && !string.IsNullOrEmpty(text);
 			return string.Empty;
 		}
 
+        int originalLength = text.Length;
 		text = LimitScanInput(text, maxChars);
+        wasTruncated = text.Length < originalLength;
 		text = text.Replace("\r\n", "\n").Replace('\r', '\n');
 		try
 		{
@@ -44,7 +58,8 @@ public static class AnimusForgeTextInputSanitizer
 
 		int limit = maxChars > 0 ? maxChars : int.MaxValue;
 		StringBuilder builder = new StringBuilder(Math.Min(text.Length, limit));
-		for (int i = 0; i < text.Length && builder.Length < limit; i++)
+		int i = 0;
+		for (; i < text.Length && builder.Length < limit; i++)
 		{
 			char c = text[i];
 			if (c == '<' || c == '>')
@@ -77,6 +92,8 @@ public static class AnimusForgeTextInputSanitizer
 			}
 			builder.Append(c);
 		}
+        // A bounded scan may leave an unprocessed tail; never imply the whole input was accepted.
+        wasTruncated |= i < text.Length;
 		return builder.ToString();
 	}
 

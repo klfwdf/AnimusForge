@@ -3455,5 +3455,9 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomStability_FactionRoute" text="王国起兵由内战派系通过诉求、回应与统一战争上限处理；稳定度不再单独随机触发叛乱。" />
   <string id="AF_UI_KingdomStability_FactionImmunity" text="玩家王国叛乱免疫会阻止派系起兵。" />
   <string id="AF_UI_Developer_Reload_SkippedStaticKingdoms" text="• 跳过 {COUNT} 个无法匹配的普通国家资料（最多允许 3 个）：{PROFILES}" />
+  <string id="AF_UI_Editor_LengthStatus" text="字符：{CURRENT} / {MAX}" />
+  <string id="AF_UI_Editor_LengthLimit" text="最多可输入 {MAX} 个字符。" />
+  <string id="AF_UI_Editor_InputTruncated" text="部分输入已因长度上限截断，请检查文本末尾。" />
+  <string id="AF_UI_Editor_SaveFailed" text="未能完成保存。请检查日志并核对已保存的内容后再重试。" />
 </strings>
 </base>
