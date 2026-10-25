@@ -1,9 +1,19 @@
 <a id="long-editor-fix-20261026"></a>
-## 长文本编辑器边界修复（2026-10-26，ACTIVE）
+## 长文本编辑器边界修复（2026-10-26，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
-- 用户确认玩家发行版为1.6.5，并授权限定修复后推送main；实现以远端ba3a47e1a为基线，不通过旧模块标记否定玩家版本，不擅自修改版本号。
-- 范围：长段换行测量的重复工作、60000字符上限与截断提醒、保存回调异常隔离。保持先关闭并恢复父输入再回调、业务持久化、字符清理规则及原限额；不自动重试、不重写滚动、不改LLM/TTS/玩法/存档。
-- 完成条件：排版新旧结果对照与工作量门禁；长文本/边界/故障/嵌套菜单及焦点回归；CN/EN资源与prefab绑定；原统一双API+Bootstrap构建；仅本任务差异正常快进推送main。实机与玩家原故障未复现，部署/打包不在授权范围。
+- 用户确认玩家发行版为1.6.5，并授权限定修复后推送main。基线ba3a47e1a，意图检查点6fb34521e，产品提交17a1950c6；原工作区和其他作者内容保持，仅从远端主线增加本任务提交，不带入旧本地历史，不修改版本号。
+- 修复：每行从至多32字符的探测开始倍增查找宽度边界，再二分，保留原字体测量与断点偏好；60000字符限额、预清理扫描上限和清理结果保持，以内部out标记/控件事件把截断信息传到VM；新增字数与持续截断提示，native fallback也提示初值/保存时截断。CN/EN四个新UI键、原content-map/语言注册及prefab真实绑定均已核对。
+- 保存异常由VM/helper的窄边界捕获，记录异常类型/栈而不记录原文或可能含原文的异常消息；失败提示不宣称全部未写入，不自动重试。DevHistoryEditPopup、DevPopupInputLease、DuelSettings及业务持久化无diff，保持先关闭/恢复父输入再回调；不改LLM/TTS/玩法/存档/撤销及滚动算法。字数栏仅在输入变化时更新，无新Tick IO或全量扫描。
+- 回归：TextEditorInputHandoffTests保留原85条并改用真实sanitizer，扩展为146条；另验证原始超限初值、owned、剩余容量、截断后编辑、确认异常/重复点击/失败后同host再打开、下一菜单、fallback、通知/日志自身失败，以及prefab边界和中英变量。界面/屏幕是替身，粘贴方法从生产源码抽取，不含实际MCM磁盘保存或原生渲染。
+- TextEditorLayoutTests提取真实排版方法，新旧对照1930断言通过，覆盖中英、变宽/零宽、空行、偏移、边界、随机文本。固定合成字宽的60000连续字符样例，累计测量从33042311降为393572（约98.81%），1091个显示行内容/范围一致；是算法工作量，不是实机耗时或内存峰值。
+- 最终17a1950c6经原统一build-only Debug通过双API、Bootstrap与双Coup seam/registration；实际参考1.3.15.110062/1.4.6.115628，不把本机已装1.4.8当已验。既有编译警告与NU1900联网漏洞源警告保留。新增字数栏后的最小高度已同步370，避免空文本无用滚动区。最终diff --check通过，独立只读复核未发现阻断项。
+- 未验：玩家原始闪退根因、真实游戏视觉/字体、原生剪贴板与真实保存落盘故障；本次只修已确认缺口与防御边界，不声称所有确认闪退均已解决。未Stage、部署、打包或覆盖玩家资料。详细命令、结果及源文件/DLL哈希保存在本机prompt-confirm-fix-20261026报告；源码交付是否完成以远端SHA回读为准。需要回滚时对17a1950c6做focused inverse，不回退其他作者提交。
+
+<a id="long-editor-fix-20261026-code-map"></a>
+代码坐标（绑定17a1950c6）：
+- src/AF.GameAdapter.Bannerlord/UI/Common/DevMultilineEditableTextWidget.cs:583–619 FindBestLineLength、:863–880 ReplaceSelection、:1251–1258 NormalizeText；同目录AnimusForgeTextInputSanitizer.cs:28–99 截断标记及既有清理；DevTextEditorHelper.cs:11–40 普通/owned/fallback接线、:44–72 保存保护与提醒。
+- src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopupVM.cs:104–115 编辑状态、:165–195 字数/截断/保存入口；content/modules/AF.Module.UI/GUI/Prefabs/DevHistoryEditPopup.xml:20–34 字数栏/视口/事件绑定；同owner的两份af_ui_strings语言资源各增加4键。
+- tests/modules/AF.Module.UI/TextEditorInputHandoffTests 与 TextEditorLayoutTests：实际生产源/提取方法的回放和绑定契约；不覆盖真实游戏、外部模型、全部原版补丁版本或旧档。
 
 <a id="policy-fixes-delivery-20261025"></a>
 ## 每日失败隔离与 NPC 续期退避交付（2026-10-25，FOCUSED_PASS / DUAL_BUILD_PASS / EXISTING_GATES_FAIL）
