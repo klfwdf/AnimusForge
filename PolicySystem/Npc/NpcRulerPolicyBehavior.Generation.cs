@@ -501,7 +501,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			bool cancellationRequested = job?.CancellationSource?.IsCancellationRequested == true;
 			if (!cancellationRequested)
 			{
-				_pendingPolicyCommits.Enqueue(new PendingNpcPolicyCommitContext
+				EnqueuePendingPolicyCommit(new PendingNpcPolicyCommitContext
 				{
 					GenerationResult = result
 				});
@@ -648,6 +648,112 @@ public sealed partial class NpcRulerPolicyBehavior
 			&& string.Equals((ruler.StringId ?? string.Empty).Trim(), (rulerHeroId ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
 	}
 
+	private void EnqueuePendingPolicyCommit(PendingNpcPolicyCommitContext context)
+	{
+		_pendingPolicyCommits.Enqueue(context);
+		// Publish after enqueue; a stale idle cache can never hide a completed producer.
+		Interlocked.Increment(ref _policyCommitEnqueueVersion);
+	}
+
+	private void ResetPendingPolicyCommitWake()
+	{
+		_policyCommitWakeTimestamp = 0;
+		_policyCommitWakeVersion = -1;
+	}
+
+	private void PublishPendingPolicyCommitWake(long dueTimestamp, long enqueueVersion)
+	{
+		_policyCommitWakeVersion = enqueueVersion;
+		_policyCommitWakeTimestamp = dueTimestamp;
+	}
+
+	private bool TryPeekRunnablePolicyCommit(
+		long nowTimestamp,
+		long budgetStartTimestamp,
+		double budgetMs,
+		out PendingNpcPolicyCommitContext context)
+	{
+		context = null;
+		if (IsPolicyCommitBudgetExceeded(budgetStartTimestamp, budgetMs))
+		{
+			return false;
+		}
+		long enqueueVersion = Volatile.Read(ref _policyCommitEnqueueVersion);
+		if (_policyCommitWakeTimestamp > nowTimestamp && _policyCommitWakeVersion == enqueueVersion)
+		{
+			return false;
+		}
+		ResetPendingPolicyCommitWake();
+		if (!_pendingPolicyCommits.TryPeek(out context))
+		{
+			return false;
+		}
+		if (context == null || context.RenewalSnapshotRetryDueTimestamp <= nowTimestamp)
+		{
+			return true;
+		}
+		// Only delayed heads require a bounded pass; ordinary commits keep their old cadence.
+		int remaining = _pendingPolicyCommits.Count;
+		long earliestWake = long.MaxValue;
+		while (remaining-- > 0 && !IsPolicyCommitBudgetExceeded(budgetStartTimestamp, budgetMs))
+		{
+			if (!_pendingPolicyCommits.TryPeek(out context))
+			{
+				return false;
+			}
+			if (context == null || context.RenewalSnapshotRetryDueTimestamp <= nowTimestamp)
+			{
+				return true;
+			}
+			earliestWake = Math.Min(earliestWake, context.RenewalSnapshotRetryDueTimestamp);
+			if (_pendingPolicyCommits.TryDequeue(out PendingNpcPolicyCommitContext delayed))
+			{
+				_pendingPolicyCommits.Enqueue(delayed);
+			}
+		}
+		context = null;
+		if (remaining < 0 && earliestWake != long.MaxValue)
+		{
+			// The captured version invalidates this cache even if a producer raced this write.
+			PublishPendingPolicyCommitWake(earliestWake, enqueueVersion);
+		}
+		return false;
+	}
+
+	private static void DeferNpcRenewalSnapshotRetry(PendingNpcPolicyCommitContext context, long nowTimestamp)
+	{
+		context.RenewalSnapshotRetryDueTimestamp = nowTimestamp + Stopwatch.Frequency * RenewalSnapshotRetryDelaySeconds;
+	}
+
+	private static PolicyLogContext BuildNpcRenewalSnapshotRetryDiagnostic(
+		PendingNpcPolicyCommitContext context,
+		string policyId,
+		string snapshotFailure,
+		long nowTimestamp)
+	{
+		string reasonHash = PolicySystemLog.HashSensitive(snapshotFailure);
+		if (string.Equals(context.RenewalSnapshotDiagnosticReasonHash, reasonHash, StringComparison.Ordinal)
+			&& context.RenewalSnapshotDiagnosticDueTimestamp > nowTimestamp)
+		{
+			return null;
+		}
+		context.RenewalSnapshotDiagnosticReasonHash = reasonHash;
+		context.RenewalSnapshotDiagnosticDueTimestamp = nowTimestamp + Stopwatch.Frequency * RenewalSnapshotDiagnosticIntervalSeconds;
+		return new PolicyLogContext
+		{
+			PolicyId = policyId,
+			EffectId = "npc_ruler_policy_bundle:" + NormalizeKeyPart(policyId),
+			StateBefore = context.Stage.ToString(),
+			StateAfter = context.Stage.ToString(),
+			Attempt = context.ActiveEffectRetryCount,
+			ErrorKind = "NpcRenewalSnapshotRetryDeferred",
+			MessageChars = context.ApprovalFailureReason?.Length ?? 0,
+			MessageHash = PolicySystemLog.HashSensitive(context.ApprovalFailureReason),
+			DetailChars = snapshotFailure?.Length ?? 0,
+			DetailHash = reasonHash
+		};
+	}
+
 	private void ProcessPendingPolicyCommits()
 	{
 		if (_pendingPolicyCommits.IsEmpty)
@@ -656,7 +762,8 @@ public sealed partial class NpcRulerPolicyBehavior
 		}
 		long startTimestamp = Stopwatch.GetTimestamp();
 		double budgetMs = PolicyCommitFrameBudgetMs;
-		while (!IsPolicyCommitBudgetExceeded(startTimestamp, budgetMs) && _pendingPolicyCommits.TryPeek(out PendingNpcPolicyCommitContext context))
+		while (!IsPolicyCommitBudgetExceeded(startTimestamp, budgetMs)
+			&& TryPeekRunnablePolicyCommit(Stopwatch.GetTimestamp(), startTimestamp, budgetMs, out PendingNpcPolicyCommitContext context))
 		{
 			int retryCountBefore = context?.ActiveEffectRetryCount ?? 0;
 			if (!ProcessPendingPolicyCommitContext(context, startTimestamp, budgetMs))
@@ -1311,13 +1418,20 @@ public sealed partial class NpcRulerPolicyBehavior
 							record,
 							out bool existingBundleReady,
 							out bool preparationRetryable,
-							out string preparationFailure))
+							out string preparationFailure,
+							out string snapshotFailure))
 						{
 							context.ActiveEffectRetryCount++;
 							context.ApprovalFailureReason = preparationFailure;
 							if (preparationRetryable)
 							{
-								LogApprovalCommitRetry(context, record.PolicyId);
+								long retryTimestamp = Stopwatch.GetTimestamp();
+								DeferNpcRenewalSnapshotRetry(context, retryTimestamp);
+								PolicyLogContext diagnostic = BuildNpcRenewalSnapshotRetryDiagnostic(context, record.PolicyId, snapshotFailure, retryTimestamp);
+								if (diagnostic != null)
+								{
+									PolicySystemLog.Lifecycle("Npc", "policy-agenda-commit-retry", "failed", diagnostic);
+								}
 								break;
 							}
 							MarkPreparedNpcModuleEffectsFailed(record);
@@ -5613,18 +5727,20 @@ public sealed partial class NpcRulerPolicyBehavior
 		NpcRulerPolicyRecord record,
 		out bool existingBundleReady,
 		out bool retryable,
-		out string failureReason)
+		out string failureReason,
+		out string snapshotFailure)
 	{
 		existingBundleReady = false;
 		retryable = false;
 		failureReason = string.Empty;
+		snapshotFailure = string.Empty;
 		if (record == null || string.IsNullOrWhiteSpace(record.PolicyId))
 		{
 			failureReason = "NPC renewal record identity is incomplete";
 			return false;
 		}
 		string stableEffectId = "npc_ruler_policy_bundle:" + NormalizeKeyPart(record.PolicyId);
-		if (TryRestoreNpcPolicyEffectBundleSnapshot(record, stableEffectId, out _))
+		if (TryRestoreNpcPolicyEffectBundleSnapshot(record, stableEffectId, out snapshotFailure))
 		{
 			existingBundleReady = true;
 			return true;

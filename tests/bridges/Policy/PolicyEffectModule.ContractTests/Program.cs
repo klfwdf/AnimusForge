@@ -406,8 +406,23 @@ internal static partial class Program
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
+			if (args.Any(value => value == "--npc-renewal-retry-only"))
+			{
+				try
+				{
+					TestNpcRenewalSnapshotRetryScheduling();
+				}
+				catch (Exception failure)
+				{
+					Console.Error.WriteLine("FAIL " + failure.GetType().Name + ": " + failure.Message);
+					return 1;
+				}
+				Console.WriteLine("PASS npcRenewalRetryAssertions=" + _assertionCount);
+				return 0;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--npc-policy-effect-repair-orchestration-only", StringComparison.OrdinalIgnoreCase)))
 			{
+				TestNpcRenewalSnapshotRetryScheduling();
 				TestNpcPlannedSnapshotDistributionContract();
 				TestNpcSingleKingdomTwoStageContracts();
 				Console.WriteLine("PASS npcPolicyEffectRepairAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
@@ -558,6 +573,7 @@ internal static partial class Program
 			TestSaveMigrations();
 			TestNpcLegacyMigrations();
 			TestNpcUnifiedMultiTargetCanonicalization();
+			TestNpcRenewalSnapshotRetryScheduling();
 			TestNpcPlannedSnapshotDistributionContract();
 			TestNpcSingleKingdomTwoStageContracts();
 			TestPolicyEvaluationReferenceContracts();
@@ -16542,6 +16558,224 @@ internal static partial class Program
 		Check(mirroredPayload != null
 			&& Items(Property(mirroredPayload.GetType(), mirroredPayload, "Effects")).Count() == 12,
 			"The 32KiB aggregate limit must count a 3KiB payload once per logical InstanceId, not once per display shell.");
+	}
+
+	private static void TestNpcRenewalSnapshotRetryScheduling()
+	{
+		Type ownerType = SutType("AnimusForge.NpcRulerPolicyBehavior");
+		Type contextType = ownerType.GetNestedType("PendingNpcPolicyCommitContext", All);
+		MethodInfo enqueue = ownerType.GetMethod("EnqueuePendingPolicyCommit", All);
+		MethodInfo peek = ownerType.GetMethod("TryPeekRunnablePolicyCommit", All);
+		MethodInfo defer = ownerType.GetMethod("DeferNpcRenewalSnapshotRetry", All);
+		MethodInfo diagnostic = ownerType.GetMethod("BuildNpcRenewalSnapshotRetryDiagnostic", All);
+		MethodInfo publishWake = ownerType.GetMethod("PublishPendingPolicyCommitWake", All);
+		MethodInfo resetWake = ownerType.GetMethod("ResetPendingPolicyCommitWake", All);
+		Check(contextType != null && enqueue != null && peek != null && defer != null
+			&& diagnostic != null && publishWake != null && resetWake != null,
+			"NPC renewal snapshot retry must have production queue, monotonic delay and diagnostic seams.");
+		FieldInfo due = contextType.GetField("RenewalSnapshotRetryDueTimestamp", All);
+		FieldInfo retryCount = contextType.GetField("ActiveEffectRetryCount", All);
+		FieldInfo queueField = ownerType.GetField("_pendingPolicyCommits", All);
+		FieldInfo version = ownerType.GetField("_policyCommitEnqueueVersion", All);
+		FieldInfo wake = ownerType.GetField("_policyCommitWakeTimestamp", All);
+		FieldInfo wakeVersion = ownerType.GetField("_policyCommitWakeVersion", All);
+		Check(due != null && version != null && wake != null && wakeVersion != null,
+			"Retry timing and wake identity must be transient owner/context fields.");
+		object owner = Activator.CreateInstance(ownerType);
+		object NewContext() => Activator.CreateInstance(contextType, nonPublic: true);
+		object delayed = NewContext();
+		object readyA = NewContext();
+		object readyB = NewContext();
+		long now = Stopwatch.Frequency * 100L;
+		long deadline = now + Stopwatch.Frequency * 30L;
+		bool Peek(object target, long clock, out object context, bool expiredBudget = false)
+		{
+			object[] args = { clock, expiredBudget ? Stopwatch.GetTimestamp() - Stopwatch.Frequency : Stopwatch.GetTimestamp(),
+				expiredBudget ? 1.0 : 0.0, null };
+			bool result = (bool)peek.Invoke(target, args);
+			context = args[3];
+			return result;
+		}
+		object Take(object target)
+		{
+			object queue = queueField.GetValue(target);
+			object[] args = { null };
+			Check((bool)queue.GetType().GetMethod("TryDequeue").Invoke(queue, args), "Selected work must remain in its original queue.");
+			return args[0];
+		}
+		object[] Queue(object target) => (object[])queueField.GetValue(target).GetType()
+			.GetMethod("ToArray").Invoke(queueField.GetValue(target), null);
+
+		enqueue.Invoke(owner, new[] { delayed });
+		Check(Peek(owner, now, out object first) && ReferenceEquals(first, delayed), "The first attempt must be immediately runnable.");
+		retryCount.SetValue(delayed, 1);
+		defer.Invoke(null, new[] { delayed, (object)now });
+		Check((long)due.GetValue(delayed) == deadline, "Only the failed renewal snapshot must wait exactly 30 monotonic seconds.");
+		for (int second = 0; second < 30; second++)
+		{
+			Check(!Peek(owner, now + second * Stopwatch.Frequency, out _)
+				&& (int)retryCount.GetValue(delayed) == 1 && Queue(owner).Length == 1,
+				"A deferred poll must not execute, increment retries or lose the work.");
+		}
+		Check((long)wake.GetValue(owner) == deadline, "An entirely deferred queue must cache its earliest wake.");
+		Check(Peek(owner, deadline, out object retried) && ReferenceEquals(retried, delayed), "The exact deadline must admit the original work once.");
+		defer.Invoke(null, new[] { delayed, (object)deadline });
+		Check(!Peek(owner, deadline, out _) && (int)retryCount.GetValue(delayed) == 1,
+			"Rescheduling after a real attempt must prevent another attempt at the same instant.");
+
+		enqueue.Invoke(owner, new[] { readyA });
+		enqueue.Invoke(owner, new[] { readyB });
+		Check(Peek(owner, now, out object runnableA) && ReferenceEquals(runnableA, readyA), "A deferred head must not block newly queued work.");
+		Check(ReferenceEquals(Take(owner), readyA), "The first runnable item must retain FIFO order.");
+		Check(Peek(owner, now, out object runnableB) && ReferenceEquals(runnableB, readyB), "Other runnable work must retain FIFO order.");
+		Take(owner);
+		Check(!Peek(owner, now, out _), "The remaining delayed work must go idle again.");
+		object[] sleeping = Queue(owner);
+		Check(!Peek(owner, now + 1, out _) && Queue(owner).SequenceEqual(sleeping), "An idle poll must not rotate the queue.");
+
+		object mixedOwner = Activator.CreateInstance(ownerType);
+		object mixedA = NewContext();
+		object mixedB = NewContext();
+		for (int index = 0; index < 6; index++)
+		{
+			object waiting = NewContext();
+			defer.Invoke(null, new[] { waiting, (object)(now + index * Stopwatch.Frequency) });
+			enqueue.Invoke(mixedOwner, new[] { waiting });
+			if (index == 1) enqueue.Invoke(mixedOwner, new[] { mixedA });
+			if (index == 4) enqueue.Invoke(mixedOwner, new[] { mixedB });
+		}
+		Check(Peek(mixedOwner, now, out object mixedSelectedA) && ReferenceEquals(mixedSelectedA, mixedA),
+			"Several delayed heads must not hide the first ready item.");
+		Take(mixedOwner);
+		Check(Peek(mixedOwner, now, out object mixedSelectedB) && ReferenceEquals(mixedSelectedB, mixedB),
+			"Interleaved delayed work must not reorder ready items.");
+		Take(mixedOwner);
+		Check(!Peek(mixedOwner, now, out _) && Queue(mixedOwner).Length == 6
+			&& (long)wake.GetValue(mixedOwner) == deadline,
+			"A full delayed pass must retain every item and select the earliest, not last, deadline.");
+
+		long observedVersion = (long)version.GetValue(owner);
+		object backgroundWork = NewContext();
+		Task.Run(() => enqueue.Invoke(owner, new[] { backgroundWork })).GetAwaiter().GetResult();
+		publishWake.Invoke(owner, new object[] { deadline, observedVersion });
+		Check(Peek(owner, now, out object raced) && ReferenceEquals(raced, backgroundWork),
+			"A stale wake published after background enqueue must not hide newly published work.");
+		Take(owner);
+		object approvedRecord = Activator.CreateInstance(SutType("AnimusForge.NpcRulerPolicyRecord"));
+		SetProperty(approvedRecord.GetType(), approvedRecord, "PolicyId", "retry-approved-entry");
+		InvokeInstance(ownerType, owner, "EnqueueApprovedAgendaCommit", new[] { approvedRecord, (object)true }, 2);
+		Check(Peek(owner, now, out object approved) && !ReferenceEquals(approved, delayed), "The real approval producer must also invalidate idle wake.");
+		Take(owner);
+
+		object budgetOwner = Activator.CreateInstance(ownerType);
+		object budgetDelayed = NewContext();
+		defer.Invoke(null, new[] { budgetDelayed, (object)now });
+		enqueue.Invoke(budgetOwner, new[] { budgetDelayed });
+		enqueue.Invoke(budgetOwner, new[] { NewContext() });
+		object[] beforeBudget = Queue(budgetOwner);
+		Check(!Peek(budgetOwner, now, out _, expiredBudget: true) && Queue(budgetOwner).SequenceEqual(beforeBudget),
+			"An expired frame budget must not rotate, consume or execute any work.");
+		Check(Peek(budgetOwner, now, out object afterBudget) && ReferenceEquals(afterBudget, beforeBudget[1]),
+			"Budget exhaustion must not strand the later runnable item.");
+		resetWake.Invoke(owner, null);
+		Check((long)wake.GetValue(owner) == 0 && (long)wakeVersion.GetValue(owner) == -1,
+			"Load/reset must clear the transient wake cache.");
+		Check((long)due.GetValue(NewContext()) == 0, "Restored jobs must start with no persisted retry deadline.");
+
+		object diagnosticContext = NewContext();
+		retryCount.SetValue(diagnosticContext, 17);
+		contextType.GetField("Stage", All).SetValue(diagnosticContext,
+			Enum.Parse(ownerType.GetNestedType("PendingNpcPolicyCommitStage", All), "CreateActiveEffect"));
+		contextType.GetField("ApprovalFailureReason", All).SetValue(diagnosticContext, "unchanged business failure");
+		const string sensitive = "private-payload-marker";
+		object LogAt(long clock, string reason) => diagnostic.Invoke(null,
+			new object[] { diagnosticContext, "retry-policy", reason, clock });
+		object logContext = LogAt(now, sensitive);
+		Check(logContext != null && LogAt(now + 299L * Stopwatch.Frequency, sensitive) == null,
+			"The first diagnostic must emit and identical failures must stay quiet for five minutes.");
+		Check(LogAt(now + 300L * Stopwatch.Frequency, sensitive) != null,
+			"The five-minute deadline must permit a bounded diagnostic.");
+		Check(LogAt(now + 301L * Stopwatch.Frequency, "changed reason") != null
+			&& LogAt(now + 302L * Stopwatch.Frequency, "changed reason") == null,
+			"A changed cause must emit once without enabling repeated logging.");
+		string json = (string)InvokeStatic(SutType("AnimusForge.PolicySystemLog"), "BuildEventJson", new object[]
+		{
+			"Npc", "policy-agenda-commit-retry", "failed", "lifecycle", "error", logContext, 42L, DateTime.UtcNow
+		}, 8);
+		JObject parsedLog = JObject.Parse(json);
+		Check((string)parsedLog["policyId"] == "retry-policy"
+			&& (string)parsedLog["effectId"] == "npc_ruler_policy_bundle:retry-policy"
+			&& (int)parsedLog["attempt"] == 17
+			&& (string)parsedLog["stateBefore"] == "CreateActiveEffect"
+			&& (string)parsedLog["stateAfter"] == "CreateActiveEffect"
+			&& (string)parsedLog["errorKind"] == "NpcRenewalSnapshotRetryDeferred"
+			&& !json.Contains(sensitive) && !json.Contains("unchanged business failure"),
+			"Diagnostics must expose stable identity/attempt/stage, never private payload or full reasons.");
+		Check((int)retryCount.GetValue(diagnosticContext) == 17
+			&& !(bool)contextType.GetField("ApprovalCommitFailed", All).GetValue(diagnosticContext),
+			"Scheduling and diagnostics must never turn this old retry into failure finalization.");
+
+		Type coreType = SutType("AnimusForge.CustomPolicyBehavior");
+		PropertyInfo coreInstance = coreType.GetProperty("Instance", All);
+		object previousCore = coreInstance.GetValue(null);
+		try
+		{
+			object core = Activator.CreateInstance(coreType);
+			object stageOwner = Activator.CreateInstance(ownerType);
+			object record = InvokeStatic(ownerType, "DeserializeRecord", new object[]
+			{
+				BuildNpcUnifiedMultiTargetRecord().ToString(Formatting.None)
+			}, 1);
+			Check(record != null, "The real renewal fixture must normalize before testing the failed snapshot path.");
+			object stageContext = NewContext();
+			SetField(contextType, stageContext, "IsRenewalCommit", true);
+			SetField(contextType, stageContext, "IsAgendaApprovalCommit", true);
+			SetField(contextType, stageContext, "Stage", Enum.Parse(ownerType.GetNestedType("PendingNpcPolicyCommitStage", All), "CreateActiveEffect"));
+			string recordBefore = JsonConvert.SerializeObject(record);
+			IDictionary stored = (IDictionary)ownerType.GetField("_policyRecords", All).GetValue(stageOwner);
+			string recordId = (string)Property(record.GetType(), record, "PolicyId");
+			stored[recordId] = recordBefore;
+			InvokeInstance(ownerType, stageOwner, "ProcessPendingPolicyCommitStage", new[] { stageContext, record }, 2);
+			long realDue = (long)due.GetValue(stageContext);
+			Check(realDue > Stopwatch.GetTimestamp() && (int)retryCount.GetValue(stageContext) == 1
+				&& (string)contextType.GetField("ApprovalFailureReason", All).GetValue(stageContext)
+					== "NPC renewal contains active instances but its authoritative bundle snapshot is unavailable",
+				"The actual CreateActiveEffect failure branch must schedule a delay without changing its business result.");
+			Check(JsonConvert.SerializeObject(record) == recordBefore && (string)stored[recordId] == recordBefore
+				&& ((IDictionary)coreType.GetField("_activePolicyEffects", All).GetValue(core)).Count == 0
+				&& !(bool)contextType.GetField("ApprovalCommitFailed", All).GetValue(stageContext)
+				&& contextType.GetField("Stage", All).GetValue(stageContext).ToString() == "CreateActiveEffect",
+				"Failed snapshot scheduling must leave policy state, persisted shells, receipts and Core effects untouched.");
+			enqueue.Invoke(stageOwner, new[] { stageContext });
+			for (int tick = 0; tick < 100; tick++)
+			{
+				if (Peek(stageOwner, realDue - 1, out object selected))
+					InvokeInstance(ownerType, stageOwner, "ProcessPendingPolicyCommitStage", new[] { selected, record }, 2);
+			}
+			Check((int)retryCount.GetValue(stageContext) == 1 && JsonConvert.SerializeObject(record) == recordBefore,
+				"One hundred pre-deadline production selections must execute zero further snapshot attempts.");
+			Check(Peek(stageOwner, realDue, out object selectedAtDue) && ReferenceEquals(selectedAtDue, stageContext),
+				"The same real failed stage must remain available at its deadline, without recreating a policy.");
+			object invalidRecord = Activator.CreateInstance(record.GetType());
+			object[] invalidPreparation = { invalidRecord, null, null, null, null };
+			Check(!(bool)InvokeStatic(ownerType, "TryPrepareNpcPolicyRenewalCommit", invalidPreparation, 5)
+				&& !(bool)invalidPreparation[2] && (string)invalidPreparation[3] == "NPC renewal record identity is incomplete",
+				"Non-retryable preparation must keep its original classification and failure reason.");
+		}
+		finally
+		{
+			coreInstance.SetValue(null, previousCore);
+		}
+
+		string root = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string generation = File.ReadAllText(Path.Combine(root, "PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs"));
+		string behaviorSource = File.ReadAllText(Path.Combine(root, "PolicySystem/Npc/NpcRulerPolicyBehavior.cs"));
+		Check(generation.Contains("EnqueuePendingPolicyCommit(new PendingNpcPolicyCommitContext")
+			&& behaviorSource.Contains("EnqueuePendingPolicyCommit(new PendingNpcPolicyCommitContext")
+			&& behaviorSource.Contains("ResetPendingPolicyCommitWake();"),
+			"Both real producers and the existing load clear path must consume the tested scheduling helpers.");
+		Check(ownerType.GetNestedType("NpcPolicyGenerationResult", All) != null,
+			"This refactor must keep the existing generation/commit context, not a second scheduler.");
 	}
 
 	private static void TestNpcPlannedSnapshotDistributionContract()

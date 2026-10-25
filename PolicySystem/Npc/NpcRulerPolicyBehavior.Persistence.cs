@@ -1924,6 +1924,10 @@ public sealed partial class NpcRulerPolicyBehavior
 		public int PublicFeedbackSavedCount;
 		public int ActiveEffectsCreatedCount;
 		public int ActiveEffectRetryCount;
+		// Transient scheduling only; these fields are never part of the saved policy record.
+		public long RenewalSnapshotRetryDueTimestamp;
+		public long RenewalSnapshotDiagnosticDueTimestamp;
+		public string RenewalSnapshotDiagnosticReasonHash;
 		public int ApprovalFailureCallbackRetryCount;
 		public bool ApprovalEffectBundleReady;
 		public bool ApprovalCoreCommitConfirmed;

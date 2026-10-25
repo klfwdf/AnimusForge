@@ -63,6 +63,8 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private const int FailedGenerationBackoffHours = 6;
 	private const int PolicyApiHardTimeoutMilliseconds = 540000;
 	private const double PolicyCommitFrameBudgetMs = 1.0;
+	private const int RenewalSnapshotRetryDelaySeconds = 30;
+	private const int RenewalSnapshotDiagnosticIntervalSeconds = 300;
 	private const int NpcPolicyCurrentHistoryLimit = 2;
 	private const int NpcPolicyAbolishedHistoryLimit = 1;
 	private const string NpcPolicyHistoryStatusActive = "active";
@@ -74,6 +76,9 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<string, string> _policyRecords = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly ConcurrentQueue<PendingNpcPolicyCommitContext> _pendingPolicyCommits = new ConcurrentQueue<PendingNpcPolicyCommitContext>();
+	private long _policyCommitEnqueueVersion;
+	private long _policyCommitWakeTimestamp;
+	private long _policyCommitWakeVersion = -1;
 	private readonly ConcurrentQueue<NpcPolicyGenerationJob> _pendingPolicySnapshotJobs = new ConcurrentQueue<NpcPolicyGenerationJob>();
 	private readonly object _generationStateLock = new object();
 	private readonly HashSet<string> _policyGenerationInFlightKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -735,7 +740,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			RuntimeGeneration = SaveRuntimeGuard.CurrentGeneration
 		};
 		bool resumeFailureFinalization = record.ApprovalFailureFinalizationPending;
-		_pendingPolicyCommits.Enqueue(new PendingNpcPolicyCommitContext
+		EnqueuePendingPolicyCommit(new PendingNpcPolicyCommitContext
 		{
 			GenerationResult = new NpcPolicyGenerationResult
 			{
@@ -1278,6 +1283,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		_initialGenerationCheckElapsed = 0f;
 		_nextPublicFeedbackNoticeDueHour = int.MaxValue;
 		_policyPresentationLastAttemptDayById.Clear();
+		ResetPendingPolicyCommitWake();
 		while (_pendingPolicyCommits.TryDequeue(out var _))
 		{
 		}
