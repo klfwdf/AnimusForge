@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Balearic_Slingers_and_Lead_Bullets",
+  "Keywords": [
+    "Balearic_Slingers_and_Lead_Bullets",
+    "Triple Sling",
+    "Lead Glandes",
+    "Bone Crushing"
+  ],
+  "RagShortTexts": [
+    "Balearic islanders trained from childhood with three distinct slings (long, medium, short), hurling cast lead bullets (glandes) with kinetic force that smashed bronze armor and shattered bones at over 200 paces."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Balearic Islands (Majorca and Minorca) produced the deadliest missile specialists in the ancient Mediterranean. According to historical accounts, island mothers placed barley bread upon high poles, forbidding their sons from eating until they struck the loaf down with a sling stone. Each Balearic mercenary carried three slings woven from flax, hemp, or sinew: a long sling bound around the head for extreme range plunging fire; a medium sling wound around the waist for battle lines; and a short sling clutched in hand for rapid point-blank defense. They hurled smooth river stones or cast-lead bullets shaped like almonds (glandes), which whirled through the air with an audible shriek. Reaching ranges over 200 paces, the kinetic energy of lead missiles exceeded contemporary composite bows. The impact smashed through bronze helmets and wooden scuta; even when stopped by chainmail, the concussive blunt-force trauma shattered sternums and ribs, causing massive internal hemorrhage before battle lines collided."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Their screaming lead acorns carry the force of a catapult! Even if a scutum halts the pellet, the shock snaps the legionary's forearm like dry firewood. Against Balearic slingers, we must not linger in the killing zone—advance at the double under locked shields and cut them down with cold steel!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Balearic slingers are our storm of lead and stone! Before a single spear crosses in combat, their spinning slings shatter consular helmets and break the swagger of the legions from two hundred paces away. Silver spent on Balearic mercenaries is silver paid in Roman blood!"
+    }
+  ],
+  "TextMappings": []
+}

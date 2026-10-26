@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_41",
+  "Keywords": [
+    "Manipular Tactics & Triplex Acies",
+    "Manipular Tactical Flexibility",
+    "Triplex Acies Succession",
+    "Quincunx Checkerboard Gaps"
+  ],
+  "RagShortTexts": [
+    "During the Punic Wars, the Roman manipular legion operated in the famed Triplex Acies formation. Arranged in a checkerbo"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "During the Punic Wars, the Roman manipular legion operated in the famed Triplex Acies formation. Arranged in a checkerboard quincunx of Hastati (youths), Principes (prime veterans), and Triarii (spear-armed elders), frontline units exhausted by melee could orderly retire through gaps in the rear lines while fresh cohorts stepped forward, presenting an elastic wall of steel."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_叙拉古城与埃皮波莱要塞",
+  "Keywords": [
+    "叙拉古城与埃皮波莱要塞",
+    "叙拉古",
+    "埃皮波莱要塞",
+    "奥提伽岛"
+  ],
+  "RagShortTexts": [
+    "叙拉古坐落于西西里东岸，拥有奥提伽岛卫城与埃皮波莱高原巨型石墙，是古典时代最坚固的大希腊城邦。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "叙拉古（Syracuse）坐落于西西里岛东南沿岸，是由科林斯殖民者于公元前八世纪建立的大希腊第一大城邦。城市依托天然的大港与小港，核心卫城位于近岸的奥提伽岛（Ortygia），岛上泉水甘冽、宫堡密布，通过堤道与主陆相连。公元前四世纪僭主狄奥尼修斯修筑了全长二十余公里的巨石城墙，将险峻的埃皮波莱高原（Epipolae）与尤里亚鲁斯要塞（Euryalus）全部圈入防线之内，拥有双层壕沟与复杂的地下坑道。在希伦二世长达五十年的明智统治期间，叙拉古作为罗马坚实盟友保持了空前繁荣，并委托科学巨擘阿基米德设计了当时世界上最致命的要塞防御机械。希伦死后叙拉古倒向迦太基，罗马‘罗马之剑’马塞卢斯执政官率海陆大军围城两年，历经惨烈攻防，最终在前212年趁夜攻陷这座地中海最坚固的城邦要塞。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "叙拉古是大希腊所有城邦中最璀璨的明珠，却也是最难啃的铁核桃！狄奥尼修斯修筑的石墙顺着埃皮波莱绝壁蜿蜒数里，阿基米德的投石机在两里外就能将我们的战船轰得粉碎。马塞卢斯执政官围攻它整整两年，无数罗马勇士血染城壕。当我们的士兵登上城头时，连马塞卢斯自己也为它的雄伟壮丽而潸然泪下！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "叙拉古倒向迦太基曾是地中海战略平衡翻盘的曙光。埃皮波莱要塞扼守着西西里的门户，只要叙拉古的大港在我们手中，迦太基舰队就能随时横跨海峡补给汉尼拔。然而迦太基派往西西里的援军行动迟缓，希波克拉底与埃皮西德斯拼死苦战，最终因城内奸细开门和瘟疫肆虐而失陷。失去叙拉古，西西里便彻底沦为罗马人的后院粮仓。"
+    }
+  ],
+  "TextMappings": []
+}

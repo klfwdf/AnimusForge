@@ -1,0 +1,69 @@
+{
+  "Id": "rule_House_of_Fabii_Tradition_and_Sacrifice",
+  "Keywords": [
+    "House_of_Fabii_Tradition_and_Sacrifice",
+    "House of Fabii",
+    "Fabius Maximus",
+    "Battle of the Cremera"
+  ],
+  "RagShortTexts": [
+    "The Fabii epitomized selfless sacrifice and stoic patience, from losing 306 warriors at the Cremera to Quintus Fabius Maximus 'Cunctator', whose attrition strategy saved Rome from Hannibal."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "No patrician house bore a more tragic yet exalted tradition of national sacrifice than the Gens Fabia. In 477 BC at the River Cremera, the clan undertook a private war against Veii to shield Rome's northern border. Three hundred and six patrician Fabii marched out with their clients; through ambush, every single grown warrior perished, leaving only a single boy in Rome to continue the bloodline. This sacred trauma forged a generational character rooted in stoic discipline and readiness to endure disgrace for the Republic's survival. When Hannibal crushed legions at Trasimene in 217 BC, Quintus Fabius Maximus was appointed Dictator. Rejecting suicidal pitched battles, Fabius instituted the controversial strategy of shadowing Hannibal from high ground, denying battle, severing foraging parties, and exhausting the Punic army through attrition. Though vilified as a coward ('Cunctator'—the Delayer) by populist rivals who subsequently led 50,000 men to slaughter at Cannae, Fabius stood vindicated. Re-elected consul, he liberated Tarentum and earned the eternal title 'The Shield of Rome.'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The House of Fabii preserved the Republic through supreme patience! When hot-headed consuls hurled our youth into Hannibal's trap, old Fabius held the ridges. Ennius spoke truth: 'One man by delaying restored our state.' His endurance remains the truest Roman shield!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fabius was an old fox clinging to barren mountaintops! He watched our army pillage Campania from his ridgeline perch, ignoring every challenge to fight like an honorable warrior. A cowardly strategy beneath contempt, yet one that starved our Italian campaign of the decisive blow we needed!"
+    }
+  ],
+  "TextMappings": []
+}

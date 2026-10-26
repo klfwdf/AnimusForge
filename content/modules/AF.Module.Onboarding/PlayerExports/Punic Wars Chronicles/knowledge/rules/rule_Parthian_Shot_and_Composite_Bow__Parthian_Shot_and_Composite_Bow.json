@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Parthian_Shot_and_Composite_Bow",
+  "Keywords": [
+    "Parthian_Shot_and_Composite_Bow",
+    "Parthian Shot",
+    "Composite Recurve Bow",
+    "Thumb Draw"
+  ],
+  "RagShortTexts": [
+    "Steppe and Parthian horse archers mastered the lethal 'Parthian Shot', swiveling 180 degrees backwards in the saddle at full gallop to release armor-piercing composite bow shafts upon pursuing cavalry."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Across the Eurasian frontier, Saka and nomadic Parthian horse archers elevated mounted missile tactics into an unbeatable art form, anchored by the legendary 'Parthian Shot'. Nomads wielded composite recurve bows meticulously crafted from laminated wood cores, horn bellies that resisted compression, and animal sinew backings under tension, fused with fish-bladder glue over months of curing. Short and compact for horseback handling, these bows stored immense potential energy, drawn using a bone thumb ring. The tactical signature was the feigned retreat: horse archers approached, unleashed a barrage, and broke away in apparent panicked flight. As overconfident enemy heavy cavalry broke formation to pursue, the fleeing steppe rider suddenly twisted his torso 180 degrees backward in the saddle, locking his legs against the galloping mount, and released an armor-piercing bodkin arrow into the charging pursuer. The pursuer, blinded by velocity, was speared through chest armor, precipitating catastrophic pile-ups before the nomads turned back to slaughter the survivors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Parthian arrow shot backwards over a horse's tail is the trick of a coward and a thief! They flee like rabbits, then twist like serpents to sting you in the throat. A Roman cavalry officer who breaks ranks to chase retreating steppe riders without infantry support deserves a court-martial before his men bleed out in the sand!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The backward shot from a galloping saddle is military deception elevated to perfection! The pursuer believes he has won, right until an arrow splits his breastplate. Hannibal understands this language of false retreats: victory belongs not to rigid brute force, but to the commander who turns the enemy's own momentum into his funeral pyre!"
+    }
+  ],
+  "TextMappings": []
+}

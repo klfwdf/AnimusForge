@@ -1,3 +1,14 @@
+<a id="source-tracking-worldbooks-20261026"></a>
+## 原版源码目录与双语布匿世界书跟踪（2026-10-26，SOURCE_VERIFIED / LIVE_NOT_RUN）
+
+- 用户授权将已确认的目录跟踪改动推送main；基于远端714380ba7，限定本条源码/资源及说明，不合入其他开发历史或未提交功能。
+- 保留已跟踪的原版游戏本体代码1.5.5共8201文件，删除旧原版游戏本体代码1.5.4共8192文件。远端不含运行时测试桥，本次继续不纳入测试桥或本地运行产物。
+- 跟踪布匿战争编年史及Punic Wars Chronicles各1272 JSON，以及英文身份映射；content-map只登记1272个实际中文来源，239条指向不存在旧人物文件的记录不纳入。英文资源按既有身份映射投影，不新增语言、语言锁、配置副本或打包入口。
+- 验证范围：2544 JSON可解析；1272个中文来源及1272个唯一英文身份映射均存在，实际英文资源选择函数逐项解析通过；无重复目标或悬空来源。与本地已核对的指定数据切片一致，编译源码/项目/构建脚本与远端基线相同，未新增构建。
+- 未验证：世界书全文语义、实机/旧档、正式CN/EN Stage/ZIP；未部署、打包或变更版本号。回滚使用本条提交的聚焦逆向提交，不强推或改写历史。推送结果以远端main回读为准。
+
+---
+
 <a id="long-editor-fix-20261026"></a>
 ## 长文本编辑器边界修复（2026-10-26，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
@@ -1888,7 +1899,7 @@ NOT-RUN：当前产品编译、专项编译型回放、全部UI实机、长战�
 
 - 核实工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`，原HEAD `8d521ec595e7fd2b9e767ce86393a5da6145ac11`，无未提交/未跟踪的非忽略文件。fetch 后 `origin/main` 仍为 `14ce14ae974a45e5b129d99effa1bd4e2942bab8`，0 behind / 25 ahead；不需要合并，按用户要求直接普通快进推送，不force、不rebase/reset。
 - 发布原工作区全部净变化，41文件；会面护卫 `30e70d37`、模组内提示词 `45c63066`、缓存/导出/终端设置 `2f8edb1f`、编辑器 `bfcdb4da`、部署 `60c94397` 与导入reparse保护 `ad39448d` 均保留。两项外交补丁及其四测试按用户此前要求已inverse，净产品与远端一致，不重复恢复。其他分支/外部工作树不是此次发布对象。
-- 检查25提交全历史的47变更路径，不含明确私有交接 `docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md`、ignored本地证据、玩家数据或DLL/ZIP/存档；新增行凭据模式扫描无信号（不是完整安全审计），`git diff --check origin/main HEAD` exit0。原checkpoint、inverse和文档行尾修复历史保持，不为美化发布改写历史。
+- 检查25提交全历史的47变更路径，不含明确私有交接 `[本地专用交接文件，公开记录不列路径]`、ignored本地证据、玩家数据或DLL/ZIP/存档；新增行凭据模式扫描无信号（不是完整安全审计），`git diff --check origin/main HEAD` exit0。原checkpoint、inverse和文档行尾修复历史保持，不为美化发布改写历史。
 - 产品/测试/构建相关文件与最终已验证源码 `ad39448d` 完全一致；重新核对既有双API/Bootstrap三产物SHA全部一致，20源码地图锚点 recorded-revision / working-tree 两模式PASS。复用[目录恢复最终离线验收](#module-runtime-storage-20261011)、[提示词专项](#module-custom-prompts-20261011)和[会面护卫专项](#meeting-real-troop-escort-20261011)，没有重新声称全仓测试通过。J15 3365/3364计数基线失败、旧124文件Release Stage缺输入仍保留；实机/游戏UI/玩家存档未验。
 - 仅新增本条发布范围与根HANDOFF摘要；源码、默认资源和构建流程不变。发布前再次核对远端与dirty；普通推送失败或远端推进时停止当前推送并重新诊断，不强行覆盖。实际发布SHA/远端ref及命令结果保存在本地 `artifacts/publication/workspace-sync-20261011-*/receipt.json`，证据不提交。不部署、Stage、打包或写游戏/C盘玩家数据。
 
@@ -3133,7 +3144,7 @@ snapshot、分块和native反射仅在SyncData保存/加载边界运行；静态
 - 基线依据：远端实际发布提交b188403634847bbac3e6e6633da7f99e6e6ba91e，v1.5.4，2026-10-06 11:17:54 +08:00；仓库最近公告为1.5.3，不将其日期误作最近产品发布。公告范围b1884036至本次v1.5.5源码，包括随后已在远端的ee796fec1 GCCZ修复和本地累计功能修复。
 - 远端比较：fetch将origin/main由e3bd28e0更新为df6fc788c13570a5cc9ffeb2a5109ee3547b0b80，本地当时领先42/落后1；新增8193项全部是原版游戏本体代码1.5.4参考资料和tools/export_bannerlord_reference.ps1。73d82a201以普通merge合入，无冲突/删改远端资料。AnimusForge.csproj:114-115已排除全部原版参考目录；导出脚本不参与产品构建。不声明Bannerlord 1.5.4运行支持。
 - 发布核验：最终运行源码与已验证包的3dad3baf相同；差异仅远端参考资料/导出工具及发布文档。package SHA256仍a8099cd8156a25aa1294d6fe1d6edbdee9277902b5bc67d54827b2b7fd6adf19，沿用上条双实现/Bootstrap、63+76离线及3379文件证据，不重复编译无变化源码。公告新增Markdown和纯文本两份；按实际代码核对字号14–36/24、世界内战上限1–20/3、4周新通牒、新增怨恨减半、收编/路径及旧配置边界。
-- 历史范围核验：git rev-list --objects origin/main..HEAD -- docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md为空；待发布快照无artifacts/bin/.tmp/ZIP/sav。此为明确排除路径与候选范围核对，不冒充所有历史的通用保密审计。只推main，不推备份分支、不重写历史。
+- 历史范围核验：git rev-list --objects origin/main..HEAD -- [本地专用交接文件，公开记录不列路径]为空；待发布快照无artifacts/bin/.tmp/ZIP/sav。此为明确排除路径与候选范围核对，不冒充所有历史的通用保密审计。只推main，不推备份分支、不重写历史。
 - 公告文件docs/releases/AnimusForge_1.5.5_累计更新公告_20261006.md及.txt；本地verify_publication.py、prepush-receipt.json、merge.log保存范围与包校验。纯文本去Markdown标题/加粗，内容一致。未实现的信使好感/解救事实不列入，AI成图及实际游戏行为不作保证。
 - 状态：公告提交a1755fa7ab7fea5cc320f92c50e2429522796a3b经git push origin HEAD:main成功（df6fc788c→a1755fa7a），独立git ls-remote确认同一SHA，领先/落后0/0。push.log、remote-main-first.txt保留原回执；首次远端比较脚本分隔符转义错误，改按制表符分割后通过，非推送失败。随后仅提交本条交接结果并同样普通推送/核对，最终远端回执见本地remote-main-final.txt。未创建GitHub Release或代发玩家群，用户可直接使用已提交公告。实机/旧档仍未验，当前任务不改变下方验收边界。回滚采用定向inverse提交，不强推或reset既有历史。
 
@@ -8704,7 +8715,7 @@ artifacts/                           # ignored：stage/packages/logs/tests/diagn
 - `C:/Program Files/dotnet/packs` 中 NETCore/WindowsDesktop/AspNetCore Ref 均有 **8.0.25 与 10.0.11**，没有8.0.30，不能满足**旧SDK10.0.400**的要求。R2已定位该版本要求来自本机 SDK 的 `Microsoft.NETCoreSdk.BundledVersions.props:273-278,332-375`，不是测试源码显式钉死8.0.30。按P9固定在仓库内准备官方SDK8.0.425及其8.0.31配套，再建立新基线；不手改SDK props、不把8.0.25伪称8.0.30、不降net8.0测试目标。本轮不运行restore/build。
 - 新发现的 runner 阻碍：`tools/NativeModuleSubmissionTests/run.py:39-45` 硬编码 `G:/AFMOD/.dotnet-sdk/dotnet.exe` 与 DOTNET_ROOT，不能凭给 shell 设 DOTNET_EXE 解决。B0 应先单独批准最小 runner 可移植性修复，采用已有 API runner 的 `--dotnet`/environment 模式；新旧 SOURCE 验证不变，先于路径移动建立正常/enum 重排/8 个反例基线。本轮未改 runner。
 - API runner 与 CampaignComposition runner 已有 `--dotnet`，分别在 `:79`、`:99`；源码守卫/代码坐标无需 .NET 构建。原脚本 `build_single_module.ps1:487-490` 会递归重置工作区 `bin/<Configuration>/single_module_artifacts` 和 `obj/single_module/<Configuration>`，`:537-541` 的 Stage 输出是 `bin/<Configuration>/single_module_stage/AnimusForge`；必须先解析这些目标并获得具体清理/覆盖授权，不能因 `-Stage` 就忽略风险。生产项目为 net472/x64，与聚焦测试 net8.0 是两套依赖门槛，8.0.30 缺包不等于生产编译已经失败。
-- 具名保护清单：`docs/handoffs/2026-09-06-integrated-phase8-handoff.md`、`docs/handoffs/2026-09-06-team-brief.md` 本机存在，保持原文；历史本地专用 `docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md` 与 `.tmp/parallel-closeout-20260916/team-handoff.md` 本机不存在，不重建、不取消保护、不把缺失理解成可上传。既有 PlayerExports、自定义内容、其他 worktree、NEW-10/GCCZ 和参考快照一并保留；未来交付还须审查 outgoing 历史，本轮不发布。
+- 具名保护清单：`docs/handoffs/2026-09-06-integrated-phase8-handoff.md`、`docs/handoffs/2026-09-06-team-brief.md` 本机存在，保持原文；历史本地专用 `[本地专用交接文件，公开记录不列路径]` 与 `.tmp/parallel-closeout-20260916/team-handoff.md` 本机不存在，不重建、不取消保护、不把缺失理解成可上传。既有 PlayerExports、自定义内容、其他 worktree、NEW-10/GCCZ 和参考快照一并保留；未来交付还须审查 outgoing 历史，本轮不发布。
 
 ### P5．批次、门禁、验收与回滚
 

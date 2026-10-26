@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Regulus_Expedition_and_Xanthippus",
+  "Keywords": [
+    "Regulus_Expedition_and_Xanthippus",
+    "Marcus Atilius Regulus",
+    "Regulus Expedition",
+    "Xanthippus"
+  ],
+  "RagShortTexts": [
+    "Consul Regulus invaded North Africa but was decisively defeated at the Battle of Tunis by Spartan mercenary general Xanthippus using war elephants."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Following victory at Ecnomus, Roman Consul Marcus Atilius Regulus landed in North Africa in 256 BC, driving to the gates of Carthage. Panic ensued, but Regulus demanded humiliating surrender terms. Refusing subjugation, Carthage hired the Spartan mercenary general Xanthippus to reorganize their military. In 255 BC at the Battle of Tunis (Bagradas River), Xanthippus deployed 100 war elephants in front and used superior cavalry on the flanks across open plains. The elephants trampled the tightly packed legionaries while cavalry closed the rear, killing 12,000 Romans and capturing Regulus alive, ending Rome's first African expedition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Regulus fell to overconfidence and the trampling fury of Spartan-led war beasts, but his honor remains eternal! Paroled to Rome to negotiate a shameful peace, he instead urged the Senate to fight to the last man, then voluntarily returned to Carthage to face torture and death rather than break his word. That is the Roman spirit!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Regulus's overweening hubris brought his ruin! He treated the proud republic of Carthage as already conquered, demanding our unconditional enslavement. Xanthippus showed him Hellenic tactical genius: our war elephants flattened their cohorts and our cavalry hunted the survivors across the burning sand. The consul was led away in chains."
+    }
+  ],
+  "TextMappings": []
+}

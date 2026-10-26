@@ -1,0 +1,69 @@
+{
+  "Id": "rule_城邦历史_耶路撒冷",
+  "Keywords": [
+    "城邦历史_耶路撒冷",
+    "耶路撒冷",
+    "Jerusalem",
+    "城邦历史_耶路撒冷城防要塞"
+  ],
+  "RagShortTexts": [
+    "耶路撒冷（Jerusalem）是古典时代要冲城邑，拥有完备城防工事与繁盛商市，在布匿战争与地缘交锋中占据核心战略地位。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "犹太民族信仰与历史的神圣心脏耶路撒冷。坐落于犹太山地险峻山脊之上，由汲沦谷与欣嫩谷天然深壑环抱。城内心脏耸立着所罗巴伯重修的第二圣殿（Second Temple），大祭司阶层在此严格遵循摩西律法举行每日燔祭。面对塞琉古帝国推行希腊化政策与托勒密王朝争夺，圣城在坚守一神信仰与抵抗异教同化中剧烈动荡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "耶路撒冷的城墙必须竖起罗马的鹰旗！无论是坚固的石塔还是城内的粮仓，军团将以钢铁纪律牢牢掌控这座要冲，任何人敢于在城中煽动叛乱都将遭到执政官最严厉的清洗！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "耶路撒冷的港口与市集必须向我们的商船敞开！迦太基尊重城邦的古老自由与地方神明，只要旗帜下汇聚起反抗罗马霸权的勇士，我们的大军必将保卫其城垣永固！"
+    }
+  ],
+  "TextMappings": []
+}

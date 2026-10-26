@@ -1,0 +1,69 @@
+{
+  "Id": "rule_迦太基城与圆形双重港",
+  "Keywords": [
+    "迦太基城与圆形双重港",
+    "迦太基城",
+    "圆形军港",
+    "科同港"
+  ],
+  "RagShortTexts": [
+    "迦太基城坐拥突尼斯湾，以险峻的拜尔萨卫城、坚固的三重防线及可容纳220艘战舰的人工圆形军港（科同港）闻名于世。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基城坐落于今日突尼斯湾突出的半岛之上，三面临海，地势极其险要，曾是地中海世界最富庶壮丽的七十万人口大都会。整座城市被高达十二米、厚逾九米的三重环形巨石城墙所护卫，墙体内设有可容纳三百头战象、四千匹战马以及两万名甲士的兵营与马厩。城中央高耸着险峻的拜尔萨卫城（Byrsa）与宏伟的埃斯库拉皮乌斯神庙。而迦太基最叹为观止的工程奇迹当属人工双重港‘科同’（Cothon）：外港为长方形商船港，商船密布；穿过狭窄水道进入内港，则是一座直径逾三百米的完全人工开凿的圆形军用港池。港池四周开辟了带柱廊的二百二十个独立船坞与修造工棚，中央人工环岛上耸立着高耸的舰队司令官邸，站在塔顶可全览海域敌情，外海却因高墙遮挡对军港内部虚实一无所知。这座奇迹之港是迦太基称霸西地中海海权的终极引擎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基城在地图上就像一只伸入大海的带毒巨蝎！它的三重城墙坚固得如同悬崖，它的军港更是藏在深水内室里的蛇窝——外面的商船遮蔽了视线，里面却随时能冲出两百艘挂满撞角的五层橹战船！小西庇阿在围城时亲手在海口筑造长堤封死了军港水道，才终于将这头海洋巨兽生生困死在海湾里！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是腓尼基航海智慧的无上杰作！科同军港的水面平滑如镜，两百二十艘五层橹和三层橹战船静卧在白色大理石圆柱环抱的船坞中，水军提督在中央岛屿的钟塔上号令四海！拜尔萨卫城沐浴在金色阳光下，商船从大西洋与黑海运来象牙、锡石与金砂。她是西地中海无可争议的女王，直到罗马蛮族用烈火将七百年的大理石化为焦土！"
+    }
+  ],
+  "TextMappings": []
+}

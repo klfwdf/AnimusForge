@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Baltic_Amber_Road_and_Clinker_Boats",
+  "Keywords": [
+    "Baltic_Amber_Road_and_Clinker_Boats",
+    "Amber Road",
+    "Northern Gold",
+    "Clinker Boat"
+  ],
+  "RagShortTexts": [
+    "Baltic coastal tribes navigated shallow, clinker-built sewn boats (such as the Hjortspring boat) through mist-veiled shallows, harvesting raw amber for trans-continental trade down the Amber Road."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In Greco-Roman lore, golden amber washed ashore on Baltic beaches was romanticized as the tears of Heliades wept over Phaethon's fall. Known as the 'Gold of the North', raw Baltic amber sustained the trans-continental Amber Road cutting south across the Vistula and Danube into the Mediterranean. Ingvaeonic maritime tribes gathered this fossilized resin utilizing the earliest clinker-built wooden vessels—epitomized by the preserved Hjortspring boat (c. 350–300 BC). Crafted without metal nails, its paper-thin lime planks were overlapped (clinker style) and stitched with cordage and sinew to flexible hazel ribs, ending in elegant twin-beaked prows. Drawing only inches of water, these light, flexible rowing vessels absorbed violent ocean swells without snapping, gliding over shoals where heavy Mediterranean quinqueremes would founder, and could be portaged overland between river basins. Coastal traders gathered kilograms of raw amber to exchange along river valleys for Mediterranean wine, olive oil, and bronze swords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Roman noblewomen pay fortunes for Baltic amber pendants that attract dry feathers when rubbed against silk! Northern barbarians spend months diving in freezing surf just to trade raw resin for a few amphorae of Falernian wine. The Republic need not march legions into those frozen fogs—our silver draws their amber south like magic!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Amber Road is a grand artery of world commerce! Northern boatmen navigate longboats that flex like water snakes over the northern surf, carrying raw sunshine harvested from Baltic beaches. Let Rome dream of controlling all trade; Punic merchants know that true mastery lies in controlling the silver and exchange houses where all worlds meet!"
+    }
+  ],
+  "TextMappings": []
+}

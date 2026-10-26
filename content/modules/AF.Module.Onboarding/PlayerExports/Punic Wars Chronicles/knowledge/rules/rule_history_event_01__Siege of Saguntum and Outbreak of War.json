@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_01",
+  "Keywords": [
+    "Siege of Saguntum and Outbreak of War",
+    "Fall of Saguntum",
+    "Ebro River Alliance",
+    "Hannibal Storming Saguntum"
+  ],
+  "RagShortTexts": [
+    "In 219 BC, Hannibal Barca besieged the fortified Iberian city of Saguntum, an independent Greek settlement allied with R"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 219 BC, Hannibal Barca besieged the fortified Iberian city of Saguntum, an independent Greek settlement allied with Rome south of the Ebro River. The besieged citizens held out heroically for eight grueling months before the city was stormed and sacked to finance Carthaginian mobilization. Rome declared this a breach of the Ebro treaty, dispatching ambassadors to Carthage with an ultimatum that ignited the Second Punic War."
+    }
+  ],
+  "TextMappings": []
+}

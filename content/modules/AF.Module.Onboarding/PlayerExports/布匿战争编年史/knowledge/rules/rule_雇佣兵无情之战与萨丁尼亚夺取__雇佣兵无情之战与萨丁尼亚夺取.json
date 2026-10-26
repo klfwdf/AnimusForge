@@ -1,0 +1,69 @@
+{
+  "Id": "rule_雇佣兵无情之战与萨丁尼亚夺取",
+  "Keywords": [
+    "雇佣兵无情之战与萨丁尼亚夺取",
+    "雇佣兵战争",
+    "无情之战",
+    "萨丁尼亚与科西嘉"
+  ],
+  "RagShortTexts": [
+    "第一次布匿战争后迦太基爆发惨烈的雇佣兵叛乱（无情之战），罗马趁火打劫撕毁中立强占萨丁尼亚与科西嘉。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前241年战后，两万名从西西里撤回北非的雇佣兵因迦太基国库空虚被拖欠军饷，在坎帕尼亚逃奴斯彭迪乌斯与利比亚人马托斯的煽动下爆发大规模叛乱。受迦太基重税压迫的北非本土部族与妇女亦群起响应，叛军一度高达十万人，封锁迦太基城并残杀战俘，战争因双方极度残暴互不留俘被称为‘无情之战’（Truceless War，前241—前238年）。最终哈米尔卡·巴卡临危受命，凭借绝妙战术在‘锯谷战役’中困死四万叛军并平定叛乱。然而在迦太基精疲力竭之际，萨丁尼亚岛的雇佣军守军亦叛变并向罗马求援。罗马趁火打劫，撕毁和约公然派军占领萨丁尼亚和科西嘉，并以再次开战威胁强索一千两百塔兰特白银。这一极端卑劣的讹诈行径彻底激怒了巴卡家族，直接铸成了第二次布匿战争的不可逆火种。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨丁尼亚的雇佣军起义并向我们宣誓归附，罗马只是顺应局势恢复秩序！难道我们应当坐视那座扼守第勒尼安海的大岛沦为海盗和叛军的巢穴吗？至于迦太基抱怨我们违约——一个连自己的雇佣军都管不住的城邦，有什么资格指责罗马捍卫海疆的坚决果断！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马抢夺萨丁尼亚是人类外交史上最寡廉鲜耻的背刺！当我们在非洲与嗜血叛军拼死血战、拯救文明城邦时，罗马人不仅撕毁和约吞并了萨丁尼亚与科西嘉，还贪婪勒索一千两百塔兰特！哈米尔卡将军正是立誓于此：让年幼的汉尼拔在巴力神坛前发誓，终其一生必为罗马之死敌！"
+    }
+  ],
+  "TextMappings": []
+}

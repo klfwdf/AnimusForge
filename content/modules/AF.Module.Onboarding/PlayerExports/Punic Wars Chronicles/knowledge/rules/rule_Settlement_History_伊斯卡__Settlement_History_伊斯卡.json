@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Settlement_History_伊斯卡",
+  "Keywords": [
+    "Settlement_History_伊斯卡",
+    "伊斯卡",
+    "Settlement_History_伊斯卡 伊斯卡",
+    "Settlement_History_伊斯卡 Fortress"
+  ],
+  "RagShortTexts": [
+    "伊斯卡 (伊斯卡) was a pivotal fortified settlement, anchoring regional military logistics and urban commerce throughout ancient Mediterranean conflicts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The classical stronghold of 伊斯卡 (伊斯卡) occupies a decisive defensive position in Classical Strategic Hub. Enclosed by formidable stone ramparts and defensive dry moats, it controls regional caravan trade routes and military mobilization defiles. Boasting secure granaries, artisan workshops, and a veteran garrison, 伊斯卡 served as a crucial operational pivot during the Punic and Hellenistic conflicts, withstanding multi-month sieges and providing vital logistical resupply to armies in the field."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ramparts of 伊斯卡 must fly the eagle standard! Whether through engineering circumvallation or direct assault, Rome ensures this fortress serves senatorial order and secures our communication lines!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The markets of 伊斯卡 belong to free maritime trade, not Roman chains! Carthage supports its autonomy against legionary oppression, guaranteeing that Punic gold and spears will reinforce its ramparts!"
+    }
+  ],
+  "TextMappings": []
+}

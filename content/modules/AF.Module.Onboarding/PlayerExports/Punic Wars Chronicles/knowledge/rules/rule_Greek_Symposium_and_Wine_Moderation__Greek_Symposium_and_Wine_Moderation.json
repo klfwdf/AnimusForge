@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Greek_Symposium_and_Wine_Moderation",
+  "Keywords": [
+    "Greek_Symposium_and_Wine_Moderation",
+    "Greek Symposium",
+    "Symposiarch",
+    "Diluted Wine"
+  ],
+  "RagShortTexts": [
+    "The Greek symposium balanced wine with water under a symposiarch's rule to foster elevated philosophical debate, poetic recitation, and civic diplomacy among Magna Graecia elites."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Throughout Magna Graecia and the Aegean, the symposium ('drinking together') anchored aristocratic civic and intellectual life. Following communal dining (deipnon), guests reclined on couches (klinai) in the andron. Ritual required electing a symposiarch (king of the banquet) who determined the wine-to-water dilution ratio mixed in monumental kraters—usually three parts water to one part wine. Drinking unmixed wine was condemned as barbarian madness (akratoposia); proper dilution induced elevated philosophical clarity rather than vulgar intoxication. Accompanied by lyre music, riddles, and kottabos games, citizens debated Platonic philosophy, politics, and civic strategy. In metropolises like Tarentum and Syracuse, symposia served as secret conclaves where Hellenic nobility weighed alliances between Carthaginian freedom and Roman subjugation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Greeks recline on cushions sipping watered wine, composing poems while barbarian fleets crowd their harbors! Philosophy and wit cannot stop a Roman gladius. Order comes from legionary iron, not symposium chatter!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The symposium is the sanctuary of Hellenic genius. In Syracuse and Tarentum, Hannibal was welcomed into these very banquet halls as a liberator. We bring gold and mutual respect to Hellenic culture, while Rome brings chains!"
+    }
+  ],
+  "TextMappings": []
+}

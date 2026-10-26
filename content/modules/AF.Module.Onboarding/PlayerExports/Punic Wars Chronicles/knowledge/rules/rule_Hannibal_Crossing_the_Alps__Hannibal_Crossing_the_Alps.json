@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Hannibal_Crossing_the_Alps",
+  "Keywords": [
+    "Hannibal_Crossing_the_Alps",
+    "Hannibal Crossing the Alps",
+    "Hannibal War Elephants",
+    "Alpine March"
+  ],
+  "RagShortTexts": [
+    "In 218 BC, Hannibal crossed the snowy Alps with war elephants, executing one of the most audacious strategic surprises in military history."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In autumn 218 BC, denying Roman naval control, Hannibal embarked on one of history's greatest strategic gambits: marching from New Carthage through Gaul, crossing the Rhône on giant timber rafts, and traversing the frozen Alps into Italy. Over fifteen grueling days, his army fought through hostile Celtic ambushes, snowstorms, and treacherous cliffs, famously splitting heated boulders with vinegar to clear a ledge. Descending into the Po Valley, Hannibal had lost half his army, arriving with 20,000 veteran infantry, 6,000 cavalry, and a few surviving war elephants, completely upending Rome's offensive war plans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "None believed an army with war elephants could cross the treacherous frozen Alps! Consul Publius Scipio was already sailing for Iberia when word arrived that Hannibal had descended from the snows into the Po Valley like a thunderbolt. It was an astonishing gamble that forced Rome to fight for its life upon Italian soil."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That march immortalized Hannibal Barca as a titan of war! Neither icy precipices nor Celtic arrows broke his iron resolve. Standing atop the summit, he pointed south and declared: 'Beyond these peaks lies the citadel of Italy!' When our battered vanguard descended onto the plains, Gallic tribes rallied and Roman arrogance turned to dread."
+    }
+  ],
+  "TextMappings": []
+}

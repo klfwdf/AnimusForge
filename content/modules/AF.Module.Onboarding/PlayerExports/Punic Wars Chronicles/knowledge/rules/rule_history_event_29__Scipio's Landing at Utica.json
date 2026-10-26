@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_29",
+  "Keywords": [
+    "Scipio's Landing at Utica",
+    "Scipio Landing at Cape Farina",
+    "Siege Camp at Utica",
+    "Masinissa Cavalry Defection"
+  ],
+  "RagShortTexts": [
+    "In 204 BC, Scipio embarked his veteran army aboard four hundred transports, landing near Utica just north of Carthage. P"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 204 BC, Scipio embarked his veteran army aboard four hundred transports, landing near Utica just north of Carthage. Panic swept the Carthaginian Senate as smoke from plundered estates rose across the horizon. Shortly after landing, the exiled Massylian Numidian prince Masinissa joined Scipio with seasoned horsemen, providing the Romans with the elite light cavalry doctrine required to overcome Hannibal's veteran forces."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Settlement_History_Gades_Gadir",
+  "Keywords": [
+    "Settlement_History_Gades_Gadir",
+    "Gades (Gadir)",
+    "加迪尔",
+    "Settlement_History_Gades_Gadir Fortress"
+  ],
+  "RagShortTexts": [
+    "Gades (Gadir) (加迪尔) was a pivotal fortified settlement, anchoring regional military logistics and urban commerce throughout ancient Mediterranean conflicts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The oldest Phoenician settlement in the far west, Gades (Punic Gadir, 'The Walled Stronghold') commands the Atlantic approaches past the Pillars of Hercules. Renowned for the ancient Sanctuary of Melqart containing an eternal oil flame, Gades served as the primary deep-water homeport for Atlantic tin and silver shipping lanes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ramparts of Gades (Gadir) must fly the eagle standard! Whether through engineering circumvallation or direct assault, Rome ensures this fortress serves senatorial order and secures our communication lines!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The markets of Gades (Gadir) belong to free maritime trade, not Roman chains! Carthage supports its autonomy against legionary oppression, guaranteeing that Punic gold and spears will reinforce its ramparts!"
+    }
+  ],
+  "TextMappings": []
+}

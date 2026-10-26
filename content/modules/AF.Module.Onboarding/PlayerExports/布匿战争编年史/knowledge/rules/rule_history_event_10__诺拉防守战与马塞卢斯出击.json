@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_10",
+  "Keywords": [
+    "诺拉防守战与马塞卢斯出击",
+    "诺拉城三次防守战",
+    "罗马之剑破神话",
+    "马塞卢斯伏击战"
+  ],
+  "RagShortTexts": [
+    "公元前216至214年，汉尼拔三次企图夺取坎帕尼亚要冲诺拉城，均被罗马名将马尔库斯·克劳狄乌斯·马塞卢斯击退。马塞卢斯利用城垣掩护组织秘密突击，出其不意猛攻迦太基攻城纵队，造成数千名迦太基精锐阵亡。马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前216至214年，汉尼拔三次企图夺取坎帕尼亚要冲诺拉城，均被罗马名将马尔库斯·克劳狄乌斯·马塞卢斯击退。马塞卢斯利用城垣掩护组织秘密突击，出其不意猛攻迦太基攻城纵队，造成数千名迦太基精锐阵亡。马塞卢斯以此打破了汉尼拔在意大利战场‘不可战胜’的神话，被元老院与罗马人民誉为拯救危局的‘罗马之剑’。"
+    }
+  ],
+  "TextMappings": []
+}

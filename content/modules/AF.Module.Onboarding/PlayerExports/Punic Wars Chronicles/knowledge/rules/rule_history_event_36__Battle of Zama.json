@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_36",
+  "Keywords": [
+    "Battle of Zama_279",
+    "Elephant Corridor Tactic",
+    "Brass Horns Stampede",
+    "Masinissa Decisive Rear Charge"
+  ],
+  "RagShortTexts": [
+    "On October 19, 202 BC at Zama, Hannibal unleashed eighty war elephants. Scipio countered by aligning his maniples in par"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On October 19, 202 BC at Zama, Hannibal unleashed eighty war elephants. Scipio countered by aligning his maniples in parallel columns rather than the traditional checkerboard, leaving wide avenues through which the panicked beasts were funneled by blaring brass horns. As veteran infantry clashed in a brutal center struggle, Masinissa's cavalry returned from pursuing Punic horsemen, striking Hannibal's rear and winning the war."
+    }
+  ],
+  "TextMappings": []
+}

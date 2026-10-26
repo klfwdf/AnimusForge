@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_27",
+  "Keywords": [
+    "Peace of Phoenice",
+    "First Macedonian War Concluded",
+    "Rome Hands Free for Africa",
+    "Balkan Status Quo Preserved"
+  ],
+  "RagShortTexts": [
+    "Signed in 205 BC at Phoenice in Epirus, the Peace of Phoenice brought an end to the First Macedonian War. The treaty rec"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Signed in 205 BC at Phoenice in Epirus, the Peace of Phoenice brought an end to the First Macedonian War. The treaty recognized minor territorial gains for Philip V in Illyria while ensuring that Macedonian fleets would never cross the Adriatic to aid Hannibal. This diplomatic success neutralized Rome's eastern flank, freeing all strategic resources for Scipio's climactic African campaign."
+    }
+  ],
+  "TextMappings": []
+}

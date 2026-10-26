@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Tyrian_Purple_and_Murex_Dye",
+  "Keywords": [
+    "Tyrian_Purple_and_Murex_Dye",
+    "Tyrian Purple",
+    "Murex Snails",
+    "Royal Purple"
+  ],
+  "RagShortTexts": [
+    "Tyrian purple was the ancient world's most costly dye, extracted from decaying murex sea snails in pungent vats to produce unfading imperial cloth worth its weight in gold."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Throughout classical antiquity, purple-dyed garments stood as the ultimate insignia of Hellenistic kings, Roman consuls, and triumphant generals. Known as Tyrian purple, this luxurious color was a closely guarded Phoenician monopoly derived from predatory sea snails: the spiny dye-murex (Bolinus brandaris) and rock-snail (Hexaplex trunculus). The extraction was staggering in scale: each mollusk held only a tiny hypobranchial gland producing a minute drop of clear fluid. Producing a single ounce of pure dye powder required crushing over 10,000 live snails. The harvested glands were packed in lead-lined vats with brine and stale urine, then simmered over gentle charcoal heat and fermented under the Mediterranean sun for days. The resulting stench of rotting shellfish was so suffocating that Punic statutes legally banished dye works outside city limits on distant downwind shores. Yet cloth steeped in Tyrian purple dried into a rich crimson-violet resembling dried coagulated bull's blood that never faded in sunlight, actually becoming richer with washing, commanding prices exceeding equal weights of silver or gold."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The purple border upon a magistrate's toga praetexta is the sacred frontier of Roman law! The Phoenician sea merchants reek of the rotting snail vats where they brew their dye, yet when that crimson-violet folds over a Roman general, it strikes awe into legions and plebeians alike!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From the depth of the sea, Phoenician patience weaves the glory of kings! Let Roman senators preach rustic poverty in the Forum; they still empty their coffers to drape themselves in Carthaginian purple. While they wield crude iron, our dye vats clothe the civilized world in royal gold!"
+    }
+  ],
+  "TextMappings": []
+}

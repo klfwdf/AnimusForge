@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_08",
+  "Keywords": [
+    "坎尼后罗马举国死誓动员",
+    "坎尼后举国动员",
+    "没收家产打造军团",
+    "赦免囚徒奴隶从军"
+  ],
+  "RagShortTexts": [
+    "坎尼惨败消息传回罗马城，元老院颁布严禁在公共场所哭泣超过三十天的法令，宣布决不向汉尼拔遣使乞和。元老院议员带头捐献全部金银珠宝铸造军费，破例征募十七岁以下少年、负债公民甚至出资赎买八千名精壮奴隶编入特"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼惨败消息传回罗马城，元老院颁布严禁在公共场所哭泣超过三十天的法令，宣布决不向汉尼拔遣使乞和。元老院议员带头捐献全部金银珠宝铸造军费，破例征募十七岁以下少年、负债公民甚至出资赎买八千名精壮奴隶编入特别军团军旅，重申全民族誓与共和国共存亡的钢铁自律，展现出古典斯多葛主义的最强韧意志。"
+    }
+  ],
+  "TextMappings": []
+}

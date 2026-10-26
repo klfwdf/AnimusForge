@@ -1,0 +1,69 @@
+{
+  "Id": "rule_塞琉古具装铁骑与人马俱甲",
+  "Keywords": [
+    "塞琉古具装铁骑与人马俱甲",
+    "具装铁骑",
+    "卡塔弗拉克特",
+    "人马俱甲"
+  ],
+  "RagShortTexts": [
+    "安条克三世通过远东战役吸纳了中亚帕提亚铁骑精髓，创立了地中海最早的大规模具装重骑兵（Cataphract），人马俱披铁鳞甲，手持四米康托斯重枪。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塞琉古帝国统治者安条克三世在著名的远东大远征（Anabasis，前212—前205年）中，亲历了中亚帕提亚与巴克特里亚游牧重装骑兵的恐怖威力，随即将其引入帝国军队，创造出西方历史上最早的正规‘具装铁骑’（Kataphraktoi，意为‘全副装甲者’）。具装铁骑实现了革命性的‘人马俱甲’：骑兵从头到脚覆盖由铁片、青铜与皮革重叠编织的锁子甲或鳞甲，甚至面带冰冷的金属面具；其坐骑——来自米底亚高原著名的尼萨纯种战马（Nisaean horse），同样披挂覆盖胸部、颈部与侧肋的厚实铁鳞马铠（Barding）。骑兵双手执握长达四米余的沉重刺枪‘康托斯’（Kontos），冲锋时借助沉重马铠与战马的绝对惯性，如同一座移动的钢铁堡垒径直碾压敌阵。这种集防御与突破力于一身的重甲怪兽，极大弥补了希腊传统骑兵在重步兵方阵面前冲击力不足的缺陷，在此后长达千年的近东与罗马帝国战争中演变为不可阻挡的中世纪全装骑士雏形。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "东方国王们竟然把战马从头到脚都用铁鳞片包裹起来，像一个个移动的铁罐头！这种骑兵冲锋起来声势浩大，但在炎炎烈日下人马极易中暑虚脱，且转向异常迟钝。只要罗马步兵保持冷静、用重标枪专射战马没有铠甲保护的腹部与马腿，他们倒地后连爬都爬不起来！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "安条克三世的具装铁骑是近东最耀眼的装甲神迹！面对那钢铁铸造的人马巨浪，任何轻装步兵都会被践踏成肉泥。东方帝国的底蕴与财富令人艳羡，只要塞琉古的铁骑与战象挺进地中海，罗马人在东方的霸权美梦就注定是一场泡影！"
+    }
+  ],
+  "TextMappings": []
+}

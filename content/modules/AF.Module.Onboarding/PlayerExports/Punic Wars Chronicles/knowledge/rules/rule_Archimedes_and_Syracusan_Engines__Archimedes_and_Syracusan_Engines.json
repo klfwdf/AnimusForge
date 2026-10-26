@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Archimedes_and_Syracusan_Engines",
+  "Keywords": [
+    "Archimedes_and_Syracusan_Engines",
+    "Archimedes",
+    "Siege of Syracuse",
+    "Catapults"
+  ],
+  "RagShortTexts": [
+    "Supported by King Hiero II, Archimedes converted Syracuse into an impregnable mechanical citadel; his giant cranes ('The Claw') lifted and capsized attacking Roman warships, baffling Marcellus."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Within the sea-girt Greek metropolis of Syracuse, the legendary polymath Archimedes (c. 287–212 BC) enjoyed decades of royal patronage under King Hiero II, transforming the city's coastal walls into the most mathematically fortified bastion of the classical era. During the Second Punic War, when Syracuse broke its alliance with Rome following Hiero's death, Roman Consul Marcus Claudius Marcellus ('The Sword of Rome') besieged the city by land and sea with a formidable fleet. Roman assault quinqueremes were met with terrifying mechanical defenses devised by Archimedes: overlapping batteries of calibrated torsion catapults fired from slotted arrow slits at every distance. When Roman ships rowed close to scale the sea walls with sambuca boarding towers, giant crane arms—the fabled 'Claw of Archimedes'—swung over the battlements. Iron grapples seized the ship's prow, hoisting the multi-ton warship high out of the water using counterweights and compound pulleys, before releasing the catch to slam the vessel upside down into the sea. Roman marines grew so traumatized that the mere appearance of a wooden spar atop the wall triggered panicked retreat, prompting Marcellus to lament that he was waging war against a geometric Briareus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Greek mathematician has turned the sea into our grave using mere levers and ropes! He lifts our quinqueremes like fishing boats and smashes them into splinters upon the rocks. Our men tremble at the sight of a wooden beam over the ramparts, terrified of the invisible claw of Syracuse!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The divine intellect of Archimedes defends our Syracusan allies like the shield of Zeus! Roman fleets boast of crushing empires, yet they weep and capsize under the master's mechanical claws and stone-hurling engines. While Archimedes guards the harbor, Syracuse remains the unassailable dagger in Rome's southern flank!"
+    }
+  ],
+  "TextMappings": []
+}

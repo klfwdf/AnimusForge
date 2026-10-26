@@ -1,0 +1,69 @@
+{
+  "Id": "rule_叙拉古之围与阿基米德防御机械",
+  "Keywords": [
+    "叙拉古之围与阿基米德防御机械",
+    "叙拉古之围",
+    "阿基米德",
+    "马塞卢斯"
+  ],
+  "RagShortTexts": [
+    "前214—前212年罗马围攻叙拉古，科学巨匠阿基米德设计起重铁爪与投石机坚守孤城两年，城破后遇害。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼战役后，统治西西里重镇叙拉古五十年的老盟友希伦二世去世，新统治者倒向迦太基，切断了西西里对罗马的粮食供应。公元前214年，被誉为‘罗马之剑’的执政官马尔库斯·克劳狄乌斯·马塞卢斯率大军与舰队水陆并进包围叙拉古。然而，叙拉古城拥有古典时代最伟大的数学家与工程天才阿基米德。阿基米德为城防设计了恐怖的机械防御系统：不同射程的重型投石机与弩炮精准击碎靠近的敌船；巨大的起重吊钩铁爪（‘阿基米德铁爪’）能自城墙伸出将罗马战船抓出水面后猛烈倾覆；传说更有利用青铜镜聚焦阳光引燃战舰帆索的聚光镜。马塞卢斯屡攻受挫，感叹自己是在‘与几何学巨人作战’，被迫转为漫长封锁。前212年，马塞卢斯趁城内守军庆祝阿耳忒弥斯节沉睡不备夜袭破城。阿基米德在城破时仍在沙盘上演算几何，被闯入的罗马士兵杀害，叙拉古自此彻底沦为罗马直辖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马塞卢斯执政官是真正的罗马之剑！叙拉古的海墙几乎被那个名叫阿基米德的希腊老人的妖法所守护——起重吊索能把整艘五层橹像小鱼一样吊起来摔得粉碎！但血肉与机械无法阻挡罗马军团破城的宿命。马塞卢斯严令不得伤害阿基米德，却无法阻止一名莽撞士兵的刀剑，这是罗马征服史上的一大遗憾。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "叙拉古的陷落是西西里战线最沉重的打击。阿基米德以凡人之智对抗整个罗马共和国的攻城大军，那是希腊科学与意志的巅峰。若不是城中叛徒出卖并在节日狂欢中疏于防备，马塞卢斯的军团至今也休想踏入叙拉古半步！"
+    }
+  ],
+  "TextMappings": []
+}

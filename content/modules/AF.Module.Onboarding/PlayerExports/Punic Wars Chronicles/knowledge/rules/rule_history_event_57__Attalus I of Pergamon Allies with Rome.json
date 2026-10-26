@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_57",
+  "Keywords": [
+    "Attalus I of Pergamon Allies with Rome",
+    "Attalus I Anti Macedonian Pact",
+    "Pergamene Athena Patronage",
+    "Asia Minor Hellenistic Ally"
+  ],
+  "RagShortTexts": [
+    "King Attalus I of Pergamon, ruler of an opulent Hellenistic realm in northwest Asia Minor, formed a pivotal naval allian"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Attalus I of Pergamon, ruler of an opulent Hellenistic realm in northwest Asia Minor, formed a pivotal naval alliance with Rome during the First Macedonian War. Facing aggressive expansion from Philip V of Macedon, Attalus committed his fleet to joint operations with Roman squadrons across the Aegean, establishing Pergamon as Rome's indispensable gateway into the politics of the Greek East."
+    }
+  ],
+  "TextMappings": []
+}

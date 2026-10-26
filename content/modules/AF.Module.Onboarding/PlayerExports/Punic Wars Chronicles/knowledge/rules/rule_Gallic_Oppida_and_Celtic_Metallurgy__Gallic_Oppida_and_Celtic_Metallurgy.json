@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Gallic_Oppida_and_Celtic_Metallurgy",
+  "Keywords": [
+    "Gallic_Oppida_and_Celtic_Metallurgy",
+    "Oppidum",
+    "Murus Gallicus",
+    "Gallic Cities"
+  ],
+  "RagShortTexts": [
+    "Gaul by 218 BC was anchored by sophisticated fortified hilltop cities (oppida) like Mediolanum, protected by shock-absorbing timber-laced 'Murus Gallicus' walls housing thriving metalworking industries."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Contrary to Roman rhetoric portraying Celts as feral nomad barbarians, Celtic Europe was dotted with fortified urban settlements known as oppida. Sprawling over hundreds of acres on strategic heights—such as Mediolanum (Milan) founded by the Insubres—these centers formed the administrative and commercial hearts of Gallic tribes. Their ramparts employed an ingenious engineering design later named the Murus Gallicus: a criss-crossing internal framework of heavy oak timbers fastened by large iron spikes, filled with rubble earth and faced with neatly dressed dry stone. This composite structure proved remarkably resilient: the stone facing resisted fire, while the internal timber skeleton absorbed the concussive kinetic shock of battering rams without fracturing. Inside oppida walls operated advanced industrial quarters: master blacksmiths forging mail shirts, enamelled bronze artisans, glassmakers, and mints striking Celtic gold and silver staters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gauls' timber-laced walls are tough nuts to crack: the iron battering ram bounces off their oak-reinforced ramparts, and torches cannot catch the stone facing. Yet Roman siege lines, earthen aggers, and catapults inevitably starve out these hillforts—Mediolanum fell once, and it will fall again under Roman command!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The oppida of northern Italy are fortified bastions of Celtic freedom! Their smiths work unceasingly over roaring forges to re-equip Hannibal's warriors with broadswords and iron chainmail. The Romans think civilization belongs only to their seven hills; the towering walls of the Po valley will prove them wrong!"
+    }
+  ],
+  "TextMappings": []
+}

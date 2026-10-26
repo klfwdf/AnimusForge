@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_50",
+  "Keywords": [
+    "麦尔卡特神庙祈福与人牲血祭争议",
+    "麦尔卡特神殿血誓",
+    "加迪尔神庙青铜柱",
+    "巴尔哈蒙人牲火祭"
+  ],
+  "RagShortTexts": [
+    "迦太基人的战争机器紧紧依托其深厚的腓尼基闪米特宗教信仰。出征前夕，汉尼拔亲赴加迪尔最古老的麦尔卡特神庙向赫拉克勒斯-麦尔卡特神像奉献战俘首级与金银，履行其少年时立下的誓死与罗马为敌之誓言。在战局危急存"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基人的战争机器紧紧依托其深厚的腓尼基闪米特宗教信仰。出征前夕，汉尼拔亲赴加迪尔最古老的麦尔卡特神庙向赫拉克勒斯-麦尔卡特神像奉献战俘首级与金银，履行其少年时立下的誓死与罗马为敌之誓言。在战局危急存亡之时，迦太基托斐特（Tophet）圣所据传举行过残忍的‘莫勒克（Moloch）’儿童火祭仪式，向天神巴尔·哈蒙祈求战局庇佑，展现出城邦文明深沉阴暗的精神支柱。"
+    }
+  ],
+  "TextMappings": []
+}

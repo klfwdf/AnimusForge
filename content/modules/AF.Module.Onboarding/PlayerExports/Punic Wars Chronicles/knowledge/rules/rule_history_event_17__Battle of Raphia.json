@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_17",
+  "Keywords": [
+    "Battle of Raphia",
+    "Fourth Syrian War Climax",
+    "Ptolemy IV vs Antiochus III",
+    "Native Egyptian Machimoi"
+  ],
+  "RagShortTexts": [
+    "In summer 217 BC, concurrent with Hannibal's campaign at Trasimene, Antiochus III and Ptolemy IV clashed at Raphia with "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In summer 217 BC, concurrent with Hannibal's campaign at Trasimene, Antiochus III and Ptolemy IV clashed at Raphia with over one hundred and forty thousand soldiers and hundreds of war elephants. Ptolemy secured victory by breaking tradition to arm twenty thousand native Egyptians as sarissa phalangites (Machimoi), crushing the Seleucid core and preserving Coele-Syria, but permanently altering Egyptian internal stability."
+    }
+  ],
+  "TextMappings": []
+}

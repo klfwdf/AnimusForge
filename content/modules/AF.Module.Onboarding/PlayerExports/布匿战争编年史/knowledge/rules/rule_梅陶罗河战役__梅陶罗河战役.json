@@ -1,0 +1,69 @@
+{
+  "Id": "rule_梅陶罗河战役",
+  "Keywords": [
+    "梅陶罗河战役",
+    "哈斯德鲁拔·巴卡",
+    "克劳狄乌斯·尼禄",
+    "汉尼拔援军断绝"
+  ],
+  "RagShortTexts": [
+    "前207年梅陶罗河战役中罗马两执政官合兵击溃哈斯德鲁拔援军，哈斯德鲁拔阵亡，汉尼拔在意大利的翻盘希望破灭。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前207年，汉尼拔的胞弟哈斯德鲁拔·巴卡率领一支携带攻城器械与援军的生力军翻越阿尔卑斯山进入北意大利，试图与在南部的汉尼拔会师直捣罗马城。然而哈斯德鲁拔派出的信使遭到罗马截获。坐镇南方的执政官盖乌斯·克劳狄乌斯·尼禄做出了极其大胆的决断：他留下部分守军伪装牵制汉尼拔，亲率七千精兵在六天内强行军四百公里赶赴北方的梅陶罗河，与另一位执政官萨利纳托尔秘密合兵。在梅陶罗河战役中，哈斯德鲁拔发现面对的是双倍的执政官大军，仍指挥大军顽强苦战；尼禄自右翼绕过罗马全阵后方直插迦太基不设防的左后侧，大获全胜。哈斯德鲁拔见大势已去，单骑冲入罗马军阵壮烈战死。尼禄回师后将哈斯德鲁拔的首级抛入汉尼拔的大营，汉尼拔抚首痛哭，深知迦太基在意大利的胜机已彻底断绝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "执政官尼禄的强行军是战略机动的绝笔！在汉尼拔眼皮底下金蝉脱壳，千里驰援北方！梅陶罗河一战，罗马消灭了另一支巴卡大军！当哈斯德鲁拔的头颅滚落在汉尼拔的营帐前时，连汉尼拔也不得不承认：罗马的气运不可阻挡！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "梅陶罗河是一场椎心泣血的惨剧！哈斯德鲁拔突破了层层阻截跨过阿尔卑斯山，两兄弟的会师只差咫尺！然而信使的失误葬送了一切。哈斯德鲁拔死得像一个真正的巴卡后裔，他持剑冲入敌阵，宁死不作降虏。当那颗血淋淋的首级送进汉尼拔营帐时，将军仰天长叹：‘我看到了迦太基的宿命！’"
+    }
+  ],
+  "TextMappings": []
+}

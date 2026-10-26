@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_12",
+  "Keywords": [
+    "Siege of Syracuse and Archimedes' Machines",
+    "Archimedes War Machines",
+    "Iron Claw Ship Capsizer",
+    "Long Range Ballista Volley"
+  ],
+  "RagShortTexts": [
+    "From 214 to 212 BC, Roman armies and fleets under Marcellus besieged Syracuse, facing the astonishing mechanical defense"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From 214 to 212 BC, Roman armies and fleets under Marcellus besieged Syracuse, facing the astonishing mechanical defenses designed by Archimedes. His high-angle catapults smashed Roman warships from afar, while giant cranes mounted with the 'Claw of Archimedes' seized attacking galleys by the prow, lifting and plunging them into the depths, forcing Marcellus to convert assault into starvation blockade."
+    }
+  ],
+  "TextMappings": []
+}

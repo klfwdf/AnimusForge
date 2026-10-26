@@ -1,0 +1,69 @@
+{
+  "Id": "rule_埃及阿蒙太阳神与伊西斯复活信仰",
+  "Keywords": [
+    "埃及阿蒙太阳神与伊西斯复活信仰",
+    "阿蒙太阳神",
+    "伊西斯",
+    "奥西里斯"
+  ],
+  "RagShortTexts": [
+    "埃及法老依托阿蒙-拉神权统治，伊西斯与奥西里斯复活神话许诺死后永生，托勒密王朝创制融合主神塞拉皮斯维系希腊与本土臣民团结。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "延续三千年的古埃及宗教文明在托勒密时代展现出宏伟的融合神权。卡纳克神庙耸立的巨柱见证着众神之王‘隐秘者’阿蒙-拉（Amun-Ra）的太阳神辉，每一任托勒密君主均在孟菲斯由大祭司加冕为‘阿蒙之子’法老以确立合法统治。在民间，伊西斯（Isis）与奥西里斯（Osiris）的神话深入骨髓：奥西里斯被恶神赛特肢解后由妻子伊西斯拼合复活，向每一个虔诚臣民许诺战胜死亡的来世永生。死者必须经过阿努比斯的神圣‘心脏天平称重’（Weighing of the Heart）——唯有心脏比正义女神玛阿特的真理羽毛更加轻盈，灵魂方能步入永恒芦苇原。为了弥合希腊征服者与埃及本土祭司的文化鸿沟，托勒密一世结合宙斯、哈迪斯与奥西里斯创制了全新主神‘塞拉皮斯’（Serapis），其位于亚历山大港的塞拉皮姆大平庙成为地中海东部最繁盛的国际朝圣圣殿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃及祭司那些长着鸟头狼首的神像虽然怪异，但伊西斯女神治愈苦难的慈悲连罗马士兵也为之倾倒。亚历山大港的神庙金碧辉煌，托勒密人用黄金把神权变成了最稳固的王冠！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "尼罗河的泥土浸透了法老的魔力与古老神迹。托勒密国王坐在塞拉皮斯的黄金神座上数着麦穗，只要他们的神庙金库依然充盈，埃及就能用面包牵制地中海所有的饿狼！"
+    }
+  ],
+  "TextMappings": []
+}

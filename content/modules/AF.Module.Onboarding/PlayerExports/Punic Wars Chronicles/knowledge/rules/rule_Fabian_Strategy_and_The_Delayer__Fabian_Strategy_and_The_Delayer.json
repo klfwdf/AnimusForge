@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Fabian_Strategy_and_The_Delayer",
+  "Keywords": [
+    "Fabian_Strategy_and_The_Delayer",
+    "Fabian Strategy",
+    "Quintus Fabius Maximus",
+    "Cunctator"
+  ],
+  "RagShortTexts": [
+    "Quintus Fabius Maximus developed the 'Fabian Strategy' of avoiding pitched battles, harassing supply lines, and waging protracted attrition against Hannibal."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Appointed dictator after Lake Trasimene, Quintus Fabius Maximus revolutionized Roman strategy against Hannibal by introducing the 'Fabian Strategy.' Recognizing Hannibal's tactical superiority, Fabius strictly forbade pitched battles. Instead, he shadowed Hannibal's movements from elevated, defensible terrain, utilizing high ground to neutralize cavalry, cutting off foraging parties, and scorching the countryside. Initially despised as a coward and mockingly dubbed 'Cunctator' (the Delayer), Fabius's wisdom was vindicated by the disaster at Cannae when reckless consuls abandoned his doctrine. Rome adopted the Fabian strategy permanently, turning the war into one of exhaustion that ultimately wore Hannibal down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fabius was the shield of Rome! While rash demagogues clamored for immediate glory and led legions to the slaughter, Fabius endured mockery to preserve the state. He made time our greatest ally, bleeding Hannibal's army drop by drop. The title 'Cunctator' became the proudest badge of Roman wisdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fabius's strategy was a suffocating coil. Hannibal longed for decisive open battles, but the cunning Roman shadowed our marching columns from inaccessible ridgetops, refusing battle while starving our foraging detachments. That cold, unyielding attrition wore down our veterans when steel could not."
+    }
+  ],
+  "TextMappings": []
+}

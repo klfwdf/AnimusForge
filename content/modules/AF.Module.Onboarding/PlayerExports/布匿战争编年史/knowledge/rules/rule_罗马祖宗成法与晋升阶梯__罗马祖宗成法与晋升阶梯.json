@@ -1,0 +1,69 @@
+{
+  "Id": "rule_罗马祖宗成法与晋升阶梯",
+  "Keywords": [
+    "罗马祖宗成法与晋升阶梯",
+    "罗马祖宗成法与晋升阶梯祖宗成法",
+    "晋升阶梯",
+    "财务官"
+  ],
+  "RagShortTexts": [
+    "罗马贵族政治的核心是祖宗成法（Mos Maiorum）与晋升阶梯（Cursus Honorum），年轻贵族从军团骑兵与财务官做起，以换取死后蜡制面具陈列于中庭的永恒荣耀。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在罗马共和国，未成文的‘祖宗成法’（Mos Maiorum）是至高无上的道德法则，涵盖了对诸神的虔诚（Pietas）、对长辈与国家的忠诚（Fides）以及言行举止的威严（Gravitas）。任何想要踏入政坛的罗马贵族青年，必须恪守严格的‘晋升阶梯’（Cursus Honorum）：首先必须在军团中完成至少十年的骑兵或保民官兵役；满三十岁方可竞选主管财政与补给的‘财务官’（Quaestor），以此获得终身进入元老院的门票；随后依次竞选主管公共节庆与粮饷的‘市政官’（Aedile）、行使司法审判权的‘裁判官’（Praetor），最终在四十二岁后竞选共和国最高军政长官——‘执政官’（Consul）。罗马贵族不仅追求权力，更视‘家族面具’（Imagines）为至高荣誉：凡官拜裁判官以上的显贵去世时，工匠会用蜂蜡浇铸其面容制作逼真的面具，供奉于宅邸中庭的木柜中；每逢家族长辈国葬，后辈会佩戴这些面具、披上历代官服骑马随行，彰显祖宗光辉以激励后人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "祖宗的戒律刻在每一个真正罗马人的骨髓里！晋升阶梯是一条用铁与血铺就的荣誉之路，没有经过军营严寒、战阵拼杀与公民大会洗礼的人，休想坐在执政官的象牙折椅上。在中庭先祖面具的凝视下，任何苟且妥协都是对罗马名字的亵渎！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人整天把他们那些祖宗规矩和死人蜡面具挂在嘴边，骨子里不过是元老院几十个贵族豪门轮流坐庄的分赃把戏！在迦太基，商业的利润和真正的战功才是衡量领袖的标准，我们绝不会让死板的晋升年龄限制汉尼拔将军这样二十多岁的天才统帅！"
+    }
+  ],
+  "TextMappings": []
+}

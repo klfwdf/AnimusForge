@@ -1,0 +1,69 @@
+{
+  "Id": "rule_帕诺穆斯战役与象阵崩溃",
+  "Keywords": [
+    "帕诺穆斯战役与象阵崩溃",
+    "帕诺穆斯",
+    "巴勒莫",
+    "梅特路斯"
+  ],
+  "RagShortTexts": [
+    "帕诺穆斯战役（公元前250年）中罗马执政官梅特路斯利用宽深壕沟诱使迦太基百头战象深陷壕沟盲区，再以狂暴标枪雨使其狂躁回冲踏碎己方大军，彻底打破战象神话。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕诺穆斯（Panormus，今西西里首府巴勒莫）拥有优越的深水海湾，是迦太基在西西里北岸最核心的海军基地。公元前250年，迦太基将领哈斯德鲁拔率领三万大军与一百四十头精锐战象卷土重来，企图夺回这座被罗马占领的重镇。罗马执政官卢基乌斯·凯基利乌斯·梅特路斯展现了极高超的防御诱敌指挥：他深知军团步兵在开阔地上对巨象抱有强烈的心理恐惧，遂下令在城墙外挖掘极深极宽的防御干壕，并命令轻装步兵（Velites）在壕沟边缘挑衅射击后立刻退回壕沟内隐蔽。迦太基驭象手狂热追击，庞大的战象群在冲至壕沟边缘时因刹车不及纷纷失足跌入深坑，或被陡峭的土堤阻断去路。此时城墙上的弩炮与壕沟内的轻步兵向密集的象群抛射暴雨般的倒刺标枪与火箭；身中数创的巨象因剧痛与恐惧彻底失去理智，咆哮着在壕沟边发狂调头反冲，将后方密集跟进的迦太基雇佣步兵撞翻践踏成泥。梅特路斯见机亲率精锐军团主力从城门杀出，顺势打出两翼包抄，斩杀两万人并生擒百余头战象。这批战象被运回罗马城在马克西穆斯竞技场供公民围观，彻底破除了罗马军队对战象的百年恐慌。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "梅特路斯执政官用一道深沟就瓦解了迦太基一百多头战象的冲锋！当巨象在壕沟里哀嚎、掉头踩死他们自己的步兵时，军团士兵爆发出雷鸣般的狂笑。那一百多头俘获的战象被拉到罗马大道上游街，自那一天起，战象在罗马人眼里不过是一堆待宰的活肉！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕诺穆斯的惨败是由于哈斯德鲁拔盲目轻敌所致！他竟然把宝贵的战象部队直接赶进敌人准备好的壕沟死角里。受惊的战象在狭窄的河滩上反噬了我们的凯尔特与伊比利亚精锐，这种低级指挥失误让迦太基在西西里北岸的防线彻底塌陷，实为军门之耻！"
+    }
+  ],
+  "TextMappings": []
+}

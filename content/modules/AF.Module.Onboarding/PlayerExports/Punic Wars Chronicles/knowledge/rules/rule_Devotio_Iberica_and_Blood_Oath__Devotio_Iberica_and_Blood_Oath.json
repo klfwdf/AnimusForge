@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Devotio_Iberica_and_Blood_Oath",
+  "Keywords": [
+    "Devotio_Iberica_and_Blood_Oath",
+    "Devotio Iberica",
+    "Sacred Blood Oath",
+    "Dying with the Chieftain"
+  ],
+  "RagShortTexts": [
+    "Iberian warriors bound themselves to their commanders through the sacred 'Devotio Iberica' blood oath; should their chieftain fall in battle, consecrated retainers were religiously bound to commit suicide."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Among the Celtiberian and Lusitanian clans of Hispania flourished an extraordinary warrior institution known to Roman chroniclers as Devotio Iberica. Sworn before the altar of the war god Neto, warriors consecrated their physical lives to a chosen chieftain or supreme commander. The oath created a mystical brotherhood: retainers pledged to act as living shields, interposing their bodies against flying javelins and sword blades. The most terrifying tenet of Devotio was the obligation of survival: should the chieftain be slain in combat, surviving retainers considered their continued existence an intolerable blasphemy and an eternal stain of cowardice. Forbidden from fleeing, surrendering, or taking ransom, sworn warriors were religiously bound to commit immediate ritual suicide over their leader's corpse or charge headlong into the enemy ranks until cut down. Hamilcar and young Hannibal cultivated thousands of such devoted retainers across Hispania, forming an incorruptible praetorian guard bound by divine honor to fight to the last man."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Iberian blood oath is the fanatical devotion of savages! To kill oneself simply because a magistrate falls is a deranged waste of warrior blood that defies civic law. A Roman serves the eternal Republic, not the mortal flesh of any single mortal man!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Devotio Iberica is the truest gold of Hispania! When an Iberian warrior swears his life to Hannibal before the sacred stones of Neto, no Roman silver can corrupt him and no legionary charge can break him. While Hannibal's bodyguards breathe, their commander walks behind an unyielding wall of sworn martyrs!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Mago_the_Agronomist",
+  "Keywords": [
+    "Mago_the_Agronomist",
+    "Mago",
+    "Agronomy",
+    "28 Volumes"
+  ],
+  "RagShortTexts": [
+    "Carthage was an agricultural pioneer whose agronomist Mago composed a 28-volume farming encyclopedia—the only literary work officially ordered translated into Latin by the Roman Senate after 146 BC."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Popular memory frequently mistakes Carthage for a purely maritime mercantile realm, yet the fertile Bagradas Valley of North Africa sustained the most scientifically advanced plantation agriculture of the Hellenistic era. The Carthaginian scholar Mago compiled a monumental 28-volume encyclopedia on agronomy that codified Mediterranean agricultural mastery. Mago's scrolls covered soil analysis, terracing, dry-farming viticulture, olive grafting, livestock breeding, veterinary care, and efficient plantation oversight. When Roman legions razed Carthage to the ground in 146 BC, the Roman Senate gave away the city's vast historical and poetic libraries to local Numidian kings, but passed an exceptional senatorial decree: Mago's 28 scrolls were to be brought to the Curia and translated into Latin and Greek at state expense by a commission headed by Decimus Silanus. Mago's principles became the bedrock of classical Roman estate economics, cited continuously by Roman agronomists Cato, Varro, and Columella."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A Carthaginian's word is worthless in treaties, yet his knowledge of vine grafting and horse breeding is unmatched! The Senate was wise to save Mago's scrolls from the fires of Carthage: let his twenty-eight volumes teach Roman patricians how to manage Sicilian grain estates and Campania vineyards!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our greatness sprang not merely from the prow of our warships, but from the emerald olive groves and golden wheat plains nurtured by Punic science. Master Mago taught the world how to make the desert bloom. Even in their triumph, the Roman barbarians must study our scrolls to learn how to feed their empire!"
+    }
+  ],
+  "TextMappings": []
+}

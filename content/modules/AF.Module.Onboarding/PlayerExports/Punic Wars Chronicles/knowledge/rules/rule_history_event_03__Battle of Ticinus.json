@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_03",
+  "Keywords": [
+    "Battle of Ticinus",
+    "Scipio the Elder Wounded",
+    "Filial Rescue at Ticinus",
+    "Numidian Flank Charge"
+  ],
+  "RagShortTexts": [
+    "In November 218 BC, Hannibal's cavalry clashed with Roman reconnaissance forces under Consul Publius Cornelius Scipio al"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In November 218 BC, Hannibal's cavalry clashed with Roman reconnaissance forces under Consul Publius Cornelius Scipio along the Ticinus River. Hannibal's agile Numidian skirmish cavalry outflanked the Roman horsemen, delivering a stinging tactical defeat. The Consul was severely wounded and was saved only by the daring charge of his seventeen-year-old son, the future Scipio Africanus."
+    }
+  ],
+  "TextMappings": []
+}

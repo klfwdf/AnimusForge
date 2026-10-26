@@ -1,0 +1,69 @@
+{
+  "Id": "rule_高卢奥皮杜姆要塞都市",
+  "Keywords": [
+    "高卢奥皮杜姆要塞都市",
+    "奥皮杜姆",
+    "高卢城寨",
+    "凯撒土木墙"
+  ],
+  "RagShortTexts": [
+    "公元前三世纪的高卢并非蛮荒原始密林，各部族围绕着被称为‘奥皮杜姆’（Oppidum）的山地要塞都市建立，拥有防冲撞火烧的‘高卢木石墙’与精良的玻璃铸币冶金业。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "古典地中海文明常将高卢人污蔑为只居住在兽皮帐篷中的原始蛮族，但考古与历史证据表明，公元前三世纪的山南与外高卢早已建立起繁华的城市文明——‘奥皮杜姆’（Oppidum，意为山头要塞要都）。如因苏布雷人的核心都邑麦地奥拉努姆（Mediolanum，今米兰）与波伊人的重镇，皆是占地数百公顷的防御中枢。奥皮杜姆的标志性城防是极具工程智慧的‘高卢墙’（Murus Gallicus）：用巨型橡木横梁交错钉铆成木制骨架，内填坚固碎石土方，外覆规整石块砌筑。这种特殊的复合结构既具备石墙抗火烧的特性，木质框架又赋予其极佳的结构韧性，罗马攻城锤撞击时木梁能吸收震波而绝不崩塌。在城墙之内，奥皮杜姆聚集了专业分工高度发达的铁匠作坊、制陶工棚、玻璃熔炉与铸币作坊，铸造精美的凯尔特金银铸币，展现出成熟而活跃的工商业都市形态。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "高卢人在山岗上筑起的木石大寨确实很难啃：攻城锤砸在那种垫着橡木梁的墙上就像砸在厚皮革上一样弹开，放火也烧不透外面的石块。但在罗马工兵的筑台云梯与投石机面前，这些蛮族要塞终究只是插翅难逃的孤岛，麦地奥拉努姆的陷落就是最好的铁证！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "高卢人的奥皮杜姆城寨是群山之间的雄关险隘！他们的铁匠作坊昼夜轰鸣，为汉尼拔的大军源源不断打造精良的长剑与马具。罗马人自以为只有他们懂建城，麦地奥拉努姆与波河平原上的高卢要都，正是埋葬罗马军团野心的绝好要塞！"
+    }
+  ],
+  "TextMappings": []
+}

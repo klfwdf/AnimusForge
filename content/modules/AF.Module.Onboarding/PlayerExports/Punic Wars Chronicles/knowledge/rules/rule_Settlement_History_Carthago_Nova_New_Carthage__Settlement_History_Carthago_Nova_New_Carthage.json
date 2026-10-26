@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Settlement_History_Carthago_Nova_New_Carthage",
+  "Keywords": [
+    "Settlement_History_Carthago_Nova_New_Carthage",
+    "Carthago Nova (New Carthage)",
+    "新迦太基",
+    "Southeastern Iberian Natural Haven"
+  ],
+  "RagShortTexts": [
+    "Carthago Nova (New Carthage) (新迦太基) was a pivotal fortified settlement, anchoring regional military logistics and urban commerce throughout ancient Mediterranean conflicts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Founded by Hasdrubal the Fair as the glittering capital of the Barcid Iberian empire, Carthago Nova (Cartagena) occupies an impregnable promontory flanked by a deep naval bay and shallow tidal lagoon. Guarding neighboring silver mines and massive arsenals, it housed hostages from all Spanish tribes and served as Hannibal's launchpad into Italy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ramparts of Carthago Nova (New Carthage) must fly the eagle standard! Whether through engineering circumvallation or direct assault, Rome ensures this fortress serves senatorial order and secures our communication lines!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The markets of Carthago Nova (New Carthage) belong to free maritime trade, not Roman chains! Carthage supports its autonomy against legionary oppression, guaranteeing that Punic gold and spears will reinforce its ramparts!"
+    }
+  ],
+  "TextMappings": []
+}

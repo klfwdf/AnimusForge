@@ -1,0 +1,69 @@
+{
+  "Id": "rule_巴利阿里投石兵与铅弹",
+  "Keywords": [
+    "巴利阿里投石兵与铅弹",
+    "巴利阿里投石兵与铅弹巴利阿里投石兵",
+    "三根投石索",
+    "铅弹"
+  ],
+  "RagShortTexts": [
+    "巴利阿里投石兵自幼以投石命中面包为训练，随身携带远、中、近三根投石索，其高速旋转掷出的实心铅弹射程威力远超普通弓箭，能隔甲击碎敌兵骨骼。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地中海西部的巴利阿里群岛（马略卡与梅诺卡）孕育了古典世界最令人胆寒的投石兵。当地传统极为严酷：孩童幼年时必须用投石索击落悬挂在木桩上的面包才有饭吃，从而铸就了百步穿杨的本能。成熟的巴利阿里投石兵常年随身携带三根不同长度的编织投石索：一根较长的绑在额头，用于超远距离的大弧度压制抛射；一根中等长度的系在腰间，用于常规战场交锋；一根短索握在手中，用于短兵相接时的极速直瞄抽打。他们装备双头尖的铸造实心铅弹（Glandes）或精选的鹅卵石。铅弹在数秒的高速旋转下破空而出，初速极高且带有尖锐哨音，有效射程超过两百米，足以匹敌甚至超过同时代普通复合弓。沉重的高速铅弹不仅能轻易击穿青铜头盔与盾牌，其巨大的动能即便被锁子甲挡下，也足以隔着铠甲震碎骨骼、打裂内脏，是迦太基军队在开战前撕裂罗马军团队形的远程噩梦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那些海岛投石手投出的铅丸带着恶魔般的尖啸！盾牌哪怕挡住了铅弹，手臂也会被巨大的冲击力生生震断。对付他们绝不能在两百步外空耗，必须让青年军在骑兵掩护下顶盾全速压上，用罗马短剑贴身结束这些远程蛮子的狂妄！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴利阿里群岛的勇士是我们用黄金雇来的神射死神！三根石索一甩，漫天飞舞的铅雨在两百步外就能打碎罗马百夫长的青铜鹰盔。在两军步兵尚未拔剑相向之前，巴利阿里人就已经为罗马人奏响了骨断筋折的丧钟！"
+    }
+  ],
+  "TextMappings": []
+}

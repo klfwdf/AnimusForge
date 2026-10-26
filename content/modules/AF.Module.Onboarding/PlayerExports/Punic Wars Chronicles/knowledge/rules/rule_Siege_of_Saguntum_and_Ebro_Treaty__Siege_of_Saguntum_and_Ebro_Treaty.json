@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Siege_of_Saguntum_and_Ebro_Treaty",
+  "Keywords": [
+    "Siege_of_Saguntum_and_Ebro_Treaty",
+    "Siege of Saguntum",
+    "Cause of Second Punic War",
+    "Hannibal besieging Saguntum"
+  ],
+  "RagShortTexts": [
+    "Hannibal's 8-month siege and capture of Saguntum in 219 BC violated Roman spheres of influence, directly precipitating the Second Punic War."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 226 BC, Rome and Hasdrubal the Fair signed the Ebro Treaty, designating the Ebro River as the boundary of Carthaginian expansion in Hispania. However, Rome subsequently allied with Saguntum, an Iberian city located 100 miles south of the river deep in Punic territory. In 219 BC, Hannibal besieged Saguntum over local tribal disputes. After an eight-month siege where defenders burned their treasures and threw themselves into flames rather than surrender, Hannibal captured the citadel. In Carthage, Roman envoy Quintus Fabius gathered the folds of his toga, declaring: 'I carry here peace and war; choose which you will.' The Carthaginians replied: 'Give us whichever you please!' Fabius shook out his toga: 'I give you war!' The Second Punic War was ignited."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Saguntum was a sworn friend of Rome! Hannibal battered its ramparts for eight months, driving heroic citizens to sacrifice their own flesh in fires rather than accept Punic slavery. When Fabius shook war from the folds of his toga in their cowardly council, Carthage signed its eventual death warrant!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rome's pretense over Saguntum was deceitful hypocrisy. The Ebro Treaty gave Carthage free hand south of the river, yet Rome installed an armed outpost far within our sphere to stir rebellion. Hannibal acted within sovereign right. When their arrogant envoy shook out war from his toga, Carthage did not flinch!"
+    }
+  ],
+  "TextMappings": []
+}

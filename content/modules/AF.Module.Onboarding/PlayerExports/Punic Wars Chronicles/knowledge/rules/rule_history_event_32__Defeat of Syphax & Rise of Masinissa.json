@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_32",
+  "Keywords": [
+    "Defeat of Syphax & Rise of Masinissa",
+    "Capture of King Syphax",
+    "Masinissa Crowned King",
+    "United Numidian Kingdom"
+  ],
+  "RagShortTexts": [
+    "Pursuing the fleeing King Syphax to his royal capital at Cirta, Masinissa and Roman commander Gaius Laelius trapped the "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pursuing the fleeing King Syphax to his royal capital at Cirta, Masinissa and Roman commander Gaius Laelius trapped the enemy horsemen. Syphax's mount was shot, and the king was dragged away in chains to be displayed in a Roman triumph. With Roman backing, Masinissa unified both eastern and western Numidian tribes, forging a powerful client state that supplied Rome with unmatched cavalry."
+    }
+  ],
+  "TextMappings": []
+}

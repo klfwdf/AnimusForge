@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Semitic_Dushara_and_Incense_Altars",
+  "Keywords": [
+    "Semitic_Dushara_and_Incense_Altars",
+    "Dushara",
+    "Allat",
+    "Baetyl Stones"
+  ],
+  "RagShortTexts": [
+    "Desert Nabataeans and Arabs worshipped Dushara and Allat through aniconic square baetyl stones, burning costly frankincense on clifftop sanctuaries above Petra."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Throughout the arid deserts of northern Arabia, the Negev, and the canyons of Petra, Semitic caravan clans worshipped aniconic rock divinities intimately bound to oasis survival. Chief among the Nabataean pantheon was Dushara (Lord of the Shara Mountains, god of sun and life-giving springs) alongside Allat, mother goddess and protectress of nomads. Distinct from Hellenic human statues, Arab religion venerated deities through baetyls (sacred betyls, meaning 'House of God')—unworked blocks of black stone or dressed rectangular stelae carved directly into living sandstone cliffs. Upon Petra's High Place of Sacrifice carved into razor crags, priests poured libations of camel milk and fine wine, casting resins of southern frankincense and myrrh onto charcoal braziers. Thick aromatic smoke drifted across the gorges, thanking gods for delivering trade caravans safely across shifting sands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nabataeans bow before featureless square stones carved into desert cliffs, yet the incense they burn upon those rocks costs more in the Forum than Spanish silver! If Rome wants temple frankincense, we must flatter their desert kings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dushara guards the secret cisterns beneath the dunes. Our Semitic kin in the desert understand that gods require true devotion and sacred incense, not vainglorious bronze monuments. Their caravan trails are blessed by the desert winds!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Roman_Augury_and_Sacred_Chickens",
+  "Keywords": [
+    "Roman_Augury_and_Sacred_Chickens",
+    "Sacred Chickens",
+    "Pullarii",
+    "Augury"
+  ],
+  "RagShortTexts": [
+    "Roman commanders legally required pullarii to read omens from sacred chickens feeding before battle; the infamous drowning of fasting chickens at Drepana by Consul Claudius served as a stern eternal warning."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Before committing legions to combat, crossing borders, or launching naval armadas, Roman magistracies were legally bound by religious augury (auspicia). Every consular campaign included a pullarius—the keeper of the sacred augural chickens. At dawn outside the praetorium, the pullarius scattered spelt meal before the caged chickens: if the birds rushed out greedily, pecking so hungrily that corn kernels tumbled from their beaks to strike the earth (tripudium solistimum), it signified the favor of Jupiter Optimus Maximus, and trumpets sounded the advance. If the chickens refused to emerge, beat their wings, or refused to eat, it warned of divine displeasure and disaster. The most notorious infraction occurred in 249 BC at Drepana: when the sacred chickens refused to feed before sea battle, the hot-tempered patrician Consul Publius Claudius Pulcher bellowed, 'If they will not eat, let them drink!' and flung the chickens into the waves. He ordered his fleet to engage, only to be utterly routed by Carthaginian admiral Adherbal, losing 93 warships. Claudius was brought home to face treason trials, cementing the sacred chickens as an inviolable cornerstone of military caution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ancestral mos maiorum must never yield to reckless temper! The disgrace of Drepana, brought on when Claudius blasphemed the sacred fowls, is taught to every young tribune. Without the blessing of Jupiter and favorable auspices, even four consular legions are mere fodder for disaster!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Romans lecture the world on discipline, yet entrust the fate of empires to caged farm birds pecking at corn! When their arrogant consul threw his chickens into the sea, our sailors sent his legions to join them at the bottom of Drepana. Let them watch their chickens while Hannibal marches across their frontiers!"
+    }
+  ],
+  "TextMappings": []
+}

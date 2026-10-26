@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Nordic_Bog_Offerings_and_Sacrificial_Swords",
+  "Keywords": [
+    "Nordic_Bog_Offerings_and_Sacrificial_Swords",
+    "Bog Offerings",
+    "Sacrificial Swords",
+    "Peat Bog Mummies"
+  ],
+  "RagShortTexts": [
+    "Coastal Nordic and Ingvaeonic tribes viewed peat bogs as divine thresholds, ceremonially bending and 'slaying' captured weapons and war vessels before depositing them into the dark waters."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Across the misty coasts of Jutland and the Baltic islands, early Nordic and Ingvaeonic peoples practiced the enigmatic rite of peat bog deposition (Bog Offerings). Believing that deep, acidic peat moss swamps served as portals between mortals and chthonic water deities, victorious clans refused to appropriate the spoils of defeated enemies. In solemn religious rituals, captured iron swords were deliberately bent double, spear points twisted, wooden shields hacked, and entire rowing vessels systematically broken to ritually 'kill' the weaponry before sinking them into deep waterlogged bogs. The unique anaerobic, tannin-rich, and acidic chemistry of peat bogs prevented decomposition, preserving thousands of bent weapons as pristine time capsules. In extraordinary instances, chosen sacrificial victims were similarly committed to the bog; the humic acid tanned human skin, preserving hair, nails, facial expressions, and even stomach contents for millennia with uncanny lifelike stillness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The swamp-dwellers of the frozen North defy all reason! Having captured hundreds of fine iron blades, their priests take mallets and smash the steel into scrap before tossing it into a peat bog! Such deranged wastefulness reveals savages who have no conception of Roman thrift and imperial order!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To break the sharpest sword and return it to the dark mire is the supreme testament of reverence! In the North, warriors understand that victory is a loan from the gods, repaid in iron and blood. Those twisted blades slumbering in the moss guard the Baltic shores more fiercely than any stone rampart!"
+    }
+  ],
+  "TextMappings": []
+}

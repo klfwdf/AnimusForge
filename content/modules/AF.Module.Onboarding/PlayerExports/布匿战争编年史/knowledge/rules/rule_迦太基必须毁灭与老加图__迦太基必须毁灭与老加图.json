@@ -1,0 +1,69 @@
+{
+  "Id": "rule_迦太基必须毁灭与老加图",
+  "Keywords": [
+    "迦太基必须毁灭与老加图",
+    "迦太基必须毁灭",
+    "老加图",
+    "马尔库斯·波尔基乌斯·加图"
+  ],
+  "RagShortTexts": [
+    "老加图在元老院演讲必以‘迦太基必须毁灭’为结语，并展示新鲜的迦太基无花果证明其近在咫尺的复苏威胁。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前153年，罗马著名政治家、监察官老加图（马尔库斯·波尔基乌斯·加图）作为使节出访迦太基调解边境纠纷。在那里，他没有看到一个战败乞怜的破落城邦，反而目睹了港口繁密停泊的商船、储满粮食的巨型粮仓以及堆满金银的繁华市集。加图被迦太基旺盛的再生能力深深震撼，认定这座城市终将再次成为罗马的生死大患。回国后，他在元老院的每一次演讲——无论议题是农业、税收还是市政——在结束时都要掷地有声地补上一句：‘此外，我认为迦太基必须毁灭！’（Ceterum censeo Carthaginem esse delendam）。为了说服犹豫的元老，加图在演说中抖落长袍，一颗完好新鲜的早熟无花果滚落在地，他环视全场冷酷指出：‘这颗无花果三天前才在迦太基被摘下，我们的死敌离罗马只有三天的航程！’这一执念彻底主导了罗马对迦太基的最终国策。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老加图元老拥有洞察未来的神明之眼！那些贪恋和平的懦夫以为条约能约束野兽，但加图用一颗鲜脆的无花果警醒了所有人：敌人的刀尖三天之内就能刺进罗马的胸膛！‘迦太基必须毁灭’不是残酷，而是为了罗马子孙后代永世安宁不可动摇的责任！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老加图是罗马最恶毒、最偏狭的刽子手！我们辛勤耕耘土地长出的鲜甜无花果，竟然成了他煽动灭绝我们城邦的借口！他每一次演讲末尾那句恶毒的狂吠，彻底暴露了罗马贵族在文明与繁荣面前病态的嫉妒与嗜血！"
+    }
+  ],
+  "TextMappings": []
+}

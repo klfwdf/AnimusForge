@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_59",
+  "Keywords": [
+    "Anabasis of Antiochus III to the East",
+    "Anabasis of Antiochus the Great",
+    "Subjugating Parthia and Bactria",
+    "Royal War Elephant Train"
+  ],
+  "RagShortTexts": [
+    "Between 212 and 205 BC, Seleucid King Antiochus III mounted an epic seven-year eastern expedition (Anabasis) across Iran"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Between 212 and 205 BC, Seleucid King Antiochus III mounted an epic seven-year eastern expedition (Anabasis) across Iran and Central Asia. Subduing rebellious satraps, forcing the Parthians into clientage, besieging Bactria, and marching to the Indus to demand tribute and war elephants, Antiochus restored the Seleucid Empire to its imperial boundaries, earning the title 'Antiochus the Great'."
+    }
+  ],
+  "TextMappings": []
+}

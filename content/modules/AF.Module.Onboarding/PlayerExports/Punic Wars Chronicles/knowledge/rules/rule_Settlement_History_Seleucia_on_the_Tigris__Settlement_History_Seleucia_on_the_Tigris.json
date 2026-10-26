@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Settlement_History_Seleucia_on_the_Tigris",
+  "Keywords": [
+    "Settlement_History_Seleucia_on_the_Tigris",
+    "Seleucia on the Tigris",
+    "塞琉西亚",
+    "Tigris River Basin"
+  ],
+  "RagShortTexts": [
+    "Seleucia on the Tigris (塞琉西亚) was a pivotal fortified settlement, anchoring regional military logistics and urban commerce throughout ancient Mediterranean conflicts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Founded by Seleucus I Nicator on the western bank of the Tigris, Seleucia on the Tigris is a colossal Hellenistic metropolis of 600,000 citizens. Intersected by Royal Canals irrigating fertile Babylonian grain fields and surrounded by fired-brick ramparts, it functions as the central clearinghouse for Persian Gulf trade and eastern satrapies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ramparts of Seleucia on the Tigris must fly the eagle standard! Whether through engineering circumvallation or direct assault, Rome ensures this fortress serves senatorial order and secures our communication lines!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The markets of Seleucia on the Tigris belong to free maritime trade, not Roman chains! Carthage supports its autonomy against legionary oppression, guaranteeing that Punic gold and spears will reinforce its ramparts!"
+    }
+  ],
+  "TextMappings": []
+}

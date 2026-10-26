@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_14",
+  "Keywords": [
+    "Outbreak of the First Macedonian War",
+    "First Macedonian War",
+    "Philip V Westward Ambition",
+    "Roman Aetolian Coalition"
+  ],
+  "RagShortTexts": [
+    "In 214 BC, King Philip V of Macedon capitalized on Roman weakness following Cannae to strike Roman protectorates in Illy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 214 BC, King Philip V of Macedon capitalized on Roman weakness following Cannae to strike Roman protectorates in Illyria, sparking the First Macedonian War. Unable to spare legions from Italy, Rome formed a formidable diplomatic alliance with the Aetolian League, Sparta, and Pergamon, embroiling Philip in regional warfare across Greece and preventing his Macedonian phalanxes from reinforcing Hannibal."
+    }
+  ],
+  "TextMappings": []
+}

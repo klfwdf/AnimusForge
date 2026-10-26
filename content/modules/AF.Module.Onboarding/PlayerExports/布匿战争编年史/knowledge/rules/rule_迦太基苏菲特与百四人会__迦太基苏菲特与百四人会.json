@@ -1,0 +1,69 @@
+{
+  "Id": "rule_迦太基苏菲特与百四人会",
+  "Keywords": [
+    "迦太基苏菲特与百四人会",
+    "迦太基苏菲特与百四人会苏菲特",
+    "百四人议会",
+    "寡头政治"
+  ],
+  "RagShortTexts": [
+    "迦太基共和国由两名每年选任的苏菲特（Shophetim）与一百零四人议会掌权；战败的将领常被议会钉上十字架处死，导致巴卡家族与本土商业寡头长期对立。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基共和国的政治体制由商业寡头与豪门贵族共同掌控。其最高国家行政长官为两名每年由公民大会从富商贵族中选举产生的‘苏菲特’（Suffetes，源于腓尼基语Shophetim，意为‘法官’或‘执政长官’），负责主持百人元老院、提请法令与处理民事诉讼。然而，迦太基真正的权力核心是具有严酷司法仲裁权的‘百四人审判评议会’（Council of One Hundred and Four，又称米什帕特Mishpat）。该机构最初设立是为了防范军事独裁者篡位，有权审判并直接罢免任何从战场归来的军事统帅。迦太基对待战败统帅的手段极其残酷：只要将领在战局中指挥失误或擅自撤退，百四人会往往会以‘叛国或渎职’罪名将其当众钉死在十字架上（Crucifixion）。这种恐怖的问责机制导致迦太基前线将领往往承受极大政治压力，也是哈米尔卡与汉尼拔等巴卡家族统帅致力于在西班牙建立独立财权与军政自治、抗衡本土大地主汉诺（大汉诺派）内耗牵制的核心根源。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基把商人的奸诈与屠夫的残忍完美结合在了一起！他们的将领在前面打仗，后方那群坐在金堆上的百四人元老就忙着立起十字架准备钉死败军之将。连自己浴血奋战的统帅都不信任的国家，注定会在内部猜忌与金币的碰撞声中分崩离析！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "苏菲特与百四人会是腓尼基商贾宪法的守护者，防止任何野心勃勃的将军在非洲建立独裁王权！然而大汉诺和那些只懂囤积农田麦子的老顽固们，却把汉尼拔在前线的英勇当作威胁，吝啬于增援一个金币。巴卡家族必须用剑在西班牙撑起自己的天空！"
+    }
+  ],
+  "TextMappings": []
+}

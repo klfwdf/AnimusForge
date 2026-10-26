@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Numidian_Light_Cavalry",
+  "Keywords": [
+    "Numidian_Light_Cavalry",
+    "Numidian_Light_Cavalry Numidian Cavalry",
+    "Bareback Riding",
+    "Light Cavalry"
+  ],
+  "RagShortTexts": [
+    "Numidian light cavalry rode bareback without metal bridles, using neck halters and whips to execute lethal hit-and-run skirmishing and feigned retreats that dismantled Roman battle formations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Numidian light horsemen hailing from the semi-arid plains of North Africa were hailed by ancient historians as the unmatched skirmish cavalry of the Mediterranean. Slender, wiry, and clad only in a sleeveless tunic and a round leopard- or cowhide buckler, they rode their nimble, enduring Barb ponies without saddles, stirrups, or bits, steering effortlessly with a simple rope halter and a light riding crop. In combat, Numidians never engaged in cohesive shock melee; instead, they swarmed enemy formations in loose, fluid bands, hurling clouds of light javelins at galloping speeds. When pressured, they dispersed in feigned panic, drawing enemy heavy horsemen into ragged pursuits until their mounts were blown, whereupon the Numidians snapped back like a steel trap to encircle and annihilate the isolated foe. Under Hannibal and his cavalry master Maharbal, Numidian light horsemen proved decisive at the Ticinus, Trebia, Trasimene, and Cannae."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Numidian horsemen are buzzing flies of the desert! They wear no armor, flee the moment steel crosses steel, and fight like cowardly bandits. Yet a Roman commander must keep his iron discipline: chasing their feigned retreats leads directly into Hannibal's concealed butchery!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Numidian riders are the desert wind incarnate! No heavily armored Italian cavalry can match their stamina or corner their nimble ponies. With a handful of javelins and a simple halter, Maharbal's sons run circles around consular legions and feast upon Roman pride!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Ebro_River_Boundary",
+  "Keywords": [
+    "Ebro_River_Boundary",
+    "Ebro River",
+    "Iberus",
+    "Ebro Treaty"
+  ],
+  "RagShortTexts": [
+    "The Ebro River served as the official boundary established in the 226 BC treaty between Rome and Hasdrubal, demarcating their respective spheres of expansion."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ebro River (ancient Iberus), flowing from the Cantabrian Mountains across northeastern Spain into the Mediterranean, gave its name to the Iberian Peninsula. In 226 BC, alarmed by Barcid gains while facing Celtic crises in northern Italy, Rome negotiated the Ebro Treaty with Hasdrubal the Fair. The pact stipulated that Carthage would not cross north of the Ebro for warfare, tacitly recognizing Punic hegemony south of the river while shielding Massalia and Rome's northern interests. However, Rome's subsequent alliance with Saguntum—deep within the Punic sphere south of the river—fatally undermined the boundary and precipitated war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ebro Treaty was an iron boundary drawn by the Senate! It forbade Punic armies from crossing northward to threaten our allies. It never stripped Rome of the right to accept free friendships with noble cities like Saguntum. When Hannibal crossed the Ebro, he broke sacred law and brought Rome's wrath upon his head!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ebro was Rome's pledge of non-interference south of its waters. Yet they violated the spirit of the treaty by planting an armed puppet in Saguntum deep within our land. When Hannibal's columns splashed across the Ebro, we marched to tear up their deceitful parchment with Phoenician iron!"
+    }
+  ],
+  "TextMappings": []
+}

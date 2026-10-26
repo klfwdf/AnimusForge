@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_59",
+  "Keywords": [
+    "塞琉古安条克三世大帝东方大远征",
+    "安条克三世东方大远征",
+    "收复帕提亚巴克特里亚",
+    "万象战队帝国威严"
+  ],
+  "RagShortTexts": [
+    "公元前212至205年，在第二次布匿战争席卷西方之际，塞琉古年轻君主安条克三世展开了震撼东方的七年大远征（Anabasis）。安条克率军横跨伊朗高原，降服叛乱的米底亚与亚美尼亚总督，亲征帕提亚与希腊-"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前212至205年，在第二次布匿战争席卷西方之际，塞琉古年轻君主安条克三世展开了震撼东方的七年大远征（Anabasis）。安条克率军横跨伊朗高原，降服叛乱的米底亚与亚美尼亚总督，亲征帕提亚与希腊-巴克特里亚王国，直至翻越兴都库什山抵达印度河平原索取战象与贡赋。安条克重温了亚历山大大帝的宏伟东征，威震全欧亚大陆，赢得了‘大帝’（Megas）的尊号。"
+    }
+  ],
+  "TextMappings": []
+}

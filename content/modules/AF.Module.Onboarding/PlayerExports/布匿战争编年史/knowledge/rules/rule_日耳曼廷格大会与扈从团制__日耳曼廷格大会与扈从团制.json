@@ -1,0 +1,69 @@
+{
+  "Id": "rule_日耳曼廷格大会与扈从团制",
+  "Keywords": [
+    "日耳曼廷格大会与扈从团制",
+    "廷格大会",
+    "武器撞击赞成",
+    "扈从团"
+  ],
+  "RagShortTexts": [
+    "日耳曼原始民主建立在全副武装自由民出席的‘廷格’（Thing）大会上，以撞击盾矛表示赞成，并由青年勇士发誓效忠首领的‘扈从团’（Comitatus）维系狂暴战意。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "生活在莱茵河以东莽莽原始森林中的日耳曼部族（如苏维汇人与切鲁西人），维系着以尚武和血缘为纽带的古老氏族体制。部族的最高政治决策机构是‘廷格大会’（Thing/Althing）：定期在新月或满月之夜举行，所有成年的自由民男性必须全副武装佩戴铁矛盾牌出席。会议没有繁复的书面文牍：若祭司或酋长提出的提议遭到大家反对，全场会爆发出沉闷愤怒的嘘声；若提议获得通过，全场数以千计的日耳曼战士会齐声怒吼，用手中的投枪（Framea）疯狂撞击盾牌——在日耳曼传统中，‘兵器的铿锵撞击声是世间最崇高的赞成票’。与廷格大会并行的核心军事纽带是‘战友扈从团’（Comitatus，日耳曼语Gefolge）：最骁勇的年轻勇士聚集在声名卓著的战功酋长周围，发誓终生效忠；首领以掠夺来的战马、铁矛、黄金臂钏与盛大宴饮赏赐随从，随从则在战阵中视首领安危为己任——在战场上战力不及首领是奇耻大辱，而在首领倒下后从战场上生还更是终生无法抬头的诅咒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "日耳曼蛮子所谓的会议，就是一群披着狼皮的强盗在黑森林大树底下挥舞矛头起哄！他们既不懂成文法典，也不懂元老院的庄严辩论，全靠敲盾牌和喝酒来决定打谁。但决不能轻视他们的扈从团：那些认死理的狂战士发起疯来，连死亡都不怕！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "日耳曼人的廷格大会跳动着蛮荒大地最炽热的野性脉搏！只要用几箱西班牙上等短剑和纯银臂钏作为赏赐，苏维汇大酋长的扈从团就会如饥饿的恶狼般越过莱茵河扑向任何敌人。在北方的黑森林里，黄金与荣誉能买到地中海最冷血无畏的肉盾！"
+    }
+  ],
+  "TextMappings": []
+}

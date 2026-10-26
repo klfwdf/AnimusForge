@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_18",
+  "Keywords": [
+    "上贝蒂斯河老西庇阿兄弟阵亡",
+    "上贝蒂斯河战役",
+    "老西庇阿兄弟阵亡",
+    "凯尔特佣兵叛变倒戈"
+  ],
+  "RagShortTexts": [
+    "公元前211年，在伊比利亚半岛牵制巴卡家族后方长达七年的老西庇阿（普布利乌斯）与格奈乌斯两兄弟分兵推进。迦太基三位统帅哈斯德鲁巴尔·巴卡、马戈与吉斯科以巨金收买了两万名罗马雇佣的凯尔特贝利亚佣兵，雇佣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前211年，在伊比利亚半岛牵制巴卡家族后方长达七年的老西庇阿（普布利乌斯）与格奈乌斯两兄弟分兵推进。迦太基三位统帅哈斯德鲁巴尔·巴卡、马戈与吉斯科以巨金收买了两万名罗马雇佣的凯尔特贝利亚佣兵，雇佣兵阵前倒戈离去。孤立无援的老西庇阿兄弟相继在卡斯图洛与伊洛卡战役中力战殉国，罗马在西班牙的战线几乎毁于一旦，残兵退守埃布罗河北岸。"
+    }
+  ],
+  "TextMappings": []
+}

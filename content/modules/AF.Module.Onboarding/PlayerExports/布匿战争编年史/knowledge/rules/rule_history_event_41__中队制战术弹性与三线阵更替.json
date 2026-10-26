@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_41",
+  "Keywords": [
+    "中队制战术弹性与三线阵更替",
+    "中队制战术弹性",
+    "三线阵青年壮年中年",
+    "棋盘式交错间隙"
+  ],
+  "RagShortTexts": [
+    "第二次布匿战争期间，罗马陆军的中队制（Manipular System）与三线阵（Triplex Acies）日臻成熟。全军由初阶青年兵（Hastati）、主力壮年兵（Principes）与精锐老年兵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "第二次布匿战争期间，罗马陆军的中队制（Manipular System）与三线阵（Triplex Acies）日臻成熟。全军由初阶青年兵（Hastati）、主力壮年兵（Principes）与精锐老年兵（Triarii）依序排列，各中队呈棋盘状交错留有退却间隙。前线力竭时可迅速通过间隙后撤，由第二线饱满战力接手冲杀，其机动韧性远胜僵硬迟缓的希腊长矛方阵。"
+    }
+  ],
+  "TextMappings": []
+}

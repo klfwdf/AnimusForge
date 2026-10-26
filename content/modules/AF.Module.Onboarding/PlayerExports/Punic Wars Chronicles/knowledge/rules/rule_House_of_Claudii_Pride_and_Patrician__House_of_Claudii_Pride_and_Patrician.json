@@ -1,0 +1,69 @@
+{
+  "Id": "rule_House_of_Claudii_Pride_and_Patrician",
+  "Keywords": [
+    "House_of_Claudii_Pride_and_Patrician",
+    "House of Claudii",
+    "Appius Claudius Caecus",
+    "Patrician Arrogance"
+  ],
+  "RagShortTexts": [
+    "The Claudii were Rome's haughtiest patrician house, famed for monumental infrastructure like the Appian Way and reckless audacity, exemplified by throwing the sacred chickens overboard."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Migrating from Sabine hills in the early Republic, the Gens Claudia earned an enduring reputation for haughty patrician supremacy, unbending obstinacy, and defiance of plebeian sentiment. Their motto was simple: rule through aristocratic virtue, never pander. The clan produced legendary visionaries: Appius Claudius Caecus constructed the monumental Appian Way and Rome's first aqueduct; when King Pyrrhus demanded terms, the blind patriarch was carried into the Senate to thunder that 'Rome never bargains while foreign invaders stand on Italian soil.' Yet their fiery arrogance could court disaster: in 249 BC before the naval disaster at Drepana, Consul Publius Claudius Pulcher performed auspices. When the sacred chickens refused to feed—a catastrophic omen—Pulcher sneered, 'If they will not eat, let them drink!' and hurled the birds into the sea, shortly before the Punic fleet annihilated his squadrons. Despite such impiety, the Claudian spirit remained indomitable, producing relentless commanders like Claudius Nero who marched covertly across Italy to crush Hasdrubal at the Metaurus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Claudii possess an arrogance as cold and sharp as Iberian steel! They sneer at the plebeians and drown their own sacred chickens; yet when Hannibal pressed at our throat, it was Claudian ruthlessness that severed the head of Hasdrubal and hurled it into the Punic camp!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Claudian patricians are madmen poisoned by their own hubris! Pulcher tossed his sacred chickens into the sea at Drepana, and our admiral Adherbal promptly drowned his entire armada. Their arrogant contempt for divine omen will lead Rome straight to ruin!"
+    }
+  ],
+  "TextMappings": []
+}

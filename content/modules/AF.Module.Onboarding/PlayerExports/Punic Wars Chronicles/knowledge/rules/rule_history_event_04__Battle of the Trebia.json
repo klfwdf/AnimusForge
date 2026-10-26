@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_04",
+  "Keywords": [
+    "Battle of the Trebia_247",
+    "Mago Riverbed Ambush",
+    "Sempronius Forced River Crossing",
+    "Freezing Winter Slaught"
+  ],
+  "RagShortTexts": [
+    "In December 218 BC, Roman Consul Tiberius Sempronius Longus was lured into leading his freezing, hungry legions across t"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In December 218 BC, Roman Consul Tiberius Sempronius Longus was lured into leading his freezing, hungry legions across the icy Trebia River to engage Hannibal's well-fed forces. As the Roman vanguard struggled in deep snow, Hannibal unleashed an ambush detachment commanded by his brother Mago hidden in an overgrown stream bed, crushing the Roman rear and securing Carthaginian mastery over Northern Italy."
+    }
+  ],
+  "TextMappings": []
+}

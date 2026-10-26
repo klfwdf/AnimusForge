@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_06",
+  "Keywords": [
+    "费边拖延战术与坚壁清野",
+    "费边拖延战术",
+    "坚壁清野坚守高地",
+    "拖延者克尽全功"
+  ],
+  "RagShortTexts": [
+    "特拉西梅诺湖惨败后，罗马元老院任命昆图斯·法比乌斯·马克西穆斯为独裁官。费边深知汉尼拔野战不可战胜，坚决推行“拖延战术”（Cunctator）：大军沿高地山脊阴影尾随汉尼拔，绝不正面迎击；同时焚烧庄稼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "特拉西梅诺湖惨败后，罗马元老院任命昆图斯·法比乌斯·马克西穆斯为独裁官。费边深知汉尼拔野战不可战胜，坚决推行“拖延战术”（Cunctator）：大军沿高地山脊阴影尾随汉尼拔，绝不正面迎击；同时焚烧庄稼田地、坚守防御要塞，切断迦太基就食补给。此举虽遭急躁派指责懦弱，却为失血的罗马争取了最宝贵的战略喘息生机。"
+    }
+  ],
+  "TextMappings": []
+}

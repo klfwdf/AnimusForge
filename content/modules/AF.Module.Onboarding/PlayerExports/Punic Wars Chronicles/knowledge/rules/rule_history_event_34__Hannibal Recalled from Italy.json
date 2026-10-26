@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_34",
+  "Keywords": [
+    "Hannibal Recalled from Italy",
+    "Hannibal Recalled to Africa",
+    "Farewell to Italian Campaign",
+    "Embarkation at Croton"
+  ],
+  "RagShortTexts": [
+    "In autumn 203 BC, facing imminent destruction, the Carthaginian Senate sent ships to recall Hannibal from Italy. Having "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In autumn 203 BC, facing imminent destruction, the Carthaginian Senate sent ships to recall Hannibal from Italy. Having campaigned for sixteen unbroken years without suffering a tactical defeat on Italian soil, Hannibal looked back upon the receding coastline of Croton with bitter tears, lamenting that it was not Roman arms, but the petty jealousy of the Carthaginian oligarchs, that had defeated his grand design."
+    }
+  ],
+  "TextMappings": []
+}

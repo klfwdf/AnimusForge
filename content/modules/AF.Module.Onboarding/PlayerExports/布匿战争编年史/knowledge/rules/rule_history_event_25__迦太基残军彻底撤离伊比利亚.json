@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_25",
+  "Keywords": [
+    "迦太基残军彻底撤离伊比利亚",
+    "加迪尔最后据点陷落",
+    "马戈巴卡登船撤军",
+    "西班牙划入罗马行省"
+  ],
+  "RagShortTexts": [
+    "伊利帕惨败后，马戈·巴卡退守伊比利亚最后的据点加迪尔（加的斯）。随着守军倒戈与内陆部族全面臣服西庇阿，马戈率残余舰队撤往巴利阿里群岛及利古里亚。至公元前206年冬，哈米尔卡·巴卡与其子侄历经二十年铁血"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊利帕惨败后，马戈·巴卡退守伊比利亚最后的据点加迪尔（加的斯）。随着守军倒戈与内陆部族全面臣服西庇阿，马戈率残余舰队撤往巴利阿里群岛及利古里亚。至公元前206年冬，哈米尔卡·巴卡与其子侄历经二十年铁血开辟的巴卡西班牙帝国彻底瓦解，伊比利亚半岛丰饶的矿脉与财富全数归于罗马，转为日后的近西班牙与远西班牙行省。"
+    }
+  ],
+  "TextMappings": []
+}

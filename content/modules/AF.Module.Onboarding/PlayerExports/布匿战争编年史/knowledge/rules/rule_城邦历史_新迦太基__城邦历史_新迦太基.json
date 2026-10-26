@@ -1,0 +1,69 @@
+{
+  "Id": "rule_城邦历史_新迦太基",
+  "Keywords": [
+    "城邦历史_新迦太基",
+    "新迦太基",
+    "Carthago Nova (New Carthage)",
+    "城邦历史_新迦太基城防要塞"
+  ],
+  "RagShortTexts": [
+    "新迦太基（Carthago Nova (New Carthage)）是古典时代要冲城邑，拥有完备城防工事与繁盛商市，在布匿战争与地缘交锋中占据核心战略地位。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "哈斯德鲁拔·巴卡在西班牙建立的巴卡王朝首府新迦太基（今卡塔赫纳）。城市建于三面环海的海角半岛之上，南临极佳的深水避风海湾，北依咸水潟湖天险。附近塞拉莫雷纳山脉出产高纯度白银，城内建有庞大的兵工厂、粮仓与造船坞，是汉尼拔远征意大利的始发后勤大本营与人质集中营。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "新迦太基的城墙必须竖起罗马的鹰旗！无论是坚固的石塔还是城内的粮仓，军团将以钢铁纪律牢牢掌控这座要冲，任何人敢于在城中煽动叛乱都将遭到执政官最严厉的清洗！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "新迦太基的港口与市集必须向我们的商船敞开！迦太基尊重城邦的古老自由与地方神明，只要旗帜下汇聚起反抗罗马霸权的勇士，我们的大军必将保卫其城垣永固！"
+    }
+  ],
+  "TextMappings": []
+}

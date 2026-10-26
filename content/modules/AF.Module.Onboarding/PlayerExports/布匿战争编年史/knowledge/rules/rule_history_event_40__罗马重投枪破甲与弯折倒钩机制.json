@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_40",
+  "Keywords": [
+    "罗马重投枪破甲与弯折倒钩机制",
+    "罗马重投枪破甲",
+    "软铁颈管弯折倒钩",
+    "钉死敌盾瘫痪防御"
+  ],
+  "RagShortTexts": [
+    "罗马重投枪（Pilum）是军团步兵在接敌二十步内毁灭性的投掷利器。其独特的长铁颈与坚硬金字塔形倒钩枪尖，能轻易穿透蛮族木盾与锁子甲；更精妙在于细长的未淬火软铁颈部在贯穿盾牌后会因自身重力弯折下坠，使敌"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马重投枪（Pilum）是军团步兵在接敌二十步内毁灭性的投掷利器。其独特的长铁颈与坚硬金字塔形倒钩枪尖，能轻易穿透蛮族木盾与锁子甲；更精妙在于细长的未淬火软铁颈部在贯穿盾牌后会因自身重力弯折下坠，使敌军盾牌拖地无法拔出也无法掷回，被迫丢弃盾牌赤手迎战罗马剑盾方阵。"
+    }
+  ],
+  "TextMappings": []
+}

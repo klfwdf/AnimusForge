@@ -1,0 +1,69 @@
+{
+  "Id": "rule_努米底亚骑兵与马西尼萨的抉择",
+  "Keywords": [
+    "努米底亚骑兵与马西尼萨的抉择",
+    "努米底亚骑兵与马西尼萨的抉择努米底亚骑兵",
+    "马西尼萨",
+    "西法克斯"
+  ],
+  "RagShortTexts": [
+    "努米底亚无鞍轻骑兵是地中海最优秀的机动骑兵，马西尼萨倒向罗马并在扎马战役中击溃汉尼拔后方，奠定胜局。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北非阿尔及利亚与突尼斯内陆草原上的努米底亚人，拥有古典地中海世界最令人生畏的轻骑兵传统。努米底亚骑手不着重甲、不佩马鞍与马衔，仅凭一根马颈套绳便能人马合一穿梭如风，右手持盾，左手挥舞数支淬毒短标枪，擅长闪电般的佯退回马射击与侧翼袭扰。在第二次布匿战争前半段，努米底亚骑兵作为迦太基军队的锋刃，在特雷比亚与坎尼战役中彻底碾碎了罗马骑兵。然而在努米底亚国内，东部马西利部落王子马西尼萨与西部马赛西里国王西法克斯因王位继承与迦太基名媛索福尼斯巴的婚约而生死交恶。西法克斯与迦太基结盟，大西庇阿则敏锐地拉拢了战功卓著的马西尼萨。前206年，马西尼萨率其精锐轻骑兵正式倒向罗马。在扎马战役中，马西尼萨率领四千努米底亚骑兵在决战关头猛击汉尼拔老兵步兵的后背，彻底锁定了罗马的胜利。战后马西尼萨受罗马加冕成为统一的努米底亚国王，并在随后的半个世纪中不断成为罗马绞杀迦太基的锐利马前卒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马西尼萨国王是罗马在北非最忠诚、最敏捷的猎犬！他的骑兵不用马鞍却能策马如飞，标枪精准得如同阿波罗的箭矢。在扎马平原上，正是他和莱利乌斯执政官率领的骑兵如雷霆般包抄汉尼拔后路，敲响了迦太基帝国的丧钟！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马西尼萨是迦太基历史上最可耻的叛徒！巴卡家族曾给予他无限荣耀与兵权，他却为了王位和对西法克斯的私仇，向罗马侵略者摇尾乞怜！正是他的努米底亚骑兵在扎马从背后捅向了汉尼拔的百战将士！没有这个卑鄙叛徒的引路，罗马军团永远休想在非洲的土地上战胜迦太基！"
+    }
+  ],
+  "TextMappings": []
+}

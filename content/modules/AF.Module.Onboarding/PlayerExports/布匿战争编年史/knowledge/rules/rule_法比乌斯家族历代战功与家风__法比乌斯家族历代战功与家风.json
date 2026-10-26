@@ -1,0 +1,69 @@
+{
+  "Id": "rule_法比乌斯家族历代战功与家风",
+  "Keywords": [
+    "法比乌斯家族历代战功与家风",
+    "法比乌斯家族",
+    "拖延者费边",
+    "克雷梅拉战役"
+  ],
+  "RagShortTexts": [
+    "法比乌斯家族恪守悲壮牺牲与极度隐忍的家风；早年全族三百男丁独战敌国近乎覆灭，后由‘拖延者’费边在坎尼惨败后以焦土拖延战术拯救罗马，被尊为‘罗马之盾’。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法比乌斯氏族（Gens Fabia）在罗马贵族史册中，是‘为城邦牺牲全族’与‘忍辱负重至死方休’的最神圣典范。公元前477年的克雷梅拉战役（Battle of the Cremera）中，为了抵抗强邻维爱城邦的袭扰，法比乌斯家族做出古代史上罕见的壮举：由家族私人出资并召集全族306名成年男丁与数千家臣奔赴边境要塞独立作战，最终因寡不敌众惨遭全歼，全族仅留下一名留在罗马城中未成年的幼子延续血脉。这一灭门血案铸就了法比乌斯家族骨子里极其沉稳内敛、甘愿受辱亦要保全大局的铁血家风。第二次布匿战争爆发后，面对汉尼拔在特雷比亚与特拉西梅诺的连番屠戮，临危受命出任独裁官的昆图斯·法比乌斯·马克西穆斯（Quintus Fabius Maximus）顶住全国上下‘懦夫’与‘投降派’的唾骂，坚决执行尾随袭扰、高地据守、切断粮秣补给的焦土拖延战术（费边策略）。即使遭遇政敌同僚分权弹劾，费边依然不改初衷；在坎尼灾难证明其正确后，费边收复塔兰托、稳定各城邦军心，被全罗马公推为‘罗马之盾’（The Shield of Rome），诗人恩纽斯赞誉他：‘一人以拖延，保全了我们的共和国’。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法比乌斯家族用沉静的耐心拯救了罗马！当所有暴躁的执政官都把军团送去给汉尼拔当刀下亡魂时，是费边用高地营寨与坚壁清野挡住了敌人的蹄铁。他甘愿背负懦夫的恶名，也要把共和国的脊梁完好无损地交到我们手中！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "费边就像一条躲在石缝里的毒蜥蜴！他永远只敢在山脊线上窥视汉尼拔的营帐，哪怕自己的庄园在山脚下化为灰烬也绝不下山交战。这种软磨硬泡的无赖打法虽然毫无勇士的荣誉可言，却确实恶心了我们整整十几年！"
+    }
+  ],
+  "TextMappings": []
+}

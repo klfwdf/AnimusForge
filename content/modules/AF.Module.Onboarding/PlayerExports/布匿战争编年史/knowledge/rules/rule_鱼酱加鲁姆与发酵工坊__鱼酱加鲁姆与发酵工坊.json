@@ -1,0 +1,69 @@
+{
+  "Id": "rule_鱼酱加鲁姆与发酵工坊",
+  "Keywords": [
+    "鱼酱加鲁姆与发酵工坊",
+    "加鲁姆",
+    "鱼酱",
+    "发酵风味"
+  ],
+  "RagShortTexts": [
+    "鱼酱（加鲁姆）是古代地中海世界无处不在的发酵鲜味调味品与大宗商贸命脉，新迦太基等半岛沿海作坊出产的顶级鱼酱在罗马贵族餐桌上价格胜过贵重精油。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在古典地中海的饮食文化中，无论平民行军口粮还是贵族奢华夜宴，都离不开一种名为‘加鲁姆’（Garum，或称Liquamen）的发酵鱼酱。制作加鲁姆是庞大的沿海支柱产业：工匠将鲭鱼、沙丁鱼、金枪鱼的内脏、鱼鳃与碎肉置于大型露天石灰水池中，撒上大量海盐与莳萝、茴香、牛至等香草，在盛夏烈日下暴晒两至三个月。在天然酶与海盐的协同作用下，鱼肉蛋白质被彻底自溶分解为富含氨基酸的琥珀色透明浓汁，随后通过藤条滤网过滤澄清。未沉淀的浓厚鱼渣被称为‘阿莱克’（Alec），供奴隶与底层平民拌麦粥食用；而最纯正清澈的‘首道加鲁姆’则带有极浓郁的复合咸鲜滋味。伊比利亚半岛南部海岸（尤其是新迦太基与贝提卡沿海）因盛产优质鲭鱼，其出产的‘盟友加鲁姆’（Garum Sociorum）享誉全地中海，被装入密封双耳陶罐（Amphorae）海运至罗马城，一小瓶售价甚至高达数百塞斯特斯银币，构成了巴卡家族在西班牙最丰厚的贸易税源之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从军团麦糊到元老院夜宴烤睡鼠，没有加鲁姆那股浓烈的咸鲜味，罗马人根本咽不下饭！新迦太基落入大西庇阿手中后，那里的鲭鱼发酵池就成了共和国国库的摇钱树。让高卢蛮子去啃硬生牛肉吧，文明的标志就是舌尖上的加鲁姆！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们西班牙沿海成百上千座鱼酱石槽不仅喂饱了地中海的贵族，更充实了巴卡家族的战争金库。罗马的商人用一船又一船的银币换取我们的鲭鱼鲜汁，转头又被汉尼拔拿来给高卢和努米底亚佣兵发军饷——在某种意义上，是鱼酱支撑了这场大战！"
+    }
+  ],
+  "TextMappings": []
+}

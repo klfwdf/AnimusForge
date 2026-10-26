@@ -1,0 +1,69 @@
+{
+  "Id": "rule_卢恩符文与北方女先知占卜",
+  "Keywords": [
+    "卢恩符文与北方女先知占卜",
+    "卢恩符文",
+    "女先知",
+    "韦勒达"
+  ],
+  "RagShortTexts": [
+    "日耳曼部落极度尊崇掌握神圣秘术的‘女先知’（Völva），并以刻有古老卢恩符文的果树枝条抛撒占卜吉凶，其预言足以左右整个部落联盟的和战抉择。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "古罗马史学家塔西佗在《日耳曼尼亚志》中记载，日耳曼部族认为女性天生具备一种神圣而通灵的洞察力（Sanctum aliquid et providum），对部族中的‘女先知’（Seeress，如传说中的韦勒达Veleda）抱有近乎神明的敬畏。这些女先知通常独居于密林深处或孤绝的高塔之中，不着华服，终生不婚，负责解读至高神明沃达纳兹（Wodanaz）与自然的征兆。日耳曼人最古老的占卜秘仪依托于神秘的‘卢恩符文’（Runes）：祭司或女先知从结果实丰硕的果树上砍下一根新鲜枝条，将其切成数段薄薄的小木片，在每块木片上用鲜血或赭石刻上象征胜利、财富、死亡或厄运的古老卢恩神秘字符；随后将小木片随机抛撒在一块纯白色的洁净亚麻布上，女先知仰望苍穹向诸神祈祷后，闭目摸取三片木片，根据其正反与符文组合断言战争吉凶。此外，部族还饲养终生未受任何农作役使的‘神圣白马’，聆听白马在神圣橡树林间的嘶鸣与喷鼻声以决战和，酋长即便手握万千兵刃，若无女先知的神谕首肯也绝不敢贸然踏出林海半步。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "日耳曼蛮族打起仗来居然要听深山老林里一个独居老巫婆的疯话！她们扔几片刻着鬼画符的树树皮、听两声白马叫唤就决定生死。但罗马军团的百夫长们可不管什么卢恩符文，当标枪带着破空声刺进树林时，任何巫术神谕都会在罗马铁军面前化为焦炭！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方的女先知拥有穿透冰雪与岁月的冰冷眼眸，她们手中的卢恩木片是荒原古神低语的印记。汉尼拔将军对待各族神明向来心存敬意：只有知晓北境神灵何时动怒、何时赐福，我们才能真正驱使那些剽悍的苏维汇狂战士为迦太基流尽最后一滴血！"
+    }
+  ],
+  "TextMappings": []
+}

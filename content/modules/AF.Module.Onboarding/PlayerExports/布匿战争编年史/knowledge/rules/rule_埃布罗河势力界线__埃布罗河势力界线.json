@@ -1,0 +1,69 @@
+{
+  "Id": "rule_埃布罗河势力界线",
+  "Keywords": [
+    "埃布罗河势力界线",
+    "埃布罗河",
+    "埃布罗河和约",
+    "伊比利亚分界线"
+  ],
+  "RagShortTexts": [
+    "埃布罗河是前226年条约规定的罗马与迦太基在伊比利亚半岛的法定势力界标，河以南为迦太基经略区，最终因萨贡图姆争端破裂。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃布罗河（Ebro，拉丁名 Iberus）发源于坎塔布连山脉，横贯伊比利亚半岛东北部注入地中海，是半岛水系中最关键的天然地理分界线。‘伊比利亚’半岛之名亦源于此河。公元前226年，因警惕巴卡家族在西班牙的迅速扩张并忙于应对波河高卢入侵，罗马派遣使团前往新迦太基，与哈斯德鲁拔签署了著名的《埃布罗河和约》。和约明文约定：罗马与迦太基以埃布罗河为界，迦太基军队绝不得越过埃布罗河向北发动战争，河以北则为罗马及其希腊盟邦（如马赛、安普里亚斯）的利益范围；作为默契交换，罗马承认迦太基在埃布罗河以南广阔土地的行动自由。然而此后罗马公然与河以南一百多公里的萨贡图姆结盟，直接埋下了和约名存实亡并彻底引爆第二次布匿战争的历史炸弹。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃布罗河和约是我们当年划定的不可侵犯的红线！条约约束的是迦太基不得越河进攻我们忠诚的高卢与希腊盟邦。但和约从未规定罗马不能与埃布罗河以南的自由城邦建立友好互助条约！汉尼拔攻打萨贡图姆并在随后挥军强渡埃布罗河向北突进，就是公然对整个罗马共和国撕毁和约的背信之举！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃布罗河是罗马人虚伪条约的最好见证！哈斯德鲁拔当年以极大的大度答应不过河，罗马人表面上划河而治，背地里却把触手伸过大河一百多英里，在萨贡图姆安插武装间谍煽动叛乱！既然罗马视条约为儿戏，汉尼拔将军跨过埃布罗河的大军，就是给罗马无耻毁约最公正的回击！"
+    }
+  ],
+  "TextMappings": []
+}

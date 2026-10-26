@@ -1,0 +1,69 @@
+{
+  "Id": "rule_高卢痛饮长夜与神圣单挑习俗",
+  "Keywords": [
+    "高卢痛饮长夜与神圣单挑习俗",
+    "高卢宴饮",
+    "大口饮酒",
+    "勇士大腿肉"
+  ],
+  "RagShortTexts": [
+    "高卢凯尔特战士崇尚大口暴饮不兑水烈酒，宴席上以剑决斗争夺‘勇士之肉’，战前赤身佩戴金项圈在阵前辱骂单挑，割下敌首悬挂马项作为神圣图腾。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在波河平原与阿尔卑斯山北麓的高卢凯尔特部落社会中，‘暴饮宴席’与‘阵前神圣单挑’（Champion Combat）构成了氏族勇武阶级的生命核心。高卢首领极度嗜好来自希腊与伊比利亚的纯葡萄酒，他们不屑于希腊人掺水勾兑的斯文喝法，而是整桶整坛地暴饮未稀释的烈酒，常在烈火燃烧的长屋中通宵达旦地嚎叫狂饮。宴席切割烤猪肉时，最肥美多汁的整条大腿（Champion's Portion）必须献给当晚公认最勇猛的第一勇士；若有另一位战士不服，两人随即拔出沉重铁剑在大厅火塘边决斗，至死方休。在两军对垒阵前，高卢最顶尖的狂战士往往赤身裸体、颈佩重金扭铠（Torc），在阵前挥舞斩首剑、敲击长盾并发出震天咆哮，指名道姓辱骂敌军主将出阵单挑，并以此决定战神裁决的归属；击杀对手后割下头颅悬挂在战马颈下，作为家族传世的最高图腾战利品。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那些高卢蛮子在阵前光着膀子大喊大叫、挥舞巨剑挑衅，确实让新兵腿软；但经验丰富的百夫长只要竖起大盾刺出短剑，蛮力就会变成倒地的尸体！他们的战吼吓不倒罗马军团！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "高卢勇士用烈酒洗涤灵魂，用单挑证明血性！汉尼拔大军最坚固的锋刃，正是这群视死如归、斩杀无数罗马狂徒的高卢男儿！他们的巨剑是撕裂意大利的最强雷霆！"
+    }
+  ],
+  "TextMappings": []
+}

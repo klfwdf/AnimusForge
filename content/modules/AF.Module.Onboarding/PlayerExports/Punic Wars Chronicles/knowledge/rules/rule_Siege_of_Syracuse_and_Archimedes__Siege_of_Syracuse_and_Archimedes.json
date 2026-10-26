@@ -1,0 +1,68 @@
+{
+  "Id": "rule_Siege_of_Syracuse_and_Archimedes",
+  "Keywords": [
+    "Siege_of_Syracuse_and_Archimedes",
+    "Marcus Claudius Marcellus",
+    "Syracuse Defenses"
+  ],
+  "RagShortTexts": [
+    "During the Siege of Syracuse (214–212 BC), mathematical genius Archimedes designed giant claws and catapults that held Roman armies at bay for two years."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Following Cannae and the death of King Hiero II, Syracuse renounced its Roman alliance and backed Carthage. In 214 BC, Consul Marcus Claudius Marcellus ('the Sword of Rome') besieged the city by land and sea. Syracuse's defense was engineered by the legendary mathematician Archimedes, who constructed fearsome war machines: varying-range catapults, the 'Claw of Archimedes' (giant cranes that lifted Roman quinqueremes and smashed them against coastal rocks), and reputedly reflective mirror arrays. Foiled, Marcellus remarked he was 'waging war against a geometrical Briareus' and settled into blockade. In 212 BC, Romans scaled the walls during an internal festival of Artemis. Archimedes was killed by a Roman soldier while drawing geometric diagrams in the sand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marcellus truly wielded the sword of Rome! The sea walls of Syracuse bristled with the uncanny wizardry of Archimedes, whose mechanical cranes plucked warships out of the surf like toys. Yet engineering cannot withstand relentless Roman infantry. Marcellus wept for the beauty of the city and grieved the tragic slaying of Archimedes by an ignorant legionary."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fall of Syracuse broke the Punic grip on Sicily. Archimedes single-handedly held the Roman legions at bay with gears, levers, and pure intellect. Had the city not been betrayed during a drunken festival of Artemis, Marcellus would never have set foot within its walls."
+    }
+  ],
+  "TextMappings": []
+}

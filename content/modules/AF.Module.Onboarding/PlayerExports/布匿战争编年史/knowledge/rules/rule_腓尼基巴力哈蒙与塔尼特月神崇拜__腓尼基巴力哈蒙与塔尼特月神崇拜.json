@@ -1,0 +1,69 @@
+{
+  "Id": "rule_腓尼基巴力哈蒙与塔尼特月神崇拜",
+  "Keywords": [
+    "腓尼基巴力哈蒙与塔尼特月神崇拜",
+    "巴力哈蒙",
+    "塔尼特",
+    "麦尔卡特"
+  ],
+  "RagShortTexts": [
+    "迦太基崇奉天空至高神巴力·哈蒙与月亮丰产女神塔尼特；托斐特圣区（Tophet）记录着面临绝境时贵族献祭牺牲以求城邦安宁的神圣仪式。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基共和国的宗教精神承袭自腓尼基母邦提尔数千年的古老黎凡特神系。城市最高的两位主宰神祇是‘香炉之主’至高天神巴力·哈蒙（Ba'al Hammon）与其配偶‘巴力之面’月亮与丰产女神塔尼特（Tanit）。塔尼特的标志——由一个圆圈、一道横梁和一个三角形组成的抽象神圣符号（Sign of Tanit）——雕刻在迦太基所有战船、墓碑、硬币与军营旗帜上以求护佑。与希腊罗马众神不同，迦太基神明威严莫测、极重神圣血契。在迦太基城墙南侧坐落着举世闻名的‘托斐特圣区’（Tophet of Salammbo）：在城邦遭遇灭顶之灾或远征生死攸关时，城中显贵贵族家族会在大祭司主持下，将纯洁的牺牲（在古典作家记载中包括珍贵的初生牲畜乃至贵族幼童）献祭于青铜火炉之中，焚化后将骨灰盛入赤陶陶罐深埋于刻满祈祷铭文的石碑之下，以期平息至高天神的怒火。战神麦尔卡特（Melqart）则庇佑远洋水手与巴卡家族的海外征战，汉尼拔终其一生在麦尔卡特祭坛前保持着虔诚祈祷。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基人的神明是贪得无厌的嗜血恶魔！他们把自己的亲生骨肉扔进青铜火炉去换取战争胜利，这种灭绝人性的邪恶祭典是对文明的亵渎！军团踏平迦太基城墙正是诸神降下的正义惩罚！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马豺狼用谎言污蔑我们献给巴力与塔尼特神的神圣祭礼！我们向至高苍天奉献最珍贵的心血以保全民族的安宁，塔尼特女神的慈爱月光将永远为布匿儿女照亮地中海的航程！"
+    }
+  ],
+  "TextMappings": []
+}

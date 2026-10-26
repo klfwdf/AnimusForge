@@ -1,0 +1,69 @@
+{
+  "Id": "rule_The_Corvus_and_Naval_Boarding",
+  "Keywords": [
+    "The_Corvus_and_Naval_Boarding",
+    "The_Corvus_and_Naval_Boarding Corvus",
+    "Roman Navy",
+    "Naval Boarding"
+  ],
+  "RagShortTexts": [
+    "The Corvus was a spiked naval boarding bridge invented by Rome in the First Punic War; although victorious in battle, its top-heavy design caused catastrophic storm shipwrecks, leading to its complete retirement before 218 BC."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At the dawn of the First Punic War, Carthage ruled the waves with centuries of maritime supremacy, while Rome possessed neither a standing battle fleet nor experienced rowers. To neutralize Carthaginian maneuvering, Roman military engineers invented the Corvus ('Raven'): a 36-foot-long pivoting gangway hoisted against a mast on the prow, terminating in a heavy, curved iron spike. When drawn alongside a Carthaginian vessel, the bridge dropped onto the enemy deck, driving the spike deep into the wood and locking the two hulls together. Heavily armored Roman legionaries rushed across two-abreast, turning naval engagements into brutal hand-to-hand land combat and winning historic triumphs at Mylae and Cape Ecnomus. However, the Corvus severely destabilized the quinquereme's center of gravity. In rough weather, top-heavy Roman fleets suffered catastrophic capsizing, losing hundreds of ships and over 100,000 men in storms off Camarina. By the outbreak of the Second Punic War in 218 BC, the Roman navy had mastered conventional seamanship, battering rams, and grappling lines, permanently abandoning the deadly Corvus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "With the Raven, our fathers taught Punic admirals that the sea belongs to Roman steel! But Neptune demanded his toll in the storms of Camarina for tampering with naval balance. Today our quinqueremes fight with seaworthy grace, bronze rams, and steadfast boarding marines—no clumsy bird is needed to crush Carthage!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Roman barbarians tried to turn glorious naval chess into a vulgar slaughterhouse with their iron-spiked bridges! Yet the sea itself punished their arrogance—over two hundred of their ships were dragged into the abyss by their own top-heavy iron toys. Today they dare not mount that cursed contraption on their prows again!"
+    }
+  ],
+  "TextMappings": []
+}

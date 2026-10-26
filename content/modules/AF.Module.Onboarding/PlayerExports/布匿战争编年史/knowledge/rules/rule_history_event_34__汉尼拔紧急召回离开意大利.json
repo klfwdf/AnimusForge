@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_34",
+  "Keywords": [
+    "汉尼拔紧急召回离开意大利",
+    "汉尼拔奉召回国",
+    "辞别十六年意大利征程",
+    "克罗托内战船起锚"
+  ],
+  "RagShortTexts": [
+    "公元前203年秋，北非告急的迦太基百人元老院急令汉尼拔与利古里亚的马戈即刻回国勤王。在意大利征战驰骋十六年、未尝一败的汉尼拔在克罗托内海滨痛别亚平宁半岛。登船之际汉尼拔咬牙长叹：‘击败汉尼拔的不是罗马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前203年秋，北非告急的迦太基百人元老院急令汉尼拔与利古里亚的马戈即刻回国勤王。在意大利征战驰骋十六年、未尝一败的汉尼拔在克罗托内海滨痛别亚平宁半岛。登船之际汉尼拔咬牙长叹：‘击败汉尼拔的不是罗马军团，而是迦太基百人元老院的嫉妒与吝啬！’随行两万四千名身经百战的意大利与高卢精兵登舰还乡，准备迎接最后的命运决战。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Punic_Wars_Overview",
+  "Keywords": [
+    "Punic_Wars_Overview",
+    "Punic Wars",
+    "Punic Wars Overview",
+    "Rome vs Carthage"
+  ],
+  "RagShortTexts": [
+    "The Punic Wars were three devastating conflicts fought between the Roman Republic and Carthage from 264 to 146 BC for supremacy over the Mediterranean."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Punic Wars were three monumental conflicts fought between the Roman Republic and the Phoenician state of Carthage between 264 and 146 BC. Derived from the Latin 'Punicus' for Phoenician, the wars decided the destiny of the classical Mediterranean. The First War centered on Sicily, where Rome created a navy to break Carthage's maritime monopoly. The Second War saw Hannibal cross the Alps with war elephants to inflict historic defeats on Roman soil, answered by Scipio Africanus invading Africa and triumphing at Zama. The Third War was a calculated siege of annihilation ending in the total destruction of Carthage and the founding of the province of Africa, establishing Roman hegemony over Mare Nostrum."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Punic Wars stand as the supreme testament to the iron will of the Senate and the Roman people! The deceitful Phoenicians bought armies with silver and ruled the sea, and Hannibal brought terror to the very gates of Rome. But Rome never bends to defeat. From Mylae to Zama, and finally Scipio Aemilianus razing Carthage to dust, our legions proved who rules the earth. Carthage is gone, reduced to the soil of our province of Africa."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Punic Wars were a century-long tragedy of blood and betrayal for Carthage. For seven hundred years our white harbors commanded the trade of the known world. Hannibal Barca crushed their proud legions at Cannae until Roman blood dyed the rivers! But domestic hesitation starved our heroes of reinforcements. Rome repaid our submission with total annihilation, burning our shrines and selling our children into bondage. Yet the memory of the Barcids will never die."
+    }
+  ],
+  "TextMappings": []
+}

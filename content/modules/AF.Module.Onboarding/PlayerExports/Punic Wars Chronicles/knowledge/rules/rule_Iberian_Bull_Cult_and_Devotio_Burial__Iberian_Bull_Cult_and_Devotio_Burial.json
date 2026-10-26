@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Iberian_Bull_Cult_and_Devotio_Burial",
+  "Keywords": [
+    "Iberian_Bull_Cult_and_Devotio_Burial",
+    "Iberian Bull Cult",
+    "Falcata Sword",
+    "Devotio Ritual"
+  ],
+  "RagShortTexts": [
+    "Iberian warriors venerated sacred bulls and bound themselves by devotio oaths to die with their chieftains; their falcata swords were ceremonially bent and destroyed at burial to perish with them."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Across ancient Hispania, indigenous Iberian and Celtiberian cultures revered the wild bull as the supreme embodiment of martial potency, decorating tombs and ramparts with stone bull sculptures (berrocales). Central to their society was the sacred oath of devotio: warrior retinues consecrated their lives to their chieftain before the gods. If the leader fell in battle, surviving retainers were divinely forbidden to live, committing ritual suicide upon their blades. Iberians fought with the fearsome falcata—a curved, forward-weighted steel sword forged from iron buried underground to purge impurities, capable of cleaving bronze helmets in a single blow. Upon a warrior's death, his falcata was ritually 'killed'—heated, bent into loops, or notched to destroy its functional purpose—before being interred in cremation tombs, ensuring the weapon accompanied its master into the afterlife."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Iberian falcata cuts through shield and skull with sickening weight! Worse yet is their devotio oath: their warriors fight like rabid beasts around their chieftains, preferring suicide over retreat. Subduing Hispania has tested Rome's resolve to the limit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "An Iberian warrior's bond is stronger than bronze! Under Barca leadership, their devotion and falcata charges shattered consular ranks. When an Iberian draws steel for Carthage, only death can break his sworn word!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Tarentum_Port_and_Citadel",
+  "Keywords": [
+    "Tarentum_Port_and_Citadel",
+    "Tarentum",
+    "Taranto",
+    "Fabius Recaptures Tarentum"
+  ],
+  "RagShortTexts": [
+    "Tarentum commanded southern Italy's premier enclosed harbor; Hannibal seized the city by night treason in 212 BC, but Fabius recaptured it in 209 BC."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Tarentum (modern Taranto) possessed the finest sheltered anchorage in southern Italy, separating the outer bay from the tranquil Mare Piccolo lagoon. Founded by Spartan exiles, it controlled Greek trade in Magna Graecia and offered Hannibal the vital deepwater harbor he needed to receive seaborne reinforcements from Carthage and Macedon. In 212 BC, local conspirators Philmenus and Nikon opened the gates at night, allowing Hannibal's troops to massacre the Roman garrison. However, Roman commander Marcus Livius Macatus rallied survivors in the cliffside citadel guarding the harbor entrance. Hannibal dragged captured ships on wheeled sleds through the city streets to blockade the lagoon, but the citadel held. In 209 BC, Fabius Maximus capitalized on a traitorous Bruttian commander inside to storm Tarentum, enslaving 30,000 citizens and capturing 3,000 gold talents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The citadel of Tarentum was an iron thorn in Hannibal's flesh! Traitors opened the landward gates, yet our garrison held the sea rock with indomitable fury, denying the Punic fleet safe entry. Fabius's recapture returned the great Spartan port to Roman dominion and stripped Hannibal of his last maritime haven in Italy!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Taking Tarentum by night was a masterstroke of Barcid infiltration! We ruled the streets and hauled triremes across paved alleys to bottle the inner sea. Yet that accursed Roman sea-citadel held out on starvation rations. When domestic treachery sold the walls back to old Fabius, our last hopes of direct resupply from Carthage were extinguished."
+    }
+  ],
+  "TextMappings": []
+}

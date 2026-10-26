@@ -1,0 +1,69 @@
+{
+  "Id": "rule_埃加迪群岛海战与第一次和约",
+  "Keywords": [
+    "埃加迪群岛海战与第一次和约",
+    "埃加迪群岛海战",
+    "第一次布匿和约",
+    "鲁塔提乌斯·卡图鲁斯"
+  ],
+  "RagShortTexts": [
+    "前241年埃加迪群岛海战中罗马舰队彻底摧毁迦太基运输补给船队，迫使其签订和约割让西西里并赔偿巨款，结束第一次布匿战争。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在历经多次海难与国库几乎破产的绝境后，罗马富裕公民自掏腰包出资组建了由两百艘轻量化改良战船构成的最后一支舰队，由执政官盖乌斯·鲁塔提乌斯·卡图鲁斯统率。公元前241年3月10日，罗马舰队在西西里西端的埃加迪群岛附近，截击了由哈诺指挥的迦太基庞大运输补给舰队。迦太基战船堆满粮食军饷、水手训练不足且行动迟缓，卡图鲁斯顶着强风果断出击，一举击沉五十艘、俘获七十艘敌舰。西西里岛上残存的哈米尔卡·巴卡孤军断粮，迦太基已毫无继续维持战事的财政能力。迦太基政府全权委托哈米尔卡议和，签订了《鲁塔提乌斯和约》：迦太基彻底撤出西西里及周边诸岛，十年内赔付罗马3200塔兰特白银。历时23年的第一次布匿战争至此告终。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃加迪群岛的风暴见证了罗马人民自发奉献的奇迹！当国库空竭，是爱国的元老与平民出钱造船！卡图鲁斯执政官以精湛的机动冲入敌阵，迦太基沉重的货船如同漂浮的棺木。哈米尔卡固然顽强，但在断绝海运之后，他也只能向罗马元老院乞求和平！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃加迪群岛海战是迦太基元老院官僚惰性的丧钟！哈米尔卡在陆地上从未被打垮，但国内却派出超载、缺水手的杂牌船队送死。三千两百塔兰特白银榨干了我们的国库，迫使我们将祖先经营数百年的西西里岛拱手让给仇敌。这一奇耻大辱，奠定了巴卡家族誓死复仇的宿命。"
+    }
+  ],
+  "TextMappings": []
+}

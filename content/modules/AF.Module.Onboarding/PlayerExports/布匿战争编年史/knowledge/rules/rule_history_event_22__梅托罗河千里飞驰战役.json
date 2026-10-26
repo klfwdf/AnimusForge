@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_22",
+  "Keywords": [
+    "梅托罗河千里飞驰战役",
+    "梅托罗河决战",
+    "执政官尼禄暗度陈仓",
+    "千里飞驰南北会师"
+  ],
+  "RagShortTexts": [
+    "公元前207年，哈斯德鲁巴尔率重军翻越阿尔卑斯山进入意大利北部，试图与汉尼拔会师。南方监视汉尼拔的罗马执政官盖乌斯·克劳狄乌斯·尼禄截获了其密信，冒险仅带六千步兵与一千骑兵，昼夜兼程飞驰四百英里北上与"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前207年，哈斯德鲁巴尔率重军翻越阿尔卑斯山进入意大利北部，试图与汉尼拔会师。南方监视汉尼拔的罗马执政官盖乌斯·克劳狄乌斯·尼禄截获了其密信，冒险仅带六千步兵与一千骑兵，昼夜兼程飞驰四百英里北上与另一执政官萨利纳托尔秘密合兵。在梅托罗河决战中，尼禄从战线后方实施大胆的大迂回，猛击哈斯德鲁巴尔无防护的右翼与后背，取得决定性大胜。"
+    }
+  ],
+  "TextMappings": []
+}

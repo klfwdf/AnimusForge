@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Rome_and_the_Seven_Hills",
+  "Keywords": [
+    "Rome_and_the_Seven_Hills",
+    "City of Rome",
+    "Seven Hills of Rome",
+    "Tiber River"
+  ],
+  "RagShortTexts": [
+    "Built upon seven hills along the Tiber, Rome was the political, religious, and military heart of the Republic, defying Hannibal even at its gates."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rome lies along the lower Tiber River in central Italy, anchored by its legendary Seven Hills: Palatine, Capitoline, Aventine, Caelian, Esquiline, Quirinal, and Viminal. Protected by the Servian Wall, the city centered upon the Capitoline citadel and the Forum where the Senate and Assemblies deliberated. Throughout the Punic Wars, Rome served as the logistical and spiritual nucleus of resistance. After the catastrophic rout at Cannae, public mourning was strictly limited to thirty days and the Senate refused all ransom negotiations. When Hannibal rode within three miles of the walls in 211 BC ('Hannibal ad portas!'), the land beneath his very campsite was auctioned in the Forum without a sesterce drop in price, demonstrating the Republic's unbreakable resolve."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The City of Seven Hills is Jupiter's earthly sanctuary! From Romulus's sacred furrow to the stout stones of Servius, our ramparts have sheltered centuries of liberty. When Hannibal brought his elephants to the Colline Gate, he peered into an armed hornet's nest of citizens resolved to die on their doorsteps. Even the turf under his horse's hooves sold at full price in our Forum!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rome is an insatiable wolf brooding over the Tiber. Its hills are stone dens of stubborn farmers, yet their defiance was undeniably formidable. After Cannae, Maharbal urged Hannibal to gallop straight for the Capitol, but our general knew the truth: without a siege train, throwing our veterans against the massive walls of Rome would drown our glorious victory in Italian stone and blood."
+    }
+  ],
+  "TextMappings": []
+}

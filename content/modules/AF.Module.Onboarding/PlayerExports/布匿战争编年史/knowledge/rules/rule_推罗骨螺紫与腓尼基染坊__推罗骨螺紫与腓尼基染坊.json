@@ -1,0 +1,69 @@
+{
+  "Id": "rule_推罗骨螺紫与腓尼基染坊",
+  "Keywords": [
+    "推罗骨螺紫与腓尼基染坊",
+    "骨螺紫",
+    "推罗紫",
+    "骨螺"
+  ],
+  "RagShortTexts": [
+    "推罗骨螺紫是古典时代比黄金更昂贵的终极奢华染料，数以万计的海螺腐烂发酵提取出永不褪色的帝王紫，其刺鼻恶臭使迦太基染坊必须远离城市建立。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在古典地中海世界，紫袍是最高统治者、元老院执政官与希腊化君王的绝对身份象征。这种被称为‘推罗紫’（Tyrian Purple）的染料由腓尼基商贾垄断数百年，其源自于地中海特有的掠食性海螺——环带骨螺（Murex trunculus）与染料骨螺（Bolinus brandaris）。提炼过程极其漫长且成本骇人：每一只骨螺体内仅有微小的鳃下腺分泌一滴微弱的无色粘液，提取一盎司纯正紫染料需要捕捞并砸碎上万只活海螺。工匠将破碎的骨螺浸泡在巨型石槽中，混合大量海盐与陈年尿液在烈日下曝晒发酵十余日。这种发酵过程产生出极度恶臭浓烈的腐鱼气味，熏风数里不散，以至于腓尼基城邦与迦太基法律明文规定：所有骨螺紫染坊必须建在远离城墙的海角与下风口处。然而，用此法染成的羊毛织物色泽深邃如凝固的鲜血，并在阳光照射与海水洗涤下不仅永不褪色，反而愈加鲜亮夺目，其每磅售价甚至超过等重的纯金，成为整个古代西方世界财富与皇权的终极图腾。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "元老执政官托加袍边沿的那道深紫条纹（Toga Praetexta），是共和国至高尊严的界标！腓尼基商人虽然贪婪，但他们从海螺里榨出的紫红确实华贵非凡。哪怕那股染坊的腥臭味传遍了海峡，只要它穿在罗马统帅的身上，那就是不可冒犯的法权象征！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大海的一切财富都在我们腓尼基人的掌心之中！推罗紫是我们先祖从深海骨螺中提炼出的天神华彩。罗马的执政官们一面在讲坛上咒骂布匿人狡诈，一面又争先恐后花重金抢购我们迦太基染坊产出的紫袍。这就是商业与文明对蛮力武夫的无声征服！"
+    }
+  ],
+  "TextMappings": []
+}

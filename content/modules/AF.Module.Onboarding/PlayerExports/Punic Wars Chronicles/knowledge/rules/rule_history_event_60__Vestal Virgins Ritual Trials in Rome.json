@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_60",
+  "Keywords": [
+    "Vestal Virgins Ritual Trials in Rome",
+    "Vestal Virgins Incestum Trial",
+    "Wrath of Gods Cannae Calamity",
+    "Forum Boarium Buried Alive"
+  ],
+  "RagShortTexts": [
+    "Following the slaughter at Cannae, religious hysteria gripped Rome, with the disaster interpreted as divine retribution "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Following the slaughter at Cannae, religious hysteria gripped Rome, with the disaster interpreted as divine retribution for unchastity among the Vestal Virgins. Upon investigation, two Vestals were condemned for breaking their sacred vows of celibacy and entombed alive in an underground chamber at the Forum Boarium. In addition, the Senate buried alive a pair of Gauls and Greeks to appease subterranean deities and avert the doom of the Republic."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_10",
+  "Keywords": [
+    "Battles of Nola and Marcellus",
+    "Battles of Nola",
+    "Sword of Rome Breaks Myth",
+    "Marcellus Sallies Out"
+  ],
+  "RagShortTexts": [
+    "Between 216 and 214 BC, Hannibal mounted three separate attempts to capture the strategic Campanian town of Nola, and wa"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Between 216 and 214 BC, Hannibal mounted three separate attempts to capture the strategic Campanian town of Nola, and was repeatedly thrown back by Praetor Marcus Claudius Marcellus. Marcellus organized aggressive sallies from the gates, inflicting sharp tactical reverses on Carthaginian columns and shattering the aura of Hannibalic invincibility, earning acclaim as the 'Sword of Rome'."
+    }
+  ],
+  "TextMappings": []
+}

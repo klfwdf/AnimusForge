@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_13",
+  "Keywords": [
+    "叙拉古沦陷与阿基米德殉难",
+    "叙拉古夜袭破城",
+    "阿尔忒弥斯节破防",
+    "阿基米德沙盘殉难"
+  ],
+  "RagShortTexts": [
+    "公元前212年，马塞卢斯趁叙拉古全城沉浸在庆祝阿尔忒弥斯女神节日的酒醉之夜，派遣敢死队攀爬低矮城墙偷袭得手。城破之时，罗马士兵闯入阿基米德书房，阿基米德因专注于沙盘几何圆图形并厉声喝止‘别踩坏我的圆！"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前212年，马塞卢斯趁叙拉古全城沉浸在庆祝阿尔忒弥斯女神节日的酒醉之夜，派遣敢死队攀爬低矮城墙偷袭得手。城破之时，罗马士兵闯入阿基米德书房，阿基米德因专注于沙盘几何圆图形并厉声喝止‘别踩坏我的圆！’，惨遭不识其身份的罗马小卒拔剑刺杀。一代巨匠陨落，叙拉古宝藏尽被劫掠运往罗马，西西里战线彻底平定。"
+    }
+  ],
+  "TextMappings": []
+}

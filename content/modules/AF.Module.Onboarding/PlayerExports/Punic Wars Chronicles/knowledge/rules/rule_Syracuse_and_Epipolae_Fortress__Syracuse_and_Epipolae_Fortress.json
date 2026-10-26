@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Syracuse_and_Epipolae_Fortress",
+  "Keywords": [
+    "Syracuse_and_Epipolae_Fortress",
+    "City of Syracuse",
+    "Epipolae Fortress",
+    "Ortygia Island"
+  ],
+  "RagShortTexts": [
+    "Syracuse on eastern Sicily combined the island citadel of Ortygia with the massive Epipolae cliff walls, making it the supreme fortress-city of Magna Graecia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Founded by Corinthian colonists in the 8th century BC, Syracuse was the premier metropolis of Magna Graecia, commanding eastern Sicily. Centered upon the fortified island of Ortygia with its freshwater Arethusa spring, the city was transformed by Tyrant Dionysius I, who enclosed the Epipolae plateau within 17 miles of massive stone ramparts anchored by the fortress of Euryalus. Under King Hiero II, Syracuse prospered as an ally of Rome, with Archimedes engineering unprecedented defensive artillery. After Hiero's death, the city allied with Carthage during the Second Punic War. Besieged for two years by Marcellus by land and sea, the fortress finally fell in 212 BC when Roman escaladers exploited an uncrested wall during the festival of Artemis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Syracuse was the crown of Sicily, guarded by the cliffs of Epipolae and Archimedes' fearsome artillery engines! For two years Marcellus battered those colossal walls while our ships were smashed by rocks flung from heights. It took Roman patience, night scaling ladders, and iron discipline to conquer the greatest Greek stronghold on earth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Syracuse was our greatest hope for a Sicilian resurgence. With its deep harbors and impregnable Euryalus fortresses under Punic protection, Rome's naval supply lines would have withered. But pestilence struck our relieving camps, and Roman treachery breached the walls while the city celebrated. Its loss severed our link to Italy."
+    }
+  ],
+  "TextMappings": []
+}

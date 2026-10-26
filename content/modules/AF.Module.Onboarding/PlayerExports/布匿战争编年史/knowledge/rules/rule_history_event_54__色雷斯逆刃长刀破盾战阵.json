@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_54",
+  "Keywords": [
+    "色雷斯逆刃长刀破盾战阵",
+    "色雷斯逆刃长刀",
+    "伦菲亚斩马重器",
+    "两手握持破盾砍杀"
+  ],
+  "RagShortTexts": [
+    "来自罗多彼山脉与色雷斯平原的奥德里西亚战士擅长使用双刃逆弧重长刀——伦菲亚（Rhomphaia）。该武器长约两米，铁柄与弯刃各占一半，刀刃向内弯曲开锋。在战阵冲杀中，身强力壮的色雷斯勇士双手握持狂暴下"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "来自罗多彼山脉与色雷斯平原的奥德里西亚战士擅长使用双刃逆弧重长刀——伦菲亚（Rhomphaia）。该武器长约两米，铁柄与弯刃各占一半，刀刃向内弯曲开锋。在战阵冲杀中，身强力壮的色雷斯勇士双手握持狂暴下劈，不仅能轻易钩割战马马腿，更能直接越过高大盾牌边缘斩断后方握盾者的肩胛与脖颈，是巴尔干边疆最具威慑力的冷兵器。"
+    }
+  ],
+  "TextMappings": []
+}

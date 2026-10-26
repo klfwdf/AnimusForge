@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_45",
+  "Keywords": [
+    "塔兰托城邦背叛罗马引狼入室",
+    "塔兰托城邦引兵开门",
+    "菲勒梅诺斯夜开城门",
+    "大希腊首府投降迦太基"
+  ],
+  "RagShortTexts": [
+    "公元前212年，大希腊最繁荣的海港城市塔兰托内部亲希腊独立派发动政变。贵族青年菲勒梅诺斯以打猎归来为名，在暴风雨之夜引诱罗马卫兵开门，汉尼拔一万精兵趁虚杀入全歼罗马巡逻队占领全城。但坚毅的罗马守军残部"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前212年，大希腊最繁荣的海港城市塔兰托内部亲希腊独立派发动政变。贵族青年菲勒梅诺斯以打猎归来为名，在暴风雨之夜引诱罗马卫兵开门，汉尼拔一万精兵趁虚杀入全歼罗马巡逻队占领全城。但坚毅的罗马守军残部退守控扼深水港湾出口的悬崖卫城，封锁港口航道，汉尼拔不得不将城中战船用圆木滚轴拉过陆地运往外海以避开卫城火力。"
+    }
+  ],
+  "TextMappings": []
+}

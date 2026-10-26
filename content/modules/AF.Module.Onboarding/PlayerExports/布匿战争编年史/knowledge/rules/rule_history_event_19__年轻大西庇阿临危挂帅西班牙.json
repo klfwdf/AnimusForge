@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_19",
+  "Keywords": [
+    "年轻大西庇阿临危挂帅西班牙",
+    "大西庇阿临危受命",
+    "二十四岁特派统帅",
+    "无资历贵族打破常规"
+  ],
+  "RagShortTexts": [
+    "父叔在上贝蒂斯河战死后，西班牙战区沦为凶险死地，罗马资深元老无一人敢于毛遂自荐接任帅位。时年仅二十四岁、尚无执政官资历的普布利乌斯·科尔内利乌斯·西庇阿（日后的大西庇阿）挺身而出，在百人队公民大会上慷"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "父叔在上贝蒂斯河战死后，西班牙战区沦为凶险死地，罗马资深元老无一人敢于毛遂自荐接任帅位。时年仅二十四岁、尚无执政官资历的普布利乌斯·科尔内利乌斯·西庇阿（日后的大西庇阿）挺身而出，在百人队公民大会上慷慨陈词，全票当选西班牙特命资深执政官（Proconsul）。西庇阿率一万一千名生力军登陆恩波里亚，拉开了近代欧洲战术革命的帷幕。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_55",
+  "Keywords": [
+    "希腊萨里沙方阵长矛阵列与盲区",
+    "马其顿萨里沙方阵",
+    "六米巨型长矛矛墙",
+    "正面无敌侧翼脆弱"
+  ],
+  "RagShortTexts": [
+    "马其顿王国与希腊化列国正规步兵的核心战力在于由六米巨型萨里沙长矛（Sarissa）构筑的严密方阵。方阵正面层层伸出密如丛林的矛尖，骑兵与步兵皆无法从正面撄其锋芒。但方阵弱点同样致命：整体调头迟缓、侧翼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马其顿王国与希腊化列国正规步兵的核心战力在于由六米巨型萨里沙长矛（Sarissa）构筑的严密方阵。方阵正面层层伸出密如丛林的矛尖，骑兵与步兵皆无法从正面撄其锋芒。但方阵弱点同样致命：整体调头迟缓、侧翼极度脆弱，且在崎岖不平的山地泥沼中极易撕裂出间隙；一旦罗马剑盾步兵突入长矛盲区贴身搏杀，庞大方阵即沦为屠宰场。"
+    }
+  ],
+  "TextMappings": []
+}

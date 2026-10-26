@@ -1,0 +1,69 @@
+{
+  "Id": "rule_埃米利乌斯保卢斯家族与名门节操",
+  "Keywords": [
+    "埃米利乌斯保卢斯家族与名门节操",
+    "埃米利乌斯保卢斯",
+    "坎尼之死",
+    "宁死不退"
+  ],
+  "RagShortTexts": [
+    "埃米利乌斯·保卢斯家族是恪守古典节操与斯多葛清修的贵族世家；老保卢斯在坎尼拒绝同僚战马脱险拔剑战死，成为罗马贵族宁死不屈的道德丰碑。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃米利乌斯氏族（Gens Aemilia）是罗马共和国最为人敬仰的‘大贵族道德领袖’世家之一，而保卢斯分支（Paulli）更将古代罗马人崇尚的严肃、正直、清贫与视死如归的斯多葛式风骨发挥到了极致。公元前216年坎尼战役前夕，老执政官卢基乌斯·埃米利乌斯·保卢斯深知在开阔平原上汉尼拔重装骑兵的恐怖包抄优势，屡次极力劝阻民粹同僚瓦罗切勿冒进；然而瓦罗仗着当日指挥权孤注一掷下令全军总攻。当罗马八万大军陷入双重合围、屠杀不可逆转之际，身负重伤、满身血污的保卢斯坐在染血石块上喘息。军团司令官伦图卢斯策马赶到，翻身下马哭求执政官乘马逃离战场以保留有用之躯拯救城邦；保卢斯惨然一笑毅然回绝：‘伦图卢斯，快马回罗马报告元老院加固城防吧！我保卢斯绝不在全军覆灭后独活，更绝不在法庭上面临指责，去当一个将战败责任推给同僚的幸存者！’言毕拔出短剑迎向合围的迦太基骑兵壮烈殉国。其崇高节操甚至赢得了汉尼拔的肃然起敬并命人为其寻尸举行火葬，其子小保卢斯日后更在彼得那战役彻底终结马其顿王国，续写家族荣耀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "保卢斯执政官用他的壮烈殉职洗刷了瓦罗的耻辱！在坎尼的血泊中，他拒绝了战马，拔剑死战到最后一息。这才是真正的罗马贵族：他们会战败，但他们绝不会逃跑！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "保卢斯是一个令人肃然起敬的真正统帅。虽然他站在了我们的对立面，但当全军溃散时，他像一尊石雕一样战死在阵地上。汉尼拔元帅亲自为他搜寻遗体并举行了最高的军人火葬礼，这是敌手之间最纯粹的敬意！"
+    }
+  ],
+  "TextMappings": []
+}

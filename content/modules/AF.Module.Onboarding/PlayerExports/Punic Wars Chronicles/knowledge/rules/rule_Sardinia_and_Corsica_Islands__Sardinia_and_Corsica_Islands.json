@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Sardinia_and_Corsica_Islands",
+  "Keywords": [
+    "Sardinia_and_Corsica_Islands",
+    "Sardinia",
+    "Corsica",
+    "Tyrrhenian Islands"
+  ],
+  "RagShortTexts": [
+    "Sardinia and Corsica flank the Tyrrhenian Sea; Rome's opportunistic seizure of the islands in 238 BC cemented permanent Carthaginian enmity."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sardinia and Corsica form a natural barrier flanking the Tyrrhenian Sea, guarding sea lanes between Italy, Hispania, and North Africa. Rich in timber, grain, and argentiferous lead, Sardinia had been a Phoenician colony for centuries. In 238 BC, while Carthage was consumed by the Mercenary War, mutinous garrisons on Sardinia revolted and invited Roman intervention. Seizing the opportunity, Rome deployed troops to annex both islands and threatened a fresh war unless Carthage paid an additional 1,200 silver talents. Combined into Rome's second overseas province in 227 BC, this annexation cemented deep Carthaginian resentment and motivated the Barcid conquest of Spain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sardinia and Corsica flank our homeland; allowing them to harbor mutineers and pirates would have left our western shores defenseless. The garrison appealed to the Senate, and we restored order, adding essential grain and silver mines to the Republic's domain while securing Mare Tyrrhenum forever!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The theft of Sardinia and Corsica was unadulterated banditry. While our blood drenched Africa fighting savage mutineers, Rome extorted our islands at swordpoint. It was that treachery that filled Hannibal's veins with fire and led us to march across the Alps to make Rome bleed!"
+    }
+  ],
+  "TextMappings": []
+}

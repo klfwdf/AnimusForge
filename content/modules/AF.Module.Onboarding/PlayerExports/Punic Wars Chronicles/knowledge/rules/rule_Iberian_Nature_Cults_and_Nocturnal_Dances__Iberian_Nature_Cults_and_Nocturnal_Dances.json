@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Iberian_Nature_Cults_and_Nocturnal_Dances",
+  "Keywords": [
+    "Iberian_Nature_Cults_and_Nocturnal_Dances",
+    "Iberian Religion",
+    "Nocturnal Dances",
+    "Moon Deity"
+  ],
+  "RagShortTexts": [
+    "Iberian tribes worshipped an unnamed moon deity through nightlong village circle dances, consecrating stone bull berracos and binding warrior retinues through devotio death oaths."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Indigenous Iberian and Celtiberian spirituality was deeply anchored in animistic veneration of sheer mountain precipices, sacred thermal springs, and primeval oak forests. Geographer Strabo recorded that Celtiberians worshipped an unnamed lunar deity; during nights of the full moon, entire hill-fort clans gathered outside their stone oppida walls, carousing and performing ecstatic interlocking circle dances through the night until dawn. Across central Spain, monolithic granite bull and boar sculptures (verracos) were erected at crossroads and pastures to protect cattle herds from blight and invoke fertility. Central to martial life was the sacred devotio oath: warriors consecrated their souls before local deities to their chosen war-chief. If the leader fell in battle, divine law forbade retainers from surviving, compelling immediate ritual suicide with their own falcatas to accompany their lord into the next life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Spanish barbarians dance in frenzied circles beneath the full moon, chanting incantations that echo off mountain crags! Worse yet is their devotio madness: kill their chieftain, and his personal guard fight like rabid wolves, slashing until cut down rather than surrender!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "An Iberian warrior's spirit is pure as mountain spring water and unyielding as Toledo iron. When bound by devotio beneath the moon, their falcatas shielded Hamilcar and Hannibal through every Alpine blizzard. True brothers in arms!"
+    }
+  ],
+  "TextMappings": []
+}

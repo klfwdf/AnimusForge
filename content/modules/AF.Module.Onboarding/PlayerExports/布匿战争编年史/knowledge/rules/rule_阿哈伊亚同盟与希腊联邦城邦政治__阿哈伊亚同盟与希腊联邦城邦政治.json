@@ -1,0 +1,69 @@
+{
+  "Id": "rule_阿哈伊亚同盟与希腊联邦城邦政治",
+  "Keywords": [
+    "阿哈伊亚同盟与希腊联邦城邦政治",
+    "阿哈伊亚同盟",
+    "菲洛皮门",
+    "希腊最后的勇士"
+  ],
+  "RagShortTexts": [
+    "阿哈伊亚同盟创立了城邦平等自治的联邦议会制度，在名将菲洛皮门率领下推行重步兵军改并征服斯巴达，在罗马与马其顿两大巨兽夹缝中维系希腊独立尊严。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "位于伯罗奔尼撒半岛北部的阿哈伊亚同盟（Achaean League），是古典希腊城邦文明向联邦制代议政治转型的杰出成果。同盟由十二座城邦结成神圣邦联，设立轮值战略统帅（Strategos）与联邦公民大会，在‘自由、平等与城邦自治’旗帜下对抗外敌。在杰出名将菲洛皮门（Philopoemen，被誉为‘最后的希腊人’）领导下，同盟推行全面的重步兵方阵军事改革，并最终彻底征服了千百年来称霸半岛的宿敌斯巴达。在布匿战争与马其顿崛起期间，阿哈伊亚同盟在马其顿腓力五世与罗马共和国之间如履薄冰地周旋，企图维系希腊本土最后的尊严与独立，其民主联邦议会运作模式亦成为后世西方联邦政治理论的重要源泉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "菲洛皮门虽是可敬的统帅，但阿哈伊亚人那些没完没了的城邦争吵早已证明希腊无法实现自我统治。罗马将为这片土地带去永恒的秩序与法则，不服从者都将被短剑碾平！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "希腊城邦同盟本应是抗击罗马狂澜的海堤，可惜他们彼此勾心斗角、目光短浅，终将被罗马那口巨钟撞得粉身碎骨！如果他们早日联合汉尼拔，何至于沦落到今天这般田地！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_25",
+  "Keywords": [
+    "Carthaginian Evacuation of Hispania",
+    "Fall of Gades Final Base",
+    "Mago Barca Maritime Retreat",
+    "Hispania Roman Province Era"
+  ],
+  "RagShortTexts": [
+    "Following the crushing defeat at Ilipa, Mago Barca fell back to his last bastion at Gades (Cadiz). When the local citize"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Following the crushing defeat at Ilipa, Mago Barca fell back to his last bastion at Gades (Cadiz). When the local citizens closed their gates against him, Mago embarked his surviving troops on transports for the Balearic Islands. By late 206 BC, the vast overseas empire carved out by Hamilcar Barca and his sons over twenty-five years collapsed completely, leaving Hispania to be organized as two Roman provinces."
+    }
+  ],
+  "TextMappings": []
+}

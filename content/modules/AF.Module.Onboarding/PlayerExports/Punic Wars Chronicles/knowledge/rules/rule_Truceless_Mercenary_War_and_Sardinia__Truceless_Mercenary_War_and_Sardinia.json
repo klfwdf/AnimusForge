@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Truceless_Mercenary_War_and_Sardinia",
+  "Keywords": [
+    "Truceless_Mercenary_War_and_Sardinia",
+    "Mercenary War",
+    "Truceless War",
+    "Seizure of Sardinia and Corsica"
+  ],
+  "RagShortTexts": [
+    "Following the First Punic War, unpaid mercenaries erupted into the Truceless War; Rome opportunistically annexed Sardinia and Corsica during Carthage's exhaustion."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 241 BC, twenty thousand returning mercenaries mutinied over unpaid wages, led by the escaped slave Spendius and the Libyan Mathos. Joined by oppressed native Libyans, the rebellion grew to 100,000, besieging Carthage in the brutal 'Truceless War' (241–238 BC). Hamilcar Barca restored discipline and trapped 40,000 mutineers in the Gorge of the Saw, finally crushing the uprising. Yet as Carthage reeled from exhaustion, rebellious mercenary garrisons on Sardinia offered the island to Rome. Violating the treaty, Rome annexed Sardinia and Corsica and threatened war unless paid an additional 1,200 silver talents. This treacherous act stoked the embers of revenge that fueled the Second Punic War."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The garrisons of Sardinia begged for Roman protection! Were we to permit an island bordering the Tyrrhenian Sea to descend into anarchic piracy? Carthage proved incapable of governing its own mercenaries. Rome established law and order, and secured our western waters from predatory chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The rape of Sardinia was the basest treachery Rome ever committed! While our citizens bled against savage mutineers to save civilization, Rome threatened war to steal Sardinia, Corsica, and twelve hundred talents in extortion. It was that bitter betrayal that led Hamilcar to bring young Hannibal before the altar of Baal, swearing eternal hatred against Rome!"
+    }
+  ],
+  "TextMappings": []
+}

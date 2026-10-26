@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Plains_of_Zama_Battleground",
+  "Keywords": [
+    "Plains_of_Zama_Battleground",
+    "Plains of Zama",
+    "Zama Regia",
+    "Naraggara"
+  ],
+  "RagShortTexts": [
+    "The arid, featureless Plains of Zama in southwestern Tunisia provided the flat arena where Scipio and Hannibal fought the decisive clash of 202 BC."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Plains of Zama (near ancient Naraggara in southwestern Tunisia) lie roughly 80 miles inland from Carthage. Arid, open, and virtually devoid of terrain obstacles or water sources, this expansive steppe was a natural arena for sweeping cavalry maneuvers and open infantry clashes. In October 202 BC, after a legendary personal parley between Scipio and Hannibal failed to secure peace, their armies clashed upon the dry plain. Scipio utilized the open ground to direct elephant charges through maniple lanes, while Masinissa's cavalry exploited the flat terrain to execute the rear charge that dismantled Hannibal's army and ended Carthage's imperial era."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The scorched earth of Zama was the arena of Rome's greatest triumph! No Trasimene fog or Trebia riverbanks could shield Hannibal on that flat plain. Scipio outmaneuvered his elephants and crushed his veterans in fair, open combat, securing the western world for Rome!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dust of Zama choked the last breath from Carthage. Without cavalry parity, fighting on an open, featureless plain was a desperate gambit forced upon Hannibal. Twenty thousand of our brave veterans fell where they stood on that scorched earth, sealing the tragedy of our homeland."
+    }
+  ],
+  "TextMappings": []
+}

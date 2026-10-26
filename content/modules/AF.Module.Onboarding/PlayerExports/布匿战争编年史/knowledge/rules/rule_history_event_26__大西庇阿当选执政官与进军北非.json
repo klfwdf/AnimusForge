@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_26",
+  "Keywords": [
+    "大西庇阿当选执政官与进军北非",
+    "大西庇阿当选执政官",
+    "元老院费边派阻挠",
+    "西西里志愿军团整编"
+  ],
+  "RagShortTexts": [
+    "公元前205年，三十岁的大西庇阿载誉归国全票当选执政官，主张直接将战火引至北非迦太基城下。元老院内以老费边为首的保守派对此强烈阻挠，拒绝拨付正规军团与军费。西庇阿凭借极高民望号召了七千名志愿老兵与意大"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前205年，三十岁的大西庇阿载誉归国全票当选执政官，主张直接将战火引至北非迦太基城下。元老院内以老费边为首的保守派对此强烈阻挠，拒绝拨付正规军团与军费。西庇阿凭借极高民望号召了七千名志愿老兵与意大利各城邦捐赠的三十艘战舰，前往西西里将当年坎尼会战流放幸存的第五、第六惩戒军团整编为无敌精锐，磨刀霍霍直指突尼斯。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_扎马平原与内陆荒漠边缘",
+  "Keywords": [
+    "扎马平原与内陆荒漠边缘",
+    "扎马平原",
+    "扎马战场",
+    "纳拉加拉"
+  ],
+  "RagShortTexts": [
+    "扎马平原地处突尼斯西南内陆平坦干旱草原，无险可守，是前202年大西庇阿与汉尼拔进行帝国终极决战的旷野战场。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "扎马平原（Plains of Zama，靠近纳拉加拉与扎马雷吉亚）位于今突尼斯内陆西南部，是一片远离海岸近一百五十公里的辽阔开阔地带。这里植被稀疏，气候干燥炽热，地势平坦起伏平缓，水源极其珍贵而稀缺，没有任何可以依托的山岩、河流或密林天险。正是这种毫无掩护的空旷地形，使其成为大规模重装方阵、战象集群与高速骑兵大迂回决战的天然角斗场。公元前202年10月，退无可退的汉尼拔与步步紧逼的大西庇阿在此相遇。战前两位古典时代最伟大的统帅曾在此平原中央举行了一对一的历史性帐前会晤；会晤破裂后，八万余名将士在此展开生死搏杀。西庇阿利用宽阔平原的开阔度巧妙疏导战象，马西尼萨的努米底亚骑兵则利用毫无遮拦的侧翼彻底包抄，在这片干旱红土上为第二次布匿战争画上了终极句号。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "扎马的红土平原是见证罗马荣耀登顶的祭坛！在那里，没有汉尼拔赖以设伏的大雾与沼泽，只有烈日与平整的泥土！大西庇阿堂堂正正地在旷野上击败了汉尼拔的战象与老兵。自那一天起，扎马之名永远镌刻在罗马的凯旋门上！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "扎马平原的荒风带走了迦太基最后的一丝生机。汉尼拔将军手头缺乏战马，在空旷无遮拦的平原上，步兵面对两翼迂回的骑兵几乎是致命的劣势。两万名百战老兵倒在扎马的尘土中，他们的鲜血渗入干燥的非洲平原，七百年的海洋霸权在此落下了沉痛的大幕。"
+    }
+  ],
+  "TextMappings": []
+}

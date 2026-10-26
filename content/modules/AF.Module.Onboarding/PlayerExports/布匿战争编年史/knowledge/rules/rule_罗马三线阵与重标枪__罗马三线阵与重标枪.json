@@ -1,0 +1,69 @@
+{
+  "Id": "rule_罗马三线阵与重标枪",
+  "Keywords": [
+    "罗马三线阵与重标枪",
+    "三线阵",
+    "青年兵",
+    "壮年兵"
+  ],
+  "RagShortTexts": [
+    "波利比乌斯时代的罗马军团实行由青年兵、壮年兵、后备兵组成的三线阵，配备具有‘软铁弯折防反掷’特性的重标枪（Pilum），是罗马步兵的核心战斗哲学。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前三世纪的罗马军团采用精巧的‘三线中队阵’（Manipular Phalanx）：第一线为手持大盾与短剑的热血‘青年兵’（Hastati）；第二线为正值盛年、装备精良的‘壮年兵’（Principes）；第三线则是手持长矛单膝跪地、作为最终中流砥柱的精锐老兵‘后备兵’（Triarii）。罗马谚语‘事情已经到了后备兵的地步’（Res ad triarios venit）即形容局势万分危急。每个军团步兵标配两支重标枪（Pilum），标枪前端装有约一米长的细长铁杆。罗马工匠故意采用未经淬火的软铁制作颈部或使用易断木销连接：标枪一旦刺穿敌人的盾牌或甲胄，细长的铁杆在惯性作用下立即弯折变形，敌人既无法将弯曲沉重的标枪从盾牌上拔下，也绝无可能将其捡起反掷回罗马阵中，被迫在近战前夕丢弃盾牌。当敌人因标枪雨而阵型大乱时，罗马军团随即拔出短剑，发动如同排山倒海般的齐步盾推肉搏冲锋。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "三线阵是罗马祖宗智慧的结晶！后备兵的红缨是军团不可动摇的底线。当我们的重标枪呼啸而出、死死咬住蛮族的高卢长盾时，他们的防线就已经瓦解了。丢掉盾牌的敌人面对罗马短剑与大盾的推挤，除了被切开肚腹别无出路！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人的步兵如同一座座移动的石墙，他们那些弯曲的软铁标枪确实阴险狠辣，能废掉我们伊比利亚武士的盾牌。但汉尼拔统帅早已看穿了这种死板阵型的致命弱点：只要用西班牙和高卢步兵吸住他们的三线主力，再让努米底亚骑兵抄截包抄他们的侧翼与后背，他们的铜墙铁壁就会瞬间变成绞肉的囚笼！"
+    }
+  ],
+  "TextMappings": []
+}

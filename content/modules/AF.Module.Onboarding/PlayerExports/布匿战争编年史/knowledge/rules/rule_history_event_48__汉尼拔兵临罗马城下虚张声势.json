@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_48",
+  "Keywords": [
+    "汉尼拔兵临罗马城下虚张声势",
+    "汉尼拔兵临罗马城下",
+    "汉尼拔在门前惊呼",
+    "罗马市民泰然自若"
+  ],
+  "RagShortTexts": [
+    "公元前211年，为解卡普阿之围，汉尼拔行孤注一掷之险招：率骑兵急行军绕过罗马野战要塞，直接兵临罗马城城门科利纳门外三英里处，引发全城妇孺惊恐高呼‘汉尼拔兵临门前（Hannibal ante porta"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前211年，为解卡普阿之围，汉尼拔行孤注一掷之险招：率骑兵急行军绕过罗马野战要塞，直接兵临罗马城城门科利纳门外三英里处，引发全城妇孺惊恐高呼‘汉尼拔兵临门前（Hannibal ante portas）！’然而罗马元老院临危不乱，城内预备役军团闭门严守，甚至在市场上公开拍卖汉尼拔大营所踩踏的那块土地且毫无贬价成交。汉尼拔见罗马军民心坚如铁只得无奈退兵。"
+    }
+  ],
+  "TextMappings": []
+}

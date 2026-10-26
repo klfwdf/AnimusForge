@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Third_Punic_War",
+  "Keywords": [
+    "Third_Punic_War",
+    "Third Punic War",
+    "Fall of Carthage",
+    "Third_Punic_War Destruction of Carthage"
+  ],
+  "RagShortTexts": [
+    "The Third Punic War (149–146 BC) was a deliberate Roman war of annihilation, ending in the complete destruction and razing of Carthage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Third Punic War (149–146 BC) was a calculated war of annihilation. Despite losing its empire, Carthage's fertile agriculture and commerce allowed it to repay its 10,000-talent indemnity rapidly. Terrified by Punic resurgence, Roman hardliners led by Cato the Elder encouraged King Masinissa of Numidia to encroach on Punic lands. When Carthage defended itself in 150 BC, Rome cited a treaty violation and declared war with 80,000 troops. Even after Carthage surrendered 200,000 suits of armor, weapons, and 300 noble hostages, Rome issued an ultimatum: Carthage must be demolished, and the population relocated ten miles inland. Refusing death by decree, the citizenry bolted their gates in a desperate three-year defense under Scipio Aemilianus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Punic treachery was in their very blood! Even defeated, their gold regenerated and they unlawfully took up arms against our faithful ally Masinissa. The Senate acted with necessary finality: so long as Carthage stood beside the sea, Rome was never truly safe. Its complete erasure was the prerequisite for eternal peace!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Third War was premeditated murder. We disarmed ourselves, paid every grain of silver, and submitted to Roman arbitration while Numidian vultures tore at our borders. When we finally defended our hearths, Rome demanded we tear down our ancestral city and starve in the desert. We forged weapons from our chains and fought to the last stone!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Battle_of_Panormus_and_Elephant_Rout",
+  "Keywords": [
+    "Battle_of_Panormus_and_Elephant_Rout",
+    "Battle of Panormus",
+    "Metellus",
+    "Elephant Rout"
+  ],
+  "RagShortTexts": [
+    "At Panormus (250 BC), Consul Metellus baited 140 Carthaginian war elephants into concealed trenches; panicked by javelins, the elephants trampled their own army, dispelling Rome's elephant dread."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The coastal stronghold of Panormus (modern Palermo) was Carthage's primary naval port in northern Sicily. In 250 BC, Carthaginian general Hasdrubal advanced with 30,000 troops and 140 war elephants to recapture the fortress. Roman Proconsul Lucius Caecilius Metellus devised an ingenious tactical trap: knowing legionaries feared open elephant charges, Metellus ordered deep trenches excavated just outside the city walls. He stationed light skirmishers (velites) to provoke the vanguard and rapidly fall back into the ditch. The Carthaginian mahouts charged recklessly; at the lip of the deep trench, the towering elephants halted in confusion or tumbled into the ditch. From battlements and trench banks, thousands of barbed pila and burning arrows rained upon the beasts. Screaming in agony, the maddened elephants spun around and stampeded backward directly into their own tightly packed infantry ranks, crushing Celtic and Iberian lines beneath massive feet. Metellus led legions through city gates in a devastating flank counter-attack, routing the Punic army and capturing over a hundred elephants, which were paraded in the Circus Maximus to permanently cure Romans of elephant phobia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Consul Metellus proved that a single spade is mightier than a hundred war elephants! We channeled their trumpeting beasts into the ditches of Panormus, watched them gore their own masters, and paraded the survivors through the Forum. From that day forth, the elephant ceased to terrify Roman hearts!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The disaster at Panormus was born of gross tactical arrogance! General Hasdrubal drove our priceless elephant corps straight into a prepared ditch without scouting. The maddened beasts trampled our own veteran ranks into red mud, forfeiting our strongest naval harbor on the northern coast through criminal negligence!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_雷古鲁斯非洲远征与克桑提普斯",
+  "Keywords": [
+    "雷古鲁斯非洲远征与克桑提普斯",
+    "雷古鲁斯",
+    "雷古鲁斯远征",
+    "克桑提普斯"
+  ],
+  "RagShortTexts": [
+    "执政官雷古鲁斯远征非洲取得初期胜利后提出严苛和约，迦太基聘请斯巴达统帅克桑提普斯在突尼斯战役用战象全歼罗军。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃克诺穆斯海战大捷后，罗马执政官马尔库斯·阿提利乌斯·雷古鲁斯率军在北非登陆，连战皆捷，俘获两万余敌众并逼近迦太基城。恐慌的迦太基元老院派遣使者乞和，但骄狂自大的雷古鲁斯开出了剥夺全部驻军、割让西西里与萨丁尼亚、全额承担军费的苛刻条件，遭迦太基绝望拒绝。随后迦太基重金聘请了经验丰富的斯巴达雇佣军统帅克桑提普斯。克桑提普斯彻底革新了迦太基军队的指挥与战术，将重装步兵部署在平坦开阔地，前置百头战象冲击罗马密集军团，两翼集中努米底亚精锐骑兵。在前255年的突尼斯战役（巴格拉达斯河战役）中，罗马军团遭到战象狂暴践踏与两翼合围，近一万两千人阵亡，雷古鲁斯本人受俘。这场惨败使罗马征服北非的企图破灭，战火再度转回西西里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "雷古鲁斯败于骄狂与异邦雇佣军的战象冲击，但他的名节重于泰山！当迦太基人放他回罗马劝降时，他却在元老院痛陈迦太基已至穷途末路、呼吁决死再战，随后信守誓言返回迦太基慷慨就义！罗马人可以战死、受俘，但绝不向腓尼基蛮族屈膝求存！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "雷古鲁斯的傲慢遭到了天谴！他以为迦太基已是囊中之物，竟狂妄地要我们自毁城墙与商船。斯巴达人克桑提普斯证明了职业将领的真正价值——在突尼斯平原上，我们的战象如移动的城墙碾碎了罗马人的方阵，骑兵如利刃切断了他们的后路。骄横的执政官最终成了我们的阶下囚！"
+    }
+  ],
+  "TextMappings": []
+}

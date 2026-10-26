@@ -1,0 +1,69 @@
+{
+  "Id": "rule_德鲁伊教团与橡树圣林秘仪",
+  "Keywords": [
+    "德鲁伊教团与橡树圣林秘仪",
+    "德鲁伊教团与橡树圣林秘仪德鲁伊",
+    "橡树圣林",
+    "黄金镰刀"
+  ],
+  "RagShortTexts": [
+    "高卢凯尔特社会的最高精神统治者是德鲁伊（Druids）祭司阶层，他们手持黄金镰刀在圣林收割槲寄生，执掌司法审判与战争调解，坚持不立文字口述相传二十年。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在古高卢与不列颠的凯尔特部族中，超然于世俗酋长之上的最高精神领袖是‘德鲁伊’（Druids）祭司阶层。德鲁伊不仅是连接神明与凡人的大祭司，更集部落法官、哲学家、医生、占星家与历史学家于一身。他们崇奉万物有灵信仰，视古老的‘橡树圣林’（Nemeton）为至高圣所；其最著名的宗教仪式是在满月之夜，白袍祭司手持神圣的‘黄金镰刀’爬上参天橡树，割取寄生其上的珍贵槲寄生（Mistletoe），用洁白的斗篷接住，配制解百毒的圣药并举行白牛祭献。德鲁伊掌握着至高无上的司法裁决权，有权对任何违抗法令的部落成员施以‘逐出神域’（Excommunication）的绝罚，令其成为人人唾弃的流浪弃儿。由于德鲁伊严令禁止将宗教与哲学教义记录于文字，学徒必须在深山洞穴与密林中隐修二十年，纯凭口述与吟诵背诵数以万计的古老诗篇，构成了凯尔特部族在罗马铁蹄下不可被外人刺探的文化核心。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那些在高卢橡树林里神神叨叨的白袍老头，不仅用法术和草药迷惑蛮族酋长，更暗中主持着可怖的活人笼祭！只要德鲁伊的密林还在向年轻人灌输反抗罗马的迷信，高卢就永远无法被真正征服。元老院的斧头迟早要把那些所谓的圣树全部砍光！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德鲁伊的智者深通天象与草木神灵之秘，他们的威望足以一声令下让两个拔刀相向的高卢部族瞬间收刀停战。汉尼拔将军深谙尊重高卢信仰的道理，正是得到了德鲁伊长老在圣林祭坛前的祝福与占卜，波伊人与因苏布雷人才会毫无保留地为我们的大军提供向导与粮草！"
+    }
+  ],
+  "TextMappings": []
+}

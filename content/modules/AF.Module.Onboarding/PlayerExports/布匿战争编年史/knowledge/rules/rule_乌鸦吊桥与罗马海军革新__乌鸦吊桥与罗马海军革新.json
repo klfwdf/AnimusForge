@@ -1,0 +1,69 @@
+{
+  "Id": "rule_乌鸦吊桥与罗马海军革新",
+  "Keywords": [
+    "乌鸦吊桥与罗马海军革新",
+    "乌鸦吊桥",
+    "乌鸦装置",
+    "米莱海战"
+  ],
+  "RagShortTexts": [
+    "乌鸦吊桥是罗马在第一次布匿战争中发明的带倒钩登船跳板，将传统撞击海战转化为罗马军团擅长的甲板接舷肉搏。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在第一次布匿战争前，罗马几乎没有远洋战舰和海战经验，而迦太基人则是世代纵横西地中海的航海巨匠。前260年，罗马以搁浅的迦太基五层橹战船为蓝本，在短短数月内砍伐木材建造了120艘战舰，并在战舰前甲板创新装设了‘乌鸦吊桥’（Corvus）。这是一种长约十一米、宽约一点二米的吊桥装置，前端底面装有沉重尖锐的铁喙（形如鸦喙）。海战交锋时，罗马战船一旦贴近敌船便松开滑轮绳索，沉重的吊桥猛然砸穿敌船甲板将其死死锁定，罗马重步兵随即沿着桥面蜂拥而上展开残酷的接舷肉搏。执政官盖乌斯·杜伊利乌斯在米莱海战中凭借这一杀器一举击沉捕获迦太基五十艘战船，打破了迦太基不可战胜的神话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "希腊人和腓尼基人总夸耀他们的冲撞战术和航海技艺，但罗马军团战士从不在波涛面前低头！乌鸦吊桥让大海变成了台伯河畔的平原！当那根沉重的铁喙砸穿迦太基的甲板时，他们的水手在我们的短剑与大盾面前只能吓得魂飞魄散！米莱海战的胜利圆柱就树立在罗马广场上！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "乌鸦吊桥是粗鲁农夫用笨重铁木对航海艺术的野蛮践踏！它破坏了船只的重心与稳定性，在风暴中多次葬送了罗马自己的船员。然而在近战交锋中，它确实令我们擅长划桨与撞击的水手措手不及。但那种笨重怪物在恶劣海况下纯属自杀，罗马后来也不得不将其彻底废弃。"
+    }
+  ],
+  "TextMappings": []
+}

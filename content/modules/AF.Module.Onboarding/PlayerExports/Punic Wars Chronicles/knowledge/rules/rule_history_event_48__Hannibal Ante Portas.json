@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_48",
+  "Keywords": [
+    "Hannibal Ante Portas",
+    "Hannibal Rides to the Gates",
+    "Roman Unflinching Fortitude",
+    "Auctioning Land Under Punic Tents"
+  ],
+  "RagShortTexts": [
+    "In a daring ploy to draw Roman forces away from besieged Capua in 211 BC, Hannibal staged a lightning forced march direc"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In a daring ploy to draw Roman forces away from besieged Capua in 211 BC, Hannibal staged a lightning forced march directly to the walls of Rome, riding within sight of the Colline Gate and sparking panic ('Hannibal ante portas!'). Demonstrating legendary coolness, the Roman Senate refused to lift the siege of Capua, and held an auction in the Forum where the very plot of land upon which Hannibal's tent stood was purchased at full price."
+    }
+  ],
+  "TextMappings": []
+}

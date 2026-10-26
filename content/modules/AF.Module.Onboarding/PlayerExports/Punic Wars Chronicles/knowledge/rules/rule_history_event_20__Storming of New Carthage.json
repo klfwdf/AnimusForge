@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_20",
+  "Keywords": [
+    "Storming of New Carthage",
+    "Assault on New Carthage",
+    "Low Tide Lagoon Wading",
+    "Punic Treasure Base Captured"
+  ],
+  "RagShortTexts": [
+    "In 209 BC, Scipio bypassed Carthaginian field armies to launch a lightning strike against their Iberian capital, Carthag"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 209 BC, Scipio bypassed Carthaginian field armies to launch a lightning strike against their Iberian capital, Carthago Nova. Discovering that tidal shifts drained the adjacent lagoon, Scipio led five hundred legionaries wading through waist-deep waters to scale unguarded seawalls while assaulting the land gates. Capturing Carthage's military depots, silver bullion, and hostages, Scipio treated Iberian captives with magnanimity, winning their allegiance."
+    }
+  ],
+  "TextMappings": []
+}

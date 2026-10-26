@@ -1,0 +1,69 @@
+{
+  "Id": "rule_凯尔特德鲁伊白橡树与神圣人祭传说",
+  "Keywords": [
+    "凯尔特德鲁伊白橡树与神圣人祭传说",
+    "德鲁伊",
+    "神圣橡树林",
+    "槲寄生"
+  ],
+  "RagShortTexts": [
+    "德鲁伊掌握高卢司法、宗教与神谕解释权，身披白袍以金镰收割槲寄生；信奉灵魂不灭转世，并在国难关头以柳条巨人焚烧战俘祭祀战神。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在高卢与不列颠凯尔特社会中，拥有超然至高权威的不是部族首领，而是‘知晓橡树智识之人’——德鲁伊（Druids）。德鲁伊阶层耗费二十年口口相传浩瀚神学与天文奥秘，严禁将经文诉诸文字。他们既是侍奉神明的大祭司，又是裁决全族仇杀诉讼的大法官，任何拒不遵从德鲁伊裁决的部落将被革除教门，沦为众叛亲离的贱民。德鲁伊在幽深密林的神圣白橡树林（Nemeton）中举行祭祀：在特定月相之日，白袍大祭司攀上百年古橡树，用一把闪耀的金镰刀割下寄生其上的珍贵槲寄生（Mistletoe），落在洁白斗篷中制成解百毒的神药。凯尔特战士之所以冲锋陷阵视死如归，核心在于德鲁伊教导的‘灵魂永生转世’（Metempsychosis）信条——死亡仅仅是一场漫长旅程的更衣换宿。在遭遇灭顶天灾或面临外敌亡族入侵时，德鲁伊会在空地上编织高达数丈的巨型柳条假人（Wicker Man），将活着的牛羊与死硬战俘关入其中点火焚化，作为献给雷神塔拉尼斯与战神埃苏斯的终极牺牲。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德尔菲与罗马的诸神绝不会容忍德鲁伊这种在暗黑森林里用活人烧柳条人的野蛮巫术！那些高卢祭司不仅煽动部落反抗军团，还用转世谎言把蛮子变成了不知恐惧的疯狗。元老院迟早要把那些该死的橡树林全部砍光！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德鲁伊长老在橡树林间唱响的神圣祷歌令人心魄震撼。高卢战士正是因为坚信灵魂永生，才能在汉尼拔大军最前方直面罗马鹰旗舍身肉搏！他们的信仰配得上纯金项圈与麦尔卡特的敬意！"
+    }
+  ],
+  "TextMappings": []
+}

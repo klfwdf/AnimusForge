@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_03",
+  "Keywords": [
+    "提契诺河骑兵前哨战",
+    "提契诺河前哨战",
+    "老西庇阿负伤",
+    "独骑救父传奇"
+  ],
+  "RagShortTexts": [
+    "公元前218年11月，刚翻过阿尔卑斯山的汉尼拔骑兵与回师波河平原的罗马执政官普布利乌斯·科尔内利乌斯·西庇阿（老西庇阿）在提契诺河遭遇。汉尼拔以灵活无匹的努米底亚轻骑兵包抄罗马重装骑兵两翼并迅速打崩罗"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年11月，刚翻过阿尔卑斯山的汉尼拔骑兵与回师波河平原的罗马执政官普布利乌斯·科尔内利乌斯·西庇阿（老西庇阿）在提契诺河遭遇。汉尼拔以灵活无匹的努米底亚轻骑兵包抄罗马重装骑兵两翼并迅速打崩罗马散兵。老西庇阿身负重伤，年仅十七岁的大西庇阿单枪匹马杀入重围救出父亲，首立奇功。"
+    }
+  ],
+  "TextMappings": []
+}

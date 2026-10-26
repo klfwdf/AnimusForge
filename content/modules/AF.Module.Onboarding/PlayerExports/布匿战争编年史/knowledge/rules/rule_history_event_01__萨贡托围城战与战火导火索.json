@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_01",
+  "Keywords": [
+    "萨贡托围城战与战火导火索",
+    "萨贡托围城战",
+    "萨贡托陷落",
+    "埃布罗河南岸盟约"
+  ],
+  "RagShortTexts": [
+    "公元前219年，汉尼拔率迦太基大军对埃布罗河南岸的希腊化自由城邦萨贡托发动残酷围城。该城虽在埃布罗河南岸，却早先与罗马缔结保护同盟。萨贡托军民坚守长达八个月，最终城破陷落，财货尽被充作军费。罗马元老院"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前219年，汉尼拔率迦太基大军对埃布罗河南岸的希腊化自由城邦萨贡托发动残酷围城。该城虽在埃布罗河南岸，却早先与罗马缔结保护同盟。萨贡托军民坚守长达八个月，最终城破陷落，财货尽被充作军费。罗马元老院以此认定迦太基践踏条约底线，正式向迦太基百人议会下达最后通牒并宣战，拉开了第二次布匿战争的序幕。"
+    }
+  ],
+  "TextMappings": []
+}

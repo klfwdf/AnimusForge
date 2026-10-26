@@ -1,0 +1,69 @@
+{
+  "Id": "rule_安息回马箭与筋角复合反曲弓",
+  "Keywords": [
+    "安息回马箭与筋角复合反曲弓",
+    "回马箭",
+    "帕提亚回射",
+    "复合反曲弓"
+  ],
+  "RagShortTexts": [
+    "草原游牧弓骑兵掌握了绝技‘回马箭’（Parthian Shot），并配备由水牛角、木芯与牛筋多层胶合的复合反曲弓，在全速疾驰溃逃中180度转身反杀紧追的重骑兵。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在中亚草原与伊朗高原边缘，塞迦与早期安息骑兵将机动骑射战术升华到了冷兵器时代的顶峰，其终极绝技即是名垂战史的‘回马箭’（Parthian Shot）。游牧骑兵并不配戴重甲，而是依靠无与伦比的骑术与筋角复合反曲弓（Composite Recurve Bow）。这种弓由木质核心为骨、弓背覆以强韧牛筋拉伸、弓腹贴以坚硬水牛角压缩，用鱼鳔熬制的高强鱼胶压合数月而成，形体短小轻便却蓄能惊人，搭配拇指戴有骨质扳指的‘蒙古撒放法’，能在数十步内射穿锁子甲。当交战不利或诱敌时，弓骑兵会以极惊惶的姿态调头全速奔逃；追击的敌方重骑兵往往自以为胜券在握而放马狂奔追击。就在战马全速奔驰之时，塞迦骑手能在颠簸的马背上腰腹发力将上半身180度完全扭向后方，双脚扣紧马腹悬空射出致命冷箭。追击者面对迎面飞来的无声重箭根本毫无戒备，前锋骑手接连被穿心坠马，引发追兵自相踩踏混乱，弓骑兵随即呼啸掉头进行彻底的围歼围杀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "东方骑兵那种在马屁股后面倒着射箭的把戏极其阴险！他们假装逃跑引诱追兵，等你骑兵队形跑散了，转过身来就是一记毒箭。军团骑兵必须死守纪律：遇到逃跑的草原游牧弓手绝对严禁脱离步兵盾墙单骑追击，违令者斩！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "回马箭是马背民族献给兵法殿堂的杰作！那一记在绝境中反身射出的穿心利箭，把骄傲的追击者直接送进了地狱。汉尼拔麾下的努米底亚骑手虽然使用标枪，但其佯败战术与草原的回马箭异曲同工——善战者从不以死板力量取胜，欺骗与速度才是战神的真谛！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_乌提卡古城与巴格拉达斯河口",
+  "Keywords": [
+    "乌提卡古城与巴格拉达斯河口",
+    "乌提卡",
+    "巴格拉达斯河",
+    "北非第一古城"
+  ],
+  "RagShortTexts": [
+    "乌提卡建城早于迦太基近三百年，位于巴格拉达斯河口，是大西庇阿远征北非的关键战役要地，后成为罗马阿非利加行省首府。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "乌提卡（Utica，意为‘古城’）坐落于北非巴格拉达斯河（今迈杰尔达河）入海口西北侧，距迦太基城仅三十余公里。乌提卡由推罗腓尼基人在公元前1100年左右建立，其建城历史比迦太基还要早近三个世纪，长期享有高度自主权与深水避风良港。巴格拉达斯河冲积平原极其肥沃，出产北非最上等的谷物。第二次布匿战争末期（前204年），大西庇阿大军登陆北非后首要目标便是围攻乌提卡，以此作为扎根非洲的大本营；在此期间西庇阿夜袭火烧了驻扎附近的迦太基与西法克斯联军大营。在第三次布匿战争爆发前夕，精明的乌提卡人预见迦太基在劫难逃，率先脱离迦太基同盟向罗马无条件献城。作为奖赏，迦太基城被夷为平地后，罗马元老院将乌提卡设立为新建的‘罗马阿非利加行省’的首府与总督驻地，使其在罗马帝国时代繁荣数百年。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "乌提卡深明大义，在关键时刻做出了明智的决断！当迦太基沉迷于抵抗时，乌提卡向罗马军团敞开了大门。大西庇阿在它的城墙下赢得了非洲战局的立足点。迦太基化作尘土后，乌提卡成为了阿非利加行省高贵繁华的首府，罗马的法律在此公平施行！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "乌提卡自诩是比迦太基更古老的腓尼基母邦，骨子里却充满了嫉妒与背叛！大西庇阿在乌提卡城外利用卑劣的夜袭火烧了我们的军营，而第三次战争中乌提卡更是带头叛变向罗马献媚求荣。他们出卖同胞换来了所谓行省首府的施舍，那是浸泡在迦太基血泪里的耻辱王冠！"
+    }
+  ],
+  "TextMappings": []
+}

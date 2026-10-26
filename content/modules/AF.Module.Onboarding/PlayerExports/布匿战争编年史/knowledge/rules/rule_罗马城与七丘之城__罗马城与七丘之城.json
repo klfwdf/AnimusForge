@@ -1,0 +1,69 @@
+{
+  "Id": "rule_罗马城与七丘之城",
+  "Keywords": [
+    "罗马城与七丘之城",
+    "罗马城",
+    "七丘之城",
+    "台伯河"
+  ],
+  "RagShortTexts": [
+    "罗马城依台伯河畔的七座山丘而建，是罗马共和国的政治、宗教与公民军团出征核心，在坎尼惨败后展现了坚不可摧的防守意志。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马城坐落于意大利中部台伯河下游平原，由著名的七座山丘（帕拉蒂尼、卡皮托尔、阿文提诺、埃斯奎利诺、维米那勒、奎里纳尔与西里欧山）构筑而成。自塞维乌斯·图利乌斯修筑石造城墙以来，罗马便形成了由卡皮托尔山卫城、帕拉蒂尼贵族区以及元老院与民众大会所在的罗马广场构成的政治与宗教中枢。布匿战争期间，罗马城不仅是调度数十万军团兵源与赋税的战略中枢，更是全共和国公民意志的图腾。在特拉西梅诺湖与坎尼会战全军覆没的绝境下，罗马全城闭门坚守、禁止当街啼哭，坚决拒绝向汉尼拔媾和求存。前211年汉尼拔兵临城下（‘汉尼拔在城门前！’Hannibal ad portas），罗马人在绝境中甚至拍卖汉尼拔军营脚下的地产，且拍卖价分文未降，展现了古罗马人近乎冷酷的制度自信与坚忍韧性。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "七丘之城是朱庇特在人间的圣居！台伯河的水流见证了罗慕路斯筑起的第一道土垄，塞维乌斯的石墙庇佑了数百年共和国的自由。汉尼拔曾带着战象逼近到三里之外的科利纳门，但他面对的是一座哪怕老幼妇孺都准备拿起短剑死战的钢铁之城！连他扎营的土地在我们的广场上都以原价被抢购一空！七丘永立，罗马永存！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马城是吞噬地中海万国财富的贪婪巨兽。七座山丘不过是强盗筑起的泥石堡垒，但不可否认，那里的泥土里浸透着可怕的顽固。坎尼战役后马哈巴尔曾劝汉尼拔将军直捣罗马，但汉尼拔清楚，那座城市拥有坚固的双层城墙与数万绝望的民兵，缺乏重型攻城器械的远征军若盲目强攻，只会把胜利葬送在台伯河畔的泥泞里。"
+    }
+  ],
+  "TextMappings": []
+}

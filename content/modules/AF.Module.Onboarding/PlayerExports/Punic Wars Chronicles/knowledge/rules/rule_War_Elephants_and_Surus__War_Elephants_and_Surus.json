@@ -1,0 +1,69 @@
+{
+  "Id": "rule_War_Elephants_and_Surus",
+  "Keywords": [
+    "War_Elephants_and_Surus",
+    "War_Elephants_and_Surus War Elephants",
+    "North African Forest Elephant",
+    "Surus"
+  ],
+  "RagShortTexts": [
+    "Hannibal's 37 war elephants were mostly small North African forest elephants, with the sole exception of Surus ('The Syrian'), a giant one-tusked Asian elephant that served as Hannibal's personal mount and the only survivor of the Alpine march."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the classical Mediterranean, war elephants used by Carthage were not modern African bush giants, but the extinct North African forest elephant (Loxodonta cyclotis pharaoensis, standing around 2.5 meters tall). These smaller elephants did not carry wooden fighting towers but were ridden bareback by a single mahout armed with javelins. When Hannibal crossed the Alps in 218 BC, he took 37 elephants, suffering catastrophic casualties on the icy cliffs. Hannibal's personal mount, however, was a massive Syrian or Asian elephant named Surus ('The Syrian'), which possessed only a single tusk. After losing an eye to infection in the flooded Arno marshes, Hannibal directed his troops from atop Surus' back. While elephants exerted immense psychological terror against cavalry and infantry unfamiliar with their trumpeting, they were notoriously vulnerable to piercing trumpets, squealing pigs, and concentrated javelins; once panicked, they frequently trampled their own infantry lines, forcing mahouts to carry an iron chisel and mallet to drive into the base of the skull if a beast became uncontrollable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Punic monsters are terrifying only to raw conscripts! Once our maniples open lanes for them to rush through, our velites will blind them with heavy pila and deafen them with trumpets! A panicked elephant turns upon its own lines faster than a fleeing mercenary, crushing the Carthaginians under their own terrified beasts!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Surus and our sacred elephants are the living thunderbolts of Baal! When their footsteps shake the valley, the Roman cavalry horses scatter in panic. Yet our mahouts must never loosen their grip on the iron chisel—in the biting snows of the Alps and the stinking rot of the Arno marshes, these noble beasts die like fragile children, and every loss tears at our commander's heart."
+    }
+  ],
+  "TextMappings": []
+}

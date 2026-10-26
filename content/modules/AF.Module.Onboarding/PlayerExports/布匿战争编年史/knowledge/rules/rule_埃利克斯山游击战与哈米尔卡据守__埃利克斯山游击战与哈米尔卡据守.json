@@ -1,0 +1,69 @@
+{
+  "Id": "rule_埃利克斯山游击战与哈米尔卡据守",
+  "Keywords": [
+    "埃利克斯山游击战与哈米尔卡据守",
+    "埃利克斯山",
+    "哈米尔卡巴卡",
+    "游击战"
+  ],
+  "RagShortTexts": [
+    "在第一次布匿战争末期，汉尼拔之父哈米尔卡·巴卡孤军进驻埃利克斯山绝壁要塞，凭借山地突击与夜袭游击战与数万罗马军团相持三年未尝一败，铸就巴卡传奇。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在第一次布匿战争走向尾声的艰难岁月里（前247—前241年），迦太基在西西里陆海战场全面受挫，唯有一位青年统帅在悬崖绝壁间谱写了不败的神话——汉尼拔之父哈米尔卡·巴卡（Hamilcar Barca）。公元前244年，哈米尔卡率领一支缺乏本土增援的孤军，神出鬼没地夺取了位于利利卑东北部的天然绝壁要塞埃利克斯山（Mount Eryx，今埃里切）。这座圣山高达七百余米，顶部坐落着著名的阿芙洛狄忒/阿斯塔特圣殿，下临崎岖的盘山峭壁。哈米尔卡在此构筑了古代战争史上绝无仅有的奇特态势：他在山腰与山顶建立防御工事，将驻军紧紧夹在山下罗马军营与山顶罗马卫所之间。在长达三年的时间里，哈米尔卡完全摒弃正面决战，而是发明了精湛的山地特种突击战：利用浓雾与暗夜组织小队精锐顺绳索攀崖而下，昼夜不停地袭扰罗马运粮队、焚毁攻城营寨、猎杀落单岗哨，随后如鬼魅般撤回悬崖绝壁。罗马军团虽以重兵将其团团包围，却在此三年间寸步难进、伤亡惨重。直到公元前241年迦太基政府因海战战败正式求和，哈米尔卡才率领未尝一败的战士昂首走下埃利克斯山，带着对罗马刺骨的仇恨播下了第二次布匿战争的火种。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "哈米尔卡·巴卡是我们在西西里遇到过最阴魂不散的魔鬼！在埃利克斯山那三年里，罗马军团天天提心吊胆，不知从哪处岩石背后就会飞出一柄伊比利亚弯刀。他的雇佣兵明明被我们围在石山顶上断了粮，却像毒蛇一样咬得罗马满手鲜血。那个家族骨子里流淌的都是对罗马的淬毒仇恨！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃利克斯山的悬崖见证了‘闪电’（Barca）之名的永恒荣耀！当迦太基国内懦弱的议会几乎放弃西西里时，哈米尔卡元帅带着一把孤剑在绝顶上把罗马军团死死钉了整整三年！他没有在战场上输掉一寸土地，是后方的议和条约背叛了这位百战不败的英雄！"
+    }
+  ],
+  "TextMappings": []
+}

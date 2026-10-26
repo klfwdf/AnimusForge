@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Runes_and_Germanic_Seeresses",
+  "Keywords": [
+    "Runes_and_Germanic_Seeresses",
+    "Elder Futhark",
+    "Germanic Seeresses",
+    "Veleda"
+  ],
+  "RagShortTexts": [
+    "Germanic tribes revered female seeresses (like Veleda) who interpreted sacred Elder Futhark runes carved into fruit-tree twigs, commanding divine veto power over war and peace."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Roman historians noted with amazement that Germanic tribes believed women possessed an innate prophetic intuition (sanctum aliquid et providum), according supreme veneration to tribal seeresses (such as the famed Veleda). Living in secluded forest towers, these celibate prophetesses were consulted as living oracles whose pronouncements swayed tribal kings. Their primary divinatory art revolved around the sacred Runes (Elder Futhark): a priest or seeress felled a branch from a fruit-bearing tree, slicing it into thin slivers and carving magical runes stained with red dye or blood onto each piece. The lots were scattered at random onto a pristine white cloth; invoking the sky gods, the seeress lifted three twigs at random, interpreting the runes' orientation to prophesy battlefield fortunes. Furthermore, tribes maintained sacred, unyoked white horses in consecrated groves, recording their snorts and neighs as unvarnished omens from Wodanaz. No Germanic warlord dared cross a river or engage in battle against the seeress's prohibition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Germanic kings grovel before old witches babbling in dark bogs! They cast fruit twigs on blankets and listen to horse whinnies before deciding whether to raid. Roman steel answers neither to runes nor forest hags—a disciplined cohort will march right through their haunted groves and clear the timber!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The northern seeresses perceive currents of fate hidden from ordinary men! The carved runes upon their twigs whisper the wrath of forest gods. Hannibal never mocks the rites of foreign warriors; by honoring their seeresses, Carthage earns the fanatical allegiance of men who fear the gods far more than Roman swords!"
+    }
+  ],
+  "TextMappings": []
+}

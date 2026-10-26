@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Phoenician_Baal_Hammon_and_Tanit_Cult",
+  "Keywords": [
+    "Phoenician_Baal_Hammon_and_Tanit_Cult",
+    "Sign of Tanit",
+    "Melqart",
+    "Tophet of Carthage"
+  ],
+  "RagShortTexts": [
+    "Carthage revered the supreme celestial ruler Ba'al Hammon and lunar goddess Tanit, whose sign adorned ships and stelae, with desperate crisis sacrifices consecrated at the Tophet sanctuary."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Carthaginian religion preserved ancient Levantine Semitic traditions inherited from Phoenician Tyre. At the summit of the Punic pantheon ruled Ba'al Hammon (Lord of the Incense Altar, associated with sky and solar bounty) alongside his consort Tanit Pene-Ba'al (Face of Ba'al, heavenly patroness of fertility and moonlight). The sacred 'Sign of Tanit'—an anthropomorphic emblem of a triangle topped by a horizontal bar and sun disc—adorned Carthaginian coins, shields, and tomb stelae across the Mediterranean. Most solemn and contested was the sacred precinct of the Tophet at Salammbo: in moments of catastrophic existential peril, the oligarchic Senate and priests conducted mlk sacrifices to appease divine wrath, interring charred bone fragments in urns beneath votive limestone stelae. Melqart, patron god of Tyre and the Barcid house, guarded voyages beyond the Pillars of Hercules; nine-year-old Hannibal swore his eternal enmity before Melqart's smoking altar."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The gods of Carthage are monstrous fiends demanding human screams in smoking braziers! Roman legionaries do not barter babies for victory—we march with clean steel and pious hearts to cleanse this Punic abomination!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Roman hypocrites slander our holiest covenants with Ba'al Hammon and pure mother Tanit! What we sacrifice in piety to save our city from ruin, they shed in rivers of blood for greed. Tanit's crescent horns will witness Rome's downfall!"
+    }
+  ],
+  "TextMappings": []
+}

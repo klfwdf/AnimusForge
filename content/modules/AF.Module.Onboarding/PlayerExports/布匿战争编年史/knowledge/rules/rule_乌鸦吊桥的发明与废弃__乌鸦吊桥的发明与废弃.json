@@ -1,0 +1,69 @@
+{
+  "Id": "rule_乌鸦吊桥的发明与废弃",
+  "Keywords": [
+    "乌鸦吊桥的发明与废弃",
+    "乌鸦吊桥的发明与废弃乌鸦吊桥",
+    "科沃斯",
+    "罗马海军"
+  ],
+  "RagShortTexts": [
+    "乌鸦吊桥是罗马在第一次布匿战争为弥补海战劣势而发明的带倒刺跳板，后因严重破坏船体重心导致数次特大风暴海难，在第二次布匿战争前被彻底废弃。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在第一次布匿战争初期，拥有数百年航海传统的迦太基海军完全称霸地中海，罗马人甚至连像样的战舰设计图都没有。为了扬长避短，罗马工匠在五列桨战船的船首安装了被称为‘乌鸦吊桥’（Corvus）的器械：一根立柱上悬挂着长约十米、宽约一米二的木制吊桥，桥头底部装有沉重的尖锐铁喙。两船靠近时，吊桥猛然砸落在敌舰甲板上，铁喙凭借自重深深刺入敌舰木板将其牢牢锁死，罗马军团步兵随即可手持大盾鱼贯而入，将海战直接转变为他们最擅长的陆地肉搏战。凭借乌鸦吊桥，罗马在米拉海战与埃克诺穆斯角海战中连续痛击迦太基。然而，这一沉重的高耸器械极大恶化了战船的适航性与重心平衡，导致罗马舰队在卡马里纳风暴等灾难中连遭灭顶之灾，数十万水兵与数百艘战船沉入海底。到了公元前218年第二次布匿战争爆发时，罗马海军已积累了充足的海战经验，彻底拆除了致命的乌鸦吊桥，转而采用撞角与传统投掷飞爪战术。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们的父辈用乌鸦吊桥向骄傲的迦太基水手证明，大海属于敢于亮剑的罗马军团！然而尼普顿诸神也用风暴警示了我们：那具沉重的大鸟虽然啄碎了敌船，却也让数百艘战舰在狂风巨浪中翻覆。如今的罗马舰队不需要吊桥也能用冲角和跳帮梯将迦太基船打得粉碎！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人用笨拙的铁爪把高雅的海战变成了粗鲁的泥浆角力！那具吸血的乌鸦是海洋女神的诅咒——看看卡马里纳海岸上漂浮的十万罗马浮尸吧，那就是他们蔑视海洋法则的报应！到了今天，他们终于不敢再把那具自杀式的吊桥立在船头了！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_塞琉古银盾兵与多元总督制",
+  "Keywords": [
+    "塞琉古银盾兵与多元总督制",
+    "银盾兵",
+    "阿尔吉拉斯庇德斯",
+    "总督辖区"
+  ],
+  "RagShortTexts": [
+    "塞琉古帝国由多民族总督区（Satrapies）组成，其核心精锐是由一万名精选希腊步兵组成的王家近卫‘银盾兵’（Argyraspides），继承亚历山大最古老的军团荣耀。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塞琉古帝国统御着从爱琴海沿岸直至兴都库什山脉的广袤疆土，其国家体制建立在继承自阿契美尼德波斯帝国的‘行省总督制’（Satrapy）与希腊殖民军事定居点（Kleroi）的奇妙融合之上。各行省由文武大权集于一身的总督（Satrap）管辖，通过古老的‘王家大道’与驿站系统向叙利亚首都安条克城传递政令并运送贡赋。帝国陆军的王冠明珠是由整整一万人组成的王家禁卫步兵军团——‘银盾兵’（Argyraspides）：这一部队直接传承自亚历山大大帝远征印度时最精锐的同名老兵卫队。每名银盾兵皆是由叙利亚与小亚细亚希腊定居军户中世代甄选出的剽悍男儿，配发由白银精细镀面包裹的高光青铜大圆盾，身披精铸胸甲。在第四次叙利亚战争的拉菲亚会战中，安条克三世正是将这支闪烁着银光的万人长矛军团置于中央阵列，作为横扫托勒密埃及方阵的中流砥柱，彰显着帝国继承亚历山大正统法统的巍峨霸权。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塞琉古人喜欢把白银贴在盾牌上炫耀财富，但在罗马短剑的砍击下，银箔掉落后里面也不过是普通的木头和青铜！一个靠压榨波斯、叙利亚和巴比伦各族奴隶拼凑起来的总督帝国，只要中央军团在决战中崩溃，整个庞然大物就会像沙堆一样瞬间瓦解！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "银盾兵的整齐方阵闪烁着亚历山大远征的古老光芒！塞琉古帝国辽阔的总督疆土拥有取之不尽的赋税、银矿与兵源。如果大西庇阿企图在解决迦太基之后将魔爪伸向近东，安条克三世的一万银盾方阵将会给罗马人上一堂最残酷的希腊正统战争课！"
+    }
+  ],
+  "TextMappings": []
+}

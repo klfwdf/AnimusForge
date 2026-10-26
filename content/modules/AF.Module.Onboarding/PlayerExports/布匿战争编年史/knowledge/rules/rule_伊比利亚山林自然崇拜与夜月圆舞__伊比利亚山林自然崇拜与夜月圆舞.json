@@ -1,0 +1,69 @@
+{
+  "Id": "rule_伊比利亚山林自然崇拜与夜月圆舞",
+  "Keywords": [
+    "伊比利亚山林自然崇拜与夜月圆舞",
+    "伊比利亚信仰",
+    "夜月圆舞",
+    "公牛图腾"
+  ],
+  "RagShortTexts": [
+    "伊比利亚人崇拜野性公牛、幽深清泉与无名月神；每逢满月全村老少通宵踏足环舞，武士向首领立下‘生同袍、死必自殉’的死誓血契。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊比利亚半岛内陆与山地的土著信仰，深植于荒野险峰、清冽泉水与古老橡树林的自然万物有灵论中。斯特拉波在地理志中记载：伊比利亚人崇拜一位神秘无名的夜间主神（被古典学者比作月神），每逢满月之夜，整座山寨部落的男女老幼便聚集在寨门外或神圣清泉旁，在火把烈焰下通宵达旦地手挽手踏足旋转狂舞（Nocturnal Dances），以狂热的合唱驱散暗夜恶灵。在安达卢西亚与中央高原，雄壮暴烈的公牛雕像（Berraco）耸立在村落隘口与墓地，象征大地无尽的生殖力与冲锋力量。而最具血性的是其‘死誓献身’（Devotio）神圣仪式：青年战士在神圣圣石前以法尔卡塔曲剑向首领立下血誓，将其灵魂与首领捆绑——首领若战死，护卫绝不可独活，必须立刻拔剑自裁殉节。这种对自然神明与领袖誓言的纯粹忠诚，让伊比利亚战士成为地中海最具杀伤力也最难被征服的狂热死士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西班牙蛮子在满月下通宵跳那种诡异的圆圈舞，嘴里唱着让新兵头发发麻的古怪调子！但更可怕的是他们对首领的死誓：主将一死，那些握着弯刀的护卫像疯子一样扑上来跟军团同归于尽，根本不知投降为何物！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊比利亚人的灵魂就像塞拉莫雷纳山里的铁矿一样纯粹刚烈！只要你赢得他们的信任与誓言，他们的法尔卡塔曲剑就会在满月下为巴卡家族死战到底，这是世间任何黄金都买不到的神圣忠诚！"
+    }
+  ],
+  "TextMappings": []
+}

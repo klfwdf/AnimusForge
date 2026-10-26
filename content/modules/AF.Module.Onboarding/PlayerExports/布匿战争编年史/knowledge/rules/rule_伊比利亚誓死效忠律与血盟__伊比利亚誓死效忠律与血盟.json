@@ -1,0 +1,69 @@
+{
+  "Id": "rule_伊比利亚誓死效忠律与血盟",
+  "Keywords": [
+    "伊比利亚誓死效忠律与血盟",
+    "誓死效忠律",
+    "血誓",
+    "与首领共死"
+  ],
+  "RagShortTexts": [
+    "伊比利亚战士恪守神圣的‘誓死效忠律’（Devotio Iberica），向战神立下与统帅同生共死的血誓，若首领阵亡而追随者苟活被视为万劫不复的奇耻大辱，必须当场自刎殉主。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在伊比利亚半岛的各部落（凯尔特伊比利亚人、卢西塔尼亚人与沿海伊比利亚人）中，存在着一种令希腊罗马史学家震撼的武士效忠契约——‘伊比利亚献身誓言’（Devotio Iberica）。追随者在部落战神内托（Neto）的神坛前举行滴血盟誓，将自己的生命与灵魂无条件‘奉献’（Devovere）给所侍奉的酋长或统帅。根据这一神圣誓约，统帅在战斗中享有神明的庇护，而誓忠者则必须以身为盾：在乱军之中他们必须用肉身替首领抵挡刀剑箭矢。最严苛的信条在于——如果在战场上首领阵亡，所有发下誓言的亲卫战士若还活着，将被全族视作被神明诅咒、背信弃义的万劫不复之徒；他们绝不接受任何投降、赎金或苟活，必须在首领尸体旁当场拔剑自刎或向敌阵发起必死绝杀。哈米尔卡与年轻的汉尼拔在西班牙开拓期间，正是通过深谙部落习俗、与数千名伊比利亚精锐勇士缔结这种献身血誓，打造出了对其个人绝对忠诚、战至最后一兵一卒也绝不溃散的死士亲卫军。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西班牙蛮子的献身血誓既让人背脊发凉，又透着一股原始的野蛮与疯狂！主帅一死他们就要全员拔剑自尽，这种盲从个人的邪恶异教誓言完全违背了罗马公民对国家法统的清醒忠诚。军团在战场上必须先斩断他们的主帅，彻底摧垮这些死士的意志！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德沃提奥（Devotio）是伊比利亚勇士对汉尼拔统帅最庄严神圣的信任！那些在内托战神前刺破手腕立誓的西班牙战士，是用自己的胸膛在替汉尼拔抵挡罗马人的标枪。有这样一群宁死也不愿多活一刻的忠诚死士做中坚，巴卡家族的将领永远不可被击败！"
+    }
+  ],
+  "TextMappings": []
+}

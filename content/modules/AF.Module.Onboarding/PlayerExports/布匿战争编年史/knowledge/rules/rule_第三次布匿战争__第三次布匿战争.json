@@ -1,0 +1,69 @@
+{
+  "Id": "rule_第三次布匿战争",
+  "Keywords": [
+    "第三次布匿战争",
+    "迦太基毁灭",
+    "迦太基陷落",
+    "迦太基之死"
+  ],
+  "RagShortTexts": [
+    "第三次布匿战争（前149—前146年）是罗马为彻底除掉迦太基商业复苏隐患而蓄意挑起的灭国之战，以迦太基城彻底毁灭为结局。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "第三次布匿战争（公元前149—前146年）是古典历史上最残酷的蓄意灭绝战争之一。在第二次布匿战争后，迦太基专心于商业与农业，在数十年内奇迹般还清了一万塔兰特赔款并重现经济繁荣。这引起了罗马元老院寡头集团（以老加图为首）的极端恐惧与嫉恨。在罗马暗中纵容下，东努米底亚国王马西尼萨不断侵占蚕食迦太基领土，迦太基被迫向罗马申诉，罗马仲裁却一味偏袒努米底亚。前150年，忍无可忍的迦太基集结军队进行自卫反击，罗马元老院立即抓住把柄，借口其‘未经罗马允许擅自动武违背和约’，正式宣战并派遣八万大军跨海压境。迦太基虽交出三十万件武器与三千名贵族人质求和，罗马却开出了‘必须拆毁沿海旧城并在内陆十英里外重建’的亡国通牒。绝望的迦太基全城百姓揭竿而起，殊死坚守长达三年，最终在小西庇阿的围攻下彻底沦陷毁灭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基的血液里流淌着背信弃义的毒汁！给他们和平，他们便用商业财富再次武装！和约明文禁止他们私自用兵，他们却公然侵袭罗马最忠诚的盟友马西尼萨国王！元老院的决断没有任何迟疑：只要迦太基城墙耸立在海边一天，罗马就一日不得安宁！它的毁灭是共和国绝对安全的唯一保障！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "第三次布匿战争是纯粹的种族灭绝与强盗行径！我们早已放弃了战船与军队，像绵羊一样还清了每一枚银币。然而罗马人支持马西尼萨像豺狼一样啃食我们的国土，当我们被迫拿起生锈的农具自卫，他们却以谎言宣战！我们交出了所有武器，他们却命令我们离开祖先的海洋去荒漠等死！全城人哪怕拔断头发做弓弦，也决不作任人宰割的牛羊！"
+    }
+  ],
+  "TextMappings": []
+}

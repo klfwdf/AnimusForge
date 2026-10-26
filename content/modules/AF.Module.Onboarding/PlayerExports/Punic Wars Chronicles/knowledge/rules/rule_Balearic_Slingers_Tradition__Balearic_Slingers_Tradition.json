@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Balearic_Slingers_Tradition",
+  "Keywords": [
+    "Balearic_Slingers_Tradition",
+    "Lead Bullets",
+    "Glandes",
+    "Precision Marksmanship"
+  ],
+  "RagShortTexts": [
+    "Trained from childhood by striking food from poles to eat, Balearic slingers wielded three specialized slings to unleash devastating stone and lead gland bullets that shattered shields and helms."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Balearic Islands (chiefly Mallorca and Menorca) produced antiquity's most dreaded light skirmishers. Their marksmanship was forged through harsh tradition: island mothers placed bread atop wooden poles, permitting young boys to eat only after knocking the food down with slingstones. Adult slingers entered battle wrapped in three distinct sinew slings—a long cord wound around the head for maximum range, a medium sling at the waist for intermediate volleys, and a short cord held in the hand for rapid snap-shooting. Beyond rounded sea pebbles, they utilized cast lead bullets (glandes) with aerodynamic ridges. Hurled with immense velocity, these lead missiles pierced heavy oak scuta, pulverized bronze helmets, and inflicted lethal concussive trauma without piercing armor. Screening Hannibal's vanguard at the Trebia, Lake Trasimene, and Cannae, Balearic slingers systematically neutralized Roman velites, blinding and breaking the legionary front lines before main battle lines clashed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The humming cords of the Balearic slingers sounded like the wings of the Furies! Their lead bullets tore through our shield bosses and smashed legionaries' skulls through bronze cheekpieces. A barbarian with a strip of leather outranging our veteran archers was a bitter pill for Rome!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Balearic slingers are Carthage's most terrifying vanguard! With stones gathered from western beaches, their cords whistle like howling wind. Before the Roman legionary can even raise his heavy pilum, a rain of lead has shattered his helm and broken his nerve!"
+    }
+  ],
+  "TextMappings": []
+}

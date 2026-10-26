@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_21",
+  "Keywords": [
+    "Battle of Baecula",
+    "Hasdrubal High Ground Withdrawal",
+    "Scipio Pincer Envelopment",
+    "Iberian March to the Pyrenees"
+  ],
+  "RagShortTexts": [
+    "At Baecula in 208 BC, Scipio confronted Hasdrubal Barca entrenched atop a steep plateau. Demonstrating revolutionary tac"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At Baecula in 208 BC, Scipio confronted Hasdrubal Barca entrenched atop a steep plateau. Demonstrating revolutionary tactical flexibility, Scipio fixed the Carthaginian center with velites while leading two elite cohorts climbing rocky defiles to crush both Punic wings. Recognizing defeat, Hasdrubal withdrew with his treasury, elephants, and veterans northward over the Pyrenees toward Italy to reinforce his brother."
+    }
+  ],
+  "TextMappings": []
+}

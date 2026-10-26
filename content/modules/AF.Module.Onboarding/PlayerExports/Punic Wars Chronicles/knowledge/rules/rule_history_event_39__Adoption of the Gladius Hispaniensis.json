@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_39",
+  "Keywords": [
+    "Adoption of the Gladius Hispaniensis",
+    "Gladius Hispaniensis Adoption",
+    "Cut and Thrust Mastery",
+    "Supplanting Gallic Broadswords"
+  ],
+  "RagShortTexts": [
+    "Witnessing the devastating wounds inflicted by Iberian iron blades, Scipio Africanus standardized the 'Gladius Hispanien"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Witnessing the devastating wounds inflicted by Iberian iron blades, Scipio Africanus standardized the 'Gladius Hispaniensis' (Spanish Sword) across his legions after capturing the armories of Carthago Nova. Employing superior high-carbon steel, its double-edged blade was ideal for both ferocious slashing and fatal pelvic thrusts behind the scutum, revolutionizing Roman infantry doctrine."
+    }
+  ],
+  "TextMappings": []
+}

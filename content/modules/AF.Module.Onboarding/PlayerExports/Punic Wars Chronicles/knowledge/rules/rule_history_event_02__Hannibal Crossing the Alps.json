@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_02",
+  "Keywords": [
+    "Hannibal Crossing the Alps_245",
+    "Hannibal Alps Crossing",
+    "War Elephants in the Snow",
+    "Gallic Mountain Ambush"
+  ],
+  "RagShortTexts": [
+    "In autumn 218 BC, Hannibal executed one of antiquity's greatest military feats by marching nearly forty thousand veteran"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In autumn 218 BC, Hannibal executed one of antiquity's greatest military feats by marching nearly forty thousand veteran troops and thirty-seven war elephants across the snowbound passes of the Alps. Despite catastrophic losses from freezing weather, treacherous precipices, and savage ambushes by hostile Gallic tribes, his arrival in the Po Valley completely paralyzed Rome's planned two-front offensive against Iberia and Africa."
+    }
+  ],
+  "TextMappings": []
+}

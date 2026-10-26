@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_24",
+  "Keywords": [
+    "Battle of Ilipa",
+    "Reverse Cannae Tactic",
+    "Scipio Tactical Masterpiece",
+    "Spanish War Final Conquest"
+  ],
+  "RagShortTexts": [
+    "In 206 BC at Ilipa, Scipio faced seventy thousand Carthaginians under Mago and Hasdrubal Gisgo. Having conditioned the e"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 206 BC at Ilipa, Scipio faced seventy thousand Carthaginians under Mago and Hasdrubal Gisgo. Having conditioned the enemy to expect his Roman legionaries in the center, Scipio launched a dawn attack with his best veterans on the wings and inexperienced Spaniards in the center. Advancing his flanks in an echelon formation, he enveloped both Punic flanks before their elite center could engage, completely extinguishing Carthaginian dominion in Hispania."
+    }
+  ],
+  "TextMappings": []
+}

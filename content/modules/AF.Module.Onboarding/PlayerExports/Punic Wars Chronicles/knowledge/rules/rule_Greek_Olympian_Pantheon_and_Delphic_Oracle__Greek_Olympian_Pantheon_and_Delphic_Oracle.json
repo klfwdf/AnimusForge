@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Greek_Olympian_Pantheon_and_Delphic_Oracle",
+  "Keywords": [
+    "Greek_Olympian_Pantheon_and_Delphic_Oracle",
+    "Olympian Pantheon",
+    "Delphic Oracle",
+    "Pythia"
+  ],
+  "RagShortTexts": [
+    "The Hellenic world worshipped the Twelve Olympians, seeking cryptic divine guidance from the Delphic Oracle's priestess Pythia, whose hexameter verses steered geopolitical alliances."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Classical and Hellenistic religion celebrated the Twelve Olympian gods enshrined in Homeric epic, personifying cosmic order and emotional forces. Zeus ruled skies from Mount Olympus, Poseidon held oceanic tridents, and Athena embodied strategic defense. Central to Hellenic pan-national diplomacy was the Oracle of Apollo at Delphi, the sacred 'navel of the world' (omphalos) upon Mount Parnassus. Before declaring wars or ratifying alliances, Greek leagues, Diadochi monarchs, and Roman senatorial envoys brought lavish golden tripods to consult Apollo. Seated above a chasm exhaling vapor, the elderly priestess Pythia inhaled sacred fumes, uttering ambiguous poetic hexameters interpreted by temple priests. Simultaneously, the Eleusinian Mysteries initiated citizens into Demeter's secrets of personal immortality and rebirth, while Panhellenic festivals like the Olympic Games enforced the Sacred Truce (Ekecheiria)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rome respects Apollo's wisdom at Delphi! In our darkest hour after Cannae, the Senate dispatched ambassadors to Delphi to learn how to appease the offended gods. When Greek piety aligns with Roman discipline, victory is guaranteed!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Greeks endlessly parse riddle-poems whispered by dazed priestesses on mountaintops! While their philosophers dispute Apollo's ambiguous verse, true mastery belongs to armies whose spears back their prayers!"
+    }
+  ],
+  "TextMappings": []
+}

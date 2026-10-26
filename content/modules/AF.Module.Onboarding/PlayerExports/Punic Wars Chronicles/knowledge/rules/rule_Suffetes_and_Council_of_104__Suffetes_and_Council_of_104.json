@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Suffetes_and_Council_of_104",
+  "Keywords": [
+    "Suffetes_and_Council_of_104",
+    "Suffetes_and_Council_of_104 Suffetes",
+    "Oligarchy",
+    "General Accountability"
+  ],
+  "RagShortTexts": [
+    "Carthage was ruled by two elected Suffetes and the feared Council of 104, which investigated returning commanders and routinely crucified failed generals, creating permanent tension with the Barcids."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The constitution of the Republic of Carthage blended aristocratic oligarchy with plutocratic magistracies. Civil administration was headed by two annually elected Suffetes (from the Punic 'Shophetim', meaning judges), who presided over the high Senate and civil assemblies. The supreme supervisory authority, however, resided in the feared Council of One Hundred and Four (Mishpat). Created to curb military tyrants, this tribunal possessed draconian authority to interrogate generals returning from foreign campaigns. Carthaginian justice for military failure was notorious: commanders who suffered tactical disasters or retreated without orders were routinely nailed to crosses in public executions. This existential threat hanging over high command compelled Barcid leaders (Hamilcar, Hasdrubal, Hannibal) to construct autonomous military and financial empires in Hispania, insulating themselves from the pacifist commercial faction led by Hanno the Great in the Council of 104."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Carthaginians are governed by cold ledgers and wooden crosses! While their generals bleed in the dust, the merchant oligarchs of the 104 sit counting silver and preparing timber to crucify their own commanders for a single lost engagement. A state that crucifies its heroes deserves the conqueror's chain!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Suffetes and the 104 maintain the sacred laws of Elissa, preventing ambitious warlords from crowning themselves kings over Carthage! Yet the land-rich oligarchs around Hanno starve Hannibal of reinforcements out of petty envy, terrified that a conqueror's glory will diminish their grain monopolies!"
+    }
+  ],
+  "TextMappings": []
+}

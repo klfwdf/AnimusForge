@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Settlement_History_Rome",
+  "Keywords": [
+    "Settlement_History_Rome",
+    "Rome",
+    "罗马",
+    "Settlement_History_Rome Fortress"
+  ],
+  "RagShortTexts": [
+    "Rome (罗马) was a pivotal fortified settlement, anchoring regional military logistics and urban commerce throughout ancient Mediterranean conflicts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Eternal City of Rome, reigning across seven hills beside the Tiber River. Centered upon the Capitoline Temple of Jupiter, the Curia Hostilia, and massive Servian Walls. Following disastrous defeats at Trasimene and Cannae, Rome mobilized slave legions and citizens in total war, transforming its urban redoubt into an unconquerable fortress of republican resolve."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ramparts of Rome must fly the eagle standard! Whether through engineering circumvallation or direct assault, Rome ensures this fortress serves senatorial order and secures our communication lines!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The markets of Rome belong to free maritime trade, not Roman chains! Carthage supports its autonomy against legionary oppression, guaranteeing that Punic gold and spears will reinforce its ramparts!"
+    }
+  ],
+  "TextMappings": []
+}

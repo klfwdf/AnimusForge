@@ -1,0 +1,69 @@
+{
+  "Id": "rule_迦太基科通内港与圆形船坞",
+  "Keywords": [
+    "迦太基科通内港与圆形船坞",
+    "科通港",
+    "双重军港",
+    "圆形船坞"
+  ],
+  "RagShortTexts": [
+    "迦太基拥有惊人的‘科通’双重人工港，外港停泊商船，内港为全封闭圆形军港，建有两百二十个大理石列柱船坞与中央海军司令岛，对外国水手绝对保密。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坐落于突尼斯湾的迦太基城拥有古代地中海最登峰造极的人工水工奇迹——‘科通港’（Cothon）。整座港口由一道巨大的铁链水闸与海相连，分为完全隔离的内、外两重港池。外港呈长方形，专供来自希腊、埃及、西班牙与意大利的商船装卸货物，市集繁华喧嚣；穿过一道狭窄且设防的水道，便进入了被高大城墙严密遮挡的内港。内港呈完美的正圆形，外圈环绕着整整两百二十个由白色大理石爱奥尼克石柱支撑的独立隐秘船坞，每个船坞都配有干船台与精良的修船工棚，可容纳五列桨战船停泊检修。圆形港池的中央是一座高耸的人工岛屿，岛上耸立着迦太基海军最高司令长官官邸。司令官在顶层环形了望台上可俯瞰整个海湾与外海动向，并以军号和信号旗调度战舰，而外港的外国商贾与间谍完全无法窥探内港中哪怕一艘战舰的虚实，堪称古代最严密的海军核心机密要塞。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基人把他们的战舰藏在城墙后面的大理石圆环里，像阴险的蜘蛛把毒牙藏在深穴中！但只要罗马的军团踏上海岸、封死他们的水道出口，那些再漂亮的大理石船坞也不过是两百二十具无法出海的棺材！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科通港是提尔之神梅尔卡特赋予迦太基的无上冠冕！两百二十艘五列桨战船在圆港的石柱下蓄势待发，海军司令的号令一响，战舰便如离弦之箭冲破铁闸驶向深海。任何异邦蛮夷只要敢靠近内港窥探一眼，都会被巡逻卫兵立刻沉入海底！"
+    }
+  ],
+  "TextMappings": []
+}

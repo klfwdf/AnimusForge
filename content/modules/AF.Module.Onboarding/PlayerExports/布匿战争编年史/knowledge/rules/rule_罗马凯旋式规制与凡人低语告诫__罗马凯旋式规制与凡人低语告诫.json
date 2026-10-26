@@ -1,0 +1,69 @@
+{
+  "Id": "rule_罗马凯旋式规制与凡人低语告诫",
+  "Keywords": [
+    "罗马凯旋式规制与凡人低语告诫",
+    "凯旋式",
+    "胜利游行",
+    "记住你终将死亡"
+  ],
+  "RagShortTexts": [
+    "罗马凯旋式是军团统帅至高荣耀：将军涂朱砂乘战车跨越凯旋门，车旁公家奴隶持续耳语‘记住你终是个凡人’，提醒战功赫赫的征服者切勿骄横自满。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "获得元老院批准举行的‘凯旋式’（Triumphus），是罗马军团统帅一生所能追求的至高无上荣耀巅峰。获准凯旋的将军面部涂满朱砂（模仿卡匹托尔山朱庇特神像神色），身披刺绣金丝的紫色托加长袍（Toga Picta），头戴月桂冠，乘着四匹白马拉拽的青铜战车驶入凯旋门。在战车前方，是装载着缴获巨量金银财宝的大车、描绘战功战局的巨幅画卷、以及戴着铁链垂头丧气的敌国战俘与敌方国王酋长；后方的军团士兵则大声唱着下流诙谐的打油诗以驱散厄运。最摄人心魄的规制在于：在战车上托举着沉重金桂冠的，是一名最低贱的公家奴隶，这名奴隶必须不断在神采飞扬的将军耳边低沉轻语：“看清你的身后，记住你不过是个凡人（Memento mori）！”这句箴言犹如一记冰冷警钟，在狂热巅峰时刻警告征服者勿忘神明谦卑，防止僭主自大毁灭共和国根基。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "踏上卡匹托尔神庙的凯旋大道是每一个罗马男儿的终极梦想！但奴隶耳边的低语提醒着我们：强盛如神明之人，其身躯亦终将归于尘土！唯有为共和国效死，英名才得永存！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人把抢来的财物和戴着镣铐的别国君王押在战车前游街示众，他们称之为荣耀，我们称之为盗匪分赃的野蛮炫耀！他们再耀武扬威，也掩盖不了暴发户的贪婪嘴脸！"
+    }
+  ],
+  "TextMappings": []
+}

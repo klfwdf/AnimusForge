@@ -1,0 +1,69 @@
+{
+  "Id": "rule_努比亚阿佩德马克狮神与黑法老圣地",
+  "Keywords": [
+    "努比亚阿佩德马克狮神与黑法老圣地",
+    "阿佩德马克",
+    "狮首战神",
+    "麦罗埃金字塔"
+  ],
+  "RagShortTexts": [
+    "库施黑法老与坎达姬女王崇拜狮首四臂战神阿佩德马克；在纳帕塔圣山阿蒙神庙受封神权，以雄狮之勇捍卫尼罗河上游千年生息。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在尼罗河第六瀑布以南的苏丹大草原与麦罗埃古都，库施文明孕育了古代非洲最勇猛神圣的武力图腾——本土狮首战神阿佩德马克（Apedemak）。与受埃及影响深远的阿蒙太阳神殿并列，阿佩德马克神庙的砂岩浮雕上刻画着狮首人身、四臂执矛手握长弓的战神形象，其身旁常伴随着吞噬敌人的神圣巨蟒与咆哮战象。统治库施帝国的黑法老与威严的坎达姬（母后/执政女王）必须亲临那加（Naqa）与麦罗埃狮神大殿举行神圣即位礼，抚摸战神石雕利爪以获取战场无敌的雄狮狂怒与军事胜利。信徒在神庙阶梯前献祭俘虏的异国战利品、金环与象牙；当帝国遭遇托勒密埃及的军队压迫时，祭司会吹响象牙号角唤醒神圣狮魂，全军精锐弓手齐声咆哮战歌，以如蝗飞箭与巨刃战斧击退一切侵略者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在遥远的尼罗河尽头，那群黑皮肤的法老和强悍的女王崇拜着长着狮子脑袋的凶猛战神！他们的神箭手百步穿杨能直接射中敌军眼眶，连亚历山大大帝当年都不愿轻易深入那片烈火荒野！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿佩德马克神的利爪是保卫非洲黑土地的永恒神矛！麦罗埃的黑法老拥有高耸的金字塔与数不尽的黄金铁矿，他们的神圣战狮绝不会向地中海北岸的侵略者低下高贵的头颅！"
+    }
+  ],
+  "TextMappings": []
+}

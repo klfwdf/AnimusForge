@@ -1,0 +1,69 @@
+{
+  "Id": "rule_波罗的海琥珀之路与搭接长船",
+  "Keywords": [
+    "波罗的海琥珀之路与搭接长船",
+    "琥珀之路",
+    "太阳石",
+    "搭接木船"
+  ],
+  "RagShortTexts": [
+    "北欧沿海部族驾驭吃水极浅、缝合搭接的轻型长木船在风暴峡湾中采集‘太阳石’琥珀，经由维斯瓦河与阿尔卑斯山运往地中海，换取珍贵的青铜与地中海葡萄酒。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在古希腊罗马人的神话中，遥远北方波罗的海海滩上的金黄琥珀，是太阳神阿波罗之子坠落后其姐妹化作白杨树流淌出的悲伤眼泪。被称为‘北方黄金’（Northern Gold）的优质琥珀，是古代贯穿欧亚大陆的‘琥珀之路’（Amber Road）的大宗命脉。英格沃内部族与沿海古日耳曼人精于航海，他们建造了西方最早的‘搭接缝合木船’（如约特斯普林木船Hjortspring boat）：船体用极薄的椴木板相互重叠搭接，并用生牛筋或韧皮纤维缝合绑扎在榛木肋骨上，两头高高翘起呈优美的天鹅颈状。这种战船完全不使用笨重的铁钉，吃水仅有一两尺，自重极轻，不仅在巨浪冲击下具有极佳的扭曲韧性，更能直接冲上海滩或由水手抬着跨越沼泽与陆上分水岭。北方水手正是驾驭这种轻捷长船在惊涛骇浪中打捞海浪冲刷出的天然琥珀，再经由维斯瓦河与易北河的水系网络南下翻越阿尔卑斯山，将‘太阳石’输送至罗马与叙拉古的贵妇手中，换回地中海甘醇的葡萄酒、精细橄榄油与锋利的青铜铸器。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马贵妇们脖子上戴着从北方蛮荒水域运来的琥珀项链，捧在手心摩挲就会产生吸引草屑的魔力。那些北海划船的蛮子为了换一坛坎帕尼亚葡萄酒，愿意冒险在冰水里泡上几个月。只要金币和商路畅通，罗马不需要派兵去那片冰冻苦寒之地，琥珀商人就会把北方的瑰宝源源不断送上门！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "腓尼基探险家汉诺曾绕行非洲，而北海的琥珀水手则乘着他们的轻皮木舟穿梭在迷雾之中。他们造的长船虽然轻薄如树皮，却能在风暴狂澜中像水鸟一样起伏自如。只要迦太基的商船控制住直布罗陀与大西洋出口，任何来自北方的贵重琥珀与锡矿就休想绕过我们的关税金库！"
+    }
+  ],
+  "TextMappings": []
+}

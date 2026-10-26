@@ -1,0 +1,69 @@
+{
+  "Id": "rule_马其顿萨里沙超长枪方阵",
+  "Keywords": [
+    "马其顿萨里沙超长枪方阵",
+    "萨里沙长矛",
+    "马其顿方阵",
+    "十六列横队"
+  ],
+  "RagShortTexts": [
+    "马其顿方阵步兵双手执持长达六米的萨里沙长矛（Sarissa），十六列深度的密集阵形在前沿形成由五层枪尖组成的铜墙铁壁，正面突击无坚不摧。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "由腓力二世开创并由亚历山大大帝发扬光大的马其顿方阵（Macedonian Phalanx），是希腊化世界最致命的正统步兵方阵。方阵步兵（Pezhetairoi）装备长达十八至二十一英尺（约5.5至6.5米）的白蜡木长矛‘萨里沙’（Sarissa）。该矛异常沉重，后端装有四角青铜配重尖箍（以平衡重心并插地防冲），步兵必须用双手执握，左臂仅系挂一面前臂小圆盾（Pelte）。一个标准的战术单位‘辛塔格马’（Syntagma）由二百五十六人组成，排成深达十六列的紧密横队。交战推进时，前五列士兵将萨里沙长矛水平放平指向前方，在方阵正前方构筑出一道由五层寒光闪闪的密集枪尖组成的钢铁丛林；后十一列士兵则将长矛以四十五度角斜举向上，不仅有效抵挡并拨落敌方抛射而来的箭雨标枪，更以密集的矛身在视觉上形成威压。只要方阵保持队形严整、两翼有骑兵掩护且在平坦地面推进，正面任何传统的重装步兵与骑兵冲锋在接触矛尖的瞬间都会被彻底贯穿粉碎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马其顿人的长矛阵从正面看过去确实如同一堵长满铁刺的城墙，但只要把他们引到起伏不平的山地丘陵，那堵墙就会因地形颠簸出现致命的裂痕！军团步兵只需要手持大盾贴地翻滚钻进他们的枪林死角，拔出短剑，方阵兵两只手握着六米长的木棍就只能任人宰割！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "亚历山大的方阵征服了从多瑙河到印度河的土地，腓力五世的长矛方阵依然是巴尔干半岛的雄狮！汉尼拔元帅深知萨里沙长矛的正面威力，唯有与马其顿结盟并在东西两线夹击，才能将罗马军团彻底碾碎在密集的枪林之下！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_战象冷知识与苏鲁斯",
+  "Keywords": [
+    "战象冷知识与苏鲁斯",
+    "战象",
+    "北非森林象",
+    "苏鲁斯"
+  ],
+  "RagShortTexts": [
+    "汉尼拔远征的37头战象多为已灭绝的北非森林象，唯有一头独牙巨象名为‘苏鲁斯’（叙利亚象），是汉尼拔个人的专属指挥座骑与翻越阿尔卑斯山后唯一的幸存象。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在古典时代，地中海战场的战象并非今日庞大的非洲草原象，而是体型较小的北非森林象（肩高约2.5米，现已灭绝）。森林象性情较为驯服，背上不配备木塔，仅坐一名驭象手（象奴）。汉尼拔在公元前218年翻越阿尔卑斯山时随军携带了三十七头战象，在严寒与险峻悬崖中伤亡惨重。值得注意的是，汉尼拔本人的专属座骑是一头罕见的巨大亚洲象（或叙利亚象），名为‘苏鲁斯’（Surus，意为‘叙利亚人’），该象仅剩一根长牙，体型远大于普通的北非象。在阿尔诺河沼泽由于感染眼疾失去一只眼睛后，汉尼拔正是骑在这头巍峨的苏鲁斯背上，居高临下涉水指挥全军。战象虽然对步兵有极强的心理震慑力，但极其惧怕尖锐的号角声、受惊狂躁的火猪以及侧翼密集的标枪投掷，一旦惊慌失措往往反噬踩踏己方步兵阵列，因此驭象手通常随身携带锤子与铁凿，一旦战象发狂便在脑后致命敲凿以弃象保军。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基人的巨兽看起来虽然可怖，但只要军团阵列不乱，它们不过是行走的肥肉！执政官与保民官们早就掌握了对付战象的技巧：让青年兵在阵线间留出纵向通道，当巨象狂冲而来时，吹响所有的军号与号角，投掷重标枪猛扎它们的眼睛和象鼻！受惊的战象会盲目发狂地调头狂奔，把迦太基自己的雇佣兵踩成肉泥！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "苏鲁斯与我们勇敢的战象是巴力赐予的雷霆之怒！当战象踏着大地震颤冲向罗马人的轻装步兵时，任何没见过这种神兽的蛮族与军团都会吓破胆。然而，象奴们必须时刻握紧腰间的铁凿与铜锤——在阿尔卑斯的暴风雪与阿尔诺河的恶臭毒沼中，这些巨兽比人类更脆弱，那是统帅用黄金也无法挽回的无价瑰宝！"
+    }
+  ],
+  "TextMappings": []
+}

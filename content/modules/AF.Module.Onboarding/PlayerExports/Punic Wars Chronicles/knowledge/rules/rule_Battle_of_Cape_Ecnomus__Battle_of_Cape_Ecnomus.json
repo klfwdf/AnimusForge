@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Battle_of_Cape_Ecnomus",
+  "Keywords": [
+    "Battle_of_Cape_Ecnomus",
+    "Battle of Cape Ecnomus",
+    "Ecnomus Naval Battle",
+    "Largest Ancient Naval Battle"
+  ],
+  "RagShortTexts": [
+    "The Battle of Cape Ecnomus (256 BC), involving nearly 700 warships and 300,000 personnel, was one of the largest naval battles in antiquity, opening Africa to Rome."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 256 BC, Rome launched 330 warships carrying 140,000 men to strike directly at Carthage's North African heartland. Carthage countered with 350 galleys at Cape Ecnomus off southern Sicily. With nearly 700 warships and 300,000 combatants, it ranks among the largest naval engagements in human history. Rome deployed in a formidable wedge formation protecting its transport fleet. The Carthaginians feigned retreat to lure away the Roman vanguard while encircling their flanks, but Roman discipline and corvus boarding actions routed the Punic center and relieved the transports. Carthage lost roughly 100 ships, allowing Rome to land unhindered at Aspis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At Cape Ecnomus, seven hundred warships churned the waves into red foam! Punic trickery attempted to divide our fleet, but our consular wedge struck their center like an iron javelin. Corvus bridges slammed onto their decks, and Roman grit carried the day. The path to Africa was paved in broken Carthaginian timber!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ecnomus was a heartbreaking tactical near-miss. Our wings enveloped their transports, yet the Roman vanguard fought back with relentless savagery. Losing a hundred ships opened the gates of our homeland to invasion, bringing enemy steel to the very shores of Utica and Carthage."
+    }
+  ],
+  "TextMappings": []
+}

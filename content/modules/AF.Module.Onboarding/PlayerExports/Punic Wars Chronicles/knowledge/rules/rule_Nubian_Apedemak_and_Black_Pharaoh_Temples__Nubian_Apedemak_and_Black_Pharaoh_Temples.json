@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Nubian_Apedemak_and_Black_Pharaoh_Temples",
+  "Keywords": [
+    "Nubian_Apedemak_and_Black_Pharaoh_Temples",
+    "Apedemak",
+    "Lion God of War",
+    "Meroë Pyramids"
+  ],
+  "RagShortTexts": [
+    "Kushite kings and Kandake queens venerated indigenous lion-headed war god Apedemak, whose temples at Naqa and Meroë promised victory through four-armed bow mastery."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "South of the cataracts along the Sudanese savanna, the Kingdom of Kush developed unique martial theology centered on the indigenous lion-headed god Apedemak. Adorning the sandstone pylon reliefs of Naqa and Musawwarat es-Sufra, Apedemak was depicted as a fierce lion-headed warrior possessing four arms grasping bows, arrows, and captured enemy chieftains, occasionally manifesting as a coiled lion-serpent emerging from a lotus flower. Alongside the sacred temple of Amun at Jebel Barkal, Kushite monarchs and warrior-queens (Kandake) drew divine legitimacy from Apedemak's roaring courage before going to war. Worshippers consecrated captured weapons, African gold torcs, and elephants to the lion god, whose blessing inspired Nubian archers—famed across antiquity as 'eye-shooters'—to defend the Nile valley against all northern aggression."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At the southern edge of the world, ferocious Nubian warrior-queens lead armies devoted to a four-armed lion god of war! Their archers can shoot a legionary through the visor at hundred yards. A formidable southern frontier best left untangled."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The sacred lion Apedemak roars over the red sands of Meroë! Kushite black pharaohs built pyramids as high as heaven and smith the finest iron blades in Africa. Their fierce devotion to the lion god protects the true heartbeat of the south!"
+    }
+  ],
+  "TextMappings": []
+}

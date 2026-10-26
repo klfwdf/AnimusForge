@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_50",
+  "Keywords": [
+    "Melqart Temples & Punic Religious Vows",
+    "Melqart Altar Blood Vow",
+    "Gades Temple Bronze Columns",
+    "Ba'al Hammon Child Sacrific"
+  ],
+  "RagShortTexts": [
+    "Carthage's military doctrine was inextricably linked to ancient Phoenician religion. Prior to invading Italy, Hannibal u"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Carthage's military doctrine was inextricably linked to ancient Phoenician religion. Prior to invading Italy, Hannibal undertook a solemn pilgrimage to the sanctuary of Melqart at Gades, renewing sacred oaths before bronze pillars. In moments of extreme national peril, Carthaginian priests assembled at the sacred Tophet sanctuaries, conducting child sacrifice to Ba'al Hammon to appease divine wrath and preserve the realm."
+    }
+  ],
+  "TextMappings": []
+}

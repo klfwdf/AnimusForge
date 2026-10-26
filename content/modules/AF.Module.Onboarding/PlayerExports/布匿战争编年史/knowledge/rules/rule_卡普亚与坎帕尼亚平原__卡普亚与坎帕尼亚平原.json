@@ -1,0 +1,69 @@
+{
+  "Id": "rule_卡普亚与坎帕尼亚平原",
+  "Keywords": [
+    "卡普亚与坎帕尼亚平原",
+    "卡普亚",
+    "坎帕尼亚平原",
+    "坎尼后叛变"
+  ],
+  "RagShortTexts": [
+    "卡普亚坐落于意大利最肥沃的坎帕尼亚平原，是仅次于罗马的第二大都会，坎尼战后倒向汉尼拔，后遭罗马严酷围城惩戒。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡普亚（Capua）位于南意大利坎帕尼亚平原中心，是仅次于罗马的半岛第二大繁华都会，拥有辉煌的剧场、竞技场、工坊与富甲天下的葡萄园、麦田。公元前216年坎尼惨败后，野心勃勃的卡普亚贵族在达修斯等亲布匿派领袖推动下背叛罗马，与汉尼拔订立盟约：开城迎接迦太基军队入驻冬营，并要求战后享有与罗马同等的独立霸权地位。汉尼拔在此享受了舒适的休整，后世甚至留下了‘卡普亚的奢华腐蚀了迦太基百战铁军’的史家争议。然而背叛引来了罗马残酷至极的清算：前212年罗马派出六个军团完全合围卡普亚，修筑了内外双层壕沟长墙；任凭汉尼拔亲提大军奔袭罗马城门（围魏救赵）进行牵制，围城罗马军团依然坚守阵地寸步不让。前211年卡普亚因饥馑开城投降，罗马元老院处决了全部主谋贵族，将数千名市民变卖为奴，彻底废除了卡普亚的自治市地位并没收其全部肥沃土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡普亚的叛徒尝到了背弃罗马誓约的恶果！他们享用着坎帕尼亚最甜美的酒浆和丝绸，却在罗马流血最深的时候把城门献给了汉尼拔！但罗马的包围圈是铁铸的！任凭汉尼拔在外面如何诱战，我们的军团就像锁链一样慢慢绞碎它的骨头！卡普亚的元老自服毒药，其余叛徒尽被执政官斩首，这就是敢于挑战罗马权威者的唯一下场！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡普亚的倒戈曾让罗马元老院面如死灰。意大利最富庶的平原向汉尼拔敞开了大门，我们的骑兵在这里获得了最好的粮秣。然而卡普亚的贵族缺乏血性与耐力，当罗马军团围上来修筑壕沟时，他们只能在城墙上哭嚎求救。汉尼拔虽佯攻罗马城企图逼退敌军，但冷酷的罗马统帅宁可放弃防卫乡野也坚决不撤围。卡普亚的陷落，让意大利南部所有游移的城邦再次被恐怖所噤声。"
+    }
+  ],
+  "TextMappings": []
+}

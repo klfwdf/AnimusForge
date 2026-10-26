@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Saguntum_Promontory_Fortress",
+  "Keywords": [
+    "Saguntum_Promontory_Fortress",
+    "Saguntum Fortress",
+    "Sagunto",
+    "Iberian Promontory"
+  ],
+  "RagShortTexts": [
+    "Perched atop an imposing coastal ridge south of the Ebro, the fortress of Saguntum was besieged by Hannibal for 8 months in 219 BC, igniting the Second Punic War."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rising dramatically upon an isolated limestone ridge overlooking the Mediterranean coast, Saguntum was an ancient fortified city of mixed Iberian and Greek heritage that commanded the coastal highway into Gaul. Allied with Rome despite lying 100 miles south of the Ebro Treaty line, its presence directly threatened Barcid dominion. In 219 BC, Hannibal laid siege with siege towers and battering rams. Defenders fought fanatically, hurling falarica—heavy javelins wrapped in burning pitch—inflicting heavy losses and severely wounding Hannibal in the thigh. After eight brutal months, with breaches crumbling and supplies exhausted, the citizens built a massive bonfire in the forum, threw their silver into the flames, and leaped into the inferno. The fall of Saguntum moved Rome to declare war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The cliff of Saguntum is consecrated ground of allied fidelity! For eight months its citizens held against Hannibal's rams. Rather than bow to Phoenician slavery, they consigned their wives, children, and gold to sacred flames. Rome took an iron oath that the ashes of Saguntum would be avenged upon the very stone of Carthage!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Saguntum was an armed Roman spearpoint thrust into Barcid Hispania. They raided our allies with impunity, trusting distant Roman promises. Hannibal was compelled to level that fortress. The eight-month siege cost us dearly, but their flaming pyre taught every Iberian tribe a grim lesson: distant Roman alliances cannot shield you from Punic vengeance."
+    }
+  ],
+  "TextMappings": []
+}

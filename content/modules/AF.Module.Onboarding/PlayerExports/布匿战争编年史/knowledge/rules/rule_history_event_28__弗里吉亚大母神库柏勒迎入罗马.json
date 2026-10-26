@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_28",
+  "Keywords": [
+    "弗里吉亚大母神库柏勒迎入罗马",
+    "大母神库柏勒黑石",
+    "西比尔神谕救国",
+    "佩加马盟友护送"
+  ],
+  "RagShortTexts": [
+    "公元前204年，在长达十四年的战火煎熬下，罗马元老院查阅西比尔神谕：‘凡外敌踏足意大利领土者，唯迎请佩西努斯之大母神（Magna Mater/库柏勒）降临罗马方能驱逐退敌。’在盟友帕加马阿塔罗斯一世的"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前204年，在长达十四年的战火煎熬下，罗马元老院查阅西比尔神谕：‘凡外敌踏足意大利领土者，唯迎请佩西努斯之大母神（Magna Mater/库柏勒）降临罗马方能驱逐退敌。’在盟友帕加马阿塔罗斯一世的协助下，一艘特制战舰将弗里吉亚神庙的黑色陨石圣物迎入台伯河口，罗马全城贵妇由名门闺秀克劳狄娅·昆塔领衔牵引圣舟进城，供奉于帕拉蒂尼山，罗马军民士气大振。"
+    }
+  ],
+  "TextMappings": []
+}

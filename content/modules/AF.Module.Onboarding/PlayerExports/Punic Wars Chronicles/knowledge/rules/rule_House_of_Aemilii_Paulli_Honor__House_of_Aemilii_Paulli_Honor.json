@@ -1,0 +1,69 @@
+{
+  "Id": "rule_House_of_Aemilii_Paulli_Honor",
+  "Keywords": [
+    "House_of_Aemilii_Paulli_Honor",
+    "House of Aemilii Paulli",
+    "Lucius Aemilius Paullus",
+    "Cannae Death"
+  ],
+  "RagShortTexts": [
+    "The Aemilii Paulli embodied patrician rectitude and stoic honor; at Cannae, wounded Consul Paullus refused an officer's horse and chose to die fighting with his trapped legionaries."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gens Aemilia, specifically the branch of the Paulli, stood as paragons of austere virtue, integrity, and self-sacrificing courage in the Roman Republic. In 216 BC before Cannae, Consul Lucius Aemilius Paullus correctly warned against engaging Hannibal upon flat terrain favoring Carthaginian cavalry, but was overruled by his plebeian colleague Terentius Varro. When Varro's reckless frontal assault was trapped in Hannibal's double envelopment, Paullus was severely wounded by sling stones. As the army collapsed into slaughter, military tribune Gnaeus Lentulus rode up and offered his horse, begging the consul to flee and preserve himself for Rome's defense. Paullus refused, ordering Lentulus to ride swiftly to warn the Senate to fortify the city, stating: 'Let me perish here amidst my slaughtered soldiers. I will not stand accused in the Forum after my consulship, nor become the accuser of my colleague to shield my own name.' Paullus died sword in hand. Even Hannibal was moved by such nobility, ordering a full military cremation for the fallen consul."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Consul Paullus redeemed Roman honor at Cannae with his dying breath! Surrounded by corpses, he refused flight and stood fast with his cohorts until cut down. While Varro fled in shame, Paullus proved that a true Roman consul dies with his eagles!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Paullus was a foe worthy of the greatest honors. When his legions broke, he sat wounded upon a rock and refused to mount a rescue horse, choosing death over dishonor. General Hannibal himself had his body recovered from the piles of slain and accorded him a solemn military pyre."
+    }
+  ],
+  "TextMappings": []
+}

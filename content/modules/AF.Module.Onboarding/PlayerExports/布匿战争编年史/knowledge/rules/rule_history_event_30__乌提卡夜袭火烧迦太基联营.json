@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_30",
+  "Keywords": [
+    "乌提卡夜袭火烧迦太基联营",
+    "乌提卡夜袭火攻",
+    "火烧西法克斯芦苇营",
+    "吉斯科大军溃散"
+  ],
+  "RagShortTexts": [
+    "公元前203年春，大西庇阿面对迦太基哈斯德鲁巴尔·吉斯科与西努米底亚国王西法克斯组成的十万联军大营，假意展开和平谈判以刺探虚实。获悉西法克斯军营全由易燃的芦苇与木席搭建后，西庇阿在午夜突袭纵火。烈火如"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前203年春，大西庇阿面对迦太基哈斯德鲁巴尔·吉斯科与西努米底亚国王西法克斯组成的十万联军大营，假意展开和平谈判以刺探虚实。获悉西法克斯军营全由易燃的芦苇与木席搭建后，西庇阿在午夜突袭纵火。烈火如风暴蔓延，混乱中敌军以为是失火四散奔逃，迎头撞入早已封锁营门的罗马军团战阵，数万人被斩杀于烈焰火海之中，联军主力瓦解。"
+    }
+  ],
+  "TextMappings": []
+}

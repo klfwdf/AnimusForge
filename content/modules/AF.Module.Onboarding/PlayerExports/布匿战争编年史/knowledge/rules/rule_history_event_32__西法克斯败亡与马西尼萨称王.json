@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_32",
+  "Keywords": [
+    "西法克斯败亡与马西尼萨称王",
+    "西法克斯被俘生擒",
+    "马西尼萨统一番邦",
+    "努米底亚王国统一"
+  ],
+  "RagShortTexts": [
+    "公元前203年，马西尼萨与罗马名将莱利乌斯率骑兵一路穷追败退的西法克斯至奇尔塔城下。西法克斯战马中箭被俘生擒，其庞大的马塞西利王国疆土尽归马西尼萨接管。西法克斯被以铁镣押送罗马元老院凯旋式游街，马西尼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前203年，马西尼萨与罗马名将莱利乌斯率骑兵一路穷追败退的西法克斯至奇尔塔城下。西法克斯战马中箭被俘生擒，其庞大的马塞西利王国疆土尽归马西尼萨接管。西法克斯被以铁镣押送罗马元老院凯旋式游街，马西尼萨在罗马支持下统一东西努米底亚诸部族建立统一王国，成为罗马在北非最凶猛有力的铁杆盟友。"
+    }
+  ],
+  "TextMappings": []
+}

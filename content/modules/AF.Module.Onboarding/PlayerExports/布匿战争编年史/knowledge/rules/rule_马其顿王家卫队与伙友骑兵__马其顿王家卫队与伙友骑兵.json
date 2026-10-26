@@ -1,0 +1,69 @@
+{
+  "Id": "rule_马其顿王家卫队与伙友骑兵",
+  "Keywords": [
+    "马其顿王家卫队与伙友骑兵",
+    "伙友骑兵",
+    "阿格玛卫队",
+    "海泰罗伊"
+  ],
+  "RagShortTexts": [
+    "马其顿安提柯王朝保留了精锐的王家阿格玛近卫军与伙友重骑兵（Hetairoi），采用楔形阵冲锋撕裂敌军两翼，是方阵体系中负责破阵决胜的“铁锤”。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在马其顿的军事思想中，步兵方阵只是将敌人牢牢吸住的‘铁砧’，真正负责给敌人以致命一击的‘铁锤’是贵族重骑兵——‘伙友骑兵’（Hetairoi，意为国王的伙伴）与王家精锐步骑卫队‘阿格玛’（Agema）。伙友骑兵由马其顿最高贵的土地贵族与武士组成，身披重型青铜肌肉胸甲与波奥蒂亚式开面头盔，手持两端装有坚固铁尖的‘绪斯同’（Xyston）重型刺枪。在战术上，马其顿骑兵由腓力二世改良自斯基泰人的‘楔形阵’（Wedge Formation）冲锋：指挥官亲自位于最顶端的尖角位置带头冲杀，骑兵梯队向两翼展开呈三角锐角，不仅转向极其敏捷、便于传达口令，更能将全部冲击力集中于一点刺穿敌军阵线脆弱的接缝。阿格玛卫队则是国王寸步不离的近卫死士，由方阵中最骁勇的退役老兵与贵族子弟组成。在青年君王腓力五世治下，这支继承了亚历山大余威的王家铁骑依然是整个希腊世界战斗力最强横的突击力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马其顿的伙友骑兵自诩为亚历山大的骑士，他们的三角楔形冲锋确实凶猛凌厉。但罗马的执政官们早已看清：只要骑兵阵型被标枪打乱，他们失去冲击力后在近战中远不如西班牙蛮子灵活。元老院的军团不会在骄傲的马其顿王冠前低头！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伙友骑兵的楔形冲锋是希腊战术的巅峰之作！当腓力五世的阿格玛重骑兵从侧翼如雷霆般砸下时，任何步兵阵列都会被一分为二。汉尼拔在南意大利期待着这支铁骑的跨海加入，与我们的努米底亚轻骑兵组成地中海最完美的双重铁翼！"
+    }
+  ],
+  "TextMappings": []
+}

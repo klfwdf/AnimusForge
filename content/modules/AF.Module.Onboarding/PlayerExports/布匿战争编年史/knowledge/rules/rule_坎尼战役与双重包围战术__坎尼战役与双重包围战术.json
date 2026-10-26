@@ -1,0 +1,69 @@
+{
+  "Id": "rule_坎尼战役与双重包围战术",
+  "Keywords": [
+    "坎尼战役与双重包围战术",
+    "坎尼战役",
+    "坎尼会战",
+    "双重包围"
+  ],
+  "RagShortTexts": [
+    "前216年坎尼战役中，汉尼拔以劣势步兵实施新月弧形收缩与侧翼两面合围，全歼近七万罗马大军，缔造了战术史上的绝世巅峰。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前216年8月2日，在阿普利亚平原上的坎尼战役爆发。罗马元老院为了毕其功于一役，动员了立国以来最大规模的八个满员军团及同盟军，共计八万六千大军，由执政官瓦罗与保卢斯统领。汉尼拔仅拥有四万步兵与一万骑兵，但他排出了世界军事史上最著名的‘新月弧形阵’：将战斗力较弱的高卢与伊比利亚步兵排在凸向罗马的中军，精锐利比亚重步兵配置在凹陷两翼，凶悍的重骑兵部署在左右外侧。交战后，罗马庞大密集的步兵人海向迦太基凸出的中央发起猛烈冲击，汉尼拔亲自坐镇中军指挥高卢步兵一边殊死抵抗一边缓慢按计划后撤，战线逐渐由凸向罗军转变为凹陷内卷；与此同时，迦太基骑兵彻底击溃罗马两翼骑兵后折返兜截罗军后路，两翼以逸待劳的利比亚重步兵同时向内合拢。八万罗马重步兵瞬间被压缩挤压成一个无法挥舞武器的血腥肉磨，屠杀持续至黄昏，五万至七万罗马官兵阵亡，包括执政官保卢斯、八十位元老和数十位军团长官。坎尼战役被公认为古典时代战术指挥的最高巅峰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼是罗马历史上最黑暗的一天！七万名勇敢的公民与盟友在那个炎热的午后倒下，八十名元老的鲜血浸透了奥菲杜斯河畔的泥土。汉尼拔从死者手上搜集的骑士金指环足足装满了几斗送回迦太基！但在这一天，罗马展现了神明般的伟大——没有一个元老提议投降，执政官瓦罗收拢残兵归来时，元老院全体出城迎接，只因他‘未对共和国绝望’！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼是巴卡家族军事皇冠上最璀璨的宝石！汉尼拔用兵力劣势的步兵，将两倍于己的罗马精锐军团化作了铁桶中的羔羊！新月阵型的后撤是神来之笔，骑兵的回旋如同死神的镰刀。整整一个下午，罗马军团密集到连举起盾牌都办不到，只能挨个等待屠戮。那一战让卡普亚、塔兰托和叙拉古纷纷开城归附，罗马人的脊梁被我们彻底打断！"
+    }
+  ],
+  "TextMappings": []
+}

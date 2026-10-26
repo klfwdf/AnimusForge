@@ -1,0 +1,69 @@
+{
+  "Id": "rule_萨贡图姆之围与埃布罗河和约",
+  "Keywords": [
+    "萨贡图姆之围与埃布罗河和约",
+    "萨贡图姆之围",
+    "萨贡图姆之围与埃布罗河和约埃布罗河和约",
+    "第二次布匿战争起因"
+  ],
+  "RagShortTexts": [
+    "前219年汉尼拔历时八个月攻破罗马在西班牙的盟邦萨贡图姆，成为第二次布匿战争的直接导火索。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前226年，罗马曾与迦太基名将哈斯德鲁拔签署《埃布罗河和约》，规定双方以埃布罗河为势力界线，迦太基军队不得越河向北扩张。然而罗马随后却与河以南近一百五十公里的繁荣要塞城邦萨贡图姆结盟，在迦太基眼皮底下安插了一个敌对前哨。前221年汉尼拔接掌西班牙帅印后，立志拔除这一钉子。前219年，汉尼拔借萨贡图姆与邻近亲迦太基部族冲突为由，亲率大军包围萨贡图姆。萨贡图姆人困守八个月浴血抵抗，城破前夕居民焚毁财宝投火自尽。罗马元老院派出使节法比乌斯前往迦太基元老会交涉，手撩托加长袍断喝：‘这里有和平与战争，你们选哪个？’迦太基元老慨然答道：‘由你决定！’法比乌斯掷袍高呼：‘那便是战争！’第二次布匿战争由此全面爆发。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨贡图姆是罗马誓言保护的同盟之城！汉尼拔用冲车与云梯围困它整整八个月，城中居民宁可全家自焚殉城也绝不向腓尼基暴徒投降！当使节法比乌斯在迦太基元老院抖落托加长袍宣战的那一刻，罗马军团的复仇利刃便已出鞘！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人指责我们违反埃布罗河条约，纯属倒打一耙！条约明文规定埃布罗河以南是迦太基的治理领地，罗马却鬼鬼祟祟地在河以南一百多公里的萨贡图姆安插傀儡同盟挑衅我们！汉尼拔攻克萨贡图姆是行使合法的主权。当罗马使节狂妄地抖动托加时，迦太基人绝不屈膝！"
+    }
+  ],
+  "TextMappings": []
+}

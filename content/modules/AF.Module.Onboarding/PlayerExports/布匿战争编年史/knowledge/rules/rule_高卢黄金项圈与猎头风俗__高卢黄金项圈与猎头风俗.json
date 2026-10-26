@@ -1,0 +1,69 @@
+{
+  "Id": "rule_高卢黄金项圈与猎头风俗",
+  "Keywords": [
+    "高卢黄金项圈与猎头风俗",
+    "黄金项圈",
+    "托克",
+    "高卢战士"
+  ],
+  "RagShortTexts": [
+    "高卢凯尔特战士视佩戴黄金托克项圈为勇士神圣荣耀，常赤膊抹白发冲锋，并将斩下的高贵敌将首级用雪松油防腐装盒传家，视其胜过等重黄金。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "山南高卢与比利牛斯山区的凯尔特部族拥有令地中海文明震颤的狂野武士文化。其标志性圣物是戴在脖颈上的金属项圈‘托克’（Torc）：通常由纯金、青铜或银线扭绞而成，两端饰有公羊角、野猪或神祇图腾。托克不仅是部落酋长与尊贵勇士的财富象征，更是德鲁伊信仰中庇护喉咙与汲取战神狂力的护身符。在交战时，精锐的高卢勇士往往将头发用石灰水浸泡向上梳成可怖的白刺发髻，赤裸上身、仅佩戴金项圈与腰带，吹响龙头造型的高耸铜号‘卡尼克斯’（Carnyx），发出如野兽咆哮般的长鸣冲入敌阵。高卢文化中极度崇尚‘猎头风俗’（Headhunting）：他们坚信人的灵魂与生命精华凝聚在头颅之中。战斗结束后，勇士们会割下英勇敌将的首级，系在战马的胸带缰绳上向同袍夸耀；归家后，首级被浸泡在珍贵的雪松油中精心防腐，供奉在家中特制的雕花木盒内。当有贵客来访时，部族长老会自豪地展示这些头颅，即便敌人家属出等重的黄金赎买也坚决予以拒绝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "高卢野蛮人吹响那些铜兽号角赤身扑来时确实吓退过新兵，但军团筑起盾墙后，他们没有甲胄的胸膛就是罗马短剑最好的刺击靶子！至于他们那些用雪松油泡着的头颅木盒，正是他们骨子里野蛮嗜血的罪证，元老院必将用法律与道路彻底征服这些森林蛮子！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "高卢人的黄金项圈闪耀着最原始纯粹的战意！当他们赤裸着胸膛、挥舞长剑砍断罗马百夫长的头盔时，整个军团都在颤抖。汉尼拔懂得尊重他们的猎头风俗与酋长荣誉，正因如此，波河平原上的数万高卢勇士才会成为我们撕碎罗马防线最狂暴的风暴！"
+    }
+  ],
+  "TextMappings": []
+}

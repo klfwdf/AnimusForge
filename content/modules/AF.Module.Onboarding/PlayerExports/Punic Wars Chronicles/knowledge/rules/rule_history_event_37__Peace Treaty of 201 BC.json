@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_37",
+  "Keywords": [
+    "Peace Treaty of 201 BC",
+    "Surrender of Punic Fleet",
+    "Fifty Year War Indemnity",
+    "Subservient Client Status"
+  ],
+  "RagShortTexts": [
+    "Ratified in 201 BC, the peace treaty stripped Carthage of all overseas territories, restricted its navy to a mere ten tr"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ratified in 201 BC, the peace treaty stripped Carthage of all overseas territories, restricted its navy to a mere ten triremes, and imposed a staggering indemnity of 10,000 talents payable over fifty years. Furthermore, Carthage was forbidden to wage war anywhere without senatorial permission and forced to return all ancestral lands to King Masinissa, reducing the maritime republic to a Roman protectorate."
+    }
+  ],
+  "TextMappings": []
+}

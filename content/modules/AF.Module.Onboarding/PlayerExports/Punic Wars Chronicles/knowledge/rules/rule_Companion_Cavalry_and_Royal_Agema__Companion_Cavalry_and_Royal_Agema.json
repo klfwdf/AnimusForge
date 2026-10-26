@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Companion_Cavalry_and_Royal_Agema",
+  "Keywords": [
+    "Companion_Cavalry_and_Royal_Agema",
+    "Companion Cavalry",
+    "Hetairoi",
+    "Agema"
+  ],
+  "RagShortTexts": [
+    "The Macedonian Companion Cavalry (Hetairoi) and Royal Agema delivered the decisive hammer blow to the phalanx anvil, charging in wedge formation with double-ended xyston lances."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "While the phalanx pinned the enemy line as an unyielding anvil, the Macedonian military doctrine relied upon elite heavy shock horsemen—the Companion Cavalry (Hetairoi, 'King's Companions') and the Royal Guard (Agema)—to deliver the crushing hammer blow. Recruited from Macedonian landed aristocracy, Companions wore bronze muscled cuirasses, Boeotian helmets that preserved peripheral vision, and carried the xyston, a 9-foot cornel-wood cavalry lance equipped with spear points at both ends so the rider could fight on if the shaft splintered. The Companions deployed in the lethal wedge formation borrowed from Thracians and Scythians: with the commander leading at the sharp apex and junior officers anchoring the diagonal wings, the wedge altered directions instantly on the fly and concentrated devastating kinetic shock onto a single seam in the enemy flank, ripping open lines for infantry exploitation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Hetairoi boast of riding with Alexander, and their wedge charge hits like a battering ram upon open fields. Yet unseat them from their mounts or stall their charge with defensive javelins, and their long lances become clumsy liabilities. Roman discipline does not flinch before gilded royal cavalry!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wedge charge of the Companions is Hellenistic military art at its zenith! When Philip V's Agema drives home into an exposed flank, lines shatter like dry glass. Paired with our swift Numidian skirmishers, Macedonian shock horsemen would give Hannibal the ultimate double wings to extinguish Rome forever!"
+    }
+  ],
+  "TextMappings": []
+}

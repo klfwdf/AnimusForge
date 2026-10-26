@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_56",
+  "Keywords": [
+    "罗得斯共和国四层桨战舰与反海盗巡航",
+    "罗得斯四层桨战舰",
+    "爱琴海护航巡警",
+    "操舰水兵精湛机动"
+  ],
+  "RagShortTexts": [
+    "罗得斯岛上海上共和国拥有全地中海训练最为严酷、操舰技术最卓越的海军舰队。罗得斯人独创的四层桨战舰（Quadrireme）速度飞快且吃水稳定，专为爱琴海峡湾与反海盗清剿巡航设计。罗得斯海军不仅清除了克里"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗得斯岛上海上共和国拥有全地中海训练最为严酷、操舰技术最卓越的海军舰队。罗得斯人独创的四层桨战舰（Quadrireme）速度飞快且吃水稳定，专为爱琴海峡湾与反海盗清剿巡航设计。罗得斯海军不仅清除了克里特岛海盗巢穴，保障了黑海粮道与黎凡特航线畅通，其制定的《罗得斯海商法》更成为全地中海沿用千年的航海法则。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_09",
+  "Keywords": [
+    "Defection of Capua",
+    "Lure of Campanian Luxury",
+    "Southern Italian Secession",
+    "Greek Magna Graecia Rebel"
+  ],
+  "RagShortTexts": [
+    "Following Cannae, Capua, Italy's second wealthiest city, defected to Hannibal in the ambition of supplanting Rome as mas"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Following Cannae, Capua, Italy's second wealthiest city, defected to Hannibal in the ambition of supplanting Rome as master of Italy. However, Carthaginian winter quarters in luxuriant Capua dissipated the razor-sharp edge of Hannibal's mercenary forces. Capua's betrayal prompted waves of rebellions across Samnium, Lucania, and Magna Graecia, straining Rome's alliance network to the brink."
+    }
+  ],
+  "TextMappings": []
+}

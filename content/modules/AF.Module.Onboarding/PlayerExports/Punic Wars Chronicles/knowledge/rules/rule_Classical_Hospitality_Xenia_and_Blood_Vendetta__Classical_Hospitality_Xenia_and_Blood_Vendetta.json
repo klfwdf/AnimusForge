@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Classical_Hospitality_Xenia_and_Blood_Vendetta",
+  "Keywords": [
+    "Classical_Hospitality_Xenia_and_Blood_Vendetta",
+    "Hospitality",
+    "Xenia",
+    "Hospitium"
+  ],
+  "RagShortTexts": [
+    "Sacred guest-friendship (Xenia / Hospitium) strictly bound hosts under divine wrath, balanced by generational blood feuds (Vendetta) redeemed only through execution or wergild."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Across the ancient Mediterranean, interpersonal safety and international diplomacy rested upon the sacrosanct institution of guest-friendship (Greek Xenia, Roman Hospitium). Guided by Zeus Xenios and Jupiter Hospitalis, custom dictated that any stranger crossing a threshold and sharing bread and salt fell under absolute divine sanctuary. A host was forbidden from inquiring into a guest's name or business until hospitality had been extended and gifts exchanged. Families preserved halved bronze or ivory tokens (tesserae hospitales) passed down through generations, granting mutual asylum and lodging across warring states. Conversely, the shadow of hospitality was the sacred blood feud (Vendetta): the murder of a kinsman divinely obligated surviving clan warriors to wage generational retribution until the perpetrator's lineage was destroyed or formally atoned through heavy blood-price (poena) arbitrated by elder councils."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hospitium is sacred before the gods of Rome! Break a hospitality token, and you invite the wrath of Jupiter Capitolinus himself. But let a barbarian betray our legions under safe conduct, and Rome will hunt his seed to the ends of the earth!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A guest who breaks bread with us in Carthage is shielded by the honor of our houses! But betray our trust, and neither Alpine snows nor Roman walls will save you from the righteous blade of Punic vengeance!"
+    }
+  ],
+  "TextMappings": []
+}

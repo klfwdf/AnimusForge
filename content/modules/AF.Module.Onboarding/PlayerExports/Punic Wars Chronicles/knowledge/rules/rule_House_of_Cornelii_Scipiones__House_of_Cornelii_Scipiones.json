@@ -1,0 +1,69 @@
+{
+  "Id": "rule_House_of_Cornelii_Scipiones",
+  "Keywords": [
+    "House_of_Cornelii_Scipiones",
+    "House of Scipio",
+    "Cornelii Scipiones",
+    "Consular Dynasty"
+  ],
+  "RagShortTexts": [
+    "The Cornelii Scipiones were Rome's premier patrician dynasty, celebrated for military genius, philhellenic learning, and an unyielding family code of supreme devotion to the Republic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cornelii Scipiones represented the pinnacle of Roman patrician virtue and military renown. Legend tells the cognomen 'Scipio' (meaning staff or walking-stick) was earned when an ancestor guided his blind father through the Forum, symbolizing familial piety. For centuries, the family dominated the consular fasti. Their family sepulchre along the Appian Way bore immortal Saturnian verses celebrating commanders who 'conquered cities and served the res publica with flawless valor.' Distinct from the provincial conservatism of rival clans, the Scipiones pioneered philhellenism, embracing Greek literature, philosophy, and sophisticated tactical doctrines. In 218 BC, Consul Publius Cornelius Scipio and his brother Gnaeus sacrificed their legions in Hispania to pin down Carthaginian reinforcements. Following their heroic deaths, young Publius Cornelius Scipio (later Africanus), who had saved his wounded father at Ticinus and drawn steel at Cannae to force panicked tribunes into swearing eternal fidelity to Rome, forged the family code of unshakeable strategic resolve that ultimately shattered Carthage at Zama."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cornelii Scipiones are the iron backbone of our Republic! From the consular tombs on the Appian Way to the deserts of Hispania, their blood has purchased Roman supremacy. When young Scipio raises the eagle, the gods of Rome themselves march beside our cohorts!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those pampered Cornelian aristocrats believe Apollo whispers victory in their ears! We slew both elder Scipios in the dust of Spain; and though young Scipio plays the fox with surprise attacks, the steel of Barcid veterans will never bow to a patrician walking-stick!"
+    }
+  ],
+  "TextMappings": []
+}

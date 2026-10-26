@@ -1,0 +1,69 @@
+{
+  "Id": "rule_草原游牧腾格里苍天与库尔干金冢",
+  "Keywords": [
+    "草原游牧腾格里苍天与库尔干金冢",
+    "腾格里",
+    "长生天",
+    "草原游牧腾格里苍天与库尔干金冢库尔干巨冢"
+  ],
+  "RagShortTexts": [
+    "欧亚大草原游牧民族崇拜至高无上的永恒长生天（腾格里）；萨满击鼓通神，阵亡大汗安葬于巍峨库尔干金冢，随葬宝马与百炼神兵。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "横跨从黑海北岸至中亚天山万里的欧亚大草原游牧诸族（斯基泰人、萨卡人与萨尔马提亚人），共享着崇敬无垠天穹的古老萨满长生天（腾格里Tengri）信仰。在游牧民眼中，天空是至高无上、永恒不灭的神圣秩序源泉，大地则是滋养万物之母。部族萨满（Shaman）头戴鹰羽冠、腰悬铜镜、手击蒙皮大鼓，在熊熊燃烧的火塘边起舞旋转进入出神通灵境界，传达长生天关于迁徙水草、征战胜负与天降白灾的启示。当一位百战大汗或王族女武士阵亡时，部族会举行震撼大地的‘库尔干’（Kurgan）宏伟葬礼：在草原地平线上堆筑起数十米高的巍峨土石巨冢，墓室中殉葬数十匹披挂金银马铠的高头战马、侍从以及装载整套黄金鳞甲、金鞘弯刀与纯金野兽纹礼器的随葬品。他们坚信死去的勇士将在长生天的无边天界原野中继续策马奔腾、追逐太阳神鹿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大草原上的蛮子把整套纯金铸造的铠甲埋在巨大的泥土包里，那种铺张的财富足以让罗马最贪婪的放贷者眼红！但他们骑射突袭的凶悍与冷酷，让任何企图染指黑海内陆的远征军望而却步！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长生天的苍穹之下，草原则是游牧骑兵取之不尽的战刀海洋！斯基泰与萨卡人的黄金战马踏碎了波斯与希腊帝国的狂妄，只要给足价码，他们的马背弯弓就是撕裂敌阵最迅猛的风暴！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_波河平原与山南高卢",
+  "Keywords": [
+    "波河平原与山南高卢",
+    "波河平原",
+    "山南高卢",
+    "波伊人"
+  ],
+  "RagShortTexts": [
+    "波河平原土地极度肥沃，由山南高卢诸部落聚居，对罗马殖民怀深仇，是汉尼拔突入意大利后的关键兵源与后勤基地。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "波河平原（Po Valley，罗马称山南高卢 Gallia Cisalpina）位于阿尔卑斯山脉与亚平宁山脉之间，由意大利最长的河流波河及其众多支流冲积而成，土地丰沃、草场广袤、橡树林遍布。公元前四世纪以来，跨山南下的凯尔特各部落（主要是因苏布雷人、波伊人与塞诺内斯人）在此定居建邑。布匿战争爆发前夕，罗马强力向北推进，修建弗拉米尼亚大道并在普拉肯提亚（皮亚琴察）与克雷莫纳设立武装殖民地，大肆圈占部落牧场，激起了高卢部族的刻骨仇恨。当汉尼拔的大军翻越阿尔卑斯山如神兵天降般出现在波河平原时，原本处于罗马高压下的高卢各部几乎全线倒戈，数万名彪悍的高卢战士加入迦太基战阵，不仅为冻伤残破的汉尼拔远征军补充了兵员与粮食，更在随后的特雷比亚、特拉西梅诺与坎尼战役中担任了最凶猛的突击冲击波。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "山南高卢是野蛮部落盘踞的险恶沼地！波伊人和因苏布雷人总是渴望饮吮罗马人的鲜血，汉尼拔刚下雪山，他们便像恶狼一样蜂拥附逆！但战争结束后，执政官军团彻底踏平了波河流域，我们推平了他们的村落，修建了平直的军道与繁华的殖民地，这片富饶平原如今已完全化作罗马最坚实的粮仓与屏障！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "波河平原是汉尼拔将军在冰雪绝境后重生的丰饶摇篮！那里的高卢人虽然莽撞无纪律，但长剑锋利、内心燃烧着对罗马殖民者的复仇怒火！若没有因苏布雷酋长送来的万匹骏马、粮秣与两万勇士，翻越阿尔卑斯山后的残破军队绝不可能在特雷比亚河畔痛击罗马军团！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_43",
+  "Keywords": [
+    "Gallic Cisalpine Uprising of 218 BC",
+    "Cisalpine Gallic Uprising 218 BC",
+    "Insubres Siege of Roman Forts",
+    "Boii Ambush of Colonies"
+  ],
+  "RagShortTexts": [
+    "In spring 218 BC, upon hearing rumors of Hannibal's advance, the Boii and Insubres Gauls of Cisalpine Gaul erupted into "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In spring 218 BC, upon hearing rumors of Hannibal's advance, the Boii and Insubres Gauls of Cisalpine Gaul erupted into open rebellion against Roman colonization. Expelling land surveyors and ambushing newly settled colonists, they trapped Roman garrisons inside Mutina. This uprising forced Rome to divert legions intended for Spain and provided Hannibal with thousands of seasoned Gallic broadswords upon arrival."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_30",
+  "Keywords": [
+    "Night Attack on the Carthaginian Camps",
+    "Night Raid on Utica Camps",
+    "Burning Syphax Reed Huts",
+    "Hasdrubal Gisgo Army Rout"
+  ],
+  "RagShortTexts": [
+    "In early 203 BC, facing over eighty thousand Carthaginians and Numidians under Hasdrubal Gisgo and King Syphax, Scipio f"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In early 203 BC, facing over eighty thousand Carthaginians and Numidians under Hasdrubal Gisgo and King Syphax, Scipio feigned peace parleys while scouts mapped the encampments. Discovering that the Numidian quarters consisted of dry reeds and timber, Scipio launched a coordinated midnight arson attack. Trapped in a raging inferno, thousands were cut down in their sleep or trampled, devastating the main army defending Carthage."
+    }
+  ],
+  "TextMappings": []
+}

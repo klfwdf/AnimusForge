@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Carthago_Delenda_Est_and_Cato",
+  "Keywords": [
+    "Carthago_Delenda_Est_and_Cato",
+    "Carthago delenda est",
+    "Cato the Elder",
+    "Marcus Porcius Cato"
+  ],
+  "RagShortTexts": [
+    "Cato the Elder famously concluded every Senate speech with 'Carthago delenda est', brandishing a fresh African fig to demonstrate Carthage's proximity."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 153 BC, the Roman censor Cato the Elder visited Carthage as an envoy. Expecting a ruined state, he found vibrant commercial wharves, granaries bursting with produce, and formidable wealth. Terrified by Punic resilience, Cato resolved that Rome would never be secure while Carthage existed. Henceforth, he concluded every senatorial speech—regardless of topic—with: 'Ceterum censeo Carthaginem esse delendam' ('Furthermore, I consider that Carthage must be destroyed'). To dramatize his point, Cato dropped a fresh African fig upon the Senate floor, warning: 'The ground that produced this fruit is only three days' sail from Rome.' His relentless rhetoric sealed Carthage's doom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cato possessed prophetic vision! Weak men dreamed of peaceful co-existence, but Cato revealed the truth with a simple green fig: our deadliest rival lay within three days' sail! 'Carthago delenda est' was not hatred, but cold, necessary statesmanship to ensure Roman survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cato was a rancid, bloodthirsty fanatic. Our flourishing orchards and peaceful merchant ships should have been celebrated; instead, our very prosperity inflamed Roman jealousy. That monstrous phrase repeated at every Senate assembly was a death sentence delivered by envious barbarians."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_希腊会饮哲学与饮宴克制礼仪",
+  "Keywords": [
+    "希腊会饮哲学与饮宴克制礼仪",
+    "希腊会饮",
+    "饮宴礼仪",
+    "兑水葡萄酒"
+  ],
+  "RagShortTexts": [
+    "大希腊与爱琴海城邦盛行会饮制度：公民斜倚软榻，由会饮领袖严格调配水酒比例，在微醺中吟诗辩论哲学，维系着古典希腊理性克制与思辨的文明精髓。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在南意大利大希腊（Magna Graecia）诸城与爱琴海诸邦，‘会饮’（Symposium，意为‘共饮聚会’）是希腊自由公民政治、艺术与哲学思辨的核心精神殿堂。会饮严格遵循理性与克制的古典法则：宾客斜倚在躺椅（Klinai）上，聚会必须推选一名‘会饮领袖’（Symposiarch），由其决定当晚葡萄酒与纯水的勾兑比例（通常为一份酒加两份或三份水，调和于巨型双耳调酒缸Krater中）。希腊人认为生饮未兑水烈酒是北方法兰克与高卢野蛮人的粗鄙行径，唯有通过水酒调和与适度微醺，才能在敬献神明诗歌、弹奏里拉琴、探讨柏拉图与亚里士多德伦理学中激发真正的灵智神性。在叙拉古、塔兰托等大邦，会饮更是城邦贵族私下商讨抗衡罗马吞并、抉择地缘阵营的外交策源地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "希腊人喜欢在软榻上一边喝着兑水葡萄酒，一边空谈毫无用处的哲学与民主。但他们忘了，再优美的辩论也挡不住军团重装步兵的一排标枪！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "叙拉古与塔兰托的会饮大厅里流淌着地中海最醇厚的酒香与智慧。迦太基尊重希腊同胞的古老风俗，我们带去的是结盟的金币而非征服的脚镣！"
+    }
+  ],
+  "TextMappings": []
+}

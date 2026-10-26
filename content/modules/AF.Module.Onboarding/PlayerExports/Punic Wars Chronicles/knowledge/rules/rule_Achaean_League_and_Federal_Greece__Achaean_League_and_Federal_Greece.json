@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Achaean_League_and_Federal_Greece",
+  "Keywords": [
+    "Achaean_League_and_Federal_Greece",
+    "Achaean League",
+    "Philopoemen",
+    "Last of the Greeks"
+  ],
+  "RagShortTexts": [
+    "The Achaean League pioneered representative federalism across the Peloponnese, reformed under Philopoemen ('the Last of the Greeks') to subjugate Sparta while navigating Roman diplomacy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Achaean League represented the pinnacle of federalist political experimentation in Hellenistic Greece. Uniting cities across the northern Peloponnese and expanding under Aratus of Sicyon, the confederacy operated via an assembly (synodos) where sovereign city-states shared common coinage, weights, foreign policy, and federal courts while retaining municipal autonomy. Under general Philopoemen—celebrated as 'the Last of the Greeks'—the League abandoned traditional light peltast tactics in favor of Macedonian-style sarissa phalanxes and heavy cavalry. Philopoemen crushed the tyrant Nabis of Sparta, incorporating the ancient Lacedaemonian city into the League. Trapped geopolitically between the encroaching Roman Republic and Antigonid Macedon, the League attempted perilous balance-of-power diplomacy, striving to preserve Hellenic liberty through institutional unity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Philopoemen was a valiant soldier, but the endless bickering of the Achaean councils proves the Greeks cannot govern themselves! Rome respects their ancient temples, but when our legions march, federal delegates must remember who commands the Mediterranean!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Achaeans had the wisdom to forge a federation of free cities, yet lacked the courage to strike Rome alongside Hannibal! Divided by local pettiness, they watch our battle lines bleed in Italy while consular fleets prepare the chains that will bind all Hellas!"
+    }
+  ],
+  "TextMappings": []
+}

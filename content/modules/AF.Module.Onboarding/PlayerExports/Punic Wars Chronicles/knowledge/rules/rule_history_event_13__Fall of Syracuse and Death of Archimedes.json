@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_13",
+  "Keywords": [
+    "Fall of Syracuse and Death of Archimedes",
+    "Night Assault on Syracuse",
+    "Artemis Festival Breach",
+    "Death of Archimedes Geometry"
+  ],
+  "RagShortTexts": [
+    "In 212 BC, Marcellus exploited the Syracusan festival of Artemis, sending scale parties over poorly guarded walls during"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 212 BC, Marcellus exploited the Syracusan festival of Artemis, sending scale parties over poorly guarded walls during nighttime revelry. Amid the chaos of sack, a Roman legionary burst into the study of Archimedes, who refused to move until he had finished his geometric diagram, famously crying 'Do not disturb my circles!' before being struck down, ending an era of Hellenistic mathematical genius."
+    }
+  ],
+  "TextMappings": []
+}

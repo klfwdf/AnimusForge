@@ -1,0 +1,69 @@
+{
+  "Id": "rule_努曼西亚绝壁与不屈之魂",
+  "Keywords": [
+    "努曼西亚绝壁与不屈之魂",
+    "努曼西亚",
+    "凯尔特伊比利亚",
+    "不屈名城"
+  ],
+  "RagShortTexts": [
+    "伊比利亚北部的努曼西亚是凯尔特伊比利亚人抗击罗马霸权的终极图腾，八千勇士抗击六万罗马军团二十年，最终全城宁可集体服毒自焚也绝不当罗马奴隶。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坐落于西班牙杜埃罗河上游峭壁之上的努曼西亚（Numantia），是整个古代世界最壮烈、最震撼人心的不屈抵抗象征。这所由凯尔特伊比利亚部落建立的坚固山城，虽然常驻战士仅有区区八千余人，却在长达二十余年的时间里，凭借险峻的地势、神准的投石与凶悍的法尔卡塔近战突击，连续击溃击退了数位罗马执政官与六万多名大军，甚至迫使罗马统帅签署了屈辱的投降条约（后被元老院撕毁）。公元前134年，元老院被迫请出灭亡迦太基的盖世名将小西庇阿（Scipio Aemilianus）统率六万大军与重兵合围。小西庇阿深知正面强攻无法战胜这群山地狂战士，遂在城外构筑长达九公里、耸立着上百座木塔的绝杀环形封锁线，并彻底截断河流运水与外部粮道。经过长达十五个月的残酷绝粮围困，在吃尽了死人尸骸与靴皮草根之后，坚贞的努曼西亚人拒绝了罗马开出的任何投降条件：勇士们将全城财富与神庙一把火焚烧，全族老弱妇孺与残存战士饮下毒草汁或拔剑互刺自尽，当罗马军团最终破门而入时，迎接他们的唯有一座正在燃烧的死城与焦土瓦砾，成为西方文明中‘宁死不屈’的至高代名词。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "努曼西亚那群西班牙野蛮人展现出的顽固令人发指！几个执政官在那座石山前折戟沉沙、身败名裂。小西庇阿用九公里的木墙和十五个月的饥荒才扼杀了他们的喘息，但直到最后一刻，竟没有一个活着的成年战士肯在鹰旗面前跪下求饶，那种疯狂的决绝让每一个军团百夫长脊背发凉！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "努曼西亚是不屈伊比利亚勇士献给自由的最高祭坛！八千山地男儿打碎了六万罗马正规军的狂妄自大。他们宁可全族共饮毒酒、焚城自尽，也绝不让自己的妻儿戴上罗马人的奴隶铁环。伊比利亚大地的每一根草木，都流淌着这种与征服者死战到底的烈火！"
+    }
+  ],
+  "TextMappings": []
+}

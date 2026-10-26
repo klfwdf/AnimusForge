@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Vestal_Virgins_and_Sacred_Hearth",
+  "Keywords": [
+    "Vestal_Virgins_and_Sacred_Hearth",
+    "Eternal Flame",
+    "Temple of Vesta",
+    "Inviolability"
+  ],
+  "RagShortTexts": [
+    "The six Vestal Virgins guarded Rome's perpetual hearth fire in the Forum; extinguishing the flame or breaking vows of chastity meant being buried alive in the Campus Sceleratus."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Within the circular Temple of Vesta in the Roman Forum burned the perpetual sacred fire, symbolizing the eternal life of the Roman Republic. Six Vestal Virgins, chosen between ages six and ten from patrician lineage by the Pontifex Maximus, took sacred vows of strict chastity for thirty years. In return, they enjoyed unprecedented legal privileges: liberated from paternal control (patria potestas), possessing absolute property rights, and preceded in streets by lictors before whom consuls lowered their fasces. If a condemned criminal crossed paths with a Vestal on his way to execution, he was instantly pardoned. However, an extinguished flame was punished by scourging in the dark by the Pontifex Maximus. If a Vestal broke her vow of chastity (incestum), it was deemed an existential pollution threatening the Republic. Because Roman religious law forbade shedding Vestal blood, convicted priestesses were stripped of badges, placed in a covered hearse, and marched to the Campus Sceleratus to be entombed alive in an underground vault with a single lamp, a loaf of bread, and a jug of water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The sacred flame of Vesta is the immortal heartbeat of the Republic! So long as the holy embers glow in the Forum, Roma will endure. When our legions fell at Cannae, the Senate cleansed the gods' fury by burying the unchaste beneath the stones—for Roman survival demands absolute ritual purity!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Romans condemn Punic sacrifices while entombing their own virgin daughters alive in pitch-black stone cellars whenever a consul loses an army! To blame military incompetence on an untended fire hearth and bury innocent girls alive is the pinnacle of barbaric hypocrisy disguised as civic law!"
+    }
+  ],
+  "TextMappings": []
+}

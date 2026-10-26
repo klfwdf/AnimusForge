@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Battle_of_the_Metaurus",
+  "Keywords": [
+    "Battle_of_the_Metaurus",
+    "Battle of the Metaurus",
+    "Hasdrubal Barca",
+    "Gaius Claudius Nero"
+  ],
+  "RagShortTexts": [
+    "At the Battle of the Metaurus (207 BC), Roman consuls destroyed Hasdrubal Barca's reinforcement army, sealing Hannibal's defeat in Italy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 207 BC, Hannibal's brother Hasdrubal Barca crossed the Alps with reinforcements and siege engines to join Hannibal for a combined march on Rome. However, Hasdrubal's dispatch riders were captured. In an audacious strategic gamble, southern Consul Gaius Claudius Nero left a token force facing Hannibal and marched 250 miles north in six days with 7,000 elite troops, secretly joining northern Consul Livius Salinator at the Metaurus River. In battle, Nero wheeled his cohorts behind the Roman line to crush the Punic flank. Realizing the day was lost, Hasdrubal charged into a Roman cohort and died fighting. Nero marched south and tossed Hasdrubal's severed head into Hannibal's outpost. Hannibal reportedly wept, declaring: 'There lies the fate of Carthage.'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Consul Nero's march was a tactical marvel that saved Rome! Slipping past Hannibal's keen gaze, he reinforced the northern army and annihilated Hasdrubal on the banks of the Metaurus. When the severed head of his brother rolled into Hannibal's camp, the invader finally understood that Rome could never be conquered!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Metaurus was the death knell of our Italian campaign. Hasdrubal had braved the alpine snows to deliver victory, but captured letters betrayed his junction. He died like a true son of Hamilcar, sword in hand. When his severed head was flung into our camp, Hannibal saw with crushing certainty the tragedy awaiting Carthage."
+    }
+  ],
+  "TextMappings": []
+}

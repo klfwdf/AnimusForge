@@ -1,0 +1,69 @@
+{
+  "Id": "rule_迦太基农学大师马戈",
+  "Keywords": [
+    "迦太基农学大师马戈",
+    "马戈农书",
+    "迦太基农业",
+    "28卷巨著"
+  ],
+  "RagShortTexts": [
+    "迦太基不仅是商业帝国更是古代农业先驱，农学大师马戈撰写的28卷农学百科是迦太基城破后唯一被罗马元老院下令官方译为拉丁文传世的宝典。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大众通常将迦太基视为只懂得商贸与雇佣兵的海上寡头，但实际上，迦太基控制的巴格拉达斯河谷拥有古典世界最先进的庄园农业体系。迦太基学者马戈（Mago the Agronomist，生卒年约前3世纪）倾尽毕生精力撰写了二十八卷鸿篇巨制《农业志》。该书详尽总结了地中海气候下的集约化农业技术：包括梯田水土保持、油橄榄的嫁接与剪枝、防风林营造、优质葡萄园栽培与无水压榨酿酒法、牲畜良种杂交，以及规模化奴隶庄园的高效管理准则。公元前146年第三次布匿战争结束、迦太基城被焚为平地之际，罗马元老院将迦太基王家图书馆中浩瀚的腓尼基历史、哲学与文学典籍统统赏赐给了东努米底亚的土著附庸国王，唯独颁布元老院特别法令（Senatus Consultum）：指派以学者德西姆斯·西拉努斯为首的委员会，将马戈的二十八卷农书以公款全文翻译为拉丁文与希腊文。这部农书深刻塑造了后来老加图、瓦罗与科鲁梅拉的罗马大庄园经济学说，是迦太基文明留给罗马征服者最深沉的农业遗产。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基人虽是阴险的仇敌，但他们的学者马戈在伺弄泥土与葡萄藤上确实是一等一的大师！罗马的元老们绝非愚蠢之徒：布匿人的城池可以烧光，但马戈的二十八卷农书必须被译成庄严的拉丁文，指引我们意大利与西西里的所有大庄园主！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基的富庶绝非仅仅依赖海风与波涛，更扎根于我们肥沃金黄的巴格拉达斯麦田与万顷橄榄林！马戈大师用二十八卷竹简教导我们如何让荒原流淌出蜜与油。即便罗马人把我们的城邦夷为瓦砾，他们也得老老实实照着马戈的智慧去耕种土地！"
+    }
+  ],
+  "TextMappings": []
+}

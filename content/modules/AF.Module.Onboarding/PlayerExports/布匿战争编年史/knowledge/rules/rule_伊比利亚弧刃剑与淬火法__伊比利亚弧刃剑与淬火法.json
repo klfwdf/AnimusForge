@@ -1,0 +1,69 @@
+{
+  "Id": "rule_伊比利亚弧刃剑与淬火法",
+  "Keywords": [
+    "伊比利亚弧刃剑与淬火法",
+    "法尔卡塔",
+    "西班牙短剑",
+    "弧刃重砍"
+  ],
+  "RagShortTexts": [
+    "伊比利亚法尔卡塔剑采用前曲厚背弧刃设计，兼具劈砍与穿刺极效；西班牙铁匠将铁板埋土腐蚀数年后多层折叠锻造，其惊人韧性令罗马军团骇然。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在伊比利亚半岛的群山中，凯尔特伊比利亚铁匠开创了享誉地中海的高超冶金工艺。伊比利亚武士的代表性武器是前曲弧刃短剑‘法尔卡塔’（Falcata）：剑身长约五十厘米，前部重心明显加宽下压如同一柄轻斧，内凹的弧形利刃具备毁灭性的劈砍破坏力，而双刃剑尖在近身搏杀时又可直接当刺剑使用。古希腊史学家记载，西班牙铁匠的独门秘法是将优质铁板深埋地下数年，任由潮湿土壤将材质松软脆弱的生铁杂质腐蚀殆尽，仅保留最坚硬耐腐的钢质核心，随后经过反复折叠锻打与油水淬火。其验剑标准极具传奇色彩：刀匠将剑身平放在头顶上，双手握住剑尖与剑柄向下发力弯折直至触及两肩；当双手松开时，利刃立刻如弹簧般恢复原状，绝不留丝毫弯曲弯折。在战场上，法尔卡塔一刀劈下足以切开罗马军团的青铜蒙皮大盾，生生削下手臂或连头带盔一劈两半，迫使罗马陆军在战争中逐步改良自身装备并吸纳西班牙短剑（Gladius Hispaniensis）的设计精髓。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西班牙蛮子的弧形弯剑简直就是屠夫的剁骨刀！野战医院里抬下来的士兵，手臂被齐肩斩断、头盔被连脑壳劈裂的惨状让老兵也胆寒。元老院已明智地下令工匠：汲取西班牙好钢的锻造技艺，尽快为我们的军团换装双刃西班牙短剑！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法尔卡塔是伊比利亚群山赐予巴卡家族的锋刃！当西班牙战士挥舞着弧剑如狂风扫过时，罗马人的木盾根本挡不住那股可怕的下劈势能。只要西班牙的银矿与铁匠作坊掌握在我们手中，汉尼拔手中就有斩断罗马喉咙的永恒利刃！"
+    }
+  ],
+  "TextMappings": []
+}

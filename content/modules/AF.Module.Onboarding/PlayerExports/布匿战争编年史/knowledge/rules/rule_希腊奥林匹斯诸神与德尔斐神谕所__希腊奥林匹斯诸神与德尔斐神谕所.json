@@ -1,0 +1,69 @@
+{
+  "Id": "rule_希腊奥林匹斯诸神与德尔斐神谕所",
+  "Keywords": [
+    "希腊奥林匹斯诸神与德尔斐神谕所",
+    "奥林匹斯十二主神",
+    "德尔斐神谕",
+    "皮提亚女祭司"
+  ],
+  "RagShortTexts": [
+    "希腊文明崇拜奥林匹斯十二主神；德尔斐阿波罗神殿女祭司皮提亚以月桂熏烟传达命运神谕，是全希腊城邦开战结盟不可逾越的神圣枢纽。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "希腊化世界的宗教生活建立在荷马史诗奠定的奥林匹斯十二主神体系与繁多的城邦秘仪之上。至高主神宙斯执掌雷霆统治万神，波塞冬掌控怒海波涛，雅典娜庇护城邦正义防御与智慧，阿波罗则统御光明、射术与神谕。位于帕纳索斯山悬崖之上的‘德尔斐神谕所’（Delphi）被尊为世界的肚脐（Omphalos）。无论是斯巴达国王、雅典执政官、马其顿腓力五世乃至远道而来的罗马使团，在发起远征或制定宪法前均需向德尔斐奉献金银祭品。神殿内室的女祭司皮提亚（Pythia）吸入地底岩缝升腾出的神圣熏烟，在恍惚迷离的狂喜状态中吐露阿波罗晦涩玄妙的双关韵文预言。在阿提卡，埃勒夫西斯密仪（Eleusinian Mysteries）向受洗信徒传授农神德墨忒尔克服死亡、灵魂永生的神圣救赎体验；奥林匹克运动会则以停战祭祀宙斯的方式展现凡人肉体的神圣健美。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德尔斐的阿波罗神谕即使在罗马也享有崇高敬畏。当坎尼惨败罗马哭声震天时，元老院第一件事就是派遣法比乌斯·皮克托尔前往德尔斐求取赎罪预言。希腊诸神的智慧是指引凡人的永恒明灯！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "希腊人整天围着德尔斐那些模棱两可的神棍诗句争论不休。神谕虽然动听，但如果阿波罗真能拯救他们，希腊城邦何至于在马其顿长矛和罗马军靴面前彻底沦陷！"
+    }
+  ],
+  "TextMappings": []
+}

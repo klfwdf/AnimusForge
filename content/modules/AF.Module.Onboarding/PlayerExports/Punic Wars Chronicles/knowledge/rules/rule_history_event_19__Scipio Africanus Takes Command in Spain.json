@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_19",
+  "Keywords": [
+    "Scipio Africanus Takes Command in Spain",
+    "Young Scipio Extraordinary Command",
+    "Twenty-Four Year Old Proconsul",
+    "Breaking Senatorial Precedent"
+  ],
+  "RagShortTexts": [
+    "Following the slaughter of both elder Scipios, not a single senior senator dared to contest the perilous Spanish command"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Following the slaughter of both elder Scipios, not a single senior senator dared to contest the perilous Spanish command. Young Publius Cornelius Scipio, only twenty-four and holding no senior magistrate office, stepped forward before the Popular Assembly. Elected unanimously with proconsular authority, he arrived in Iberia with reinforcements, determined to avenge his father and extinguish Punic power."
+    }
+  ],
+  "TextMappings": []
+}

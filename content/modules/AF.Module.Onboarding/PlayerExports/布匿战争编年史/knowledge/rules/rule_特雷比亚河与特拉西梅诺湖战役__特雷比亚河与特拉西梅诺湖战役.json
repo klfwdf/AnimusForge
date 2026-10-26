@@ -1,0 +1,69 @@
+{
+  "Id": "rule_特雷比亚河与特拉西梅诺湖战役",
+  "Keywords": [
+    "特雷比亚河与特拉西梅诺湖战役",
+    "特雷比亚河战役",
+    "特拉西梅诺湖战役",
+    "特拉西梅诺湖伏击"
+  ],
+  "RagShortTexts": [
+    "前218年特雷比亚河与前217年特拉西梅诺湖战役中，汉尼拔连续运用伏击战术歼灭两支罗马执政官军团。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "进入意大利后，汉尼拔迅速展现了惊人的战术诱敌艺术。前218年冬的特雷比亚河战役中，汉尼拔利用努米底亚骑兵挑衅引诱罗马执政官塞姆普罗尼乌斯的大军在严冬清晨涉过冰冷刺骨的河流，罗军饥寒交迫之际遭到迦太基以逸待劳的主力迎击，随后汉尼拔幼弟马戈率千名伏兵自芦苇丛杀出合围，近三万罗马士兵惨遭歼灭。前217年春，汉尼拔行军穿过亚平宁山脉的沼泽地直逼埃特鲁里亚，执政官弗拉米尼乌斯率军急追。在特拉西梅诺湖畔狭窄狭长的湖岸小道上，汉尼拔借清晨浓雾掩护将主力隐匿于北面山丘树林中。当罗马军团沿湖岸行进拉长成长蛇阵时，迦太基大军全线冲杀下山，前堵后截，将一万五千罗马军团生生驱入冰冷的湖水中斩杀或溺毙，执政官弗拉米尼乌斯战死阵中。两次惨败震动罗马全城，元老院被迫任命费边为紧急独裁官。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "特雷比亚河与特拉西梅诺湖是罗马军团不可磨灭的血泪教训！塞姆普罗尼乌斯的鲁莽和弗拉米尼乌斯的狂躁正中了敌人的下怀。在浓雾迷漫的湖畔，我们的战士被压缩在峭壁与湖水之间，连拔剑列阵的空间都没有！但正是从这些血泊中，罗马人学会了收起骄狂、在忍耐中磨砺出反败为胜的钢铁意志！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在特雷比亚，罗马人在冰冷的河水里瑟瑟发抖；在特拉西梅诺湖，漫天大雾成了我们的无形披风！汉尼拔将军如同摆弄木偶一般操纵着傲慢的罗马执政官。整整一支庞大的军团在湖畔土崩瓦解，十五里湖岸水染赤红。那一天，罗马城门紧闭，执政官当街宣布：‘我们在一场重大战役中被击败了！’"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Celtic_Druidic_Groves_and_Sacred_Sacrifice",
+  "Keywords": [
+    "Celtic_Druidic_Groves_and_Sacred_Sacrifice",
+    "Druids",
+    "Sacred Oak Groves",
+    "Nemeton"
+  ],
+  "RagShortTexts": [
+    "Druids held judicial and spiritual monopoly across Celtic lands, harvesting mistletoe with gold sickles, teaching reincarnation, and orchestrating wicker-man sacrifices in crisis."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In Celtic society across Gaul and Britain, ultimate intellectual and spiritual authority rested with the Druids ('knowers of the oak'). Undergoing up to twenty years of oral training forbidden from written transcription, Druids served as supreme judges, philosophers, and intermediaries with gods like Teutates, Taranis, and Esus. Any chieftain refusing their rulings was excommunicated, becoming an outcast. Sacred rites unfolded in consecrated woodland clearings (nemeta): on the sixth day of the lunar cycle, white-robed Druids climbed ancient oaks to sever sacred mistletoe with golden sickles, catching the boughs in white linen. Druidic doctrine of metempsychosis (transmigration of souls) convinced Celtic warriors that death was merely a gateway to rebirth, inspiring reckless fury in battle. In supreme crises, ancient sources recorded the construction of colossal wicker colossi ('Wicker Man') packed with livestock and enemy captives set ablaze as appeasement to celestial deities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Druids are demonic sorcerers lurking in rotting groves, burning live Roman soldiers in wicker cages to false gods! Their venomous preachings incite rebellion across Gaul; Rome's axes must fell every oak grove to civilize these savages!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Druid bards chant ancient cosmic genealogies beneath the stars. Because they teach that the warrior's spirit never dies, Gallic swordsmen break legionary shields with fearless smiles. Their courage was the iron wedge of Hannibal's vanguard!"
+    }
+  ],
+  "TextMappings": []
+}

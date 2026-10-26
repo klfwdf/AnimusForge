@@ -1,0 +1,69 @@
+{
+  "Id": "rule_萨贡图姆孤峰要塞",
+  "Keywords": [
+    "萨贡图姆孤峰要塞",
+    "萨贡图姆要塞",
+    "萨贡托",
+    "埃布罗河南岸孤峰"
+  ],
+  "RagShortTexts": [
+    "萨贡图姆要塞耸立于西班牙东岸险峻孤峰上，俯瞰沿海通道，前219年汉尼拔历时八个月攻破该城引爆第二次布匿战争。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨贡图姆（Saguntum，今西班牙萨贡托）耸立在伊比利亚半岛东海岸距海仅数里的狭长陡峭石灰岩孤峰山脊之上，地势宛如一堵天造地设的屏障，控制着从西班牙通往比利牛斯山的唯一沿海陆路通道。城邦居民由本地伊比利亚人与早期希腊扎金索斯移民融合而成，以坚固的独石城墙和凶悍的标枪步兵闻名。作为罗马在埃布罗河以南唯一的‘自由同盟者’，萨贡图姆对巴卡家族在西班牙的扩张构成了致命侧翼威胁。公元前219年春，汉尼拔亲提大军包围萨贡图姆，调集数十架巨型攻城冲车与三层云梯轮番猛攻。萨贡图姆人凭借居高临下的断崖死战不降，甚至用裹着浸油沥青与麻布的‘燃火长标枪’（Falarica）屡屡击穿迦太基的攻城塔，汉尼拔本人亦在大腿负重伤。经过长达八个月的残忍围攻与城墙坍塌，城内食水断绝，市民在广场架起巨大柴堆将所有黄金白银投入火中，男女老少相拥跳入火海自尽，城破时未留任何有价值战利品。这一壮烈殉城震惊罗马，正式拉开了第二次布匿战争的血幕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨贡图姆的孤峰见证了世间最崇高的同盟忠义！面对汉尼拔的百战雇佣军与连绵冲车，那里的勇士死守了整整八个月！当城墙坍塌时，他们没有乞降，而是把财宝掷入火中，全城老幼昂首投火殉国！罗马元老院在圣殿前发誓：萨贡图姆的骨灰与烈火，必将由整个迦太基的彻底覆灭来偿还！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨贡图姆自恃有罗马撑腰，狂妄地在我们的行省边境寻衅滋事，甚至屠杀亲迦太基部族的妇女儿童！汉尼拔将军必须拔除这枚扎在西班牙咽喉上的倒刺。那八个月是一场可怕的血磨，城墙断裂时飞出的火标枪差点要了将军的命。他们宁可全城自尽也不投降，虽然悲壮，但这也让整个西班牙明白：罗马的盟约远隔千山万水，救不了任何狂妄之徒！"
+    }
+  ],
+  "TextMappings": []
+}

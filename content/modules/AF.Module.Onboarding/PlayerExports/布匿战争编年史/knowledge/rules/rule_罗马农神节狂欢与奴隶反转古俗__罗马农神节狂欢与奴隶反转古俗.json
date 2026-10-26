@@ -1,0 +1,69 @@
+{
+  "Id": "rule_罗马农神节狂欢与奴隶反转古俗",
+  "Keywords": [
+    "罗马农神节狂欢与奴隶反转古俗",
+    "农神节",
+    "萨图尔努斯",
+    "阶级倒错"
+  ],
+  "RagShortTexts": [
+    "每年冬至农神节罗马全民狂欢，法律停摆、掷骰赌博，主仆身份彻底倒错由主人斟酒伺候奴隶，以此致敬萨图尔努斯神统治的无阶级远古黄金时代。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "每年12月17日起举行的农神节（Saturnalia），是罗马共和国最神圣、最狂热且最深入民心的全民狂欢节庆。此节旨在纪念农业神萨图尔努斯（Saturn）统治的远古黄金时代——那是一个没有阶级压迫、人人平等、财富共有的乌托邦。在长达七天的节日期间，所有元老院诉讼、军事行动与公职审判全线休止；最震撼人心的习俗是‘社会阶层彻底倒置’：奴隶脱下沉重的铁环与奴隶装，穿上主人的宽袍（Synthesis）与自由软帽（Pileus），在餐桌上大模大样接受昔日严苛主人的斟酒伺候；全城公民放纵饮酒、通宵达旦地玩骰子赌博、走街串巷高呼‘Io Saturnalia！’互赠蜜饯泥偶与红蜡烛。即便在布匿战争最灰暗的岁月里，元老院也绝不取消农神节，因为这口古老狂欢的阀门维系着整个罗马平民与奴隶阶层摇摇欲坠的忠诚与生机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农神节是诸神赐给罗马人的安宁之日！即便是家中最卑微的高卢奴隶，在这一天也能坐在主人的席位上品尝美酒，这是对远古黄金盛世的敬畏！在狂欢的呼喊声中，我们重聚团结与力量！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人一边在农神节上假惺惺地给奴隶端茶倒酒，一边在战场上把千千万万战俘钉死在十字架上，这种虚伪的狂欢简直令人作呕！"
+    }
+  ],
+  "TextMappings": []
+}

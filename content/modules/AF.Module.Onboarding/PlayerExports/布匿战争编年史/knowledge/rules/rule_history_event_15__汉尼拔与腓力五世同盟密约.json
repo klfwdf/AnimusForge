@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_15",
+  "Keywords": [
+    "汉尼拔与腓力五世同盟密约",
+    "汉尼拔腓力盟约",
+    "地中海双雄密谋",
+    "瓜分罗马地盘协议"
+  ],
+  "RagShortTexts": [
+    "公元前215年，汉尼拔大营与马其顿国王腓力五世正式结盟。条约商定：双方共同对罗马作战，战胜后罗马必须放弃伊利里亚与亚得里亚海沿岸所有属地归还马其顿；迦太基则享有意大利霸权，并在希腊遇险时派军支援。然而"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前215年，汉尼拔大营与马其顿国王腓力五世正式结盟。条约商定：双方共同对罗马作战，战胜后罗马必须放弃伊利里亚与亚得里亚海沿岸所有属地归还马其顿；迦太基则享有意大利霸权，并在希腊遇险时派军支援。然而马其顿使团回程途中在公海被罗马巡逻战舰截获，盟约原文落入元老院手中，罗马紧急派遣瓦莱里乌斯舰队封锁亚得里亚海。"
+    }
+  ],
+  "TextMappings": []
+}

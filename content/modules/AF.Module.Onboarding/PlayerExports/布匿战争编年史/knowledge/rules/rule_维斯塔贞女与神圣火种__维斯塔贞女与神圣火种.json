@@ -1,0 +1,69 @@
+{
+  "Id": "rule_维斯塔贞女与神圣火种",
+  "Keywords": [
+    "维斯塔贞女与神圣火种",
+    "维斯塔贞女",
+    "圣火永续",
+    "灶神殿"
+  ],
+  "RagShortTexts": [
+    "维斯塔贞女负责守护罗马城灶神殿永不熄灭的神圣火种；若圣火熄灭或贞女失贞被视为亡国征兆，违戒贞女将被施以活埋极刑以向神明赎罪。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在罗马古广场的圆形灶神殿中，燃烧着象征罗马共和国永恒国运的‘维斯塔圣火’。六名出身最高贵氏族的女祭司——‘维斯塔贞女’（Vestal Virgins）在六至十岁时由最高祭司长（Pontifex Maximus）亲自选拔，必须立下严守三十年童贞的誓言。作为回报，贞女享有全罗马女性最高的尊荣与特权：她们不受父权（Patria Potestas）约束，拥有独立立遗嘱与处置财产的权利；出行时由侍从武士（Lictor）开道，即便执政官相遇也必须避让致敬；凡死刑犯在押赴刑场途中只要偶遇贞女，便可依法当场免死。然而，若圣火因疏忽熄灭，当值贞女将遭最高祭司在暗室中用皮鞭严惩；若贞女犯下失贞罪（Incestum），将被视作引发瘟疫与兵败的绝大天谴。罗马法律禁止流淌贞女的鲜血，受罚者会被剥夺祭司袍，在哀悼的沉默中被押送至‘恶名平原’（Campus Sceleratus）的地下石室，仅留少许水粮，随后洞口被活生生封死埋葬。在坎尼战役惨败后，罗马因恐慌接连审判并活埋了两名失贞贞女，以平息神愤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "维斯塔神殿的火种是罗马生命的跳动脉搏！只要圆殿中的火焰一天不熄，台伯河畔的七丘之城就绝不会沉沦。若有贞女玷污誓约招致神明对军团的震怒，哪怕她是贵族之女，也必须在恶名平原下被泥土活埋以洗净共和国的罪愆！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人自命纯洁，却把十几岁的小女孩关在石殿里看火，一旦战败打了败仗，就怪罪是修女不贞洁，把她们活活封在泥坑里憋死来当替罪羊！把军事灾难归咎于未熄的火堆和可怜的少女，这就是所谓‘理性罗马’最虚伪残忍的迷信！"
+    }
+  ],
+  "TextMappings": []
+}

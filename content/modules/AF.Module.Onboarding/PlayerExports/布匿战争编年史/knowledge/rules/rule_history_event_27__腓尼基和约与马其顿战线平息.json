@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_27",
+  "Keywords": [
+    "腓尼基和约与马其顿战线平息",
+    "腓尼基和约媾和",
+    "马其顿战线告一段落",
+    "罗马腾出双手决战"
+  ],
+  "RagShortTexts": [
+    "公元前205年，在埃托利亚同盟单方面与马其顿媾和后，罗马与马其顿国王腓力五世在伊庇鲁斯的腓尼基签署和平条约，第一次马其顿战争正式结束。条约承认了腓力五世在伊利里亚的部分微小利益，但成功阻止了马其顿海军"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前205年，在埃托利亚同盟单方面与马其顿媾和后，罗马与马其顿国王腓力五世在伊庇鲁斯的腓尼基签署和平条约，第一次马其顿战争正式结束。条约承认了腓力五世在伊利里亚的部分微小利益，但成功阻止了马其顿海军涉足意大利战场。罗马由此彻底解除了东线巴尔干半岛的后顾之忧，得以将全部军事与财政精力投向下阶段对北非非洲本土的决战。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_49",
+  "Keywords": [
+    "迦太基百人元老院汉诺派内耗",
+    "大汉诺和平派议会",
+    "百人元老院内耗争权",
+    "阻扣西班牙增援饷械"
+  ],
+  "RagShortTexts": [
+    "迦太基百人元老院内部长期存在着以‘大汉诺’为首的土地贵族和谈派与以‘巴卡家族’为首的海外军功派的激烈政争。汉诺派代表北非农业地主阶层利益，厌恶高昂军费并极度猜忌巴卡家族独揽大权。在坎尼大捷后马戈带回三"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基百人元老院内部长期存在着以‘大汉诺’为首的土地贵族和谈派与以‘巴卡家族’为首的海外军功派的激烈政争。汉诺派代表北非农业地主阶层利益，厌恶高昂军费并极度猜忌巴卡家族独揽大权。在坎尼大捷后马戈带回三斗元老金戒指求援时，汉诺冷嘲热讽并竭力阻挠物资配给，致使汉尼拔在意大利孤军奋战缺乏后备兵器与围城重械，错失灭亡罗马的历史良机。"
+    }
+  ],
+  "TextMappings": []
+}

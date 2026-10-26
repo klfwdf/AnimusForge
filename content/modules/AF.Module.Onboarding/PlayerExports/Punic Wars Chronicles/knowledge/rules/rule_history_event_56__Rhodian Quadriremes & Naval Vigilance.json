@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_56",
+  "Keywords": [
+    "Rhodian Quadriremes & Naval Vigilance",
+    "Rhodian Quadrireme Galleys",
+    "Aegean Anti Piracy Patrols",
+    "Superb Seamanship Maneuver"
+  ],
+  "RagShortTexts": [
+    "The island republic of Rhodes maintained the most disciplined and technologically advanced naval force in the eastern Me"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The island republic of Rhodes maintained the most disciplined and technologically advanced naval force in the eastern Mediterranean. Renowned for their fast quadrireme galleys and superb rowers, Rhodian squadrons patrolled vital sea lanes from the Black Sea to Alexandria, eradicating piratical fleets and enforcing the famed Rhodian Sea Law, which governed Mediterranean maritime commerce for centuries."
+    }
+  ],
+  "TextMappings": []
+}

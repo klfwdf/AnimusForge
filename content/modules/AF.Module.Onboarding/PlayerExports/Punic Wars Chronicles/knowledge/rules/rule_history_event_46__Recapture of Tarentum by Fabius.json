@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_46",
+  "Keywords": [
+    "Recapture of Tarentum by Fabius",
+    "Bruttian Mercenary Betrayal",
+    "Fabius Final Triumph",
+    "Hannibal Mourns Lost Initiative"
+  ],
+  "RagShortTexts": [
+    "In 209 BC, during his fifth consulship, elderly Fabius Maximus orchestrated the recapture of Tarentum. Suborning a Brutt"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 209 BC, during his fifth consulship, elderly Fabius Maximus orchestrated the recapture of Tarentum. Suborning a Bruttian mercenary officer who opened a neglected sector of the walls, Fabius stormed the city and slaughtered the Punic garrison. Arriving only five miles away to find the city lost, Hannibal sighed bitterly: 'The Romans have found another Hannibal; we have lost Tarentum even as we won it.'"
+    }
+  ],
+  "TextMappings": []
+}

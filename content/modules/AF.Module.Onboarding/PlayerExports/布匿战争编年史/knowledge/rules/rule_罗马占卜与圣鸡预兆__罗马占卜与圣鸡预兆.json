@@ -1,0 +1,69 @@
+{
+  "Id": "rule_罗马占卜与圣鸡预兆",
+  "Keywords": [
+    "罗马占卜与圣鸡预兆",
+    "圣鸡占卜",
+    "奥古尔",
+    "战前吉凶"
+  ],
+  "RagShortTexts": [
+    "罗马统帅在临战前必须由占卜官观察‘圣鸡啄米’（Tripudium）以定吉凶，若圣鸡绝食则严禁出战；第一次布匿战争中执政官怒掷绝食圣鸡入海招致德雷帕纳惨败成为万世警钟。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马共和国在开战、渡河或签订和约前，必须履行最神圣的占卜礼仪（Auspicia）。随军军官中必定配有一名专门饲养‘圣鸡’（Sacred Chickens）的侍祭占卜官（Pullarius）。在破晓拂晓时分，占卜官会在执政官帐前打开鸡笼抛撒大麦：若圣鸡争相啄食谷物，甚至贪婪地将麦粒从嘴边溢落跌在地上跳动（此被称为Tripudium solistimum），便被视为主神朱庇特赐予的最大吉兆，军团随即吹响集结号杀向敌阵；反之，若圣鸡蜷缩在笼中惊恐鸣叫、拒绝进食，则被视为凶兆，执政官必须立即取消作战计划闭门坚守。公元前249年第一次布匿战争期间，脾气暴躁的罗马执政官普布利乌斯·克劳狄乌斯·普尔凯尔在德雷帕纳海战前拂晓占卜，圣鸡因晕船与惊吓拒绝啄米。克劳狄乌斯大发雷霆，怒吼道：‘既然它们不肯吃米，那就让它们喝水去吧！’当众命人将笼中圣鸡全部丢入大海，强行引舰出海，结果遭到迦太基舰队伏击，九十三艘战舰沉没被俘，几乎全军覆没。克劳狄乌斯回国后遭到严厉公审与巨额罚款，‘莫惹圣鸡’自此成为刻在每一位罗马将领骨子里的敬畏信条。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "祖宗的成法不可违抗，朱庇特的警告不可轻慢！克劳狄乌斯将圣鸡沉海所招致的德雷帕纳之耻，每一名军校保民官都牢记在心。战场上的武勇若失去了天神的眷顾，再坚固的军团也会像被风吹散的沙尘一样在海上崩碎！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人自诩为法治与理性的化身，打起仗来却要看几只被关在笼子里的大公鸡吃不吃麦子！在德雷帕纳，他们的傲慢执政官把鸡扔进了海里，而我们的将领阿德赫巴尔则把他们的士兵送进了鱼腹！如果罗马人继续让家禽来决定战局，汉尼拔会让他们的整个意大利都啼哭无门！"
+    }
+  ],
+  "TextMappings": []
+}

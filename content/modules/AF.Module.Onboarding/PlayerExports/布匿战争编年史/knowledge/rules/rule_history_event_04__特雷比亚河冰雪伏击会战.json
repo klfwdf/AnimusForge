@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_04",
+  "Keywords": [
+    "特雷比亚河冰雪伏击会战",
+    "特雷比亚河冰雪会战",
+    "马戈河床埋伏",
+    "塞姆普罗尼乌斯涉渡"
+  ],
+  "RagShortTexts": [
+    "公元前218年12月冬至，执政官提比略·塞姆普罗尼乌斯·隆古斯（巴拉诺尔）急躁冒进，驱策饥寒交迫的四万罗马军团强渡冰冷彻骨的特雷比亚河。汉尼拔以逸待劳，在两军激战之际，伏于芦苇枯河床中的其弟马戈率一千"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年12月冬至，执政官提比略·塞姆普罗尼乌斯·隆古斯（巴拉诺尔）急躁冒进，驱策饥寒交迫的四万罗马军团强渡冰冷彻骨的特雷比亚河。汉尼拔以逸待劳，在两军激战之际，伏于芦苇枯河床中的其弟马戈率一千骑兵与一千精步兵突袭罗马军团背脊，罗马军团全线崩溃，两万余人阵亡，高卢各部纷纷归附迦太基。"
+    }
+  ],
+  "TextMappings": []
+}

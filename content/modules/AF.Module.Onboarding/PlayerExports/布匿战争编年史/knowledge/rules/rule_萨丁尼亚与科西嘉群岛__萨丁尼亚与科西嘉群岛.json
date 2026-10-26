@@ -1,0 +1,69 @@
+{
+  "Id": "rule_萨丁尼亚与科西嘉群岛",
+  "Keywords": [
+    "萨丁尼亚与科西嘉群岛",
+    "萨丁尼亚",
+    "科西嘉",
+    "第勒尼安海群岛"
+  ],
+  "RagShortTexts": [
+    "萨丁尼亚与科西嘉是西地中海仅次于西西里的战略大岛，前238年罗马趁雇佣兵战争强行占领，成为双方不可化解的世仇。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨丁尼亚岛与科西嘉岛犹如一对孪生巨屏纵卧于第勒尼安海西侧，北控利古里亚海，南逼北非海角，西扼伊比利亚海路。萨丁尼亚岛土地肥沃，出产大量谷物、盐、银矿与铜矿，自腓尼基时代起便是重要的商栈与要塞重地。在第一次布匿战争期间，迦太基守军顽强抵御了罗马的袭扰；然而战后迦太基陷入惨烈的‘无情之战’雇佣兵叛乱，萨丁尼亚的雇佣守军亦发动叛变并向罗马请降。公元前238年，罗马元老院趁迦太基精疲力竭无暇他顾，悍然派遣执政官舰队出兵强占萨丁尼亚与科西嘉，并宣称迦太基若敢反对便立即开启全面战争，强索额外一千两百塔兰特白银赔款。前227年，萨丁尼亚与科西嘉被合并设立为罗马共和国的第二个海外行省。这一不义夺取成为迦太基举国最刻骨铭心的国耻，哈米尔卡·巴卡立誓在西班牙重建霸权以图复仇，直接促成了汉尼拔远征的决绝爆发。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨丁尼亚与科西嘉就像两把利剑悬在第勒尼安海的咽喉！驻扎在那里的雇佣兵主动向罗马投诚，难道我们要坐视海盗和暴徒把海岛变成劫掠意大利海岸的匪窝吗？元老院果断出兵平定群岛设立行省，为罗马赢得了第勒尼安海的永久宁静，更为共和国赢得了宝贵的银矿与谷仓！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨丁尼亚是罗马强盗嘴脸最赤裸的明证！条约里白纸黑字写着群岛归属迦太基，但当我们在非洲本土浴血镇压叛乱时，罗马人却拔出匕首从背后抢夺了群岛，还逼迫我们缴纳勒索金！巴卡家族在西班牙流淌的每一滴汗水，都是为了有朝一日从罗马人手中夺回萨丁尼亚与科西嘉！"
+    }
+  ],
+  "TextMappings": []
+}

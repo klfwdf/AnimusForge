@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_47",
+  "Keywords": [
+    "Siege of Capua & Circumvallation",
+    "Siege of Capua Circumvallation",
+    "Double Trench Wall System",
+    "Famine and Starvation Siege"
+  ],
+  "RagShortTexts": [
+    "Between 212 and 211 BC, sixty thousand Roman legionaries encircled Capua with a monumental double line of circumvallatio"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Between 212 and 211 BC, sixty thousand Roman legionaries encircled Capua with a monumental double line of circumvallation and contravallation. One wall faced inward to starve the defenders, while the other faced outward against Hannibal's relief assaults. When Hannibal's attacks failed to pierce the Roman fortifications, starving Capua surrendered. Rome executed dozens of Capuan leaders, abolishing its civic charter."
+    }
+  ],
+  "TextMappings": []
+}

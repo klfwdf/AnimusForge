@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Africa_Province_and_Mare_Nostrum",
+  "Keywords": [
+    "Africa_Province_and_Mare_Nostrum",
+    "Africa Province",
+    "Mare Nostrum",
+    "Roman Mediterranean Hegemony"
+  ],
+  "RagShortTexts": [
+    "After Carthage's fall, Rome annexed Africa as a province, securing mastery of 'Mare Nostrum' while sowing domestic crises that tore the Republic apart."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Following Carthage's destruction in 146 BC, a senatorial commission demarcated the territory with the 'Fossa Regia' ditch, establishing the Roman province of Africa with Utica as capital. The fertile cereal fields and olive groves of North Africa became a primary breadbasket for Rome. With its western rival eradicated and Greece annexed, the Mediterranean became 'Mare Nostrum' (Our Sea). Yet this triumph destabilized Roman society: decades of foreign service impoverished the yeoman peasantry, influxes of enslaved captives filled aristocratic latifundia, and agrarian collapse catalyzed the Gracchan political crisis and civil wars that doomed the Republic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Golden wheat from the province of Africa fills the warehouses of Ostia to feed our Roman citizens! From the Pillars of Hercules to the shores of Syria, every wave bows before SPQR. Mare Nostrum is not mere geographical arrogance; it is the realized destiny of Roman virtue and sacrifice!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rome believed it conquered the world with flame and chains, but the curse of Carthage took root within its very soul! Enslaved multitudes displaced their own smallholders, leaving Rome's streets swarming with landless mobs. Their generals soon turned legionary gladii upon their own Senate, tearing the Republic apart in the blood it stole from us."
+    }
+  ],
+  "TextMappings": []
+}

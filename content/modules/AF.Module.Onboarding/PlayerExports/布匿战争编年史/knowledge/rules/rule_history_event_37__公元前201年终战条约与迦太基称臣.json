@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_37",
+  "Keywords": [
+    "公元前201年终战条约与迦太基称臣",
+    "公元前201年终战条约",
+    "迦太基交出全部战舰",
+    "五十年巨额战争赔款"
+  ],
+  "RagShortTexts": [
+    "公元前201年，迦太基正式签署终战条约：彻底放弃西班牙及所有海外岛屿；将全部近五百艘战舰焚毁，仅准保留十艘护航巡逻船；五十年内偿还一万塔兰特巨额战争赔款；未经罗马元老院批准决不得在非洲本土内外发动任何"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前201年，迦太基正式签署终战条约：彻底放弃西班牙及所有海外岛屿；将全部近五百艘战舰焚毁，仅准保留十艘护航巡逻船；五十年内偿还一万塔兰特巨额战争赔款；未经罗马元老院批准决不得在非洲本土内外发动任何战争；承认马西尼萨为努米底亚全境合法君主。迦太基自此彻底沦为二流附庸，地中海由罗马单极霸权时代正式揭幕。"
+    }
+  ],
+  "TextMappings": []
+}

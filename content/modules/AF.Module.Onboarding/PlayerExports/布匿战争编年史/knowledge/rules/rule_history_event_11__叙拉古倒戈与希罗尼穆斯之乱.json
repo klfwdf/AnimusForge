@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_11",
+  "Keywords": [
+    "叙拉古倒戈与希罗尼穆斯之乱",
+    "叙拉古倒戈西西里",
+    "希罗尼穆斯撕毁盟约",
+    "西西里战略重心易手"
+  ],
+  "RagShortTexts": [
+    "公元前215年，长期忠诚于罗马的叙拉古老国王希厄洛二世逝世，其年少气盛的孙子希罗尼穆斯继位。在迦太基密探汉尼拔使节埃皮基德斯与希波克拉底的煽动下，希罗尼穆斯轻率撕毁半个世纪的和平条约转投迦太基。虽不久"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前215年，长期忠诚于罗马的叙拉古老国王希厄洛二世逝世，其年少气盛的孙子希罗尼穆斯继位。在迦太基密探汉尼拔使节埃皮基德斯与希波克拉底的煽动下，希罗尼穆斯轻率撕毁半个世纪的和平条约转投迦太基。虽不久后国王遇刺身亡，但叙拉古彻底落入亲迦太基寡头之手，点燃了西西里岛全面反抗罗马的血腥战火。"
+    }
+  ],
+  "TextMappings": []
+}

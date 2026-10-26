@@ -1,0 +1,69 @@
+{
+  "Id": "rule_第一次布匿战争",
+  "Keywords": [
+    "第一次布匿战争",
+    "西西里战争",
+    "埃加迪群岛",
+    "西西里行省"
+  ],
+  "RagShortTexts": [
+    "第一次布匿战争（前264—前241年）是罗马与迦太基争夺西西里岛控制权的长达23年的惨烈拉锯战，以罗马战胜并获得西西里告终。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "第一次布匿战争爆发于公元前264年，导火索是西西里岛东北端的墨西拿争端。战争长达二十三年，主要战场在西西里岛陆地及其周边海域。起初迦太基拥有绝对的制海权，罗马则依托强大的公民兵团在陆战中占优。为打破僵局，罗马仿造搁浅的迦太基战船组建舰队，并发明了‘乌鸦吊桥’，在米莱与埃克诺穆斯海角海战中连续重创敌舰。尽管雷古鲁斯执政官远征非洲失利，哈米尔卡·巴卡在西西里展开顽强游击，前241年罗马在埃加迪群岛海战中彻底歼灭迦太基主力船队。迦太基无力再战，被迫签订和约，割让西西里岛并赔偿3200塔兰特白银，西西里成为罗马第一个海外行省。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "第一次布匿战争证明了没有什么能够阻挡罗马的决心！我们原先连一条正规战舰都没有，但我们砍倒森林造出战船，用乌鸦吊桥把大海变成了陆地斗兽场。尽管风暴吞噬过我们的舰队，元老院和公民们自掏腰包再次造船！在埃加迪群岛，我们彻底砸碎了迦太基的海上霸权，西西里永远归属于罗马！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "第一次布匿战争是我们海权沦丧的开端。西西里本是我们的屏障，哈米尔卡·巴卡将军在埃里克斯要塞神出鬼没，未尝一败！然而国内那些目光短浅的寡头元老在关键时刻削减海军军费，使得缺乏护航的运输船队在埃加迪群岛覆灭。被迫签订的屈辱条约和巨额赔款，直接导致了随后的雇佣军叛乱。"
+    }
+  ],
+  "TextMappings": []
+}

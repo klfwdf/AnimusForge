@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_54",
+  "Keywords": [
+    "Thracian Rhomphaia Shock Warfare",
+    "Thracian Rhomphaia",
+    "Anti Cavalry Polearm Blade",
+    "Two Handed Shield Splitter"
+  ],
+  "RagShortTexts": [
+    "The dreaded weapon of Thracian warriors of the Odrysian Kingdom was the rhomphaia, a polearm-sword with a heavy, straigh"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dreaded weapon of Thracian warriors of the Odrysian Kingdom was the rhomphaia, a polearm-sword with a heavy, straight or inward-curving iron blade mounted on an equal-length wooden shaft. Wielded with two hands in shock assaults, it functioned as both thrusting spear and devastating scythe, capable of slicing through shields, severing limbs, and cutting down armored cavalrymen."
+    }
+  ],
+  "TextMappings": []
+}

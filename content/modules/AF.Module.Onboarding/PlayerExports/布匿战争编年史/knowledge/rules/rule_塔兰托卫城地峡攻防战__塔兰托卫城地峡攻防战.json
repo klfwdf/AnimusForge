@@ -1,0 +1,69 @@
+{
+  "Id": "rule_塔兰托卫城地峡攻防战",
+  "Keywords": [
+    "塔兰托卫城地峡攻防战",
+    "塔兰托卫城",
+    "地峡防御",
+    "汉尼拔夜袭"
+  ],
+  "RagShortTexts": [
+    "公元前212年汉尼拔里应外合夜袭攻克大希腊重镇塔兰托，但罗马守军退守险要地峡卫城苦撑数年，汉尼拔创造‘旱地拖船跨街入海’奇迹封锁海口，战况极尽精妙。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前212年，南意大利大希腊最富庶的希腊城邦塔兰托（Tarentum）爆发叛乱倒向迦太基。在城内亲布匿年轻贵族的策应下，汉尼拔以极其精妙的夜袭打开城门，一举控制了整座城市。然而，狡黠的罗马驻军统帅马尔库斯·李维在最后时刻带领残存军团士兵撤入了全城地势最高、地处极窄岩石地峡顶端的‘塔兰托卫城’（Citadel of Tarentum）。这座卫城犹如一把铁锁横亘在内海与外海之间，其两侧皆是陡峭悬崖，陆地一侧由坚固石墙与深壕死死阻隔。汉尼拔发现自己的大军虽然占领了城市，但由于罗马卫城居高临下的投石弩炮火力封锁了出海口，停泊在内海港湾中的塔兰托同盟舰队根本无法出海支援。面对困境，汉尼拔再次施展惊世骇俗的工兵天才——‘旱地行舟’：他命人砍伐大量圆木铺在平坦的城市主干街道上作为滑轨，利用滑轮、大缆绳与数百头耕牛战马，硬生生将几十艘沉重的战船从内港码头拉出，穿过城中街道拖行逾两公里，在罗马卫城射程之外直接滑入外海大洋！随后汉尼拔利用这批战船从海上对卫城实施严密反向封锁。双方在狭窄地峡上爆发了长达三年的坑道攻防、投石对轰与饥饿相持，直至公元前209年‘拖延者’费边利用内奸里应外合反攻收复塔兰托，才终结了这场古典攻坚史上的绝世奇局。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塔兰托的卫城是罗马军团骨气的最好丰碑！虽然整座城市叛变了，但李维将军率领残兵在地峡要塞上顶住了汉尼拔整整三年！无论汉尼拔在大街上怎么拖他的战船，罗马的石弹与弩箭永远在卫城上空呼啸，直至费边执政官大军赶到，彻底清洗了那座叛逆的城邦！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "汉尼拔把战船从城中街道上拉入大海的奇迹，让整个地中海的世界为之瞠目结舌！塔兰托的希腊同胞向迦太基敞开怀抱，罗马守军只能像缩头乌龟一样被我们死死围在狭窄的岩石尖尖上瑟瑟发抖。要不是费边收买了叛徒内应，南意大利的海军钥匙早就掌握在迦太基手中！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_House_of_Hanno_the_Great_Oligarchy",
+  "Keywords": [
+    "House_of_Hanno_the_Great_Oligarchy",
+    "House of Hanno",
+    "Hanno the Great",
+    "Landed Aristocracy"
+  ],
+  "RagShortTexts": [
+    "The dynasty of Hanno the Great represented Carthage's conservative landed oligarchy, pursuing African agrarian wealth while systematically sabotaging military reinforcements for Hannibal."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The House of Hanno the Great (represented in-game by clan Bini Yashro) led the dominant conservative faction within Carthage's oligarchic Council of One Hundred and Four. Deriving vast revenues from African estates worked by thousands of Libyan serfs and caravan trade with the Sahara, the Hannontes opposed overseas military adventures championed by the Barcids. They regarded costly campaigns in Hispania and Italy as ruinous drains upon state revenues that aggrandized warlords at the expense of merchant profits. Hanno advocated territorial expansion within North Africa and peaceful accommodation with Rome. During the Second Punic War, when Mago poured three bushels of golden signet rings stripped from fallen Roman senators onto the Senate floor to plead for reinforcements, Hanno famously scoffed: 'If Hannibal has destroyed Rome, why does he ask for soldiers and coin?' By withholding crucial naval and logistic reinforcements, the Hannonite peace party left Hannibal isolated in southern Italy, sealing Carthage's eventual doom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rome owes a debt of gratitude to Hanno the Great! While Hannibal bled our legions in the south, Hanno's penny-pinching faction starved him of troops from Carthage. Greedy merchants who value olive groves over empires always dig their own graves!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hanno and his cabal of obese merchants sold our empire for peace! While Hannibal carved Rome to pieces with cold iron, Hanno refused to send a single warship or talent of silver from the docks. They clutched their coin-pouches while the Republic died around them!"
+    }
+  ],
+  "TextMappings": []
+}

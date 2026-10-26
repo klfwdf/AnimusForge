@@ -1,0 +1,69 @@
+{
+  "Id": "rule_迦太基围城战与彻底毁灭",
+  "Keywords": [
+    "迦太基围城战与彻底毁灭",
+    "迦太基围城战",
+    "迦太基城毁灭",
+    "小西庇阿"
+  ],
+  "RagShortTexts": [
+    "前149—前146年迦太基军民浴血坚守孤城三年，小西庇阿破城后经残酷巷战将全城付之一炬，五万遗民尽被贩奴。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前149年，面对拆城内迁的亡国通牒，迦太基城内五十万军民爆发殊死抗争。工匠日夜不停锻造武器，妇女剪下长发纺成投石机弓弦，以残存卫城拜尔萨为核心坚守。罗马军队初战数度受挫，前147年大西庇阿的养孙小西庇阿（埃米利安·西庇阿）接任统帅，在港口修筑巨型防波堤阻断一切海运补给。前146年春，罗马军队攻破外墙，展开了战史罕见的六天六夜血腥巷战——士兵从六层高的楼宇楼顶搭梯接战，逐屋焚烧倒塌，废墟填满了军民尸骸。最终拜尔萨卫城守将哈斯德鲁拔出降，其妻痛斥其懦弱，携两子跃入燃烧的神庙自焚。罗马元老院下达了彻底摧毁的严令：大火连续焚烧了十七天，所有城墙、神庙与宅邸尽被推平，五万名幸存者尽数被卖为奴隶。后世传说罗马人在废墟上撒下白盐使寸草不生，这座立国近七百年的地中海明珠彻底从地图上抹去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "小西庇阿将军完成了罗马最严酷的使命！在那六天六夜里，每一间房屋都是一座要塞，但罗马军团的意志战胜了绝望的疯狂！当十七天的烈火将拜尔萨卫城烧成灰烬时，小西庇阿凝视火海泪流满面，吟诵着荷马的诗句，悲悯于特洛伊与罗马未来可能的命运。然而命令已经执行：迦太基已不复存在，罗马的霸业终得万世奠定！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是文明史上最惨绝人寰的浩劫！三年来，我们的母亲剪发制弓，孩子推运石弹！在烈火燃烧的六天六夜里，罗马军团将瓦砾堆里的活人直接推进火海！守将之妻抱着孩子跳入埃斯库拉皮乌斯神庙烈焰的身影，是布匿民族永恒不屈的脊梁！七百年的城邦化为焦土，五万人沦为奴隶。此仇此恨，浩瀚地中海的海水也洗刷不尽！"
+    }
+  ],
+  "TextMappings": []
+}

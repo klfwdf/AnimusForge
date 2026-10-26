@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Battles_of_Trebia_and_Lake_Trasimene",
+  "Keywords": [
+    "Battles_of_Trebia_and_Lake_Trasimene",
+    "Battle of the Trebia",
+    "Battle of Lake Trasimene",
+    "Trasimene Ambush"
+  ],
+  "RagShortTexts": [
+    "In 218 and 217 BC, Hannibal orchestrated devastating tactical traps at the Trebia River and Lake Trasimene, destroying two Roman consular armies."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Upon entering Italy, Hannibal exhibited unmatched mastery of tactical deception. At the Trebia (winter 218 BC), Numidian skirmishers lured Consul Sempronius Longus across freezing waters into an ambush by Mago Barca's concealed forces, shattering the Roman army. The following spring at Lake Trasimene (217 BC), Hannibal laid a massive ambush along a narrow defile between misty wooded hills and the lake shore. As Consul Gaius Flaminius's army marched into the defile, Punic forces charged downhill from the fog, trapping the column. Fifteen thousand Romans were slaughtered or drowned in the lake, including Flaminius himself. The catastrophic defeat prompted Rome to appoint Fabius Maximus as dictator."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Trebia and Trasimene were bitter baptisms of blood! Impetuous consuls rushed headlong into Punic snares. At Trasimene, our men were trapped between shrouded hills and deep waters with no room to deploy their shields. Yet out of that slaughter, Rome found the iron humility to endure and fight on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At Trebia, the Romans froze in the icy current; at Trasimene, morning mist concealed our wrath! Hannibal orchestrated their demise like pieces on a game board. When the trap snapped shut, fifteen thousand proud legionaries perished along the blood-soaked lake. In Rome, the praetor could only weep: 'We have been defeated in a great battle!'"
+    }
+  ],
+  "TextMappings": []
+}

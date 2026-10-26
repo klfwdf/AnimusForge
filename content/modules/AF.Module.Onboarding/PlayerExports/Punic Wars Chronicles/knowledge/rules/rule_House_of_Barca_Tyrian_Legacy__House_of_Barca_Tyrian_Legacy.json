@@ -1,0 +1,69 @@
+{
+  "Id": "rule_House_of_Barca_Tyrian_Legacy",
+  "Keywords": [
+    "House_of_Barca_Tyrian_Legacy",
+    "Barcid Dynasty",
+    "Hamilcar Barca",
+    "Hannibal Barca"
+  ],
+  "RagShortTexts": [
+    "The Barcids ('Lightning') claimed descent from ancient Tyrian royalty; Hamilcar founded an Iberian empire and bound nine-year-old Hannibal by blood-oath to wage eternal war against Rome."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Barcid dynasty (Punic 'Baraq' meaning lightning; represented in-game by Bini Hannim) was Carthage's supreme military dynasty. Claiming lineage from ancient maritime royalty in Phoenician Tyre, the Barcids combined strategic genius, charisma over multi-ethnic mercenaries, and religious devotion to Melqart. Following his undefeated guerilla defense on Sicily and brutal suppression of the Mercenary War, Hamilcar Barca led his loyal veterans to Hispania, carving out a semi-autonomous empire rich in silver and manpower. Before embarking, Hamilcar led his nine-year-old son Hannibal to the altar of Melqart in Carthage, demanding the boy place his hand upon the sacrificial entrails and swear eternal hatred against the Roman Republic. Hannibal and his brothers—Hasdrubal and Mago, the 'lion's brood'—fulfilled that oath with ferocity. Hannibal's march across the Alps and masterpieces of tactical envelopment at Trebia, Trasimene, and Cannae brought Rome to the brink of annihilation, establishing the Barcids as antiquity's most formidable rivals to Roman hegemony."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Barcid brood is a nest of vipers nourished on hatred of Rome! Hamilcar poisoned his young son with sacrificial blood before Melqart's altar, and that oath bore fruit in eighty thousand slaughtered citizens at Cannae. Rome will never be secure until the last Barcid lies cold in the earth!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Barca is the lightning bolt that struck fear into the heart of Italy! While spineless oligarchs in the Senate trembled over their trade balances, Hannibal led our banners across frozen Alpine peaks to humiliate the legions. The blood of Tyre flows in their veins, pure and untamed!"
+    }
+  ],
+  "TextMappings": []
+}

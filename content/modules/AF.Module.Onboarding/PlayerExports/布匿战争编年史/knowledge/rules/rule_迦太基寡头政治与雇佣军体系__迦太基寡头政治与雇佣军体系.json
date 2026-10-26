@@ -1,0 +1,69 @@
+{
+  "Id": "rule_迦太基寡头政治与雇佣军体系",
+  "Keywords": [
+    "迦太基寡头政治与雇佣军体系",
+    "迦太基政治",
+    "苏菲特",
+    "百四人元老会"
+  ],
+  "RagShortTexts": [
+    "迦太基政体由商人寡头与百四人会主导，其军事体系依赖国库重金招募的多民族雇佣军与战象，兼具战术多样与忠诚脆弱。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基共和国的统治架构建立在精明的商业寡头专政之上。国家最高行政长官为两名每年由公民大会选举产生的‘苏菲特’（Suffete，类似于罗马执政官），但实际大权长期被以‘百四人元老会’为代表的巨贾、航海世家与大地主垄断。在军事上，迦太基公民基本只服役于海军或本土近卫军，庞大的远征军则完全依靠国库巨资雇佣异邦战士：高大凶悍挥舞长剑的凯尔特高卢步兵、擅长持盾短剑格斗的西班牙伊比利亚战士、百步穿杨的巴利阿里投石兵、神出鬼没的努米底亚无鞍轻骑兵，以及震慑人心的北非森林象。这支多民族雇佣联军在哈米尔卡或汉尼拔这样的战术天才手中能够发挥出极为致命的复合突击力；然而一旦国库银币中断或战局受挫，缺乏共同信仰与国家认同的雇佣军便极易哗变甚至反噬祖城，成为迦太基最致命的内伤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基人把战争当成了货栈账本上的买卖！他们蜷缩在华丽的海边豪宅里，指使高卢人流血、西班牙人送死、战象开道。但雇佣军的忠诚只维系在钱袋的叮当响声中！一旦金币枯竭，那些凶徒立刻就会掉转枪头砍向迦太基的元老！用银子买不来真正的胜利！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们的财富让我们汇聚了地中海所有最致命的勇士！巴利阿里投石手的铅弹能打穿罗马铜盔，高卢狂战士的冲锋能撕碎敌阵，战象的践踏更是令马匹战栗狂奔！巴卡家族知道如何赢得这些骄傲异族战士的绝对忠诚。若不是国内议事堂里的守财奴在关键时刻扣押军饷，汉尼拔的雇佣大军早已把罗马城踏平！"
+    }
+  ],
+  "TextMappings": []
+}

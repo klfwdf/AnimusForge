@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Saka_Kurgans_and_Steppe_Gold",
+  "Keywords": [
+    "Saka_Kurgans_and_Steppe_Gold",
+    "Kurgan",
+    "Saka Gold",
+    "Animal Style Art"
+  ],
+  "RagShortTexts": [
+    "Saka steppe nomadic royalty were interred beneath colossal earthen mounds (kurgans), clad in thousands of repoussé gold scales and flanked by sacrificed thoroughbreds adorned in Animal Style gold."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Across the vast Eurasian steppes bordering Bactria and the Caspian Sea, the Saka horse lords developed a civilization distinguished by dazzling gold craftsmanship and monumentality. When a high chieftain died, the confederation erected a colossal earth and stone tumulus called a Kurgan, often soaring over sixty feet high. Beneath lay a subterranean timber chamber of dressed pine logs. The royal corpse was entombed in armor fashioned from thousands of interlocking repoussé gold plaque-scales, topped by a tall conical gold-embossed headdress. Surrounding the chieftain lay dozens of sacrificed elite steppe horses arrayed in gilded bridles and polychrome saddles. The defining hallmark of Saka material culture was the dynamic 'Animal Style': gold plaques, gorytoi (bow-cases), and belt buckles depicting coiled panthers, stags with sweeping antlers terminating in eagle heads, and winged griffins locked in visceral combat with horses, crystallizing the violent majesty of nomadic steppe existence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nomads of the northern steppe sew thousands of gold sheets onto their coats only to bury them beneath muddy dirt heaps! They build neither aqueducts nor fora, squandering plunder on corpses and sacrificed ponies. Roman tax collectors will have much to harvest when the legions advance beyond the Euxine!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The kurgans of the Saka are monuments to untamable freedom! The golden leopards and twisting stags embossed on their quivers capture the predatory spirit of the steppe. While Rome bickers over small silver denarii, the horse lords of the East sleep under mountains of gold, keeping Hellenistic kings constantly looking over their shoulders!"
+    }
+  ],
+  "TextMappings": []
+}

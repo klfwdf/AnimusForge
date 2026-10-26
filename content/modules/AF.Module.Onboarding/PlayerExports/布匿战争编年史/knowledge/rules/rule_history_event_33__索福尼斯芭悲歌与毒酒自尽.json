@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_33",
+  "Keywords": [
+    "索福尼斯芭悲歌与毒酒自尽",
+    "索福尼斯芭毒酒自尽",
+    "迦太基第一美人烈骨",
+    "马西尼萨新婚死誓"
+  ],
+  "RagShortTexts": [
+    "奇尔塔城破之际，迦太基大将吉斯科之女、西法克斯王后索福尼斯芭在王宫阶梯迎候马西尼萨。她容貌绝代且笃守爱国热血，恳求曾经的未婚夫马西尼萨决不让她沦为罗马凯旋式上受辱的女囚。马西尼萨当即娶其为妻企图保护，"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奇尔塔城破之际，迦太基大将吉斯科之女、西法克斯王后索福尼斯芭在王宫阶梯迎候马西尼萨。她容貌绝代且笃守爱国热血，恳求曾经的未婚夫马西尼萨决不让她沦为罗马凯旋式上受辱的女囚。马西尼萨当即娶其为妻企图保护，但大西庇阿严正声明她是罗马战利品必须押送罗马。绝望之下马西尼萨派侍从奉上一杯毒鸩，索福尼斯芭从容饮尽殉国，成千古烈女绝唱。"
+    }
+  ],
+  "TextMappings": []
+}

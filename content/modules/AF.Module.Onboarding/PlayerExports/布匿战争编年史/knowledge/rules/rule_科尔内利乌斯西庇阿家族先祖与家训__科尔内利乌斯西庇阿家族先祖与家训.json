@@ -1,0 +1,69 @@
+{
+  "Id": "rule_科尔内利乌斯西庇阿家族先祖与家训",
+  "Keywords": [
+    "科尔内利乌斯西庇阿家族先祖与家训",
+    "西庇阿家族",
+    "科尔内利乌斯",
+    "执政官世家"
+  ],
+  "RagShortTexts": [
+    "科尔内利乌斯·西庇阿家族是罗马共和国战功最显赫的大贵族世家，以笃信命运、开明拥抱希腊文化与战场统帅天才闻名，其家训强调为共和国奉献至死。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科尔内利乌斯氏族（Gens Cornelia）是罗马最古老显贵的三大贵族氏族之一，而西庇阿支脉（Scipiones，‘Scipio’拉丁原意为‘手杖’，源自先祖以目盲老父之手杖导引的孝道传说）更是共和国将星闪烁的顶尖门第。自公元前四世纪以来，西庇阿家族世代蝉联执政官、监察官与大祭司职务。在亚壁古道旁的西庇阿家族石墓中，篆刻着庄严肃穆的古拉丁文萨图恩诗体墓志铭：‘武勋盖世、德操无双、以身为城’。西庇阿家族不仅在战场上极度骁勇果敢，更在文化上首开罗马精英阶层钻研希腊哲学、文学与演说的‘希腊之友’（Philhellenism）风气。在第二次布匿战争爆发之初，老西庇阿与其弟格奈乌斯舍生忘死挺进西班牙牵制巴卡军队，虽双双阵亡却为罗马赢得了宝贵的喘息之机；其子青年普布利乌斯·西庇阿更在提契诺河飞马救父、坎尼惨败后拔剑逼迫同僚誓死不弃罗马，立下‘若罗马倾覆，西庇阿必化灰烬同殉’的刚烈家规，最终开创了‘阿非利加征服者’的盖世功业。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西庇阿家族是朱庇特神赐予罗马最锋利的鹰爪！从先祖的执政官长袍到年轻西庇阿的统帅斗篷，那个家族流淌的每一滴血都在为共和国的荣耀燃烧。无论是西班牙的荒漠还是扎马的沙场，只要西庇阿的鹰旗升起，胜利就属于罗马！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科尔内利乌斯家那群傲慢的罗马崽子自诩受阿波罗神庇佑，老西庇阿兄弟在西班牙被我们打得暴尸荒野！青年西庇阿虽然狡诈多端偷袭了新迦太基，但在真正的战场硬碰硬上，巴卡家族的闪电永远不会向手杖屈服！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_28",
+  "Keywords": [
+    "Transfer of the Magna Mater to Rome",
+    "Magna Mater Cybele Black Stone",
+    "Sibylline Oracle Salvation",
+    "Pergamene Royal Escort"
+  ],
+  "RagShortTexts": [
+    "In 204 BC, after fourteen grueling years of war, consultation of the Sibylline Books revealed that an invader on Italian"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 204 BC, after fourteen grueling years of war, consultation of the Sibylline Books revealed that an invader on Italian soil could only be expelled if the Magna Mater (Cybele) was brought to Rome. With the diplomatic aid of King Attalus I of Pergamon, the sacred black meteoric stone of Cybele was escorted from Pessinus to Rome and enshrined upon the Palatine Hill, producing an immense surge of religious and civic morale."
+    }
+  ],
+  "TextMappings": []
+}

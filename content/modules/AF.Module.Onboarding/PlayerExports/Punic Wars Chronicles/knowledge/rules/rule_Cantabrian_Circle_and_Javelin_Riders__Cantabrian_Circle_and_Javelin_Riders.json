@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Cantabrian_Circle_and_Javelin_Riders",
+  "Keywords": [
+    "Cantabrian_Circle_and_Javelin_Riders",
+    "Cantabrian Circle",
+    "Circle Tactics",
+    "Mounted Skirmishing"
+  ],
+  "RagShortTexts": [
+    "Northern Iberian light cavalry perfected the 'Cantabrian Circle', deploying galloping formations that rotated in a perpetual carousel to pour an unbroken stream of javelins upon enemy infantry."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The rugged hill tribes of northern Hispania (the Cantabri and Astures) devised a carousel cavalry doctrine renowned as the Cantabrian Circle (Circulus Cantabricus). Mounted on sure-footed mountain ponies and equipped with small wicker caetra bucklers, squads of light javelin riders approached rigid infantry formations without engaging in hand-to-hand shock. Instead, the horsemen deployed into a perpetual, flowing oval carousel moving at a gallop across the enemy's front. As each rider reached the closest apex of the circle nearest the enemy line, he launched a heavy barbed javelin with full kinetic force, instantly wheeling outward and retreating along the back loop while drawing his next weapon. This carousel created a relentless, unbroken barrage of plunging missiles. Because the target was in constant lateral motion, archers and slingers struggled to lead targets effectively, leaving heavily armored infantry formations pin-cushioned and demoralized."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Iberian riders spin like a potter's wheel of death! They circle our maniples, hurling javelins into gaps between shields. A tribune must hold his men in lockstep—never break ranks to chase them! Let our Cretan archers shoot the lead horses in the turn; once the carousel stumbles, the illusion breaks!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cantabrian Circle is a spinning vortex of death that drives consular legions to despair! While Roman soldiers crouch miserably beneath bruised shields, our Iberian horsemen dance upon their flanks with effortless precision, bleeding their front lines dry without shedding a drop of Punic blood!"
+    }
+  ],
+  "TextMappings": []
+}

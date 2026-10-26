@@ -1,0 +1,69 @@
+{
+  "Id": "rule_马西利与马塞西利东南部落宿仇",
+  "Keywords": [
+    "马西利与马塞西利东南部落宿仇",
+    "努米底亚",
+    "马西利",
+    "马塞西利"
+  ],
+  "RagShortTexts": [
+    "东努米底亚（马西利）与西努米底亚（马塞西利）因争夺北非草场与绝色名媛索福尼斯巴爆发宿仇；马西尼萨结盟罗马并在扎马反噬迦太基，统一努米底亚。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北非辽阔干燥的阿特拉斯山脉以北与高原荒漠上，生活着被称为‘无鞍人马’的柏柏尔游牧蛮勇——努米底亚人。这片土地在第二次布匿战争前夕分裂为两大水火不容的强横部落王国：东部的马西利部落（Massylii，青年雄鹰马西尼萨领衔）与西部更为广袤的马塞西利王国（Masaesylii，老国王西法克斯统治）。两族为了争夺丰饶绿洲、放牧权以及迦太基第一绝色美人索福尼斯巴（Sophonisba）的婚约爆发了数十年不共戴天的血仇。早期西法克斯与罗马结盟，马西尼萨则率轻骑兵追随汉尼拔在西班牙立下赫赫战功；随后迦太基为了拉拢实力更强的西法克斯，将索福尼斯巴转嫁给西法克斯，迫使马西塞利倒向迦太基。愤怒的年轻雄鹰马西尼萨遂果断转投大西庇阿，并在扎马战役最后关头率领六千名马西利精锐铁骑从汉尼拔步兵背后实施致命一击，完成了灭国复仇并统一全努米底亚王国，彻底改变了地中海的霸权格局。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马西尼萨国王是罗马在地中海最忠诚、最迅猛的盟友！正是他的马西利轻骑兵在扎马的荒原上折断了汉尼拔的后背！没有努米底亚人的马蹄声，西庇阿在扎马绝不可能打出那场歼灭奇迹！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西法克斯的动摇与马西尼萨的背叛让布匿帝国付出了亡国的惨重代价！这群沙漠里的游牧狼崽子为了一个女人和王冠，把北非的未来彻底出卖给了罗马强盗！"
+    }
+  ],
+  "TextMappings": []
+}

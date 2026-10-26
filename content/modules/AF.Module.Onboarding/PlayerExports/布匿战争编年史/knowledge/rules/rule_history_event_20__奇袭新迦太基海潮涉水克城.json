@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_20",
+  "Keywords": [
+    "奇袭新迦太基海潮涉水克城",
+    "奇袭新迦太基城",
+    "退潮浅滩秘密潜渡",
+    "迦太基西班牙金库陷落"
+  ],
+  "RagShortTexts": [
+    "公元前209年，大西庇阿展现出惊世骇俗的战略隐蔽性，弃敌主力不顾，奔袭数百里直扑巴卡家族的大本营兼总金库——新迦太基（卡塔赫纳）。西庇阿通过渔民获知傍晚浅水潟湖因风势落潮的秘密，亲率五百敢死队涉水攀爬"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前209年，大西庇阿展现出惊世骇俗的战略隐蔽性，弃敌主力不顾，奔袭数百里直扑巴卡家族的大本营兼总金库——新迦太基（卡塔赫纳）。西庇阿通过渔民获知傍晚浅水潟湖因风势落潮的秘密，亲率五百敢死队涉水攀爬防御薄弱的北墙，配合陆海夹击一天内攻克此难攻不落的坚城。西庇阿缴获全部军械库与三千名伊比利亚贵族人质，并以宽仁之礼全数放还，使西班牙诸部族彻底反戈拥护罗马。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_泥炭沼泽投献与神圣折剑祭礼",
+  "Keywords": [
+    "泥炭沼泽投献与神圣折剑祭礼",
+    "泥炭沼泽",
+    "投献礼",
+    "折毁兵器"
+  ],
+  "RagShortTexts": [
+    "北海与波罗的海沿岸部族视酸性泥炭沼泽为连通神界的圣所，将战胜缴获的敌军刀剑盾牌刻意砸弯折断、整船沉入死水沼泽祭献水神，封存千年如新。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在日德兰半岛与波罗的海沿岸的荒凉湿地中，英格沃内日耳曼与早期北欧部族信奉一种神秘的‘泥炭沼泽投献礼’（Bog Offerings）。北欧部民坚信深邃幽暗、水草繁茂的泥炭藓沼泽（Bog）是生者与幽冥神灵相交接的门户。在打赢一场氏族生死战役后，胜利者绝不将缴获的战利品留作私用——所有的敌方铁剑、单刃战刀、青铜矛头、木盾乃至整条长木船，必须在神圣仪式中由铁匠当众用力砸弯、对折打碎、焚烧致残，使其在法理上‘彻底死亡’失去凡世效用；随后将这些废铁与盛有牛羊血肉的陶罐一同庄严沉入泥炭死水沼泽底部，作为不可赎回的牺牲全数奉献给掌管丰饶与战争的深渊水神。泥炭藓沼泽特有的缺氧与高酸性腐殖酸环境，不仅使被淹没的武器两千余年不锈蚀，更将某些作为祭品沉入泥沼的人类遗体完美鞣制保存（如著名的‘泥沼木乃伊’），毛发、皮肤甚至胃中残留的野谷麦糊依然完好如初，散发着北欧远古信仰摄人心魄的冷冽幽光。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那些生活在北海沼泽里的野人简直不可理喻！缴获了上好的精铁短剑和长船，居然当着大家的面用铁锤砸成废铁丢进臭泥塘里泡着！这种暴殄天物的原始狂热，证明蛮荒极北之地的野蛮人根本不配理解文明世界的财富与秩序！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "把最锋利的铁刃砸断还给大地与深渊，这是北境航海者对未知神明最绝决的敬畏！在他们眼中，武器不是为了炫富，而是夺取生命的圣物。那些在死水沼泽中沉睡两千年的折断长剑，就是北方海岸永远不容外敌染指的古老符咒！"
+    }
+  ],
+  "TextMappings": []
+}

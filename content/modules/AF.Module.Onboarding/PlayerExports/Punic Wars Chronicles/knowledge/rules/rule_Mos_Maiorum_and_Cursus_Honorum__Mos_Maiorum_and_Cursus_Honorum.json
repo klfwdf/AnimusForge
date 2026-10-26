@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Mos_Maiorum_and_Cursus_Honorum",
+  "Keywords": [
+    "Mos_Maiorum_and_Cursus_Honorum",
+    "Mos Maiorum",
+    "Cursus Honorum",
+    "Quaestor"
+  ],
+  "RagShortTexts": [
+    "Republican Rome was governed by ancestral custom (Mos Maiorum) and the political ladder (Cursus Honorum), where patricians climbed from military tribunes to consuls to earn ancestral wax death masks (imagines)."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In republican Rome, the unwritten ancestral custom (Mos Maiorum) formed the bedrock of civic life, prizing filial piety (pietas), unyielding fidelity (fides), and solemn dignity (gravitas). An aspiring patrician navigated the Cursus Honorum ('Course of Offices'): first completing ten years of cavalry or military tribune service; qualifying at age thirty for Quaestor (treasury and quartermaster), which unlocked lifelong Senate membership; ascending to Curule Aedile (games and markets), Praetor (supreme judicial magistrate and junior military commander), and culminating at forty-two in the supreme twin magistracy of Consul. The supreme aspiration of a noble house was the right to ancestral wax death masks (imagines maiorum). Craftsmen poured beeswax over deceased curule magistrates to create lifelike portraits kept in atrium cupboards; during state funerals, actors donned these masks and historical robes to ride alongside the funeral bier, inspiring young Romans to surpass ancestral glory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Mos Maiorum is the unbreakable spine of the Republic! A man does not sit upon the curule ivory chair through gold or silver, but through the sweat of ten campaign seasons and the stern judgment of the centuries. Beneath the gaze of our ancestral wax masks, a Scipio knows no fear!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Roman patricians boast endlessly of their ancestral customs and grotesque wax masks, but their Cursus Honorum is merely a senatorial cartel designed to keep military genius shackled to age minimums. Carthage judges men by gold and victory, not by how many dead grandfathers are rotting in their atrium cupboards!"
+    }
+  ],
+  "TextMappings": []
+}

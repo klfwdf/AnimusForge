@@ -1,0 +1,69 @@
+{
+  "Id": "rule_费边战术与拖延者策略",
+  "Keywords": [
+    "费边战术与拖延者策略",
+    "费边战术",
+    "费边战术与拖延者策略拖延者费边",
+    "库恩克塔托尔"
+  ],
+  "RagShortTexts": [
+    "费边·马克西穆斯首创避免正面决战、坚壁清野切断补给并伏击分散敌军的‘拖延战术’，拯救了危局中的罗马共和国。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "特拉西梅诺湖惨败后，罗马元老院任命经验丰富的贵族昆图斯·费边·马克西穆斯为独裁官。面对汉尼拔无可匹敌的战术指挥天才，费边制定了一套颠覆传统罗马尚武观念的全新战略——‘拖延战术’（Fabian Strategy）。他严禁罗马军团与汉尼拔进行任何正面的大规模会战，而是率军尾随敌军并在高地险要处扎营，凭借居高临下的地势遏制敌军机动。费边坚壁清野，严密拦截迦太基的侦察与征粮分队，切断汉尼拔的粮草补给，并在小规模遭遇战中消磨敌军有生力量。起初这套战术被急躁的罗马公民和军界嘲讽为胆怯懦弱，费边甚至被讥讽为‘拖延者’（Cunctator）；但坎尼战役的毁灭性惨案用七万人的鲜血证明了费边的无双远见。在此之后，元老院彻底确立了费边战略为对汉尼拔的指导总方针，为罗马重建军力并开展海外反攻赢得了决定性的战略时间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "费边是罗马共和国真正的拯救者！当庸俗狂躁的政客叫嚣着盲目决战时，只有他顶住一切屈辱和嘲讽，选择让时间成为罗马最锐利的武器！他在高山林地间穿梭，像一头耐心的母狼凝视着猎物，饿死汉尼拔的战马、截杀他的征粮队！‘拖延者’这个绰号，最终成为了罗马最崇高的荣耀勋章！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "费边战术是汉尼拔将军在意大利最头疼的锁链。我们渴望堂堂正正的决战，但那个狡黠的老头永远把军队藏在悬崖和坚固的石头营寨后面。他像阴魂一样在山脊上尾随我们，不战不退，专拣散开的征粮队下手。正是这种冷酷无情的耗费战，慢慢磨平了我们百战老兵的锋芒。"
+    }
+  ],
+  "TextMappings": []
+}

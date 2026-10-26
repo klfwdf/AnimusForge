@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_45",
+  "Keywords": [
+    "Fall of Tarentum to Hannibal",
+    "Philemenos Night Gate Betrayal",
+    "Magna Graecia Capital Secession",
+    "Roman Citadel Port Siege"
+  ],
+  "RagShortTexts": [
+    "In 212 BC, anti-Roman conspirators led by young Philemenos betrayed the wealthy port of Tarentum to Hannibal. Returning "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 212 BC, anti-Roman conspirators led by young Philemenos betrayed the wealthy port of Tarentum to Hannibal. Returning from a night hunt, Philemenos signaled the guards to open the postern gate, admitting Hannibal's assault detachment which stormed the lower city. However, the Roman garrison retreated into the sea-citadel, maintaining a defiant siege that prevented Hannibal from utilizing the deep-water harbor."
+    }
+  ],
+  "TextMappings": []
+}

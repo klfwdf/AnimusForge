@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Germanic_Thing_Assembly_and_Comitatus",
+  "Keywords": [
+    "Germanic_Thing_Assembly_and_Comitatus",
+    "Thing Assembly",
+    "Weapon Clashing",
+    "Comitatus"
+  ],
+  "RagShortTexts": [
+    "Germanic tribal society was governed by the armed freeman Thing assembly, ratifying motions by clashing spears on shields, and propelled by the fanatical comitatus retainer brotherhood."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the primeval forests beyond the Rhine, Germanic tribes operated under an ancient warrior democracy balanced by personal war-bands. Tribal law and political crises were resolved at the Thing (folkmoot), held outdoors under sacred trees during specific lunar phases. All free adult males attended fully armed with spear and wooden shield under the oversight of tribal priests who maintained order. Debate was visceral: unpopular motions were rejected by guttural groaning; approved proposals were ratified by a deafening roar as thousands of warriors clashed spear shafts against shields—clashing weapons (framae) constituted the highest form of assent. Parallel to the Thing was the sacred military brotherhood of the Comitatus (Gefolge): elite youths voluntarily bound themselves to a renowned warlord. The chieftain provided horses, arm-rings, banquets, and captured weapons; in return, the retinue defended their lord with reckless valor. To be outshone by one's chief in battle was disgraceful, but to survive the chieftain's death on the battlefield was an indelible curse of lifelong infamy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Germanic Thing is not a government of laws, but a howling mob of wolfskins banging spears against shields in a dark clearing! They possess neither magistrates nor jurisprudence. Yet their comitatus retainers are deadly: when their chieftain charges, they throw themselves upon our scuta without regard for life!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Thing of the northern forests vibrates with pure, untamed ferocity! A chieftain who spreads silver arm-bands and Spanish blades commands hundreds of berserkers eager to die at his nod. In the primeval oaks dwells a reservoir of savage muscle that no gold of the Roman treasury can domesticate!"
+    }
+  ],
+  "TextMappings": []
+}

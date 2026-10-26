@@ -1,0 +1,69 @@
+{
+  "Id": "rule_扎马战役与第二次和约",
+  "Keywords": [
+    "扎马战役与第二次和约",
+    "扎马战役",
+    "扎马会战",
+    "大西庇阿击败汉尼拔"
+  ],
+  "RagShortTexts": [
+    "前202年扎马战役中大西庇阿破解战象并依靠努米底亚骑兵击溃汉尼拔主力，以严苛和约彻底终结了第二次布匿战争。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前204年，大西庇阿力排元老院保守派干扰，率军登陆北非突尼斯，连战连捷并焚毁迦太基与东努米底亚西法克斯的联军营地。危急关头，迦太基元老院紧急召回在意大利征战十六年的汉尼拔。前202年10月19日，扎马战役爆发。汉尼拔拥有八十头战象和四万五千兵力，大西庇阿则联合了倒向罗马的努米底亚新国王马西尼萨，拥有精锐的四千努米底亚轻骑兵与两万九千罗马精锐。针对汉尼拔的战象冲击，大西庇阿改变了操典军团传统的交错棋盘阵，让小队纵向对齐留出宽阔直通通道，辅以号角军乐惊吓战象，使得暴冲的巨兽大多顺着通道穿过阵线或反冲迦太基两翼。随后马西尼萨的骑兵击溃迦太基骑兵，回旋猛扑汉尼拔老兵步兵方阵的后背。两万迦太基士兵阵亡，汉尼拔只身突围返回迦太基劝告议和。前201年签订的停战和约彻底摧毁了迦太基的强国地位：放弃海外领地、销毁所有战舰仅留十艘、交出战象、赔偿一万塔兰特白银，且未经罗马允许绝不得对外动武。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "扎马平原上，西庇阿阿非利加努斯的名字与世长存！面对八十头如奔雷般的巨象，执政官用智慧留出通道，让罗马军号震散敌兽！马西尼萨的骑兵如雷霆击碎了汉尼拔的后方，这是文明与纪律对野蛮征服的绝对胜利！自那一刻起，地中海的每一个浪头都向罗马垂首称臣！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "扎马是迦太基最后的挽歌。汉尼拔将军手下多是未经训练的散兵新卒，而西庇阿不仅拥有罗马最精锐的百战军团，更靠着叛徒马西尼萨的努米底亚骑兵占尽优势。当骑兵从背后撞入老兵阵列时，一切都结束了。一万塔兰特和交出战船撕碎了我们的翅膀，迦太基自此沦为了任人宰割的羔羊。"
+    }
+  ],
+  "TextMappings": []
+}

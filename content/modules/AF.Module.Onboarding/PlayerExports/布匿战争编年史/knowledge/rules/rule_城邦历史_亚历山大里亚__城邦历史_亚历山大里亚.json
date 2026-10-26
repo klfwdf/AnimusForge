@@ -1,0 +1,69 @@
+{
+  "Id": "rule_城邦历史_亚历山大里亚",
+  "Keywords": [
+    "城邦历史_亚历山大里亚",
+    "亚历山大里亚",
+    "Alexandria",
+    "城邦历史_亚历山大里亚城防要塞"
+  ],
+  "RagShortTexts": [
+    "亚历山大里亚（Alexandria）是古典时代要冲城邑，拥有完备城防工事与繁盛商市，在布匿战争与地缘交锋中占据核心战略地位。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "亚历山大大帝奠基的世界第一都会亚历山大里亚。拥有古代七大奇迹之一的法罗斯巨型灯塔（Pharos）、藏书数十万卷的博学院与大图书馆，以及托勒密法老宏伟的皇家宫殿区。作为欧亚非三大洲黄金、粮食与丝绸的交汇咽喉，其深水双港（大港与尤诺斯托斯港）昼夜停泊千艘商船，是希腊化科学艺术的最高灯塔。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "亚历山大里亚的城墙必须竖起罗马的鹰旗！无论是坚固的石塔还是城内的粮仓，军团将以钢铁纪律牢牢掌控这座要冲，任何人敢于在城中煽动叛乱都将遭到执政官最严厉的清洗！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "亚历山大里亚的港口与市集必须向我们的商船敞开！迦太基尊重城邦的古老自由与地方神明，只要旗帜下汇聚起反抗罗马霸权的勇士，我们的大军必将保卫其城垣永固！"
+    }
+  ],
+  "TextMappings": []
+}

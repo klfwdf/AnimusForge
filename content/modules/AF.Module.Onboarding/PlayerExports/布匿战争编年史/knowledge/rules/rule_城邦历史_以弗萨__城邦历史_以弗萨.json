@@ -1,0 +1,69 @@
+{
+  "Id": "rule_城邦历史_以弗萨",
+  "Keywords": [
+    "城邦历史_以弗萨",
+    "以弗萨",
+    "Ephesos",
+    "城邦历史_以弗萨城防要塞"
+  ],
+  "RagShortTexts": [
+    "以弗萨（Ephesos）是古典时代要冲城邑，拥有完备城防工事与繁盛商市，在布匿战争与地缘交锋中占据核心战略地位。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "小亚细亚爱琴海沿岸第一大邦以弗所。城内耸立着古代世界七大奇迹之一的阿尔忒弥斯大湿地神庙（一百二十七根巨大大理石柱雕琢如林）。以弗所拥有优良的深水避风港湾与庞大的希腊剧场，是连接爱琴海岛屿与安纳托利亚内陆波斯皇家大道的最繁盛贸易终端与哲学圣殿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "以弗萨的城墙必须竖起罗马的鹰旗！无论是坚固的石塔还是城内的粮仓，军团将以钢铁纪律牢牢掌控这座要冲，任何人敢于在城中煽动叛乱都将遭到执政官最严厉的清洗！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "以弗萨的港口与市集必须向我们的商船敞开！迦太基尊重城邦的古老自由与地方神明，只要旗帜下汇聚起反抗罗马霸权的勇士，我们的大军必将保卫其城垣永固！"
+    }
+  ],
+  "TextMappings": []
+}

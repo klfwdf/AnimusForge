@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_14",
+  "Keywords": [
+    "第一次马其顿战争爆发",
+    "第一次马其顿战争",
+    "腓力五世西进野心",
+    "罗马策动埃托利亚"
+  ],
+  "RagShortTexts": [
+    "公元前214年，马其顿国王腓力五世趁罗马在坎尼惨败后的虚弱期，出兵进攻伊利里亚与亚得里亚海沿岸要塞，第一次马其顿战争全面爆发。由于无力抽调大规模正规军团渡海远征，罗马展现出高超的外交离间手段：拉拢希腊"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前214年，马其顿国王腓力五世趁罗马在坎尼惨败后的虚弱期，出兵进攻伊利里亚与亚得里亚海沿岸要塞，第一次马其顿战争全面爆发。由于无力抽调大规模正规军团渡海远征，罗马展现出高超的外交离间手段：拉拢希腊北方的埃托利亚同盟、斯巴达以及小亚细亚的帕加马王国组成反马其顿同盟，在巴尔干本土拖住腓力大军，瓦解其联手汉尼拔的企图。"
+    }
+  ],
+  "TextMappings": []
+}

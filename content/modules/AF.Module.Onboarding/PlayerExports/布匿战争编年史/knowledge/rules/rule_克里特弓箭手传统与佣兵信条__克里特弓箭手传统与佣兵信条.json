@@ -1,0 +1,69 @@
+{
+  "Id": "rule_克里特弓箭手传统与佣兵信条",
+  "Keywords": [
+    "克里特弓箭手传统与佣兵信条",
+    "克里特弓箭手",
+    "重型复合弓",
+    "青铜小圆盾"
+  ],
+  "RagShortTexts": [
+    "克里特弓箭手配备重型反曲复合弓与青铜小圆盾，既能远距破甲射杀又能近身拔剑搏杀；恪守‘认金币不认国界’的职业佣兵信条，是地中海各大强权竞相争抢的精锐。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "爱琴海南部崎岖多山的克里特岛，是古典希腊世界公认无可替代的顶尖职业雇佣弓箭手之乡。克里特岛上城邦林立、仇杀不断，恶劣的生存环境造就了岛民机警凶悍的性格与鬼斧神工的射术。与寻常东方式毫无防护的弓手不同，克里特弓箭手拥有一套极其全面的单兵攻防行头：他们左手挽着带有青铜贴皮的特制硬皮小圆盾（Pelte），腰间悬挂双刃短剑（Xiphos），手握用上等野山羊角、坚木与兽腱反复压合浸胶精制而成的重型反曲复合弓。这种独特装备使其不仅能在两百步开外抛射足以穿透青铜胸甲与硬皮甲的重型倒刺破甲箭，即便在山林遭遇战中被敌方轻重步兵贴脸包抄，克里特人亦能瞬间架起小盾拔剑突刺，进行不逊于正规步兵的高强度肉搏白刃战。克里特佣兵集团严格遵守‘以契约为生命、见金币即效命’的中立信条，无论是马其顿国王、叙拉古僭主、迦太基统帅还是罗马执政官，谁出得起重金，克里特的羽箭就会毫不留情地射向谁的敌人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "克里特人的反曲弓是希腊世界最狠辣的武器。军团在大军行进时若没有克里特弓手在两翼山头游弋警戒，一旦遭遇伏击，重步兵方阵就只能沦为箭靶子。给他们足够的银币，他们就是最值钱的护卫！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "只要你的银币纯度够高，克里特神射手的箭矢就能在两百步外射穿任何罗马执政官的锁子甲；但千万不要试图拖欠军饷，这群希腊山民认契约比认母邦城邦还要决绝！"
+    }
+  ],
+  "TextMappings": []
+}

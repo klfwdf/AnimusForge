@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_42",
+  "Keywords": [
+    "卡斯图洛与新迦太基银矿金融命脉",
+    "卡斯图洛银矿开采",
+    "巴卡军阀军饷来源",
+    "高卢佣兵巨额金饷"
+  ],
+  "RagShortTexts": [
+    "位于瓜达尔基维尔河流域的卡斯图洛（Castulo）银矿是巴卡家族远征军团无与伦比的经济命脉。在汉尼拔与当地卡斯图洛伊比利亚公主伊米尔切（Himilce）联姻后，该地数千名矿工日夜开采高纯度银锭，每日产"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "位于瓜达尔基维尔河流域的卡斯图洛（Castulo）银矿是巴卡家族远征军团无与伦比的经济命脉。在汉尼拔与当地卡斯图洛伊比利亚公主伊米尔切（Himilce）联姻后，该地数千名矿工日夜开采高纯度银锭，每日产银达数百磅。汉尼拔以此铸造巨量银币，向来自高卢、巴利阿里、利比亚和努米底亚的十余万雇佣军按时发放丰厚薪饷，支撑起长达十六年的海外远征。"
+    }
+  ],
+  "TextMappings": []
+}

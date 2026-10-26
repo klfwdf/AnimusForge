@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_24",
+  "Keywords": [
+    "伊利帕战役逆向坎尼阵型",
+    "伊利帕战役逆向坎尼",
+    "大西庇阿战术巅峰",
+    "虚张中军两翼精锐"
+  ],
+  "RagShortTexts": [
+    "公元前206年，大西庇阿在伊利帕与哈斯德鲁巴尔·吉斯科和马戈统帅的七万迦太基大军对决。连续数日西庇阿皆以罗马军团居中、西班牙同盟在侧的常规阵型出阵；决战清晨西庇阿突然变更布阵，将软弱的同盟步兵留在中央"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前206年，大西庇阿在伊利帕与哈斯德鲁巴尔·吉斯科和马戈统帅的七万迦太基大军对决。连续数日西庇阿皆以罗马军团居中、西班牙同盟在侧的常规阵型出阵；决战清晨西庇阿突然变更布阵，将软弱的同盟步兵留在中央并缓步迟滞，由两翼罗马精锐老兵加快步频实施迅猛钳形突击。迦太基精锐被压迫在侧翼崩溃，战象在狭窄处践踏己阵，全军覆灭，伊比利亚统治彻底终结。"
+    }
+  ],
+  "TextMappings": []
+}

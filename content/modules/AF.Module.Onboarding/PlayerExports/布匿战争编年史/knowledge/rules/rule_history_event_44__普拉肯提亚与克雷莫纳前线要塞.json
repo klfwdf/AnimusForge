@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_44",
+  "Keywords": [
+    "普拉肯提亚与克雷莫纳前线要塞",
+    "普拉肯提亚前线要塞",
+    "克雷莫纳波河双壁",
+    "六千殖民勇士守城"
+  ],
+  "RagShortTexts": [
+    "公元前218年罗马在波河两岸建立的双子殖民地堡垒——普拉肯提亚（皮亚琴察）与克雷莫纳，每城屯驻六千户罗马公民兼士兵。在特雷比亚河惨败与高卢全境叛乱的惊涛骇浪中，这两座要塞如中流砥柱般凭借厚重城垣与波河"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年罗马在波河两岸建立的双子殖民地堡垒——普拉肯提亚（皮亚琴察）与克雷莫纳，每城屯驻六千户罗马公民兼士兵。在特雷比亚河惨败与高卢全境叛乱的惊涛骇浪中，这两座要塞如中流砥柱般凭借厚重城垣与波河水运航道死守不退，汉尼拔多次遣精锐围攻均无法克城，成为罗马在波河平原永不陷落的钢铁锚点。"
+    }
+  ],
+  "TextMappings": []
+}

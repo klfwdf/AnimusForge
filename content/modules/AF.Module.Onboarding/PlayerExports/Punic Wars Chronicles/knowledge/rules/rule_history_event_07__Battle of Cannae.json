@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_07",
+  "Keywords": [
+    "Battle of Cannae_250",
+    "Convex Center Envelopment",
+    "Hasdrubal Heavy Horse Sweep",
+    "Greatest Roman Slaughter"
+  ],
+  "RagShortTexts": [
+    "On August 2, 216 BC, Rome deployed over eighty thousand soldiers at Cannae under Consuls Varro and Paullus. Hannibal dep"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On August 2, 216 BC, Rome deployed over eighty thousand soldiers at Cannae under Consuls Varro and Paullus. Hannibal deployed an intentional crescent formation that yielded under Roman pressure while his veteran African wings stood firm. Carthaginian cavalry swept the Roman flanks and closed the circle from behind, creating a cauldron that slaughtered over sixty thousand Romans in a single day."
+    }
+  ],
+  "TextMappings": []
+}

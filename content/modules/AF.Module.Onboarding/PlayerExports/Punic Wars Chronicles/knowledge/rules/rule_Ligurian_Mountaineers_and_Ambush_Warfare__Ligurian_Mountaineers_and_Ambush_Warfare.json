@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Ligurian_Mountaineers_and_Ambush_Warfare",
+  "Keywords": [
+    "Ligurian_Mountaineers_and_Ambush_Warfare",
+    "Ligurian Mountaineers",
+    "Alpine Ambush",
+    "Guerilla Tribes"
+  ],
+  "RagShortTexts": [
+    "Inhabiting the rugged Maritime Alps and Apennines, the Ligurians were famed for ascetic toughness, deadly ambush tactics, and guiding Hannibal's vanguard through Alpine ravines."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Clinging to the razor crags of the Maritime Alps and northern Apennines, the Ligurian tribes were renowned across antiquity for indomitable ferocity and physical endurance. Strabo observed that Ligurian women labored alongside men in stone quarries and gave birth mid-shift, returning to work immediately. Possessing neither paved cities nor fertile plains, Ligurian warriors fought as light mountain skirmishers armed with curved sicae daggers, light round bucklers, and heavy javelins. When Hannibal traversed the Alps in 218 BC, Ligurian clans ambushed his rearguard before Punic gold and envoys converted them into scouts and guides down into the Po Valley. For decades following the war, Roman consular armies fought brutal, grinding mountain campaigns against the Ligurians, giving rise to the Roman proverb: 'To triumph over Ligurians is easy; to conquer them is impossible.'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ravines of Liguria have swallowed more Roman cohorts than pitched battles! Those mountain savages drop boulders from sheer cliffs, vanish into mist, and slit sentries' throats in darkness. Every mile through their crags must be purchased with Roman blood!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hard as their native flint, the Ligurians make superb skirmishers for the Barcid cause! When supplied with Punic blades, they navigate blizzard-swept passes like mountain goats, ambushing Roman supply trains and leaving consular outposts in flames."
+    }
+  ],
+  "TextMappings": []
+}

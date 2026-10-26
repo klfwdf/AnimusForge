@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_31",
+  "Keywords": [
+    "Battle of the Great Plains",
+    "Defeat of Syphax at Campi Magni",
+    "Celtiberian Phalanx Last Stand",
+    "Roman Dominance North Africa"
+  ],
+  "RagShortTexts": [
+    "Thirty days after the fire disaster, Hasdrubal and Syphax assembled thirty thousand survivors on the Great Plains (Campi"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Thirty days after the fire disaster, Hasdrubal and Syphax assembled thirty thousand survivors on the Great Plains (Campi Magni), reinforced by four thousand elite Celtiberian mercenaries. Scipio utilized his maniples to extend his flanks and envelope the resolute Celtiberians while Masinissa routed the hostile cavalry. The victory shattered the last indigenous field army shielding the Carthaginian capital."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Scipio_Campaigns_in_Hispania",
+  "Keywords": [
+    "Scipio_Campaigns_in_Hispania",
+    "Scipio Africanus",
+    "Scipio Hispania Campaign",
+    "Capture of Carthago Nova"
+  ],
+  "RagShortTexts": [
+    "Publius Cornelius Scipio took command in Hispania, stormed New Carthage, and decisively broke Punic control at Baecula and Ilipa."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After his father and uncle were slain in Hispania in 211 BC, 25-year-old Publius Cornelius Scipio volunteered for command. In 209 BC, he marched swiftly to capture Carthago Nova by wading across a tidal lagoon at low water, seizing the Punic treasury, naval arsenals, and Iberian hostages whom he freed to win indigenous alliances. At the Battle of Baecula (208 BC) and the decisive Battle of Ilipa (206 BC), Scipio deployed revolutionary tactical ingenuity: placing his elite Roman legionaries on the wings while holding his weak Iberian center back, executing a double envelopment of Hasdrubal Gisco's superior army. This masterstroke ended Carthaginian dominion in Hispania, cutting Hannibal's overland reinforcements and silver supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Scipio Africanus was favored by Jupiter himself! Wading through the low tide to capture New Carthage, he struck at the very heart of Barcid wealth. At Ilipa, his brilliant inverted battle line rolled up their flanks like parchment. Scipio won Spain not only with the sword, but with unmatched magnanimity toward the Iberian tribes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Scipio was Carthage's most lethal nemesis. Storming New Carthage severed our silver supply, and at Ilipa he crushed our armies with an envelopment worthy of Hannibal himself. Once Spain fell, Hannibal in Italy was severed from reinforcements, dooming our empire to face invasion on our own soil."
+    }
+  ],
+  "TextMappings": []
+}

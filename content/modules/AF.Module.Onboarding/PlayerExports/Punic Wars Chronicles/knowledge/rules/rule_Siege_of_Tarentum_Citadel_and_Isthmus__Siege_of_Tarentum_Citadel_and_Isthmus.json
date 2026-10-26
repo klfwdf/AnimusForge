@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Siege_of_Tarentum_Citadel_and_Isthmus",
+  "Keywords": [
+    "Siege_of_Tarentum_Citadel_and_Isthmus",
+    "Siege of Tarentum",
+    "Tarentum Citadel",
+    "Portage Across City"
+  ],
+  "RagShortTexts": [
+    "In 212 BC, Hannibal captured Tarentum by night assault, yet Romans held the isthmus citadel; Hannibal famously dragged a fleet across city streets on rollers to blockade the garrison from the sea."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 212 BC, the premier Magna Graecia metropolis of Tarentum revolted in favor of Carthage. In a flawless nocturnal infiltration coordinated with pro-Punic conspirators, Hannibal took the lower city. However, Roman commander Marcus Livius Macatus rallied his garrison inside the formidable Tarentum Citadel, situated on a narrow, rocky isthmus guarding the throat of the inner harbor (Mare Piccolo). Isolated on sea cliffs with their landward approach fortified by a massive ditch and artillery ramparts, the Roman garrison held firm. Their fortress artillery effectively bottled up the Tarentine fleet inside the inner harbor, preventing them from accessing the open sea. Confronted by this maritime stalemate, Hannibal executed an astonishing engineering feat: he constructed wooden trackways greased with animal tallow across the broad streets of the city, using draft oxen and capstans to portage entire heavy warships overland for over a mile directly into the open outer gulf. He then blockaded the Roman citadel from the sea, settling into an epic three-year subterranean and artillery siege until Fabius Maximus recaptured the city through treachery in 209 BC."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Citadel of Tarentum held the honor of Rome when all Magna Graecia folded before Hannibal! Macatus and his brave cohorts stood fast upon that windswept rock for three brutal years while Hannibal hauled ships down city avenues like toys. Fabius returned with fire and sword to liberate the citadel and cleanse the treason of Tarentum!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hannibal dragging a battle fleet through paved city streets is a feat worthy of the gods of Tyre! The Greeks of Tarentum welcomed our banners with wine and laurel. The trapped Roman garrison choked upon their rocks, reduced to gnawing leather until treachery within the walls saved the Senate from total naval expulsion in the south!"
+    }
+  ],
+  "TextMappings": []
+}

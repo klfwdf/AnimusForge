@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Mount_Eryx_and_Hamilcars_Guerilla",
+  "Keywords": [
+    "Mount_Eryx_and_Hamilcars_Guerilla",
+    "Mount Eryx",
+    "Guerilla Warfare",
+    "Mountain Fortress"
+  ],
+  "RagShortTexts": [
+    "Between 244–241 BC, Hamilcar Barca held the sheer precipices of Mount Eryx, waging three years of asymmetric guerilla warfare against consular armies without suffering a single tactical defeat."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the twilight years of the First Punic War, while Carthage faltered across the Mediterranean, one commander carved an immortal reputation upon the sheer limestone crags of western Sicily: Hamilcar Barca, father of Hannibal. In 244 BC, with a modest mercenary force and zero naval support, Hamilcar seized Mount Eryx, a sacred 2,500-foot mountain crowned by the famed sanctuary of Venus Erycina. In an unprecedented tactical deployment, Hamilcar established his base upon the middle slopes, wedged dangerously between a Roman force occupying the summit and consular legions ringing the mountain base. For three unbroken years, Hamilcar waged relentless asymmetric guerilla warfare: launching night sorties down vertical cliffs using ropes, ambushing supply trains in dense mist, raiding siege works, and evaporating back into impenetrable ravines. Consular legions suffered heavy attrition and paranoia, unable to dislodge the Punic lion. When peace was signed in 241 BC following naval defeat at the Aegates, Hamilcar marched his undefeated army down the mountain with full arms and standards, harboring the volcanic hatred that ignited the Second Punic War."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hamilcar Barca was an phantom of venom upon Mount Eryx! For three years our cohorts slept in armor on those rocky slopes, never knowing which fog-bank concealed his cut-throats. We choked him off from the sea, yet he struck like an adder from the cliffs. His bitter seed gave birth to Hannibal!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mount Eryx was the eagle's nest where the Barcid lightning struck unceasingly! While corrupt oligarchs in Carthage neglected the fleet, General Hamilcar held the heights with bare hands and sheer will, defying the entire military might of Rome without losing a single engagement. He never surrendered; it was the politicians who sold his victories for peace!"
+    }
+  ],
+  "TextMappings": []
+}

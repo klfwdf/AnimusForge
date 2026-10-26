@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_51",
+  "Keywords": [
+    "努米底亚轻骑兵无鞍驰射战术",
+    "努米底亚轻骑兵",
+    "无鞍无辔骑术绝技",
+    "标枪游击佯败诱敌"
+  ],
+  "RagShortTexts": [
+    "来自北非荒原与阿特拉斯山麓的努米底亚轻骑兵是汉尼拔军中最令人胆寒的奇兵。骑手仅凭一根马颈皮索与马鞭即可随心所欲驾驭战马，无需鞍鞯马镫亦能在颠簸狂奔中精准投掷两支尖锐短标枪。他们精擅‘佯败诱敌’与‘散兵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "来自北非荒原与阿特拉斯山麓的努米底亚轻骑兵是汉尼拔军中最令人胆寒的奇兵。骑手仅凭一根马颈皮索与马鞭即可随心所欲驾驭战马，无需鞍鞯马镫亦能在颠簸狂奔中精准投掷两支尖锐短标枪。他们精擅‘佯败诱敌’与‘散兵骚扰’战术，在提契诺、特雷比亚与坎尼战役中多次将厚重的罗马骑兵与步兵诱入绝境伏击圈。"
+    }
+  ],
+  "TextMappings": []
+}

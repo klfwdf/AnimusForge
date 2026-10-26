@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_52",
+  "Keywords": [
+    "Balearic Slingers and Lead Glandes",
+    "Three Sling Distances",
+    "Lead Glandes Skull Crushing",
+    "Lethal Long Range Volley"
+  ],
+  "RagShortTexts": [
+    "Hailing from the Balearic Islands, these specialist skirmishers wore three slings braided from esparto grass and sinew: "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hailing from the Balearic Islands, these specialist skirmishers wore three slings braided from esparto grass and sinew: long-range around the head, mid-range at the waist, and short-range in hand. Firing smooth river stones and cast-lead acorns (glandes), their missiles possessed velocity comparable to arrows, capable of fracturing helmets, shattering shields, and blinding commanders before lines met."
+    }
+  ],
+  "TextMappings": []
+}

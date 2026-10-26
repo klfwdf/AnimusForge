@@ -1,0 +1,69 @@
+{
+  "Id": "rule_科尔多瓦要塞与瓜达尔基维尔防线",
+  "Keywords": [
+    "科尔多瓦要塞与瓜达尔基维尔防线",
+    "科尔多瓦",
+    "卡图巴",
+    "瓜达尔基维尔河"
+  ],
+  "RagShortTexts": [
+    "科尔多瓦（古称卡图巴）扼守瓜达尔基维尔河（贝提斯河）通航终点，背靠塞拉莫雷纳银矿脉，是巴卡家族经略西班牙的核心兵站与后勤水陆枢纽。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坐落于西班牙南部富庶的瓜达尔基维尔河（古典时代称贝提斯河Baetis）中游北岸的科尔多瓦（Corduba，伊比利亚古称卡图巴Kartuba，意为‘富饶油坊之城’），是伊比利亚半岛地缘战略的关键要冲。这里是贝提斯河深水大船能够自大西洋加的斯港通航溯流而上的最终内河终点码头，同时背靠矿产极度丰饶的塞拉莫雷纳山脉（Sierra Morena）。哈米尔卡与哈斯德鲁拔在建立新迦太基后，迅速将科尔多瓦打造成内陆首屈一指的重装防御要塞与银矿精炼仓储中枢：附近矿山开采的高纯度白银与优质铁矿石经由此地冶炼锻造，再装船顺流直下输往迦太基国库与前线工坊；周围肥沃的冲积平原盛产高品质油橄榄与小麦，常年屯驻着数千名利比亚步兵与伊比利亚雇佣军。在第二次布匿战争期间，汉尼拔二弟哈斯德鲁拔正是以此为依托建立贝提斯河防线，构筑起抵御罗马大军向南推进的内陆铁壁，也是此后罗马为夺取西班牙南部矿权爆发数次血腥争夺的必争之地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科尔多瓦是巴卡家族在西班牙内陆生金吐银的聚宝盆！只要迦太基人还盘踞在贝提斯河畔，源源不断的安达卢西亚白银就会变成汉尼拔手里的雇佣军。军团必须逆流而上拿下这座要塞，把那些冒烟的银矿熔炉全部打上罗马元老院的烙印！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡图巴要塞是巴卡帝国在伊比利亚内陆最坚实的心脏！贝提斯河的清波将丰盛的粮食运往新迦太基，塞拉莫雷纳的银矿日夜为我们的军队提供精铁与金币。只要科尔多瓦的旗帜依然飘扬，罗马人就休想跨过瓜达尔基维尔河南下半步！"
+    }
+  ],
+  "TextMappings": []
+}

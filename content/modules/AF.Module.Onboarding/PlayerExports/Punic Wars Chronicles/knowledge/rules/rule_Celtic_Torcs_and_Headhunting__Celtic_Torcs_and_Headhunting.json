@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Celtic_Torcs_and_Headhunting",
+  "Keywords": [
+    "Celtic_Torcs_and_Headhunting",
+    "Gold Torc",
+    "Torc",
+    "Gallic Warriors"
+  ],
+  "RagShortTexts": [
+    "Celtic warriors wore sacred twisted gold torcs and blew carnyx horns into battle; they decapitated noble foes, preserving severed heads in cedar oil as hereditary badges of honor."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Celtic tribes of Gallia Cisalpina and Transalpina practiced a fierce martial culture that struck dread into Roman legions. Their defining religious and social insignia was the torc: a heavy neck-ring of twisted gold or bronze ending in bulbous terminals shaped like boars or serpents. Believed to confer spiritual invulnerability under Druidic rites, the torc marked chieftain rank and warrior status. In battle, elite Gauls frequently spiked their long hair into ghostly white manes using lime water, stripping naked above the waist to fight adorned only in torcs, armbands, and scabbards. Behind towering bronze carnyx war horns roaring like bellowing beasts, they launched terrifying shock charges. Gauls were devoted practitioners of headhunting, believing the soul resided within the cranium. After victory, warriors decapitated worthy enemies, dangling severed heads from horse harnesses before curing them in cedar oil. Preserved heads were kept in heirloom cedar chests and displayed to guests, with chieftains proudly boasting that not even the enemy's weight in gold could ransom the trophy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The screaming Gauls charging half-naked with spiked white hair and blowing animal trumpets can unsettle raw recruits. Yet against an unshaken Roman shield wall, their unarmored chests invite our thrusting gladii! Their morbid collection of pickled heads proves their savagery—Rome will tame their oak forests with legions and paved stone!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The golden torc is the untamed soul of the northern wild! When Gallic broadswords clash upon consular shields, Rome's iron discipline shatters under primeval fury. Hannibal honors their chieftain rites and battle trophies, which is why thirty thousand Gallic swordsmen now march beneath our standards to avenge their stolen lands!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_38",
+  "Keywords": [
+    "Ebro Treaty of 226 BC",
+    "Hasdrubal the Fair Pact",
+    "Saguntine Legal Contradiction",
+    "Ebro River Demarcation"
+  ],
+  "RagShortTexts": [
+    "Signed in 226 BC between the Roman Senate and Hasdrubal the Fair, the Ebro Treaty established the Ebro River as the nort"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Signed in 226 BC between the Roman Senate and Hasdrubal the Fair, the Ebro Treaty established the Ebro River as the northern boundary of Punic military expansion in Hispania. However, the ambiguous status of Saguntum, an Iberian city south of the river that had concluded a separate friendship pact with Rome, created an irreconcilable diplomatic crisis that Hannibal exploited to trigger war."
+    }
+  ],
+  "TextMappings": []
+}

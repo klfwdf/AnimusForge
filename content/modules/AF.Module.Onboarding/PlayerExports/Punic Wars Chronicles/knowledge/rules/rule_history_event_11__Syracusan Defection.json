@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_11",
+  "Keywords": [
+    "Syracusan Defection",
+    "Hieronymus Breaks Roman Pact",
+    "Sicily Front Reignited",
+    "Punic Emissaries in Syracuse"
+  ],
+  "RagShortTexts": [
+    "In 215 BC, following the death of Rome's steadfast ally King Hiero II of Syracuse, his young grandson Hieronymus ascende"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 215 BC, following the death of Rome's steadfast ally King Hiero II of Syracuse, his young grandson Hieronymus ascended the throne and was swiftly seduced by Carthaginian emissaries. Hieronymus renounced the fifty-year Roman alliance in exchange for promises of all Sicily. His assassination plunged Syracuse into factional violence, firmly placing the impregnable city into the Carthaginian camp."
+    }
+  ],
+  "TextMappings": []
+}

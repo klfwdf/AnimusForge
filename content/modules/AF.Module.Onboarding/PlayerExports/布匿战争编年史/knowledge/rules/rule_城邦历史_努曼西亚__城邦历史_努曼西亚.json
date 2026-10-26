@@ -1,0 +1,69 @@
+{
+  "Id": "rule_城邦历史_努曼西亚",
+  "Keywords": [
+    "城邦历史_努曼西亚",
+    "城邦历史_努曼西亚努曼西亚",
+    "Numantia",
+    "城邦历史_努曼西亚城防要塞"
+  ],
+  "RagShortTexts": [
+    "努曼西亚（Numantia）是古典时代要冲城邑，拥有完备城防工事与繁盛商市，在布匿战争与地缘交锋中占据核心战略地位。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "凯尔特伊比利亚人傲骨不屈的圣城努曼西亚。高踞杜埃罗河畔数百尺陡峭平顶台地之上，俯瞰八方隘口。城内战士仅数千人，却凭借法尔卡塔曲剑肉搏与险峻石墙阻遏数万罗马大军二十年未下。这里是西班牙土著反抗外来帝国霸权最神圣的图腾，全城以宁可集体自焚服毒也绝不当罗马奴隶的悲壮烈火永载史册。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "努曼西亚的城墙必须竖起罗马的鹰旗！无论是坚固的石塔还是城内的粮仓，军团将以钢铁纪律牢牢掌控这座要冲，任何人敢于在城中煽动叛乱都将遭到执政官最严厉的清洗！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "努曼西亚的港口与市集必须向我们的商船敞开！迦太基尊重城邦的古老自由与地方神明，只要旗帜下汇聚起反抗罗马霸权的勇士，我们的大军必将保卫其城垣永固！"
+    }
+  ],
+  "TextMappings": []
+}

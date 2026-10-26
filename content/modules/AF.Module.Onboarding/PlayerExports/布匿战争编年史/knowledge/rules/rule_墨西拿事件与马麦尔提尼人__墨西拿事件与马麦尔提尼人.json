@@ -1,0 +1,69 @@
+{
+  "Id": "rule_墨西拿事件与马麦尔提尼人",
+  "Keywords": [
+    "墨西拿事件与马麦尔提尼人",
+    "墨西拿事件",
+    "马麦尔提尼人",
+    "叙拉古希伦"
+  ],
+  "RagShortTexts": [
+    "墨西拿事件是第一次布匿战争的直接导火索，坎帕尼亚雇佣兵占领墨西拿后引来叙拉古围攻，其向迦太基与罗马求援导致两强交锋。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前288年，一群来自意大利坎帕尼亚的雇佣兵（自称马麦尔提尼人，意为‘战神马尔斯之子’）在被叙拉古解雇后，用背信弃义的手段血洗并占领了扼守西西里海峡要冲的墨西拿城。前265年，叙拉古新国王希伦二世率军征讨马麦尔提尼人。面临灭顶之灾的雇佣兵先后向迦太基与罗马求援。迦太基率先派出驻军进驻墨西拿卫城；但部分雇佣兵反悔并向罗马公民大会求助。罗马元老院虽对盗匪行径心存道德疑虑，却极度恐惧迦太基一旦完全吞并西西里将直逼意大利本土海峡。最终罗马公民大会表决出兵，执政官阿皮乌斯·克劳狄乌斯率军偷渡海峡驱逐迦太基驻军，第一次布匿战争随即正式打响。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马麦尔提尼人固然是一群无法无天的坎帕尼亚雇佣盗徒，但墨西拿海峡是意大利半岛的咽喉重地！如果放任迦太基人在墨西拿修筑要塞，他们的战船就能随时卡死雷吉乌姆并登陆意大利。罗马跨过海峡不是为了偏袒匪帮，而是为了捍卫意大利本土的绝对安全！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人所谓的跨海求援不过是赤裸裸的虚伪侵略！墨西拿早已在我们的保护之下，守军甚至和平进驻了卫城。罗马人却煽动叛乱叛变的雇佣军背约，偷渡海峡袭击我们的守军。自那一刻起，罗马撕下了和平的面具，暴露了吞并地中海所有群岛的狼子野心。"
+    }
+  ],
+  "TextMappings": []
+}

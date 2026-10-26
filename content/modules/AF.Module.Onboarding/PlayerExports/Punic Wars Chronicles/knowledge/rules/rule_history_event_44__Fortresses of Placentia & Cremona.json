@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_44",
+  "Keywords": [
+    "Fortresses of Placentia & Cremona",
+    "Placentia Frontier Fortress",
+    "Cremona Twin River Defense",
+    "Six Thousand Colonist Soldiers"
+  ],
+  "RagShortTexts": [
+    "Founded in 218 BC as twin fortress-colonies along the Po River, Placentia and Cremona were each settled by six thousand "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Founded in 218 BC as twin fortress-colonies along the Po River, Placentia and Cremona were each settled by six thousand veteran Roman colonists. Throughout the dark winter following the defeat at Trebia and universal Gallic defection, these fortified bastions held out against repeated assaults by Hannibal, sustained by riverine supply fleets and denying Carthage absolute mastery of the Po."
+    }
+  ],
+  "TextMappings": []
+}

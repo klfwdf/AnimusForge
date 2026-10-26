@@ -1,0 +1,69 @@
+{
+  "Id": "rule_古典地中海待客礼仪与血仇复仇誓言",
+  "Keywords": [
+    "古典地中海待客礼仪与血仇复仇誓言",
+    "待客礼仪",
+    "客道",
+    "异邦庇护"
+  ],
+  "RagShortTexts": [
+    "古典时代视‘客道待客礼仪’（Xenia/Hospitium）为神圣不可违之天条；一旦打破客礼则引发世代不休的‘血仇复仇’（Vendetta），唯有鲜血或血金方能赎清。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在古典地中海世界，维系不同城邦、氏族乃至敌对民族之间文明交往的核心道德支柱是神圣的‘待客之法’（希腊称Xenia，罗马称Hospitium）。无论是落魄旅人、流亡贵族还是外国使节，一旦踏入主人门槛并分享了桌上的面包与食盐，便即刻置于至高客神宙斯（Zeus Xenios）或朱庇特的绝对神圣庇佑之下；主人必须以美酒佳肴款待，在用膳完毕前严禁盘问客人姓名身世，离别时双方更需互赠刻有特殊花纹、劈为两半的‘待客信物’（Tessera Hospitalis），以便两家子孙后代凭信物世代结为生死同盟。然而，神圣客道的对立面是残酷刻骨的‘血亲复仇’（Vendetta）：若氏族成员被外人背信杀害或侮辱，全族成年男丁便背负上受神明监督的血仇誓言，必须追杀凶手全族至死方休。从高卢长屋、伊比利亚山寨到罗马贵族院落，血仇唯有通过凶手头颅或经长者法庭严格裁决交付巨额‘赔命金’（Weregild/Poena）方能平息，构成了古典地中海社会最底层的行为刚性戒律。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人把待客之约视为仅次于法律的庄严誓言。但若有人敢背叛罗马的友谊与信物，元老院的复仇将如雷霆万钧！几代人过去，军团的剑锋也必将让背信者的子孙用城邦的灰烬偿还血债！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "无论你来自提尔、希腊还是高卢，只要坐在迦太基人的大厅里饮过蜜酒，你就是受麦尔卡特神庇护的兄弟！但谁若在背后捅刀撕毁契约，地中海的波涛无论多深也藏不住他必死的头颅！"
+    }
+  ],
+  "TextMappings": []
+}

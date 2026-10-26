@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Roman_Toga_and_Salutatio",
+  "Keywords": [
+    "Roman_Toga_and_Salutatio",
+    "Toga",
+    "Toga Praetexta",
+    "Roman Citizenship"
+  ],
+  "RagShortTexts": [
+    "The woolen toga signified Roman citizenship and legal station, while the morning salutatio—where dependent clients greeted their patrician patron for grain or coins—anchored Roman political machinery."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In republican Rome, the woolen toga was the exclusive, legally mandated garb of free Roman male citizens. The standard citizen wore the natural white toga virilis; curule magistrates, praetors, and highborn youths wore the toga praetexta, bordered by a broad band of Tyrian purple. Weighing heavily and stretching nearly eighteen feet across, folding a toga required household slaves to arrange its sweeping sinus drape across the chest; running or manual labor in a toga was virtually impossible, lending Roman citizens a deliberate, monumental swagger in civic spaces. Mirroring this formal hierarchy was the clientela system: every morning at dawn, hundreds of impoverished citizen-clients (clientes) assembled in the atrium of their noble patron (patronus) for the solemn ritual of the salutatio (morning greeting). In exchange for formal deference and legal protection in court, patrons distributed the sportula—a daily basket of food or bronze coins. In return, clients formed an unyielding voting bloc in the Centuriate Assembly and escorted their patron through the Forum, translating domestic patronage into consular elections."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The toga is the sacred mantle of Roman libertas! When a freedman assumes the white wool, he walks under the shield of Roman law. The crowded salutatio in an atrium proves a patrician house's authority; the man who commands the most togas at dawn rules the assemblies at noon!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Roman senators wrap themselves in twenty feet of heavy wool blankets, parading like stiff statues while their hungry clients grovel every sunrise for dry breadcrumbs! They call this web of aristocratic bribery 'liberty'—a ridiculous theater compared to the honest contracts and gold coins of the Punic Agora!"
+    }
+  ],
+  "TextMappings": []
+}

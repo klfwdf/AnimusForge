@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Carthage_and_the_Cothon_Harbor",
+  "Keywords": [
+    "Carthage_and_the_Cothon_Harbor",
+    "City of Carthage",
+    "Cothon",
+    "Circular Naval Harbor"
+  ],
+  "RagShortTexts": [
+    "Carthage was defended by the Byrsa citadel, colossal triple land walls, and the Cothon—an ingenious artificial double harbor holding 220 war galleys."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Situated on a coastal peninsula in modern Tunisia, Carthage was an ancient metropolis of 700,000 guarded by natural waters and monumental fortifications. Its isthmus was shielded by a triple wall system 40 feet high and 30 feet thick, containing internal stables for 300 war elephants, 4,000 horses, and quarters for 20,000 soldiers. At the city's heart rose the steep Byrsa citadel and the temple of Eshmun. Carthage's architectural marvel was the Cothon: an artificial double harbor composed of a rectangular commercial outer basin and an inner circular military port ringed with Ionic colonnades and 220 dry docks. In the center of the naval basin sat an artificial island housing the Admiral's palace, offering commanding views of the sea while screening fleet operations from foreign eyes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Carthage jutted into the sea like a venomous crab! Its triple walls seemed carved from living mountain, and its circular naval harbor was a den of piratical deceit, concealing hundreds of quinqueremes behind merchant wharves. It took Scipio Aemilianus's colossal stone mole across the harbor entrance to finally choke the maritime breath from that monstrous queen of the seas!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cothon was the pinnacle of Phoenician engineering! Two hundred and twenty war galleys rested beneath marble arches, while our Admiral watched over the Mediterranean from his island pavilion. Gold from Spain, tin from Britain, and purple dye from Tyre flowed through our quays. She was the jewel of the sea until Roman savagery burnt seven centuries of beauty to ash."
+    }
+  ],
+  "TextMappings": []
+}

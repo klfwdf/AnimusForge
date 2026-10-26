@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Roman_Triumph_and_Memento_Mori",
+  "Keywords": [
+    "Roman_Triumph_and_Memento_Mori",
+    "Roman Triumph",
+    "Memento Mori",
+    "Jupiter Capitolinus"
+  ],
+  "RagShortTexts": [
+    "The Triumph granted generals godlike adulation, riding a four-horse chariot with face painted vermilion, while a public slave whispered 'Remember thou art mortal' to ward off tyrannical hubris."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Triumph was the ultimate honor awarded by the Senate to an imperator who slew over 5,000 foreign enemies in a single campaign. Painted with red vermilion to emulate the terracotta statue of Jupiter Capitolinus, the triumphator wore the gold-embroidered purple toga picta and laurel wreath, riding a circular bronze chariot drawn by four white stallions through the Triumphal Gate. Preceding him marched magistrates, trumpeters, wagons laden with captured spoils, paintings of battles, and shackled enemy monarchs destined for execution in the Tullianum. Behind followed legions chanting bawdy ribald verses to ward off the evil eye (fascinum). Solemnly, a state slave stood behind the general holding the heavy gold crown of Jupiter above his head, repeatedly whispering into his ear: 'Respice post te! Hominem te esse memento!' ('Look behind you! Remember you are but a man!'), an institutional ward against monarchical tyranny and divine hubris."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To ascend the Capitoline Hill in the triumphal chariot is to touch the hem of Jupiter himself! Yet that slave whispering in the general's ear keeps our Republic safe: even the greatest conqueror must bleed and die like any Roman citizen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A Roman triumph is nothing more than a barbaric pirate display! They parade stolen temple treasures and dragged captive queens in iron chains to feed the bloodlust of the Forum mob, cloaking raw greed in pious theater."
+    }
+  ],
+  "TextMappings": []
+}

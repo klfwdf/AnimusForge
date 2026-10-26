@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_08",
+  "Keywords": [
+    "Roman Mobilization After Cannae",
+    "Post Cannae Mobilization",
+    "Private Wealth Donated to SPQR",
+    "Enlisting Slaves and Debtors"
+  ],
+  "RagShortTexts": [
+    "In the grim aftermath of Cannae, the Roman Senate forbade public mourning for more than thirty days and refused to purch"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the grim aftermath of Cannae, the Roman Senate forbade public mourning for more than thirty days and refused to purchase back prisoners of war. Senators donated private fortunes to replenish empty treasuries, enlisting seventeen-year-old boys and purchasing eight thousand enslaved volunteers into newly raised legions, forging an unshakable national resolve to fight until Carthage was destroyed."
+    }
+  ],
+  "TextMappings": []
+}

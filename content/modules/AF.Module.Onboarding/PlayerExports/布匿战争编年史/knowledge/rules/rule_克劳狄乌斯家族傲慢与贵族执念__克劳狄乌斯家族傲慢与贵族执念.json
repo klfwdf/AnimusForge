@@ -1,0 +1,69 @@
+{
+  "Id": "rule_克劳狄乌斯家族傲慢与贵族执念",
+  "Keywords": [
+    "克劳狄乌斯家族傲慢与贵族执念",
+    "克劳狄乌斯家族",
+    "傲慢执念",
+    "盲人阿庇乌斯"
+  ],
+  "RagShortTexts": [
+    "克劳狄乌斯氏族以极度孤高傲慢、铁腕治军和蔑视平民著称，曾诞生主持修建亚壁古道的盲人阿庇乌斯，以及因海战前怒将圣鸡扔入大海溺死闻名的普尔喀。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "克劳狄乌斯氏族（Gens Claudia）自罗马王政末期从萨宾山区迁入以来，便以惊世骇俗的狂傲气质、不可动摇的贵族特权执念与特立独行的政治手腕名震全城。家族流传着名言：‘克劳狄乌斯人只遵从荣誉与神律，绝不向乌合平民谄媚’。该家族英雄与怪杰辈出：先祖‘盲人’阿庇乌斯·克劳狄乌斯（Appius Claudius Caecus）力排众议出资主持修筑了罗马首条战略干道亚壁古道与首座引水渠，并在皮洛士大军逼近罗马城下时，双目失明的他挺直腰板步入元老院，怒斥主和派‘罗马绝不与踏在意大利土地上的敌人谈判！’；但在第一次布匿战争期间，海军统帅普布利乌斯·克劳狄乌斯·普尔喀在德雷帕纳海战前按例行占卜，因圣鸡拒绝啄食谷粒示意不详，狂怒之下的普尔喀当众暴喝：‘既然不吃，那就让它们去喝水！’并一把将圣鸡抓起扔进大海，随后罗马舰队遭遇狂风与布匿伏击几乎全军覆没。即便饱受元老院重罚与平民诅咒，克劳狄乌斯人冷峻严酷的战阵本色未改，其铁血风骨仍在战争中屡次成为扭转乾坤的重锤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "克劳狄乌斯人骨子里有一种比岩石还硬的傲慢！他们骂起保民官来毫不留情，甚至敢把不听话的占卜圣鸡扔进海里淹死。但当共和国陷入最深沉的绝境时，谁也不能否认克劳狄乌斯军官的剑锋从未颤抖半分！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这群疯狂自负的罗马贵族连他们自己神明的预兆都敢蔑视！普尔喀在德雷帕纳把圣鸡扔进大海，阿德赫巴尔将军就让整支罗马舰队沉入海底喂鱼！他们的狂妄傲慢正是布匿水手最甘美的战利品！"
+    }
+  ],
+  "TextMappings": []
+}

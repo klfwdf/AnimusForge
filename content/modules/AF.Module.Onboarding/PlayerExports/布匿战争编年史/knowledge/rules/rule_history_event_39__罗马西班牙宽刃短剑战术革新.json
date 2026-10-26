@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_39",
+  "Keywords": [
+    "罗马西班牙宽刃短剑战术革新",
+    "西班牙宽刃短剑革新",
+    "刺劈兼备近身格斗",
+    "淘汰传统高卢铁剑"
+  ],
+  "RagShortTexts": [
+    "在西班牙战场与凯尔特贝利亚勇士搏杀中，罗马军团为其精纯的高碳钢与独特的‘西班牙短剑’（Gladius Hispaniensis）所震撼。大西庇阿在占领新迦太基后，召集数千名当地铁匠为罗马全军换装此剑。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在西班牙战场与凯尔特贝利亚勇士搏杀中，罗马军团为其精纯的高碳钢与独特的‘西班牙短剑’（Gladius Hispaniensis）所震撼。大西庇阿在占领新迦太基后，召集数千名当地铁匠为罗马全军换装此剑。其双刃宽厚、剑尖锐利，兼具强劲的劈砍与致命的刺击效能，配合方盾（Scutum）冲撞贴身刺击，使罗马近身搏杀战术迈向古典时代的顶峰。"
+    }
+  ],
+  "TextMappings": []
+}

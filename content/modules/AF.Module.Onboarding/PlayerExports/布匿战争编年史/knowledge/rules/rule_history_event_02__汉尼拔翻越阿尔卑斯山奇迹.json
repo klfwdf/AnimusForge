@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_02",
+  "Keywords": [
+    "汉尼拔翻越阿尔卑斯山奇迹",
+    "汉尼拔翻越阿尔卑斯山",
+    "战象翻山之险",
+    "高卢山地险隘强行军"
+  ],
+  "RagShortTexts": [
+    "公元前218年秋季，汉尼拔率领近四万大军与三十七头北非战象横渡罗讷河，强行翻越险峻覆雪的阿尔卑斯山。行军途中面对阿洛布罗格山民的连番伏击、落石塌方与严寒冻伤，减员几近半数，但最终出人意料地突入意大利波"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年秋季，汉尼拔率领近四万大军与三十七头北非战象横渡罗讷河，强行翻越险峻覆雪的阿尔卑斯山。行军途中面对阿洛布罗格山民的连番伏击、落石塌方与严寒冻伤，减员几近半数，但最终出人意料地突入意大利波河平原。这彻底打乱了罗马分兵进攻西班牙和北非本土的原定战略，震动了整个罗马政坛。"
+    }
+  ],
+  "TextMappings": []
+}

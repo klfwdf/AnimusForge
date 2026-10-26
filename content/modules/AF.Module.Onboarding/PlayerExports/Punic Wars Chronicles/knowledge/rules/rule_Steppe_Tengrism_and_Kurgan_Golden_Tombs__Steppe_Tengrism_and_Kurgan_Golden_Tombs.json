@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Steppe_Tengrism_and_Kurgan_Golden_Tombs",
+  "Keywords": [
+    "Steppe_Tengrism_and_Kurgan_Golden_Tombs",
+    "Tengri",
+    "Eternal Blue Sky",
+    "Kurgan Tumuli"
+  ],
+  "RagShortTexts": [
+    "Steppe nomads worshipped Tengri, the Eternal Blue Sky, guided by shamans; fallen khans were interred in massive kurgan earthen mounds laden with golden armor and sacrificed warhorses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Across the vast Eurasian steppe belt, Scythian, Saka, and Sarmatian nomadic confederacies shared a cosmological spiritual world centered on Tengri (the Eternal Blue Sky) and sacred Mother Earth. In open grasslands without walls, the endless sky represented cosmic harmony and supreme divine will. Shamans (Enarees among the Scythians) beat rawhide drums and chanted around smoking braziers, entering ecstatic trances to commune with spirits of ancestors, wild beasts, and weather patterns. When a royal khan or warrior-princess perished, confederations erected massive kurgan mounds towering above the plains. Underground timber chambers were packed with slaughtered stallions fitted with gold-plated bridles, dynamic 'Animal Style' beaten-gold pectoral collars, and recurve bowcases, ensuring the chieftain rode through the sky realm accompanied by his heavenly retinue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The steppe riders entomb kings beneath mountains of earth, wrapped in beaten gold that rivals the treasures of Apollo! Their shamans summon blizzards and their horse archers shoot backwards from galloping steeds—a terrifying world beyond our horizons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Under the endless blue sky of Tengri, the steppe produces warriors as fierce as desert lions. When their horn composite bows release black rains of bronze arrowheads, empires crumble into dust. True sons of the open wind!"
+    }
+  ],
+  "TextMappings": []
+}

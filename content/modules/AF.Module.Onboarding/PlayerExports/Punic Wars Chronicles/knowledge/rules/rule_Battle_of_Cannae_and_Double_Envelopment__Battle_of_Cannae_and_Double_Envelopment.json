@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Battle_of_Cannae_and_Double_Envelopment",
+  "Keywords": [
+    "Battle_of_Cannae_and_Double_Envelopment",
+    "Battle of Cannae",
+    "Cannae",
+    "Double Envelopment"
+  ],
+  "RagShortTexts": [
+    "The Battle of Cannae (216 BC) is military history's definitive double-envelopment, where Hannibal surrounded and annihilated nearly 70,000 Romans."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On August 2, 216 BC, at Cannae in Apulia, Rome deployed an unprecedented 86,000-man army under Consuls Terentius Varro and Aemilius Paullus to crush Hannibal. Outnumbered with roughly 50,000 men, Hannibal crafted military history's masterpiece of tactical envelopment: placing weaker Gallic and Iberian infantry in an outward-bowing crescent in the center, flanked by veteran Libyan heavy infantry and superior cavalry. As the massive Roman phalanx pressed forward, Hannibal's center executed a disciplined fighting retreat, bending the crescent inward. Concurrently, Hasdrubal's cavalry routed the Roman wings and swept behind their rear, while the Libyan infantry wheeled inward. Encircled and compressed so tightly they could not draw their swords, between 50,000 and 70,000 Romans fell, including Consul Paullus and eighty senators."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cannae was the darkest day Rome ever endured. Seventy thousand citizens and allies lay slain by dusk; bushels of gold rings were stripped from fallen patricians. Yet in the face of annihilation, the Republic refused surrender! When the surviving consul Varro returned, the Senate went out to thank him because 'he had not despaired of the Republic'! From those ashes arose our final victory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cannae is the immortal masterpiece of tactical warfare! With half their numbers, Hannibal wrapped the mighty legions of Rome in an inescapable ring of death. Our outward crescent retreated with sublime discipline, drawing their dense masses into the trap before our cavalry sealed their doom. That glorious slaughter broke Roman power across southern Italy!"
+    }
+  ],
+  "TextMappings": []
+}

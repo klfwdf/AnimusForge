@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_23",
+  "Keywords": [
+    "哈斯德鲁巴尔断首与汉尼拔绝望",
+    "哈斯德鲁巴尔战死断首",
+    "抛首汉尼拔军营",
+    "汉尼拔痛呼迦太基国运"
+  ],
+  "RagShortTexts": [
+    "梅托罗河战败前夕，哈斯德鲁巴尔·巴卡不愿沦为阶下囚，拔剑单枪匹马冲入罗马军团长矛丛中壮烈战死。执政官尼禄割下其首级火速南返，在汉尼拔大营门前将血淋淋的人头抛入营垒。汉尼拔认出弟弟的面庞，仰天痛哭‘在这"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "梅托罗河战败前夕，哈斯德鲁巴尔·巴卡不愿沦为阶下囚，拔剑单枪匹马冲入罗马军团长矛丛中壮烈战死。执政官尼禄割下其首级火速南返，在汉尼拔大营门前将血淋淋的人头抛入营垒。汉尼拔认出弟弟的面庞，仰天痛哭‘在这一颗头颅中，我看到了迦太基的命运！’。自此汉尼拔丧失了全部野战援军，被迫蜷缩在意大利西南端布鲁蒂姆山区苦苦坚守。"
+    }
+  ],
+  "TextMappings": []
+}

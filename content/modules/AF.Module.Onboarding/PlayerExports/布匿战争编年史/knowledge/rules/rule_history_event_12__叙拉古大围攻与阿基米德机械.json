@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_12",
+  "Keywords": [
+    "叙拉古大围攻与阿基米德机械",
+    "叙拉古大围攻战",
+    "阿基米德防御机械",
+    "起重铁爪倾覆战舰"
+  ],
+  "RagShortTexts": [
+    "公元前214至212年，马塞卢斯率领罗马重装陆军与五行桨战舰舰队围攻叙拉古。叙拉古数学大师阿基米德发明了惊世骇俗的机械守城体系：精准巨型投石机在远距砸沉罗马战船，伸出城垛的‘阿基米德铁爪’起重机将靠岸"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前214至212年，马塞卢斯率领罗马重装陆军与五行桨战舰舰队围攻叙拉古。叙拉古数学大师阿基米德发明了惊世骇俗的机械守城体系：精准巨型投石机在远距砸沉罗马战船，伸出城垛的‘阿基米德铁爪’起重机将靠岸战舰凌空吊起后猛摔沉入海底。罗马士兵对城墙上出现的任何绳索横木皆惊呼逃窜，马塞卢斯不得不放弃强攻改为长期封锁。"
+    }
+  ],
+  "TextMappings": []
+}

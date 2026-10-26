@@ -1,0 +1,69 @@
+{
+  "Id": "rule_巴利阿里群岛与海路枢纽",
+  "Keywords": [
+    "巴利阿里群岛与海路枢纽",
+    "巴利阿里群岛",
+    "巴利阿里群岛与海路枢纽巴利阿里投石兵",
+    "马略卡与梅诺卡"
+  ],
+  "RagShortTexts": [
+    "巴利阿里群岛扼守西班牙与意大利间海路，以出产使用粗绳投掷沉重铅弹的致命投石手闻名，长期为迦太基重要军源地。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴利阿里群岛（Balearic Islands，包括马略卡岛与梅诺卡岛）耸立在西班牙东岸与萨丁尼亚岛之间的西地中海中央海域，是连接伊比利亚半岛、高卢南部海岸与北非海运的绝对枢纽。群岛居民自幼经受严酷的投石技巧训练，传说母亲会将面包挂在树梢上，孩童唯有用投石索击落方能进食。成年巴利阿里战士腰缠三根不同射程（远、中、近）的牛筋或马鬃粗编投石索，善用光滑重石或特制橄榄形铅弹（Glandes），其投掷初速极高且极其精准，能在百步之外击碎罗马青铜头盔与骨骼，甚至比寻常弓箭更具穿透钝击力。在布匿战争中，巴利阿里群岛一直是迦太基忠诚的军源地与舰队中继站，汉尼拔的大军始终配置着数千名精锐巴利阿里投石兵作为散兵前锋，在特雷比亚、特拉西梅诺湖与坎尼战役中多次在开战之初击杀罗马军团前列的青年兵军官。前123年，罗马执政官梅特路斯率军远征彻底征服该群岛并设为行省，因战功获得‘巴利阿里库斯’的尊号。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴利阿里投石手的狂暴石雨是每一个军团百夫长都必须警惕的死神！那些未开化的海岛蛮人手中甩动的皮绳，能把鹅卵石和铅丸像投石机一样砸碎我们的大盾与面甲！在坎尼和特雷比亚，我们的许多勇敢青年连敌人的剑刃都没碰到就死于飞石之下。直到梅特路斯执政官彻底扫荡群岛设立行省，这群致命的投石手才终于成为罗马辅助军团的忠诚前哨！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴利阿里群岛是迦太基舰队在西班牙海域最好的避风港与哨所！那里的猎手是天生的神射手，三根投石绳就是他们的生命。当汉尼拔将军在战场中央举起手，数千名巴利阿里投石兵同时甩动长索，呼啸而出的铅丸遮天蔽日，罗马人引以为傲的严整方阵在飞石呼啸声中瞬间七零八落！"
+    }
+  ],
+  "TextMappings": []
+}

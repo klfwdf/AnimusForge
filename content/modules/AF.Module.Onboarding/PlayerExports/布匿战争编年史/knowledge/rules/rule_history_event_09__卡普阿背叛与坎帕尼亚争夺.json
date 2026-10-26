@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_09",
+  "Keywords": [
+    "卡普阿背叛与坎帕尼亚争夺",
+    "卡普阿背叛罗马",
+    "坎帕尼亚奢靡之毒",
+    "意大利南部同盟分裂"
+  ],
+  "RagShortTexts": [
+    "坎尼会战后，意大利第二大都市卡普阿宣布与罗马决裂，开门倒向汉尼拔以求取代罗马成为意大利霸主。然而汉尼拔军队进驻富庶奢靡的卡普阿过冬，长期的温柔乡与物资充盈一定程度上消磨了蛮族佣兵的血性。卡普阿的背叛引"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼会战后，意大利第二大都市卡普阿宣布与罗马决裂，开门倒向汉尼拔以求取代罗马成为意大利霸主。然而汉尼拔军队进驻富庶奢靡的卡普阿过冬，长期的温柔乡与物资充盈一定程度上消磨了蛮族佣兵的血性。卡普阿的背叛引发南部萨莫奈、卢卡尼亚以及大希腊诸城邦的连锁倒戈，使罗马陷入前所未有的四面楚歌之境。"
+    }
+  ],
+  "TextMappings": []
+}

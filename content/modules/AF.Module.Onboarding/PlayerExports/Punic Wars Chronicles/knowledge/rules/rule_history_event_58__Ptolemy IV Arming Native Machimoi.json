@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_58",
+  "Keywords": [
+    "Ptolemy IV Arming Native Machimoi",
+    "Ptolemy IV Native Conscription",
+    "Machimoi Egyptian Phalanx",
+    "Hellenic Hegemony Broken"
+  ],
+  "RagShortTexts": [
+    "Faced with imminent invasion during the Fourth Syrian War, Ptolemy IV took the unprecedented step of conscripting and dr"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Faced with imminent invasion during the Fourth Syrian War, Ptolemy IV took the unprecedented step of conscripting and drilling twenty thousand native Egyptians into a sarissa phalanx (Machimoi). While their decisive shock charge saved Egypt at Raphia, handing arms to disenfranchised indigenous subjects shattered Greek military supremacy, directly igniting the protracted Thebaid Rebellion that split Egypt."
+    }
+  ],
+  "TextMappings": []
+}

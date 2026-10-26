@@ -1,0 +1,69 @@
+{
+  "Id": "rule_坎塔布里亚回旋战术",
+  "Keywords": [
+    "坎塔布里亚回旋战术",
+    "坎塔布里亚回旋",
+    "环形骑射",
+    "飞马掷标枪"
+  ],
+  "RagShortTexts": [
+    "伊比利亚北部的坎塔布里亚骑兵开创了‘旋转木马式’游击战术，骑兵排成连续旋转的椭圆回旋阵列，在掠过敌阵顶点时轮番投掷标枪，形成无死角箭雨。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "生活在伊比利亚半岛北部崇山峻岭中的坎塔布里亚人与阿斯图尔人，开创了名震古代战场的‘坎塔布里亚回旋战术’（Cantabrian Circle）。当地轻装骑兵身材矫健，骑乘善于在悬崖陡坡攀爬的本土矮种战马，左手套着轻质柳条编织的小皮盾，右手握有数支带倒钩的投掷标枪。在遭遇密集阵型的步兵方阵时，他们绝不进行鲁莽的正面冲锋，而是由两个小队在距离敌阵数十步外组成一个高速奔跑的连续椭圆形回环：每名骑手紧随前人疾驰，当战马绕到距离敌阵最近的弧顶盲区时，骑兵在毫厘之间以全身力道脱手掷出标枪，随即伏鞍沿外弧顺滑回旋退回后方重新抽枪上膛，后继的骑手则无缝接替进入投掷点。这种战术让骑兵群化身为一座永不停歇的‘旋转杀戮磨盘’：敌军步兵承受着连绵不绝的暴雨般标枪倾泻，而由于目标始终处于极高速度的横向移动中，敌方的弓箭手与步兵极难进行反击瞄准，令死板呆立的步兵方阵陷入崩溃。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那些山地骑兵就像旋转的纺车一样狡猾！他们绕着我们的军团兜圈子，标枪像冰雹一样砸在大盾上。对付这种游击回旋绝不能盲目追击打乱阵型，必须让克里特弓手和巴利阿里投石兵在军团大盾缝隙中打出交叉火力，把领头的几匹战马射倒，整个旋转的圆圈就会自己绊倒失控！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎塔布里亚的旋转风暴是群山赐予平原步兵的噩梦！当伊比利亚轻骑兵转起那个致命的圆环时，罗马人的百夫长除了把头缩在笨重的大盾后面挨揍，什么也做不了。汉尼拔麾下的西班牙骑兵正是用这种技巧，一次次把罗马同盟军的阵脚撕开缺口！"
+    }
+  ],
+  "TextMappings": []
+}

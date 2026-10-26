@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_16",
+  "Keywords": [
+    "诺帕克图斯和约与西方阴云",
+    "诺帕克图斯和约",
+    "西方阴云著名演说",
+    "阿格劳斯呼吁希腊团结"
+  ],
+  "RagShortTexts": [
+    "公元前217年夏，希腊各同盟在同盟战争耗尽国力后齐聚诺帕克图斯议和。埃托利亚政治家阿格劳斯发表了名垂青史的‘西方阴云’演说，疾呼希腊人‘应携起手来如同一人渡水’，警示北方王室与南方城邦：罗马与迦太基在"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前217年夏，希腊各同盟在同盟战争耗尽国力后齐聚诺帕克图斯议和。埃托利亚政治家阿格劳斯发表了名垂青史的‘西方阴云’演说，疾呼希腊人‘应携起手来如同一人渡水’，警示北方王室与南方城邦：罗马与迦太基在西方的厮杀决战终将产生一个超级霸主，胜者决不会止步于意大利，西方的阴云必将笼罩希腊。演说促成全希腊暂时休战，腓力五世由此决心全力西顾。"
+    }
+  ],
+  "TextMappings": []
+}

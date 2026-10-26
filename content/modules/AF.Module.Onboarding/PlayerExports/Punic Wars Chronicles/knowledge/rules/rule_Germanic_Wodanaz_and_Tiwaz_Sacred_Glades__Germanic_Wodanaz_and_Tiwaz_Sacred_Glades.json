@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Germanic_Wodanaz_and_Tiwaz_Sacred_Glades",
+  "Keywords": [
+    "Germanic_Wodanaz_and_Tiwaz_Sacred_Glades",
+    "Wodanaz",
+    "Odin",
+    "Tiwaz"
+  ],
+  "RagShortTexts": [
+    "Germanic tribes worshipped Wodanaz and Tiwaz within primeval forest glades without temples, consecrating broken enemy weapons and hanging captives from sacred boughs."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Deep within the primeval forests of Germania, tribal religion worshipped elemental powers without stone temples or anthropomorphic idols, deeming it unworthy of divine majesty. Worshippers consecrated dark sacred glades (harigstoz) to Wodanaz (God of Battle-Rage and the Dead) and Tiwaz (God of Oaths and Lawful Single Combat). Before campaigns, warbands swore sacred oaths under holy trees. Elite shock champions entered battle naked or clad in bearskins (berserkir), inducing the berserkergang frenzy—howling like wild beasts and ignoring pain from spear wounds. Following triumph, the sacred law of total consecration required warriors to systematically hammer captured weapons into useless scrap, drown baggage horses in peat bogs, and hang defeated commanders from sacred oak branches as tribute to Wodanaz, shocking Roman legions with uncompromising ferocity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Teutoburg fog conceals horrors no Roman augur can fathom! To be dragged bleeding through black bogs and hung from an oak to Wodanaz is the fate of legions that dare cross the Rhine. The frontier must remain guarded by iron ramparts!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The northern forests breed warriors who know neither fear nor surrender! When the frenzy of Wodanaz takes them, their great iron broadswords cleave legionary scuta like firewood. Let Rome try to conquer trees and shadows!"
+    }
+  ],
+  "TextMappings": []
+}

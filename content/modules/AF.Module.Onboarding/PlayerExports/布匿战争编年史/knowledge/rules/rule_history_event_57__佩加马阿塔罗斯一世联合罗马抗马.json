@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_57",
+  "Keywords": [
+    "佩加马阿塔罗斯一世联合罗马抗马",
+    "阿塔罗斯一世反马其顿",
+    "佩加马雅典娜守护",
+    "小亚细亚希腊化盟友"
+  ],
+  "RagShortTexts": [
+    "小亚细亚西北部的阿塔罗斯王国（佩加马）在阿塔罗斯一世统治下国势鼎盛。面对马其顿腓力五世与塞琉古安条克三世的南北夹击威胁，远见卓识的阿塔罗斯一世率先遣使跨海与罗马结成铁血军事同盟。佩加马舰队不仅在爱琴海"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "小亚细亚西北部的阿塔罗斯王国（佩加马）在阿塔罗斯一世统治下国势鼎盛。面对马其顿腓力五世与塞琉古安条克三世的南北夹击威胁，远见卓识的阿塔罗斯一世率先遣使跨海与罗马结成铁血军事同盟。佩加马舰队不仅在爱琴海掩护罗马战舰巡弋，更出资援助希腊反马其顿战线，成为罗马共和国日后兵锋跨入小亚细亚的最坚实跳板。"
+    }
+  ],
+  "TextMappings": []
+}

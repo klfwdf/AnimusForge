@@ -1,0 +1,69 @@
+{
+  "Id": "rule_塞迦库尔干巨冢与野兽纹金器",
+  "Keywords": [
+    "塞迦库尔干巨冢与野兽纹金器",
+    "库尔干巨冢",
+    "塞迦黄金",
+    "野兽纹饰"
+  ],
+  "RagShortTexts": [
+    "塞迦草原游牧贵族去世后长眠于数十米高的‘库尔干’（Kurgan）巨冢，身披数千片精美猛兽盘卷金甲，并殉葬数十匹金具纯种良驹，展现不可思议的草原财富。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在中亚大草原与天山北麓，逐水草而居的塞迦游牧民族（Saka，东方斯基泰人）创造了震撼古代世界的黄金艺术与墓葬奇观。当尊贵的可汗或贵族武士去世时，部族会为其构筑规模宏大的‘库尔干’（Kurgan）覆斗形封土巨冢——高达数十米、直径逾百米。墓室用整根落叶松木榫卯搭建成地下木椁，墓主身着由数千枚纯金打造的鱼鳞金片缀缝而成的‘黄金铠甲’，头戴高耸如长枪的尖顶金冠；其周围殉葬数十匹体态优美、配备纯金马衔与雕花鞍具的良种骏马，坚信它们能在冥界继续供主人驰骋。塞迦艺术登峰造极之处在于举世闻名的‘野兽纹饰风格’（Animal Style）：黄金铸造的腰带扣、剑鞘与马具上，精细雕刻着盘曲成圆圈的金钱豹、鹿角化作鸟首的神鹿、双翼格里芬神兽以及猛虎噬撕骆驼的剧烈肉搏场景，将草原弱肉强食的狂野生命力与希腊波斯冶金工艺完美熔铸于一体。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那些在里海北边骑马狂奔的蛮子，居然把几万片纯金缝在衣服上埋进土坟堆里！他们既不建城也不修港口，抢来的金子全拿去给死人和死马陪葬。等帝国的疆界延伸到高加索，元老院的军团会把那些巨大的土坟一座座挖开充实罗马国库！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塞迦人的库尔干巨冢是草原大帝永恒的宫殿！他们黄金马具上的飞鹰与猛豹，闪烁着地中海城邦永远无法理解的自由与力量。汉尼拔将军最重视丝绸商道上这些来去如风的黄金骑射手，他们是牵制塞琉古后背、制衡东方局势最神秘的锋刃！"
+    }
+  ],
+  "TextMappings": []
+}

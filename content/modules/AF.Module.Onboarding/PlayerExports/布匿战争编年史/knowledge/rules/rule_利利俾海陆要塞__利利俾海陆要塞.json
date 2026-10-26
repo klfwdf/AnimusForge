@@ -1,0 +1,69 @@
+{
+  "Id": "rule_利利俾海陆要塞",
+  "Keywords": [
+    "利利俾海陆要塞",
+    "利利俾",
+    "马尔萨拉",
+    "西西里要塞"
+  ],
+  "RagShortTexts": [
+    "利利俾是西西里最西端的迦太基巨石要塞，拥有暗礁海港与深厚护城壕，第一次布匿战争期间罗马围攻十年未破。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "利利俾（Lilybaeum，今西西里马尔萨拉）扼守西西里岛最西端的岬角，正对北非突尼斯海岸，距迦太基仅一天航程，是迦太基掌控西西里岛逾两百年的坚固锁钥。城市三面环抱浅滩暗礁与险恶海流，外港水下暗礁密布，若无熟练本国舵手引航敌船极易搁浅撞毁；陆侧则筑有极其高大的巨石城墙与深达二十米、宽逾三十米的干壕，并配有坚不可摧的棱角碉楼。在第一次布匿战争后半期（前250—前241年），罗马执政官先后调集数万大军与庞大舰队对利利俾展开了古典战史最著名的十年海陆围城战。罗马军团修筑了无数土山、坑道、掘壕并出动巨大冲车，守军统帅西米尔科却以石炮反击、挖掘对冲坑道并出敢死队纵火焚毁了罗马全套攻城器械；迦太基航海家‘汉尼拔·罗德岛人’更凭借精湛航技单船在白天公然穿过罗马层层封锁舰队入港卸粮。利利俾坚守十年直至终战从未被强攻攻克，最终只是在埃加迪群岛海战后根据停战和约和平移交罗马。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "利利俾的礁石和城壕是罗马军团整整十年的梦魇！我们的执政官在那里填平了海沟、挖穿了地道、造出了最高的攻城塔，但迦太基人在狂风暴雨夜的一把大火，便将几个月的心血化作白灰！最终我们明白了：只要不击沉海上的运粮船，这座要塞就永远攻不破！埃加迪群岛的胜利，才是迫使利利俾守军交出钥匙的真正利刃！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "利利俾是布匿筑城与航海技艺最荣耀的丰碑！那里的浅滩是罗马战舰的坟场，巨石城墙让他们的冲车化作废铁。罗德岛人汉尼拔独自驾着快船，当着整个罗马围困舰队的面摇橹入港送粮，罗马人只能在岸上干瞪眼跺脚！整整十年，罗马军团寸步难行！若非埃加迪群岛舰队受挫，利利俾的城头永远不会降下巴力神旗！"
+    }
+  ],
+  "TextMappings": []
+}

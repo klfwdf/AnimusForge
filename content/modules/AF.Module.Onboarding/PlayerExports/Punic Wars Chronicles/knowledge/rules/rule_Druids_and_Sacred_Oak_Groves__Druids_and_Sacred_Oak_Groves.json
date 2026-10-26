@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Druids_and_Sacred_Oak_Groves",
+  "Keywords": [
+    "Druids_and_Sacred_Oak_Groves",
+    "Druids_and_Sacred_Oak_Groves Druids",
+    "Druids_and_Sacred_Oak_Groves Nemeton",
+    "Sacred Oak"
+  ],
+  "RagShortTexts": [
+    "The Druids formed the intellectual and spiritual apex of Celtic society, performing rites in sacred oak groves with golden sickles, judging inter-tribal law, and strictly forbidding written scriptures."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Across Celtic Gaul, spiritual and judicial authority was monopolized by the revered order of Druids. Transcending tribal boundaries, Druids served as judges, philosophers, astronomers, and healers. They held nature sacred, gathering in consecrated woodland clearings known as nemeta. Their defining ritual involved the sacred harvest of mistletoe growing upon ancient oaks: clad in spotless white tunics, a senior Druid scaled the sacred tree under specific lunar phases to sever mistletoe with a golden sickle, catching it in a white linen cloak before sacrificing two white bulls to brew panaceas. Druids arbitrated boundary disputes and murder trials; those defying their verdicts faced religious interdiction—the ultimate sentence of social ostracism. Forbidding the transcription of sacred doctrine to preserve memory and prevent holy lore from falling into foreign hands, novitiates studied for up to twenty years memorizing vast epics of oral verse in the forest deeps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The white-robed Druids lurking in Gallic thickets are the chief instigators of rebellion! They poison the minds of Gallic chieftains with superstitious rites and human wicker burnings. So long as these druidic groves stand untouched, Gaul will never submit to the Pax Romana—our axes must fell their sacred trees to the root!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Druids possess ancient wisdom older than Rome itself, commanding the elemental forces of forest and storm. Their word halts battles between rival clans with a single gesture. Hannibal respects their oak sanctuaries, and in return, the Druids read the omens that guided our army safely across the Alpine valleys!"
+    }
+  ],
+  "TextMappings": []
+}

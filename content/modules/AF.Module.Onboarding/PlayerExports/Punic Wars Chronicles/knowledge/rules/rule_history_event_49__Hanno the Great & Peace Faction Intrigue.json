@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_49",
+  "Keywords": [
+    "Hanno the Great & Peace Faction Intrigue",
+    "Hanno the Great Peace Faction",
+    "Council of One Hundred Intrigue",
+    "Withholding Reinforcements"
+  ],
+  "RagShortTexts": [
+    "Throughout the conflict, the Carthaginian Senate was paralyzed by factional rivalry between the Barcid war party and the"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Throughout the conflict, the Carthaginian Senate was paralyzed by factional rivalry between the Barcid war party and the agrarian peace party led by Hanno the Great. Representing domestic African landholders, Hanno feared a victorious Barcid military dictatorship more than Roman defeat. Following Cannae, when Mago presented rings taken from fallen Roman equites to plead for reinforcements, Hanno blocked vital levies, starving Hannibal of decisive siege gear."
+    }
+  ],
+  "TextMappings": []
+}

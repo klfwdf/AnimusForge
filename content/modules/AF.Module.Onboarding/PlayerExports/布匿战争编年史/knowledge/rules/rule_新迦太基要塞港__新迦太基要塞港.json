@@ -1,0 +1,69 @@
+{
+  "Id": "rule_新迦太基要塞港",
+  "Keywords": [
+    "新迦太基要塞港",
+    "新迦太基要塞港新迦太基",
+    "卡塔赫纳",
+    "哈斯德鲁拔建城"
+  ],
+  "RagShortTexts": [
+    "新迦太基城坐落于伊比利亚东南岸，由哈斯德鲁拔建于前228年，是巴卡家族经略西班牙的白银金库、军火要塞与深水港枢纽。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "新迦太基（Carthago Nova，今西班牙卡塔赫纳）由汉尼拔的姐夫美男子哈斯德鲁拔于公元前228年建立，是迦太基在伊比利亚半岛的统治中枢与最大海上基地。城市坐落在一个深入内陆的狭窄深水海湾内，北面是一片浅水潟湖，南面临海，仅通过一条极其狭窄的岩石陆桥与大陆相连，地势险绝近乎不可攻破。邻近的卡斯图洛山脉蕴藏着极其富饶的银矿，每天可为巴卡家族提供两万五千得拉克马的纯银，直接资助了汉尼拔远征意大利的全部军饷与雇佣兵招募。城内储备着堆积如山的军械、粮食以及数百名来自西班牙各部落的高贵人质。公元前209年，大西庇阿利用当地渔民提供的情报，趁强烈的落潮北风涉渡退潮的北面潟湖突袭城墙薄弱处，一举攻克这座看似固若金汤的要塞，彻底拔除了巴卡家族在欧洲的根基。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "新迦太基是巴卡家族用西班牙银矿和雇佣兵铸造的巢穴！他们以为有潟湖和海湾环绕便能万无一失，但海神海王星站在罗马这一边！大西庇阿踏着退潮的泥滩率领敢死队爬上城墙，落潮的水波就是指引胜利的神谕！夺取新迦太基不仅让我们获得了六百塔兰特的白银和十八艘战舰，更让整个西班牙的部落看清了谁才是真正的胜者！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "新迦太基的失陷是西班牙战局崩盘的致命伤。哈斯德鲁拔将军苦心经营十数年，将荒芜的海湾变成了拥有宏伟宫殿与满溢银库的东方都城。马戈指挥的一千守军英勇抵抗，但谁能料到北面那片千百年从未见底的潟湖竟然会在落潮和狂风下露出水底！罗马人偷袭了我们最空虚的软肋，巴卡家族在西班牙的心脏被生生挖走了。"
+    }
+  ],
+  "TextMappings": []
+}

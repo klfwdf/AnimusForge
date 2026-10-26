@@ -1,0 +1,69 @@
+{
+  "Id": "rule_罗马共和国公民兵与操典军团",
+  "Keywords": [
+    "罗马共和国公民兵与操典军团",
+    "罗马操典军团",
+    "罗马共和国公民兵与操典军团青年兵",
+    "罗马共和国公民兵与操典军团壮年兵"
+  ],
+  "RagShortTexts": [
+    "布匿战争时期的罗马操典军团以自备财产的公民兵为基础，按年龄财产分为青年兵、壮年兵与后备兵三道防线。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "布匿战争时期罗马军事实力的基石是其严整的‘操典军团’（Manipular Legion）与公民兵动员体制。罗马军队由具备一定财产门槛的自由自耕农公民组成，每人自备武器装备，具有极高的城邦归属感与荣誉感。军团战阵按年龄与作战经验排列为三道棋盘格梯队（Quincunx）：前锋为年轻勇敢的‘青年兵’（Hastati），次席为三十岁左右经验成熟的‘壮年兵’（Principes），最后则是身经百战的老兵‘后备兵’（Triarii）。军团装备大曲面方盾（Scutum）、两支投掷重标枪（Pilum）以及致命的西班牙双刃短剑（Gladius Hispaniensis）。小队（Maniple）之间留有战术间隙，战斗中前线受损时可灵活交替后撤换防，后备兵跪地持长矛作为最后的定海神针。这套高度机动的战术弹性使罗马军团在多次会战崩溃后仍能迅速整训重组，构成了战胜迦太基雇佣兵的终极力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马军团不是靠金币招募的乌合之众，每一个手持大盾的重步兵都是拥有土地与选票的罗马公民！青年兵掷出重标枪砸碎敌阵，壮年兵拔出短剑贴身突刺，若局势凶险，更有后备兵如同铁壁磐石！‘事已至后备兵’（Res ad triarios rediit）意味着绝不后退的死战！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马军团就像由泥土和铁铸成的怪物。他们的方阵呆板粗重，汉尼拔将军多次用精妙的战术像宰割牲畜一样消灭了他们几十万人。但最可怕的是，他们的公民源源不断！当坎尼的尸骨未寒，罗马城里的铁匠铺又敲响了新的短剑，这是任何雇佣兵军队都难以长久对抗的消耗地狱。"
+    }
+  ],
+  "TextMappings": []
+}

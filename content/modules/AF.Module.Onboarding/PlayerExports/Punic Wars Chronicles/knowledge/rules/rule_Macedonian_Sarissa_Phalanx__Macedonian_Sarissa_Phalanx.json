@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Macedonian_Sarissa_Phalanx",
+  "Keywords": [
+    "Macedonian_Sarissa_Phalanx",
+    "Sarissa",
+    "Macedonian Phalanx",
+    "Syntagma"
+  ],
+  "RagShortTexts": [
+    "The Macedonian phalanx deployed sixteen ranks deep wielding the 18-to-21 foot two-handed sarissa pike, projecting a bristling wall of five spear points to crush frontal opposition on flat ground."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pioneered by Philip II and Alexander the Great, the Macedonian phalanx remained the defining tactical engine of the Hellenistic kingdoms. The phalangite infantryman (pezhetairos) wielded the sarissa: an enormous cornel-wood pike measuring 18 to 21 feet long with a double-pointed iron head and a bronze counterweight butt-spike. Requiring both hands to wield, infantry slung a light 24-inch round pelte shield over their left shoulder. Organized into standard tactical blocks of 256 men (syntagma) deployed 16 ranks deep, the front five ranks leveled their pikes horizontally, presenting an impenetrable hedge of five overlapping spear-points bristling in front of every marching front-ranker. The rear eleven ranks held their sarissas upright or angled at 45 degrees, creating a dense overhead lattice that deflected falling arrows and javelins. On flat plains with protected flanks, this hedgehog of pikes was virtually unstoppable against frontal infantry shock or cavalry charges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Macedonian pike wall looks like a moving iron fortress upon a parade ground. But draw them onto broken hills or rocky ravines, and their rigid ranks buckle! Once a maniple slips past the spear points into close range, their six-meter poles become useless timber against short Roman steel!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The sarissa of Macedon subdued the Persian Empire and remains the supreme anvil of Hellenistic warfare! Philip V's phalanx holds the keys to the Adriatic. If Hannibal's maneuvers combine with the bristling pikes of Macedon, consular legions will be ground to dust between hammer and anvil!"
+    }
+  ],
+  "TextMappings": []
+}

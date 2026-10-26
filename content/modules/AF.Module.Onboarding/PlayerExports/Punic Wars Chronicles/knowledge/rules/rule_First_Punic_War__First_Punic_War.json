@@ -1,0 +1,69 @@
+{
+  "Id": "rule_First_Punic_War",
+  "Keywords": [
+    "First_Punic_War",
+    "First Punic War",
+    "Sicilian War",
+    "Aegates Islands"
+  ],
+  "RagShortTexts": [
+    "The First Punic War (264–241 BC) was a 23-year grinding conflict over Sicily, concluding in a Roman naval victory and the cession of Sicily."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The First Punic War began in 264 BC over the strategic port of Messana on Sicily. Spanning twenty-three years of brutal attrition, it was fought across Sicilian land and sea. Carthage initially commanded the waves, but Rome constructed its first major fleet modeled on a captured Punic quinquereme and invented the 'corvus' boarding bridge, winning stunning naval victories at Mylae and Cape Ecnomus. Although Consul Regulus's African invasion was crushed by Spartan mercenary general Xanthippus, Rome raised one final fleet via private citizen contributions to shatter the Carthaginian navy at the Aegates Islands in 241 BC. Carthage surrendered Sicily and paid 3,200 silver talents, giving Rome its first overseas province."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The First Punic War demonstrated Rome's unmatched resolve! We possessed no fleet, yet we felled timber, trained rowers on wooden benches on dry land, and attached the corvus to grapple Phoenician ships. Storms sank fleets, yet our citizens emptied their purses to build another. At the Aegates Islands, we shattered Carthage's maritime arrogance forever. Sicily became the first jewel in Rome's provincial crown!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The First Punic War cost us the ancestral shield of Sicily. Hamilcar Barca fought like a lion in the mountains of Eryx and Panormus, never beaten in open battle! Yet our blinded oligarchs in Carthage neglected the navy, leaving an under-crewed grain convoy to be ambushed at the Aegates Islands. The humiliating peace and crippling silver indemnity stripped us of our island and provoked the bloody Mercenary War."
+    }
+  ],
+  "TextMappings": []
+}

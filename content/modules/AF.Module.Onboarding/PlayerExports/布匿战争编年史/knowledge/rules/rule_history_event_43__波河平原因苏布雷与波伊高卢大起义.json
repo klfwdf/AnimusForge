@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_43",
+  "Keywords": [
+    "波河平原因苏布雷与波伊高卢大起义",
+    "波河平原高卢大起义",
+    "因苏布雷人围城罗马",
+    "波伊部落伏击殖民地"
+  ],
+  "RagShortTexts": [
+    "公元前218年春，在得知汉尼拔即将跨越比利牛斯山的情报后，波河平原饱受罗马殖民压迫的波伊人与因苏布雷人发动全面起义。高卢勇士驱逐了罗马测量官员，伏击了前去镇压的罗马军团，将罗马拓荒殖民者围困在摩德纳要"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年春，在得知汉尼拔即将跨越比利牛斯山的情报后，波河平原饱受罗马殖民压迫的波伊人与因苏布雷人发动全面起义。高卢勇士驱逐了罗马测量官员，伏击了前去镇压的罗马军团，将罗马拓荒殖民者围困在摩德纳要塞。高卢大起义牵制了原定开往西班牙的罗马主力，并为翻越阿尔卑斯山后饥寒交迫的汉尼拔提供了数万名精悍的高卢重装剑士补充。"
+    }
+  ],
+  "TextMappings": []
+}

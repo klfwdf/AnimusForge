@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Carthaginian_Tophet_and_Child_Sacrifice",
+  "Keywords": [
+    "Carthaginian_Tophet_and_Child_Sacrifice",
+    "Tophet",
+    "Baal Hammon",
+    "Tanit"
+  ],
+  "RagShortTexts": [
+    "The Tophet of Carthage contains urns with cremated remains of infants and animals; Greco-Roman accounts claimed noble firstborn were burned alive to Baal Hammon in times of national peril."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Beneath the Byrsa acropolis in Carthage lies the sacred outdoor precinct known as the Tophet, dedicated to the supreme deities Tanit and Baal Hammon. Archaeological excavations unearthed over 20,000 urns containing the cremated bones of infants, young children, and young lambs, commemorated by limestone stelae inscribed with vows. Greek and Roman chroniclers like Diodorus Siculus and Plutarch described these rites in horrifying detail: claiming that during severe national crises or wartime sieges, noble Carthaginian families handed their infant sons to bronze statues of Cronus (Baal). The statue's sloping outstretched arms allowed the child to roll directly into a fiery pit beneath, amidst deafening flutes and drums meant to drown out the screams of distraught mothers. Modern scholars debate whether the Tophet represents real human child sacrifice (molk) or consecrated necropolises for high-mortality stillborns; nonetheless, the tale horrified Roman sensibilities, providing ironclad moral justification in senatorial speeches that 'Carthage must be destroyed'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Carthaginians are monsters who offend both heaven and earth! What manner of civilized nation feeds its own infant sons into the belly of a furnace to appease bronze idols? The gods despise their child-slaughtering rites, and Roman legions will purge this abomination from Africa!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Roman hypocrites slander our sacred grief! The Tophet is where our ancestors consecrated the departed souls of infants taken too early by pestilence, returning them to Tanit's gentle bosom beside pristine lambs. A people who slaughter slaves in gladiatorial sand for amusement have no right to lecture Carthage on piety!"
+    }
+  ],
+  "TextMappings": []
+}

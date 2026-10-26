@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_18",
+  "Keywords": [
+    "Battle of the Upper Baetis",
+    "Fall of the Scipio Brothers",
+    "Celtiberian Mercenary Betrayal",
+    "Collapse of Roman Spain"
+  ],
+  "RagShortTexts": [
+    "In 211 BC, Roman commanders Publius and Gnaeus Cornelius Scipio were annihilated in Spain during the twin battles of Cas"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 211 BC, Roman commanders Publius and Gnaeus Cornelius Scipio were annihilated in Spain during the twin battles of Castulo and Ilorca. Carthaginian generals Hasdrubal Barca and Mago bribed twenty thousand Celtiberian mercenaries to abandon the Roman ranks. Deprived of their forces, both Scipio brothers fell sword in hand, leaving Roman territory in Hispania clinging to a desperate bridgehead north of the Ebro."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_巴卡家族提尔先祖与闪电军门",
+  "Keywords": [
+    "巴卡家族提尔先祖与闪电军门",
+    "巴卡家族",
+    "哈米尔卡",
+    "汉尼拔"
+  ],
+  "RagShortTexts": [
+    "巴卡家族（闪电之族）承袭提尔古老勇士血统，哈米尔卡在西班牙营建独立的军阀基业，汉尼拔幼年立下誓死灭亡罗马的神圣血誓，以天才统帅之术震颤地中海。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴卡家族（Barcid Dynasty，在模组中对应Bini Hannim氏族）是迦太基历史上最耀眼、最富传奇色彩但也最令寡头元老院忌惮的至高军门。‘巴卡’（Barca）源自腓尼基闪米特语词根‘Baraq’，意为划破长空的‘雷霆与闪电’。家族自称源出腓尼基母邦提尔（Tyre）古老海王与祭司世家，崇奉战神与商业守护神麦尔卡特（Melqart）。在第一次布匿战争西西里战场上，哈米尔卡·巴卡孤军抗敌未尝一败；战后面对迦太基议会的软弱出卖与雇佣兵叛乱，哈米尔卡以铁血手腕平定内乱，随后带着家族与死忠将士远渡伊比利亚半岛开疆拓土，建立了事实独立、富甲天下的新迦太基帝国。在九岁远行西班牙前夕，哈米尔卡将长子汉尼拔带到麦尔卡特祭坛前，让其抚摸刚宰杀的牲畜鲜血发下震撼千古的誓言：‘终其一生，永不与罗马为友，必倾其所能毁灭罗马！’巴卡三兄弟（汉尼拔、哈斯德鲁拔、马戈）兼备勇烈、兵法奇谋与各族军队协调统御力，率领多民族军团踏碎阿尔卑斯，成为高悬在罗马城头二十年不落的死神之矛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴卡家族是这片大海上最危险的复仇毒蛇！老哈米尔卡把对罗马的淬毒仇恨当成母乳喂养汉尼拔长大。九岁在祭坛前发下的血誓，换来了坎尼平原上八万具罗马士兵的骸骨！只要还有一个巴卡族人喘气，元老院就绝不能安枕无忧！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "‘闪电’（Barca）之名是布匿民族永恒的荣耀冠冕！议会里那些胆小如鼠的议员整天只知道清点银币，唯有哈米尔卡和汉尼拔用战刀和战象在全欧洲打出了迦太基的威严！他们流淌着提尔海王的勇士之血，是天生的征服者！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Hannibal_Vinegar_Rock_Splitting",
+  "Keywords": [
+    "Hannibal_Vinegar_Rock_Splitting",
+    "Alps Crossing",
+    "Fire and Vinegar",
+    "Rock Splitting"
+  ],
+  "RagShortTexts": [
+    "Confronted by an impassable Alpine rockfall, Hannibal's engineers built bonfires over limestone boulders and doused them in sour vinegar, utilizing thermal shock to chisel a path down to Italy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In late 218 BC, as Hannibal's multinational army descended the Italian slope of the Alps, they encountered a catastrophe: a catastrophic landslide had sheared away the path, leaving a sheer 1,000-foot precipice of frozen mud and jagged limestone. Mules, cavalry horses, and war elephants slipped uncontrollably, plummeting into bottomless gorges, trapping the frozen army without food. Hannibal deployed an ingenious ancient engineering technique recorded by Livy. Felling massive mountain pines, pioneers piled vast bonfires across the obstructing limestone boulders. The wind whipped the fires into a roar until the rock glowed red-hot. Hannibal ordered gallons of sour ration wine (acetum/vinegar) poured across the calcined boulders. The instantaneous thermal shock combined with acidic penetration fractured the crystalline limestone structure, shattering immense rockfaces into brittle fragments. In a single day of furious pickaxe labor, pioneers carved a zig-zagging ledge wide enough for pack animals and elephants, unlocking the passage to the Po Valley."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hannibal's descent through the Alps borders on sorcery! The Senate believed the snowy crags of the north were a god-given fortress wall protecting Italia; instead, this Punic fiend cracked open the very stone with fire and acid, delivering his starving army straight into our backyard!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Even the frozen spine of the earth yields to Hannibal! When our war elephants trembled upon the icy abyss, our general answered despair with fire and vinegar, splitting the mountain in twain. The Alps could not hold back the sons of Barcid glory—now the rich plains of the Po lie ripe for the sword!"
+    }
+  ],
+  "TextMappings": []
+}

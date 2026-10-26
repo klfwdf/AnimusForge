@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_31",
+  "Keywords": [
+    "大平原战役击溃西法克斯",
+    "大平原战役",
+    "西法克斯残军败退",
+    "西班牙凯尔特雇佣军血战"
+  ],
+  "RagShortTexts": [
+    "大平原（Campi Magni）战役中，哈斯德鲁巴尔与西法克斯纠集了三万残部，其中包含四千名新渡海抵达的精锐凯尔特贝利亚雇佣重步兵。大西庇阿以中队战术灵活拆分第二线青年兵与第三线成年兵展开两翼延伸包抄"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大平原（Campi Magni）战役中，哈斯德鲁巴尔与西法克斯纠集了三万残部，其中包含四千名新渡海抵达的精锐凯尔特贝利亚雇佣重步兵。大西庇阿以中队战术灵活拆分第二线青年兵与第三线成年兵展开两翼延伸包抄，马西尼萨骑兵从两翼打崩努米底亚敌骑。凯尔特佣兵战至最后一人寸步不退全军殉国，西法克斯落荒而逃，迦太基城彻底失去陆地屏障。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_58",
+  "Keywords": [
+    "埃及托勒密四世武装本土马哈利姆步兵",
+    "托勒密四世武装本土",
+    "马哈利姆埃及长矛兵",
+    "希腊统治垄断打破"
+  ],
+  "RagShortTexts": [
+    "在公元前217年拉菲亚会战的生死关头，托勒密四世打破了托勒密王朝近百年仅信赖希腊佣兵的传统，破例征募并武装了两万名埃及本土平民‘马哈利姆’（Machimoi）组成萨里沙长矛方阵。虽然这一激进举措力挽狂"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在公元前217年拉菲亚会战的生死关头，托勒密四世打破了托勒密王朝近百年仅信赖希腊佣兵的传统，破例征募并武装了两万名埃及本土平民‘马哈利姆’（Machimoi）组成萨里沙长矛方阵。虽然这一激进举措力挽狂澜击败塞琉古大军，但也使埃及本土百姓意识到自身掌握的武装力量，直接导致战后数年爆发席卷尼罗河上游的‘底比斯大起义’，动摇了托勒密王朝根基。"
+    }
+  ],
+  "TextMappings": []
+}

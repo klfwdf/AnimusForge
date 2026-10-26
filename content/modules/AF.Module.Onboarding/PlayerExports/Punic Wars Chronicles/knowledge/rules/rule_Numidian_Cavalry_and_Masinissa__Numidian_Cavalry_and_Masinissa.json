@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Numidian_Cavalry_and_Masinissa",
+  "Keywords": [
+    "Numidian_Cavalry_and_Masinissa",
+    "Numidian Cavalry",
+    "Masinissa",
+    "Syphax"
+  ],
+  "RagShortTexts": [
+    "Numidian light cavalry was the supreme skirmishing horse of the Mediterranean; Masinissa's alliance with Rome sealed Hannibal's defeat at Zama."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Numidians of the North African steppes fielded the ancient Mediterranean's supreme light cavalry. Riding bareback without saddles or bridles—guiding their agile Barb ponies with a simple neck cord—they carried round leather shields and bundles of light javelins, excelling in harassment, scouting, and feigned retreats. In the early stages of the Second Punic War, Numidian cavalry served as Hannibal's tactical edge, outflanking Roman horse at the Trebia and Cannae. However, dynastic rivalry erupted between eastern Massylii prince Masinissa and western Masaesyli king Syphax. When Syphax married the Carthaginian noblewoman Sophonisba and allied with Carthage, Scipio courted Masinissa. Defecting to Rome in 206 BC, Masinissa's 4,000 riders broke Punic cavalry at Zama and smashed Hannibal's rear, securing Scipio's historic triumph and forging a unified Numidian kingdom under Roman sponsorship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Masinissa was Rome's fiercest ally in North Africa! Riding unarmored with effortless grace, his riders showered Punic flanks with javelin storms. At Zama, it was Masinissa's thundering rear charge that shattered Hannibal's veterans and sealed our eternal victory!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Masinissa was the arch-traitor who sold Africa to Roman slavery! For generations we honored his people and fought side by side. Yet out of petty spite against Syphax and lust for a crown, he threw his horsemen into Scipio's camp. At Zama, it was African javelins striking African backs that extinguished the light of Carthage!"
+    }
+  ],
+  "TextMappings": []
+}

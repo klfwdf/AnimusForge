@@ -1,0 +1,69 @@
+{
+  "Id": "rule_利利卑要塞攻防与坑道战",
+  "Keywords": [
+    "利利卑要塞攻防与坑道战",
+    "利利卑之围",
+    "西西里终极要塞",
+    "坑道战"
+  ],
+  "RagShortTexts": [
+    "利利卑是西西里最坚固的海角要塞，罗马曾动用十万大军围攻九年，双方在地下展开激烈的地道爆破与反坑道肉搏，成为古代攻防战史上的传奇战例。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坐落于西西里岛最西端海角的利利卑要塞（Lilybaeum，今马尔萨拉），是第一次布匿战争中交战双方搏杀最惨烈的绞肉机。要塞三面环海、暗礁密布，陆地一侧则被深达四十尺、宽六十尺的干壕以及巍峨石塔死死封锁。公元前250年，罗马出动两名执政官、两百余艘战船与十余万大军展开长达九年的铁壁围城。攻城期间，罗马工兵建造了高达六十尺的巨型攻城塔，并日夜不息地挖掘庞大的地下坑道企图掏空要塞城墙地基。守将希米尔科针锋相对，带领迦太基守军实施精湛的‘反坑道战’（Counter-mining）：工兵在城墙内侧沿线挖掘深壕，将黄铜盆扣在地表倾听地底震动以精确定位罗马掘进方向；一旦挖通敌方坑道，守军随即向洞内释放烟熏毒气、灌注沸水与滚油，甚至在漆黑狭窄的地底通道中持短剑殊死肉搏。最终一场突如其来的强风刮过，迦太基敢死队出城纵火，将罗马苦心营建数月的木制攻城器械烧成灰烬，罗马被迫转入旷日持久的绝望围困，直至终战和约签订，利利卑城墙从未被罗马军团以武力攻克。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "利利卑是罗马军团用鲜血与白骨堆出来的伤疤！我们在那座该死的要塞下挖了九年的坑道，无数罗马青年在暗无天日的地底被毒烟和沸水活活闷死。如果不是埃加迪群岛海战彻底切断了他们的运粮船，那堵海角上的石墙我们永远也啃不下来！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "利利卑是迦太基军旅在西西里最顽强的骄傲！十万罗马蛮子带着他们的攻城槌在城墙外绝望地嚎叫了九年，希米尔科将军用地下坑道和一场大火把他们的野心化为了青烟。只要迦太基的水手掌控航线，任何要塞都是不可攻破的铜墙！"
+    }
+  ],
+  "TextMappings": []
+}

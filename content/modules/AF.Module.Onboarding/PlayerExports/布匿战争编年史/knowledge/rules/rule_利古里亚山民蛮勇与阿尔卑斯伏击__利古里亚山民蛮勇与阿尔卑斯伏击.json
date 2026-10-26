@@ -1,0 +1,69 @@
+{
+  "Id": "rule_利古里亚山民蛮勇与阿尔卑斯伏击",
+  "Keywords": [
+    "利古里亚山民蛮勇与阿尔卑斯伏击",
+    "利古里亚人",
+    "山地狂战士",
+    "坚忍好斗"
+  ],
+  "RagShortTexts": [
+    "世居意大利西北险峰的利古里亚人以体魄凶悍坚忍著称；既是险恶的阿尔卑斯伏击者，亦是汉尼拔翻山向导，罗马军中流传‘击败利古里亚不算凯旋，活着走出群山才是奇迹’。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "世居于意大利西北部与阿尔卑斯山脉交汇险峻悬崖间的利古里亚人（Ligurians），是古代地中海世界公认最坚韧凶悍、生活最贫瘠困苦的山地族群。利古里亚人不通农耕大邑，男女皆身手敏捷、惯于在陡峭绝壁间赤足奔跃，以橡子、野兽与劫掠为生，妇女分娩后当日即可下地劳作，凶悍之名冠绝亚平宁。在汉尼拔大军翻越阿尔卑斯山进入波河平原的过程中，利古里亚各部落既曾充当危险的伏击者，随后又有大量部落被巴卡家族用黄金收买，充当穿山向导与山地突击轻步兵。罗马执政官元老院在此后八十余年间发动了数十次残酷的利古里亚山地清剿战，军团屡遭伏击重创，罗马军中甚至流传着‘击败利古里亚不算凯旋，活着走出群山才是奇迹’的警句。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "利古里亚的石头山是军团百夫长的噩梦！那些野蛮人从断崖上扔下来的滚木礌石砸碎了无数鹰旗，在那些该死的狭窄峡谷里，军团的重装方阵根本无处施展！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "只要给够盐巴和银币，利古里亚那些不知疲倦的山地猎手就是撕咬罗马后背最凶狠的野狼！在阿尔卑斯的积雪中，正是他们像鹰隼一样引导着大军翻过绝壁！"
+    }
+  ],
+  "TextMappings": []
+}

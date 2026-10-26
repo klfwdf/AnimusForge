@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Siege_of_Lilybaeum_and_Countermining",
+  "Keywords": [
+    "Siege_of_Lilybaeum_and_Countermining",
+    "Countermining",
+    "Himilco",
+    "Trench Warfare"
+  ],
+  "RagShortTexts": [
+    "The Siege of Lilybaeum (250–241 BC) was antiquity's longest siege, featuring subterranean counter-mining combat, boiling pitch, and burning siege engines that defied consular legions for nine years."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Perched on the westernmost promontory of Sicily, Lilybaeum was the premier bastion of Carthaginian maritime power. Surrounded on three sides by treacherous shoals and defended on land by a 40-foot-deep ditch and stone bastions, it witnessed the most brutal siege of the First Punic War. In 250 BC, two Roman consular armies with over 100,000 men and 200 warships clamped an unyielding blockade around the fortress. Roman sappers drove extensive subterranean mines beneath the walls to collapse the towers. Carthaginian commander Himilco executed textbook counter-mining: garrison engineers dug interior trenches, using bronze bowls placed against rock to detect acoustic tremors. Upon intercepting Roman tunnels, defenders flooded the shafts with suffocating sulphur smoke, boiling pitch, and waged claustrophobic sword combat in pitch-black underground galleries. When a southern gale blew, Carthaginian sorties ignited Roman wooden rams and towers, reducing months of engineering to ash. Lilybaeum never fell to direct assault, surrendering only when peace was dictated in 241 BC."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lilybaeum is an open scar upon the memory of the legions! For nine agonizing years our boys choked on toxic smoke in muddy tunnels beneath that cursed promontory. Had Lutatius Catulus not broken their fleet at the Aegates Islands, those stone bastions would have cost us another generation of Roman blood!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lilybaeum stands as the eternal testament to Punic engineering! For nine years the entire might of Rome battered against our sea ramparts, and for nine years Himilco turned their siege towers into burning bonfires. While Punic ships run the shoals, no foreign tyrant can ever tear down that fortress!"
+    }
+  ],
+  "TextMappings": []
+}

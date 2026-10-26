@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Iberian_Falcata_and_Toledo_Steel",
+  "Keywords": [
+    "Iberian_Falcata_and_Toledo_Steel",
+    "Falcata",
+    "Iberian Sword",
+    "Forward Curved Blade"
+  ],
+  "RagShortTexts": [
+    "The forward-curved Iberian falcata combined the shearing power of an axe with a lethal thrusting point; buried-iron metallurgy gave it spring-temper elasticity that severed Roman limbs and inspired the Gladius."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the mineral-rich mountains of Hispania, Celtiberian armorers developed sword-smithing techniques unmatched in the classical West. The iconic Iberian sidearm was the falcata: a forward-curved single-edged blade roughly 20 inches long, widening near the tip to concentrate mass into an axe-like hacking center of percussion, while maintaining a double-edged point for piercing lunges. Ancient chronicles record the unique Celtiberian forging method: iron plates were buried underground for several years so soil moisture and acids would corrode away inferior slag, leaving only the hard carbon steel core. This core was repeatedly pattern-welded and oil-quenched. The ultimate test of quality was legendary: the armorer placed the blade flat atop his head and bent both tip and hilt down until they touched his shoulders; upon release, the steel snapped back perfectly straight without taking a set. In combat, the falcata sheared cleanly through brass-bound scuta, severing limbs and cleaving bronze helmets in two, directly inspiring the Roman Republic's later adoption of the Gladius Hispaniensis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The curved blade of the Iberian is the tool of a butcher! In our triage tents, men lie with arms lopped off clean at the shoulder and bronze helmets split through the skull. The Senate has rightly resolved to commission our smiths to forge broad, double-edged swords after the Spanish pattern!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The falcata is the iron heart of Hispania! Roman wood and brass crumble when our Iberian infantry chop downward with that weighted edge. So long as the mines of New Carthage churn out this miraculous steel, Hannibal possesses the sharpest cleavers in the Mediterranean!"
+    }
+  ],
+  "TextMappings": []
+}

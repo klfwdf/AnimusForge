@@ -1,0 +1,69 @@
+{
+  "Id": "rule_日耳曼沃登神战团与提尔神圣誓林",
+  "Keywords": [
+    "日耳曼沃登神战团与提尔神圣誓林",
+    "沃登",
+    "奥丁",
+    "提尔神树"
+  ],
+  "RagShortTexts": [
+    "日耳曼人崇拜风暴战神沃登（奥丁）与独臂誓约之神提尔；部落不立人造石庙，而在幽暗森林中悬挂战利品与首级，战士以狂暴出征为神圣天职。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在莱茵河以东茫茫无际的日耳曼尼亚黑森林中，日耳曼部落信奉冷酷狂暴的原始多神体系。塔西佗记载日耳曼人认为将神明禁锢在石壁之内或雕刻成人形是对神圣尊严的亵渎，因此他们的神殿即是风声呼啸的原始森林圣地（Lucus）。至高神祇是驾驭狂暴风暴、赐予战士战场癫狂的狂怒之神沃登（Wodanaz，即后世奥丁Odin），以及执掌正义决斗、古老法庭与誓约的战神提尔（Tiwaz）。在氏族向敌对部落出征前，首领会将战刃在神圣橡树下以誓言结社；最精锐的青年狂战士（Berserkir）披上整张完整的灰狼皮或熊皮，在战前通过嚼食毒菌或狂饮草药烈酒使自己陷入不知痛楚的狂暴出神状态（Berserkergang）。决战大获全胜后，部族会遵照古律将所有俘获的敌方兵器用铁锤彻底砸弯折断，将敌军将领与百夫长吊死在神圣古树的枝桠上献祭沃登，以鲜血浸透大地的原始蛮性令整个地中海世界闻风丧胆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "日耳曼森林是文明军团的梦魇！那些野蛮人把俘虏的百夫长像牲口一样吊死在树上放血献祭给他们的恶神沃登。踏入那片永不见天日的黑森林，每一个士兵都要紧握短剑为灵魂祈祷！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "日耳曼勇士的狂怒就像北海翻滚的冰涛！他们不需要大理石神庙，一把砸碎敌盔的铁斧就是献给提尔神的最好贡品。只要用足够的黄金武装他们，他们就是撕碎罗马北疆最锋利的狼群！"
+    }
+  ],
+  "TextMappings": []
+}

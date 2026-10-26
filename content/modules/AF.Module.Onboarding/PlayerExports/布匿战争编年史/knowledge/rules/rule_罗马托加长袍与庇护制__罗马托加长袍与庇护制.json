@@ -1,0 +1,69 @@
+{
+  "Id": "rule_罗马托加长袍与庇护制",
+  "Keywords": [
+    "罗马托加长袍与庇护制",
+    "托加长袍",
+    "紫边托加",
+    "公民身份"
+  ],
+  "RagShortTexts": [
+    "托加长袍是罗马自由公民的法定标志，极其厚重且讲究褶皱礼仪；晨间门客前往贵族豪宅的‘早拜礼’（Salutatio）与领赏面包构成了罗马共和国的政治权力基石。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在古典罗马社会，厚重的羊毛‘托加长袍’（Toga）是罗马成年男性公民独有的神圣服饰与阶层象征。普通的成年公民着素白色‘纯洁托加’（Toga Virilis）；高级执政官、裁判官与高贵未成年贵族子弟则穿镶有推罗紫宽边的‘紫边托加’（Toga Praetexta）；遭遇丧乱时则换穿未漂白的黑灰色‘哀悼托加’。由于一袭托加长达近六米、呈厚重半椭圆形，单凭一人极难穿戴整齐，必须由两名奴隶协同在胸前折出层叠考究的‘辛西亚’（Sinus）褶皱，穿着后行动迟缓威严，禁止在战阵与剧烈体力劳动中穿着。与托加体系紧密交织的是罗马的‘庇护与门客制’（Clientela）：每当拂晓时分，成百上千衣着破旧托加的平民门客（Clientes）便会聚集在贵族‘庇护人’（Patronus）宅邸的门厅与中庭，举行被称为‘早拜礼’（Salutatio）的晨参仪式。门客向赞助人致以崇高的敬意，赞助人则向门客发放盛装面包或铜币的‘小篮赏金’（Sportula），并在法庭上为门客提供法律辩护；作为回报，门客在公民大会选举中必须整齐划一地为庇护人投下赞成票，构成了罗马贵族操纵共和国政治机器的核心杠杆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "托加长袍是罗马人不可被剥夺的尊严！当一个异邦奴隶穿上托加，他就拥有了神圣的公民法权。中庭里的门客清晨早拜，是贵族世家威望的证明。谁能在黎明聚集最多的托加门客，谁就能在公民大会上赢得执政官的桂冠！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马的贵族们把自己裹在六米长吸水就沉重的笨羊毛毡子里，像雕像一样在石子路上踱步，还要穷酸平民天天大清早去抢几个铜板和干面包！这种虚伪的主从游戏就是他们所谓的‘共和自由’，比起我们凭真金白银和商业契约说话的迦太基市场简直可笑至极！"
+    }
+  ],
+  "TextMappings": []
+}

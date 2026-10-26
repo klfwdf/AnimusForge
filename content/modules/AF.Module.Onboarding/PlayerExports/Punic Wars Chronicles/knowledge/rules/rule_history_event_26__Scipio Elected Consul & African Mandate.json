@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_26",
+  "Keywords": [
+    "Scipio Elected Consul & African Mandate",
+    "Scipio Consular Election",
+    "Fabian Senatorial Opposition",
+    "Sicily Volunteer Legions"
+  ],
+  "RagShortTexts": [
+    "Elected consul for 205 BC at age thirty, Scipio proposed taking the war directly to the gates of Carthage. Facing fierce"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Elected consul for 205 BC at age thirty, Scipio proposed taking the war directly to the gates of Carthage. Facing fierce opposition from Fabius Maximus and conservative senators who refused him an army, Scipio was granted Sicily without official legionary levies. Raising seven thousand volunteers and securing ships from Italian allies, he retrained the disgraced fifth and sixth legions from Cannae into a premier strike force."
+    }
+  ],
+  "TextMappings": []
+}

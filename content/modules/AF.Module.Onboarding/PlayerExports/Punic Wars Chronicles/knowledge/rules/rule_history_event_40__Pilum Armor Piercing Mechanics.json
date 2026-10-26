@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_40",
+  "Keywords": [
+    "Pilum Armor Piercing Mechanics",
+    "Roman Pilum Mechanics",
+    "Soft Iron Shank Bending",
+    "Shield Disabling Barbs"
+  ],
+  "RagShortTexts": [
+    "The Roman heavy pilum was engineered as a devastating shock weapon thrown at twenty paces. Featuring a slender soft-iron"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Roman heavy pilum was engineered as a devastating shock weapon thrown at twenty paces. Featuring a slender soft-iron shank tipped by a hardened pyramidal point, it punctured shields and mail coats alike. Upon penetration, the soft iron neck bent under the weight of the wooden shaft, dragging down the enemy's shield and preventing them from returning the missile."
+    }
+  ],
+  "TextMappings": []
+}

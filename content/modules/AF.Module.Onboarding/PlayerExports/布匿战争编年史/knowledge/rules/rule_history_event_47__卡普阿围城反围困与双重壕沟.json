@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_47",
+  "Keywords": [
+    "卡普阿围城反围困与双重壕沟",
+    "卡普阿双重壕沟围城",
+    "内外两面筑垒防御",
+    "饥馑易子而食惨状"
+  ],
+  "RagShortTexts": [
+    "公元前212至211年，六万罗马大军围绕叛城卡普阿修筑了空前绝后的内外双重环形堑壕与木石要塞线（Circumvallation）：内圈防范城内守军突围，外圈抵御汉尼拔大军自外部冲击。城内断粮陷入人相食"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前212至211年，六万罗马大军围绕叛城卡普阿修筑了空前绝后的内外双重环形堑壕与木石要塞线（Circumvallation）：内圈防范城内守军突围，外圈抵御汉尼拔大军自外部冲击。城内断粮陷入人相食的绝境，汉尼拔虽在壕沟外发起猛攻亦无法撼动罗马防线。公元前211年卡普阿献城投降，罗马元老院下令处决全部叛变元老，取消该城一切市政特权。"
+    }
+  ],
+  "TextMappings": []
+}

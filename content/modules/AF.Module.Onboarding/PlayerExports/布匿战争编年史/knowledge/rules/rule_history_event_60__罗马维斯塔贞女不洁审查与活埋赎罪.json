@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_60",
+  "Keywords": [
+    "罗马维斯塔贞女不洁审查与活埋赎罪",
+    "维斯塔贞女不洁审判",
+    "坎尼大败神明震怒",
+    "牛市广场活埋赎罪"
+  ],
+  "RagShortTexts": [
+    "坎尼惨败后，罗马城被极度惊恐与绝望所笼罩，元老院认定必是罗马触怒了神明。大祭司团（Pontifices）对圣火守护者维斯塔贞女展开严厉审查，判定两位贞女犯下破除贞操的‘不洁大罪’（Incestum）。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼惨败后，罗马城被极度惊恐与绝望所笼罩，元老院认定必是罗马触怒了神明。大祭司团（Pontifices）对圣火守护者维斯塔贞女展开严厉审查，判定两位贞女犯下破除贞操的‘不洁大罪’（Incestum）。元老院下达了罗马历史上极其罕见的极端宗教决断：将两名贞女及其通奸者在城门旁的牛市广场（Forum Boarium）生殉活埋于地下石室；并依照古老神谕将一对高卢人与一对希腊人同坑活埋以禳除灾祸平息神怒。"
+    }
+  ],
+  "TextMappings": []
+}

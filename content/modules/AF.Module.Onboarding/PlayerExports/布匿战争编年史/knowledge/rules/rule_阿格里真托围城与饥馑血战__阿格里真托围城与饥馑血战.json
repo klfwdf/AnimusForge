@@ -1,0 +1,69 @@
+{
+  "Id": "rule_阿格里真托围城与饥馑血战",
+  "Keywords": [
+    "阿格里真托围城与饥馑血战",
+    "阿格里真托",
+    "阿克拉加斯",
+    "第一次围城"
+  ],
+  "RagShortTexts": [
+    "阿格里真托（阿克拉加斯）之战是第一次布匿战争首次大规模会战；罗马双执政官构筑内外双重堑壕围困五万人城邑，最终因大饥荒破城，两万市民沦为奴隶。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前262年爆发的阿格里真托之战（Siege of Agrigentum，古称阿克拉加斯），是罗马与迦太基在地中海打响的第一场极具战略分水岭意义的大规模围城血战。阿格里真托依山傍海，城墙高达数十米，是迦太基在西西里南部最重要的集结后勤基地。罗马元老院倾尽全国主力，派出两名执政官与四个满员军团（四万余人）进逼城下。面对城内汉尼拔·吉斯科坚固的防守，罗马人构筑了古代战争中极其罕见的‘双重环形堑壕’（Circumvallation）：内壕防范城内守军突围，外壕抵御迦太基大将汉诺率领的援军与战象部队。围城持续了整整七个月，城内五万军民粮草断绝，被迫宰杀骡马乃至吞食皮带皮革；而外围负责封锁的罗马军团同样因疫病与补给线被袭伤亡惨重。最终城内守军趁夜雾涉险突围弃城，狂怒的罗马军团涌入这所繁华的希腊名邦，大肆洗劫神庙，并将两万五千名来不及逃脱的希腊居民全部作为奴隶贩卖，彻底拉开了西西里争霸残酷血腥的总体战序幕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿格里真托让我们明白，同迦太基的战争不是城邦间的绅士比武，而是灭族夺地的决死搏杀！双重壕沟见证了军团在饥饿与烈日下的钢铁纪律。两万五千名俘虏换回的银币，向整个意大利证明罗马拥有彻底踏平西西里任何要塞的铁石意志！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿克拉加斯的悲剧是罗马豺狼野蛮本性的铁证！那是一座拥有数百年雅典艺术与神庙的和平希腊城邦，罗马人却把幸存的妇女儿童像牲口一样用铁链锁在市场上拍卖。这种赤裸裸的强盗行径坚定了各族人民对罗马的同仇敌忾，此仇不报，布匿人的誓言绝不休止！"
+    }
+  ],
+  "TextMappings": []
+}

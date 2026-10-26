@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Corduba_and_Baetis_River_Fortress",
+  "Keywords": [
+    "Corduba_and_Baetis_River_Fortress",
+    "Corduba",
+    "Baetis River",
+    "Guadalquivir"
+  ],
+  "RagShortTexts": [
+    "Corduba (Kartuba) controlled the navigable limit of the Baetis (Guadalquivir) River, serving as the Barcid dynasty's inland fortress, silver smelting depot, and southern Iberian logistical hub."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Situated on the northern bank of the Baetis River (modern Guadalquivir), Corduba (Punic-Iberian Kartuba, meaning 'city of rich oil presses') occupied a supreme strategic junction in southern Hispania. It stood at the absolute inland limit for seagoing vessels sailing upriver from the Atlantic port of Gades, while anchoring immediate access to the lead and silver-rich Sierra Morena mountain veins. During their subjugation of Andalusia, Hamilcar and Hasdrubal converted Corduba into an inland military depot and metallurgical refinery. Raw silver extracted from Castulo and nearby shafts was cast into ingots here and barged downriver to supply Carthaginian war expenses, while local iron fed arms factories churning out thousands of falcatas and shields. During the Second Punic War, Hasdrubal Barca used the fortress as the pivot of the Baetis river defense to check Roman amphibious thrusts into Andalusia, ensuring the continued extraction of mineral wealth that kept Hannibal's Italian campaign solvent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Corduba is the silver crucible feeding Hannibal's endless mercenary payroll! So long as Punic garrisons hold the Baetis River, Spanish silver pours into Carthaginian war chests. The legions must march upstream and plant the eagle upon its river walls to starve the Barcid beast at its financial root!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ramparts of Kartuba safeguard the golden arteries of our Iberian empire! Down the Baetis river float the grain and silver that sustain Hannibal's march through Italy. Let the Scipios threaten our frontiers; behind the river bastions of Corduba, the sons of Barcid glory stand unyielding!"
+    }
+  ],
+  "TextMappings": []
+}

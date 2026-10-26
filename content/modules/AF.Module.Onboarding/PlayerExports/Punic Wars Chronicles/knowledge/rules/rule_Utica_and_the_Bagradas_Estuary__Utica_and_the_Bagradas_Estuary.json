@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Utica_and_the_Bagradas_Estuary",
+  "Keywords": [
+    "Utica_and_the_Bagradas_Estuary",
+    "Utica",
+    "Bagradas River",
+    "Oldest Phoenician Colony"
+  ],
+  "RagShortTexts": [
+    "Utica, founded centuries before Carthage at the mouth of the Bagradas River, was the focus of Scipio's African campaign and became the capital of Roman Africa."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Utica ('Ancient City'), located northwest of Carthage at the mouth of the fertile Bagradas (Medjerda) River, was established by Tyrian Phoenicians around 1100 BC—predating Carthage by centuries. Controlling a rich agricultural delta and natural port, Utica was Carthage's most significant, if resentful, sister city. In 204 BC, Scipio Africanus besieged Utica during his North African invasion, using winter negotiations to launch a surprise night assault that incinerated the Punic and Numidian camps. In 149 BC, predicting Carthage's doom, Utica surrendered preemptively to Rome. Following the destruction of Carthage, Rome rewarded Utica by making it the administrative capital of the newly founded province of Africa."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Utica chose wisely, opening its gates to Roman justice while Carthage courted ruin! Scipio secured his African bridgehead outside its walls, and when the Punic capital burned, Utica was deservedly elevated to become the glorious capital of our new province of Africa!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Utica boasted of being older than Carthage, yet proved petty and treacherous. When Scipio arrived, Utica conspired in the night arson of our camp; when Rome brought legions for our destruction, Utica surrendered without striking a blow. They bought their provincial capital with the blood of their sister city!"
+    }
+  ],
+  "TextMappings": []
+}

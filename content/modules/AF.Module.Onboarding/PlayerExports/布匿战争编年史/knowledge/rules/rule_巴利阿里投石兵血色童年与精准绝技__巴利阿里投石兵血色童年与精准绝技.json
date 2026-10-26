@@ -1,0 +1,69 @@
+{
+  "Id": "rule_巴利阿里投石兵血色童年与精准绝技",
+  "Keywords": [
+    "巴利阿里投石兵血色童年与精准绝技",
+    "巴利阿里投石兵血色童年与精准绝技巴利阿里投石兵",
+    "巴利阿里投石兵血色童年与精准绝技铅弹",
+    "血色童年"
+  ],
+  "RagShortTexts": [
+    "巴利阿里投石兵自幼接受严苛投石训练，随身携带三根不同射程皮索，能投掷重铅弹贯穿敌人头盔与木盾，是汉尼拔与迦太基军队最致命的轻步兵前锋。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坐落于西地中海航道要冲的巴利阿里群岛（马略卡与梅诺卡），自远古起便孕育出令整个古代世界胆寒的神射手——巴利阿里投石兵（Balearic Slingers）。岛上居民生性剽悍孤傲，孩童自幼便经受母亲极其严苛的残酷训练：母亲将面包挂在木桩高处，唯有用投石索在百步开外准确击中将其打落，孩子方能进食，否则便只能忍饥挨饿。每位成年战士作战时均在腰间或额头上盘绕三根由兽筋与亚麻编织的不同长度投石索：长索用于两百米开外的远距面压制，中索用于常规齐射，短索用于近距平射搏杀。他们不仅能投掷拳头大小的光滑鹅卵石，更装备模铸的重装菱形铅弹（Glandes）。在百步距离内，飞速旋转的铅弹带着凄厉啸声破空而来，其巨大的动能能直接砸碎青铜战盔、贯穿木盾并震碎胸骨内脏。作为汉尼拔横扫意大利的先锋死神，他们在特雷比亚、特拉西梅诺与坎尼战役中完全压制了罗马轻步兵标枪手，以恐怖的射杀效率撕开了罗马军团的前锋战线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那些巴利阿里野蛮人的皮带甩起来比弩炮还要致命！拳头大的铅弹呼啸而过，砸在罗马方盾上就像铁锤敲击。不知道多少年轻百夫长连头盔带头骨一起被砸得稀烂，在两军短兵相接前就倒在了血泊里！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴利阿里勇士的投石索就是长了眼睛的死神镰刀！无论是海边的礁石还是沉甸甸的铅丸，只要在他们的绳套里旋转呼啸，罗马军团的傲慢阵型就会在百步之外被砸得鬼哭狼嚎！"
+    }
+  ],
+  "TextMappings": []
+}

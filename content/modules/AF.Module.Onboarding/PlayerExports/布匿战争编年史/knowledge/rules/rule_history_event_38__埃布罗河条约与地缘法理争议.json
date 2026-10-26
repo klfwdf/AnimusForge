@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_38",
+  "Keywords": [
+    "埃布罗河条约与地缘法理争议",
+    "埃布罗河条约划界",
+    "哈斯德鲁巴尔外交和约",
+    "萨贡托法理死结"
+  ],
+  "RagShortTexts": [
+    "公元前226年，罗马元老院与迦太基驻西班牙统帅美男子哈斯德鲁巴尔签署《埃布罗河条约》。条约规定以埃布罗河为界：迦太基决不可携武器越过河界北进，河北岸归属罗马势力范围。然而条约对河南岸原本已同罗马结盟的"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前226年，罗马元老院与迦太基驻西班牙统帅美男子哈斯德鲁巴尔签署《埃布罗河条约》。条约规定以埃布罗河为界：迦太基决不可携武器越过河界北进，河北岸归属罗马势力范围。然而条约对河南岸原本已同罗马结盟的萨贡托城邦地位含糊其辞，成为双方各执一词的法理死结，最终被汉尼拔引为击碎平衡的导火线。"
+    }
+  ],
+  "TextMappings": []
+}

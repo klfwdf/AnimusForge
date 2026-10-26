@@ -1,0 +1,69 @@
+{
+  "Id": "rule_墨西拿海峡与两岸咽喉",
+  "Keywords": [
+    "墨西拿海峡与两岸咽喉",
+    "墨西拿海峡",
+    "斯库拉与卡律布狄斯",
+    "雷吉乌姆"
+  ],
+  "RagShortTexts": [
+    "墨西拿海峡连接第勒尼安海与伊奥尼亚海，宽仅三至八公里，水流湍急暗涡密布，是布匿战争爆发的战略原点。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "墨西拿海峡（Strait of Messina）是分隔意大利半岛‘靴尖’卡拉布里亚与西西里岛东北角的狭窄水道，最窄处仅约三点一公里。海峡沟通第勒尼安海与伊奥尼亚海，自古因潮汐对冲产生的狂暴乱流与巨大漩涡而闻名，古希腊荷马史诗中吞噬水手的六头女妖斯库拉（Scylla）与巨大旋涡卡律布狄斯（Charybdis）神话便源于此地。海峡西岸为墨西拿深水避风港，东岸为罗马盟城雷吉乌姆（Rhegium）。谁控制了这道海峡，谁就扼杀了所有东西向穿行地中海商船的咽喉，更能自由将陆军投送至西西里岛。公元前264年，正是罗马执政官阿皮乌斯·克劳狄乌斯借夜色掩护，搭乘雷吉乌姆与塔兰托盟友的简陋木船强渡这道湍急海峡驱逐迦太基驻军，直接拉开了长达百余年布匿战争的历史序幕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "墨西拿海峡是意大利大门的门槛！站在雷吉乌姆的悬崖上，甚至能听见对岸墨西拿城里的犬吠声！如果让迦太基战舰横在海峡中央，意大利半岛南端就成了笼中困兽。克劳狄乌斯执政官带着第一批军团冒着暗礁与漩涡强渡海峡，正是这一步跨越，开启了罗马从半岛城邦迈向世界霸主的壮阔征程！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这道被斯库拉漩涡守护的水道本该是不可逾越的边界。千百年来，迦太基的水手敬畏地航行在海峡深处，而罗马农夫原本连造一条像样的渔船都不会！然而正是因为守将的犹豫和叛乱佣兵的接应，罗马军团乘着小艇偷渡海峡，将战火烧向了原本和平富饶的西西里花园。"
+    }
+  ],
+  "TextMappings": []
+}

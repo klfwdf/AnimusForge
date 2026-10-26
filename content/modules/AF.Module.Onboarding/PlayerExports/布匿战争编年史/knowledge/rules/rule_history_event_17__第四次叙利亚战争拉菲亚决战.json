@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_17",
+  "Keywords": [
+    "第四次叙利亚战争拉菲亚决战",
+    "拉菲亚战役大战象",
+    "第四次叙利亚战争",
+    "托勒密四世对决安条克"
+  ],
+  "RagShortTexts": [
+    "公元前217年夏，正值第二次布匿战争在西方白热化之际，东方地中海爆发了希腊化时代规模最大的陆战——拉菲亚战役。托勒密四世与塞琉古安条克三世大帝统帅十四万大军与两百头战象在加沙边境殊死对决。托勒密破例武"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前217年夏，正值第二次布匿战争在西方白热化之际，东方地中海爆发了希腊化时代规模最大的陆战——拉菲亚战役。托勒密四世与塞琉古安条克三世大帝统帅十四万大军与两百头战象在加沙边境殊死对决。托勒密破例武装两万名埃及本土平民组成长矛方阵（Machimoi），击碎了塞琉古方阵中军，夺回柯里叙利亚。此战打破了希腊统治者垄断军武的铁律，直接催生了日后的埃及大起义。"
+    }
+  ],
+  "TextMappings": []
+}

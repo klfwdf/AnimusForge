@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_35",
+  "Keywords": [
+    "扎马决战前夕双雄阵前会晤",
+    "扎马战前双雄会晤",
+    "汉尼拔西庇阿和谈",
+    "命运之轮无常喟叹"
+  ],
+  "RagShortTexts": [
+    "公元前202年10月扎马战役前夕，四十五岁的迦太基宿将汉尼拔与三十三岁的罗马战神大西庇阿在两军阵前单独策马会晤。汉尼拔感慨命运无常，劝告年轻的西庇阿以坎尼为鉴适可而止，提出割让地中海所有海岛换取和平；"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前202年10月扎马战役前夕，四十五岁的迦太基宿将汉尼拔与三十三岁的罗马战神大西庇阿在两军阵前单独策马会晤。汉尼拔感慨命运无常，劝告年轻的西庇阿以坎尼为鉴适可而止，提出割让地中海所有海岛换取和平；西庇阿则坚决回应：‘迦太基此前数度践踏停战条约，若无无条件投降，唯有以刀剑决雌雄！’两位千古统帅握手作别，各自回阵布设灭国决战。"
+    }
+  ],
+  "TextMappings": []
+}

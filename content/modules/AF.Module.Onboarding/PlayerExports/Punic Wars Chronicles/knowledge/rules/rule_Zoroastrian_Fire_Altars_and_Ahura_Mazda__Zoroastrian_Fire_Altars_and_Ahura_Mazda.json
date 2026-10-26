@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Zoroastrian_Fire_Altars_and_Ahura_Mazda",
+  "Keywords": [
+    "Zoroastrian_Fire_Altars_and_Ahura_Mazda",
+    "Zoroastrianism",
+    "Ahura Mazda",
+    "Sacred Fire Altar"
+  ],
+  "RagShortTexts": [
+    "Zoroastrianism framed existence as cosmic war between Ahura Mazda and Ahriman, venerating perpetual temple fire altars kept pure by Magi chanting the moral triad."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Founded by Prophet Zarathustra, Zoroastrianism was the supreme ethical dualist faith of the Iranian world across the Seleucid and Arsacid empires. Existence represented cosmic conflict between Ahura Mazda (Lord of Light and Wisdom) and Angra Mainyu (Ahriman, the Destructive Spirit of Chaos). Fire (Atar) and clean water were revered as conduits of divine truth and radiant Asha (cosmic order). Upon open-air stone altars tended by hereditary Magi priests, sacred fires were fed with frankincense and dried almond wood, shielded from polluting breath by cloth veils (padan). Faith mandated the ethical triad: 'Humata, Hukhta, Huvarshta' (Good Thoughts, Good Words, Good Deeds). Rejecting idols and bloody sacrifices, Zoroastrians exposed the dead upon high towers (dakhmas) to avoid polluting holy earth or fire, awaiting the Frashokereti—the final purification of the cosmos and total destruction of falsehood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fire-worshippers build no bronze statues, bowing only before eternal flames atop eastern crags. Their Magi prize truth and oaths above life itself; when dealing with Parthian nobility, a Roman commander must remember their word is bound by sacred fire!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The sacred flames of Ahura Mazda burn pure upon the Iranian heights, incorruptible by Roman greed. Their warriors fight not for slave markets or looted temples, but for truth against darkness. A worthy faith for an invincible land!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Strait_of_Messina_Chokepoint",
+  "Keywords": [
+    "Strait_of_Messina_Chokepoint",
+    "Strait of Messina",
+    "Scylla and Charybdis",
+    "Rhegium"
+  ],
+  "RagShortTexts": [
+    "Separating Italy from Sicily by just two miles of treacherous vortex currents, the Strait of Messina was the geopolitical flashpoint that sparked the Punic Wars."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Strait of Messina separates the Italian peninsula from Sicily by a mere two miles at its narrowest point. Connecting the Tyrrhenian and Ionian Seas, its violent alternating tidal currents and whirlpools inspired Homer's mythic sea monsters Scylla and Charybdis. Guarded on the Sicilian shore by Messana and on the Italian shore by Roman-allied Rhegium, control of this choke point dictated maritime transit through the central Mediterranean. In 264 BC, Roman Consul Appius Claudius Caudex requisitioned boats from southern Italian allies to cross the treacherous waters under cover of darkness, expelling the Punic garrison and igniting the First Punic War."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Strait of Messina is the threshold of Italy! From the cliffs of Rhegium, one can hear the roosters crowing in Sicily across the channel. Rome could never suffer Punic quinqueremes patrolling that narrow neck. Claudius's bold night crossing across the vortex currents was the fateful stride that made Rome an empire!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That churning channel, long guarded by the eddies of Charybdis, should have swallowed the Roman invaders. For generations our fleets kept the straits secure. But when Roman boots touched the Sicilian shore under cover of darkness, the peace of the western Mediterranean was shattered forever."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_33",
+  "Keywords": [
+    "Tragedy of Sophonisba",
+    "Suicide of Sophonisba",
+    "Poison Cup of Pride",
+    "Masinissa Tragic Choice"
+  ],
+  "RagShortTexts": [
+    "Upon entering Cirta, Masinissa met Sophonisba, the dazzling daughter of Hasdrubal Gisgo and queen of Syphax. Pleading th"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Upon entering Cirta, Masinissa met Sophonisba, the dazzling daughter of Hasdrubal Gisgo and queen of Syphax. Pleading that she be spared the degradation of being paraded in Roman chains, she married Masinissa on the spot. When Scipio firmly demanded her surrender as a captive of the Republic, Masinissa sent her a cup of poison, which she drank without flinching, preferring death to Roman subjugation."
+    }
+  ],
+  "TextMappings": []
+}

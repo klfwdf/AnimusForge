@@ -1,0 +1,69 @@
+{
+  "Id": "rule_腓尼基航海星图与巴力海祭禁忌",
+  "Keywords": [
+    "腓尼基航海星图与巴力海祭禁忌",
+    "腓尼基航海术",
+    "极星导航",
+    "腓尼基航海星图与巴力海祭禁忌巴力哈蒙"
+  ],
+  "RagShortTexts": [
+    "腓尼基与迦太基海员掌握观测小熊座北极星（腓尼基星）实施远洋盲航的黑科技，其绝密航海星图严禁泄露，并在狂暴风暴中向巴力抛洒纯金饰物祈求平息波涛。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "作为古代世界无可匹敌的海洋霸主，腓尼基人与迦太基人掌握着严格对外保密的长途远洋航海黑科技。希腊人航海尚需沿着海岸线目视辨别陆标，而布匿舵手早已依靠北方天空中最精确的指路星宿（古希腊人称之为‘腓尼基星’，即小熊座北极星）在茫茫大洋深处实施盲航。迦太基海员掌握着关于地中海洋流、锡利群岛锡矿航线与西非信风规律的绝密星图与羊皮纸水文志，若遇异国战船尾随追踪，迦太基船长宁可故意将货船撞毁在暗礁上溺亡全员，也绝不让商路航线落入罗马人之手。出航之前，船长必须向守护神麦尔卡特（Melqart）宰杀公羊献祭，并在船头雕刻庇佑女神塔尼特的圆月双角；若遭遇狂暴风暴，水手严禁在甲板呼喊死者名字，并将贵重香料与纯金饰物抛入大海献祭深海巴力，祈求狂风止息。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基水手宁愿撞碎自己的船也不肯泄露直布罗陀海峡外面的秘密。但罗马战舰已经学会了利用乌鸦吊桥把大海变成军团的陆地！神明的星图也挡不住罗马步兵的铁靴！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大海是麦尔卡特神赐给提尔与迦太基子孙的牧场！天上的北极星永远为布匿战船指引归航，陆地爬虫般的罗马人休想窥视大洋深处的奥秘！"
+    }
+  ],
+  "TextMappings": []
+}

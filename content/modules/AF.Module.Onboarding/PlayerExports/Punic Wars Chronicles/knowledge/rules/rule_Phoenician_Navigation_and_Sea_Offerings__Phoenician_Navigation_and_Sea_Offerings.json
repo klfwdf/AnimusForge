@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Phoenician_Navigation_and_Sea_Offerings",
+  "Keywords": [
+    "Phoenician_Navigation_and_Sea_Offerings",
+    "Phoenician Navigation",
+    "Pole Star",
+    "Ba'al Hammon"
+  ],
+  "RagShortTexts": [
+    "Phoenicians mastered celestial navigation via Ursa Minor ('Phoenician Star') and safeguarded sea-charts, offering golden tribute to Melqart and Ba'al to survive ocean gales."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Phoenician and Carthaginian mariners commanded unmatched navigational expertise, sailing the Atlantic beyond the Pillars of Hercules while Greeks hugged coastlines. They pioneered navigation by Ursa Minor—which Greeks called the 'Phoenician Star'—allowing open-ocean voyages out of sight of land. Carthage treated trade routes to the tin-rich Cassiterides and West African gold coast as supreme state secrets: Strabo recorded a Punic captain who ran his own ship aground upon shoals, drowning pursuers, to prevent a Roman galley from discovering the Atlantic route; the Carthaginian Senate indemnified his total cargo losses. Before voyages, crews made sacrifices to Melqart, affixing horse-headed prows (hippoi) and Tanit horns to the bow. In oceanic storms, shouting names of the dead was taboo, while captains cast gold rings and frankincense overboard as placatory gifts to Ba'al to calm marine tempests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Carthaginians guard their ocean routes like jealous dragons guarding treasure caves. Let them whisper to their stars; when Roman corvi drop upon their cedar decks, the ocean becomes legionary soil!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The western seas are sacred waters bequeathed by Melqart to the sons of Tyre! The Phoenician Star burns in the night sky for our helmsmen alone. Roman landlubbers who trespass past the Pillars are food for deep-sea monsters!"
+    }
+  ],
+  "TextMappings": []
+}

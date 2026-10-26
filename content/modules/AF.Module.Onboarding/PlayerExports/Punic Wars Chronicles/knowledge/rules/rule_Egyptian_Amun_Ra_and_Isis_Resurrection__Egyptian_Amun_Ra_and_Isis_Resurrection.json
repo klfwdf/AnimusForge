@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Egyptian_Amun_Ra_and_Isis_Resurrection",
+  "Keywords": [
+    "Egyptian_Amun_Ra_and_Isis_Resurrection",
+    "Amun-Ra",
+    "Isis",
+    "Osiris"
+  ],
+  "RagShortTexts": [
+    "Egyptian theology merged millennia-old Pharaonic solar cults of Amun-Ra and Osirian resurrection with Ptolemy I's syncretic god Serapis, promising eternal life across the Nile valley."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dating back three millennia, Egyptian religion in the Hellenistic era achieved grand syncretic majesty under the Ptolemaic dynasty. The monumental hypostyle halls of Karnak worshipped Amun-Ra, King of the Gods, with Ptolemaic rulers traveling to Memphis to be crowned Pharaohs as 'Beloved Sons of Ra.' Popular devotion centered on Isis, universal mother goddess of magic and healing, and her resurrected consort Osiris. Funerary cults promised eternal paradise (Aaru) to souls whose hearts balanced lighter than the feather of Ma'at upon the scales of jackal-headed Anubis. To bridge the divide between ruling Greco-Macedonian elites and native Egyptians, Ptolemy I introduced Serapis—a syncretic deity amalgamating Zeus, Osiris, and Hades, seated upon a throne accompanied by three-headed Cerberus—whose Serapeum in Alexandria drew worshippers from across antiquity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Though animal-headed gods strike our augurs as bizarre, the cult of Isis spreads inexorably into Campania and Rome! Her promises of resurrection console souls weary of war; Egypt's gods are as ancient and deep as the Nile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The pharaohs build mountains of limestone over dead kings while Serapis receives shiploads of gold at Alexandria. While the Nile floods on divine schedule, Ptolemaic grain will buy whatever foreign swords the court requires!"
+    }
+  ],
+  "TextMappings": []
+}

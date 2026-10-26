@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_06",
+  "Keywords": [
+    "Fabian Strategy and Attrition",
+    "Highland Shadowing Tactic",
+    "Fabius Cunctator Doctrine",
+    "Avoiding Pitched Battle"
+  ],
+  "RagShortTexts": [
+    "Appointed Dictator following the disaster at Lake Trasimene, Quintus Fabius Maximus instituted the famous Fabian Strateg"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Appointed Dictator following the disaster at Lake Trasimene, Quintus Fabius Maximus instituted the famous Fabian Strategy of calculated strategic attrition. Refusing to offer Hannibal pitched battle, Fabius shadowed the Carthaginian army from high ground, cutting off foraging parties and scorching the countryside. Though criticized by aggressive Roman senators, this policy saved the Republic from collapse."
+    }
+  ],
+  "TextMappings": []
+}

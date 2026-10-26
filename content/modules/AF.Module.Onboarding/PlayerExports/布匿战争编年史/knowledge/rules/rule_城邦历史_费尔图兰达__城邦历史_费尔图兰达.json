@@ -1,0 +1,69 @@
+{
+  "Id": "rule_城邦历史_费尔图兰达",
+  "Keywords": [
+    "城邦历史_费尔图兰达",
+    "费尔图兰达",
+    "城邦历史_费尔图兰达费尔图兰达",
+    "城邦历史_费尔图兰达城防要塞"
+  ],
+  "RagShortTexts": [
+    "费尔图兰达（费尔图兰达）是古典时代要冲城邑，拥有完备城防工事与繁盛商市，在布匿战争与地缘交锋中占据核心战略地位。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "古典时代要邑费尔图兰达（费尔图兰达），坐落于古典行省要冲。城郭依山傍水、筑有坚固的石砌城垛与环形干壕，扼守着区域商业行商大道与军团调遣必经隘口。城内工坊林立、粮仓充裕，常驻精锐守军与地方民兵。在布匿战争与继业者纷争波及地中海全境的动荡岁月里，费尔图兰达多次经历围城封锁与政权更迭，其坚不可摧的城防与战略补给能力是决定周边战区归属的关键枢纽。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "费尔图兰达的城墙必须竖起罗马的鹰旗！无论是坚固的石塔还是城内的粮仓，军团将以钢铁纪律牢牢掌控这座要冲，任何人敢于在城中煽动叛乱都将遭到执政官最严厉的清洗！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "费尔图兰达的港口与市集必须向我们的商船敞开！迦太基尊重城邦的古老自由与地方神明，只要旗帜下汇聚起反抗罗马霸权的勇士，我们的大军必将保卫其城垣永固！"
+    }
+  ],
+  "TextMappings": []
+}

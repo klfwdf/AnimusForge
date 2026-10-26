@@ -1,0 +1,69 @@
+{
+  "Id": "rule_布匿战争概述",
+  "Keywords": [
+    "布匿战争概述",
+    "布匿战争",
+    "罗马与迦太基",
+    "腓尼基战争"
+  ],
+  "RagShortTexts": [
+    "布匿战争是公元前264年至前146年间罗马共和国与迦太基共和国争夺西地中海霸权的历时百余年的三次毁灭性决战。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "布匿战争是罗马共和国与北非迦太基共和国之间进行的三次旷日持久的争霸战争，从公元前264年一直持续到前146年。罗马人称腓尼基人为‘布匿’，因而得名。第一次战争因争夺西西里而起，罗马以海军革新击败迦太基并夺取西西里与萨丁尼亚；第二次战争以汉尼拔翻越阿尔卑斯山远征意大利、大西庇阿反攻北非扎马决战为高潮，迦太基丧失全部海外领土；第三次战争则是罗马蓄意发动的歼灭战，迦太基城终遭彻底焚毁夷平，土地被置为阿非利加行省。通过这三次战争，罗马扫清了西地中海唯一的同等对手，确立了不可动摇的地中海霸权。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "布匿战争是元老院与罗马人民意志最伟大的证明！野蛮狡诈的腓尼基人曾凭借金银和战船垄断海洋，汉尼拔更曾将战火烧到罗马城门之下。但罗马从不因战败而屈服，从米莱到扎马，再到小西庇阿焚毁迦太基城，我们的军团用钢铁证明了谁才是地中海真正的主人！迦太基已被抹去，它只配成为我们的阿非利加行省。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是布匿民族长达百年的泣血悲歌。罗马人的贪婪与背信弃义摧毁了繁荣了七百年的迦太基城。我们的先辈曾统治着波涛与商路，汉尼拔的战象与骑兵曾在坎尼将罗马军团屠戮殆尽！然而商人的犹疑断送了胜机，罗马人用灭绝性的残暴洗劫了我们的祖城，将几十万同胞贩为奴隶。但巴卡家族的誓言永不磨灭，海风中依然回荡着复仇的呼喊。"
+    }
+  ],
+  "TextMappings": []
+}

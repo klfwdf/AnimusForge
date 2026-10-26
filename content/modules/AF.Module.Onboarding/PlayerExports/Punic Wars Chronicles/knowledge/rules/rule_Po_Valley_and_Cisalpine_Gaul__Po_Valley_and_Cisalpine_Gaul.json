@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Po_Valley_and_Cisalpine_Gaul",
+  "Keywords": [
+    "Po_Valley_and_Cisalpine_Gaul",
+    "Po Valley",
+    "Cisalpine Gaul",
+    "Boii"
+  ],
+  "RagShortTexts": [
+    "The fertile Po Valley was inhabited by hostile Cisalpine Gallic tribes (Insubres and Boii), serving as Hannibal's essential base of reinforcement after the Alps."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Po Valley (Roman Cisalpine Gaul) stretches between the Alps and the Apennines, nourished by the Po River. Settled by warlike Celtic tribes—principally the Insubres and Boii—the region fiercely resisted Roman encroachment, erupting into revolt when Rome planted fortified colonies at Placentia and Cremona in 218 BC. When Hannibal descended from the alpine snows, these Celtic tribes welcomed him as a liberator. Tens of thousands of Gallic warriors joined his ranks as shock infantry and cavalry, replenishing his decimated vanguard and providing vital grain, mounts, and guides for the push southward into the Italian heartland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cisalpine Gaul was a hornets' nest of barbarian hostility! The Boii and Insubres rallied to the African invader like ravenous beasts. But after the war, our legions settled the score: we drained their swamps, subjugated their clans, and turned the Po Valley into the breadbasket and northern bastion of Roman Italy!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Po Valley was the salvation of our expedition. Exhausted and frostbitten after the Alps, our soldiers found food, fresh mounts, and twenty thousand furious Celtic swordsmen ready to strike Rome. Without the tribes of the Po, the triumphs at Trebia and Trasimene would never have been written."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Carthago_Nova_Stronghold",
+  "Keywords": [
+    "Carthago_Nova_Stronghold",
+    "Carthago Nova",
+    "New Carthage",
+    "Cartagena"
+  ],
+  "RagShortTexts": [
+    "Founded by Hasdrubal in 228 BC on a sheltered Iberian lagoon, Carthago Nova was the Barcid capital, silver vault, and naval base until Scipio stormed it in 209 BC."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Founded in 228 BC by Hasdrubal the Fair on the southeastern coast of Hispania, Carthago Nova (modern Cartagena) was the administrative capital, naval arsenal, and treasury of the Barcid domain. Situated on a rocky promontory surrounded by a deep natural bay and a shallow northern saltwater lagoon, it was connected to the mainland only by a narrow isthmus. Nearby silver mines yielded 25,000 drachmas daily, funding Hannibal's military mobilization. In 209 BC, Scipio Africanus marched secretly and exploited evening tides and offshore winds that drained the lagoon to wading depth. Leading troops across the shallows, Scipio scaled the uncrested walls, seizing 600 talents of silver, massive stores of weapons, and Iberian hostages whose courteous release won over local tribes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "New Carthage was the jewel of Barcid power, rich with silver and packed with weapons destined for Hannibal. They thought their marshy lagoon made them invincible, but Neptune parted the waters for Roman sandals! Scipio's men waded through the low tide and planted our eagles atop their battlements, striking the decisive blow that ripped Hispania from Punic clutches!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The loss of New Carthage broke our empire in Hispania. Hasdrubal built its white wharves to rival Tyre itself, and its silver funded our finest armies. Mago held the walls bravely, but a freak ebb tide and northern gales drained the lagoon, allowing Roman wolves to crawl over our northern ramparts. With its fall, our logistical spine was snapped."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Kingdom_of_Pergamon_Attalid_Dynasty",
+  "Keywords": [
+    "Kingdom_of_Pergamon_Attalid_Dynasty",
+    "Kingdom of Pergamon",
+    "Attalid Dynasty",
+    "Parchment"
+  ],
+  "RagShortTexts": [
+    "Pergamon combined dazzling Hellenistic culture (inventing parchment) with shrewd diplomacy, defeating Galatian invaders and allying with Rome to dominate western Asia Minor."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Perched upon a dramatic 1,000-foot acropolis overlooking the Caicus plain in Mysia, the Kingdom of Pergamon rose under the Attalid dynasty into a powerhouse of Hellenistic civilization. Founded by Philetaeros and elevated to royal status by Attalus I Soter following his crushing victory over invading Celtic Galatians, Pergamon championed Hellenic civilization against eastern despotism and barbarian invasion. When Egypt restricted papyrus exports, Pergamene scholars perfected parchment (charta pergamena), accumulating over 200,000 scrolls in their monumental library, rivaling Alexandria. Surrounded by aggressive behemoths—the Seleucid Empire and Antigonid Macedon—Attalus I executed a visionary grand strategy: aligning unreservedly with the rising Roman Republic. Pergamon served as Rome's primary diplomatic bridgehead, naval station, and logistic hub during the Punic and Macedonian wars, leveraging consular legions to systematically dismantle rival dynasties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Attalus of Pergamon understands the rule of law and the sanctity of alliances! While Greek leagues squabble like schoolchildren, Pergamon offered docks, grain, and cavalry to the legions. Their magnificent library and loyalty honor our shared destiny!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pergamon is Rome's pampered sycophant in the Aegean! They trade their scholars' parchment and classical statues for Roman cohorts to bully their neighbors. When Rome finishes swallowing the Mediterranean, the Attalids will discover they merely built an ornate cage for their own servitude!"
+    }
+  ],
+  "TextMappings": []
+}

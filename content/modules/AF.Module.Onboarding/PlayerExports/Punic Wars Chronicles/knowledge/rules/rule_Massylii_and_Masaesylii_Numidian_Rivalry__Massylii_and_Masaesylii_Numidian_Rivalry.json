@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Massylii_and_Masaesylii_Numidian_Rivalry",
+  "Keywords": [
+    "Massylii_and_Masaesylii_Numidian_Rivalry",
+    "Numidian Rivalry",
+    "Massylii",
+    "Masaesylii"
+  ],
+  "RagShortTexts": [
+    "Eastern Massylii and western Masaesylii waged bitter blood feuds over grazing lands and princess Sophonisba; Masinissa's alliance with Scipio delivered the cavalry blow that doomed Hannibal at Zama."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "North of the Atlas Mountains across the Maghreb roamed the Numidians, legendary unarmored horsemen who rode without bridles or saddles, controlling steeds with a simple reed switch. The tribes were polarized into two bitter rival kingdoms: the eastern Massylii under the royal house of Masinissa, and the larger western Masaesylii ruled by King Syphax. Their geopolitical rivalry flared into total war over territory and the hand of Carthaginian noblewoman Sophonisba. Initially, Syphax flirted with Rome while Masinissa led elite light horse for Carthage in Hispania. To secure Syphax, the Carthaginian Senate broke Masinissa's betrothal and gave Sophonisba to Syphax, alongside military backing to dispossess Masinissa. Surviving mountain ambushes, Masinissa defected to Scipio Africanus. At Zama in 202 BC, Masinissa's 6,000 Massylian cavalry routed the Masaesylii and swept into Hannibal's rear, shattering the Punic infantry and uniting Numidia under a single pro-Roman crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Masinissa is the truest sword Rome ever bought in Africa! His bareback horsemen outmaneuvered Hannibal's wings and smashed his veterans from behind at Zama. A Numidian ally who bleeds for the Republic is worth ten legions!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The squabbles of the Numidian chieftains destroyed our homeland! Syphax was an indecisive fool dazzled by Sophonisba's charms, while the traitor Masinissa sold Africa to Scipio's legions to crown himself king over Punic ashes!"
+    }
+  ],
+  "TextMappings": []
+}

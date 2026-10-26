@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Carthaginian_Oligarchy_and_Mercenaries",
+  "Keywords": [
+    "Carthaginian_Oligarchy_and_Mercenaries",
+    "Carthaginian Oligarchy",
+    "Suffetes",
+    "Council of 104"
+  ],
+  "RagShortTexts": [
+    "Carthage was governed by an oligarchic Council of 104 and Suffetes, projecting power through multinational mercenaries and terrifying North African war elephants."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Carthage's constitution was an oligarchic commercial republic guided by two annually elected Suffetes and dominated by the senatorial Council of 104, composed of merchant princes and landowners. Citizens rarely served in foreign wars except as officers and naval marines; military expeditions relied upon diverse paid mercenary forces: fierce Celtic broadswordsmen, lethal Iberian caetrati, deadly Balearic slingers, nimble Numidian light cavalry, and terrifying North African forest elephants. While brilliant commanders like Hamilcar and Hannibal synthesized these ethnic contingents into lethal tactical machines, their loyalty remained bound to silver and prestige, leaving the state vulnerable to catastrophic mutinies whenever the treasury dried."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Carthage treats warfare like a mercantile ledger! Their fat oligarchs lounge by the harbor while hiring Gauls to bleed and Iberians to die. But mercenaries fight for gold, not patria! The moment their silver runs out, they turn on their paymasters. You cannot purchase the civic soul that makes a legion invincible!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our wealth gathers the finest warriors of the ancient world under the sacred standard of Tanit! Balearic slingers shatter Roman helmets from afar, Iberian falcatas bite through armor, and war elephants scatter their formations in panic. Hannibal commanded their adoration with pure genius. Had our penny-pinching council sent reinforcements instead of counting coins, Rome would be a forgotten ruin."
+    }
+  ],
+  "TextMappings": []
+}

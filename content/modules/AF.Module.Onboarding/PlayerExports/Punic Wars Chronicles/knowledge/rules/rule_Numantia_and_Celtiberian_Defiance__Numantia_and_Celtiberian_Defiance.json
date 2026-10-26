@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Numantia_and_Celtiberian_Defiance",
+  "Keywords": [
+    "Numantia_and_Celtiberian_Defiance",
+    "Numantia",
+    "Celtiberian Defiance",
+    "Scipio Aemilianus"
+  ],
+  "RagShortTexts": [
+    "Numantia symbolized ultimate Celtiberian resistance: for 20 years, 8,000 warriors defied consular armies; when Scipio Aemilianus starved the citadel, citizens burned the city and committed mass suicide."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Perched upon a formidable plateau overlooking the Douro River in northern Hispania, the Celtiberian hill-fortress of Numantia became an immortal legend of heroic defiance against imperial subjugation. Armed with only 8,000 warriors, the Numantines repulsed Roman consular armies for twenty unbroken years through ambushes, falcata shock charges, and defensive tenacity, inflicting humiliating defeats that toppled consular careers in Rome. In 134 BC, the desperate Senate deployed Scipio Aemilianus (the conqueror of Carthage) with 60,000 men. Acknowledging the suicidal folly of frontal assault, Scipio erected a 9-kilometer ring of circumvallation fortified with seven camps, moats, and catapult towers, damming the river to impose total starvation. After fifteen months of agonizing siege where survivors subsisted on leather shields and boiled roots, the Numantines rejected unconditional surrender. In a monumental act of collective martyrdom, they torched their homes, slew their families to save them from rape and enslavement, and drank poison. When Roman cohorts breached the gates, they entered a smoking necropolis where not a single living warrior surrendered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The stubborn fury of Numantia humiliated Rome for two decades! Consul after consul returned to the Forum broken and disgraced before that windswept rock. Scipio was forced to wall them in with nine kilometers of timber to starve them like beasts; yet when the ashes cooled, not one warrior bowed his knee to the eagles!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Numantia is the blazing beacon of Iberian liberty! Eight thousand mountain swordsmen shattered the legions and exposed Roman invincibility as a hollow myth. Rather than submit to chains, they chose to burn their ancient city to ash and perish as free men. That untamed spirit lives in every blade carried by Hannibal's Spanish corps!"
+    }
+  ],
+  "TextMappings": []
+}

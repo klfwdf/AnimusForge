@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Settlement_History_Petra_Raqmu",
+  "Keywords": [
+    "Settlement_History_Petra_Raqmu",
+    "Petra (Raqmu)",
+    "佩特拉",
+    "Settlement_History_Petra_Raqmu Fortress"
+  ],
+  "RagShortTexts": [
+    "Petra (Raqmu) (佩特拉) was a pivotal fortified settlement, anchoring regional military logistics and urban commerce throughout ancient Mediterranean conflicts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Capital of the Nabataean kingdom, Petra ('The Rock', Semitic Raqmu) is concealed within narrow sandstone chasms reached through the winding Siq gorge. Renowned for rock-cut facades like the Treasury (Al-Khazneh) carved into living pink cliffs and secret ceramic pipeline cisterns, it levies immense transit taxes on eastern caravan routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ramparts of Petra (Raqmu) must fly the eagle standard! Whether through engineering circumvallation or direct assault, Rome ensures this fortress serves senatorial order and secures our communication lines!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The markets of Petra (Raqmu) belong to free maritime trade, not Roman chains! Carthage supports its autonomy against legionary oppression, guaranteeing that Punic gold and spears will reinforce its ramparts!"
+    }
+  ],
+  "TextMappings": []
+}

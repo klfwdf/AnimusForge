@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Gallic_Feasting_and_Sacred_Single_Combat",
+  "Keywords": [
+    "Gallic_Feasting_and_Sacred_Single_Combat",
+    "Gallic Feasting",
+    "Uncut Wine",
+    "Champion's Portion"
+  ],
+  "RagShortTexts": [
+    "Gallic warriors drank unwatered wine in wild feasts, fought lethal duels for the 'champion's cut' of meat, and challenged enemies to naked single combat, preserving severed heads as sacred trophies."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Across Cisalpine and Transalpine Gaul, warrior aristocracies revolved around competitive feasting, heavy drinking, and ritual champion combat. Gallic nobles consumed unwatered Mediterranean wine in astonishing quantities, carousing in smoky timber longhouses. Feasts centered on the 'Champion's Portion' (curadmír)—the roasted boar's thigh awarded to the foremost warrior; challenges over the meat triggered immediate single combat with long swords beside the hearth. In warfare, Gaesatae berserkers strode naked into the space between opposing armies, wearing only gold torcs, hurling insults, and challenging enemy generals to duel under the gaze of gods and druids. Victory culminated in headhunting: decapitating the slain foe and nailing the preserved skull to the gateway or carrying it from the saddle as an ancestral talisman of spiritual power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A screaming Gallic giant dancing naked with a six-foot sword is a terrifying sight to a raw recruit. But discipline beats frenzy every time: lock the scuta, thrust with the gladius, and step over the barbarian's bleeding bulk!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gauls possess an untamed fury that no Roman training manual can comprehend! Fuelled by wine and pride, their champions carved deep bloody lanes through consular legions at Trebia and Cannae. True brotherhood forged in battle!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Capua_and_Campanian_Plain",
+  "Keywords": [
+    "Capua_and_Campanian_Plain",
+    "City of Capua",
+    "Campanian Plain",
+    "Defection to Hannibal"
+  ],
+  "RagShortTexts": [
+    "Capua was Italy's wealthy second city after Rome; its defection to Hannibal after Cannae prompted a ruthless Roman siege and brutal retributive subjugation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Located in the heart of the fertile Campanian plain, Capua was the second wealthiest metropolis in Italy, famed for bronzework, perfumed luxuries, and vast wheat estates. Following Rome's crushing defeat at Cannae in 216 BC, Capuan nobles defected to Hannibal, demanding parity with Rome in post-war Italy and providing winter quarters for Punic troops. In 212 BC, Rome retaliated with determination: six legions constructed dual lines of circumvallation around the city, trapping the garrison. Even when Hannibal marched dramatically to the gates of Rome in 211 BC to divert the besiegers, the Roman army held its lines before Capua. Starved into submission, Capua fell: fifty leading senators poisoned themselves, dozens of surviving magistrates were beheaded, the population was sold into slavery, and the city's municipal charter was permanently erased."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Capua learned the price of Roman vengeance! They drank Campania's sweet vintage and opened their gates to the African invader when Rome was on its knees. But our consular siege lines never wavered, even when Hannibal rode to our very gates. Capua's magistrates died beneath the lictor's axe and its soil became public land of Rome!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Capua's alliance promised the fracturing of Rome's confederation. For years its granaries sustained our war effort. Yet when Roman legions encircled the walls with ditches and palisades, Hannibal's diversionary march on Rome could not break their fanatical resolve. The brutal fall of Capua frightened southern Italy back into Roman chains."
+    }
+  ],
+  "TextMappings": []
+}

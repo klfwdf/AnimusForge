@@ -1,0 +1,69 @@
+{
+  "Id": "rule_阿非利加行省与罗马地中海霸权",
+  "Keywords": [
+    "阿非利加行省与罗马地中海霸权",
+    "阿非利加行省",
+    "我们的海",
+    "罗马地中海霸权"
+  ],
+  "RagShortTexts": [
+    "迦太基毁灭后其故地被置为阿非利加行省，罗马确立了地中海绝对霸权，但也引发了意大利自耕农破产与社会内战危机。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "前146年迦太基城陷落后，罗马元老院派出十人委员会划定边界，将迦太基直辖领土改置为‘罗马阿非利加行省’，首府设在早已降附的乌提卡。在北非肥沃的麦田与油橄榄林支撑下，阿非利加迅速与西西里、埃及一道成为罗马帝国的‘大粮仓’。扫清迦太基后，罗马在西地中海再无匹敌对手，并顺势吞并马其顿与希腊，将地中海彻底变为罗马人的‘内湖’（Mare Nostrum）。然而胜利的果实却反噬了共和国自身的根基：长期远征导致意大利小农自耕农破产流亡，无数战俘奴隶充斥贵族大庄园（Latifundia），贫富分化急剧扩大，最终引爆了格拉古兄弟改革的流血冲突与马略军事改革，将罗马共和国推向了长达百年的残酷内战深渊。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿非利加行省的金色麦浪源源不断地运抵奥斯提亚港，养育着罗马数以万计的公民！西地中海自赫尔库勒斯之柱到爱琴海，每一面战旗都印着SPQR的铭文。我们的海不仅是地名，更是罗马铁骑与战船征服世界的永恒誓词！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马自以为通过屠杀与掠夺赢得了全世界，但迦太基的冤魂正在诅咒这个帝国！他们的土地长满了奴隶劳作的毒草，他们的平民沦为向贵族乞讨粮食的流民，他们的统帅带着刀剑攻打自己的元老院！罗马在阿非利加的废墟上建立的霸权，终将在他们自己的血腥内战中自我毁灭！"
+    }
+  ],
+  "TextMappings": []
+}

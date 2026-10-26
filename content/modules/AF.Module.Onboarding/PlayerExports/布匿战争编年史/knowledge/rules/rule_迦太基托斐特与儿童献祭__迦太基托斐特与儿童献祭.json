@@ -1,0 +1,69 @@
+{
+  "Id": "rule_迦太基托斐特与儿童献祭",
+  "Keywords": [
+    "迦太基托斐特与儿童献祭",
+    "托斐特",
+    "迦太基托斐特与儿童献祭巴力哈蒙",
+    "塔妮特"
+  ],
+  "RagShortTexts": [
+    "迦太基城内的托斐特圣殿发掘出数以万计焚化幼童与羊羔的骨灰瓮，关于迦太基是否在国家危机时将贵族初生子投入巴力神火炉的献祭传闻，是罗马眼中的终极野蛮符号。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在迦太基卫城比尔萨山脚下，坐落着古腓尼基宗教最神秘也最具争议的露天圣殿——‘托斐特’（Tophet）。考古发掘在此出土了超过两万个陶瓮，里面盛放着被烈火焚烧成灰烬的婴儿、幼童以及羊羔幼崽的遗骨，其上立有刻有塔妮特女神符印与巴力·哈蒙神铭文的祈愿石碑。古希腊与罗马史料（如狄奥多罗斯与普鲁塔克）对此进行了极度耸人听闻的描摹：声称当迦太基面临亡国危机或战争灾祸时，元老贵族们会将自己最纯洁健康的亲生长子献祭给巴力·哈蒙神；一尊巨大的空心青铜神像腹中燃烧着熊熊烈火，神像的双臂向下倾斜，当祭司将婴儿放在神像手掌中时，幼子便滑入炽热的火坑中化为焦炭，其周围伴随着震天动地的长笛与皮鼓声以掩盖母亲的哭号。现代历史学家对于这究竟是残酷的宗族宗教献祭，还是古代高夭折率婴儿的专用水葬墓园仍存学术争议，但这一恐怖意象在罗马公民心中构成了迦太基‘残暴不仁、亵渎神明’的道德铁证，成为罗马元老院坚决要求‘迦太基必须被毁灭’的深层心理支柱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基人是灭绝人性的恶魔！他们为了保住金库与商船，竟然把自己的亲生骨肉丢进烧红的青铜铜像肚子里烧死！诸神绝不会庇护一个靠焚杀婴儿来祈求胜利的民族。罗马军团的剑锋正是为了清洗这片被血污亵渎的土地！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人用恶毒的谎言把我们对至高神塔妮特与巴力·哈蒙的崇敬抹黑为妖魔！托斐特安息的是那些被病痛夺走夭折的纯洁灵魂与敬献给天神的无瑕羊羔。罗马人在农神节用鲜血角斗屠杀奴隶取乐，倒反过来对我们神圣肃穆的葬礼指手画脚！"
+    }
+  ],
+  "TextMappings": []
+}

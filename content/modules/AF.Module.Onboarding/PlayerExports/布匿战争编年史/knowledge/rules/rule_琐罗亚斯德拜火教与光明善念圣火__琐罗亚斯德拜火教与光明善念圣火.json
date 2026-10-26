@@ -1,0 +1,69 @@
+{
+  "Id": "rule_琐罗亚斯德拜火教与光明善念圣火",
+  "Keywords": [
+    "琐罗亚斯德拜火教与光明善念圣火",
+    "琐罗亚斯德教",
+    "拜火教",
+    "阿胡拉马兹达"
+  ],
+  "RagShortTexts": [
+    "波斯与安息帝国信奉阿胡拉·马兹达光明圣火；信徒恪守善思、善言、善行道德三箴言，以纯洁圣火坛对抗黑暗恶魔阿里曼的混沌侵蚀。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "由先知琐罗亚斯德（查拉图斯特拉）创立的波斯拜火教，是古典东方世界最深邃崇高的二元道德宗教体系。宇宙被视为光明智慧之主阿胡拉·马兹达（Ahura Mazda）与黑暗毁灭魔王安格拉·曼纽（阿里曼Ahriman）永不停歇的正邪战场。火（Atar）被视为宇宙纯洁真理与神圣秩序‘阿沙’（Asha）在人间的化身与眼睛。在波斯高原与帕提亚安息各要塞顶峰，祭司团（Magi，麦琪）日夜守护着建于露天石台之上的‘永恒圣火坛’，添加纯净香木并严禁以任何污秽肉体、死尸或呼吸污染圣火。信徒的人生核心义务被凝练为纯粹的道德三位一体：‘善思（Humata）、善言（Hukhta）、善行（Huvarshta）’。他们不筑神像、反对血腥人牲，死者遗体被置于高耸岩石天葬台供飞禽食尽以防尸气污染大地与神圣水源，坚信在终末审判日恶将被消灭、宇宙将迎来实现彻底净化的黄金盛世。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "东方的拜火教徒不立偶像，只在一堆明火面前沉思真理与善念。安息人虽然凶悍顽抗，但他们对誓言契约的敬重让罗马军团在东方战场不得不打起十二分精神面对这群恪守法度的硬汉！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿胡拉·马兹达的纯洁火光燃烧在伊朗高原每一座雪山巅峰！那是一种纯净如清风的精神力量，与罗马豺狼追逐黄金与奴隶的污浊贪婪截然不同，是东方不可征服的精神堡垒！"
+    }
+  ],
+  "TextMappings": []
+}

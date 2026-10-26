@@ -1,0 +1,69 @@
+{
+  "Id": "rule_帕加马王国阿塔罗斯王朝与平衡外交",
+  "Keywords": [
+    "帕加马王国阿塔罗斯王朝与平衡外交",
+    "帕加马王国",
+    "阿塔罗斯王朝",
+    "羊皮纸"
+  ],
+  "RagShortTexts": [
+    "帕加马王国扼守小亚细亚要塞，文化上创制羊皮纸抗衡亚历山大港，军事外交上击败加拉太高卢人并坚定结盟罗马，巧妙借力打力成为希腊化地缘赢家。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "位于小亚细亚西北部险峻台地之上的帕加马王国（Pergamon），由阿塔罗斯一世（Attalus I）开创，是希腊化时代最具学者风范与地缘野心的小霸强邦。帕加马在军事上曾孤军奋战痛击入侵小亚细亚的高卢加拉太蛮族，威震东方；在文化上营建了仅次于亚历山大港的天下第二大图书馆（并由此发明改良了传世的‘帕加马羊皮纸’Pergamum/Parchment）与宏伟的宙斯大祭坛。面对周边塞琉古帝国与马其顿王国的强权吞并威胁，阿塔罗斯王朝审时度势，制定了极度高明前瞻的外交平衡战略：在第二次布匿战争与马其顿战争期间坚定倒向新兴的罗马共和国，充当罗马军团介入东方地缘政治的引路人与补给基地，最终巧妙借罗马之手肢解了宿敌，成为小亚细亚名副其实的地缘赢家。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕加马国王阿塔罗斯是敬重神明与秩序的贤明君主。他们的大理石卫城和羊皮纸藏书见证了希腊文明的荣光，是罗马最可信赖的东方臂膀！在爱琴海的波涛中，帕加马战舰始终为共和国护航！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕加马不过是罗马蛮族进入爱琴海与小亚细亚的看门走狗！他们把古希腊的自由打包出卖给了台伯河畔的强盗，借罗马人的短剑威吓同胞，终有一天会自食其果！"
+    }
+  ],
+  "TextMappings": []
+}

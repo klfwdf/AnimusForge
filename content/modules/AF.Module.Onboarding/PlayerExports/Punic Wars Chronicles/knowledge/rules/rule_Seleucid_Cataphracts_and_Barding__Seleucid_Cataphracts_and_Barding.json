@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Seleucid_Cataphracts_and_Barding",
+  "Keywords": [
+    "Seleucid_Cataphracts_and_Barding",
+    "Cataphracts",
+    "Heavy Cavalry",
+    "Scale Barding"
+  ],
+  "RagShortTexts": [
+    "Antiochus III adopted the eastern cataphract system after his Bactrian campaigns, creating heavily armored shock cavalry where both rider and Nisaean horse were encased in metal scale barding."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "During his grand eastern expedition across Parthia and Bactria, Seleucid King Antiochus III encountered the devastating potential of fully armored nomadic shock cavalry, incorporating them into his royal field army as the classical cataphract (kataphraktos, 'completely armored'). The cataphract represented the pinnacle of pre-medieval armored warfare: the rider was enveloped in an iron and bronze scale cuirass, arm greaves, and an articulated metal face mask. The heavy Nisaean warhorse was similarly armored in thick barding of overlapping horn, bronze, or iron scales covering the chest, neck, and flanks. Armed with the massive twelve-foot two-handed kontos lance, the cataphract charged at a calculated trot, relying on pure momentum and armor invulnerability to smash through enemy infantry phalanxes. This formidable armored cavalry system anticipated the medieval knight, shaping Near Eastern tactical doctrine for centuries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Eastern despots encase their horses in iron scales until they look like clanking metal turtles! It makes a fearsome spectacle upon an open plain, but in the blistering sun, their mounts overheat within an hour. Aim heavy pila at the horse's unprotected knees and belly—once a cataphract crashes into the dust, he cannot even stand beneath his own armor!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The armored cataphracts of Antiochus III are living iron fortresses! When whole squadrons of barded Nisaean chargers roll forward, no Roman maniple can withstand that crushing wall of metal and lance. If the vast wealth of the Seleucids marches west, the legions will learn what true armored shock entails!"
+    }
+  ],
+  "TextMappings": []
+}

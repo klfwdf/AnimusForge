@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Balearic_Islands_Maritime_Hub",
+  "Keywords": [
+    "Balearic_Islands_Maritime_Hub",
+    "Balearic Islands",
+    "Balearic Slingers",
+    "Mallorca and Menorca"
+  ],
+  "RagShortTexts": [
+    "The Balearic Islands dominated western Mediterranean sea lanes, renowned for deadly mercenary slingers who hurled heavy stones and lead bullets."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Balearic Islands (chiefly Mallorca and Menorca) occupy a strategic crossroads between Hispania, southern Gaul, and North Africa. The islanders were famed across antiquity for unmatched proficiency with the sling, trained from childhood by mothers who placed food atop poles, requiring children to knock it down with a sling to eat. Balearic warriors carried three slings of varying lengths wrapped around their heads or waists, hurling fistsized stones or lead bullets (glandes) with devastating velocity capable of shattering helmets and bone. Serving as skirmishers in Carthaginian service, they screened Hannibal's armies at Trebia, Trasimene, and Cannae, inflicting severe casualties on Roman velites before hand-to-hand combat began. Rome finally conquered the islands in 123 BC under Caecilius Metellus 'Balearicus'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The leaden hail of the Balearic slingers was the terror of our front ranks! Those unarmored islanders whipped cords with such velocity that their lead missiles shattered bronze helms and cracked scuta like eggshells. It took Metellus's systematic pacification of the islands to tame those deadly skirmishers and enlist their slings beneath the Roman eagle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Balearics are Carthage's ancestral archers without bows! Our fleets shelter in their bays, and their slingers served Hannibal with lethal devotion. When their leather cords whistled, the sky rained stone and lead, blunting the arrogance of Roman legionaries before our lines even met!"
+    }
+  ],
+  "TextMappings": []
+}

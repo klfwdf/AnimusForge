@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_35",
+  "Keywords": [
+    "Parley of Hannibal & Scipio at Zama",
+    "Parley at Zama Plains",
+    "Hannibal Scipio Conference",
+    "Wheel of Fortune Warning"
+  ],
+  "RagShortTexts": [
+    "On the eve of the Battle of Zama in October 202 BC, Hannibal and Scipio met alone on horseback between their armies. Han"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On the eve of the Battle of Zama in October 202 BC, Hannibal and Scipio met alone on horseback between their armies. Hannibal, veteran of a hundred clashes, warned the youthful Scipio of the fickleness of Fortune, offering the surrender of Spain and the Mediterranean islands for peace. Scipio replied that Punic perfidy had destroyed all basis for negotiation: Carthage must submit or fight to the finish."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_大西庇阿远征西班牙与贝库拉伊利帕战役",
+  "Keywords": [
+    "大西庇阿远征西班牙与贝库拉伊利帕战役",
+    "大西庇阿",
+    "西庇阿远征西班牙",
+    "奇袭新迦太基"
+  ],
+  "RagShortTexts": [
+    "年轻的大西庇阿接掌西班牙战局后奇袭新迦太基，在贝库拉与伊利帕战役中彻底摧毁巴卡家族的海外基地。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前211年，西庇阿的父亲与叔父在西班牙双双阵亡，罗马在西班牙的战局濒临崩溃。前210年，年仅二十五岁、甚至尚未担任过执政官的普布利乌斯·科尔内利乌斯·西庇阿以非凡勇气自荐出任西班牙最高统帅。前209年，大西庇阿进军神速，趁落潮涉渡潟湖奇袭攻克迦太基在欧洲的统治心脏‘新迦太基’（Carthago Nova），缴获了巨量银两、军械、人质与战船，并以宽仁之风释放西班牙部落人质，赢得土著首领的全面倒戈。在前208年的贝库拉战役与前206年的伊利帕战役中，西庇阿展现了天才般的阵型机动：在伊利帕战役中，他打破常规，将精锐罗马重步兵布置在两翼，将较弱的盟军放在中央，以两翼先发合围彻底击溃了哈斯德鲁拔·吉斯戈与玛戈的联军。西班牙自此彻底脱离迦太基掌控，西庇阿不仅斩断了汉尼拔唯一的陆上兵源与银矿，更为反攻非洲本土奠定了决定性跳板。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大西庇阿是朱庇特庇佑的天降神将！在父叔殉国的绝境中，他跨海登上西班牙，涉水踏过新迦太基退潮的海湾拔下敌城！在伊利帕，他以神出鬼没的两翼轮换战术打得迦太基名将抱头鼠窜！西庇阿不仅赢得了战役，更以无可比拟的仁德征服了西班牙诸部族的心！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "年轻的西庇阿是我们最可怕的噩梦。他在西班牙的每一步都精准切中要害：夺走新迦太基剥夺了我们的银矿与后勤港口；在伊利帕，他用两翼包抄彻底瓦解了哈斯德鲁拔与玛戈的大军。失去西班牙，汉尼拔在意大利就成了无源之水、无本之木，迦太基的命运从那时起便已走向倾覆。"
+    }
+  ],
+  "TextMappings": []
+}

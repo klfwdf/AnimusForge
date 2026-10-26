@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Roman_Saturnalia_and_Role_Reversal",
+  "Keywords": [
+    "Roman_Saturnalia_and_Role_Reversal",
+    "Saturnalia",
+    "Saturn Cult",
+    "Role Reversal"
+  ],
+  "RagShortTexts": [
+    "Saturnalia celebrated Saturn's Golden Age through social inversions: masters served slaves at banquets, courts closed, dice gambling raged, and citizens shouted 'Io Saturnalia!'"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Celebrated annually from December 17, the Saturnalia was the Roman Republic's most raucous and universally beloved religious festival, dedicated to Saturn, god of agriculture. Commemorating the mythical Golden Age when humanity lived in egalitarian abundance without slavery or private property, the festival inverted societal hierarchies. Masters donned informal dinner clothes (synthesis) and served banquets to their enslaved household servants, who wore the felt cap of freedmen (pileus) and could speak their minds without punishment. Courts, schools, and military levies suspended operations. Public dice gambling, normally outlawed, was universally practiced. Streets echoed with shouts of 'Io Saturnalia!' as citizens exchanged wax candles (cerei) and terracotta figurines (sigillaria). Even amidst the catastrophe of Hannibal's invasion, the Senate preserved the festival, renewing civic cohesion and resilience through collective ritual levity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Saturnalia is the sacred heartbeat of Rome! For one glorious week, rank is forgotten and even the captive slave drinks wine from our silver bowls. When the cries of 'Io Saturnalia!' echo through the hills, Roman fraternity triumphs over all hardship!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Romans play at holy benevolence during Saturnalia, serving wine to slaves whom they whip like dogs the remaining fifty-one weeks of the year! A hypocritical masquerade to pacify the wretches who toil beneath their lashes!"
+    }
+  ],
+  "TextMappings": []
+}

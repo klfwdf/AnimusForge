@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Lilybaeum_Naval_Bastion",
+  "Keywords": [
+    "Lilybaeum_Naval_Bastion",
+    "Lilybaeum",
+    "Marsala",
+    "Siege of Lilybaeum"
+  ],
+  "RagShortTexts": [
+    "Lilybaeum on the westernmost cape of Sicily was Carthage's near-impregnable naval bastion; Rome besieged it for a decade without breaching its walls."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lilybaeum (modern Marsala) sat on the westernmost promontory of Sicily, facing North Africa just a day's sail from Carthage. Guarded on three sides by treacherous offshore reefs and deceptive sandbanks, its landward wall featured massive dry moats 60 feet deep and 90 feet wide. From 250 to 241 BC, Rome subjected Lilybaeum to a grueling nine-year siege by land and sea. Roman sappers tunneled under walls and advanced colossal siege engines, but commander Himilco repeatedly burned their towers in night sallies. Punic blockade-runners like 'Hannibal the Rhodian' regularly slipped through the Roman naval cordon in broad daylight to provision the garrison. The fortress never fell by force, surrendering only when Carthage ceded Sicily after the Battle of the Aegates Islands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lilybaeum was an unyielding nightmare for ten consular campaigns! Our legions filled its abyssal moats and built towering rams, only to watch sudden Punic sallying parties set the timbers ablaze in howling gales. We learned our lesson: that fortress could only be starved from the sea, which Catulus achieved at the Aegates Islands!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lilybaeum was the proudest shield of Carthage! For nine years Rome hurled legions against its ramparts, achieving nothing but mountains of Roman dead. Hannibal the Rhodian taunted their entire blockade fleet, steering his swift quinquereme through their channels like a falcon. The fortress was never taken by the sword—only surrendered when politicians signed the peace."
+    }
+  ],
+  "TextMappings": []
+}

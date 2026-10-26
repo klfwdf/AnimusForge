@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Siege_of_Agrigentum_and_Starvation",
+  "Keywords": [
+    "Siege_of_Agrigentum_and_Starvation",
+    "Siege of Agrigentum",
+    "Akragas",
+    "Great Famine"
+  ],
+  "RagShortTexts": [
+    "The Siege of Agrigentum (262 BC) saw Rome deploy double circumvallation lines to starve out 50,000 citizens; its brutal sack and enslavement transformed the Punic War into total war."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fought in 262 BC, the Siege of Agrigentum (Greek Akragas) marked the first catastrophic land collision of the First Punic War. Perched on coastal bluffs in southern Sicily, the city was garrisoned by Hannibal Gisco as Carthage's primary southern operational depot. Rome committed both consular armies—nearly 40,000 men. To enforce an airtight siege, Roman engineers constructed a massive double circumvallation line: an inner ditch sealing the garrison inside, and an outer rampart holding off 50,000 Carthaginian relief troops and 50 war elephants under general Hanno. The siege lasted seven agonizing months, reducing the city to horrific starvation where citizens ate pack mules and boiled saddle leather. Although Gisco's elite mercenaries executed a desperate night breakout through the lines, the abandoned city was violently sacked by consular legions. Over 25,000 Greek inhabitants were herded into slave markets, shattering Hellenic neutrality and initiating an era of total, unrestrained warfare across Sicily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At Agrigentum, the Republic learned that war in Sicily requires iron ruthlessness! Our double lines choked both the garrison and their elephant relief force. The silver earned from its slave markets proved to the Senate that no walled citadel can withstand Roman siege engineering!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The slaughter of Akragas exposed the ravenous greed of the Roman wolf! They ransacked centuries-old Greek temples and dragged twenty-five thousand innocent citizens into chains. That crime proved to the Mediterranean that Roman friendship is merely a prelude to slavery and ruin!"
+    }
+  ],
+  "TextMappings": []
+}

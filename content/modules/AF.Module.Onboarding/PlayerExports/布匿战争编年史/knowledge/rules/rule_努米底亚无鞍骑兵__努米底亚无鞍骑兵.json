@@ -1,0 +1,69 @@
+{
+  "Id": "rule_努米底亚无鞍骑兵",
+  "Keywords": [
+    "努米底亚无鞍骑兵",
+    "努米底亚骑兵",
+    "无鞍骑乘",
+    "标枪骑兵"
+  ],
+  "RagShortTexts": [
+    "努米底亚骑兵不配马鞍与马衔，仅凭颈绳与短杖操控疾驰的柏柏尔马，以神出鬼没的佯败诱敌与游骑环射战术成为汉尼拔在意大利横扫罗马军团的王牌核心。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "来自北非荒原与阿特拉斯山脉边缘的努米底亚骑兵（Numidian Cavalry）被历史学家波利比乌斯誉为地中海最优秀的轻骑兵。他们身材瘦削敏捷，身上仅披一袭无袖羊毛短袍与单层圆皮盾，作战时不备马鞍、马镫甚至没有金属马衔，仅靠一根套在马颈上的皮绳与手中的细短木杖便能随心所欲地驾驭耐粗饲、极耐渴的柏柏尔战马。努米底亚人从不与重装骑兵进行正面对决，而是掌握了登峰造极的‘放风筝与佯败战术’：他们分成十数骑的小群如黄蜂般贴近敌阵，在高速疾驰中以极刁钻的角度连续投掷淬火标枪；一旦敌人反击追击，他们便四散佯装溃逃，诱使敌人脱节失控，随后再借由惊人的机动力迅速合拢包围，将疲惫落单的重装骑兵逐个猎杀。在第二次布匿战争期间，汉尼拔麾下的努米底亚骑兵指挥官马哈巴尔正是利用这种战术，在提基努斯、特拉西梅诺与坎尼屡次斩断罗马军团的机动翅膀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那些非洲游牧蛮子就像荒漠里的苍蝇一样令人厌烦！他们既没有铠甲也不敢正面交锋，骑着瘦马丢完标枪就跑。但军团必须时刻戒备：轻敌冒进追击这些假装败退的骑兵，往往就会一头撞进汉尼拔精心布下的伏击圈深渊！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "努米底亚骏马是荒漠中飞翔的猎鹰，马哈巴尔的勇士是汉尼拔手中最灵动的眼睛与利爪！笨重的罗马同盟骑兵连他们的马尾灰尘都追不上。在坎尼的烈日下，正是他们切断了罗马人的退路，将八个军团彻底锁死在血泊之中！"
+    }
+  ],
+  "TextMappings": []
+}

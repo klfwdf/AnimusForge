@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_07",
+  "Keywords": [
+    "坎尼会战双重包围歼灭战",
+    "坎尼会战双重包围",
+    "凸月阵型诱敌深入",
+    "哈斯德鲁巴尔铁骑断后"
+  ],
+  "RagShortTexts": [
+    "公元前216年8月2日，执政官瓦罗与保卢斯统领罗马史上空前规模的八万六千大军在坎尼与汉尼拔决战。汉尼拔布设向外弯曲的凸形中央薄弱阵列，由高卢与伊比利亚勇士诱敌深入；当罗马庞大方阵逐步推入下陷的凹月弧心"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前216年8月2日，执政官瓦罗与保卢斯统领罗马史上空前规模的八万六千大军在坎尼与汉尼拔决战。汉尼拔布设向外弯曲的凸形中央薄弱阵列，由高卢与伊比利亚勇士诱敌深入；当罗马庞大方阵逐步推入下陷的凹月弧心时，两侧迦太基老兵精锐与击溃敌翼的重骑兵迅速合拢铁钳，全歼近七万罗马官兵，成为世界军事史上双重包围的至高典范。"
+    }
+  ],
+  "TextMappings": []
+}

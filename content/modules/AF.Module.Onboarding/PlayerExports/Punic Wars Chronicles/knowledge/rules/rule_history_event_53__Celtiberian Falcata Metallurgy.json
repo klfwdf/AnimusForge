@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_53",
+  "Keywords": [
+    "Celtiberian Falcata Metallurgy",
+    "Folded Carbon Steel Cleaver",
+    "Forward Weighted Curved Blade",
+    "Devotio Chieftain Sidearm"
+  ],
+  "RagShortTexts": [
+    "The iconic weapon of Celtiberian and Iberian warriors was the curved falcata, forged using advanced iron-smelting techni"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The iconic weapon of Celtiberian and Iberian warriors was the curved falcata, forged using advanced iron-smelting techniques where iron plates were buried in earth to oxidize impurities before folding. With its forward-weighted recurved blade, the falcata combined the crushing impact of an axe with the clean slicing power of a sword, easily cleaving through bronze helmets and wooden shields."
+    }
+  ],
+  "TextMappings": []
+}

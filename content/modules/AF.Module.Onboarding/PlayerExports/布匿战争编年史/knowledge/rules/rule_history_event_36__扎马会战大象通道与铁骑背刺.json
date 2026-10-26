@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_36",
+  "Keywords": [
+    "扎马会战大象通道与铁骑背刺",
+    "扎马会战战象纵队通道",
+    "号角惊骇战象反噬",
+    "马西尼萨铁骑合围"
+  ],
+  "RagShortTexts": [
+    "公元前202年10月19日，扎马决战打响。汉尼拔驱使八十头战象发起强攻，大西庇阿早有预谋，打破传统棋盘交错布阵，将各中队排成笔直纵队通道，命军号齐鸣、铜锣大作，战象受惊乱窜，大半顺通道穿过或反噬迦太基"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前202年10月19日，扎马决战打响。汉尼拔驱使八十头战象发起强攻，大西庇阿早有预谋，打破传统棋盘交错布阵，将各中队排成笔直纵队通道，命军号齐鸣、铜锣大作，战象受惊乱窜，大半顺通道穿过或反噬迦太基左翼骑兵。两军老兵步兵在中央展开血腥拉锯之际，击溃敌骑的马西尼萨与莱利乌斯铁骑自后背猛烈回刺，汉尼拔精锐尽墨，逃往哈德鲁门托姆，战争胜负已定。"
+    }
+  ],
+  "TextMappings": []
+}

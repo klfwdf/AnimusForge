@@ -1,0 +1,69 @@
+{
+  "Id": "rule_第二次布匿战争",
+  "Keywords": [
+    "第二次布匿战争",
+    "汉尼拔战争",
+    "汉尼拔远征意大利",
+    "第二次布匿战争坎尼会战"
+  ],
+  "RagShortTexts": [
+    "第二次布匿战争（前218—前201年）由汉尼拔奇袭意大利引爆，汉尼拔连续取得坎尼等大捷，最终大西庇阿反攻北非扎马战役终结争霸。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "第二次布匿战争（公元前218—前201年），又称‘汉尼拔战争’，是古代军事史上的巅峰对决。战事因汉尼拔攻陷罗马盟邦萨贡图姆而引爆。为瓦解罗马的同盟体系，汉尼拔率军翻越阿尔卑斯山奇袭意大利，在特雷比亚、特拉西梅诺湖以及坎尼战役（前216年）中重创罗马军团，歼灭近十万罗马与盟军官兵，致使南意大利与叙拉古倒戈。面对亡国危机，罗马在费边‘拖延战术’指导下避免决战，以持久战消耗敌军；同时青年统帅大西庇阿开辟西班牙第二战场，摧毁巴卡家族后方基地并随后跨海直捣北非本土。汉尼拔被迫回防，在前202年的扎马战役中被大西庇阿彻底击溃。迦太基被迫接受严苛和约：放弃西班牙及全部海外领地，交出所有战象，舰队削减至十艘，五十年内赔付一万塔兰特白银，未经罗马许可不得开战。迦太基自此沦为罗马附庸。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "汉尼拔确实是战神一般的统帅，坎尼战役那一天，整个罗马城在号啕大哭！但是，摧毁三支执政官军团并不能征服罗马！元老院没有向任何人乞和，意大利核心同盟坚如磐石！费边拖延了毒蛇的獠牙，大西庇阿在西班牙斩断了它的身躯，最后在扎马踏平了它的头颅！这场战争证明，罗马的制度超越任何单一天才！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是汉尼拔·巴卡将军将恐惧深深烙印进罗马人骨髓里的十六年！特拉西梅诺湖的水变成了红色，坎尼平原铺满了执政官与元老的尸首！然而汉尼拔在意大利孤军奋战了十六年，国内寡头却只知守着银库，甚至不肯多派一艘补给船。扎马之败非战之罪，迦太基输给的不仅是罗马的大西庇阿，更是我们自己的内耗与背叛！"
+    }
+  ],
+  "TextMappings": []
+}

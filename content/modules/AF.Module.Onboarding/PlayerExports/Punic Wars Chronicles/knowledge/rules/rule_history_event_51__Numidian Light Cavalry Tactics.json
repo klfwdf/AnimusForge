@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_51",
+  "Keywords": [
+    "Numidian Light Cavalry Tactics",
+    "Numidian Light Cavalry",
+    "Bareback Horsemanship Mastery",
+    "Javelin Feigned Retreat Tactic"
+  ],
+  "RagShortTexts": [
+    "Numidian light horsemen from North Africa were celebrated as the finest skirmish cavalry of the ancient world. Riding sm"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Numidian light horsemen from North Africa were celebrated as the finest skirmish cavalry of the ancient world. Riding small, wiry horses without bridles, bits, or saddles—guided solely by a simple halter rope and riding stick—they hurled light javelins with pinpoint accuracy. Masters of feigned retreats and harassing skirmishes, they repeatedly lured rigid Roman formations into devastating ambushes."
+    }
+  ],
+  "TextMappings": []
+}

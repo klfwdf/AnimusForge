@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_16",
+  "Keywords": [
+    "Peace of Naupactus & Clouds in the West",
+    "Peace of Naupactus",
+    "Clouds in the West Speech",
+    "Agelaus Pan Hellenic Plea"
+  ],
+  "RagShortTexts": [
+    "At the 217 BC peace conference of Naupactus ending the Greek Social War, diplomat Agelaus delivered his prophetic 'Cloud"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At the 217 BC peace conference of Naupactus ending the Greek Social War, diplomat Agelaus delivered his prophetic 'Clouds in the West' address. He warned that whether Rome or Carthage triumphed, the victor would cross the Adriatic to conquer Greece. Urging Philip V and the leagues to join hands before those western storm clouds burst upon them, the speech prompted an immediate armistice."
+    }
+  ],
+  "TextMappings": []
+}

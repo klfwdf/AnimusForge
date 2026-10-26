@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_23",
+  "Keywords": [
+    "Death of Hasdrubal Barca",
+    "Hasdrubal Decapitation",
+    "Severed Head Thrown in Camp",
+    "Hannibal Mourns Carthage Fate"
+  ],
+  "RagShortTexts": [
+    "When battle turned desperate at the Metaurus, Hasdrubal Barca charged his horse into the thick of a Roman cohort, dying "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When battle turned desperate at the Metaurus, Hasdrubal Barca charged his horse into the thick of a Roman cohort, dying an honorable warrior's death. Consul Nero had Hasdrubal's severed head flung into Hannibal's forward outpost. Recognizing his brother's features, Hannibal wept, proclaiming that he saw therein the doom of Carthage, retiring his undefeated army into the mountains of Bruttium."
+    }
+  ],
+  "TextMappings": []
+}

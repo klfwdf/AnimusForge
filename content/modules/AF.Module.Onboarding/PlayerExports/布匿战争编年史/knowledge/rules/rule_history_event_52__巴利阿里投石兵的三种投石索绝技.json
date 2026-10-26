@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_52",
+  "Keywords": [
+    "巴利阿里投石兵的三种投石索绝技",
+    "巴利阿里投石兵",
+    "三种投石索长中短",
+    "铅质飞弹破盔裂颅"
+  ],
+  "RagShortTexts": [
+    "巴利阿里群岛的投石手自幼接受严苛的实战训练，每名战士腰间与头部佩戴三根不同长度的兽筋投石索：长索用于两百步外的超远距阻击，中索用于百步内齐射，短索用于近身缠斗。其投掷的鹅卵石与特制枣核形铅弹（Glan"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴利阿里群岛的投石手自幼接受严苛的实战训练，每名战士腰间与头部佩戴三根不同长度的兽筋投石索：长索用于两百步外的超远距阻击，中索用于百步内齐射，短索用于近身缠斗。其投掷的鹅卵石与特制枣核形铅弹（Glandes）初速惊人，能在百步之内砸穿罗马青铜头盔与重盾，骨碎内伤当场暴毙，是汉尼拔前线最致命的开道重火力。"
+    }
+  ],
+  "TextMappings": []
+}

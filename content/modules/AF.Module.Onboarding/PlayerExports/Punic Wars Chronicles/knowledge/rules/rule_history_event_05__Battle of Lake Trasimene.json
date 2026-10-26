@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_05",
+  "Keywords": [
+    "Battle of Lake Trasimene_248",
+    "Consul Flaminius Slain",
+    "Lakeside Defile Trap",
+    "Annihilation in the Morning Fog"
+  ],
+  "RagShortTexts": [
+    "In spring 217 BC, Hannibal outmaneuvered Consul Gaius Flaminius along the northern shores of Lake Trasimene. Concealing "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In spring 217 BC, Hannibal outmaneuvered Consul Gaius Flaminius along the northern shores of Lake Trasimene. Concealing his army in thick morning fog along the hillside defiles, Hannibal struck the Roman march column from the flanks and rear, pinning the legions against the lake. Flaminius and fifteen thousand legionaries were killed, causing panic throughout Rome."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Messana_Dispute_and_Mamertines",
+  "Keywords": [
+    "Messana_Dispute_and_Mamertines",
+    "Messana Dispute",
+    "Mamertines",
+    "Hiero of Syracuse"
+  ],
+  "RagShortTexts": [
+    "The Mamertine seizure of Messana in Sicily prompted appeals to both Carthage and Rome, triggering the direct confrontation of the First Punic War in 264 BC."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 288 BC, Campanian mercenaries calling themselves the Mamertines ('Sons of Mars') betrayed and captured the Sicilian port of Messana, controlling the strategic strait separating Sicily from Italy. Decades later, King Hiero II of Syracuse besieged them. Desperate, the Mamertines first invited a Carthaginian garrison, then appealed to Rome for alliance. Wary of Punic encirclement right across the narrow water, the Roman popular assembly voted to intervene. In 264 BC, Roman troops crossed the straits, expelled the Punic commander from Messana's citadel, and ignited the First Punic War."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Mamertines were rogue brigands, true enough, but the Strait of Messina is the gateway to Italy! Had Carthage entrenched itself across that narrow mile of water, Punic warships would have menaced Rhegium and southern Italy at will. Rome crossed the strait not out of love for mercenaries, but to secure the sacred frontiers of our homeland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rome's intervention at Messana was a display of naked, hypocritical piracy! Our garrison had peacefully pacified the conflict between Syracuse and the city. Yet Rome connived with treacherous brigands to kidnap our commander and violate treaties. That treacherous crossing of the straits doomed both empires to twenty-three years of senseless slaughter."
+    }
+  ],
+  "TextMappings": []
+}

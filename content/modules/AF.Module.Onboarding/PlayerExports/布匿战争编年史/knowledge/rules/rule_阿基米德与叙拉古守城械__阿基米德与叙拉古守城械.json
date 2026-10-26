@@ -1,0 +1,69 @@
+{
+  "Id": "rule_阿基米德与叙拉古守城械",
+  "Keywords": [
+    "阿基米德与叙拉古守城械",
+    "阿基米德与叙拉古守城械阿基米德",
+    "阿基米德与叙拉古守城械叙拉古之围",
+    "起重投石机"
+  ],
+  "RagShortTexts": [
+    "希腊数学天才阿基米德在希伦二世资助下将叙拉古武装为机械要塞，其发明的‘阿基米德之爪’铁吊车与多级变焦投石机重创罗马攻城舰队，被罗马统帅叹为几何学神话。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在西西里岛的希腊名邦叙拉古，近代物理与几何学先驱阿基米德（Archimedes，约前287—前212年）在国王希伦二世长达数十年的慷慨资助下，将整座沿海城邦改造成了古典时代最匪夷所思的机械化战争要塞。在第二次布匿战争期间，叙拉古因老王去世背弃罗马倒向迦太基，引来罗马‘罗马之剑’执政官马塞卢斯的铁壁围攻。然而，罗马陆海军在城墙下遭遇了阿基米德发明的多重杀伤机械：城墙堞口布满了射程从数百步到几十步不等的精密扭力投石机与弩炮，使罗马战船无论停在何处都处于火石覆盖之下；当罗马战舰试图乘夜色强行贴近城墙搭设攻城云梯时，被称为‘阿基米德之爪’（The Claw of Archimedes）的巨型杠杆吊车从悬崖城墙后猛然探出，巨大的重型铁钩死死咬住罗马战舰船首，随后利用滑轮配重将数吨重的五列桨战船从海中凌空吊起、前后剧烈摇晃，再骤然松手将其头下尾上重重砸入大海拍得粉碎。马塞卢斯麾下的罗马水兵被机械彻底击溃了心智，甚至一看到城墙上探出一根木头绳索就惊恐万状地尖叫逃窜，令马塞卢斯无奈感叹：‘我们这根本不是在同凡人打仗，而是在同一位拥有百手的几何学独眼巨人作战！’"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那个在沙盘上画圆圈的希腊老疯子，用杠杆和滑轮把罗马的五列桨战船像小玩具一样吊起来摔碎！士兵们在城墙下吓得魂飞魄散，哪怕看见城头伸出一根粗绳子都以为要天降巨石。马塞卢斯发誓要亲手活捉阿基米德，见识一下这位能撼动地球的学者的大脑！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿基米德的智慧是奥林匹斯诸神赐予叙拉古的护城神迹！罗马人自以为无坚不摧的海军舰队，在希腊大师的起重巨爪与漫天飞石面前被打得像落水狗一样哀嚎逃窜。只要叙拉古城墙上的机关仍在运转，罗马人就永远休想切断迦太基与西西里之间的海上纽带！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_埃克诺穆斯海角海战",
+  "Keywords": [
+    "埃克诺穆斯海角海战",
+    "埃克诺穆斯海战",
+    "古代最大海战",
+    "远征非洲海战"
+  ],
+  "RagShortTexts": [
+    "前256年埃克诺穆斯海角海战参战战舰近700艘、官兵近30万人，是古代最庞大的海战，罗马以此打通远征非洲的通道。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前256年夏，罗马共和国为了彻底结束西西里的消耗僵局，集结了330艘战船与十四万将士，决心跨海直扑迦太基北非本土。迦太基统帅哈米尔卡与哈诺调集了350艘战舰在西西里南岸的埃克诺穆斯海角拦截。这场海战双方投入战舰近七百艘、官兵近三十万人，按参战人数规模是古典时代最庞大的海战之一。罗马人摆出稳固的楔形楔形三角舰队，护送庞大的运输船队；迦太基舰队试图通过假装后撤拉散罗马编队并从两翼合围。但罗马执政官雷古鲁斯与沃尔索指挥前锋以凶猛接舷战粉碎敌中军后迅速回援运输舰。最终迦太基战败，损失近百艘战船，北非海上门户彻底洞开，罗马大军得以顺利登陆阿斯皮斯。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃克诺穆斯海角的海面被几百艘巨舰的大桨激荡成漫天白沫！迦太基人企图用狡猾的分兵战术割裂我们的舰队，但执政官雷古鲁斯用钢铁般的楔形阵向前猛刺。乌鸦吊桥砸破了无数敌船，迦太基的水手跳海逃生。那一天，西西里以南的汪洋彻底屈服在罗马鹰旗之下！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃克诺穆斯是我们无法挽回的战略剧痛。哈米尔卡将军的诱敌战术本已成功拉散了罗马的前军与后卫，但罗马步兵在被包围的运输船上展现了野兽般的顽抗。我们的水手在密集的接舷格斗中力竭而败，近百艘战舰被毁或被夺。自那场会战后，迦太基城墙下第一次看见了罗马人的军旗。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_21",
+  "Keywords": [
+    "贝库拉战役与哈斯德鲁巴尔突围",
+    "贝库拉战役高地强攻",
+    "哈斯德鲁巴尔金蝉脱壳",
+    "西庇阿两翼机动突破"
+  ],
+  "RagShortTexts": [
+    "公元前208年，大西庇阿在贝库拉的高地迎战哈斯德鲁巴尔·巴卡。西庇阿摒弃了原版正面硬撞的陈腐战术，以轻装步兵牵制敌军中央阵地，亲自统领两个大队分别沿两侧隐蔽峡谷盘旋包抄哈斯德鲁巴尔侧翼。哈斯德鲁巴尔败"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前208年，大西庇阿在贝库拉的高地迎战哈斯德鲁巴尔·巴卡。西庇阿摒弃了原版正面硬撞的陈腐战术，以轻装步兵牵制敌军中央阵地，亲自统领两个大队分别沿两侧隐蔽峡谷盘旋包抄哈斯德鲁巴尔侧翼。哈斯德鲁巴尔败局已定但早有预案，果断放弃部分辎重带走最精锐主力部队与全部战象，向北翻越比利牛斯山直插高卢，踏上了前往意大利支援汉尼拔的征程。"
+    }
+  ],
+  "TextMappings": []
+}

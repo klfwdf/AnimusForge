@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Cothon_Naval_Harbor_of_Carthage",
+  "Keywords": [
+    "Cothon_Naval_Harbor_of_Carthage",
+    "Cothon_Naval_Harbor_of_Carthage Cothon",
+    "Circular Harbor",
+    "Naval Drydocks"
+  ],
+  "RagShortTexts": [
+    "Carthage's artificial dual harbor (Cothon) featured an outer commercial port and a top-secret inner circular military basin housing 220 slipways and a central admiralty command island."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The maritime power of Carthage was anchored in the Cothon, the most sophisticated artificial harbor complex in antiquity. Guarded by an iron-chain boom, it was divided into two distinct basins: an outer rectangular merchant harbor buzzing with foreign freighters, and an inner, highly classified naval harbor strictly concealed behind concentric battlements. The military harbor was a perfect circle ringed by 220 covered drydocks supported by elegant Ionic marble columns, each sheltering a war galley with dedicated shipwright storehouses. In the center of the circular basin stood an artificial island housing the Admiral's headquarters. From a high watchtower, the Punic admiral commanded an unhindered 360-degree panoramic view of the open Mediterranean and harbor approaches, coordinating deployments via trumpets and signal banners, while foreign merchants in the outer harbor were strictly barred from catching the slightest glimpse of Carthaginian naval readiness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Punic spider hides its black galleys within secret marble rings behind closed canals! Yet let Roman legions storm the seawall and block the harbor mouth with stone moles: those two hundred and twenty gilded drydocks will burn together like tinder in a single afternoon!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cothon is the unbreachable sanctuary of Melqart! Two hundred and twenty quinqueremes rest behind marble colonnades, ready to surge through the watergate at the blare of the admiral's horn. Rome may drill infantry in muddy camps, but the master of the Cothon remains the supreme ruler of the sea!"
+    }
+  ],
+  "TextMappings": []
+}

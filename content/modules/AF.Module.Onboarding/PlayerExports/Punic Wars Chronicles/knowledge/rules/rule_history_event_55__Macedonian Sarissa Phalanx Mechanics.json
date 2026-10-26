@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_55",
+  "Keywords": [
+    "Macedonian Sarissa Phalanx Mechanics",
+    "Macedonian Sarissa Phalanx",
+    "Six Meter Pike Forest",
+    "Invulnerable Front Vulnerable Flank"
+  ],
+  "RagShortTexts": [
+    "The core of Macedonian and Hellenistic armies was the sarissa phalanx, bristling with pikes up to six meters in length. "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The core of Macedonian and Hellenistic armies was the sarissa phalanx, bristling with pikes up to six meters in length. Presenting five tiers of overlapping spear points, the phalanx was virtually unassailable from the front. However, its immense bulk made it unmaneuverable over broken terrain; once gaps opened, Roman legionaries slipped inside the pike forest, cutting down the helpless phalangites with shortswords."
+    }
+  ],
+  "TextMappings": []
+}

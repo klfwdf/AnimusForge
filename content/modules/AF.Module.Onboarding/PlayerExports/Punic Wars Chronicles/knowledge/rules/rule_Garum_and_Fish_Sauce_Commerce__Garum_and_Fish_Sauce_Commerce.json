@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Garum_and_Fish_Sauce_Commerce",
+  "Keywords": [
+    "Garum_and_Fish_Sauce_Commerce",
+    "Garum",
+    "Liquamen",
+    "Fermented Fish Sauce"
+  ],
+  "RagShortTexts": [
+    "Garum was the essential fermented umami fish sauce of antiquity; the premium mackerel fisheries of Carthago Nova fueled lucrative Mediterranean amphora trade and supplied Barcid treasury wealth."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Across the ancient Mediterranean, no dish was served—from humble plebeian spelt gruel to lavish patrician roasted dormice—without garum (also known as liquamen), a pungent, fermented fish sauce. Its production formed a colossal maritime industry centered along the tuna and mackerel migration corridors of southern Hispania and North Africa. Intestines and gills of fat mackerel, sardines, and anchovies were layered with heavy sea salt and aromatic herbs (anise, fennel, coriander) in stone vats and left to liquefy under the blistering Mediterranean summer sun for months. Natural proteolytic enzymes dissolved fish muscle into a clear, amber-hued umami liquid strained through wicker baskets. The thick sediment, called alec, nourished slaves and soldiers, while the pure first-run liquid from Carthago Nova (Garum Sociorum) commanded astronomical prices in Rome, packaged in slender amphorae. This ubiquitous condiment was not merely a culinary passion, but a vital economic commodity that yielded vast commercial revenues for the Barcid administration in Hispania."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Whether marching on stale hardtack or feasting on stuffed sow's udders, a Roman requires the sharp, savory tang of good garum! Once Scipio liberates New Carthage, its coastal salting vats will flow directly into the treasury of the Republic. Let northern barbarians choke on unseasoned meat; civilized Rome seasons its bread with fish sauce!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our vast coastal salting tanks in Hispania feed every port in the sea while lining our treasuries with Roman silver! Roman patricians pay gold for our seasoned mackerel sauce, and that silver pays the wages of Hannibal's infantry. Their appetites finance their own undoing!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_罗马卡匹托尔三主神与维斯塔圣火",
+  "Keywords": [
+    "罗马卡匹托尔三主神与维斯塔圣火",
+    "卡匹托尔三主神",
+    "朱庇特",
+    "维斯塔圣火"
+  ],
+  "RagShortTexts": [
+    "卡匹托尔山朱庇特、朱诺与弥涅耳瓦三主神保佑共和国国祚；维斯塔圣火殿由贞女日夜守护不灭，一旦熄灭被视为罗马城覆亡之凶兆。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马共和国的公民秩序与军事行动深深植根于神圣严谨的国教仪式之中。坐落于卡匹托尔山顶的宏伟神庙供奉着‘卡匹托尔三主神’（Capitoline Triad）：掌管雷霆与城邦主权的至高朱庇特（Jupiter Optimus Maximus）、庇护罗马婚姻妇女与国家财政的王后朱诺（Juno Moneta），以及执掌智慧、战略谋划与精工技艺的女神弥涅耳瓦（Minerva）。任何执政官在率领军团出征前，必须登临卡匹托尔山向朱庇特宰杀白牛献祭，并由占卜官（Augurs）通过观测飞鸟轨迹或神鸡啄食以求取神意许可（Auspices）。而在罗马广场的心脏地带，圆形维斯塔神庙中燃烧着象征城邦永恒生命的国之圣火，由六位严格挑选、发誓三十年保持纯洁的维斯塔贞女（Vestal Virgins）日夜轮值守护；圣火一旦意外熄灭便被视为共和国面临天谴覆亡的至凶大兆，肇事贞女将被严惩，全城亦需举行隆重净化大祭。大祭司长（Pontifex Maximus）执掌神圣历法与神官议会，确保‘神人谐和’（Pax Deorum）始终庇佑罗马军团踏平一切外敌。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "只要维斯塔神殿的圣火还在燃烧，朱庇特神的鹰隼就会永远翱翔在军团上空！异族蛮子可以狂叫他们的神明，但罗马的胜利建立在对卡匹托尔三主神最严正虔诚的誓约之上！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人把几只不肯吃米的神鸡和一堆烧不尽的木炭当成不可战胜的凭据！当坎尼的尸山血海染红泥土时，他们的朱庇特神在狂风中除了沉默什么也给不了他们！"
+    }
+  ],
+  "TextMappings": []
+}

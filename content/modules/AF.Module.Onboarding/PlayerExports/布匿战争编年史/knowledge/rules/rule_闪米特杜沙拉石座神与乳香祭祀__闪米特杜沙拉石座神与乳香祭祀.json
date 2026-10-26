@@ -1,0 +1,69 @@
+{
+  "Id": "rule_闪米特杜沙拉石座神与乳香祭祀",
+  "Keywords": [
+    "闪米特杜沙拉石座神与乳香祭祀",
+    "杜沙拉",
+    "阿拉特",
+    "无相圣石"
+  ],
+  "RagShortTexts": [
+    "纳巴泰与阿拉伯诸邦崇拜沙夏拉山神杜沙拉与阿拉特女神；信奉无相巨石崇拜（Baetyl），在峡谷神龛终年焚烧顶级乳香与没药以祈求商队平安。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在阿拉伯半岛荒漠、内盖夫绿洲与佩特拉玫瑰石城中，古老北闪米特部族信奉着与沙漠严酷环境紧密相连的岩石神系。纳巴泰人的最高主神是‘沙夏拉山岭之主’杜沙拉（Dushara，代表太阳与高山丰饶），与其相伴的是庇护一切商旅平安、象征全胜光辉的女神阿拉特（Allat）。令人称奇的是，纳巴泰人严禁为神明雕刻具象的人形雕像，而是将神性凝聚在一座座天然未经雕琢的方形四棱黑石或砂岩壁龛巨石之中——被称为‘神圣贝提尔’（Baetyl，‘神之居所’）。在佩特拉险峻的‘高处祭坛’（High Place of Sacrifice）上，大祭司在俯瞰峡谷的红色岩壁顶端向石柱倾倒葡萄酒与橄榄油，并大量点燃珍贵纯正的阿曼特级乳香与索马里没药。香气浓郁的白烟在荒漠烈风中升腾十里，向众神宣告商队跨越死亡沙海的安全通达，构成了沙漠商业文明最庄严肃穆的神圣景观。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "纳巴泰人在光秃秃的红石尖上放几块黑石头就当成神来拜，但在那些石头面前烧掉的乳香，在罗马市场上可比同等重量的纯金还要昂贵！为了获得他们的香料，元老院必须对那些沙漠酋长客客气气！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "杜沙拉神庇佑着沙漠里每一处隐秘的清泉。闪米特兄弟的商队在乳香白烟引导下穿过死亡荒原，他们懂得以虔诚与坚忍面对严酷大漠，这比罗马人虚浮的大理石雕像更加深邃坚韧！"
+    }
+  ],
+  "TextMappings": []
+}

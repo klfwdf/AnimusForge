@@ -1,5 +1,0 @@
-using TaleWorlds.MountAndBlade.Diamond;
-
-namespace TaleWorlds.MountAndBlade;
-
-public delegate PremadeServerAction OnPremadeServerActionRequestedForServerEntryDelegate(GameServerEntry server);

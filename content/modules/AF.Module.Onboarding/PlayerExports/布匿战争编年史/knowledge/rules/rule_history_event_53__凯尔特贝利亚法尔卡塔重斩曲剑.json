@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_53",
+  "Keywords": [
+    "凯尔特贝利亚法尔卡塔重斩曲剑",
+    "法尔卡塔曲剑锻造",
+    "折叠高碳钢破甲劈砍",
+    "内弧形重心刀刃"
+  ],
+  "RagShortTexts": [
+    "伊比利亚内陆的凯尔特贝利亚战士手持闻名天下的法尔卡塔曲剑（Falcata）。该剑采用古老的高碳钢反复折叠锻造工艺，剑身呈向内微弯的曲刃反弧，重心靠前如同锋利的短斧与宽剑合体。临阵猛力下劈能直接斩断敌军"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊比利亚内陆的凯尔特贝利亚战士手持闻名天下的法尔卡塔曲剑（Falcata）。该剑采用古老的高碳钢反复折叠锻造工艺，剑身呈向内微弯的曲刃反弧，重心靠前如同锋利的短斧与宽剑合体。临阵猛力下劈能直接斩断敌军长矛木柄、切裂铁盔削去肢体，令习惯于刺剑格挡的罗马士兵谈之色变，其精纯冶金工艺直接启发了罗马短剑的改良。"
+    }
+  ],
+  "TextMappings": []
+}

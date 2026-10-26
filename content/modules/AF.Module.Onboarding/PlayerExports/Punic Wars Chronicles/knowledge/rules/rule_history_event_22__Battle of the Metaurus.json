@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_22",
+  "Keywords": [
+    "Battle of the Metaurus_265",
+    "Consul Claudius Nero Secret March",
+    "Lightning Forced March Junction",
+    "Decisive Turning Point Italy"
+  ],
+  "RagShortTexts": [
+    "In 207 BC, Hasdrubal Barca descended into northern Italy. Intercepting messengers bearing Hasdrubal's battle plan, south"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 207 BC, Hasdrubal Barca descended into northern Italy. Intercepting messengers bearing Hasdrubal's battle plan, southern Consul Gaius Claudius Nero secretly marched six thousand elite infantry and one thousand cavalry four hundred miles north in seven days. Joining Consul Livius Salinator at the Metaurus River, Nero executed a daring rear-flank wheel that shattered the Carthaginian line, achieving Rome's greatest victory of the Italian campaign."
+    }
+  ],
+  "TextMappings": []
+}

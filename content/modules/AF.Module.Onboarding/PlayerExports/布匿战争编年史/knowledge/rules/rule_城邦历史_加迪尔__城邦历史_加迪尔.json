@@ -1,0 +1,69 @@
+{
+  "Id": "rule_城邦历史_加迪尔",
+  "Keywords": [
+    "城邦历史_加迪尔",
+    "加迪尔",
+    "Gades (Gadir)",
+    "城邦历史_加迪尔城防要塞"
+  ],
+  "RagShortTexts": [
+    "加迪尔（Gades (Gadir)）是古典时代要冲城邑，拥有完备城防工事与繁盛商市，在布匿战争与地缘交锋中占据核心战略地位。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "腓尼基人在大西洋沿岸最古老的殖民堡垒加迪尔（加的斯，意为‘围墙要塞’）。扼守直布罗陀海峡大西洋出口，拥有闻名世界的麦尔卡特（赫拉克勒斯）神圣神庙，神庙内燃烧着终年不灭的橄榄油圣火。作为远洋锡矿与银矿船队的母港，加迪尔水手熟知大西洋信风与暗礁，是迦太基最后的海洋圣地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加迪尔的城墙必须竖起罗马的鹰旗！无论是坚固的石塔还是城内的粮仓，军团将以钢铁纪律牢牢掌控这座要冲，任何人敢于在城中煽动叛乱都将遭到执政官最严厉的清洗！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加迪尔的港口与市集必须向我们的商船敞开！迦太基尊重城邦的古老自由与地方神明，只要旗帜下汇聚起反抗罗马霸权的勇士，我们的大军必将保卫其城垣永固！"
+    }
+  ],
+  "TextMappings": []
+}

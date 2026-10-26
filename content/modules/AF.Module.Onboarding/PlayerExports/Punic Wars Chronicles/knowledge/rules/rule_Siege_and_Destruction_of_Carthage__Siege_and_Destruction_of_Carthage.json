@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Siege_and_Destruction_of_Carthage",
+  "Keywords": [
+    "Siege_and_Destruction_of_Carthage",
+    "Siege of Carthage",
+    "Destruction of Carthage",
+    "Salting the Earth"
+  ],
+  "RagShortTexts": [
+    "After a heroic 3-year siege (149–146 BC), Scipio Aemilianus breached Carthage, fought through brutal street battles, razed the city, and enslaved 50,000 survivors."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 149 BC, facing annihilation, Carthage's population transformed their city into a munitions factory: temples forged armor, and women severed their long hair to twist into catapult strings. For two years, Punic defenders repelled Roman assaults until Scipio Aemilianus took command in 147 BC, constructing an immense stone mole across the harbor. In spring 146 BC, Roman troops breached the cothon harbor and fought six days of savage street warfare, clearing six-story buildings roof by roof before setting the city ablaze. Fifty thousand starving survivors were enslaved, and the city burned for seventeen days before being completely dismantled, with legendary accounts claiming salt was plowed into the ashes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Scipio Aemilianus executed the Senate's final verdict. For six days, our soldiers cleared every barricade and burning tenement. As the flames consumed the Byrsa citadel, Scipio wept and quoted the Iliad: 'A day will come when sacred Troy shall perish...' He wept for the frailty of human greatness, knowing Rome might one day face such ruin; yet his duty was done, and the threat erased forever."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fall of Carthage was an atrocity without parallel in ancient history! For three years our people held against famine and legionary hosts. As flames roared through the Byrsa, our commander's wife condemned her husband's cowardice and hurled her children into the burning temple before plunging in herself. Seven centuries of Phoenician majesty erased in seventeen days of fire!"
+    }
+  ],
+  "TextMappings": []
+}

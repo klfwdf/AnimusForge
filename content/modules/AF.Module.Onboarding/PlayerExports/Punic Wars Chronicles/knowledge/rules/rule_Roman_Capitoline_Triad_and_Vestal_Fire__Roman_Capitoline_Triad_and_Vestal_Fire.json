@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Roman_Capitoline_Triad_and_Vestal_Fire",
+  "Keywords": [
+    "Roman_Capitoline_Triad_and_Vestal_Fire",
+    "Capitoline Triad",
+    "Jupiter Optimus Maximus",
+    "Vestal Virgins"
+  ],
+  "RagShortTexts": [
+    "Rome's state religion anchored upon the Capitoline Triad and the eternal Vestal flame; extinguishing the hearth fire foretold civic doom, guarded strictly by six virgin priestesses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Roman civic resilience and legionary conquests were sanctified by the meticulous state religion maintaining the 'Pax Deorum' (Peace with the Gods). Crowning the Capitoline Hill stood the monumental temple of the Capitoline Triad: Jupiter Optimus Maximus (Supreme God of Thunder and State Sovereignty), Juno Moneta (Protectress of Matrons and the Mint), and Minerva (Goddess of Strategy and Craftsmanship). Consuls were religiously forbidden from marching without taking the auspices—observing sacred bird flights or the feeding frenzy of holy chickens (pulli). In the Roman Forum, the circular Temple of Vesta contained the sacred hearth flame representing the perpetual vitality of the res publica. Kept perpetually burning by six noble Vestal Virgins bound by strict thirty-year vows of chastity, the flame's accidental extinction was feared as an apocalyptic omen of national ruin, punishable by burying unchaste priestesses alive in the Campus Sceleratus. Led by the Pontifex Maximus, this rigid religious machinery convinced legionaries that Rome was destined for universal dominion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "While the sacred flame burns in Vesta's hearth, Rome cannot fall! Consuls march beneath Jupiter's thunderbolt; no foreign magic or barbarian deity can shatter the eternal covenant between our Senate and the gods!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Romans tremble before pecking chickens and keep frightened virgins tending embers like slaves! Hannibal proved at Cannae that their Jupiter blinks while Punic steel writes the true destiny of nations!"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_大汉诺家族与迦太基豪商寡头",
+  "Keywords": [
+    "大汉诺家族与迦太基豪商寡头",
+    "大汉诺",
+    "迦太基寡头",
+    "豪商财阀"
+  ],
+  "RagShortTexts": [
+    "大汉诺家族是迦太基百人元老院中保守地主与商业财阀领袖，主张深耕北非、与罗马和平妥协，其屡次阻挠给汉尼拔前线增兵拨款，成为迦太基战败的内因。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大汉诺家族（House of Hanno the Great，在模组中对应Bini Yashro氏族）是迦太基‘百人元老院’（The Council of One Hundred and Four）中历史最深厚、财富最骇人的传统土地世家与跨国商贾财阀同盟。与奉行海外军事扩张、依靠军队个人威望的巴卡家族截然相反，大汉诺派系代表着本土农庄主与温和派商人的切身利益。他们的核心国策是：‘深耕北非本土肥沃的突尼斯谷地，残酷剥削利比亚农奴庄园，垄断撒哈拉沙漠黄金与象牙商路’，将对外战争视为无端耗费国库、助长将军专权的赔本买卖。在两场布匿战争中，大汉诺始终是坚定的主和派首领。当汉尼拔在意大利取得坎尼大捷、特使马戈将缴获的整整三大桶罗马骑士黄金戒指倾倒在迦太基议会大理石地板上请求增兵时，大汉诺冷笑反唇相讥：‘既然汉尼拔百战百胜即将攻克罗马，为何还要向本土索要粮草与援兵？’大汉诺派系长期的政治杯葛与军费拖延，使得汉尼拔在意大利孤军作战十六年得不到主力增援，成为迦太基最终走向亡国深渊的致命内伤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "感谢大汉诺和他那些斤斤计较的迦太基富商！如果不是他们在元老院拼命卡死汉尼拔的援兵和补给，二十万罗马军团恐怕早就在意大利被活活耗光了。贪婪的商人总是会亲手勒死自己的救星！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大汉诺那群坐在象牙躺椅上的老吸血鬼，脑子里除了自己在利比亚的麦田和橄榄油庄园什么也没有！汉尼拔元帅在意大利浴血奋战，他们却在议会里为了几袋银币斤斤计较拒不发兵。正是这帮自私的寡头背叛了迦太基！"
+    }
+  ],
+  "TextMappings": []
+}

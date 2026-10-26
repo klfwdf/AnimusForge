@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Cretan_Archers_and_Mercenary_Code",
+  "Keywords": [
+    "Cretan_Archers_and_Mercenary_Code",
+    "Cretan Archers",
+    "Composite Bow",
+    "Pelte Shield"
+  ],
+  "RagShortTexts": [
+    "Armed with powerful horn composite bows and bronze-rimmed pelte shields, Cretan archers were antiquity's finest mercenary marksmen, equally deadly in long-range archery and close melee."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crete's rugged mountainous terrain and endemic inter-city warfare produced the ancient Mediterranean's premier mercenary bowmen. Unlike eastern archers who collapsed when charged, Cretans were versatile hybrid skirmishers. Each archer carried a potent horn-and-wood composite recurve bow firing broadhead bodkin arrows capable of piercing mail at extended range. Crucially, they strapped a small bronze-faced pelte shield to their left forearm and carried a Greek xiphos short sword, enabling them to parry attacks and hold their ground in fierce close-quarters combat. Operating as cohesive mercenary brotherhoods under professional captains, Cretans adhered to a strict mercenary code: absolute fidelity to the paymaster for the duration of the contract, regardless of nationality. Every Mediterranean imperial power—from the Diadochi kingdoms and Carthage to the Roman Republic—competed eagerly to recruit Cretan companies to secure superiority in missile skirmishing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A company of Cretan archers guarding our marching columns is worth five cohorts of raw infantry. Their recurve bows can punch through heavy shields, and when pressed in the woods, they draw their short swords and fight like cornered badgers. Roman silver well spent!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cretans care nothing for Roman eagles or Punic gods; they worship only hard silver talents and clean archery! Keep their purses heavy and their arrows will pin Roman centurions to the earth from beyond javelin range."
+    }
+  ],
+  "TextMappings": []
+}

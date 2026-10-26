@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Corvus_and_Roman_Naval_Innovation",
+  "Keywords": [
+    "Corvus_and_Roman_Naval_Innovation",
+    "Corvus",
+    "Boarding Bridge",
+    "Battle of Mylae"
+  ],
+  "RagShortTexts": [
+    "The corvus was a spiked boarding bridge developed by Rome during the First Punic War, turning naval clashes into legionary melee combat."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Prior to the First Punic War, Rome lacked naval traditions, while Carthage ruled the Mediterranean. In 260 BC, using a wrecked Punic quinquereme as an architectural template, Rome rapidly built 120 warships equipped with the corvus—a 36-foot boarding bridge mounted on a swiveling mast with a heavy downward-pointing iron spike. When Roman ships drew alongside, the bridge dropped onto the enemy deck, pinning the vessels together and allowing legionaries to swarm aboard. Consul Gaius Duilius utilized the corvus at the Battle of Mylae, capturing or destroying fifty Punic vessels and dismantling Carthage's naval aura."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Phoenicians boasted of rowing and ramming, but a Roman legionary fights best with sword and shield! The corvus turned fickle waves into solid ground. Once that iron beak slammed into their timber, their oarsmen were no match for Roman gladii and scuta. The Columna Rostrata in the Roman Forum still honors Duilius's glorious victory at Mylae!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The corvus was an unrefined monstrosity that defied seamanship! It top-heavy design destabilized ships and drowned tens of thousands of Roman rowers in subsequent squalls. Yet in calm waters, its sudden iron jaws neutralized our ramming maneuvers. It forced our captains to respect legionary savagery, though Rome eventually abandoned the clumsy contraption."
+    }
+  ],
+  "TextMappings": []
+}

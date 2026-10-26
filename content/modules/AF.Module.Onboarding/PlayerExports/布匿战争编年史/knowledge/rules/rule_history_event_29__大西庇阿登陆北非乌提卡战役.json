@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_29",
+  "Keywords": [
+    "大西庇阿登陆北非乌提卡战役",
+    "西庇阿登陆北非海角",
+    "乌提卡半岛营垒",
+    "马西尼萨率铁骑归附"
+  ],
+  "RagShortTexts": [
+    "公元前204年夏，大西庇阿率四百艘运输船与精锐军团跨海直捣北非，在迦太基西北部的乌提卡附近海角成功登陆。迦太基城内警钟长鸣陷入极度恐慌。在当地，流亡的东努米底亚马西利王子马西尼萨单骑脱险投奔西庇阿大营"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前204年夏，大西庇阿率四百艘运输船与精锐军团跨海直捣北非，在迦太基西北部的乌提卡附近海角成功登陆。迦太基城内警钟长鸣陷入极度恐慌。在当地，流亡的东努米底亚马西利王子马西尼萨单骑脱险投奔西庇阿大营，献上精湛的轻骑兵骑术与战术情报，两军结成牢不可破的同盟，为罗马赢得了抗衡迦太基骑兵的最关键砝码。"
+    }
+  ],
+  "TextMappings": []
+}

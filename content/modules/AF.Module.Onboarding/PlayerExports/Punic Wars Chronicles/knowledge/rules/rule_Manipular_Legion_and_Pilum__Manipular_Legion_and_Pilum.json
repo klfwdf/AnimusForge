@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Manipular_Legion_and_Pilum",
+  "Keywords": [
+    "Manipular_Legion_and_Pilum",
+    "Manipular Legion",
+    "Hastati",
+    "Principes"
+  ],
+  "RagShortTexts": [
+    "The Polybian Roman manipular legion fought in three lines of Hastati, Principes, and kneeling Triarii, employing bending soft-iron pila designed to disable enemy shields prior to the short sword charge."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 218 BC, the Roman consular legion was organized into the flexible manipular system ('a phalanx with joints'). Infantry deployed in three distinct echelons based on age and wealth: the eager youth (Hastati) in front; experienced veterans in their physical prime (Principes) in the second line; and wealthy, veteran spearmen (Triarii) kneeling in the third line as a last reserve. The common Roman idiom 'It has come down to the Triarii' signified a supreme crisis. Legionaries carried two heavy javelins (pila), consisting of a wooden haft joined to a three-foot slender iron shank with a barbed pyramid head. The shank was forged from unhardened soft iron: upon penetrating an enemy shield or armor, the slender neck buckled under the weight of the haft. This made it impossible to yank the javelin free from the shield, dragging the rim down with dead weight, while preventing enemies from hurling it back. Rendered shieldless and demoralized, opponents were crushed under the synchronized thrust of Roman scuta and gladii."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The manipular line is the invincible rhythm of the Republic! Behind our Hastati stand the Principes, and behind them kneel the immortal Triarii. Once our bending pila pin down enemy shields, our gladii do the bloody work of Rome!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Roman line fights like an unyielding machine, and their bent javelins can indeed strip our warriors of their wooden shields. Yet Hannibal knows their fatal flaw: rigid formations that press straight forward cannot defend against swirling Numidian cavalry snapping their flanks and surrounding their rear!"
+    }
+  ],
+  "TextMappings": []
+}

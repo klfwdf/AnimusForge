@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_15",
+  "Keywords": [
+    "Hannibal-Philip V Treaty",
+    "Hannibal Philip V Treaty",
+    "Mediterranean Dual Pact",
+    "Partition of Roman Sphere"
+  ],
+  "RagShortTexts": [
+    "In 215 BC, Hannibal concluded a mutual defense pact with Philip V of Macedon, pledging that Rome would be stripped of it"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 215 BC, Hannibal concluded a mutual defense pact with Philip V of Macedon, pledging that Rome would be stripped of its Adriatic protectorates and forced to surrender Italian supremacy. However, Roman naval patrols intercepted the Macedonian ship carrying the ratified treaty back to Greece. Forewarned of the pact, Rome dispatched Admiral Laevinus with fifty warships to seal the Adriatic crossing."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,69 @@
+{
+  "Id": "rule_汉尼拔翻越阿尔卑斯山",
+  "Keywords": [
+    "汉尼拔翻越阿尔卑斯山_253",
+    "汉尼拔翻越阿尔卑斯山汉尼拔翻越阿尔卑斯山_253",
+    "汉尼拔战象",
+    "阿尔卑斯进军"
+  ],
+  "RagShortTexts": [
+    "前218年秋汉尼拔率军历经艰险翻越阿尔卑斯雪山突入意大利波河平原，成为军事史上最惊人的战略奇袭之一。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年秋，为了避开罗马掌握绝对制海权的地中海海路，汉尼拔·巴卡做出了古典时代最惊人的战略抉择——从新迦太基出发，跨越比利牛斯山，用木筏强渡罗讷河，直插险峻莫测的阿尔卑斯雪山。在十五天的行军中，汉尼拔率领由伊比利亚战士、利比亚老兵和三十七头战象组成的联军，抵御了敌对高卢高地部落的滚石伏击，克服了暴风雪、冻疮、断崖绝壁与粮秣枯竭。传说汉尼拔命军士伐木烧岩、泼醋使巨石碎裂开山修道。当这支饱经磨难的大军降临到北意大利波河平原时，三万八千步兵与八千骑兵仅剩下两万步兵、六千骑兵和极少数战象，但他们却如同一记惊雷直接砸在毫无防备的罗马北方软肋上，彻底颠覆了罗马原定两线进攻西班牙与非洲的开战战略。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在汉尼拔之前，从未有人相信一支庞大的正规军和巨兽能翻越终年积雪的阿尔卑斯天险！执政官西庇阿的大军原本已开往马赛准备远征西班牙，却愕然发现敌军主帅早已神兵天降般降临在波河流域！这是一场疯狂的豪赌，他虽然损失了一半兵力，却逼得罗马必须在自己的家门口流血应战！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是巴卡家族统帅天才的极致展现！高卢部族的滚石没有阻挡他，千仞冰崖没有冻结他的意志。汉尼拔在绝顶指着南方对冻伤的将士们说：‘看啊，翻过这道山脊，整个意大利和罗马城就在我们脚下！’当我们如天神降临般踏上波河平原时，高卢人倒向了我们，罗马人的恐惧自那一刻开始！"
+    }
+  ],
+  "TextMappings": []
+}

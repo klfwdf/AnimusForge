@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_05",
+  "Keywords": [
+    "特拉西梅诺湖晨雾全歼战",
+    "特拉西梅诺湖晨雾战",
+    "弗拉米尼乌斯战死",
+    "窄道临湖关门打狗"
+  ],
+  "RagShortTexts": [
+    "公元前217年春，汉尼拔穿越阿诺河沼泽直插伊特鲁里亚，执政官盖乌斯·弗拉米尼乌斯率军急追。汉尼拔利用特拉西梅诺湖北岸狭长狭道与浓密晨雾，将全军伏于山岭树林。当罗马行军纵队完全进入峡谷时，号角齐鸣伏兵四"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前217年春，汉尼拔穿越阿诺河沼泽直插伊特鲁里亚，执政官盖乌斯·弗拉米尼乌斯率军急追。汉尼拔利用特拉西梅诺湖北岸狭长狭道与浓密晨雾，将全军伏于山岭树林。当罗马行军纵队完全进入峡谷时，号角齐鸣伏兵四起，罗马军队被阻绝于悬崖与湖水之间无路可退，一万五千人阵亡，执政官被高卢骑士刺杀，全军覆灭。"
+    }
+  ],
+  "TextMappings": []
+}

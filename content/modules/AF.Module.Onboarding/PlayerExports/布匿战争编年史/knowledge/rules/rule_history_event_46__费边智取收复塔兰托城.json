@@ -1,0 +1,31 @@
+{
+  "Id": "rule_history_event_46",
+  "Keywords": [
+    "费边智取收复塔兰托城",
+    "费边智取收复塔兰托",
+    "布鲁蒂姆佣兵内应",
+    "八旬老将最后凯旋"
+  ],
+  "RagShortTexts": [
+    "公元前209年，近八旬高龄的‘拖延者’费边五度出任执政官，督军围攻塔兰托。费边秘密收买了守城布鲁蒂姆佣兵指挥官，趁佣兵放水开辟缺口，罗马大军登城掩杀光复全城。汉尼拔疾驰援救至五英里外闻讯城破，怅然长叹"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前209年，近八旬高龄的‘拖延者’费边五度出任执政官，督军围攻塔兰托。费边秘密收买了守城布鲁蒂姆佣兵指挥官，趁佣兵放水开辟缺口，罗马大军登城掩杀光复全城。汉尼拔疾驰援救至五英里外闻讯城破，怅然长叹：‘罗马人也有属于他们的汉尼拔，我们怎么夺取塔兰托，今天就怎么失去它。’此战是费边军事生涯的终极巅峰。"
+    }
+  ],
+  "TextMappings": []
+}

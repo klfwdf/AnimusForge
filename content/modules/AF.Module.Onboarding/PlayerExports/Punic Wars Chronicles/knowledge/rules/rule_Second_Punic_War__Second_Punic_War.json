@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Second_Punic_War",
+  "Keywords": [
+    "Second_Punic_War",
+    "Second Punic War",
+    "Hannibalic War",
+    "Hannibal Invasion of Italy"
+  ],
+  "RagShortTexts": [
+    "The Second Punic War (218–201 BC), or Hannibalic War, featured Hannibal's campaigns in Italy and ended with Scipio's victory at Zama."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Second Punic War (218–201 BC), known as the Hannibalic War, was antiquity's greatest geopolitical clash. Triggered by Hannibal's capture of Saguntum, the Carthaginian general executed a legendary crossing of the Alps into Italy. At Trebia, Lake Trasimene, and Cannae (216 BC), Hannibal annihilated Roman armies, threatening Rome's very survival. Rome persevered through the Fabian strategy of attrition, while Scipio Africanus conquered Carthaginian Iberia and invaded North Africa. Recalled to defend Carthage, Hannibal was defeated by Scipio at the Battle of Zama in 202 BC. Carthage ceded Hispania, surrendered its war fleet and elephants, paid 10,000 talents, and lost sovereignty over its foreign policy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hannibal was a military genius of terrifying stature; after Cannae, the wailing in Rome reached the heavens. Yet tactical triumphs cannot conquer the Roman Republic! The Senate refused negotiation, our Italian allies remained steadfast, Fabius starved his beast, and Scipio extinguished his empire at Zama. Rome proved that an army of free citizens under the law outlasts any solitary warlord!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For sixteen years, Hannibal Barca marched up and down Italy like a god of war, making the name of Carthage terrorize Roman children for centuries! Cannae remains the masterwork of annihilation. But our oligarchs left him isolated, refusing men and siege trains while Scipio tore Spain from our grasp. Zama was a tragedy forced by internal betrayal and Numidian defection."
+    }
+  ],
+  "TextMappings": []
+}

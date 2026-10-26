@@ -1,0 +1,69 @@
+{
+  "Id": "rule_汉尼拔泼醋碎石过雪山",
+  "Keywords": [
+    "汉尼拔泼醋碎石过雪山",
+    "翻越阿尔卑斯",
+    "泼醋碎石",
+    "热胀冷缩"
+  ],
+  "RagShortTexts": [
+    "在翻越阿尔卑斯山遭遇绝壁崩塌时，汉尼拔利用高山松木伐木生火剧烈加热巨石，随后浇泼发酵酸酒（醋）利用热胀冷缩使其崩解开山，展现惊人野战工兵造诣。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年秋，汉尼拔大军翻越阿尔卑斯山隘口降下意大利一侧时，遭遇了整个远征途中最绝望的生死危机：山道因春季雪崩与近期落石发生大面积断裂塌方，陡峭的千仞峭壁下方深不见底，仅剩下一片结冰的光滑碎石斜坡，马匹与战象一旦失足便翻滚跌下深渊粉身碎骨，五万大军在饥寒交迫中被生生困在绝顶。面对绝境，汉尼拔展现出无与伦比的实战工兵智慧：根据古罗马史学家李维记载，汉尼拔命士兵砍倒漫山遍野的高山古松与落叶松，在阻断山道的巨型石灰岩岩体上架起巨大的篝火堆，借着高山凛冽的疾风昼夜猛烈焚烧，直至坚硬的巨石被烧至通体通红炽热；随后，工兵将行军配给中发酵酸败的军用酸酒与醋（Acetum）大量泼浇在炽热岩石上，极度的热胀冷缩与酸液渗透引发了剧烈的热应力脆裂，巨大的岩块瞬间如同脆玻璃般崩裂碎解。士兵随即挥舞镐头与铁锹凿开石缝，仅用短短一天时间便在千仞悬崖间开辟出一条足以容纳人马战象安全通行的下山步道，奇迹般解救了全军。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "汉尼拔翻过雪山的方式绝非凡人的伎俩，甚至透着巫术般的可怖！山峰上那场泼醋碎石的烈火，把阿尔卑斯万年不化的坚冰熔成了通往意大利的血路。罗马元老院本以为北境雪山是天然的护城河，如今却迎来了骑着象从绝壁降临的死神！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "汉尼拔将军是群山也要低头臣服的统帅！当冰雪封锁退路、战象在悬崖边悲鸣时，将军用烈火与酸醋撕裂了石灰岩！那座被罗马人称为不可逾越的雪山天堑，最终不过成了迦太基勇士脚下的踏脚石。意大利就在眼前，复仇的烈火即将烧遍他们的田野！"
+    }
+  ],
+  "TextMappings": []
+}

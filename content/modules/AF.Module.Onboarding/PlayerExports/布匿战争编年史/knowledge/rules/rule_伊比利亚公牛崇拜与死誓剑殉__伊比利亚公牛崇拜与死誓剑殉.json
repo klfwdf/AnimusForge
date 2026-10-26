@@ -1,0 +1,69 @@
+{
+  "Id": "rule_伊比利亚公牛崇拜与死誓剑殉",
+  "Keywords": [
+    "伊比利亚公牛崇拜与死誓剑殉",
+    "伊比利亚公牛",
+    "法尔卡塔曲剑",
+    "死誓信条"
+  ],
+  "RagShortTexts": [
+    "伊比利亚人崇拜野性公牛图腾，战士向首领立下‘首领死则必自裁’的死誓信条（Devotio）；随葬时将削铁如泥的法尔卡塔曲剑折弯毁伤，使兵刃与主人同死。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在伊比利亚半岛中南部，凯尔特与土著伊比利亚部族将野性暴烈、肌肉虬结的黑色公牛视为大地生殖与无敌力量的至高神圣图腾。部落战士信奉古老的‘死誓献身’（Iberian Devotio）信仰：青年武士在氏族祭司与公牛石雕见证下向首领立下血誓，将其个人灵魂与首领的性命绑定；若首领在战场中阵亡而护卫独活，便是不可饶恕的万劫耻辱，幸存护卫必须立刻以剑自刎殉节。伊比利亚勇士视其随身锻造的‘法尔卡塔’（Falcata，前重型曲刃砍刀）为生命的伴生神物，其精铁经由数次埋入泥土腐蚀杂质后反复捶打百炼而成，能劈碎青铜重甲。当勇士战死埋葬时，部族会举行肃穆的毁剑仪式（Ritual Defacement）：将亡者的法尔卡塔曲剑用力折弯打结破坏，使其‘一同死亡’随葬墓穴，防止世俗之人再次挥舞这柄沾染神性的灵魂之刃。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西班牙蛮子的曲刃弯刀能把军团头盔劈成两半，他们的死誓更让他们像疯狗一样拼死护卫首领。征服伊比利亚的每一座丘陵都必须流干军团的血！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊比利亚勇士的忠诚比塞拉莫雷纳的白银还要珍贵！只要哈斯德鲁拔以兄长之礼待他们，他们的法尔卡塔弯刀就会为巴卡旗帜战至最后一息！"
+    }
+  ],
+  "TextMappings": []
+}

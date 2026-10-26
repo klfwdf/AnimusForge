@@ -1,0 +1,68 @@
+{
+  "Id": "rule_Roman_Manipular_Legion_and_Citizen_Soldiers",
+  "Keywords": [
+    "Roman_Manipular_Legion_and_Citizen_Soldiers",
+    "Roman Citizen Soldier",
+    "Gladius Hispaniensis"
+  ],
+  "RagShortTexts": [
+    "During the Punic Wars, the Roman manipular legion was composed of property-owning citizen-soldiers organized in three tactical battle lines: hastati, principes, and triarii."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The backbone of Roman martial power during the Punic Wars was the manipular legion, manned by property-owning citizen-soldiers whose agrarian livelihood tied their fortunes directly to the Republic. Arranged in a flexible checkerboard quincunx formation, the legion deployed in three lines by age and experience: the youthful hastati formed the vanguard, seasoned principes held the second line, and veteran triarii anchored the reserve with long thrusting spears. Armed with the curved rectangular scutum, two heavy throwing pila that warped upon impact, and the lethal Spanish shortsword (gladius hispaniensis), the maniples could rotate lines under fire, giving Rome an unmatched endurance in attritional warfare."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our legions are not mercenaries bought with foreign silver; every legionary is a citizen who tills his own field! The hastati hurl their pila to shatter shields, the principes advance with flashing gladii, and if the day turns grave, the triarii kneel behind their shields as an unbreakable wall! To 'come to the triarii' is the pledge that a Roman stands his ground to the death!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Roman legion is a beast forged of iron and stubborn mud. Their infantry lacks tactical finesse, and Hannibal slaughtered them in their tens of thousands. Yet their terrifying strength lies in their reserve of manpower: when an entire army is wiped out, their rural cantons simply arm their sons and forge new shields, continuing the war without end."
+    }
+  ],
+  "TextMappings": []
+}
