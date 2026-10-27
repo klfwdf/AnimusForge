@@ -340,6 +340,9 @@ public sealed class OnnxEmbeddingEngine
 
 	private bool _useInt64Input = true;
 
+	// True for bge-small-en: the sentence vector is the first ([CLS]) token, not the inner-token mean.
+	private bool _poolCls;
+
 	private int _maxLength = 512;
 
 	private readonly object _cacheLock = new object();
@@ -489,8 +492,9 @@ public sealed class OnnxEmbeddingEngine
                     ? AnimusForgeModelStore.ResolveEmbedding() : AnimusForgeModelStore.ResolveEmbedding(moduleRoot);
 				string text5 = files.ModelPath;
 				string text6 = files.TokenizerPath;
-				string text7 = files.ConfigPath;
-				if (!string.IsNullOrEmpty(text7))
+					string text7 = files.ConfigPath;
+					_poolCls = string.Equals(files.Pooling, "cls", StringComparison.Ordinal);
+					if (!string.IsNullOrEmpty(text7))
 				{
 					TryReadMaxPosition(text7, out _maxLength);
 				}
@@ -524,7 +528,7 @@ public sealed class OnnxEmbeddingEngine
 				_lastError = "";
 				try
 				{
-					Logger.Log("OnnxEmbedding", string.Format("Initialized model={0} tokenizer={1} inputType={2} maxLen={3}", System.IO.Path.GetFileName(text5), System.IO.Path.GetFileName(text6), _useInt64Input ? "int64" : "int32", _maxLength));
+					Logger.Log("OnnxEmbedding", string.Format("Initialized model={0} tokenizer={1} inputType={2} maxLen={3} pooling={4} dir={5}", System.IO.Path.GetFileName(text5), System.IO.Path.GetFileName(text6), _useInt64Input ? "int64" : "int32", _maxLength, _poolCls ? "cls" : "mean", System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(text5) ?? "")));
 				}
 				catch
 				{
@@ -665,15 +669,28 @@ public sealed class OnnxEmbeddingEngine
 						array[num3] = tensor[new int[2] { 0, num3 }];
 					}
 				}
-				else if (dimensions.Length >= 3)
-				{
-					int num4 = dimensions[1];
-					int num5 = dimensions[2];
-					if (num4 <= 0 || num5 <= 0)
+					else if (dimensions.Length >= 3 && _poolCls)
 					{
-						return false;
+						int clsWidth = dimensions[2];
+						if (dimensions[1] <= 0 || clsWidth <= 0)
+						{
+							return false;
+						}
+						array = new float[clsWidth];
+						for (int c = 0; c < clsWidth; c++)
+						{
+							array[c] = tensor[new int[3] { 0, 0, c }];
+						}
 					}
-					array = new float[num5];
+					else if (dimensions.Length >= 3)
+					{
+						int num4 = dimensions[1];
+						int num5 = dimensions[2];
+						if (num4 <= 0 || num5 <= 0)
+						{
+							return false;
+						}
+						array = new float[num5];
 					int num6 = 0;
 					int num7 = num4;
 					if (num7 > attentionMask.Length)

@@ -27,7 +27,7 @@ class Program {
 }
 namespace AnimusForge {
  internal static class AnimusForgeModelStore {
-  internal sealed class ModelFiles { public string ModelPath="",TokenizerPath="",ConfigPath=""; }
+  internal sealed class ModelFiles { public string ModelPath="",TokenizerPath="",ConfigPath="",Pooling="mean"; }
   public static ManualResetEventSlim Entered=new(),Release=new();public static int Thread,Calls;public static string Root;
   public static ModelFiles ResolveEmbedding()=>throw new Exception("uncaptured module lookup on worker");
   public static ModelFiles ResolveEmbedding(string root){Thread=Environment.CurrentManagedThreadId;Root=root;Interlocked.Increment(ref Calls);Entered.Set();Release.Wait();throw new Exception("fixture missing model");}
