@@ -336,7 +336,16 @@ internal void Publish(SceneSpeechQueueItem item)
 
 							{
 
-								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref content);
+								// 场景主回复在接力轮（NPC 对其他 NPC 发言）传入 playerDirectedActionText == ""，
+								// 普通入队为 null。接力轮只剥离 MOOD，不改玩家关系/私人好感/耐心。
+								if (playerDirectedActionText != null && playerDirectedActionText.Length == 0)
+								{
+									PatienceRules.ExtractMoodAndStripTag(ref content);
+								}
+								else
+								{
+									MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref content);
+								}
 
 								if (allowPlayerDirectedActions)
 

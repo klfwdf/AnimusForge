@@ -22,6 +22,40 @@ namespace AnimusForge;
 /// </summary>
 internal static class BannerlordApiCompat
 {
+#if BANNERLORD_1_5_OR_GREATER
+    internal const string FacialAnimationHandlerTypeName = "TaleWorlds.MountAndBlade.Source.Missions.Handlers.MissionFacialAnimationHandler";
+#else
+    internal const string FacialAnimationHandlerTypeName = "SandBox.Missions.MissionLogics.MissionFacialAnimationHandler";
+#endif
+
+    internal static TaleWorlds.Localization.TextObject GetKingdomTitle(Kingdom kingdom)
+    {
+#if BANNERLORD_1_5_OR_GREATER
+        return kingdom?.FormalName;
+#else
+        return kingdom?.EncyclopediaTitle;
+#endif
+    }
+
+    internal static bool IsHideoutSpotted(Hideout hideout)
+    {
+#if BANNERLORD_1_5_OR_GREATER
+        return hideout?.Settlement?.IsVisible == true;
+#else
+        return hideout?.IsSpotted == true;
+#endif
+    }
+
+    internal static bool PartyHasPerk(MobileParty party,
+        TaleWorlds.CampaignSystem.CharacterDevelopment.PerkObject perk, bool secondary)
+    {
+#if BANNERLORD_1_5_OR_GREATER
+        return party.HasPerk(perk, out _, secondary);
+#else
+        return party.HasPerk(perk, secondary);
+#endif
+    }
+
 	private const BindingFlags AgentMethodFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
 	private static readonly MethodInfo AgentGetTargetAgentMethod = typeof(Agent).GetMethod(

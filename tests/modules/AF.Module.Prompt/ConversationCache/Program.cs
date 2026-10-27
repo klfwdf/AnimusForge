@@ -97,6 +97,27 @@ internal static class Program
             if (model.StartsWith("gemini")) Check(!serialized.Contains("cache_control"), "Gemini gets no foreign cache-control directives");
         }
 
+        {
+            // Claude transcript breakpoint must sit on the latest assistant turn, not the request-varying tail.
+            var claude = JObject.Parse(LlmApiCompat.PrepareChatRequestJson("https://relay.test/v1/chat/completions", Payload(latest, "claude-test")));
+            var wireMessages = (JArray)claude["messages"];
+            int lastAssistant = -1;
+            for (int i = 0; i < wireMessages.Count; i++) if (wireMessages[i]["role"]?.ToString() == "assistant") lastAssistant = i;
+            Check(lastAssistant > 0 && wireMessages[lastAssistant]["cache_control"] != null, "Claude transcript breakpoint on latest assistant turn");
+            Check(wireMessages[wireMessages.Count - 1]["cache_control"] == null || lastAssistant == wireMessages.Count - 1, "Claude does not mark the per-request tail");
+            Check(wireMessages.Count(x => x["cache_control"] != null) <= 1, "Claude adds at most one transcript breakpoint");
+        }
+        Check(LlmApiCompat.FormatPromptCacheUsage(JObject.Parse("{\"prompt_tokens\":1000,\"prompt_cache_hit_tokens\":800,\"prompt_cache_miss_tokens\":200}"))
+            == "prompt_tokens=1000 cached_tokens=800 cache_write_tokens=n/a hit_rate=80.0%", "DeepSeek usage cache accounting");
+        Check(LlmApiCompat.FormatPromptCacheUsage(JObject.Parse("{\"prompt_tokens\":2000,\"prompt_tokens_details\":{\"cached_tokens\":1500}}"))
+            .StartsWith("prompt_tokens=2000 cached_tokens=1500"), "OpenAI-compatible usage cache accounting");
+        Check(LlmApiCompat.FormatPromptCacheUsage(JObject.Parse("{\"input_tokens\":100,\"cache_read_input_tokens\":900,\"cache_creation_input_tokens\":0}"))
+            == "prompt_tokens=1000 cached_tokens=900 cache_write_tokens=0 hit_rate=90.0%", "Anthropic input_tokens excludes cache reads");
+        Check(LlmApiCompat.FormatPromptCacheUsage(LlmApiCompat.ExtractUsageObject(JObject.Parse("{\"usageMetadata\":{\"promptTokenCount\":400,\"cachedContentTokenCount\":100}}")))
+            == "prompt_tokens=400 cached_tokens=100 cache_write_tokens=n/a hit_rate=25.0%", "Gemini native usage cache accounting");
+        Check(LlmApiCompat.FormatPromptCacheUsage(JObject.Parse("{\"prompt_tokens\":500}"))== "prompt_tokens=500 cached_tokens=n/a cache_write_tokens=n/a hit_rate=n/a", "missing cache fields are not estimated");
+        Check(LlmApiCompat.FormatPromptCacheUsage(JObject.Parse("{\"completion_tokens\":5}")) == "", "output-only usage chunk yields no prompt figures");
+
         foreach (string channel in new[] { "native", "scene", "courier", "scene_auxiliary" })
         {
             ConversationPromptCache.Clear();

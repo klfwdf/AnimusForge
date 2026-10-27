@@ -35,6 +35,10 @@ internal static class ConversationContextWindow
         return turns;
     }
 
+    // Content-defined window anchor: about one turn in AnchorModulus is a boundary.
+    // The window only shrinks forward, never past its configured turn/char limits.
+    internal const int AnchorModulus = 3, MaxAnchorShift = 4;
+
     internal static int RecentStart(List<Turn> turns, ConversationContextOptions options)
     {
         int start = turns.Count, chars = 0;
@@ -45,7 +49,29 @@ internal static class ConversationContextWindow
             if (start < turns.Count && (long)chars + size > options.RecentChars) break;
             chars += size; start--;
         }
+        return AnchorStart(turns, start);
+    }
+
+    // Sliding the oldest kept turn by one on every request changes the first history
+    // message, so provider prefix caches stop after system+persona. Starting at the next
+    // content-defined boundary keeps the same first turn across several requests. Boundaries
+    // depend on turn content, not indexes, so upstream truncation does not move them.
+    // Cost: hashes at most MaxAnchorShift+1 turn heads per request.
+    internal static int AnchorStart(List<Turn> turns, int start)
+    {
+        if (start <= 0) return start; // nothing evicted yet: the prefix is already stable
+        int last = Math.Min(start + MaxAnchorShift, turns.Count - 2); // keep at least two turns
+        for (int i = start; i <= last; i++)
+            if (IsAnchor(turns[i])) return i;
         return start;
+    }
+
+    private static bool IsAnchor(Turn turn)
+    {
+        string text = turn.Messages.Count == 0 ? "" : turn.Messages[0].Content ?? "";
+        uint hash = 2166136261;
+        foreach (char c in text) { hash ^= c; hash *= 16777619; }
+        return hash % AnchorModulus == 0;
     }
 
     internal static HashSet<string> Terms(string text)
@@ -77,12 +103,36 @@ internal static class ConversationContextWindow
     }
 
     internal static List<ConversationMessage> Select(IEnumerable<ConversationMessage> source, string query, ConversationContextOptions options)
+        => Select(source, query, options, out _);
+
+    // Same membership as Select. Earlier relevant turns and day recall are also returned in
+    // `recall` (chronological source order) so callers can move them after the stable history
+    // prefix; the main result keeps system facts plus the recent window only when recall is split.
+    internal static List<ConversationMessage> SelectWindow(IEnumerable<ConversationMessage> source, string query,
+        ConversationContextOptions options, out List<ConversationMessage> recall)
     {
+        var selected = Select(source, query, options, out HashSet<ConversationMessage> recent);
+        recall = new List<ConversationMessage>();
+        if (recent == null) return selected;
+        var window = new List<ConversationMessage>(selected.Count);
+        foreach (var message in selected)
+        {
+            if (message.Role == "system" || recent.Contains(message)) window.Add(message);
+            else recall.Add(message);
+        }
+        return window;
+    }
+
+    private static List<ConversationMessage> Select(IEnumerable<ConversationMessage> source, string query,
+        ConversationContextOptions options, out HashSet<ConversationMessage> recent)
+    {
+        recent = null;
         var messages = (source ?? Enumerable.Empty<ConversationMessage>()).Where(x => x != null).ToList();
         if (options == null || !options.Enabled) return messages;
         var turns = Group(messages.Where(x => !x.PromptIsRecall));
         int start = RecentStart(turns, options);
-        var selected = new HashSet<ConversationMessage>(turns.Skip(start).SelectMany(x => x.Messages));
+        recent = new HashSet<ConversationMessage>(turns.Skip(start).SelectMany(x => x.Messages));
+        var selected = new HashSet<ConversationMessage>(recent);
         var terms = Terms(query);
         int recallChars = 0, recallCount = 0;
         // Prioritize the already-ranked recall from the complete saved day over a

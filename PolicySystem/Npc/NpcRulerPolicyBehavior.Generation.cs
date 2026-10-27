@@ -2514,7 +2514,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			+ ",rulerHeroId=" + (ruler?.StringId ?? "")
 			+ ",rulerName=" + (ruler?.Name?.ToString() ?? "")
 			+ ",culture=" + (kingdom.Culture?.Name?.ToString() ?? kingdom.Culture?.StringId ?? PolicyGenerationPromptTexts.Get("Unknown", "unknown"))
-			+ ",kingdomTitle=" + (kingdom.EncyclopediaTitle?.ToString() ?? "")
+			+ ",kingdomTitle=" + (BannerlordApiCompat.GetKingdomTitle(kingdom)?.ToString() ?? "")
 			+ ",rulerTitle=" + (kingdom.EncyclopediaRulerTitle?.ToString() ?? "")
 			+ ",war=" + diplomacyContext + "}";
 		string mechanicalFacts = "SettlementScale{" + BuildSettlementSnapshot(towns, villages, prosperity) + "}"

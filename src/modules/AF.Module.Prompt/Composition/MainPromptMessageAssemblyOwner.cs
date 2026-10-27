@@ -9,7 +9,7 @@ namespace AnimusForge;
 // capture adapters; no provider, game object, history write or lifecycle state is held here.
 internal static class MainPromptMessageAssemblyOwner
 {
-	internal static List<object> BuildCourierReplyMessages(string npcName, string playerName, string letterText, string extras, string deliveryFact, string history, IEnumerable<ConversationMessage> persistentMemoryRoleMessages, string npcRoleContext, string preprocessExcludedRuleBlock, string recentFacts, string senderIdentity, string senderRelationship, string currentLocationLine, string currentDateFact, string playerCustomRuleBlock)
+	internal static List<object> BuildCourierReplyMessages(string npcName, string playerName, string letterText, string extras, string deliveryFact, string history, IEnumerable<ConversationMessage> persistentMemoryRoleMessages, string npcRoleContext, string preprocessExcludedRuleBlock, string recentFacts, string senderIdentity, string senderRelationship, string currentLocationLine, string currentDateFact, string playerCustomRuleBlock, IEnumerable<ConversationMessage> recallMessages = null)
 	{
 		string system = PromptComposerTexts.Format("main_courier_reply_system", ("NPC", npcName), ("PLAYER", playerName));
 		if (!string.IsNullOrWhiteSpace(npcRoleContext))
@@ -56,6 +56,7 @@ internal static class MainPromptMessageAssemblyOwner
 		};
 		string contextText = context.ToString().Trim();
 		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
+		AppendCourierRecallMessage(messages, recallMessages, npcName, playerName);
 		if (!string.IsNullOrWhiteSpace(contextText))
 		{
 			messages.Add(CreateCourierChatMessage("user", PromptRuleBlockText.ProjectHeadersForPrompt(contextText)));
@@ -75,7 +76,7 @@ internal static class MainPromptMessageAssemblyOwner
 		return messages;
 	}
 
-	internal static List<object> BuildInboundNpcLetterMessages(string npcName, string playerName, string seed, string extras, string fact, string history, IEnumerable<ConversationMessage> persistentMemoryRoleMessages, string npcRoleContext, string preprocessExcludedRuleBlock, string recentFacts, string playerIdentity, string playerRelationship, string currentLocationLine, string currentDateFact, int targetChars, string letterKind, string playerCustomRuleBlock)
+	internal static List<object> BuildInboundNpcLetterMessages(string npcName, string playerName, string seed, string extras, string fact, string history, IEnumerable<ConversationMessage> persistentMemoryRoleMessages, string npcRoleContext, string preprocessExcludedRuleBlock, string recentFacts, string playerIdentity, string playerRelationship, string currentLocationLine, string currentDateFact, int targetChars, string letterKind, string playerCustomRuleBlock, IEnumerable<ConversationMessage> recallMessages = null)
 	{
 		string system = PromptComposerTexts.Format("main_courier_inbound_system", ("NPC", npcName), ("PLAYER", playerName), ("KIND", letterKind), ("CHARS", targetChars));
 		if (!string.IsNullOrWhiteSpace(npcRoleContext))
@@ -122,6 +123,7 @@ internal static class MainPromptMessageAssemblyOwner
 		};
 		string contextText = context.ToString().Trim();
 		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
+		AppendCourierRecallMessage(messages, recallMessages, npcName, playerName);
 		if (!string.IsNullOrWhiteSpace(contextText))
 		{
 			messages.Add(CreateCourierChatMessage("user", PromptRuleBlockText.ProjectHeadersForPrompt(contextText)));
@@ -197,6 +199,20 @@ internal static class MainPromptMessageAssemblyOwner
 				messages.Add(chatMessage);
 			}
 		}
+	}
+
+	// Recall varies with each letter; one quoted user block after the stable transcript keeps
+	// the history prefix cacheable and cannot be mistaken for the latest assistant reply.
+	internal static void AppendCourierRecallMessage(List<object> messages, IEnumerable<ConversationMessage> recallMessages, string npcName, string playerName)
+	{
+		if (messages == null || recallMessages == null) return;
+		var lines = new List<string>();
+		foreach (ConversationMessage message in recallMessages)
+			if (TryConvertCourierMemoryMessageToChatMessage(message, npcName, playerName, out var chatMessage)
+				&& chatMessage is ConversationPromptMessage quoted && !string.IsNullOrWhiteSpace(quoted.content))
+				lines.Add(quoted.content.Trim());
+		if (lines.Count > 0)
+			messages.Add(CreateCourierChatMessage("user", PromptComposerTexts.Format("scene_prefix_recall", ("TEXT", string.Join("\n", lines)))));
 	}
 
 	internal static bool TryConvertCourierMemoryMessageToChatMessage(ConversationMessage message, string npcName, string playerName, out object chatMessage)

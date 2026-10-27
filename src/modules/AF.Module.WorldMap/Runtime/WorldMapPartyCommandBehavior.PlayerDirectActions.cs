@@ -178,7 +178,7 @@ public sealed partial class WorldMapPartyCommandBehavior
                 if (settlement == null || !WorldMapOrderCoordinator.IsSafeIdentifier(settlement.StringId) || settlement.StringId.Contains(":")
                     || (kind == "ATTACK" && !IsSupportedAttackSettlement(settlement))
                     || (kind == "CLEAR_HIDEOUT" && !CanOfferHideoutClearTarget(settlement))
-                    || (settlement.IsHideout && settlement.Hideout?.IsSpotted != true)) continue;
+                    || (settlement.IsHideout && !BannerlordApiCompat.IsHideoutSpotted(settlement.Hideout))) continue;
                 string id = settlement.StringId;
                 targets.Add(new PlayerDirectOrderTarget {
                     Id = id, Type = "settlement", DisplayType = settlement.IsTown ? "TownType" : settlement.IsCastle ? "CastleType"
@@ -187,7 +187,7 @@ public sealed partial class WorldMapPartyCommandBehavior
                     IsCurrent = () => ReferenceEquals(settlement, ResolveSettlementById(id))
                         && (kind != "CLEAR_HIDEOUT" || CanOfferHideoutClearTarget(settlement))
                         && (kind != "ATTACK" || IsSupportedAttackSettlement(settlement))
-                        && (!settlement.IsHideout || settlement.Hideout?.IsSpotted == true)
+                        && (!settlement.IsHideout || BannerlordApiCompat.IsHideoutSpotted(settlement.Hideout))
                 });
             }
         }

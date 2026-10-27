@@ -9,7 +9,7 @@
   "AF_TAUNT_PROMPT_MeetingContext": "hero会面场景",
   "AF_TAUNT_PROMPT_MeetingFightEffect": "这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。",
   "AF_TAUNT_PROMPT_LordContext": "非会面场景中的领主互动",
-  "AF_TAUNT_PROMPT_LordFightEffect": "这会在约10秒对峙后自动退出对话，并把当前场景升级为持械冲突；该领主和场上士兵会拿武器围攻玩家；并且会按玩家公开敌对该领主所属势力来处理，必要时会先强制让玩家脱离原势力再宣战。",
+  "AF_TAUNT_PROMPT_LordFightEffect": "这会在约10秒对峙后自动退出对话，并把当前场景升级为持械冲突；该领主和场上士兵会拿武器围攻玩家；若该领主与玩家属于不同势力，会按玩家公开敌对该领主所属势力来处理；若同属一个势力，这只是私人冲突，不会让玩家脱离势力或宣战。",
   "AF_TAUNT_PROMPT_NpcContext": "普通NPC的场景互动",
   "AF_TAUNT_PROMPT_NpcFightEffect": "这会在约10秒对峙后自动退出对话，并把当前场景升级为冲突。"
 }

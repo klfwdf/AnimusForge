@@ -14,6 +14,7 @@ namespace RichExecutions.Core;
 /// module's synchronous campaign commit to the victim's kingdom and halves
 /// every negative vanilla relation value.
 /// </summary>
+#if !BANNERLORD_1_5_OR_GREATER
 internal sealed class ScopedExecutionRelationModel : ExecutionRelationModel
 {
     public override int HeroKillingHeroClanRelationPenalty =>
@@ -63,42 +64,11 @@ internal sealed class ScopedExecutionRelationModel : ExecutionRelationModel
         // Replace the base game's stream of one-line relationship notices with
         // one complete kingdom/lord/clan summary when the scoped execution ends.
         showQuickNotification = false;
-        if (!BelongsToVictimKingdom(victim, hero))
-        {
-            ExecutionRelationScope.RecordDecision(
-                hero,
-                vanillaChange,
-                adjustedChange: 0,
-                outsideKingdom: true);
-            return 0;
-        }
-
-        var adjustedChange = vanillaChange < 0
-            ? (int)Math.Round(vanillaChange * 0.5d, MidpointRounding.AwayFromZero)
-            : vanillaChange;
-        ExecutionRelationScope.RecordDecision(
-            hero,
-            vanillaChange,
-            adjustedChange,
-            outsideKingdom: false);
-        return adjustedChange;
-    }
-
-    private static bool BelongsToVictimKingdom(Hero victim, Hero target)
-    {
-        var victimClan = victim.Clan;
-        var targetClan = target.Clan;
-        if (victimClan is null || targetClan is null)
-        {
-            return false;
-        }
-
-        var victimKingdom = victimClan.Kingdom;
-        return victimKingdom is not null
-            ? targetClan.Kingdom == victimKingdom
-            : targetClan == victimClan;
+        return ExecutionRelationScope.AdjustRelationChange(victim, hero, vanillaChange);
     }
 }
+
+#endif
 
 internal static class ExecutionRelationScope
 {
@@ -109,6 +79,43 @@ internal static class ExecutionRelationScope
     // inactive there - the safe direction is "no scoping", never "wrong scope".
     [ThreadStatic]
     private static ScopeState? _active;
+
+#if BANNERLORD_1_5_OR_GREATER
+    internal static int AdjustBloodFeudRelationSet(Hero victim, Hero target, int current, int value)
+    {
+        if (!IsActiveFor(victim)) return value;
+        _active.VanillaSetTarget = target;
+        _active.VanillaSetRelation = value;
+        return current + AdjustRelationChange(victim, target, value - current);
+    }
+
+    internal static int AdjustBloodFeudRelationChange(Hero victim, Hero target, int current, int change)
+    {
+        if (!IsActiveFor(victim)) return change;
+        // The original event first sets the victim clan to the minimum, then
+        // visits it again. Track that one original value so a clamped no-op
+        // cannot become an extra penalty after the first call was halved.
+        bool followsSet = ReferenceEquals(_active.VanillaSetTarget, target);
+        int original = followsSet ? _active.VanillaSetRelation : current;
+        int next = Math.Max(-100, Math.Min(100, original + change));
+        if (followsSet) _active.VanillaSetRelation = next;
+        return AdjustRelationChange(victim, target, next - original);
+    }
+#endif
+
+    internal static int AdjustRelationChange(Hero victim, Hero target, int vanillaChange)
+    {
+        if (!IsActiveFor(victim)) return vanillaChange;
+        var victimClan = victim.Clan;
+        var targetClan = target?.Clan;
+        bool inside = victimClan != null && targetClan != null &&
+            (victimClan.Kingdom != null ? targetClan.Kingdom == victimClan.Kingdom : targetClan == victimClan);
+        int adjusted = inside
+            ? (vanillaChange < 0 ? (int)Math.Round(vanillaChange * 0.5d, MidpointRounding.AwayFromZero) : vanillaChange)
+            : 0;
+        RecordDecision(target, vanillaChange, adjusted, outsideKingdom: !inside);
+        return adjusted;
+    }
 
     public static IDisposable Begin(Hero victim)
     {
@@ -174,6 +181,10 @@ internal static class ExecutionRelationScope
         }
 
         public Hero Victim { get; }
+#if BANNERLORD_1_5_OR_GREATER
+        public Hero? VanillaSetTarget { get; set; }
+        public int VanillaSetRelation { get; set; }
+#endif
         public TextObject ScopeName { get; }
         public bool IsKingdomScope { get; }
         public HashSet<Hero> AffectedHeroes { get; } = new();

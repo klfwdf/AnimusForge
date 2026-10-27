@@ -360,7 +360,9 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
         history = KeepAfefFactsAndRecentConversationMessages(history.Where(x => !x.PromptIsRecall).ToList(), input.HistoryLineLimit);
         history.InsertRange(0, recalled);
         string query = input.CurrentInputMessage?.Content ?? history.LastOrDefault(x => x.Role == "user" && !x.PromptIsRecall)?.Content ?? "";
-        history = ConversationContextWindow.Select(history, query, input.WindowOptions);
+        // Recall (day recall and earlier relevant turns) changes with every input; keep it out
+        // of the chronological prefix so it cannot break the provider cache after the persona.
+        history = ConversationContextWindow.SelectWindow(history, query, input.WindowOptions, out var recallHistory);
         int group = 0;
         int lastGroup = ConversationContextWindow.Group(history).Count;
         foreach (var entry in history)
@@ -375,6 +377,16 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
         }
         // Keep selected chronological speech/facts ahead of request-varying
         // recall, runtime state and rules so those updates do not break its prefix.
+        // One quoted block: separate assistant turns here would read as the latest reply and
+        // would also move the transcript cache breakpoint into this request-varying tail.
+        var recallLines = new List<string>(recallHistory.Count);
+        foreach (var entry in recallHistory)
+            if (TryConvertSceneMessageToStrictChatMessage(entry, input.Context, out var recallMessage, keys)
+                && recallMessage is ConversationPromptMessage quoted && !string.IsNullOrWhiteSpace(quoted.content))
+                recallLines.Add(quoted.content.Trim());
+        if (recallLines.Count > 0)
+            messages.Add(new ConversationPromptMessage("user", PromptComposerTexts.Format("scene_prefix_recall",
+                ("TEXT", string.Join("\n", recallLines)))));
         if (!string.IsNullOrWhiteSpace(input.CurrentInstructions))
             messages.Add(new ConversationPromptMessage("user", PromptComposerTexts.Format("scene_prefix_current", ("TEXT", input.CurrentInstructions))));
         AppendSections(messages, input.PrefixUserSections);

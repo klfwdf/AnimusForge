@@ -187,7 +187,7 @@ internal static class CompatibilityAudit
 			typeof(Agent),
 			typeof(sbyte)
 		});
-		CheckRuntimeTypeAndMethod(counters, "StealthHideout", "SandBox.Missions.MissionLogics.MissionFacialAnimationHandler", "OnMissionTick", critical: false);
+		CheckRuntimeTypeAndMethod(counters, "StealthHideout", BannerlordApiCompat.FacialAnimationHandlerTypeName, "OnMissionTick", critical: false);
 	}
 
 	private static void AuditQuestAndIssueBridge(AuditCounters counters)

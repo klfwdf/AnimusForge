@@ -1261,6 +1261,11 @@ internal static ItemObject TryGetAgentEquipmentItemForPrompt(Hero hero, Equipmen
 		}
 		try
 		{
+			// MissionEquipment exposes weapon slots only; armor remains in SpawnEquipment.
+			if (index < EquipmentIndex.WeaponItemBeginSlot || index >= EquipmentIndex.NumAllWeaponSlots)
+			{
+				return null;
+			}
 			return Agent.Main.Equipment[index].Item;
 		}
 		catch

@@ -190,7 +190,7 @@ internal static class VengeanceRuntimeBridge
 
         try
         {
-            starter.AddModel(new ScopedExecutionRelationModel());
+            ExecutionRelationCompatibility.Register(starter);
             starter.AddBehavior(new RichExecutions.Campaign.RichExecutionCampaignBehavior(
                 RichExecutionApi.Service,
                 RichExecutionApi.Methods,

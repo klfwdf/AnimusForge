@@ -470,6 +470,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				}
 			}
 			DuelSettings settings = DuelSettings.GetSettings();
+			int maxRelayTurns = settings?.ShoutMaxRelayTurns ?? DuelSettings.DefaultShoutMaxRelayTurns;
 			GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 			string lastSpeakerOutputText = "";
 			List<string> roundNpcVisibleTexts = new List<string>();
@@ -521,7 +522,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			bool useTownResponseBudget = AfGcczShoutBridge.ShouldUseTownNpcResponseBudgetForExternal();
 			HashSet<int> townBudgetAdmittedAgentIndices = useTownResponseBudget ? new HashSet<int>() : null;
 			// Bound utterances, not distinct people: two NPCs may hand the conversation back.
-			int remainingTurns = AUTO_GROUP_CHAT_MAX_LINES;
+			int remainingTurns = maxRelayTurns;
 			string responseEventId = "player_utterance:" + conversationEpoch;
 			while (currentSpeaker != null && remainingTurns-- > 0)
 			{
@@ -798,7 +799,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					List<ConversationMessage> persistentMemoryRoleMessages = memorySnapshot?.UncompressedMessages;
 					uncompressedSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_uncompressed_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + ((persistentMemoryRoleMessages == null) ? 0 : persistentMemoryRoleMessages.Count) + " ms=" + Math.Round(uncompressedSw.Elapsed.TotalMilliseconds, 2));
-					string relayTurnContext = multiNpcScene ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, AUTO_GROUP_CHAT_MAX_LINES - remainingTurns) : null;
+					string relayTurnContext = multiNpcScene ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, maxRelayTurns - remainingTurns) : null;
 					string relayTurnUserSection = multiNpcScene ? BuildSceneGroupTurnUserSectionForPrompt(firstTurn, relayTurnContext, currentSpeaker, engagedParticipants) : null;
 					List<object> messages = _ports.BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupTurn, privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, "", "", "", "", "", knowledgeExtrasSection, systemRuleBlock), suffixUserSections: new[] { relayTurnUserSection }, persistentHistoryMessages: persistentMemoryRoleMessages, stablePersona: roleTopIntro, currentInstructions: currentInstructions);
                     using var promptCache = ConversationPromptCache.Begin(messages, "scene", sceneReplyGeneration,
@@ -1060,7 +1061,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					if (flag11)
 					{
 						string replyForPostprocess = LocalTtsToneTag.Strip(string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText);
-						string relayConversationContext = relayPostprocessSelected ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, AUTO_GROUP_CHAT_MAX_LINES - remainingTurns) : null;
+						string relayConversationContext = relayPostprocessSelected ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, maxRelayTurns - remainingTurns) : null;
 						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId, relayConversationContext: relayConversationContext, localSpeechCompletion: localSpeechCompletion, speechLanguage: speechLanguage);
 						ObserveSceneRewritePostprocess(conversationEpoch, postprocessTask);
 						receipt?.AddPostprocess(postprocessTask);
@@ -1095,8 +1096,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							else if (relayTargetAgentIndex == currentSpeaker.AgentIndex)
 							{
                                 relaySelfStopConfirmed = true;
-								Logger.Log("ShoutBehavior", "[SceneRelay] current speaker selected itself; relay stopped agent=" + currentSpeaker.AgentIndex);
-										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEnded", "This relay round ended."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+								Logger.Log("ShoutBehavior", "[SceneRelay] current speaker requested self-stop agent=" + currentSpeaker.AgentIndex);
 								relayRequested = false;
 							}
 							else
@@ -1122,6 +1122,12 @@ internal sealed partial class SceneConversationSessionRuntime
 					relayTargetAgentIndex = forcedRelayTargetAgentIndex;
 					relayRequested = true;
 				}
+                // The plural-audience fallback may legitimately continue the relay.
+                // Announce an end only after the final continuation decision.
+                if (relaySelfStopConfirmed && !relayRequested)
+                {
+                    _ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEnded", "This relay round ended."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+                }
 				if (!string.IsNullOrWhiteSpace(cleaned) && relayRequested)
 				{
 					nextSpeaker = await _dispatcher.RunAsync("scene_relay_next_validate", currentSpeaker.Name, relayTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, relayTargetAgentIndex), (NpcDataPacket)null);

@@ -788,7 +788,7 @@
   <string id="AF_UI_Weekly_Browser_KindRecent" text="王国近况" />
   <string id="AF_UI_Weekly_Browser_KindWeekly" text="周报档案" />
   <string id="AF_UI_Weekly_Browser_Issue" text="第 {NUMBER} 期" />
-  <string id="AF_UI_Weekly_Browser_CalradiaDate" text="卡拉迪亚{DATE}" />
+  <string id="AF_UI_Weekly_Browser_CalradiaDate" text="{DATE}" />
   <string id="AF_UI_Weekly_Browser_DayNumber" text="第 {DAY} 日" />
 当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。" />
 可填：seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0" />
@@ -3454,6 +3454,8 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomRebellion_LegacyRetired" text="旧版独立稳定度叛乱已取消。王国起兵由内战派系统一处理。" />
   <string id="AF_UI_KingdomStability_FactionRoute" text="王国起兵由内战派系通过诉求、回应与统一战争上限处理；稳定度不再单独随机触发叛乱。" />
   <string id="AF_UI_KingdomStability_FactionImmunity" text="玩家王国叛乱免疫会阻止派系起兵。" />
+  <string id="AF_MCM_Shout_MaxRelayTurns" text="场景喊话最大接力轮数" />
+  <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="玩家一次喊话后 NPC 最多发言的总次数，包含首次回复，同一人物再次发言也计一次。设为 1 时仅首次回复，不继续接力。范围 1–8，默认 8；下一次喊话生效，人物仍可提前结束接力。" />
   <string id="AF_UI_Developer_Reload_SkippedStaticKingdoms" text="• 跳过 {COUNT} 个无法匹配的普通国家资料（最多允许 3 个）：{PROFILES}" />
   <string id="AF_UI_Editor_LengthStatus" text="字符：{CURRENT} / {MAX}" />
   <string id="AF_UI_Editor_LengthLimit" text="最多可输入 {MAX} 个字符。" />

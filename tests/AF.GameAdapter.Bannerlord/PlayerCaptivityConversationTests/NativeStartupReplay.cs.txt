@@ -1,0 +1,65 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+
+internal static class NativeStartupReplay
+{
+    private const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+    private static object current;
+    private static int checks;
+    private static void Check(bool ok, string label) { if (!ok) throw new Exception(label); checks++; }
+    private static Exception InvokeError(MethodInfo method)
+    {
+        try { method.Invoke(null, null); return null; }
+        catch (TargetInvocationException ex) { return ex.InnerException; }
+    }
+    private static int Main(string[] args)
+    {
+        try
+        {
+            string[] directories = args[0].Split('|');
+            AppDomain.CurrentDomain.AssemblyResolve += (_, request) =>
+            {
+                string name = new AssemblyName(request.Name).Name;
+                foreach (string directory in directories)
+                {
+                    string path = Path.Combine(directory, name + ".dll");
+                    if (File.Exists(path)) return Assembly.LoadFrom(path);
+                }
+                return null;
+            };
+            Assembly af = Assembly.LoadFrom(args[1]);
+            MethodInfo tick = af.GetType("AnimusForge.PlayerCaptivityConversation", true).GetMethod("Tick", All);
+            Assembly game = Assembly.Load("TaleWorlds.CampaignSystem");
+            Type campaign = game.GetType("TaleWorlds.CampaignSystem.Campaign", true);
+            Type captivity = game.GetType("TaleWorlds.CampaignSystem.PlayerCaptivity", true);
+            MethodInfo nativeGetter = captivity.GetProperty("IsCaptive", All).GetGetMethod();
+            Check(campaign.GetProperty("Current").GetValue(null) == null, "real API starts without Campaign");
+            Check(InvokeError(nativeGetter) is NullReferenceException, "native getter reproduces missing-campaign dereference");
+            Exception failure = InvokeError(tick);
+            if (args.Length > 2 && args[2] == "expect-crash")
+            {
+                Check(failure is NullReferenceException && failure.StackTrace.Contains("PlayerCaptivity.get_IsCaptive"), "old real AF DLL reproduces the reported startup crash");
+                Console.WriteLine("PASS expected old-DLL crash: " + failure.GetType().Name + " at native PlayerCaptivity.get_IsCaptive");
+                return 0;
+            }
+            Check(failure == null, "actual AF Tick safely exits before Campaign initialization: " + failure);
+            current = FormatterServices.GetUninitializedObject(campaign);
+            campaign.GetProperty("Current").SetValue(null, current);
+            Check(campaign.GetProperty("PlayerCaptivity").GetValue(current) == null, "partial actual Campaign has no captivity subsystem");
+            Check(InvokeError(nativeGetter) is NullReferenceException, "native getter also rejects partial Campaign");
+            Check(InvokeError(tick) == null, "actual AF Tick skips a partially constructed Campaign");
+            campaign.GetProperty("PlayerCaptivity").SetValue(current, FormatterServices.GetUninitializedObject(captivity));
+            Check((bool)nativeGetter.Invoke(null, null) == false, "real empty captivity subsystem reports non-captive");
+            for (int i = 0; i < 3; i++) Check(InvokeError(tick) == null, "initialized non-captive Tick needs no native Time/GameState " + i);
+            current = null;
+            campaign.GetProperty("Current").SetValue(null, null);
+            Check(InvokeError(tick) == null, "actual Tick tolerates Campaign teardown");
+            Console.WriteLine("PASS native startup replay assertions=" + checks + "; actual AF/TaleWorlds DLLs and getters; reflection supplies partial Campaign only; no game/save/network started.");
+            return 0;
+        }
+        catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+    }
+}

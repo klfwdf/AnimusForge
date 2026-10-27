@@ -159,15 +159,15 @@
                     </ButtonWidget>
                   </Children>
                 </Widget>
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="960" SuggestedHeight="520" HorizontalAlignment="Center" VerticalAlignment="Top" DoNotAcceptEvents="true" IsVisible="@IsHistoryOpen" Sprite="afdui_parchment_panel" MarginTop="130">
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="160" MarginRight="250" MarginTop="45" MarginBottom="250" DoNotAcceptEvents="true" IsVisible="@IsHistoryOpen" Sprite="afdui_parchment_panel">
                   <Children>
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="400" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="44" MarginTop="26" Text="@SceneHistoryTitleText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="19" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-                    <ButtonWidget Id="AFTabCloseHistory" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="100" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="816" MarginTop="26" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleHistory">
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" MarginRight="160" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="44" MarginTop="26" Text="@SceneHistoryTitleText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="19" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                    <ButtonWidget Id="AFTabCloseHistory" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="100" SuggestedHeight="32" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="44" MarginTop="26" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleHistory">
                       <Children>
                         <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@CloseText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                       </Children>
                     </ButtonWidget>
-                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="872" SuggestedHeight="420" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="44" MarginTop="70" DoNotAcceptEvents="true">
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="44" MarginBottom="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="44" MarginTop="70" DoNotAcceptEvents="true">
                       <Children>
                         <AnimusForgeConversationHistoryAutoScrollPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="12" ClipRect="AFHistoryDrawerClip" InnerPanel="AFHistoryDrawerClip\AFHistoryDrawerList" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFHistoryDrawerBar" AutoHideScrollBars="true" AutoScrollRequestVersion="@HistoryScrollVersion">
                           <Children>

@@ -413,6 +413,9 @@ internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(str
 					{
 						continue;
 					}
+					// The player-facing log is the interaction history with this NPC.
+					// Autonomous court correspondence stays in the NPC's memory store.
+					if (PlayerConversationHistoryScope.IsNpcPublicDocumentFact(line)) continue;
 					ClassifyDialogueHistoryLine(line, out var speaker, out var text, out var kind);
 					result.Add(new AnimusForgeDialogueHistoryEntry
 					{

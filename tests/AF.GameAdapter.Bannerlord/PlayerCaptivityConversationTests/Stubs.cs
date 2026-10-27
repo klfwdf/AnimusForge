@@ -26,7 +26,14 @@ namespace TaleWorlds.CampaignSystem
 {
     public enum CampaignTimeControlMode { Stop, UnstoppableFastForward }
     public enum ConversationContext { Default, PartyEncounter }
-    public class Campaign { public static Campaign Current = new(); public ConversationManager ConversationManager = new(); public CampaignTimeControlMode TimeControlMode; public ConversationContext CurrentConversationContext; public MenuContext CurrentMenuContext = new(); }
+    public class Campaign { public static Campaign Current = new(); public PlayerCaptivity PlayerCaptivity = new(); internal CampaignTickCacheDataStore _tickData = new(); public ConversationManager ConversationManager = new(); public CampaignTimeControlMode TimeControlMode; public ConversationContext CurrentConversationContext; public MenuContext CurrentMenuContext = new(); }
+    public class CampaignTickCacheDataStore
+    {
+        private readonly List<PartyBase> _previousFrameUpdatedPartyBases = new();
+        private readonly List<PartyBase> _currentFrameUpdatedPartyBases = new();
+        public List<PartyBase> Previous => _previousFrameUpdatedPartyBases;
+        public List<PartyBase> Current => _currentFrameUpdatedPartyBases;
+    }
     public class Clan { public Hero Leader; }
     public class Hero
     {
@@ -38,7 +45,14 @@ namespace TaleWorlds.CampaignSystem
     }
     public class CharacterObject { public Hero HeroObject; public static CharacterObject PlayerCharacter => Hero.MainHero.CharacterObject; }
     public readonly record struct CampaignTime(long Ticks);
-    public static class PlayerCaptivity { public static CampaignTime CaptivityStartTime; public static PartyBase CaptorParty; public static bool IsCaptive => CaptorParty != null; }
+    // Match the native getter's owner dereferences, rather than a process-global fake.
+    public class PlayerCaptivity {
+        private PartyBase _captorParty;
+        public static CampaignTime CaptivityStartTime;
+        public static int IsCaptiveReads;
+        public static PartyBase CaptorParty { get => Campaign.Current.PlayerCaptivity._captorParty; set => Campaign.Current.PlayerCaptivity._captorParty = value; }
+        public static bool IsCaptive { get { IsCaptiveReads++; return Campaign.Current.PlayerCaptivity._captorParty != null; } }
+    }
     public class CampaignGameStarter
     {
         public List<string> MenuOptions = new();
@@ -58,7 +72,7 @@ namespace TaleWorlds.CampaignSystem.Party
         public bool IsMobile => MobileParty != null; public bool IsSettlement => Settlement != null;
         public TextObject Name = new("Captor"); public Roster PrisonRoster = new(), MemberRoster = new();
     }
-    public class MobileParty { public static MobileParty MainParty = new(); public PartyBase Party; public Hero LeaderHero; public object MapEvent; }
+    public class MobileParty { public static MobileParty MainParty = new(); public PartyBase Party; public Hero LeaderHero; public object MapEvent; public Settlement CurrentSettlement; public bool IsVisible = true; public string StringId = "captor"; }
 }
 namespace TaleWorlds.CampaignSystem.Settlements
 {
@@ -159,4 +173,12 @@ namespace AnimusForge
     }
     internal static class NobleGatheringTextProjection { internal static string ProjectFactBodyForPrompt(string text) => text; }
     internal static class WorldMapFactPromptProjection { internal static string ProjectBodyForPrompt(string text) => text; }
+    // Unrelated fact-family leaves; these tests exercise captivity facts only.
+    internal static class SocialFactPromptProjection { internal static string ProjectForPrompt(string text) => text; }
+    internal static class EconomyActionFactProjection { internal static string ProjectForPrompt(string text) => text; }
+    internal static class PlayerExperiencePrompt { internal static string Evidence(string text) => ""; }
+}
+namespace AnimusForge.SiegeAftermathIntervention
+{
+    internal static class SiegeSceneMemoryPromptProjection { internal static string ProjectFact(string text, bool english) => text; }
 }

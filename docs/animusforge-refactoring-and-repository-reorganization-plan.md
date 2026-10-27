@@ -1,26 +1,3 @@
-<a id="publish-runtime-fixes-20261027"></a>
-### 场景固定前缀与本轮API/社交修复发布（2026-10-27，SOURCE_AND_OFFLINE_VERIFIED）
-
-- 场景普通、被动、多人接力、即时及紧凑反应统一使用公共固定system；当前NPC稳定资料在已选历史前，动作、任务、规则及运行状态在历史后按最新版替换。缓存按actor隔离，切换NPC保留各自当前前缀；规则/人物资料编辑生效，历史编辑或压缩不恢复旧快照。保留原历史/AFEF/角色/当前输入，避免旧追加方案重复发送失效状态。CN/EN三组新提示键沿现有reader和内容选版接线。
-- 同步已验证的导演门禁收缩、独立导演API分组/模型拉取、生图设置整理、OpenRouter专用images路由、Gemini原生imageSize与Chat extra_body.google.image_config尺寸映射；API凭据沿原设置owner，不硬编码。另含口头外交威胁重复刷新修复和配偶/家族/同伴结识资格排除；第三方战争误停战未复现，未声称修复该反馈。
-- 生产入口：SceneConversationSessionRuntime五条场景请求 → ShoutBehavior.BuildStableSceneMessagesForNpc → SceneHistoryMessageAssemblyOwner.Build → ConversationPromptCache.Begin/ConversationPromptCacheStore → LlmApiCompat。公共system由MainPromptMessageAssemblyOwner.BuildSceneSharedSystemPrompt生成，人物资料排除当前动作。生图路由位于extensions/AnimusForge.Illustrator/src/Core/UniversalOpenAiImageClient.cs及GeminiNativeImageProtocol.cs；社交资格位于ProactiveCandidateQualification.TryBuildFriendshipNeedSnapshot。
-- 在远端main基线上独立组装并重编译：BannerlordApi=1.3/1.4均零错误；CN/EN缓存各151项、双API×CN/EN实际DLL各47项、人物结识专项10项通过。actual-DLL验证覆盖最终Gemini/DeepSeek/Claude请求体、跨NPC公共system一致、人物资料前置、最新状态、历史引用/事实及资料/规则编辑。导演/生图改动复用本会话既有专项及真实接口证据。本轮无新的付费请求，未验证游戏现场和中转实际缓存token/计费；按用户要求未执行哈希或全仓/Stage门禁。
-- 运行频率仅请求时线性组装，沿现有有界缓存；不新增Tick IO/反射扫描/自动模型请求。本提交从远端main提取具名产品差异，不带入本地累计历史、私密handoff、测试日志、未授权1.5/接力/其他脏改动，也不强推或改写远端历史。EN游戏安装已完成本地部署，但此源码发布不执行新部署/打包。
-
----
-
-<a id="source-tracking-worldbooks-20261026"></a>
-## 原版源码目录与双语布匿世界书跟踪（2026-10-26，SOURCE_VERIFIED / LIVE_NOT_RUN）
-
-- 用户授权将已确认的目录跟踪改动推送main；基于远端714380ba7，限定本条源码/资源及说明，不合入其他开发历史或未提交功能。
-- 保留已跟踪的原版游戏本体代码1.5.5共8201文件，删除旧原版游戏本体代码1.5.4共8192文件。远端不含运行时测试桥，本次继续不纳入测试桥或本地运行产物。
-- 跟踪布匿战争编年史及Punic Wars Chronicles各1272 JSON，以及英文身份映射；content-map只登记1272个实际中文来源，239条指向不存在旧人物文件的记录不纳入。英文资源按既有身份映射投影，不新增语言、语言锁、配置副本或打包入口。
-- 验证范围：2544 JSON可解析；1272个中文来源及1272个唯一英文身份映射均存在，实际英文资源选择函数逐项解析通过；无重复目标或悬空来源。与本地已核对的指定数据切片一致，编译源码/项目/构建脚本与远端基线相同，未新增构建。
-- 未验证：世界书全文语义、实机/旧档、正式CN/EN Stage/ZIP；未部署、打包或变更版本号。回滚使用本条提交的聚焦逆向提交，不强推或改写历史。推送结果以远端main回读为准。
-
----
-
-<a id="long-editor-fix-20261026"></a>
 ## 长文本编辑器边界修复（2026-10-26，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
 - 用户确认玩家发行版为1.6.5，并授权限定修复后推送main。基线ba3a47e1a，意图检查点6fb34521e，产品提交17a1950c6；原工作区和其他作者内容保持，仅从远端主线增加本任务提交，不带入旧本地历史，不修改版本号。
@@ -47,6 +24,213 @@
 - 最终合并源码原build-only入口：双API、Bootstrap及双Coup seam/registration通过；引用1.3.15/1.4.6，既有编译警告保留。最终实现SHA256：1.3 `efb41ffba36cd7c0780209349125daf642d1f0368af2ad99fc917c222cf412b7`；1.4 `674ad066d4a01fcbea1ff53fae62e13b0620898fe0a33a11849c68dcd7ea55c2`。
 - 两API各通过：daily-failure-isolation 322、npc-renewal-retry 87、lifecycle-recovery 2668、all-modules 1491、soldier-troop-xp 43；沿用隔离CN模块夹具，无测试断言修改。初次测试输出缺少模块初始化前必需的运行依赖而启动失败，补齐测试目录缺失依赖后重跑通过；失败日志保留，不改产品加载契约。远端新增CourierAiForwarding真实候选DLL回归1.3/1.4各17/26项通过。
 - 保留原门禁失败：NPC orchestration的冻结目标验证、日志契约的Management直接sink调用；专项成功不等于全仓全绿。开发候选此前实机仅发布政策15项断言通过，原生退出检查失败且进程已退；最终合并候选未再实机、未测试真实sav往返或故障注入，不以此前发布证明真实每日/NPC故障通过。未部署、Stage、打包或覆盖玩家资料；发布只限审核后的源码和测试及本条交接。
+
+---
+
+<a id="package-latest-state-20261022"></a>
+### 1.6.5双语双实现打包（2026-10-22，PACKAGED / FINAL_EXTRA_CHECKS_NOT_RUN）
+
+- 已生成 `AnimusForge_v1.6.5_CN_1022_1923.zip` / `AnimusForge_v1.6.5_EN_1022_1923.zip`，位于一键编译覆盖推送/packages；每包单AnimusForge模块，Bootstrap及1.3/1.4实现，1.5.5排除。纳入最新状态替换/排序、接力1–8轮设置、日期前缀清理与历史窗口放大。
+- 用户明确排除布匿战争编年史：发行清单移除118条，236份源资产和英文映射保留。首次标准流程被现有该书英文映射阻断；后一次被外部并发更新内容清单（预期3882/本次Stage3530）阻断。最终按用户“不要检验，打包好”指示，使用本次冻结清单与已有语言投影/ZIP函数写入双包，不覆盖并发修改、不改官方构建脚本。
+- 1.6.5双API/Bootstrap/接缝编译与实际DLL1.3CN/1.4EN各24项在用户停止额外检验前通过；最终ZIP未追加独立验证，未实机/原档/provider/部署/push。不把压缩成功等同正式全量验收通过。
+- 证据与回滚原件：`artifacts/package-latest-state-20261022/receipt.json`、`finish-package.log`、`frozen-content-map.json`、`before/`、`previous-stage/AnimusForge`。聚焦回滚版本和发行选择，保留其他作者并发改动；不得整文件恢复清单或hard reset。
+
+---
+
+<a id="latest-request-state-20261022"></a>
+### 最新状态替换与请求排序（2026-10-22，SOURCE_AND_OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 用户明确要求“把请求里的旧状态一起移除，只保留最新状态”，并追问缓存命中、检查排序。旧追加式缓存将完整动态状态绑到历史 cue，失效清单再完整发送原文，玩家16:03一轮出现两份相同5422字符背景。本任务仅改三渠道共享请求与两种信使方向，不改保存历史/事实、检索资格、上下文窗口、摘要阈值、设置、构建脚本、API或制作组玩法；1.5.5仍排除。
+- 当前缓存每次使用上游权威完整请求，不再回放旧优化消息或追加失效原文。原已选历史/AFEF/记忆和role保持；接受回复只作lease成功提交，不另建可复活被编辑/压缩记录的聊天副本。当前system改变时替换旧版，不变时保持逐字一致。150000字符仅限制本地保留，超出仍无损发送上游完整请求。
+- 源头顺序改为system→已选时间序历史与事实→当前回忆/状态/规则→单独提供的当前输入或接力指引。已记入历史的当前发言保留原记录位置，不再复制；历史内部顺序保持。状态替换处之后的prefix可能失配；system自身含动态信息时仍会缩短前缀，不能承诺全历史缓存或服务端计费下降。
+- 源码本地提交 `a3f005ddfb8e31e32b7945dbb488df67ba13ff3f`（实现 `1464b2661b8a81ff8518fff1fb14a8e7966a9bfd`，后续仅修复测试文件换行）；聚焦净差13文件。主分支HEAD保持实际abe2057，使用独立索引/本地ref `codex/latest-request-state-20261022`，未推送或覆盖游戏。检查代码坐标、真实消费者、产物绑定见 [code-map](../artifacts/latest-request-state-20261022/code-map.json) 与 [receipt](../artifacts/latest-request-state-20261022/receipt.json)；入口为 `ConversationPromptCache.Begin` → `ConversationPromptCacheStore.Begin/Build/Lease.Commit`，排序owner为SceneHistoryMessageAssemblyOwner及MainPromptMessageAssemblyOwner双向信使。旧PromptReassembler/DynamicBlockDeduplicator保留定义，但当前Store.Build不再调用；不可把旧核心直接测试作为新请求路径证据。
+- 验证：CN/EN链接生产源码各148项（四渠道8轮，1000→8000旧值移除、背景一份、字符长度不累积、引文/AFEF/历史与角色原样、过预算仍保留、取消/晚结果）；日内压缩20项；协议13组；实际1.3/1.4 × CN/EN四组DLL各24项，直接运行真实排序owner→store→Gemini最终wire，保留不变system/历史前缀。旧排序DLL负对照在历史优先断言失败。最终双实现（1.3.15.110062、1.4.6.115628）/Bootstrap/双接缝与注册门禁通过。
+- 两个旧全量投影fixture分别被无关PolicySystem lifecycle历史hash、缺失DailyMemoryLine/ConversationContextOptions链接阻止，保留失败日志且不放松门禁；本任务改用实际DLL验证。未验证实机/玩家原档/真实provider缓存token和费用，未部署/Stage/ZIP/push。原已安装包仍使用此前逻辑，本条替代旧源码“未实现旧状态替换”结论，不改写旧部署事实。
+- 性能：仅请求时按已选消息做线性组合/指纹；不重复全量发送历史快照，不增加Tick IO、扫描、模型请求或压缩调用。回滚使用本任务实现和换行修复的聚焦逆向差异；`artifacts/latest-request-state-20261022/before/`保存精确原件，不可整文件覆盖其他作者后续更改。
+
+---
+
+<a id="public-manual-layout-20261022"></a>
+## 2026-10-22 玩家手册卡片与切页宽度修复（LOCAL_BROWSER_VERIFIED / NOT_PUBLISHED）
+
+- 本轮用户报告第二章样式不一致、切换章节会变窄；只处理 `public_manual/index.html`。调查确认第二章单独的 `.ai-doc-entry` 漏接公共卡片 padding；`.doc-layout` 在 column flex 父容器内仅有 max-width、auto margin，按内容内在宽度收缩。1920px 浏览器实测：安装/第二章 1440px，政变 1381.6px、政策 1437.6px。
+- 复用 `.feature-entry`：七篇 AI article 保留 `.ai-doc-entry` 作为章节选择标识，删除其独立 CSS 与重复 `.main-stream` 声明；`.doc-layout` 明确 width:100%、沿用 max-width:1440px。桌面预留根滚动条空间；移除重复手机根节点 width:100% 规则，避免额外挤占宽度。两组对比 grid 允许小于280px，对话长标签就地换行。所有可见 CN/EN 文本及全部 JavaScript 与原文件逐项一致，无新增脚本、轮询、事件监听或运行时扫描。
+- 真实本地 IAB：33个导航全部实际选中、外框1440/正文1040一致；CN/EN×dark/light/parchment六组合中七篇均可见，padding与背景同玩法卡片一致；320/390/768/960px正文无横向溢出、第二章直接子内容无溢出；控制台error为空。`node --check`通过；已检查保存的桌面/手机截图。证据 `artifacts/manual-layout-20261022/browser-validation.json`、`desktop-after.jpg`、`mobile-after.jpg`、`layout.patch` 与 `receipt.json`。
+- 代码图（本次最终源码SHA256见receipt）：`public_manual/index.html:101-103` 桌面scrollbar-gutter；`:349-357` `.doc-layout`；`:2088-2093` `.dialogue-line`；`:5958-6400` 第二章共享卡片，`:6182`/`:6372` 对比grid。现有 `switchView/_performSwitchView` 与搜索资格选择器保持原样。只验证网站排版与既有切页；未发布/推送，未验证线上缓存、Safari/Firefox和物理手机。纯静态网站修改，不启动游戏构建。
+- 回滚：本地检查点 `68fe22065819efb3de0e8fc95704cffdfd62fc97`，原字节 `artifacts/manual-layout-20261022/before/index.html`；最终聚焦修订见receipt/`codex/manual-layout-20261022`，使用focused inverse，勿整树重置。main及共享索引、其他作者dirty和此前安装/打包状态保持。
+
+---
+
+<a id="push-bannerlord155-source-20261022"></a>
+# 1.5.5 游戏反编译源码单独推送（2026-10-22，PUSHED_VERIFIED）
+
+- 最新用户授权“单独推送1.5.5游戏源码”；仅新增 `原版游戏本体代码1.5.5/`。基于实际远端 `main` 的 `5b82d06240fc4427a413043741151bf1f3a3d718` 创建一个提交 `77fad380a4437b5b6c13344e9f60375769235a92` 并非强制推送到 `origin/main`；远端复核一致。未推送本地 AF 修复、打包文件、台账或本地私密交付历史。
+- 版本 `v1.5.5.124170`，81 个反编译工程、8115 个 C# 文件及来源/诊断清单，共 8201 文件、92726972 字节。独立索引逐项验证只有 A 操作且所有路径均在目标目录，逐文件原始字节计算 Git blob 与暂存结果完全一致；推送后 SHA256 复核源文件未变化。无 DLL/归档文件。
+- 当前 `main`/HEAD `abe2057cf5c48a5ca90c3ca27661399c29ad18ea`、共享索引 SHA256 与既有 `index.lock` 均保留；没有切换/合并本地分支或覆盖工作区。操作脚本/来源文件清单/推送日志/收据均在 `artifacts/push-bannerlord155-source-20261022/`。本地 intent `bf226f9b6d1dae4e518c3886d806b3386032148a`，发布提交本地保留于 `codex/bannerlord155-source-only-20261022`。
+- 本次是既有反编译参考材料发布，未改 AF 产品行为、不进行游戏部署或打包；未验证这批反编译工程可完整重建原版，也未启动游戏。已有 Epic 平台解析诊断保留于 `_failures.txt`。如需撤回，针对发布提交做聚焦 revert，不重写远端历史；发布前远端点为上述 `5b82d062`。本记录和 HANDOFF 仅在本地维护，不追加到此次源码发布。
+
+---
+
+<a id="package-164-api15-20261022"></a>
+
+## 2026-10-22 AF1.6.4／Bannerlord1.5.5特别版CN/EN打包（PACKAGED / LIVE_INSTALL_NOT_RUN）
+
+- 用户授权打包、明确仍为1.6.4，先要求“1.5.5特别版”命名，随后明确自己手动改名；因此保留规范CN/EN名，两包同一上海时间戳 `1022_0922`，不递增版本、不覆盖旧包。依本轮1.5.5特别版范围仅含versions/1.5，永久一键双实现入口和模块身份未改。
+- 首次正式英文门禁真实失败：本会话早先新增 `PlayerConversationHistoryScope` 的3个中文兼容识别常量。未绕过门禁：把6个CN/EN确切旧外交公文envelope前缀原样迁入既有 `MemorySourceTexts.json`、`compatibility`映射及真实embedded reader；协议旧值/顺序/匹配边界不改，首次静态表初始化缓存，不增加Tick IO或逐行资源读取。兼容资源不属于自然语言翻译，CN/EN均保留精确旧格式。
+- 重建1.3/1.4/1.5/Bootstrap及三Coup gate通过；真实DLL历史回放68/68/70、包候选真实1.5启动回放11通过，6值等价核对通过。英文源码及实际DLL字符串/资源门禁通过；完整CN 3527、EN 3518投影，变量/旧值/世界书身份/语言注册/双语UI真实接线按既有owner校验。全ZIP每项hash、单模块、唯一Bootstrap、仅1.5、构建标记/六运行库锁、版本、无玩家运行数据和原版DLL均通过；两份都通过后才发布。
+- CN `F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.6.4_CN_1022_0922.zip`（78459094字节），EN `F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.6.4_EN_1022_0922.zip`（77576511字节）；SHA256和逐条manifest在 `artifacts/package-164-api15-20261022/receipt.json` / `zip-manifest-CN.json` / EN。
+- 复用并保留上轮启动崩溃热修与其他已验改动。项目版本源/正式打包脚本hash保持，未推送、未覆盖游戏、未实机安装/读档。本机安装仍为前一热修48d2候选；包内多了等值兼容资源迁移。intent `55690065a20ffd31cbae39d4ea2ccb046854dddc`，本地 `codex/package-164-api15-20261022`；源码回滚仅对before中的两文件做聚焦逆向，不回退启动保护。旧包/旧Stage保留。
+
+<a id="captivity-startup-crash-20261022"></a>
+
+## 2026-10-22 启动崩溃回归修复并热修覆盖（CN15_HOTFIX_DEPLOYED / LIVE_RETEST_NOT_RUN）
+
+- 用户“载入崩溃”后读取真实Bootstrap和原版rgl日志：08:40、08:41、08:42、08:43均在 `OnApplicationTick → PlayerCaptivityConversation.Tick → PlayerCaptivity.get_IsCaptive` 空引用，尚未创建战役。原版getter直接访问 `Campaign.Current.PlayerCaptivity._captorParty`。上次bandit/capture可见性补充在guard前无条件读IsCaptive，由本会话引入；上次“部署校验通过”只证明文件覆盖，不能证明实机启动。该现场推翻此前安装的LIVE_NOT_RUN状态，保留其交付历史。
+- 修复仅在Tick入口增加 `Campaign.Current?.PlayerCaptivity == null` 退出，保留已初始化战役的接力、履历、俘虏可见性和释放规则。每帧常数次指针读取，无Tick IO/扫描/反射/分配，不靠catch吞异常。
+- 测试缺口已补：旧fixture把CaptorParty保存在全局安全字段，不能暴露原版getter的owner依赖；现替身按原版Campaign→PlayerCaptivity链读取。真实AF/TaleWorlds DLL回放：旧DLL复现同一NRE；新1.3/1.4/1.5各11项，包括无Campaign、半初始化Campaign、真实空俘虏子系统、teardown。反射仅提供部分Campaign，不替换getter、不创建游戏/存档。生产生命周期CN/EN：旧API各222、1.5各239；旧adapter负控在空Campaign处崩溃；三版/Bootstrap/三Coup gate通过。
+- 已在原“部署”交付的修复范围内重新覆盖CN仅1.5：原部署owner函数未改，fresh Stage复用上次完整CN3527/EN3518内容投影（所有资源未变），只更新DLL/PDB/build marker三项；3364保护文件hash和时间戳保留。新实现SHA256 `48d2cd07decf711f8596a44f522962444c6ef7684a348ce2f6a5c379af9e86a8`，已安装匹配。保留其余四项修复，无配置/存档/世界书/ONNX/日志修改，无Recovery/自动回滚、ZIP、push或版本递增。
+- 证据 `artifacts/captivity-startup-crash-20261022/receipt.json` / `deployment-receipt.json` / `code-map.json` / `source-input-hashes.json` / 原崩溃与正负回放日志；intent `8af04dd3f24e56dbeaa77584ba292dc650b19c83`，本地 `codex/captivity-startup-crash-20261022`。未替玩家重新启动游戏或读档，不能声称实机复验通过。旧Stage仅作差异材料，其中旧DLL已证实会崩溃，不能静默回退。按聚焦提交逆向处理源码；main与共享index.lock保留。
+
+<a id="deploy-cn15-relay-background-20261022"></a>
+
+## 2026-10-22 CN仅1.5部署：接力提示／开局背景／首次交谈卡顿／捕获入口（DEPLOYED / LIVE_NOT_RUN）
+
+- 最新用户明确授权“部署”，延续 CN仅1.5。目标 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`，游戏 `v1.5.5.124170`，AF `v1.6.4`，Bootstrap唯一入口与versions/1.5。部署源码来自 `58639ee131a29c1ca053a37b359b3f7d2eb593c1`，包含 `fb688a01d43d62f356fd11793e946a0b539e5887` 的前两项修复。
+- 使用原 `scripts/build/deploy_module.ps1` 函数和原内容/语言投影，任务内runner不改一键/原脚本。部署前无骑砍进程；版本、Stage/目标路径、reparse、私有runtime锁、唯一1.5和玩家目录保护均通过。CN完整Stage 3527、EN验证投影 3518；实际变更7文件，3364保护文件hash和时间戳一致；384个非保护管理文件逐一匹配Stage。
+- 新安装实现SHA256 `E8E5E9D9752CAEBD9C482F1120654025ECC6EB5492D29EEEABE727213A9ADCBA`，等于已验证候选；资源逐一匹配Stage。复用三版构建/Bootstrap/Coup、接力57、履历CN/EN各189、索引88和俘虏1.5各231证据；不在安装目录再次加载程序集，避免initializer追加日志。只证明覆盖及候选契约验证，不冒充实机/原档/真实provider验收。
+- 未启动游戏、未ZIP/版本递增/push；不创建部署Recovery/备份/manifest/自动回滚，不编辑玩家存档、配置、提示词、ONNX、缓存、插画或自定义世界书。失败保护无触发，部署后所有本次保护项再次核对通过。
+- 本条明确取代前两源码条目的未部署状态。证据 `artifacts/deploy-cn15-relay-background-20261022/receipt.json`、`prepared.json`、installed-before audit、preflight/deploy日志；intent `b1626951ff3d49f1cc91a9076241be2497543f08`，本地 `codex/deploy-cn15-relay-background-20261022`，main/index.lock保留。先前Stage `artifacts/deploy-cn15-fixes-20261021/stage/AnimusForge` 仅为恢复材料，回退需检查安装现场后显式部署，不能声称已自动备份。
+
+<a id="relay-notice-start-background-20261022"></a>
+
+## 2026-10-22 场景接力误报结束／开局履历细化（SOURCE_VERIFIED / NOT_DEPLOYED）
+
+- 用户明确：切人正常，只修正在继续接力时误报“本轮接力已结束”；履历要具体写清是什么样的商人等。真实日志 08:15:05：self-stop 后 `self-stop overridden for unanswered plural audience current=11 next=13`，因此原提示先于最终调度决定。
+- 场景 owner 仅把自停结束提示移至群体未回答者 fallback 之后，判断 `relaySelfStopConfirmed && !relayRequested`；实际切人、后处理资格、人数/轮次预算与失败提示均保持。诊断由“stopped”改为“requested self-stop”，避免在可能继续时误记已停。
+- 9种开局的 CN/EN SocialPromptTexts、双语UI与英文fallback同步细化。商人写作坊、同伴商队、护卫、驮畜、货物及周转本钱；亡命徒写同伴匪徒、罪名与困境，其他角色同步展开。职业资产依据原版1.5.5 `CampaignAdvancedStartingPlayerOptionsCampaignBehavior` 和 Naval 对应方法；没有凭空加入具体城镇/家族/性格。原 canonical token 与 once-only flag 不变，已有token在读取边界即显示新描述，不改玩家原文/未知旧文，不增加模型请求/存档键/Tick工作。
+- 验证：1.3/1.4/1.5 + Bootstrap及三Coup seam通过，2028项现源码/嵌入输入均早于候选并记录hash；真实生产接力片段57项、旧控制器负对照精确失败于“继续时不得提示结束”；实际1.5 DLL CN/EN履历各189项，覆盖旧token、动态名字、once-only/清空、JSON重载、压缩后备、NPC知情/主动上下文和双语UI。18组Prompt/UI文案配对。回放补接真实ContextWindow/Ledger/Memory reader依赖；Social/Siege/TTS无关叶端仍为替身，不代表这些链路验收。
+- 最新候选包含前一修复 `fb688a01d43d62f356fd11793e946a0b539e5887` 的冷索引后台化与被俘入口可见性，原专项有效证据复用。未实机、未部署/ZIP/push，不修改现安装与玩家存档设置。共享双实现输出由本候选替代前一轮构建结果；旧证据中的hash保留为历史结果。
+- 证据：`artifacts/relay-notice-start-background-20261022/receipt.json`、`code-map.json`、`source-input-hashes.json`、`before/`；前修复证据 `artifacts/first-conversation-capture-fixes-20261022/receipt.json`。intent `8211ca867d969a6cff21dfc5df0e4164685969f9`，分支 `codex/relay-notice-start-background-20261022`；按聚焦提交逆向回滚，保留其他作者和共享index.lock。
+
+<a id="first-conversation-capture-fixes-20261022"></a>
+
+## 2026-10-22 首次交谈卡顿与坐镇被俘可见性（SOURCE_VERIFIED / NOT_DEPLOYED）
+
+- 最新用户反馈：首次 NPC 对话卡顿；坐镇战败后看押者立即隐藏（劫匪也会出现）。真实日志 08:08:25–30 `MyBehavior.OnEngineTick` 4949.29ms，08:11:31 `automatic_opening_skipped no_eligible_lord`。第一项由主线程 `PreparePromptLoreRetrieval` 冷建世界书索引产生；第二项原修复仅在交谈返回时运行，遗漏无可交谈领主的捕获入口。
+- 修改：Prepare 只发布按版本深拷贝的规则；既有后台 Collect 构建索引，继续原召回/重排规则。Index 以短 publication lock 作废/提交，不在主线程等待 embedding build lock，旧版本构建与结果拒绝。1.5 当前真实俘虏在安全等待地图阶段每0.25秒至多校验一次，仅恢复活动、实际持有玩家且不在定居点的隐藏看押者；支持劫匪/载入俘虏，不依赖交谈，不改变部队、roster 或释放授权。
+- 验证：1.3/1.4/1.5 + Bootstrap 与三 Coup seam 通过；索引88（包含真实宿主声明、阻塞 inference/并发作废/旧版本拒绝），CN/EN 人设世界书各16，俘虏旧API各215、1.5各231。旧Prepare与旧俘虏adapter负对照分别失败于主线程嵌入和无领主捕获入口。夹具游戏对象/模型端口为替身，不冒充实机。无关旧设置断言 `300` 不符合现默认素材，原断言未修改，使用明确 `--lore-only` 验证本链路。
+- 证据/一基符号图：`artifacts/first-conversation-capture-fixes-20261022/receipt.json`、`code-map.json`、`before/` 和各日志。回滚用本次聚焦提交的逆向变更或before比对，不能整文件覆盖其他作者。主分支/共享index.lock、现安装CN仅1.5和玩家数据未改；保存加载时原索引预热未改，未实机、未部署/ZIP/push。
+
+<a id="deploy-cn15-fixes-20261021"></a>
+## CN 仅 1.5 修复覆盖部署（2026-10-21 开始，2026-10-22 完成，DEPLOYED / INSTALLED_OFFLINE_VERIFIED）
+
+- **授权/安装**：用户明确“部署”，沿用此前 CN、仅 Bannerlord 1.5 的要求，将已验证候选覆盖到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。AF v1.6.4，原版 v1.5.5.124170；只保留 `versions/1.5`，Bootstrap 唯一入口。未递增版本、未生成 ZIP、未 push。本条仅替代[历史/俘虏可见性修复](#history-scope-captor-visibility-20261021)、[装备槽修复](#equipment-prompt-slot-fix-20261021)、[开局履历](#player-start-history-20261021)及[前次安装](#deploy-cn15only-20261021)的相应“尚未部署”状态，不扩大它们的实机验收结论。
+- **部署内容**：1.5 实现包含 `c54af89f784634e4c2b2aeab642957ebcb8f1ac1` 的玩家对话历史范围/当前俘虏者可见性恢复，及其祖先 `71b95a55de5d` 的装备空防具槽保护和 `ab1314cd` 的九开局身份履历。2028 项源码/嵌入输入 hash 与最终构建清单全部稳定；既有 MainPrompt 等作者 dirty 保留并如实计入候选输入，没有因部署提交它们。
+- **流程与保护**：新工作区任务脚本 `artifacts/deploy-cn15-fixes-20261021/deploy.ps1` 在前次已验证单 1.5 流程上复用真实部署 owner 的路径/reparse/FeatureBridges/build-marker/managed 写入函数，未修改一键或 `scripts/build/deploy_module.ps1`。完整 Stage 3527 文件、CN 投影 3527 / EN 验证投影 3518 通过，6 私有依赖锁一致。覆盖前检查游戏已退出、整安装 3743 文件状态稳定、已安装差异只能来自确切前次清单；玩家路径/已编辑世界书与未知安装内容保护，不通过复制玩家文件到 Stage 来放行。
+- **结果**：实际更新 7 个文件：1.5 DLL/PDB/marker、Bootstrap marker、SocialPromptTexts CN 及两套 Social UI XML；Bootstrap DLL 本体 hash 不变。384 个非保护管理文件按 Stage hash 验证；3143 个已有管理路径按保护规则保留，216 个非管理路径保留，合计 3359 个保护文件在部署结束时 hash/时间戳一致。ONNX、用户提示词、插画、缓存与既有数据保留；没有写存档或 MCM 设置。
+- **安装验证**：直接使用已安装 DLL 及已安装 CN/双语 UI 资源，历史范围/真实缓存字段回放 70 项和开局履历回放 174 项 PASS；这仍是托管离线夹具，没有启动 Game/Campaign/Mission/Gauntlet/provider。回放载入真实程序集时 initializer 在六个既有日志追加诊断；独立复核其旧字节前缀 hash 均保留，其他保护文件 hash/时间戳不变，未截断/恢复日志以伪造不变证据。详见 `receipt.json` 的 `PostReplayDiagnosticsAppended`。
+- **产物/证据**：安装 1.5 DLL SHA `c83171429a4721ed5e7c4cc16a1db02e467140a83c88138736c990db70bb819a`，Bootstrap SHA `9922ea9db7a719ff728a5db8731c4388253545cd2760db684f8cef4ce275a308`。部署审计、完整 Stage、prepared.json、installed-before-audit.json、prepare/deploy 日志和两个 installed replay 日志在 `artifacts/deploy-cn15-fixes-20261021/`；审计留在工作区，没有向 Modules 写 Recovery/manifest/自动回滚标记。
+- **未验/回滚**：玩家原存档中的实际 UI、俘虏交谈后地图显示、真实模型对白和装备 Prompt 仍需实机复测，不以离线回放替代。部署不创建备份，也没有自动回滚；原先本地 `artifacts/deploy-cn15only-20261021/stage/AnimusForge` 保留为旧版本材料，若需恢复须先检查安装现场再显式部署选定 Stage，不能宣称已恢复。源码/记录 intent 检查点 `ba3e2266988090dfba1c5b13ba884f5e601520cd`，本地分支 `codex/deploy-cn15-fixes-20261021`；仅文档工作区原字节在同任务 `before/`。共享 index.lock、main HEAD/index、其他作者工作保持。
+
+---
+
+<a id="history-scope-captor-visibility-20261021"></a>
+## 对话历史范围与俘虏交谈后俘虏者消失（2026-10-21，SOURCE_VERIFIED / NOT_DEPLOYED）
+
+- **用户范围**：用户要求对话历史只展示玩家与当前人物的交谈，指出被俘触发与看押者对话后点“离开”，看押自己的敌方部队消失。保留交谈关联行为事实、原始 NPC 自身记忆及既有释放机制，不改部队人数、资源、归属、活动状态，不处理原存档、不新部署/打包/push。
+- **历史写入与修复**：外交公文发布/收取被既有外交 owner 写入 NPC 的 AFEF 自身事实；它们此前和交谈共用历史容器。新增 `src/modules/AF.Module.Memory/Records/PlayerConversationHistoryScope.cs` 识别精确 CN/EN 公文/机制结果外壳及 NPC AFEF 前缀，在 `MemoryHistoryCommitBannerlordAdapter.GetDialogueHistoryEntriesById` 的显示查询中、可见条数计数之前排除。对话原话（包括引用公文）、玩家行为、玩家外交约定/交互事实、未知动态记录保留，原始 Lines、NPC 日记/压缩/回忆及外交写入、恢复不改。Scene 标记按既有入口先剥离，编辑/删除保持原 LineOrdinal。当前修复针对已确认的自主外交公文事实，不凭正文关键词猜测所有历史来源，也不声称全仓历史分类已重构。
+- **俘虏可见性证据**：当前日志两次开启俘虏对话（23:32:59 lord_5_1、23:42:01 lord_4_12）；后者后续 EncounterDiag 仍显示部队 active=1，无该 captor 销毁记录。未取得现场 IsVisible 实机回读，不把截图直接判定为对象销毁。原版 1.4 可见性每次调用 `Party.UpdateVisibilityAndInspected`；1.5 `CampaignTickCacheDataStore.UpdateVisibilitiesBasedOnPoint` 跳过 `IsVisibilityPersistent` 的俘虏者，但旧 previous-frame 列表清理仍可把它设为不可见，此后又不参与重算。该确定性缓存过渡缺口与截图一致，具体玩家存档上的触发仍需实机验收。
+- **退出修复**：新增 `src/AF.GameAdapter.Bannerlord/Compatibility/CaptivityMapVisibilityCompat.cs`，由 `PlayerCaptivityConversation.RestoreMap` 在交谈结束的原主线程边界调用。严格要求当前 campaign、同一 captor、主角真实被俘、同一 PrisonRoster、部队 active 且不在定居点；1.5 仅将该 captor 从原生前/当前帧临时可见性列表移除，并用原生 `IsVisible` setter 恢复显示。1.3/1.4 不绑定新缓存。已释放/换 captor/失效/城镇内不强行显示；原等待菜单、时间恢复、释放许可和部队 roster 不改，无对象重建/全图显形/重复放人。
+- **性能与合同**：显示过滤复用原按需历史读取，固定六前缀表，无 Tick 扫描/IO。可见性只在返回边界运行，三个 FieldInfo 一次缓存、两次针对该 party 的 List.Remove，无每帧反射/轮询/世界扫描。无新存档键、JSON 字段或运行设置，无新单语玩家文案；旧 CN/EN 外壳作为兼容身份保留，语言 reader/三渠道模型记忆不变。
+- **验证**：原统一入口 Debug 的 1.3/1.4 + Bootstrap、显式 Release 1.5 及三版 Coup 门禁 PASS；`ConversationHistoryScopeTests` 分别对真实三版 DLL 68/68/70 项 PASS，覆盖中英已知事实、引用/未知/玩家交互保留、可见 tail、编辑 ordinal、原记忆不变，以及真实 1.5 cache 字段/列表绑定、只移除 captor 和幂等。`PlayerCaptivityConversationTests` 链接生产适配器/可见性 helper 的旧分支 CN/EN 各 215 项、1.5 分支各 217 项 PASS（游戏对象和 provider 为夹具）。保留旧测试缺失的四组无关事实投影 leaf，显式补夹具隔离，不把其行为算作验证。未改生产文本来放行测试。
+- **前后对照**：当前安装旧 DLL 用同一 reader 测试会因自主公文占用可见 tail 而失败（`history-negative-installed.log`）；原退出源码用新增 lifecycle 断言明确失败于“Leave restores hidden current captor”（`captivity-negative-before.log`），新候选两组均通过。没有把旧测试失败当成实机物理删除复现。
+- **产物/代码地图**：`artifacts/history-scope-captor-visibility-20261021/receipt.json`、`source-input-hashes.json`、`code-map.json` 绑定 1987 Compile + 41 EmbeddedResource、源码原字节 hash、一基符号坐标、真实原版参考和覆盖边界；工作树已有开局履历/装备 Prompt 等其他作者修改包含在编译输入中，聚焦提交只含本轮。1.5 候选 SHA `c83171429a4721ed5e7c4cc16a1db02e467140a83c88138736c990db70bb819a`，位于同目录 `candidate15/versions/1.5/AnimusForge.dll`。
+- **未验/回滚**：尚未 Game/Mission/Gauntlet、玩家旧存档、真实 provider 和其他 mod 组合实机复测；无新 Stage/ZIP/部署/push，当前安装仍是此前 CN 仅 1.5，尚不含本修复。检查点 `aef12078e935c0b272595b500ed41f9cf76f418b`，分支 `codex/history-scope-captor-visibility-20261021`，原字节 `artifacts/history-scope-captor-visibility-20261021/before/`；用本轮聚焦提交的 inverse 回退，不整树 reset/改写历史。共享 index.lock、main HEAD/index 及其他作者工作保持。
+
+---
+
+<a id="player-start-history-20261021"></a>
+## 玩家开局身份进入履历及消息提示默认值核查（2026-10-21，SOURCE_VERIFIED / NOT_NEWLY_DEPLOYED）
+
+- **范围与状态**：用户要求“玩家开局要进玩家履历”，随后检查“周报／快报消息提示”是否默认开启。实际工作区 `F:/AnimusForge-main` / `main`，HEAD `abe2057cf5c48a5ca90c3ca27661399c29ad18ea`；本轮只交付源码、资源与离线候选，不新部署/打包/push。此前 [CN 仅 1.5 部署](#deploy-cn15only-20261021) 仍是当前游戏安装，尚不含本轮履历改动。
+- **行为**：1.5 会话启动边界读取真实 `Campaign.AdvancedStartData` 中已确认 `StartType`；覆盖默认、统治者、封臣、雇佣兵、商人、法外狂徒、乞丐、舰队提督及海上行商九项。缺失/未知类型不猜测，不从当前身份反推开局；有可靠原始选择的已有 1.5 存档可在下次会话补记。确定性事实直接进入既有 `MajorSummary`，不等模型总结，不增加知名度、近期行动或摘要素材。原履历保留，持久化布尔标志防重复；玩家编辑/清空后不强制重建。1.3/1.4 不读取新 API。
+- **持久化与语言**：既有 `_af_player_notoriety_state_v1` JSON 增加 `PlayerStartHistoryRecorded`，沿用现有分块 owner，不增加存档键。开局类型以独立规范标记保存；请求边界使用 CN/EN Prompt 成对资源，履历显示/编辑器使用游戏 UI 语言成对资源，动态旧文和姓名保值。沿用真实 `SocialPromptTexts` Lazy reader、`SocialUiLocalization`、content-map 与语言注册，不增加回复语言强制规则。共享履历注入、主动对话知情门槛保持；主动证据在预算前渲染，并按履历或姓名变化刷新缓存。
+- **代码证据与性能**：owner 为 `src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.StartingHistory.cs`，规范事实 helper 为 `Notoriety/PlayerStartingHistoryRecord.cs`；显示、编辑、摘要回退和请求投影接入原 `PlayerNotorietyBehavior.cs`，主动证据在 `Proactive/PlayerNotorietyBehavior.Experience.cs`。原字节 SHA、符号、从 1 开始的坐标与覆盖边界见 `artifacts/player-start-history-20261021/code-map.json`，不在 HANDOFF 重复全表。只在会话边界捕获一次；无新 Tick 扫描、IO、反射、轮询或模型请求，固定资源沿用缓存。
+- **验证与修正**：统一入口 Debug 1.3/1.4 + Bootstrap、显式 Release 1.5 及三版 Coup 接缝门禁均 PASS；新 `tests/modules/AF.Module.Social/PlayerStartingHistoryTests/` 对真实 1.5 DLL 分别运行 CN/EN，各 174 项 PASS，覆盖九身份、原文保留、不增加知名度、重复/旧 JSON 往返、清空、缺失/未知数据、真实 typed session 读取、独立 UI/包语言、摘要第三次失败截短、主动证据缓存/改名/知情门槛。离线夹具明确替换 campaign getter、observer 资格和 provider，未冒充实机。发现并修正标记在摘要失败截短时被压平的边界；改名测试对旧候选明确失败，新候选通过。`PersistenceChunkReplayTests` 及 `validate_persistence_profile_config.py --chunk-contract-only` PASS，0 新存档键。资源/真实映射核对、定向 diff whitespace 检查通过；未刷新冻结历史 oracle。
+- **消息提示结果**：`DuelSettings.EnableWeeklyReportMapNotifications` 初始化为 `true`，无 settings/异常回退同样为 `true`；终端定义读写同一 owner 属性，周报队列/发布消费者读取该开关。系统原生 Documents 下 `Mount and Blade II Bannerlord/Configs/ModSettings/Global/AnimusForge/AnimusForge_global_settings.json` 的精确键也是 `true`。与用户截图“已开启”一致；未修改设置文件。
+- **产物与未验**：1.5 最终候选 `artifacts/player-start-history-20261021/candidate15-verified/versions/1.5/AnimusForge.dll`，SHA `1ed7aa4c91e2bf2575f2a16d3bce9bae55640039895efecfa2a6627e6380782f`。`receipt.json`、`source-input-hashes.json` 记录 1985 Compile + 41 EmbeddedResource 和工作树既有作者内容；日志保留于同目录。没有 Game/Campaign 新开局/真实存档加载、Gauntlet/provider 实机验收，也没有本轮完整 Stage/CN/EN ZIP/新部署。
+- **回滚**：intent 检查点 `2b68c92ec817a60bc02d354fc2c0f40f8feaa5b7`，本地分支 `codex/player-start-history-20261021`；旧文件原字节在 `artifacts/player-start-history-20261021/before/`。以本轮聚焦提交的 inverse 回退，新增两个实现文件和专项测试相应移除，禁止整树 reset、历史改写或覆盖别人的改动。既有共享 index.lock、main HEAD/index 保持；独立 index 仅为保存本轮切片。
+
+---
+
+<a id="deploy-cn15only-20261021"></a>
+## CN 仅 1.5 定向部署（2026-10-21，CN_DEPLOYED / INSTALLED_OFFLINE_VERIFIED / LIVE_NOT_RUN）
+
+- **最新授权/替代**：用户明确“部署CN 仅1.5版”。此条替代下方 `bannerlord155-compat-20261021` 对当前 CN 安装的 NOT_DEPLOYED 状态；不授权正式打包、push、其他模组写入或游戏启动。工作区仍为 `F:/AnimusForge-main` / `main` / `abe2057cf5c48a5ca90c3ca27661399c29ad18ea`；原有 dirty 保留。
+- **实际目标和版本**：`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，原版 `v1.5.5.124170`，AF `v1.6.4`，CN 固定内容，双语 UI 沿游戏语言。目标部署前只有 10 个 ONNX 文件，不含 SubModule.xml/旧实现；没有删除旧版本或其他模组文件。本次完整布局为单模块、Bootstrap 唯一入口与 `versions/1.5/AnimusForge.dll`，不存在 1.3/1.4 实现目录。
+- **实施/保护 owner**：本次任务脚本 `artifacts/deploy-cn15only-20261021/deploy.ps1` 从真实 `scripts/build/deploy_module.ps1` 的 AST 导入原有函数，复用 `Assert-BuildMarker`、路径/ancestor reparse/FeatureBridges 保护及 `Invoke-ManagedStageDeployment`，不执行旧双实现入口。单 1.5 Stage 对整个内容映射及源 hash、唯一程序集目录、Bootstrap-only XML、Coup receipt 与 6 项私有运行库锁进行严格检查；保留所有现存目标文件并在部署后确认原字节/时间，原有逐文件同卷候选写入和玩家目录合并规则不改。既有一键构建、部署/打包脚本没有修改，不扩大默认发行矩阵。
+- **来源与验证**：复用本轮源修订 `623faf6948b5dd45602059f741c4983254dd5f58` 的真实候选，2024 个编译/嵌入输入 hash 未变，82 条游戏原始程序集来源 hash 仍匹配；当前前置模组下 33 项回放先通过。新建独立干净 Stage，完整 CN 3527 项、EN 验证投影 3518 项通过；仅把 CN 部署到游戏。3527 个管理文件全部 hash 核对通过，10 个原有 ONNX 文件 hash/时间保持。已安装 DLL 再做 33 项兼容回放通过（真实 BuildInfo、74 关键 API、65 声明式 Harmony 目标/命名参数、血仇/触底边界、面部动画绑定）；未运行实际游戏。
+- **程序哈希**：1.5 DLL `3159f254ced7d3200cb90c086b54adbd6024fc4428b37dc6365ab49809e282a8`；Bootstrap `9922ea9db7a719ff728a5db8731c4388253545cd2760db684f8cef4ce275a308`。最终文件、Stage、部署 owner/任务脚本 hash、保护和回放证据见本机 `artifacts/deploy-cn15only-20261021/receipt.json`；`prepared.json`/`installed-before-audit.json` 仅为工作区审计数据，没有在游戏 Modules 中创建 Recovery/部署清单或完成标记。
+- **未验/回滚**：未启动 Game/Campaign/Mission、真实 provider、旧档或 UI；实机录像场景、战斗、血仇互动、TTS 和帧性能仍未验。没有正式 ZIP/版本递增/push。部署无备份或自动回滚，失败不能声称恢复；本轮成功后的后续恢复需检查安装现场、按新授权重新部署。源码/记录 intent 检查点 `f9755c747cdc20047ca32225242a75d5d37fcc7e`，本地 `codex/deploy-cn15only-20261021`；共享 index.lock、main HEAD、其他作者改动保持，交付记录聚焦提交在同一本地分支。
+
+---
+
+<a id="bannerlord155-compat-20261021"></a>
+## Bannerlord 1.5.5 反编译与本地兼容适配（2026-10-21，OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PACKAGED）
+
+- **授权与身份**：用户先要求更新原版反编译参考，后明确本次还需 AF 适配 1.5.5。实际工作区 `F:/AnimusForge-main` / `main`，开工 HEAD `abe2057cf5c48a5ca90c3ca27661399c29ad18ea`。游戏 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord`；真实 `BuildInfo.GameVersion=v1.5.5.124170`。本轮未授权部署、生产打包或 push；既有 1.3/1.4 支持、一键编译/覆盖/Stage/ZIP owner 均保留。
+- **原版参考**：新增 `原版游戏本体代码1.5.5/`，ILSpy 11.0.0.9375，81 程序集、8115 C#、81 工程；82 条源程序集记录（含一个异构 PE 重复来源）重新核对 SHA-256 全部一致；旧参考目录未修改。Epic 缺 SDK/provider 的 101 条已知类型注释明确记录，0 个其他导出失败。清单在该目录 `_manifest.json/_source.json/_failures.txt`；原始依赖和完整导出日志只在 ignored artifacts。
+- **实现/消费者及代码地图**：`AnimusForge.csproj:21-35,54-67,675-679` 与 `Properties/AssemblyInfo.cs:11-20` 增加 1.5 编译常量/flavor 和现代依赖选择；`src/AF.Bootstrap/BootstrapRuntime.cs:18-23,83-88,233-244,324-346` 增加显式版本/BuildInfo 的 V15 与独立目录，未来版本保持拒绝。`Compatibility/BannerlordApiCompat.cs:25-57` 提供新命名、FormalName、Hideout 可见性与 out-perk 签名；真实消费者为 `PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs:2403`、`WorldMapPartyCommandBehavior.HideoutClear.cs:62,88`、`WorldMapPartyCommandBehavior.PlayerDirectActions.cs:181,190`、`MilitaryExerciseBehavior.cs:3493`；路径后缀均归 `src/modules/` 对应 owner 或 `src/AF.GameAdapter.Bannerlord/`。`Kingdom/AnimusForgeSettlementLoyaltyModel.cs:37-42` 仅旧版保留已删除总督属性。`Patches/Safety/LipSyncFacialAnimSuppressPatch.cs:21` 与 `Diagnostics/CompatibilityAudit.cs:190` 接新面部动画类型。
+- **处刑职责**：`Vengeance/Source/Core/ExecutionRelationCompatibility.cs:16-103` 在 1.5 注册时仅改接真实血仇行为中的两处关系调用，保留原版血仇/特质/通知；明确校验 1 个 Set、1 个 Change，缺失拒绝。`ScopedExecutionRelationModel.cs:17-69,73-128` 保留旧模型并复用同一 scope 规则；`src/bridges/Vengeance/Host/VengeanceRuntimeBridge.cs:193` 和独立入口 `Vengeance/Source/SubModule.cs:69` 接同一注册器。普通处刑、嵌套无关 victim 不改变；本王国/无王国本家族的负关系减半，外部不受影响。新增适配仅直接转接/注册或处刑事件运行，没有新增 Tick IO、扫描、反射、分配或轮询。运行资源、存档键和双语包语料不变。
+- **构建与验证**：原统一入口 Debug 的真实 `v1.3.15.110062` / `v1.4.6.115628` 与 Bootstrap 通过；新显式 `scripts/build/build_bannerlord15_candidate.ps1` 对 `v1.5.5.124170` Release 构建通过。三版真实 Coup 接缝/20 项记忆准入门禁均通过；1.5 构建器验证引用前后 hash、剔除原版依赖副本并保留唯一 flavor。`tests/AF.GameAdapter.Bannerlord/Bannerlord15CompatibilityTests/` 三个独立进程分别 23/23/33 项顶层断言 PASS：每条线 74 项关键 API、66/65/65 个声明式 Harmony 目标和命名参数、所有 AF 托管类型、真实 BuildInfo、显式版本选择/未来拒绝、共享 scope；1.5 另含真实血仇安装/幂等/缺调用负例及面部动画绑定、强制最低关系与后续重复扣罚/近最低值的原版截限回放。
+- **失败与修正保留**：首轮编译暴露模型/属性/签名变化；首次门禁因编译输出中的原版 DLL 副本被拒绝，已改为门禁前清理。首次 audit 夹具未加载 SandBox.View 导致假缺失，修正为真实启动程序集加载顺序。声明式扫描对自 1.4 已不注册的演习旧 patch 报缺失，最终用实际注册 IL 中无类型 token 证明其不活跃；未删除业务断言。测试首次直接静态引用游戏值类型导致 CLR 过早绑定失败，移到嵌套夹具后各版本独立绑定通过。最终源代码复核另发现原版先设最低再扣关系的重复惩罚边界，已跟踪唯一 Set 目标的原版关系值并按实际截限扣减减半，补六项回放；全部旧失败日志保留。
+- **产物/证据**：`artifacts/bannerlord-1.5.5-reference-20261021/receipt.json`、`code-map.json` 记录源码原字节 hash、候选/Bootstrap hash、命令、诊断和坐标；最终 1.5 二进制在 `candidate15-clamp-final/versions/1.5/`。构建器只交付该二进制候选，不生成完整 1.5 Stage、CN/EN ZIP 或游戏安装。完整维护说明在 `docs/bannerlord_1_5_5_compatibility.md`；不是用旧双包宣称支持 1.5。
+- **未验/保留**：未启动 Game/Campaign/Mission、provider 或旧存档；Gauntlet 渲染、三渠道真实动作、实际血仇交互、战斗、第三方 MOD 和帧性能未验。旧 1.4/1.5 启动淡入路径的可选诊断保留，既有代码已主动跳过；1.3/1.4 原有面部动画可选诊断本轮不扩大修复。正式交付 1.5 仍需按新授权接通既有 Stage/包/部署白名单和门禁，不能直接安装旧双包。
+- **回滚/作者保护**：共享 `.git/index.lock` 已存在，未删除或抢占；创建独立 intent commit `3df034e82973cbb45ed93260f28811cec9402a3c`，引用 `codex/checkpoint-bannerlord155-20261021`。验证切片在独立临时 index/本地分支 `codex/bannerlord155-compat-20261021` 留存，不改变共享 index 或 main HEAD，不 push。`before/` 保存本轮文件原字节；既有 MainPrompt、桥接测试平台及台账/HANDOFF dirty 保留，不纳入本轮产品切片。源码回滚只 focused inverse 本分支兼容切片或按 before 聚焦恢复；旧目录和其他作者改动不回滚。
+
+---
+
+<a id="afef-reader-audit-20261020"></a>
+## AFEF 英文标记消费者专项复核（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+本条补充并修正下方 `en-fixed-text-followup-20261020` 的审查范围：上轮主链分类/投影通过，不代表恢复、归档和临时场景消费者全覆盖。用户追问后在上一实际 DLL 新增 62 项负向回放，复现 36 项断言失败：英文或全角 NPC 事实被玩家前缀重复包装、历史系统事实漏识别、召回包装残留、单次事实/首次见面去重漏匹配；这些是断言数，不是 36 个独立 Bug。
+
+- **产品修复**：`d1d5998ac`。`DialogueHistoryLedger.TryReadAfefPrefix` 统一识别 CN/EN 两类 actor 和旧全角中文，共六种已知前缀；恢复/额外事实包装、自由对话、归档召回、场景记录、单次事实过期、历史分类及前处理上下文入口共用该识别。写入沿用旧身份；不翻译正文、不改已发生/失败语义、不改变 ACTION 标签、不加输出语言锁。
+- **代码范围**：`src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs:20-99` 为固定六项表、`TryReadAfefPrefix`、`NormalizeAfefFact` 和单次事实识别；`Recovery/MemoryRecoverySeedRules.cs:69-77`、`Recall/HistoryArchiveRecallOwner.cs:470-475`、`Summary/MemoryBusinessStateOwner.cs:1221-1234` 为恢复/归档/追加消费者；`src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs:352-370`、`SceneHistoryProjectionOwner.cs:236-259` 为自由对话及场景过期；`src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs:312-330,444-475,519-531` 为召回/分类/首次见面；`Prompt/PromptRuleCaptureBannerlordAdapter.cs:292,741`、`SceneHistoryPromptCaptureAdapter.cs:289` 和 `src/modules/AF.Module.Prompt/Composition/ScenePromptMessageProjectionComposer.cs:642-655` 为前处理/场景事实包装。原中文前缀兼容资源在 `MemorySourceTexts.json`，仍属既有 embedded compatibility 映射。
+- **性能**：六项只读表初始化一次，调用为有界前缀比较；正文不扫描/翻译，无新 Tick、IO、反射、全量游戏对象扫描。三渠道沿既有共享 memory/history 入口，不新增存档键、字段或分块协议。
+- **验证**：原统一 Release 1.3/1.4 + Bootstrap、双 Coup 门禁通过；最终两 API × CN/EN 四组实际 DLL 回放各 74 项新增标签兼容断言通过，涵盖恢复、native、scene、旧存档标记、NPC/玩家身份、重复包装、历史过滤、单次事实/去重，以及普通引用/未知标签不误判。原 171 项实际消息/历史、4553 项终端检查随四组通过；CN/EN 事实回放各 1610 项通过；EN 源码和两份实际 DLL 资源门禁通过。旧文件双 CR 结尾保留，未为消除词法 whitespace 提示整文件改换行。
+- **证据/未验**：`artifacts/afef-reader-audit-20261020/receipt.json` 绑定本轮源码、最终 DLL 哈希、失败/通过回放；未启动游戏、真实 provider、旧档实机或动作实机。未生成 Stage/ZIP、未部署、未推送；上一条本地 EN 候选不含这次补修，不作为此修订的交付候选。已有其他作者 dirty 保留，私有 artifacts 不提交。
+- **回滚**：检查点 `codex/checkpoint-afef-reader-audit-20261020`；仅 focused revert `d1d5998ac`，不回滚上轮内容投影修复和其他作者工作。
+
+---
+
+<a id="en-fixed-text-followup-20261020"></a>
+## EN 固定文本与事实投影补修（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+本条以当前用户最后指令为准：**CN 提示词使用中文，EN 提示词使用英文；不约束模型必须使用何种回复语言。** AFEF 的传输标记两包统一英文。临时提出的 EN 输出语言约束已撤销；`ApplyOutputLanguage` 保持原 no-op，两套 `conversation_reply_language`、`AF_LLM_PROMPT_Execution_Language` 仍为空。产品修订为 `762ede1fc` + 换行保全 `2d2929ce7`，原工作区/分支为 `F:/AnimusForge-main` / `main`，不改写历史；最终净差异 44 个产品/测试文件、324 行新增/71 行删除。
+
+- **已修复**：默认玩家提示词中的中文 AFEF 示例、外交/场景固定事实标记、最终 provider 请求中的旧 AFEF 和规则头漏投影；已知默认文件按精确哈希迁移，保留旧别名和真实用户覆盖。补齐历史分类、旧存储规范化及后处理 ASCII actor 识别，防止重复 AFEF 或事实角色丢失。
+- **显示/请求消费者**：开局 Day 0 固定标题/素材标签在 UI 或包语言边界投影；外交及政策日期复用已有 calendar projector。公告发布分类头与写作素材标题分别维护，支持旧中文和新英文正文解析。新战报及已知旧战报素材投影野外、阵亡/负伤和非领主队伍类型，不改动态名字、数量、胜负或存档原记录。
+- **运行频率/性能**：最终 messages 投影只在请求序列化前处理脱离游戏对象的副本；目录和兼容语料 Lazy 缓存，正则静态编译，常规消息有 marker 快速检查。战报在事件或档案打开边界处理；没有新增 Tick 扫描、IO、反射或模型翻译请求。
+- **验证**：原统一 Release 双 API + Bootstrap、双 Coup 接口门禁、干净 Stage 通过。最终 1.3/1.4 DLL 各回放 CN/EN 两种内容包及两种界面语言；每包实际历史/消息 171 项，终端 4553 项，语言/UI/entity 279/282 项。首轮真实日志 payload 离线经过最终序列化，28 个固定汉字降到 0，原 payload、角色、动作协议和预算保留；未发 HTTP。CN/EN 事实回放各 1610 项、13 组协议回归、默认包静态契约 41 项及精确默认哈希通过；79 个英文 JSON 文本值没有汉字。源码/实际 DLL EN 门禁及完整最终投影：完整最终 CN/EN 投影 3530/3521 项及实际 DLL EN 门禁通过。
+- **产物与证据**：`artifacts/en-zero-chinese-followup-20261020/receipt.json` 绑定最终源码、DLL/Bootstrap 哈希、回放、完整投影和当前要求。最终本地 EN 候选位于同目录 `en-delivery/AnimusForge`；Stage 位于 `bin/Release/single_module_stage/AnimusForge`。原 Stage 分别保留在本任务 artifacts 下，未覆盖游戏。日志、玩家文本和私有证据不纳入提交/上传。
+- **未验/保留**：游戏 Gauntlet 渲染、真实 provider、新会话实机及旧档实机未执行；旧模型生成的中文对白、宣言和政策正文未改写/翻译，不声称既有记录变成英文。独立历史外交资源测试引用本仓缺失对象 `76fc6ed40`，不能重放该历史 oracle；本轮实际 DLL/provider 序列化和资源门禁另有证据。未生成正式双 ZIP、未部署、未推送。旧 J15 世界书开发辅助文件历史项不由本条宣称修复。
+- **回滚**：检查点分支 `codex/checkpoint-en-zero-chinese-followup-20261020` / `74f92c357efa60f0481787f16b3b896ce2f81bcb`；产品回滚按顺序 focused revert `2d2929ce7`、`762ede1fc`，不 hard reset、不改写历史、不回滚其他作者工作。
+
+<a id="en-fixed-text-followup-20261020-code-map"></a>
+### 本轮代码范围（源码修订 `2d2929ce7`）
+
+| 职责 | 已核实源码与符号 | 覆盖与边界 |
+| --- | --- | --- |
+| 最终请求固定文本 | `src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs:14-43` `ApplyFixedTextProjection` / `ProjectFixedTransportText`；`LlmApiCompat.cs:137,150` | OpenAI/Anthropic 转换和缓存分段前；字符串/文本块兼容；不附加输出语言规则 |
+| 开局 Prompt | `src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs:27-47`；`src/AF.GameAdapter.Bannerlord/Prompt/WeeklyPromptCaptureAdapter.cs:57`；`src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs:26-34` | 固定默认标题/标签按包；用户编辑标题保留 |
+| AFEF 存储/分类 | `src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs:55-72`；`src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs:450-480`；`ScenePromptMessageProjectionComposer.cs:526-534,661-676` | ASCII/中文旧身份互认；存档原身份保留；后处理 actor 不变 |
+| 终端档案显示 | `src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs:25-52,250-265`；`src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs:832-844`；`KingdomNewsArchiveSource.cs:110,134` | Day 0、分类、日期；不翻译未知生成正文 |
+| 战报事实碎片 | `src/modules/AF.Module.Weekly/Materials/WorldBulletinCampaignMaterialPolicy.cs:7-30,66-70` | 已知 battle/siege/sally 素材，保持伤亡数字/主体；未知引用保持 |
+| 公告发布与解析 | `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:869-887`；`Generation/WorldBulletinStateOwner.Presentation.cs:136-160` | CN 旧发布头/EN 新发布头双向解析，写作输入头独立 |
+| 资源/验证 | Prompt/Llm/Weekly/Localization 现有资源、`McmKnownPromptDefaults.json`；`tests/modules/AF.Module.Prompt/Composition/RuntimeLanguageChecks.cs` / `run_actual_message_assembly.py` | 现有 reader/内容映射选版；实际 DLL 与可选私有日志回放，不替代实机 |
+
+---
 
 <a id="diplomacy-chain-localization-20261020"></a>
 ## 外交链路、王国解析及双语边界（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
@@ -253,7 +437,8 @@
 - EN两份规则安装与源码逐hash一致；inventory.json记录75行/72不同模板。当前只有首轮MOOD:NEUTRAL取得真实模型/生产归一化/历史证据；线程标记待复核，其他71项NOT_RUN。不可把本条或工具构建当作全量验收。
 - 必要工具适配：默认0请求保持，installed-game显式unlimited模式接通当前Documents MCM原owner（不复制配置）；新增主线程绑定与gameThreadId观测；共享有限协议族词法提取，不再只观察Gold/Mood；assets新增有界、仅测试前一次的renown/relation前置，使用原生动作，PRECONDITION_ONLY与被测结果分开。C#双桥1.3.15/1.4.8及307项契约通过；Python101项中100原通过、缺BindMainThread的宿主fake已补转发断言后单项重跑PASS。性能仅冷启动/每次明确请求，不增加Tick IO/扫描。
 - 首轮run69e61f247ad74fc7984e78c4a46857f8/PID37220已真实创建战役并对Lucon提交英文消息。4次真实HTTP均200，provider计56782 tokens，Postprocess输出[ACTION:MOOD:NEUTRAL]，生产consumer/dispatch/mood及COMPLETED_WITH_HISTORY已观察；不将neutral无状态变化/错误线程标记算完整执行PASS。正常退出仍ERC4/0xFFFFFFFF。冻结构建/请求/回执/trace/费用分页/语言shape均在本机artifacts/en-postprocess-alltags-20261018，私有descriptor/token不提交。
-- 用户自定义PlayerCustomPromptRule约6万字符，含明确中文输出要求；首次NPC因该上下文回复中文。已询问是否仅测试进程临时采用EN包默认，等待回答，未覆盖或翻译原文件。保持用户内容与包语言边界，测试默认profile不增加强制语言system规则。
+- 最新测试桥已部署AFRuntimeTestBridge_6e9b0284a023（原module仍保留，不默认加载），frozen a15d16eaff513675a2c3d94539e4eaeac0ed0401453217764c5e28e8371e2ac9；该版线程绑定尚未实机复核。源图为artifacts/bannerlord-runtime-bridge-20261013的SessionSafety.ConfigureNetwork、bridge_tool.session_preflight/api_settings_path、SessionProtocol.ExtractProtocolTags/FixtureSpec.Parse、CampaignFixture.Prepare、SessionResultObservers.BindMainThread、SessionStateReader.BindMainThread、SessionGameAdapter.InitializeMainThread；精确范围在本机source-spans.json。剩余场景/业务回读能力需继续，不把源图覆盖范围扩张为已测游戏责任。
+- 用户自定义PlayerCustomPromptRule约6万字符，含明确中文输出要求；首次NPC因该上下文回复中文。用户确认仅测试进程使用EN资源，之后又要求进程内清空自定义提示词；实测使用EMPTY_PLAYER_PROMPT_PROCESS_ONLY（0字符），原文件/设置保持原值，不追加强制英文规则。
 - 后续run1f4bf8d0457046d88e407d52287cadcc实测：gameThreadId26，ANNOYED实际provider→consumer→主线程Patience 80→78、relationDelta=-1、history SHA一致；NEUTRAL预期NO_CHANGE。赠金/借款/入雇佣兵三轮被NPC拒绝或延后，只有负向证据，绝不算对应正向标签通过。接受NPC挑战后真实provider输出DUEL/DUEL_LINE_WIN/DUEL_LINE_LOSE/ANNOYED，进入Mission；DuelOutcome显示OpponentWon、PartiallyCompleted，同时PlayerNotorietySummary被测试来源门拦截，不升级完整链路PASS。场景切换还使旧trace丢失。退出请求被Mission阻塞，result=NORMAL_EXIT_TRANSITION_TIMEOUT，最终session-result保护未变、lifecycle FAIL；当前检查PID40752已不存在，不声称原生正常退出。
 - 用户随后明确同意只在测试进程采用EN包默认，原文件/设置保留，并同意仅清理PID40752再继续；检查时该PID已无，因此没有发送强杀。平台修复仅位于测试工具：SessionGameAdapter.Owner在同一所属campaign的Mission转换保留有界观察，generation仍变化/旧动作仍拒绝；SessionSafety.EnterNotorietySummary与SessionNetworkBudget.TryAcquire仅给unlimited/所属campaign/确切PlayerNotorietySummary/Memory/配置端点的摘要授权；SessionLifecycle.Request/Tick捕获所属campaign和Mission，只对相同对象至多一次调用原生EndMission，替换/异常不吞掉。此前失败证据保留。
 - 新增显式--use-packaged-player-prompt：SessionLaunch/Contracts/Python预检绑定固定包默认文件SHA并受保护；SessionSafety.ConfigurePlayerPrompt只在进程getter返回缓存文本，原字段/文件/MCM不写。安装默认519字符、SHA f7e1e11b74bfba233b07c11c40db066af6d1426ec516b5877872d1d913aa7111，与仓库EN源一致。getter reload/复原、哈希绑定/默认关闭/原文件不写、同campaign证据保留与generation拒绝、原生退出归属/重复/替换/异常等回归通过；188+28+95=311 C#及116 Python通过。SessionStateReader.Read(heroes)补精确ID/金钱/关系/氏族/王国/婚姻/队伍人数，只在显式请求读取最多四项；双桥1.3.15/1.4.8通过，新字段实机待验。当前冻结f5c18d20fe336cc15782e7bede94b984040c1b151e80f6a1eef978529b3973dd；无产品/玩家资产/默认启动流程改动。
@@ -284,6 +469,19 @@
 
 - 第十轮109b8c687fd14db0a53d16dead625b52/PID5192：空玩家提示词仍实机0字符；主/辅助/后处理当前均gemini-3.8-flash-high，原MCM SHA dcdade86...及自定义SHA 2ed99ab...再次不变。真实MOOD:BORED（turn f900a4fe7ac74776b972bde1e2564bf1/provider attempt4）经production消费、最终dispatch、主线程26应用，Patience55→54/delta-1/privateLoveDelta-1；COMPLETED_WITH_HISTORY且三回复SHA一致，可见英文无tag。两次召集被当前人物因社会关系拒绝、无对应标签；两金币借款拒绝且玩家1000/NPC10000、债务空表不变，均只负向记录，不继续反复付费刷同一拒绝。13HTTP全200/46202tokens，累计十轮115HTTP/691485tokens，币价UNKNOWN。手工session.end已退出、保护不变，原生ERC4/0xFFFFFFFF仍生命周期FAIL，无强杀。当前inventory为16/72模板实际生成、12模板有本任务完整效果/权威回读或预期无AFEF情绪/跟随证据，完整72仍未完成；Duel三/END及其余必要前置、player locomotion/native give-show/政治/部队/任务/婚姻/GCCZ等尚未验证。模型与清空玩家提示词这次调整已实机完成；证据s10-verification.json与s10-*。
 
+- 2026-10-19 清上下文语言复测（未完成）：EN 资源冷启动、空玩家提示词进程模式。run `b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5` / PID29388 的英文赠金请求得到英文回复；主链拒绝赠金，后处理 `[ACTION:MOOD:NEUTRAL]`，耐心0→0、无金币转移。NPC 称“not a copper”但 `state.read heroes` 金币为10000，此事实矛盾被CN对照复现。第二条场景跟随回复未完整回读标签/最终效果，记部分/未知，不计通过。该会话保护不变，生命周期 `NATIVE_DEVICE_REFERENCES_REMAIN`、`NATIVE_SHUTDOWN_NOT_CLEAN`。
+- 用户要求“测完EN再测CN”后，EN全量仍未完成时误跑了CN对照：run `29fada9663c44984b389c51a1935aa76` / PID21980，CN资源哈希 `d304b6eb…`、`509ee924…` 已在启动前核验，空历史中文赠金请求得到中文回复；未输出赠金标签/未转金币，仅 `[ACTION:MOOD:ANNOYED]`，耐心30→28、关系-1、privateLove-2。NPC同样称钱袋无钱而原生金币10000。保护不变，原生退出ERC4/`0xFFFFFFFF`，生命周期FAIL。此CN只是一条误提前对照，不代表CN全量测试。
+- 用户指出顺序后已停止CN请求并恢复EN安装资源：`RuleBehaviorPrompts.json=e25825ee…`、`ActionPostprocessPrompts.json=cbbd4530…`；当前无Bannerlord进程，原自定义提示词和MCM设置未改。之后只继续EN：run `4845b900d419439db2765fa6b5903afc` / PID31412，英文Duel挑战被NPC拒绝，回复为英文；后处理仅`[ACTION:MOOD:ANNOYED]`，耐心30→28、关系-1、privateLove-2，无Duel标签/决斗启动。`Token_Stats.txt`最近六条模型名均为`gemini-3.8-flash-high`；费用仍UNKNOWN。该run保护不变，但trace分页未完成、两条只读回读为`TRANSPORT_ArgumentException`；生命周期`NATIVE_DEVICE_REFERENCES_REMAIN`、`NATIVE_SHUTDOWN_NOT_CLEAN`、`PROCESS_LIFECYCLE_FAILED`。
+- 新确认问题：两种语言的独立干净对话都把金币10000的NPC说成“没钱/钱包空”，属于跨语言事实投影/上下文 grounding 错误；本轮干净EN样本回复英文、CN样本回复中文，未复现中文泄漏。模型拒绝赠金/决斗的负向结果不算相应正向标签通过。证据见`artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md`与上述三个run目录。
+- 后续EN贷款样本（run `71f5042956cd4d17a4d7ac5581340ecb` / PID27412）在空白EN战役、关系50/慷慨度2、空债务基线下仍回复NPC无钱，原生NPC金币10000。turn有history，但测试会话先停止，`state.read economy` 返回`SESSION_STOPPED`；postprocess标签及债务变化未读到，必须保持UNKNOWN。最近EN/CN样本的回复均与请求语言一致；此项仅是小样本，不构成语言/标签全量结论。
+- 最新 EN 矩阵（加入 s14 后）：75 行/72 个不同模板；18 个模板取得真实 provider 标签，14 个模板完成效果与事实回读；Duel 三模板和 `[END]` partial，54 个模板还没有真实模型输出，57 行全部阶段仍为 `NOT_RUN`。EN 全量任务仍未完成，CN 未继续。
+- s14 正向完整链路：run `5da5a20a6ac94ad892a73f4d033c6920` / PID38192，英文首条输入 → `[ACTION:MARRIAGE_FORMAL:main_hero:lord_1_31]` → 原生双方 spouseId 互指、Zoana 转入 `player_faction` → Lucon/Zoana 两个 AFEF memory owner 直接读取并接受，history `COMPLETED_WITH_HISTORY`。5 HTTP全200/13603 tokens，币价UNKNOWN；MCM模型设置是`gemini-3.8-flash-high`，逐HTTP模型名未由桥收据暴露。
+- 新确认的 EN 语言问题：首条英文玩家请求前没有中文内容，但刚完成婚姻的两个 AFEF owner 事实预览都是中文；另一个全新 EN 俘虏场景在无玩家输入时出现中文自动开场。自然回复正文无法从只读收据取回，不能据此声称主回复语言为中文。安装 EN 资源哈希与保护文件保持。
+- s14 actionTrace 的中间 `postprocess.normalized` 事件缺婚姻标签，`postprocess.completed` 却含婚姻标签；原生配偶/氏族状态和双 AFEF owner 都成功，因此登记为 trace阶段证据不一致，不否定效果通过。360秒会话在玩家输入前停止的 run `9b7254...` 没有标签结果。
+- 三个续测进程均已退出、保护文件未变，原生 ERC4 / `0xFFFFFFFF` 生命周期仍FAIL；未强杀。未修产品或测试桥、未部署/打包/push；CN暂不开始。细节与请求收据见`artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md`及`s14-*`。
+
+- s15/s16 EN-only负向尝试：`MARRIAGE_ELOPE` 对Apolytea的有效首轮只输出`MOOD:NEUTRAL`，spouseId保持空；先前Zoana目标被拒`INVALID_CONVERSATION_TARGET`后，测试夹具又以`ASSETS_ONLY_BEFORE_TEST`拒绝修改Apolytea关系，实际关系为1，回复正文不可见，不能称NPC明确拒绝。`MERGE_TO_PLAYER`在Apolytea关系100时也只输出neutral，双方partyId/partyMembers未变；两个标签均未取得正向样本。两轮4 HTTP全200，分别14544/12612 tokens，币价UNKNOWN；证据`artifacts/en-postprocess-alltags-20261018/s15-*`、`s16-*`。
+- 两轮均请求正常退出后进程已消失、保护文件未变、无强杀；原生ERC4生命周期仍FAIL。仅续测EN，没有启动CN或修复产品/测试桥；正向覆盖不变为18/72模型输出、14项全链路，57行仍全阶段NOT_RUN，EN任务继续未完成。
 
 <a id="afrt-existing-game-live-20261018"></a>
 ## 现有游戏测试桥部署与连接实测（2026-10-18，DEPLOYED / CONNECTION_PASS / NATIVE_EXIT_FAIL）
@@ -1910,7 +2108,6 @@ NOT-RUN：当前产品编译、专项编译型回放、全部UI实机、长战�
 
 - 核实工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`，原HEAD `8d521ec595e7fd2b9e767ce86393a5da6145ac11`，无未提交/未跟踪的非忽略文件。fetch 后 `origin/main` 仍为 `14ce14ae974a45e5b129d99effa1bd4e2942bab8`，0 behind / 25 ahead；不需要合并，按用户要求直接普通快进推送，不force、不rebase/reset。
 - 发布原工作区全部净变化，41文件；会面护卫 `30e70d37`、模组内提示词 `45c63066`、缓存/导出/终端设置 `2f8edb1f`、编辑器 `bfcdb4da`、部署 `60c94397` 与导入reparse保护 `ad39448d` 均保留。两项外交补丁及其四测试按用户此前要求已inverse，净产品与远端一致，不重复恢复。其他分支/外部工作树不是此次发布对象。
-- 检查25提交全历史的47变更路径，不含明确私有交接 `[本地专用交接文件，公开记录不列路径]`、ignored本地证据、玩家数据或DLL/ZIP/存档；新增行凭据模式扫描无信号（不是完整安全审计），`git diff --check origin/main HEAD` exit0。原checkpoint、inverse和文档行尾修复历史保持，不为美化发布改写历史。
 - 产品/测试/构建相关文件与最终已验证源码 `ad39448d` 完全一致；重新核对既有双API/Bootstrap三产物SHA全部一致，20源码地图锚点 recorded-revision / working-tree 两模式PASS。复用[目录恢复最终离线验收](#module-runtime-storage-20261011)、[提示词专项](#module-custom-prompts-20261011)和[会面护卫专项](#meeting-real-troop-escort-20261011)，没有重新声称全仓测试通过。J15 3365/3364计数基线失败、旧124文件Release Stage缺输入仍保留；实机/游戏UI/玩家存档未验。
 - 仅新增本条发布范围与根HANDOFF摘要；源码、默认资源和构建流程不变。发布前再次核对远端与dirty；普通推送失败或远端推进时停止当前推送并重新诊断，不强行覆盖。实际发布SHA/远端ref及命令结果保存在本地 `artifacts/publication/workspace-sync-20261011-*/receipt.json`，证据不提交。不部署、Stage、打包或写游戏/C盘玩家数据。
 
@@ -3155,7 +3352,6 @@ snapshot、分块和native反射仅在SyncData保存/加载边界运行；静态
 - 基线依据：远端实际发布提交b188403634847bbac3e6e6633da7f99e6e6ba91e，v1.5.4，2026-10-06 11:17:54 +08:00；仓库最近公告为1.5.3，不将其日期误作最近产品发布。公告范围b1884036至本次v1.5.5源码，包括随后已在远端的ee796fec1 GCCZ修复和本地累计功能修复。
 - 远端比较：fetch将origin/main由e3bd28e0更新为df6fc788c13570a5cc9ffeb2a5109ee3547b0b80，本地当时领先42/落后1；新增8193项全部是原版游戏本体代码1.5.4参考资料和tools/export_bannerlord_reference.ps1。73d82a201以普通merge合入，无冲突/删改远端资料。AnimusForge.csproj:114-115已排除全部原版参考目录；导出脚本不参与产品构建。不声明Bannerlord 1.5.4运行支持。
 - 发布核验：最终运行源码与已验证包的3dad3baf相同；差异仅远端参考资料/导出工具及发布文档。package SHA256仍a8099cd8156a25aa1294d6fe1d6edbdee9277902b5bc67d54827b2b7fd6adf19，沿用上条双实现/Bootstrap、63+76离线及3379文件证据，不重复编译无变化源码。公告新增Markdown和纯文本两份；按实际代码核对字号14–36/24、世界内战上限1–20/3、4周新通牒、新增怨恨减半、收编/路径及旧配置边界。
-- 历史范围核验：git rev-list --objects origin/main..HEAD -- [本地专用交接文件，公开记录不列路径]为空；待发布快照无artifacts/bin/.tmp/ZIP/sav。此为明确排除路径与候选范围核对，不冒充所有历史的通用保密审计。只推main，不推备份分支、不重写历史。
 - 公告文件docs/releases/AnimusForge_1.5.5_累计更新公告_20261006.md及.txt；本地verify_publication.py、prepush-receipt.json、merge.log保存范围与包校验。纯文本去Markdown标题/加粗，内容一致。未实现的信使好感/解救事实不列入，AI成图及实际游戏行为不作保证。
 - 状态：公告提交a1755fa7ab7fea5cc320f92c50e2429522796a3b经git push origin HEAD:main成功（df6fc788c→a1755fa7a），独立git ls-remote确认同一SHA，领先/落后0/0。push.log、remote-main-first.txt保留原回执；首次远端比较脚本分隔符转义错误，改按制表符分割后通过，非推送失败。随后仅提交本条交接结果并同样普通推送/核对，最终远端回执见本地remote-main-final.txt。未创建GitHub Release或代发玩家群，用户可直接使用已提交公告。实机/旧档仍未验，当前任务不改变下方验收边界。回滚采用定向inverse提交，不强推或reset既有历史。
 
@@ -8726,7 +8922,6 @@ artifacts/                           # ignored：stage/packages/logs/tests/diagn
 - `C:/Program Files/dotnet/packs` 中 NETCore/WindowsDesktop/AspNetCore Ref 均有 **8.0.25 与 10.0.11**，没有8.0.30，不能满足**旧SDK10.0.400**的要求。R2已定位该版本要求来自本机 SDK 的 `Microsoft.NETCoreSdk.BundledVersions.props:273-278,332-375`，不是测试源码显式钉死8.0.30。按P9固定在仓库内准备官方SDK8.0.425及其8.0.31配套，再建立新基线；不手改SDK props、不把8.0.25伪称8.0.30、不降net8.0测试目标。本轮不运行restore/build。
 - 新发现的 runner 阻碍：`tools/NativeModuleSubmissionTests/run.py:39-45` 硬编码 `G:/AFMOD/.dotnet-sdk/dotnet.exe` 与 DOTNET_ROOT，不能凭给 shell 设 DOTNET_EXE 解决。B0 应先单独批准最小 runner 可移植性修复，采用已有 API runner 的 `--dotnet`/environment 模式；新旧 SOURCE 验证不变，先于路径移动建立正常/enum 重排/8 个反例基线。本轮未改 runner。
 - API runner 与 CampaignComposition runner 已有 `--dotnet`，分别在 `:79`、`:99`；源码守卫/代码坐标无需 .NET 构建。原脚本 `build_single_module.ps1:487-490` 会递归重置工作区 `bin/<Configuration>/single_module_artifacts` 和 `obj/single_module/<Configuration>`，`:537-541` 的 Stage 输出是 `bin/<Configuration>/single_module_stage/AnimusForge`；必须先解析这些目标并获得具体清理/覆盖授权，不能因 `-Stage` 就忽略风险。生产项目为 net472/x64，与聚焦测试 net8.0 是两套依赖门槛，8.0.30 缺包不等于生产编译已经失败。
-- 具名保护清单：`docs/handoffs/2026-09-06-integrated-phase8-handoff.md`、`docs/handoffs/2026-09-06-team-brief.md` 本机存在，保持原文；历史本地专用 `[本地专用交接文件，公开记录不列路径]` 与 `.tmp/parallel-closeout-20260916/team-handoff.md` 本机不存在，不重建、不取消保护、不把缺失理解成可上传。既有 PlayerExports、自定义内容、其他 worktree、NEW-10/GCCZ 和参考快照一并保留；未来交付还须审查 outgoing 历史，本轮不发布。
 
 ### P5．批次、门禁、验收与回滚
 
@@ -11723,6 +11918,72 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 - Not verified: live UI/provider and previously imported saves; no formal production ZIP, DLL rebuild, version bump or push. Runtime loading still uses existing layered reads; this slice restores the requested ten files through packaging/deployment rather than reinstating runtime generation of additional files.
 
 
+<a id="en-postprocess-alltags-live-20261019"></a>
+## EN 后处理标签全量实机测试续记（2026-10-19）
+
+- 目标仍是 72 个独立标签模板逐项完成真实 EN 对话→provider 标签→游戏效果→事实 owner 回读；EN 完成前不开始 CN。仅测试汇集问题，不修产品。模型请求授权不限量；每次新会话仍使用现成 F 盘游戏与进程级空玩家提示词，不改玩家提示词文件/MCM，不创建副本或读写玩家存档。
+- s18 run 29ef32a1244b483c985694c3019146d4 / PID 10344、turn 9a8f669493e040b98ca07c7f4059a799：relation 100、generosity 2、成年未婚带队英雄；首条唯一输入为英文。真实 provider 后处理仅输出 [ACTION:MOOD:NEUTRAL]，未输出私奔标签；模型回复原文不可见，故不把它解释为同意/拒绝判定。婚姻效果与 AFEF 未回读，仍 UNKNOWN。
+- 会话在 360 秒 supervisor 边界自然终止；保护基线未变，但原生退出 0xFFFFFFFF 且 ERC4，生命周期 FAIL。未强杀。证据见 artifacts/en-postprocess-alltags-20261018/s18-*、artifacts/bannerlord-runtime-bridge-20261013/runs/29ef32a1244b483c985694c3019146d4/。
+- 当前仍是 75 行 / 72 模板；18 个模板有 provider 输出记录、14 个有完整效果及事实回读，s18 仅负向例，不增加正向覆盖。EN 未完成，CN 未开始；后续继续 EN，不能把 trace 缺页、未读回状态或模型自然回复语言算作通过。
+
+### s19/s20 接续（2026-10-19）
+
+EN 标签全量仍未完成，CN 未启动。s19 玩家输入前俘虏开场自动中文，未提交请求。s20 新 EN 战役、空玩家提示词：私奔请求被明确拒绝、provider 仅输出 neutral，spouseId 仍空；合并队伍被明确拒绝、provider 仅输出 neutral，partyId/member count 未变。两条是负向样本，不算模板正向覆盖。第三条英文前往 Diathma 守卫三天请求已完成对话历史，但 actionTrace、英雄、费用读取及 session.end 连续触发 `TRANSPORT_ArgumentException`；该项记 UNKNOWN。会话最终退出，保护基线未变，原生生命周期 FAIL（设备引用残留/非干净关闭）。矩阵仍 75 行/72 模板、18 个真实 provider 覆盖、14 个完整效果与事实回读、57 行 model `NOT_RUN`。费用和第三条逐请求模型归因未确认。详见 [实测报告](../artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md) 与 [inventory](../artifacts/en-postprocess-alltags-20261018/inventory.json)。
+
+### s21：EN 世界地图驻城命令重测（2026-10-19）
+
+新战役/PID 27652、进程级空玩家提示词，测试前 Apolytea 成年、带队、relation=100、generosity=2。唯一英文请求明确要求其独立队伍前往 Diathma 守卫三天，并排除跟随/合并意图；NPC 以英文明确拒绝，真实 provider 后处理仅 `[ACTION:MOOD:NEUTRAL]`，没有 `GO_TO_SETTLEMENT`。对话完成并写普通历史，无 AFEF；无目标标签/效果，记负向覆盖，不判断机制实现错误。桥业务/覆盖报告 UNKNOWN、费用 UNKNOWN，保护 PASS、生命周期 FAIL（原生设备引用残留/非干净退出）；会话自然退出。矩阵正向覆盖计数不变（75行/72模板、18 provider、14完整效果事实回读、57行model NOT_RUN）。证据 `artifacts/bannerlord-runtime-bridge-20261013/runs/21a0b1c2d3e44f5a9b6c7d8e0f123456/`，详情见[实测报告](../artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md) 与 [inventory](../artifacts/en-postprocess-alltags-20261018/inventory.json)。
+
+### s22：EN 私奔标签异目标重测（2026-10-19）
+
+全新英文战役/空提示词，目标 Epipheria 成年、active、未婚、带队，测试前关系/慷慨度 100/2。她明确拒绝私奔，要求正式求婚；真实后处理仅 `[ACTION:MOOD:ANNOYED]`，耐心 80→78、关系 −1、privateLove −2；spouseId 仍空、无 AFEF，turn 及十事件 trace 完成。作为负向样本，不增加正向覆盖。4 次 provider 请求、12,431 tokens、币价与逐请求模型身份 UNKNOWN。session.end 报 `TRANSPORT_ArgumentException`，进程随后退出，保护 PASS、原生生命周期 FAIL。矩阵维持 75行/72模板、18 provider、14完整效果事实回读、57行model NOT_RUN。见 [实测报告](../artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md) 与[矩阵](../artifacts/en-postprocess-alltags-20261018/inventory.json)。
+
+
+### s23：EN 场景引导重复提交（2026-10-19）
+
+Diathma 的 Danos 场景中，同一英文请求因操作失误提交两次（turn `bfb00689fc6b4e35beaa8b5b1805eb71`、`eb1221c0142048ecad08cd59e1350cb7`），按一个重复样本组记录。第二轮正文表示愿意带路；trace 的 `postprocess.normalized.normalizedTags` 未保留 SCENE_GUIDE，但 `postprocess.completed` 再次包含该标签，阶段记录不一致。唯一 scene 回读时 NPC 尚在对话内，离开对话后的跟随效果和事实 owner 均 UNKNOWN；不增加覆盖。进程已退出，protectionsUnchanged=true，生命周期 FAIL（设备引用残留/非干净关闭）。EN 继续中，CN 未启动。证据：`artifacts/bannerlord-runtime-bridge-20261013/runs/23c2d3e4f5a647b18c9d0e1f23456789/`。
+
+
+### s24/s25 EN 接续（2026-10-19）
+
+s24 新战役建立后，Diathma/Osarios 状态可读，但 native scene fixture 返回 `TRANSPORT_ArgumentException`；原 commandId recover 仍 UNKNOWN，没有重试或玩家输入，不是标签样本。s25 新 EN 空提示词战役对 Apolytea 提交唯一英文私奔请求；关系/慷慨度前置100/2、成人未婚带队。NPC 明确拒绝，真实 provider `normalized/completed` 均只有 neutral，生产 dispatch 有记录，spouseId 空、history 完成、factMemory=null，记有效负向，不增正向覆盖。收据4请求但仅前三行8,504 tokens可读；模型日志为 gemini-3.8-flash-high；费用未知。两进程保护未变，native lifecycle 均 FAIL（ERC4 / shutdown not clean），无强杀。EN 继续，CN 未启动。证据见实测报告、矩阵及 runs `24c3d5e6f7a84901b2c3d4e5f6071829`、`25d4e6f7a8b94012c3d4e5f607182930`。
+
+
+### s26：EN 婚配意愿未知样本（2026-10-19）
+
+全新 EN 战役、空提示词；Apolytea 成年未婚带队，关系/慷慨度前置100/2。两条不同英文请求明确询问个人是否同意正式婚配；conversation history 均完成，但 provider 后处理只有 neutral，spouseId 未变化、factMemory=null。UI 对 NPC 正文仅投影约128字符，后半不可读，无法裁断是否明确同意/拒绝；记 UNKNOWN，不增正向或确定负向覆盖，也不测离婚。7 HTTP 200、23,213 tokens、币价未知；model log锚点 gemini-3.8-flash-high。保护未变，原生退出仍 ERC4/FAIL。见 s26 run 与测试报告。
+
+
+### s27：EN 俘虏开场自动中文复现（2026-10-19）
+
+新 EN 战役、进程级空玩家提示词，玩家在 native captivity opening 前未发送消息；provider 自动中文 NPC 开场94字符。读取显示本地俘虏状态/捕获者/AF 会话均正确；于是未发玩家输入，不计标签样本。4个HTTP200、9,201 tokens、Token_Stats锚点 gemini-3.8-flash-high；保护未变，生命周期 ERC4/FAIL。与 s19 相同，证明清上下文后自动开场仍可中文；EN 继续、CN未启。证据及详细限制见实测报告和 run `27f6a8b9c0d14234e5f6071829304a5b`。
+
+
+### s28：EN 驻城巡逻正向效果及事实语言问题（2026-10-19）
+
+Apolytea成年带队、relation/generosity 100/2；唯一英文请求要求独立队伍在 Diathma 巡逻3天。provider输出真实 `PATROL_SETTLEMENT`，生产日志记录 `WorldMapCommand start patrol actor=lord_1_1_8 settlement=town_EN2 days=3`；actionTrace 完成 dispatch，conversation history完成。memory owner 回读 `accepted=true,isAfef=true`，但AFEF预览仍是中文“[AFEF NPC行为补充] Apolytea建立了1道大地图命令。”，确认 EN 事实投影问题。4 HTTP 200、10,307 tokens，日志model gemini-3.8-flash-high；保护未变，原生退出ERC4/FAIL。该模板为新增正向全链路证据；桥没有独立巡逻队列读取字段。详见 s28 run 与实测报告。
+
+### s29：EN 场景动作与引导标签尝试（2026-10-19）
+
+run `29b8c0d1e2f34567a8192b3c4d5e6f70` / PID 5036，Diathma native scene 的 Patrys the Cooper。两条真实英文请求均 `COMPLETED_WITH_HISTORY`；请求鼓掌时 provider 仅输出 `MOOD:JOY`，请求带路时仅输出 `MOOD:NEUTRAL`，均未输出目标 `SCENE_ACT` / `SCENE_GUIDE`。回复正文不可见，因此只记目标标签未输出，不判 NPC 同意/拒绝或机制错误；无目标效果回读，正向覆盖不增加。7个聊天HTTP请求，tokens/费用不完整且未知。原生退出 lifecycle FAIL（ERC4、process lifecycle、shutdown），但 `protectionsUnchanged=true`，PID 已退出；无强杀、未改产品、CN 未启动。矩阵在 `artifacts/en-postprocess-alltags-20261018/inventory.json`，run 与报告保留于对应 artifacts 目录。
+
+### s30：EN 债务免除 ADP 正向完整链路（2026-10-19）
+
+新 EN run `30c9d1e2f3045678a91b2c3d4e5f6071` / PID 30676。对话前 Arcor relation/generosity=100/2，原生债务台账为空；英文债务承诺真实生成AD:5:3:P，Reward owner形成五金币、三日到期的`DDE42AA4E`。后续英文请求使 provider 真实输出`[ADP:DDE42AA4E]`，trace保留consumed/normalized/completed；conversation `COMPLETED_WITH_HISTORY` 且三hash匹配。Reward owner回读该DebtId已无记录、欠款0；Memory owner接受对应AFEF（SHA `157c5df890d9f7144fe7db4e7882dcb44545884874625781482e1098c04da493`）。ADP升级完整正向通过，AFEF EN预览中文为已复现语言问题。会话退出后PID结束、保护未变，ERC4生命周期FAIL，无强杀。8个HTTP尝试计数可读，但cost分页不全，token/费用未知。当前 inventory 字段实算16/72完整正向、20/72 provider；全量未完、CN未启动。证据见本机实测报告、inventory和runs `30c9d1e2f3045678a91b2c3d4e5f6071`。
+
+### s31：EN 俘虏开场在玩家输入前自动中文（非标签样本，2026-10-19）
+
+新 run `31dae2f30456789abc0123456789def0` / PID 39376、EN资源与进程级空提示词；Arcor关系/慷慨度100/2，native capture后权威状态均显示player captive、holder一致、timeStopped。玩家输入前 opening 自动回复101字符中文（SHA `e1a9dcadcf0cf0f0438766ebe1a0019a45d234933908b189e865cb22cedaf96b`），4个自动HTTP均200，只有opening MOOD:NEUTRAL。没有提交玩家消息；不计标签，也未测RELEASE_PLAYER_CAPTIVITY/LET_PLAYER_GO。与s19/s27相同问题复现。进程退出且保护未变，但native ERC4生命周期FAIL，无强杀；EN继续、CN未启动。详见实测报告、inventory及runs `31dae2f30456789abc0123456789def0`。
+
+### s32：EN `LET_PLAYER_GO` 条件性回复尝试（2026-10-19）
+
+run `32ebf30456789abc0123456789def012` / PID8236，新EN战役、空提示词，Arcor relation/generosity100/2。英文请求明确要求立即无条件放行；真实provider只输出MOOD:NEUTRAL。回复称玩家并未被扣留，并附“if your business here is concluded, go in peace”；该条件不等于无条件同意。对话历史完成、三hash匹配，但对话界面仍在，释放效果未成立/未回读，AFEF无动作事实；不计正向覆盖，也不判功能错误。4 HTTP200、11,555tokens、费用未知。进程退出、保护不变，ERC4生命周期FAIL，无强杀。证据见实测报告、inventory与runs `32ebf30456789abc0123456789def012`。
+
+### s33：EN `KING_ABDICATE_TO_PLAYER` 明确拒绝（2026-10-19）
+
+run `33fc0456789abcd0123456789def0123` / PID37308，新EN战役，Lucon原生为Empire ruler，关系/慷慨度前置100/2。唯一英文退位请求完成history；provider只输出MOOD:ANNOYED，Lucon明确拒绝。原生`kingdomRulerId`仍`lord_1_1`，无退位效果/AFEF；记录VALID_NEGATIVE，不诊断错误或计正向覆盖。4 HTTP200、11,715 tokens，币价未知。进程退出、保护未变，lifecycle FAIL（NATIVE_SHUTDOWN_NOT_CLEAN），未强杀。详情见实测报告、inventory及runs `33fc0456789abcd0123456789def0123`。
+
+
 <a id="conversation-prompt-cache-20261019"></a>
 ## Native / Scene 提示词缓存内置替换与审查（2026-10-19）
 
@@ -11960,6 +12221,20 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 - 未验：实际 1.4.8 崩溃现场、原生退出时序、旧档、真实城堡收益/Agent 清理；无实机、部署、打包或 push。源码回滚使用 focused inverse `git revert 4aebda4fc` 后原入口重建，不影响其他作者改动；未创建部署恢复或声称已恢复。
 
 
+<a id="illustrator-root-gemini-routing-20261020"></a>
+## 生图目录与Gemini自动路由（2026-10-20，OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN）
+
+用户要求目录移出logs至AF根，并明确名称带GEMINI走Chat生图。产品提交b20f85e25（仅本任务6文件），起点a0126e440；期间其他会话城堡退出修复4aebda4fc等提交均保留。
+
+- 路径owner为extensions/AnimusForge.Illustrator/src/Engine/IllustratorStoragePaths.cs:8-12，ImageDirectory改为活动模块根/image save；DiskImageCacheManager.cs:135-147和Core/GenerationDiagnostics.cs:94-98原样通过CacheRoot消费，画廊、成图、Diagnostics同步。配置、普通logs及临时Cache目录保持原归属。可访问安装AF根未发现旧生图目录，未执行玩家文件迁移；旧库如需搬迁必须保留整个目录及旁路JSON/索引，原ReadMetadata:727-753按实际PNG重绑路径。
+- extensions/AnimusForge.Illustrator/src/Core/UniversalOpenAiImageClient.cs:275-297的IsChatCompletionProtocol改为不区分大小写包含gemini，不要求同时含image，覆盖gemini-nano-banana-2.1。GenerateImageAsync自动分支实际消费；显式Edits、Gemini原生URL及Player2独立分支保持。无新增模型调用、探测、重试、Tick IO、扫描或迁移；目录仍一次解析，名称判断仍每请求一次。
+- 原统一build-only Debug通过1.3(v1.3.15.110062)/1.4(v1.4.6.115628)+Bootstrap及双Coup gates。永久专项extensions/AnimusForge.Illustrator/tests/GeminiProtocolTests/Verify.ps1:1-53在实际两DLL各22项通过：别名/大小写/provider前缀、普通模型负例、端点拼接、显式Chat及query不能改schema。旧已验证DLL负控在nano-banana名称处按预期失败；仅反射协议方法，无HTTP/原生游戏/付费请求。首次缺Harmony依赖，补充已有依赖后通过；未运行旧全量生图审计脚本。
+- AGENTS/README及docs/illustrator_pipeline_diagnostics.md同步新目录，并修正指南中已退役的AppData回退说明。无新增玩家固定文案/运行设置，CN/EN共用路径和协议逻辑，不新增内容包资源。
+- 用户刚刚那次模型的可访问trace/steps及主日志未找到，不能实证它的实际端点；旧代码仅凭该名称不会自动命中Chat，实际仍受地址/偏好/参考图/回退影响。未验真实provider、实机、实际旧图库或迁移，未Stage/双ZIP/部署/push。
+
+代码范围及完整本机证据集中artifacts/illustrator-root-directory-20261020/review.md、receipt.json、unified-build.log和gemini-*.log。回滚仅对b20f85e25做focused inverse，保留其他提交和dirty，不hard reset。共享暂存区并发期间，f311df7d5的说明标题误用于另一会话已暂存的城堡交接内容；内容保留，后续48a56eb0d由其作者续修，本条未再次操作共享index。
+
+
 <a id="retire-environment-ai-en-delivery-20261020"></a>
 ## 环境 AI 退役与 EN 编译部署交付（2026-10-20，OFFLINE_VERIFIED / EN_DEPLOYED / LIVE_NOT_RUN）
 
@@ -11976,3 +12251,316 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 ### 本轮源码责任与范围
 
 代码修订 `5689b6937` / `1e5aa5396`：`ShoutBehavior.cs:2651–2699` 的 `OnMissionStarted` 保留普通喊话并撤销自动环境注册；`DuelSettings.cs:483–505`、`:5166–5250` 保留四模型渠道及原缓存；`AnimusForgeMcmPages.cs:93–104` 的 ApiGroup/ApiOrder 与 `TerminalSettingsCoverage.cs:48–159` 负责原 owner 的两前端投影；`CoupGuards.cs:121–145` 保留现有保护挂钩并移除退役目标；`PromptReassembler.cs:451–464`、`:736–829` 使用兼容资源原值；`SupplementalChecks.cs:194–210` 验实际类型/属性退役及原 MCM JSON，`TerminalLiveSettingsTests/Program.cs:58–64` 初始化真实模块 XML。完整路径、哈希、已覆盖/未覆盖范围见本机 `verified-code-map.json`，删除文件清单见 `removal-inventory.json`。本条不重复既有外交/生图/城堡源地图。
+
+
+<a id="release-1-6-3-20261020"></a>
+## v1.6.3 正式交付（2026-10-20，RELEASED / EN_DEPLOYED / LIVE_NOT_RUN）
+
+- 用户本轮明确授权编译、部署、推送、打包及增量玩家公告。根目录 `F:/AnimusForge-main` / `main`；开工修订 `b64448c78`，检查点 `codex/checkpoint-release-1.6.3-20261020`。已有 dirty 与私有历史保留。
+- 版本由原 `scripts/build/package_mod.ps1 -Build -ExcludeOnnx` 事务更新 v1.6.2 → v1.6.3；源码只新增版本元数据与玩家公告，没有改构建/部署流程。产品源码范围与消费者复用 [EN 补修代码图](#en-fixed-text-followup-20261020-code-map)及 [AFEF 读链复核](#afef-reader-audit-20261020)；本次发行继续覆盖上述修复，无新 gameplay/存档协议变更。
+- 原统一 Release 双 API（1.3.15 / 1.4.6 引用）、Bootstrap、双 Coup、干净 Stage、固定 EN 源码/DLL、完整 CN/EN 投影及逐 ZIP 内容/布局门禁通过。最终四组实际 DLL 各 74 项 AFEF、171 项消息/历史及 4553 项终端检查通过，均为离线真实程序集证据；未发模型 HTTP。
+- CN：`F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.6.3_CN_1020_2337.zip`，3530 文件，SHA256 `5EE35BFB1E4CB264256BD4A038E18B6A47F40096A3EAF45861EEEAE27BCDDAD4`。
+- EN：`F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.6.3_EN_1020_2337.zip`，3521 文件，SHA256 `BC5A5AD5B0376B264B5899A8655EA15EA2C21443457E208F15BB2F505D9F5354`。两包同版本、同分钟、同 Bootstrap/两实现；不含 ONNX 模型目录（保留锁定的运行库），单 `AnimusForge/` 根。
+- EN ZIP 解压后从原 `Invoke-ManagedStageDeployment` 原子替换 owner 部署到游戏当前单模块。核验管理哈希 387、玩家/文档设置保护哈希 3144，另 3236 项非管理文件 size/mtime 不变；无残余临时文件、无 Recovery 新增、无自动回滚宣称。
+- 本期远端比较基线 `8064bea6b81a108f6be4f4717427bb76ba15ce26`；干净公开提交 `212eb1c491eb942d3860d70fc34cc38079e47375` 经正常 fast-forward 推 main，并由 ls-remote 独立核实。产品/测试树与本地 source `60b3ba8db4a274100cbd44a7ce4c83a59c3458d5` 一致。仅版本/公告与52项前轮修复进入公开树，不推私有 artifacts、其他作者 dirty 或排除历史。未创建 GitHub Release、上传 ZIP 或发送消息。
+- 玩家公告：`docs/releases/AnimusForge_v1.6.3_zh-CN.md`、`.txt` 与 `AnimusForge_v1.6.3_en.md`；只汇总上次远端之后的固定文本、档案日期/分类/战报碎片和 AFEF 兼容修复。已发布的环境 AI/Gemini/同盟不重复计入。明确固定包语言不强制回复语言，旧生成中文正文和玩家自定义内容不会自动翻译。
+- 当前完整证据：`artifacts/release-1.6.3-20261020/package.log`、`package-check.json`、`replay13/result.json`、`replay14/result.json`、`deployment-final-check.json`、`publication-ready.json` 与 `receipt.json`。最终 DLL 哈希见包检查与回放收据。
+- NOT RUN：游戏 UI/实际对话、真实 provider、旧档实机接受、模型输出语言保证。历史每包1610项事实契约证据可复用相同源码；不得宣称实机通过。回滚：检查点、保留旧 Stage 和旧 v1.6.2 双包；源码 focused inverse，实际部署回退另做目标保护校验，不自动覆盖用户数据。
+
+
+<a id="release-1-6-3-notes-baseline-correction-20261020"></a>
+## v1.6.3 公告基线纠正（ANNOUNCEMENT_CORRECTED / PUSH_VERIFIED）
+
+- 用户指出此前公告过短，并明确以上次正式 v1.6.2 为基线。本条只替代 [本次发行](#release-1-6-3-20261020) 内公告范围与“已发布内容不再计入”的判断，保留其编译、安装、ZIP和未验记录。正确范围为 `60f3a8b21`（10月17日 v1.6.2 正式发行）→ v1.6.3；已核对旧公告、1017_0855 正式双包内build marker、版本提交与区间源码净差异。
+- 修改 `docs/releases/AnimusForge_v1.6.3_zh-CN.md`、对应 `.txt` 及 `AnimusForge_v1.6.3_en.md`，不修改产品路径。中文约3800字符、中英各9节/49条；覆盖四种语音、流式音频/口型、本地语音/百科选声/教程、自动上下文与缓存、主动接触、外交解析/同盟、场景/战后、政策复审、事实/双语、环境闲聊退役和Gemini生图。玩家正文不列私有日志、开发任务号或内部测试计数。
+- 逐模块核对实际生产源与来源提交；证据映射 `artifacts/release-1.6.3-notes-baseline-correction-20261020/verification.json`。确认相对教程链接、EN无汉字、两文语义范围/数字一致、无凭据模式、git diff --check通过，原两ZIP哈希与发行收据一致。
+- 本地公告提交 `66df425fef3e3e070f7f6e5ff1f492508341a2b5`；从远端 `212eb1c491eb942d3860d70fc34cc38079e47375` 生成仅三份公告的干净子提交 `d2d05f0c63bd20d3cb7fa79fc5886d8b5769c9b9`，正常fast-forward push并由ls-remote核实，不推本地私有历史与他人dirty。
+- 无新编译、部署、模型请求或实机；主程序与安装包保持原发行状态，模型行为、实机、旧档限制不变。原公告文本保存在本机任务目录，检查点 `codex/checkpoint-v1.6.3-notes-baseline-20261020`；需要恢复时只对公告做focused inverse。
+
+
+<a id="bubble-position-20261021"></a>
+## 场景喊话气泡定位修复（2026-10-21，OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN）
+
+- 用户截图显示气泡在人物身体附近且横向偏离。以实际main/工作区与原版1.4.5 UIContext、Widget、EventManager、MBWindowManager及AgentLockVisualBrushWidget为证据，确认旧UpdatePosition把framebuffer像素写入PositionXOffset/PositionYOffset，原生布局又乘CustomScale，未扣除安全区原点。安装日志确实记录2560×1440原始坐标；不记录或上传聊天正文。此前`6b30db66b`移除inverse scale的结论被本条替代，不改写历史当时验证结果。
+- 变更仅生产文件 `src/AF.GameAdapter.Bannerlord/UI/Conversation/FloatingTextMissionView.cs:310-354:UpdatePosition`，修订`72b84559a`：328行以原版人物标记相同的`MBWindowManager.WorldToScreen`取得top-left像素，342-348行减当前Gauntlet层安全区原点、乘CustomInverseScale、再减半宽和高度/头顶间距；354行前的一次诊断含agent、world/pixel/ui、scale、safe origin。无相机/behind/depth异常/非有限坐标隐藏气泡，保留此前有效视口容差。
+- 实际消费者是 `content/foundation/AF.Foundation.UI/GUI/Prefabs/FloatingTextLayer.xml:7` 的 `PositionXOffset=@X/PositionYOffset=@Y` → Gauntlet `Widget.ScaledPositionOffset`，UIContext.CustomScale在布局边界生效，不能把scaled像素直接作为unscaled offset。内容map `content/content-map.json:248-249`继续指向同一prefab，两包共用，无新玩家文案/配置/API/存档键/协议变化。既有头部锚点、文字/宽高/打字方法逐方法比对保持。
+- 性能：仍仅每帧遍历现有活动气泡，每个气泡一次原生投影和固定算术；没有新增全场景扫描、反射、磁盘IO、队列或轮询。沿用高度估算，不扩展本次任务到文字布局重构。
+- 新测试 `tests/modules/AF.Module.Conversation/FloatingTextPositionTests/run.py`提取真实生产UpdatePosition/高度/finite/hide方法编译执行；`Program.cs.template`用可控引擎投影和UI scale替身，按原生布局乘scale并加安全区原点后核对头顶中心。1920×1080、2560×1440、3840×2160、3440×1440、三种scale倍率、安全区、不同屏幕点与中英多行，共440检查。基线419失败（含本次目标缩放偏移）；修复后440通过；prefab实际绑定与原有文字方法保全核验通过。替身不证明引擎真实投影或游戏画面验收。
+- 原统一 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot <当前游戏根> -Configuration Debug`通过，真实参考1.3.15/1.4.6，Bootstrap/双Coup/注册smoke通过，0错误/既有warnings。最终候选在 `bin/Debug/single_module_artifacts/`；实现与源码hash绑定本机receipt。没有Stage/部署/ZIP/push或模型HTTP。原已发布v1.6.3包和安装模块仍为前次发行，不能将当前源码修复称为已安装。
+- 完整命令和证据：`artifacts/bubble-position-20261021/{before.log,after.log,build.log,verification.json,receipt.json}`；基线HEAD/dirty与来源保护在同目录。NOT RUN：游戏真实渲染/跟随相机与动态UI缩放的实机接受，其他mod组合；不以数值回放代替截图复测。
+- 回滚检查点 `codex/checkpoint-bubble-position-20261021`，仅对产品提交focused inverse；唯一主台账/HANDOFF追加独立提交，保留已有dirty，禁止整文件恢复或hard reset。
+
+
+<a id="interior-chronicle-20261021"></a>
+## 内政近期纪事重复/跨栏重叠（2026-10-21，OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN）
+
+- 用户截图红框显示近期纪事两条相同摘要，且“战后冷却/玩家王国派系”等条件文字穿入纪事区域。真实写入OnVillageLooted使用家族级概述，历史允许同周多次同文；面板原样取最后三项，无展示合并。左栏Conditions按自然宽度横排六项，没有绘制边界，能越过右栏；纪事固定24/22高度也可能换行重叠。未把截图推断当作存档实际事件次数，未读取或删除用户sav。
+- `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:1098-1116`，`BuildPlayerKingdomPanel → AddRecentChronicle`（产品`615872c4c`）：请求面板时从最多12项历史倒序读取，用Ordinal的week+完整text键合并，同周同文仅占一行，并补足最多三条不同摘要。不同周/大小写/完整正文不同记录保留；去重在46字符裁剪前执行，避免删除前缀相似的真实事件。历史对象、顺序、原文、不满/数值/存档写入保持，无新增持久化或协议字段。
+- 消费者 `src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomFactionTab.cs:237-241` 的FigureSource/SourceLine仍取同一DTO，绑定身份不变。`src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomInteriorPanel.cs:364-365,379-393` 的FiguresBand/LedgerBand：四条纪事文本高度CoverChildren；成派条件纵向独立28行，列表与band按内容测高，左列限制绘制范围，避免长中英条件跨到右列。完整布局仍由原UIExtender构造器一次生成，保留两API方向适配，不新增Tick布局生成/IO。
+- 本次没有新增/修改固定字符串或资源key，沿用已配对CN/EN纪事周次和标题；两包共享UI，语言仍随游戏。没有模型语言锁、翻译旧存档或全局文本替换。性能：仅打开/重建面板时扫描既有有界历史并创建小HashSet，不改变每帧热路径或事件结算。
+- 新 `tests/modules/AF.Module.Kingdom/InteriorChronicleTests/run.py`编译执行真实chronicle投影与完整KingdomInteriorPanelPatch生成XML，仅UIExtender属性和文本资源适配用桩；API13/14条件符号各31项PASS，基线各14FAIL。覆盖截图同周同文、顺序/回填、跨周保留、同前缀不同正文保留、null/empty、原历史对象保全、四条绑定唯一性、自适应行高、条件纵排/边界和band测高。CN/EN周次插值场景均验；非原生UI实机接受。
+- 原统一Debug构建两实现/Bootstrap、双Coup与注册smoke通过，真实引用1.3.15/1.4.6，0错误/既有warnings。候选在 `bin/Debug/single_module_artifacts/`，含上轮`72b84559a`气泡定位修复；哈希与源码回放收据绑定本机receipt。未Stage/部署/打包/push，原已安装/ZIP仍为发行版；无模型请求。
+- 证据 `artifacts/interior-chronicle-20261021/{before.log,after.log,before/sources.json,after/sources.json,build.log,receipt.json}`。NOT RUN：原生渲染、真实用户存档/窗口缩放、第三方mod组合；生成XML结构验证不能替代截图复测。回滚检查点 `codex/checkpoint-interior-chronicle-20261021`；仅对产品提交focused inverse，主台账/HANDOFF追加独立提交，保留既有dirty。
+
+
+<a id="en-request-final-wire-20261021"></a>
+## EN 政策/外交请求与 AFEF 固定标记审查（2026-10-21，OFFLINE_VERIFIED）
+
+- 产品 `73cdb5872`：外交请求窗口和 canonical 历史的已知中文日期在请求边界投影；内层 `[AFEF内战事实]` 在最终 wire 转为 `[Civil war fact]`；删除 NPC 政策技术 JSON 示例结尾中文句号。外层仍为 `[AFEF NPC_ACTION]` / `[AFEF PLAYER_ACTION]`，存档、actor、协议与原正文保留，不加回复语言锁。
+- 冻结日志 56 次外交请求/133 条消息均解析；首轮生成请求全文无汉字，接口原始返回中文，后续引用旧中文文书。政策截图有当次生成记录，但完整请求未被保存，不能认定那次所有动态输入全英文。80份映射EN JSON及82份固定安装资源比对、20个发送入口文件盘点与边界见 [专项审查](localization/en-request-audit-20261021.md)。东亚标点、固定语料和动态原文分别记录，不声称所有请求全Unicode清零。
+- 最新合并候选双API×CN/EN：33项真实组装/序列化、74项AFEF兼容、170项消息历史、4553项终端检查各通过；原源码及最终两DLL EN门禁通过。无付费请求，真实provider输出语言/截图政策缺失payload未验；旧中文正文仍按原文引用。
+- 代码证据（产品修订 `73cdb5872`）：`WorldDiplomacyRequestHistoryApplication.cs:151-157 Build`、`WorldDiplomacyCanonicalRenderRules.cs:22-27,192-205 Render*`负责请求日期；`PrimaryChatMessagePolicy.cs:14-43 ApplyFixedTextProjection/ProjectFixedTransportText`由`LlmApiCompat`两协议发送口消费；`NpcRulerPolicyBehavior.Generation.cs:3531-3536 ComposeNpcPolicyDraftPrompt`保持技术契约。全路径分别为`src/modules/AF.Module.Diplomacy/Application/`、`src/modules/AF.Module.Diplomacy/Domain/`、`src/modules/AF.Module.Llm/Protocol/`及`PolicySystem/Npc/`。
+- 本机证据 `artifacts/en-request-audit-20261021/receipt.json`；最终合并候选回放见 `artifacts/rebellion-rate-20261021/replay13` / `replay14`。回滚检查点`codex/checkpoint-en-request-audit-20261021`，仅focused inverse产品提交；未部署/Stage/打包/push。
+
+<a id="scene-manual-tags-developer-gate-20261021"></a>
+## 场景手动标签的开发者开关（2026-10-21，OFFLINE_VERIFIED）
+
+- 产品 `8adcfadd3`：`SceneShoutInputController`的`direct_actions`原先无条件加入菜单，现与`tag_test`共用现有开发者数据管理开关。共享`OpenPlayerDirectActions`在打开和每次延迟确认前重验开关；覆盖原生、场景轮盘和持续对话入口，关闭开关后旧窗口也不能继续派发。无新设置/新文案/新持久化。
+- 真实source-linked admission/world-map集成226项通过，包括三入口关闭拒绝、窗口打开后关闭拒绝、现有成本/目标/队列规则；双实现/Bootstrap通过。完整console总入口仍在未改动的`AFSceneSessionFolio.xml @StatusText`重叠断言失败，专项通过不冒充该总入口或Gauntlet实机通过，未扩大本次范围修改既有布局。
+- 代码证据（产品 `8adcfadd3`）：`src/AF.GameAdapter.Bannerlord/Scene/SceneShoutInputController.cs:1470-1482 TriggerShout`菜单；`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PlayerDirectActions.cs:78-109 OpenPlayerDirectActions/Current`打开与回调；现有展示VM和prefab仍使用同一开关。检查只在已有菜单/确认路径读取原设置，不增加Tick扫描。
+- 证据 `artifacts/scene-manual-tag-gate-20261021/{admission-tests.log,direct-actions-tests.log,receipt.json}`；回滚检查点`codex/checkpoint-scene-manual-tag-gate-20261021`，仅focused inverse`8adcfadd3`。未部署、实机、Stage、ZIP或push。
+
+<a id="standalone-rebellion-retirement-20261021"></a>
+## 取消旧稳定度独立叛乱，由内战派系接管（2026-10-21，OFFLINE_VERIFIED）
+
+- 按用户最新明确指令，产品 `3d8313f7b` 取代旧稳定度独立建国机制。截图三次对应战役日91105/91111/91113：北帝国/巴旦尼亚为稳定度叛变，西帝国为派系内战。世界上限原本仅统计派系，不能拿“三次”解释为同一受限路径；当次稳定度和骰值未记录，不追认概率正常。
+- 删除旧每周随机选氏族/建国调度，保留原稳定度周平衡和厌战消耗，再通知派系owner。所有稳定度档位旧独立概率为0；旧强制测试按钮撤下，兼容调用只返回退役说明，不做选人或HTTP。旧untracked外部split签名保留为无操作；队列/命名晚结果及物理建国前均要求有效派系ID。关闭派系后无独立稳定度兜底。已存在王国、稳定度存档身份、原版城镇叛乱、派系玩家起兵例外和已注册政变战争保留。
+- 稳定度仍影响关系、王室忠诚度及`CivilWarFeature.Instability`，派系继续按诉求、回应、最少拒绝次数、冷却、国内/世界上限运行。同步MCM/终端原owner说明、百科/开发面板CN/EN资源和真实reader；无新业务配置、存档格式或后台游戏对象读取。运行频率仍是既有周维护分片及主线程队列，减少旧候选扫描、骰子和命名HTTP。
+
+| 当前代码证据（产品 `3d8313f7b`） | 覆盖责任 / 未覆盖 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Kingdom/KingdomRebellionRuntimeController.cs:158-179,281-324,352-360,482-510,555-562` | 兼容入口停用、物理派系授权、周维护、无派系队列拒绝、晚结果拒绝；非实机建国证明 |
+| `src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs:146-149`；`src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:1499-1523` | 旧概率归零；稳定度仍注入派系feature；派系算法未重写 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:3116-3120`；`src/AF.GameAdapter.Bannerlord/UI/Editors/KingdomRebellionEditorController.cs:68-75,146-147 ProcessPendingDevForcedKingdomRebellionResult/StartDevForcedKingdomRebellionAsync` | 历史无派系split和强制命名停用；保留共享派系命名/结算UI |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/KingdomStabilityLabController.cs:76-150,183-187`；`src/AF.GameAdapter.Bannerlord/Kingdom/KingdomStabilityGameAdapter.cs:835-840` | 真实UI撤旧候选/概率/强制按钮，保留数值编辑及代际校验；原生Gauntlet未验 |
+
+- 验证：统一Debug两实现（1.3.15.110062/1.4.6.115628）与Bootstrap、双Coup seam及注册smoke通过；双API×CN/EN实际DLL退役断言各30项、政策/外交33项及既有消息/终端回归通过；派系owner/effects生命周期396项和稳定度编辑器43项通过。修复旧夹具缺少的真实文本reader/变量替身，并将旧中文显示断言迁为当前显示语义；未删业务条件、世界cap或结算断言。
+- 本机 `artifacts/rebellion-rate-20261021/{kingdom-events.txt,build.log,faction-lifecycle-tests.log,event-editor-tests.log,english-gates.txt,replay13,replay14,receipt.json}` 绑定最终两DLL SHA256。NOT RUN：真实用户存档推进、原生UI、实机派系建国/和平/旧国处置、真实provider、正式Stage/双包/部署/push；不声称已消除用户当前运行实例中的既有王国。回滚检查点`codex/checkpoint-retire-stability-rebellion-20261021`，focused inverse`3d8313f7b`，不改写历史或覆盖其他dirty。
+
+
+<a id="builtin-cache-image-settings-20261021"></a>
+## 缓存固定内置与生图设置集中到生图API（2026-10-21，OFFLINE_VERIFIED）
+
+- 产品 `bf64b87bc`，用户确认整组移除缓存设置、固定开启并沿用默认参数：删除`DuelSettings.PromptCache.cs`三属性及MCM元数据、终端分类专用路由和两语言七个设置文案。实际请求适配固定150000字符存储上限/10分钟TTL，原上下文预算、代际/渠道隔离、失败原请求回退及超时重建保留。实际MCM formatter读旧false/容量/TTL后不再保存这些字段；旧值不能关闭机制。
+- 同产品按用户最新要求，将`IllustratorSettings`全部28个现有可调选项并入原“生图API”组，包含总开关、自动生图、显示、场景渲染、存储、超时、导演预算与自定义规则。终端均在AI页单一生图API组；MCM同原组显示，原owner/字段/preset/setter/值不变，已退役独立导演地址/Key/模型不恢复。此用户要求明确替代原“生图显示外观留UI页、导演规则独立Prompt页”的路由；其他UI设置不迁移。
+- 代码证据（修订`bf64b87bc`）：`src/modules/AF.Module.Prompt/Composition/PromptCacheCore/PromptCacheCoreHost.cs:7-18 PromptCacheSettings`固定参数；`src/modules/AF.Module.Conversation/Internal/ConversationPromptCache.cs:45-79 Begin`真实消费者；`src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs:48-80 CategoryFor/IsVisible/ViewGroup`处理owner与限定ID、分组；`extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs:72-509`各设置属性共同使用`AF_ILL_GROUP_IMAGE_API`，消费者和保存身份保持。
+- 验证：统一Debug双实现（1.3.15.110062/1.4.6.115628）+Bootstrap/双Coup/registration通过，source及两DLL EN门禁通过；缓存CN/EN各51项、协议13组、实际DLL/MCM formatter两API各64项通过。最终双API×CN/EN回放终端各4694项（含28项全覆盖分类/MCM可见性）、政策外交33/旧叛乱退役30/AFEF74/消息历史170项各通过。首次真实DLL检查命中自动周报生图被通用构造器重新归入外交，已修复限定`Illustrator.` ID优先路由并重建重验，保留失败证据。
+- 运行频率：缓存原请求路径与懒缓存元数据；无新增Tick IO/反射扫描，无新配置副本。证据`artifacts/builtin-prompt-cache-20261021/{cache-cn.log,cache-en.log,protocol-tests.log,final-build.log,final13,final14,final-settings13,final-settings14,english-gates.txt,receipt.json}`绑定最终DLL及产品hash。NOT RUN：原生UI实机、真实服务商缓存命中/费用和生图、旧存档、Stage/双包/部署/push；不把默认启用解释成服务商必定命中缓存。
+- 检查点`codex/checkpoint-builtin-prompt-cache-20261021`与`codex/checkpoint-image-settings-api-group-20261021`；回滚只focused inverse产品`bf64b87bc`，保留其他作者dirty。最终候选包含本轮前述请求/开发者标签/旧叛乱退役修复，已安装游戏仍未更新。
+
+
+<a id="en-all-fixes-deployed-20261021"></a>
+## 上文修复的 EN Release 部署（2026-10-21，EN_DEPLOYED / LIVE_NOT_RUN）
+
+- 用户明确授权“做完就部署EN”；源码HEAD `dbcc6ad97c55f918837fbb8734fcb4d2e891dde6`，版本保持 `v1.6.3`。此条替代本日气泡定位、内政纪事去重、EN请求固定日期/AFEF注释、手动标签开发者门控、独立稳定度叛乱退役、缓存内置与生图设置归组记录中的“未部署”。产品提交依次为`72b84559a`、`615872c4c`、`73cdb5872`、`8adcfadd3`、`3d8313f7b`、`bf64b87bc`，已核对均在HEAD祖先且实际源码未被其他dirty改写。
+- 使用原统一脚本重新构建Release 1.3.15.110062 / 1.4.6.115628、Bootstrap、双Coup seam/registration并生成干净Stage通过；旧项目Release产物和Stage保留在本机任务目录。完整CN/EN投影分别3530/3521项通过，源码及两Release DLL EN门禁通过。Release双API×CN/EN实际DLL回放：每组终端4694、请求组装33、AFEF74、旧叛乱退役30、消息历史171项通过；复用未变源码的气泡440、纪事双版本各31、派系396和缓存双语各51项专项，不把这些离线证据称为实机。
+- 通过现有`Invoke-ManagedStageDeployment`向`F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`写入经完整投影校验的EN输入。部署后逐项比对387个管理文件hash，实际更新14个；保留3134个已有玩家文件，3139个玩家内容/设置hash一致；3374个非本次管理文件元数据不变。Bootstrap单入口和双实现SHA与Release回放一致，未生成Recovery或原子临时残留，未覆盖游戏/TaleWorlds DLL。既有自定义Prompt、配置、世界书和文书/存档原文不静默改写。
+- 证据`artifacts/en-deploy-20261021/{build-stage.log,prepare-en.log,projection-result.json,en-projection.json,replay13,replay14,deploy-en.log,deployment-result.json,deployment-final-check.json,receipt.json}`，包含本地保护hash，禁止作为公开日志上传。未递增版本、未ZIP、未push、未启动游戏。NOT RUN：原生UI/气泡位置和Folio既存重叠实机、旧档推进、真实provider输出语言及生图。全英固定Prompt不保证接口回复语言，旧中文历史和未知自定义仍按原文引用，不能宣称所有真实请求/生成结果绝无中文。
+- 回滚只用对应产品focused inverse；本次部署按既定规则不创建游戏目录备份或自动回滚。旧本地Release产物/Stage位置`artifacts/en-deploy-20261021/prior-release-build`与`prior-release-stage`，需要恢复时由原保护部署流程核对后操作，不覆盖玩家数据。已保护其他作者运行桥接、主台账/HANDOFF dirty，未将其纳入提交。
+
+<a id="en-live-diplomacy-gccz-20261021"></a>
+## EN 外交真实接口、事件归档、GCCZ 投影与快报阅读（2026-10-21，EN_DEPLOYED / LIVE_NOT_RUN）
+
+- 用户确认继续排查接口且不约束模型输出语言；本轮沿用“做完就部署 EN”的授权。产品 `32236f2ca` / `c2f5a3cea` / `a976ca934`，版本保持 v1.6.3。此前把全英固定 Prompt 等同于真实模型回复通过的结论不成立：截图“商路共济之议”日志同一 HTTP body 的三条 messages 共17355字符、0汉字，接口原始回复首先出现中文。安装 DLL/Bootstrap hash 与当时最新部署一致，不能归因于旧 DLL。真实接口 A/B：原 reasoning_effort=none 两次中文；只去掉该字段两次英文；按已保存 high 配置一次英文；简短英文问句英文。返回模型标签差异本身不证明服务商换模型。
+- 直接原因之一是外交发送路径硬编码关闭推理，忽略已开启的事件专用 API 设置。`src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs:526-550` 的请求配置构造和 prepared/legacy 两条消费者已读取实际路由的开关/强度并冻结在 prepared 请求；重试不再读取变化中的 MCM。专用与主 API fallback 双向测试 CN114/EN115通过。未加入语言锁、输出汉字过滤或自动翻译；服务商自然输出仍由其实际行为决定，不承诺此后所有回复绝无中文。
+- 截图政策 `Coastal War-Host Muster`（150字符）走成功解析/保存且效果包 active，与本地固定 fallback 不同；正文链只 Trim、超900拒绝，不用摘要替换正文、不截短。缺当次完整 raw，无法逐字还原。原 EN 默认将中文60—100字符照译为英文60—100characters，导致表达量过短；两份默认现改为完整政令说明理由/措施/执行者/对象及必要条件，摘要独立；技术900字符上限不改。精确新旧默认 SHA 同步 `McmKnownPromptDefaults.json`，未知/编辑过的用户 Prompt 保留。
+- 事件读取：`CampaignSystemFactProjection.cs:89-105,338-390` 扩展宴会、竞技大会和政策固定框架；`WeeklyReportArchivePolicy.cs:235-285` 将 FactMaterial/ArchiveMaterial 接同一读取投影；`WorldBulletinEventCaptureAdapter.cs` 在650截断前先投影已知内战材料。竞技大会对完整有序模板投影冠军/角色/家族/王国/奖品/人数，未知和截断旧快照保留原文。原生周报111个Fact模板核对两包键/变量与EN固定正文；不因此声称全部未知旧记录均英文。
+- GCCZ：`TownPromptComposer.cs:24-27,124-154,563-569` 空聚落兜底使用选中包；新 `SiegeSceneMemoryPromptProjection.cs:1-113` 懒加载成对catalog中的71个去重场景事件、172个事实/反应框架及104个typed值规则。完整可信模板在请求边界投影，数额和ID校验，action/branch/plan/status/pool/notes按类型匹配，嵌套深度有界；未知动态、人名、引见信原文保留，存储、序号、去重和受众判定保持。最终复核补齐退还救济物资明细的固定数量单位与分隔符，保留物品名。`SiegeInterventionMemoryContextBuilder.cs:48-55` 使用投影事件而视角仍判断原记录；`MemorySystemFactProjection.cs:205-244` 接普通AFEF/场景反应读取；`SiegeCastleRuntimePromptProfile.cs:252-260` 接暂定分组计划。没有改变动作标签、事实身份、权限或玩法结算。
+- GCCZ UI：`SiegeCastleCompletedInterventionSummaryBuilder.cs:21-75` 对EN汇总中的已知领主出售/处决/政治安排做读取投影；`SiegeAiInterventionBehavior.cs:15140-15161` 原来漏传语言、默认中文的城堡汇总现按游戏界面语言选择。Prompt仍按包，UI仍按游戏语言；五组catalog与disk/embedded来源交叉核对。独立 `G:/AFMOD/GCCZ` 不可访问，未镜像，也未创建空副本。
+- 快报：`WorldBulletinPanelVM.cs:77-88,294-301,339-408` 正文与短讯沿原报刊字号12—36/default18，`WorldBulletinPanel.xml` 可见并可拖动正文滚动条、独立短讯滚动状态，正文避开滑块。设置沿同一 MCM owner/terminal getter/setter，两包说明同步，重开报刊生效；没有新增设置副本。终端近况卡片/reader标题、日期和预览分行/裁剪避免截图重叠，实际视觉仍待游戏验收。
+- 运行频率：文本规则与catalog按进程Lazy缓存，仅请求/读取/面板构造/完成汇总执行；场景记忆沿既有10条上限，typed嵌套有界；不新增Tick IO、全表反射或游戏对象后台读取。GCCZ核心+真实bridge最近记忆160项通过（fake辅助transport）；GCCZ真实provider/composer/AFEF消费者矩阵8组合各594项；通用事实回忆CN/EN各1610项；事件投影/实际归档方法CN/EN各183项；快报真实VM和prefab48项通过。测试替代边界和NOT_RUN记录在对应日志，不能把fixture当实机。
+- 旧 `GcczCompatibilityTextReplay`停在旧版本逐字逆迁移断言（修改的`SiegeInterventionMemoryContextBuilder.cs`），未删除或弱化断言；旧归档综合夹具缺既有外交模型类型未通过。本轮受影响真实方法由上述专项覆盖，不宣称旧综合套件全部通过。首次/中间Stage因旧锁定XML及在生成期间修复换行被门禁拒绝，失败现场保留；最终冻结源码后重新生成干净Stage通过。双API Release（1.3.15.110062/1.4.6.115628）、Bootstrap、Coup seam/registration通过，保留既有363编译警告。
+- 最终构建/投影/部署结果见本条下方实际交付补充。中间候选c2f5a3cea已部署并通过387管理文件、3144保护哈希、3389非管理元数据校验；随后发现救济退还单位遗漏，追加a976ca934并重建，不将中间部署当作最终补丁验收。证据目录 `artifacts/en-live-diplomacy-language-20261021/` 中包含真实日志和私有请求，禁止整目录公开上传；`product-validation-receipt.json`绑定产品源码及最终DLL。回滚仅对 `32236f2ca` / `c2f5a3cea` / `a976ca934` 做focused inverse，不回滚其他作者改动；前置检查点 `f6a2dac96`。旧项目Release产物/Stage保留于该目录 `prior-release-build` / `prior-release-stage`；部署不建游戏Recovery、不自动回滚，恢复须沿原保护流程核对后操作。未验原生UI/气泡/快报滚动视觉、旧档推进及新版本游戏内provider回复；动态旧原文不静默改写。
+
+- 实际最终交付：`release-refund-final.log` 双API/Bootstrap/Coup/registration和干净Stage通过；`prepare-en-final.log` 源码及两DLL英文门禁、完整CN3530/EN3521投影通过。最终 `a976ca934` 使用既有 `Invoke-ManagedStageDeployment` 覆盖到 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`，校验387个管理文件，最后一次相对中间候选更新12个；保留3134个已有玩家文件，3144项保护哈希一致，3389个非管理文件大小/mtime不变，无Recovery和原子临时残留。最终1.3/1.4 DLL SHA与 `product-validation-receipt.json`绑定。该条取代中间候选“最终待部署”状态，未ZIP、未push、未启动游戏；实机和独立G盘镜像仍未完成。
+
+<a id="declaration-language-length-20261021"></a>
+## 宣言中文回复复核与中英篇幅单位（2026-10-21，LENGTH_EN_DEPLOYED / RESPONSE_LANGUAGE_UNRESOLVED）
+
+- 用户截图为“致西帝国的结盟倡议”，Vlandia→Western Empire。原日志 `Token_Stats.txt:25427-25504` 对应18:49:16请求：三条最终messages长度15025/1061/2878，共18964字符，均0汉字；reasoning_effort=high，原始provider content的title/body/reputation_reason为中文。Bootstrap18:42实际加载SHA `4F8CE15DB47F716DEB733DC80E5A66B74D18DC6E85A4624A37732ABE8E99F159`，与上一轮最终部署a976ca934一致。不是旧DLL，也未发现本条生成前的固定提示词汉字残留；后续响应请求引用这条已生成中文原文，不能倒过来当作首次生成时的中文输入。上一轮“按已配置high得到英文”的单次A/B不能证明语言问题解决，本条是明确反例。
+- 保留用户“不约束模型必须输出语言”的要求，不加语言锁、输出过滤、自动翻译或改写已保存宣言。对同一英文请求只做两次独立服务商调用（无自动重试）：原字符指导重放本次返回英文174字符/26词；仅将正文字符改词、标题20字符改12词，返回英文557字符/89词。两个请求均0汉字、同模型同high同temperature/max_tokens；这支持篇幅单位影响，但同一请求的不同语言输出表明模型行为并不稳定。未建立可在本地保证输出语言的修复，语言问题仍未解决；不把全英固定资源或本次英语样本作为所有生成结果验收。
+- 篇幅缺口已修：截图当次EN固定contract仍写“40 to 200 characters, including punctuation”，日志多个英文结盟倡议仅29—33词。产品 `4aec88969` 保留原MCM字段/JSON身份、默认100/300和现有用户40/200等数值；CN资源仍按字符（含标点），EN固定正文与书记官代笔按单词指导。`DiplomacyPromptTexts.en.json` 的`AF_DIP_Contract_004/021/041`、`DiplomacyMiscPromptTexts.en.json` 的`PlayerDraft_LengthRule`及真实reader/consumer同步；EN标题/分析标题通常不超过12词，CN保持20字。原生MCM属性、终端Registry/Localization和两包XML的同一上下限说明同步交代按内容包选单位，UI语言不改变单位；不新增配置副本或覆盖玩家设置。
+- 实际接线：`WorldDiplomacyPromptContractRules.cs:214-237` 的`GetDeclarationOutputTokenBudget`为普通/回应/接力/口头协定生成及重建提供`max(base,4*upper+1024)`容量；`WorldDiplomacyGenerationTaskApplication`创建、`WorldDiplomacyJobPreparationApplication`重建、`WorldDiplomacyOrchestration.OralGeneration`三消费者均接入。短文保留原1800容量底线，上限1000时5024；书记官已有`4*upper+256`容量足够支持词单位。HTTP仍按实际API配置取上限，既有512 cap回放保留。篇幅只是偏好，发布和代笔不因偏短/偏长而裁切或重试；6000字符编辑/存储容量不变，超容量沿原失败语义。标题现有100字符安全容量不变。
+- 请求合约与cache affinity升v31，沿现有`WorldDiplomacyStorageMigration`加载边界从v30刷新待办Prompt/旧修复messages/cache，保留已保存文书、动作、报价、条款和回合进度；发送前也拒用旧affinity并走真实重建。只在请求准备/加载迁移时做常量运算与已有缓存刷新，无新增Tick扫描、IO或后台游戏对象读取。用户明确要求中英文篇幅差异化，此处有意改变英文写作指导单位；不将旧双语skill“不可把字符预算改词”的默认保守规则误当作禁止用户授权产品变更。
+- 验证：真实书记官VM/application/client/protocol/transport（游戏/MCM替代）CN115/EN116；真实生成/接力、v30→v31待办迁移与修复链回放CN/EN各107；口头协定宣言CN/EN各329，含短于/长于偏好及6000容量不改正文和机制。成对资源键/变量、EN固定片段、MCM与终端双语hint身份核对通过。生命周期测试按原net6目标构建并在.NET8 Major roll-forward执行；首次尝试直接覆盖TargetFramework被资产目标门禁拒绝，改回原项目目标后通过，没有更改测试工程目标。双API/完整Stage/投影/部署结果另见实际交付补充，实机与旧档推进未验。
+- 本机证据 `artifacts/declaration-language-followup-20261021/{evidence.json,receipt.json,player-cn.log,player-en.log,cn--writing-style.log,en--writing-style.log,cn--oral-declaration.log,en--oral-declaration.log,probe-exact,probe-words}`；目录含完整请求和provider回复，仅留本机、不整目录公开上传。检查点`9f5f15d`，回滚仅focused inverse产品`4aec88969`，保留其他作者dirty；旧项目Release产物/Stage保留在本目录`prior-release-build`/`prior-release-stage`。不重译或删除既有中文文书，不宣称部署后旧中文记录会消失。
+
+- 部署前观察到游戏会话结束保存：三份已知MCM JSON（主设置/Illustrator/Coup）哈希在初始快照后变化，均仍为有效对象；游戏进程已退出。其余保护内容未变。保留当前值，以原始`before.initial.json`留证并重新冻结`before.json`及实际缓存/日志元数据；不把游戏自身缓存清理当作本轮部署删除，也不改写这些设置。
+
+- 最终交付：统一Release两API/Bootstrap/Coup seam/registration、干净Stage通过；源码与两DLL英文门禁、完整CN3530/EN3521投影通过。EN v1.6.3已覆盖`F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`，387管理文件hash验证，更新13个；3134既有玩家文件保留，3144项保护hash与最新会话基线相同，3421个非管理文件大小/mtime不变，无Recovery和原子临时残留。依据最后读取主设置仍为40/200，EN现指导40—200词、CN40—200字。`receipt.json`绑定最终产品和DLL；未ZIP、未push、未启动游戏，实机未验；本部署仅可宣称篇幅修复已交付，不能宣称截图中文回复问题已解决。
+
+<a id="package-1-6-4-20261021"></a>
+## v1.6.4 正式双包（2026-10-21，PACKAGED / NOT_DEPLOYED / NOT_PUSHED）
+
+- 用户当前要求仅“打包”。按原 `scripts/build/package_mod.ps1 -Configuration Release -Build -ExcludeOnnx` 版本事务，v1.6.3→v1.6.4；仅更新 `AnimusForge/SubModule.xml:4` 模块版本及 `Properties/AssemblyInfo.cs:7` AssemblyFileVersion=1.6.4.0。产品基于 `a615b2efb`，包含宣言篇幅单位修复 `4aec88969` 和此前已提交产品，保护其他作者未提交内容；不修改构建流程。
+- 原统一Release双API（1.3.15.110062 / 1.4.6.115628）、Bootstrap、Coup seams/registration、干净Stage、EN源码/DLL、完整CN/EN内容投影及两ZIP锁定逐文件哈希均通过；编译存在警告，0错误。本机完整日志及收据：`artifacts/package-1.6.4-20261021/package.log` / `receipt.json`。
+- `AnimusForge_v1.6.4_CN_1021_1941.zip`：86185538 bytes，3530项，SHA256 `60A8BDBBAFB86CA5B3EC4FBD7900C9E7769EF222CB51618464625469626CF933`。
+- `AnimusForge_v1.6.4_EN_1021_1941.zip`：85510890 bytes，3521项，SHA256 `9919B7B0AA6E4A7ED9E3FA8D43EF68019612DCBF6FCD2B12519F307F109113E7`。
+- 独立验证：ZIP CRC、同版本/同时间戳、唯一AnimusForge根、XML仅加载Bootstrap、1.3/1.4 DLL与Stage及两包相符、无Logs/Cache/Recovery/ONNX目录；保留并复核原16份ZIP哈希。安装目录XML/Bootstrap/两实现4项关键hash与打包前一致；未执行部署、推送或启动游戏，不代表全游戏目录审计。
+- 未验：原生UI、旧档推进、稳定的模型输出语言。前轮全英文请求仍有provider返回中文的已知问题未解决，本轮不增加语言锁、不改写已存中文正文。
+- 回滚：版本文件原字节保存在本机证据目录 `SubModule.before.xml` / `AssemblyInfo.before.cs`；源码使用本次版本提交的focused inverse，保留其他作者dirty和旧包。打包产物目录为 `一键编译覆盖推送/packages`；当前已安装EN仍为v1.6.3，不暗示已部署v1.6.4。
+
+<a id="push-1-6-4-20261021"></a>
+## v1.6.4 干净源码推送（2026-10-21，SOURCE_PUSHED / ZIP_LOCAL）
+
+- 用户在正式双包后授权“推送”。实际远端基线 `d2d05f0c63bd20d3cb7fa79fc5886d8b5769c9b9`，本地已验证包源码 `3dc06e98566a379db2540e6e6f1f4fe23c53586c`；本地main多119个历史提交，包含禁止公开的artifacts及交接内容，因此沿用此前独立index/commit-tree的干净发布方式，不推送本地main历史。
+- 公开提交 `5b82d06240fc4427a413043741151bf1f3a3d718` 仅以该远端基线为单亲；97项产品/资源/测试及脱敏请求审计文档变更，保留必要删除（退役缓存设置文件），不含本地HANDOFF/主台账增量、artifacts、凭据、二进制或ZIP。公开树在src/content/PolicySystem/extensions/GCCZ/tests/scripts/Properties/AnimusForge/docs-localization与已打包源码完全一致，遗漏树差异限于80个本地证据/交接路径；新增历史1个提交，凭据格式扫描0命中，CRLF兼容的diff check通过。
+- `git push --dry-run`通过后，执行普通 `git push origin refs/heads/codex/publish-1.6.4-20261021:refs/heads/main`，从基线正常fast-forward到 `5b82d06240fc4427a413043741151bf1f3a3d718`，并通过 `git ls-remote origin refs/heads/main` 独立核实。未force-push、不推其他分支/标签、不提交其他作者dirty；本机证据 `artifacts/package-1.6.4-20261021/{public-source.patch,publication-ready.json,receipt.json}`，不可整目录上传。
+- 复用刚通过的Release双API/Bootstrap、双Coup/registration、干净Stage、EN源码/DLL、完整CN3530/EN3521投影与两ZIP哈希/CRC证据；本轮无产品修改，不重复构建。CN/EN ZIP保持本地，不创建GitHub Release或上传压缩包；未新部署、未启动游戏，原生UI/旧档仍未验，provider偶发中文输出仍未解决，不追加语言锁。
+- 本条取代[正式双包记录](#package-1-6-4-20261021)“未push”状态；回滚远端源码使用公开提交focused inverse并重新验证后普通推送，禁止hard reset或改写历史。包回滚点仍为 `codex/checkpoint-package-1.6.4-20261021`，玩家数据和其他作者dirty保留。
+
+
+<a id="equipment-prompt-slot-fix-20261021"></a>
+
+## 装备 Prompt 空防具槽越界修复（2026-10-21）
+
+状态：OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN。范围仅限用户指定的装备读取缺陷，不处理政策日志误报或多外国目标规则。产品修订 `71b95a55de5d2e13d5fa46e09484498eb32651cf`，意图检查点 `51c61ca81489c3591426d6d2dfdd0478443cc887`；独立本地分支 `codex/equipment-prompt-slot-fix-20261021`。main 与其他作者未提交改动保留，未 push、打包、部署或修改一键入口。
+
+- 原因：防具 SpawnEquipment 槽为空后，英雄与普通 NPC 读取器均回退到仅含五个武器槽的 MissionEquipment，防具索引 5—9 触发已捕获 IndexOutOfRangeException。
+- 真实 owner/消费者：`EquipmentPromptCaptureAdapter.BuildNonHeroEquipmentSummaryForPrompt`（`src/AF.GameAdapter.Bannerlord/Composition/EquipmentPromptCaptureAdapter.cs:124—153`）限制回退索引为 0—4；`PersonaIdentityPromptCaptureAdapter.TryGetAgentEquipmentItemForPrompt`（`src/AF.GameAdapter.Bannerlord/Prompt/PersonaIdentityPromptCaptureAdapter.cs:1245—1275`）在完整装备表未命中后只允许武器槽回退。分别由场景 NPC 装备摘要与玩家/英雄装备 Prompt 读取链路消费。保留 SpawnEquipment 优先级、已有防具、合法武器回退及 Hero 自身装备后备。
+- 双语/性能：先读本仓库双语 skill；没有增加或修改固定文本、资源 key、格式、协议、存档或设置；CN/EN 沿用原 reader。只在生成装备上下文时每次槽读取增加常量边界比较，无新增 Tick 工作、反射、扫描、缓存或 IO。
+- 回归：`tests/AF.GameAdapter.Bannerlord/EquipmentPromptCaptureTests/run.py` 原样提取两处生产方法，用明确的 12 个完整槽/5 个武器槽夹具执行。旧代码空防具检测失败并捕获 5 次越界；修复后 20 项通过、捕获/未捕获越界均为 0；覆盖空/非空防具、英雄五个武器回退、Spawn 优先、普通 NPC 摘要、便装语义和空对象。夹具不代表真实引擎。
+- 构建：原统一 Debug 1.3/1.4 + Bootstrap 构建及双 Coup 接缝通过；显式 1.5 Debug 候选及 Coup 接缝通过。引用版本分别 v1.3.15.110062、v1.4.6.115628、v1.5.5.124170。已有构建警告保留。最终字节绑定、命令日志、候选哈希见本机 `artifacts/equipment-prompt-slot-fix-20261021/receipt.json`；不把工作树其他作者变化纳入本产品提交。
+- 未验：未覆盖安装、实机同场景复测、旧档推进或真实 provider 请求；当前游戏仍加载旧 DLL，不能声称运行日志已消除越界。源码 focused inverse 仅针对上述产品提交；修改前原字节位于同证据目录 `before/`，不整文件覆盖已有改动。
+
+- 后续同会话只读卡顿调查：23:34:38 的 PerfProbe 窗口记录 MyBehavior.OnEngineTick 单次 27706.097ms；外层 27782.994ms 在下一窗口上报，属嵌套计时不相加。23:34:13—23:34:38 日志空档后紧接世界快报发布；内部子步骤未有独立计时，不能断言根因。此卡顿不属于本装备修复已验证范围，未修改快报链路。
+
+
+<a id="conversation-no-budget-drop-20261022"></a>
+## 最终预算超限不再删除已选对话（2026-10-22，SOURCE_AND_OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+用户明确要求“不要删，超就超了”。本条替代 [预算超限继续对话](#conversation-budget-continuation-20261020) 中按最终总预算移除可选历史组的行为；近期窗口、日内摘要、相关原话召回、完整原始存档及现有缓存容量/生命周期保持。
+
+- 主payload、缓存入口、信使收发信组装不再调用历史裁剪；删除 `ConversationRequestBudget.Prepare` 与 `ConversationContextSettingsCapture.PrepareOptionalHistory`。最终字符/token目标只用于诊断和保留缓存的判断，超标回退完整已选请求。固定Prompt、当前输入、AFEF与已选历史的角色/顺序、输出额度保留。没有新设置、存档键、Tick工作或模型调用。
+- 原 `ConversationContextInputChars` / `ConversationContextEstimatedTokens` 的owner、JSON、范围和默认值保持；MCM英文fallback与既有CN/EN资源说明同步，终端继续使用原owner元数据投影。没有修改构建/部署流程。
+- 验证：生产缓存CN/EN各54项；旧生产裁剪源码负控在“超限保留历史”断言失败，新实现通过；同日300轮/600条原文回放20项（35次fixture摘要，峰值27消息/38883字符）；协议13组；实际1.3/1.4 DLL各64项MCM/终端/JSON/最终payload检查。5万字符system＋64000输出下，报价、NPC接受、付款和当前输入均保留，Gemini转换后仍完整。官方1.3/1.4＋Bootstrap构建及双Coup/注册门禁通过；CN/EN31个现有UI key成对、两条新说明与MCM fallback一致。
+- 证据与源码范围：`artifacts/conversation-no-budget-drop-20261022/receipt.json`、`code-map.json`、`before/`与各日志。本地 `codex/conversation-no-budget-drop-20261022` 独立索引提交；主分支/共享索引锁与其他作者dirty保留。精确产品提交见receipt；构建基于本任务修改后的共享工作区（包含既有作者改动），不宣称该局部分支单独复现全部当前候选。
+- 未验：真实游戏/玩家旧档/真实模型HTTP、原生MCM绘制；未部署/打包/push，安装状态未改变。仅撤销本条产品提交可回滚本次修改；`before/`保存本任务文件基线，禁止整体回滚其他作者工作区。
+
+
+<a id="conversation-cache-no-budget-bypass-20261022"></a>
+## 超最终预算仍复用稳定提示词前缀（2026-10-22，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+用户进一步要求“超预算跳过缓存去掉”“有当日长聊天压缩就好了”，并要求验证去重。本条覆盖[前一切片](#conversation-no-budget-drop-20261022)中“最终目标控制缓存保留/超标回退”的描述；已选历史不删除的修复继续有效。
+
+- `ConversationPromptCache.Begin` 删除最终输入字符/token/输出预留的旁路判定，不再把这组设置传入Store；`ConversationPromptCacheStore.Begin` 删除token预算参数，缓存本身只沿用既有150000字符容量、10分钟TTL、32 scope/总池约束。超本地总预算仍冻结并复用相同system前缀。当日摘要、近期原文、旧原话召回、summary/window/source/provider/generation失效保持。真实缓存容量不足的完整请求fallback与原始记忆保留。
+- MCM原owner与终端共用的两条CN/EN提示改为“仅诊断，不删历史/不跳过缓存”；属性/JSON/default/range身份保持，无新设置。性能为去掉缓存入口token估算与重复budget扫描；无新增Tick/IO/模型请求或缓存容量增长。
+- 验证：旧生产adapter/store负控在“字符超标仍进入缓存”具名断言失败；生产缓存CN/EN各68项、300轮长聊20项（35次fixture摘要，600原文保留）、协议13组通过。官方双API/Bootstrap/双Coup/注册通过；实际1.3/1.4 DLL各76项，含自由对话/场景/信使超目标连续两轮：完整首轮前缀逐字不变，50000字符system仅一份，已接受回复保留；尾部没有未变化状态，却保留新增/移除状态和当前输入，最终Gemini wire保留交易/付款。原设置双入口与JSON回读、31个CN/EN UI key及fallback一致。
+- 源码/修订/哈希/回滚：`artifacts/conversation-no-budget-drop-20261022/cache-prefix/receipt.json`、`code-map.json`、`source-hashes.json`、`before/`和各日志；本地 `codex/conversation-no-budget-drop-20261022`。主分支/共享index锁及其他作者内容保持；候选基于共享工作区构建，局部分支只记录本次切片。
+- 未验实机、玩家旧档、真实provider缓存命中/费用、原生MCM绘制；未部署/打包/push。回滚仅本条产品提交focused inverse（receipt具名），不能回滚其他作者dirty或前一不删历史切片。
+
+
+<a id="deploy-cn-dual-cache-20261022"></a>
+## CN 双实现部署：历史保留与缓存（2026-10-22，DEPLOYED / LIVE_NOT_RUN）
+
+- 用户“部署CN”后明确“只部署双版本”“1.5.5暂时不考虑”。已按原部署 owner 覆盖 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge` 的 CN 标准 1.3/1.4 双实现；不构建或更新 1.5，安装中的旧 1.5 文件按原未列入 Stage 文件保留规则保持。本条仅替代[缓存修复](#conversation-cache-no-budget-bypass-20261022)和[历史保留修复](#conversation-no-budget-drop-20261022)的未部署状态；不把旧 1.5 安装宣称为已包含本次修复。
+- 使用已验证候选，产品 `3e3b39419affab807ade3a77e7430af1192f2bfd` / `a591b6346de113c76187cbac0ed8e1861440cc53`，源码范围仍见缓存切片 `code-map.json`。最终总预算仅诊断，不删除已选历史或跳过缓存；日内摘要/近期窗口/召回及原缓存容量和 TTL 保持。现有增量去重已验；旧状态行原地替换仅讨论，未实现。
+- 官方干净 Stage、当前产物、桥接门禁、完整 CN 3530 / EN 3521 投影通过；调用原 `Invoke-ManagedStageDeployment` 实际更新 10 文件。安装后逐文件哈希验证 Stage 3530 项、3791 个保护文件哈希/长度/时间戳保持；两实现及 Bootstrap 与已测候选匹配，既有 1.5 文件未变，无额外安装路径变化。原一键脚本未修改，未建立 Recovery、部署备份或自动回滚。
+- 复用有效离线证据：缓存 CN/EN 各68、长聊20、协议13、真实1.3/1.4 DLL各76；包含三渠道超预算连续两轮、稳定前缀单份 system、未变状态不重复追加及交易历史保留。没有启动游戏、玩家旧档或真实 provider 缓存命中/费用验证，也未打 ZIP、push 或处理 1.5.5。
+- 本机证据 `artifacts/deploy-cn-dual-cache-20261022/{receipt.json,deployment-receipt.json,prepared.json,projection.json,stage.log,preflight-verified.log,deploy.log}`；意图 `8d535526c5456c286ee7ebf542780c766a7c9f1f`，本地 `codex/deploy-cn-dual-cache-20261022`。安装 DLL13 `95c950cd03683368267c1ee02566cfbbd6a7fbc9090ebf272c925e3a561e03ce`，DLL14 `6e5b9837670f522cee11d302d72bd199efbd8ef9fb5f0ba9e7a66f92c994bb39`。回滚源码需对上述产品提交聚焦逆向并重新双构建，安装需另行部署；旧项目 Stage 保留在同目录 `previous-stage/`，不作为自动恢复承诺。主分支/共享 index 锁和其他作者改动保持。
+
+
+<a id="pull-merge-push-cache-20261022"></a>
+## 对话历史／缓存修复拉取合并推送（2026-10-22，PUSHED_VERIFIED / LIVE_NOT_RUN）
+
+- 用户授权“拉取合并推送”。fetch 得到远端 `77fad380a4437b5b6c13344e9f60375769235a92`，新增游戏参考目录保留，1.5.5 仍不在开发/构建范围。主分支有121个本地独有历史，含不得推送的交接/证据，故采用独立发布分支 `codex/publish-conversation-cache-20261022`，仅整理本会话已验证的15个源码、CN/EN资源和测试文件，其他作者修改保留；不是全工作区提交。
+- 公开产品 `cbadfc5ea7a4f42bb043729642c955823ebe06e9` 基于旧公开基线，真实 merge-tree 三方合并到新远端，0冲突；公开合并 `b4e5331d090f36266be0d82aa049677ddac158fd` 两父分别为当前远端与本轮产品，新增历史仅2提交。源码范围与[缓存切片](#conversation-cache-no-budget-bypass-20261022)代码图相同；最终预算不删已选历史、不绕开缓存，摘要/容量/TTL保持，旧状态行原地替换未实现。
+- 合并后干净源码复跑：缓存CN/EN各68、长聊20（35次fixture摘要/600原文）、协议13通过；原统一入口1.3/1.4/Bootstrap均编译通过。初次门禁因独立目录缺少完整SandBox引用停止，使用现有同版本完整引用执行原 `Invoke-CoupSeamGate` 后，两API接缝/注册与DLL绑定通过；无脚本或产品变更来绕过门禁。构建警告保留。
+- 推送预演后普通fast-forward推送到 `origin/main` 成功，ls-remote及origin/main均核对为上述合并SHA；无force/push其他分支或标签。新增15路径和两提交审计通过，无本地HANDOFF/主台账/artifacts增量或凭据格式命中。原主工作区HEAD `abe2057cf5c48a5ca90c3ca27661399c29ad18ea`、共享索引及锁哈希和15工作文件保持，未切换或推进本地main；远端合并发生于独立发布分支。
+- 本机证据 `artifacts/pull-merge-push-cache-20261022/{receipt.json,ready.json,validation.json,public.patch,push.log,push-dry-run.log,dual-build.log,dual-gates.log,cache-cn.log,cache-en.log,intraday.log,protocol.log}`。未实机/旧档/真实provider命中或费用验证，未新增部署、打包或版本递增；上一条CN部署状态保持。回滚公开产品使用 `cbadfc5ea7a4f42bb043729642c955823ebe06e9` 的focused inverse，再验证普通推送；禁止改写历史或整工作区回滚。
+
+
+<a id="scene-relay-calendar-history-ui-20261022"></a>
+## 接力上限设置／第三方历法日期／场景历史窗口（2026-10-22，SOURCE_AND_OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 用户先要求场景喊话最大接力轮数接入终端和MCM，随后明确“最大8轮”；最终原DuelSettings新增ShoutMaxRelayTurns，默认8、范围1–8，setter同样限制越界。首次NPC回复计一轮，同一人再次发言继续计数，设1时仅首答；每次喊话捕获一次，上轮运行中不改上限。终端由现有MCM元数据缓存自动收录并路由场景页，原owner/保存JSON/preset不另造副本，中英文名称/说明实际显示通过。原资格、人数预算、提前结束和战斗演出抑制保持，两处提示词轮序同步。
+- 截图“卡拉迪亚”来自AF在CampaignTime.Days(day).ToString()后额外套用的模板。按用户要求删除CN/EN日期包装前缀；日期字段读取边界清理确切旧前缀，缺完整材料天数的旧范围也在标题/元数据显示时清理。第三方月份、公元前年份、未知日期、正文和存档原文保留，不全局替换世界名或重写档案。
+- 按用户红框扩大AFSceneSessionScroll和AFSceneSessionFolio两种历史抽屉：由固定960×520改为可用区域伸展，预留左160/右250/上45/下250；标题和正文同步扩展，关闭按钮右上锚定。每个prefab仅4个布局节点改变，滚动和全部其他绑定/节点保留，原200条展开历史上限和刷新策略不变。两项原content-map及SceneSessionPanel.LoadMovie消费者保持。
+- 验证：真实生产接力回放90项（含1/3/8/越界、途中设置变化/下次生效、两条主/后处理轮序）；接力实际1.3/1.4 DLL各28项MCM发现、终端分类/显示/委托、CN/EN、JSON磁盘重载和旧配置缺字段通过。最终双API/Bootstrap、双Coup接缝/注册通过；最终DLL日期各18项CN/EN及旧归档实际投影通过，覆盖截图的近期标题/元数据、原正文和记录保留。两套布局4个虚拟画布的几何和绑定核对通过，不替代原生绘制。
+- 证据：`artifacts/scene-relay-max-turns-20261022/receipt.json`（接力产品018b969f，保行尾后续d8dab61c）及`artifacts/calendar-scene-history-ui-20261022/{receipt.json,code-map.json,layout-checks.json,dual-build.log,actual13-final,actual14-final,before}`。代码图提供真实符号/行范围/哈希。旧完整编辑器测试夹具缺多个既有依赖，尝试失败保留且相关夹具改动已还原；改用最终真实DLL验证当前日期责任，不宣称全编辑器专项通过。
+- 性能：每次喊话一次限额读取，去掉硬编码；日期只处理至多两个端点，无新增Tick反射/扫描/IO或归档迁移。未实机窗口外观/第三方模组整合/旧档/真实provider，未新部署、打包、push或处理1.5.5。当前游戏仍为上次安装状态。回滚对上述切片做聚焦逆向；原字节在各before目录，保留其他作者和主分支。本任务仅使用独立索引；收尾观察到共享索引已变、旧锁已不在，未删除锁或回写恢复外部状态。
+
+
+<a id="kingdom-import-tolerance-20261022"></a>
+## 2026-10-22 普通国家导入允许三个不匹配项（OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 用户要求：世界书整包导入至少容许三个国家不匹配。本次固定阈值为普通国家最多3个，逐项跳过；第4个拒绝整个预检并列出前4个ID/名称，不修改存档。动态建国原有无限跳过与同ID存档保留继续有效，独立计数。畸形/重复资料、重复映射目标和导入时目标丢失仍拒绝。
+- 全部普通条目跳过但数量不超过3时，允许资料包其他域继续导入，保持现有缺席国家默认重置规则。普通跳过ID加入原PreservedProfileIds；确认和完成提示增加普通跳过数量和名单，中英文资源沿用现有reader/content-map/language_data。
+- 性能：仅手动导入预检遍历已有entries；普通跳过列表最多4项，不新增Tick扫描、IO或配置。没有新设置/MCM字段。
+- 代码证据（修订见下方receipt关联本地分支）：`src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.cs`，`TryBuildDatabaseReloadPlan` 268–348：上限/跳过/快照；`TryApplyDatabaseReloadPlan` 402–450：沿用候选原子发布与完成提示；`KingdomDatabaseReloadPlan` 2048–2063：非持久化计数/名单。`src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperImportUiController.cs` 721–724：真实确认消费者。
+- 四份既有XML新增6个CN/EN键，原生语言注册和内容映射均存在；无包语言强制输出或玩家内容改写。
+- 验证：现有实际源码抽取回放57项通过（1/2/3接受、4拒绝、模糊名字跳过、不占动态名额、全普通跳过、旧动态保留/失败不发布）；CN/EN XML键唯一/变量/映射通过；原build_single_module入口1.3/1.4/Bootstrap与接缝/注册检查通过。世界/reader/localization使用fixture，不代表Campaign实测。
+- 未验：原生界面绘制、当前运行DLL、实际资料包/玩家存档导入。未部署、打包或推送。证据/逐文件修改前备份：`artifacts/kingdom-import-tolerance-20261022/`，聚焦回滚只反向本次差异，不覆盖用户及其他作者改动。
+
+
+<a id="pull-merge-rewritten-remote-20261022"></a>
+## 2026-10-22 拉取并移植三国家容错到重写后的远端（LOCAL_MERGED / NOT_PUSHED）
+
+- 原origin/main记录12fcb6db5；远端实测e0b3c81248492a9e9ae05f15cfbfbdb957f7f20f。GitHub比较显示diverged，ahead3871/behind3870，共同祖先61dae27a9bee3a1dbb1b7b1f9b0e1e8defc2776e；不得将旧历史直接merge回清理后的主线。
+- 原大包fetch已停止，改在任务目录clean-remote.git以depth1/blob:none取新主线元数据；读取并校验八个远端文件的blob身份，三方移植本次普通国家最多三个不匹配的代码/双语资源/测试差异，解决追加块冲突时保留远端正文。此前其他缓存/接力等未发布工作继续留原工作区，本次没有夹带。
+- 新提交7d7823f7861a0a0ab78db1a899ab4581e2857b93唯一父提交为新远端e0b3c812；分支codex/merge-kingdom-import-20261022位于artifacts/pull-merge-20261022/clean-remote.git。主工作区HEAD、index、已有index.lock及八个产品/测试文件哈希不变；只在本台账追加说明。旧历史候选d184e6dc已弃用，不作为交付。
+- 验证：新合并源码回放57项、八文件边界、XML解析/键唯一、父提交、共享工作区保护通过。合并后未完整构建（修改前双API+Bootstrap构建证据见上一条）；未实机、push、部署或打包。独立仓库为浅克隆/部分对象快照，不能作为完整历史离线备份。
+- 证据及回滚：artifacts/pull-merge-20261022/receipt.json，clean-before/与clean-merged/。原目录无产品变更需要回滚；候选分支可反向新提交，不把旧分支历史并入或推送。
+
+
+<a id="push-selected-remote-20261022"></a>
+## 2026-10-22 选择保留三项并撤销测试/说明后推送（PUSHED_VERIFIED）
+
+- 用户明确选择撤销1e5740dd测试传输修正与8d49c8d9交付说明的内容，保留afb26e33婚配产品、532fcaf5场景听众默认值、e0b3c812交付规则，再推送本地国家导入容错。以新历史e0b3c812为唯一基础，未重写远端历史/强推/合并旧克隆。
+- 实际新增7d7823f7861a0a0ab78db1a899ab4581e2857b93（八文件国家容错）与cee4babd9f1a4a4119a046c7732b7b2d66517279（五文件撤销及两份说明中7行旧测试平台路径清理）。旧提交仍在祖先中，内容通过新提交撤销；不误报为从历史删除。源码交付检查曾因恢复旧文档的残留引用拒绝，聚焦清理后相同规则通过；拒绝候选5cd9e63未推送。
+- 使用上游validate_source_delivery.py和任务局部批准范围/相同推送hook验证新树、所有新增提交和对象，真实pre-push及dry-run通过。首发因过滤副本缺少旧台账delta base失败，确认远端未变后补齐五个精确远端blob再普通推送成功。ls-remote核实main=cee4babd9f1a4a4119a046c7732b7b2d66517279。
+- 验证：国家合并源码回放57、五文件撤销边界、测试Python语法、两个新提交父链及保留产品修复通过。未合并后完整构建/实机/旧档/部署/打包。本地共享工作区产品、HEAD和index保持，任务记录只追加本条和HANDOFF。
+- 证据/回滚：artifacts/push-selected-20261022/receipt.json与日志；撤销本次选择用cee4bab聚焦逆提交，国家容错用7d7823f聚焦逆提交，不reset/force。当前远端交付不包括其他仍在原目录的缓存/接力/日历/UI本地修复。
+
+
+<a id="deploy-en-local-upstream-20261023"></a>
+## 2026-10-23 EN当前本地全量＋选定上游部署（DEPLOYED / LIVE_NOT_RUN）
+
+- 用户授权部署EN并选择当前本地全部改动＋上轮保留上游功能。以实际F:/AnimusForge-main/main工作区为来源，合入afb26e33婚配消歧、532fcaf5听众默认排除、e0b3c812源码交付规则；不合入已撤销的1e5740dd和8d49c8d9。当前缓存、8轮接力、日历与历史UI及其他作者改动保留。四份Social资源冲突按键合并；首次JSON写入异常改用同目录临时文件原子替换。
+- 聚焦源码c3af020d8a91acaf21dd4be53e6559ec2f2dfc60，基线5121e1548341ab1b0578e02c46716e359c7277e1。婚配生产owner为src/modules/AF.Module.Social/Host/RomanceSystemBehavior.cs及共享后处理、记忆/周报；src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.SceneAudience.cs 12–24改默认/回退true，显式false保留。逐文件范围及哈希见source-receipt.json，不提交发布本地历史。
+- 原统一入口Release构建1.3/1.4/Bootstrap和Coup接缝/注册通过；婚配源码回放47、国家导入57、8份JSON/XML解析及键唯一通过；EN源码和两套DLL资源门禁通过。原干净Stage门禁及Get-AnimusForgePackageProjection生成3521文件EN候选。任务冻结清单排除1511个Punic/布匿项，不改共享清单或世界书源文件，原Release Stage留previous-stage。
+- 原Invoke-ManagedStageDeployment部署v1.6.5至F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，更新3210文件。候选/目标哈希及6121受保护文件哈希/时间戳核对通过；玩家提示词/设置/日志/缓存、较新导出与未知文件保留，已有1.5文件保持，不增加1.5.5实现。EN固定内容投影，UI随游戏语言，自定义提示词不改。
+- 未实机启动、原生UI、旧档或实际provider验证；未打包或push。无Modules/.AnimusForge.Recovery、部署备份/manifest/自动回滚。证据在artifacts/deploy-en-20261023/receipt.json及build/stage/deploy日志；源码修改前文件before/，旧项目Stage previous-stage/非游戏备份。恢复需聚焦逆差异重建，并另行授权部署。
+
+
+<a id="naval-ai-forwarding-fix-20261023"></a>
+## 2026-10-23 航海AI模型遗漏转发修复（OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 用户授权“修复补齐”。已确认回归来自1fa0209e2f54106eb13b599bffe623c358a95a09（2026-06-22《宴会更新》）：删除两个既有1.4转发并由MobilePartyAIModel改继承DefaultMobilePartyAIModel，编译不再暴露漏实现。不是本次目录迁移新增；原始删改见regression-origin.patch。
+- 产品提交 531c5b7ef974be627a87a3b89ab22c926a0e4e76；修改src/AF.GameAdapter.Bannerlord/Courier/CourierMobilePartyAIModel.cs，FortificationPortPatrolDistanceAsDays 26–28、GetSettlementNearbyThreatAndAllyCheckRadius 76–82，用BANNERLORD_1_4_OR_GREATER保护，直接委托_inner，保留空模型默认回退、信使/临时聚会/驻留保护。实际消费者CampaignModelComposition全局模型→原航海GetPatrolRadiusInternal→港口巡逻半径；底层DLC的0.5不再被外层默认0覆盖，无硬编码DLC值。
+- 原build_single_module入口Release双API与Bootstrap、双Coup接缝/注册通过，既有警告保留。真实最终DLL回放1.3共17项、1.4共26项通过；覆盖全部当前抽象接口声明、港口距离动态转发、港口/陆地半径与参数身份、空inner回退。当前安装旧1.4 DLL负对照在缺少get_FortificationPortPatrolDistanceAsDays处失败。测试未启动原生Campaign，1.3辅助依赖沿用构建时游戏bin回退及Harmony。
+- 性能：每次模型查询一次直接虚调用，不新增Tick扫描、反射、分配、IO或缓存；不修改配置、运行文案、存档协议或公开API。未实机/旧档/已卡队伍恢复验证，岸边无法登船未证明同因；不部署、打包或push，当前安装仍为旧EN部署。
+- 证据artifacts/naval-ai-forwarding-fix-20261023/receipt.json、build.log、verified14/、final13-with-dependencies/、verified-negative14/。原字节before/，本地分支codex/naval-ai-forwarding-fix-20261023，检查点fa32bedd740117b8fcc4a7cc7215fc2da03b9b9e。回滚对产品提交聚焦逆向；不reset，不恢复其他作者文件。主main及共享index保持未使用；本地历史不作为公开推送候选。
+
+
+<a id="deploy-cn-naval-fix-20261023"></a>
+## 2026-10-23 CN航海模型修复直接部署（DEPLOYED / EXTRA_TESTS_NOT_RUN）
+
+- 用户明确授权“部署CN，直接部署就行不要检验”。复用上一轮已验证的1.3/1.4/Bootstrap构建与现有干净CN Stage，不重建、不运行额外测试或部署后独立全量核验；仅执行原部署owner的路径、产物身份、玩家目录保护与逐文件替换完整性检查。
+- 来源产品531c5b7ef974be627a87a3b89ab22c926a0e4e76，补齐航海AI两个转发。目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，原Invoke-ManagedStageDeployment成功更新78文件，CN固定资源/双语UI及双实现已部署；复用原CN内容和布匿排除，1.5已有文件及未知玩家文件保留，CustomPrompts/Configs/较新PlayerExports沿用原保护规则。
+- 没有新增NavalDLC程序集依赖：两个接口属于1.4本体，底层无DLC时仍转发DefaultMobilePartyAIModel；1.3通过条件编译排除。之前离线默认回退检查通过，不代表无DLC实机启动已测。未启动游戏、验证已卡队伍恢复或岸边登船；未打包/push。无部署备份、Recovery或自动回滚。
+- 证据artifacts/deploy-cn-naval-fix-20261023/{receipt.json,deploy.log,deploy.ps1}；候选cn-stage/AnimusForge。本次仅安装产物，源码回滚仍对531c5b7ef做聚焦逆向、重建并另行授权部署；此前EN安装状态由本条CN部署明确取代。
+
+
+<a id="push-package-165-naval-20261023"></a>
+## 2026-10-23 航海修复推送及1.6.5双包（PUSHED_PACKAGED / LIVE_NOT_RUN）
+
+- 用户授权推送打包1.6.5；明确不再处理已能下海的调船等待。普通推送远端main从cee4babd9f1a4a4119a046c7732b7b2d66517279到672722b710e310da8f81afdc95a298f9de13f318，仅三个文件：AI模型两个转发及专项测试；实际pre-push交付守卫和远端核对通过，不包含本地交接历史或其他作者改动。产品源码对应已验证本地531c5b7ef。
+- 固定v1.6.5，无递增或重建；现有CN3530/EN3521候选搭配本轮Release Bootstrap与1.3/1.4产物，布匿及1.5.5排除。输出F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.6.5_CN_1023_1029.zip、F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.6.5_EN_1023_1029.zip；旧包保留，无ZIP上传或额外部署。
+- 原ZIP writer、layout/Bootstrap/双marker门禁通过，全部目标集合、源文件与ZIP SHA-256逐项通过；复用已有双语/构建证据，使用Python索引做完整线性归档核对，避免原逐项全表查找。两次重复检查尝试停止，临时归档仅留artifacts，最终采用完整CN和预投影EN；官方脚本未修改。
+- 未实机、无DLC启动、军团登船或既有卡队恢复验收；当前已安装CN保持。用户要求不再改原版调船等待逻辑，本次无额外游戏行为修改。
+- 证据artifacts/push-package-165-naval-20261023/{push-receipt.json,package-receipt.json,prepared-CN.json,prepared-EN.json,finish-archives.log}；公开源码回滚聚焦逆提交672722b710e310da8f81afdc95a298f9de13f318，旧发行未覆盖。主main及共享index不推进，所有交接提交仅本地，不作为公开推送候选。
+
+<a id="oral-threat-refresh-20261027"></a>
+## 2026-10-27 口头外交宣言威胁快照循环修复（OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 用户授权修复重复调用。产品提交 fff988bff，意图检查点 174589960；WorldDiplomacyOrchestration.RefreshDiplomaticThreatPresentationAndPrompt 对口头协议重建成功后更新两份威胁快照，复用现有选择规则。任务提交/完成边界运行，不新增 Tick 扫描；口头固定动作、审核及状态变化时拒绝旧结果保持。
+- OralPrivacyAuthorityReplay 覆盖初始威胁、刷新、请求期间威胁变更、旧稿丢弃、重发通过审核并发布一次；`--oral-declaration` 342断言通过。原统一构建入口 Debug 1.3（1.3.15）/1.4（1.4.6）/Bootstrap 和双Coup门禁通过。完整外交套件在 LifecycleRepairReplay.Submission 的归档路由断言失败，未证实基线；未实机、旧档、实际provider或部署，日志中254次是否由该条件触发尚未证实。
+- 回滚使用 `git revert fff988bff` 聚焦产品提交，不重置工作区。HANDOFF 与本台账已有其他未提交内容，本次仅追加记录，不将其他作者内容纳入产品提交。
+
+<a id="deploy-en-oral-threat-20261027"></a>
+## 2026-10-27 EN 口头外交威胁快照修复部署（DEPLOYED / LIVE_NOT_RUN）
+
+- 用户明确授权部署 EN；使用产品提交 fff988bff 及当前工作区既有改动的已验证 Debug 1.3/1.4/Bootstrap 构建。部署到 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，沿用此前用户要求的布匿世界书部署排除，不改共享内容清单或玩家世界书。
+- 原内容投影、干净 Stage、EN 候选、路径/reparse/FeatureBridges/构建标记及目标保护检查通过；原 Invoke-ManagedStageDeployment 成功，3521 候选文件，更新 11 文件，9189 保护文件及部署结果逐项核验通过。已有 1.5 文件保留；没有部署备份或自动回滚。旧项目 Stage 保存在 artifacts/deploy-en-oral-threat-20261027/previous-stage，候选、日志及 receipt.json 在同目录。
+- 真实游戏、旧档、API provider 未验证；此前完整外交套件归档路由断言失败未消除。未打包或推送。恢复需检查现场，选择已验证版本重建并另行授权部署。

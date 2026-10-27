@@ -216,6 +216,16 @@ public static class ShoutNetwork
 		}
 	}
 
+	// One line per completed provider response. Logged regardless of recordTokenStats so gateway
+	// callers that skip Token_Stats still expose real cache accounting under the same trace id.
+	private static string LogProviderPromptCacheUsage(string mode, string model, string usageText)
+	{
+		if (string.IsNullOrEmpty(usageText)) return "";
+		try { Logger.Log("PromptCache", "provider_usage mode=" + mode + " model=" + (model ?? "") + " " + usageText); }
+		catch { }
+		return "\n[PROVIDER_USAGE] " + usageText;
+	}
+
 	private static string BuildTokenStatsOutputContent(string finalContent, string reasoningContent = null)
 	{
 		string content = ApplyPlayerDynamicNameToMainText(finalContent ?? "").Trim();
@@ -837,6 +847,8 @@ public static class ShoutNetwork
 							return emptyError;
 						}
 						content = ApplyPlayerDynamicNameToMainText(content);
+						string usageSuffix = LogProviderPromptCacheUsage("non_stream", effectiveModelName,
+							LlmApiCompat.FormatPromptCacheUsage(LlmApiCompat.ExtractUsageObject(responseJson)));
 						sw.Stop();
 						Logger.Obs("Network", "request_complete", new Dictionary<string, object>
 						{
@@ -850,7 +862,7 @@ public static class ShoutNetwork
 						Logger.Metric("network.non_stream", ok: true, sw.Elapsed.TotalMilliseconds);
 						if (recordTokenStats)
 						{
-							string outputContent = BuildTokenStatsOutputContent(content, reasoning);
+							string outputContent = BuildTokenStatsOutputContent(content, reasoning) + usageSuffix;
 							Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent), messages, outputContent, "non_stream", requestBodyForTokenStats);
 						}
 						FreezeWatchdog.Mark("PrimaryChat.non_stream.complete", "resultLen=" + content.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -945,6 +957,7 @@ public static class ShoutNetwork
 		int msgCount = messages?.Count ?? 0;
 		int inputTokens = Logger.EstimateTokensFromMessages(messages);
 		string requestBodyForTokenStats = "";
+		string streamPromptCacheUsage = "";
 		Logger.Obs("Network", "request_start", new Dictionary<string, object>
 		{
 			["mode"] = "stream",
@@ -1078,6 +1091,7 @@ public static class ShoutNetwork
                         rawSampleMaxChars: -1,
                         includeDataPrefix: false).ConfigureAwait(false);
                     if (streamResult.Discarded) return;
+                    if (!string.IsNullOrEmpty(streamResult.PromptCacheUsage)) streamPromptCacheUsage = streamResult.PromptCacheUsage;
                     if (!string.IsNullOrEmpty(streamResult.RawStreamSample))
                     {
                         if (rawStreamResponse.Length > 0) rawStreamResponse.AppendLine();
@@ -1178,7 +1192,8 @@ public static class ShoutNetwork
 						["resultLen"] = fullText.Length
 					});
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-					string outputContent3 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
+					string outputContent3 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString())
+						+ LogProviderPromptCacheUsage("stream_partial", effectiveModelName, streamPromptCacheUsage);
 					if (recordTokenStats) Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial", requestBodyForTokenStats);
 					FreezeWatchdog.Mark("PrimaryChat.stream.partial_complete", "resultLen=" + fullText.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_partial_complete"))
@@ -1290,7 +1305,8 @@ public static class ShoutNetwork
 				["resultLen"] = finalText.Length
 			});
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-			string outputContent2 = BuildTokenStatsOutputContent(finalText, fullReasoning.ToString());
+			string outputContent2 = BuildTokenStatsOutputContent(finalText, fullReasoning.ToString())
+				+ LogProviderPromptCacheUsage("stream", effectiveModelName, streamPromptCacheUsage);
 			if (recordTokenStats) Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent2), messages, outputContent2, "stream", requestBodyForTokenStats);
 			FreezeWatchdog.Mark("PrimaryChat.stream.complete", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_complete"))

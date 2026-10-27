@@ -36,10 +36,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dotnet")
     parser.add_argument("--source-ref")
+    parser.add_argument("--scene-source", type=Path, help="negative-control scene controller source")
     parser.add_argument("--request-source-ref", help="Use the actual historical group request callsite as a wiring negative control")
     parser.add_argument("--run-root", type=Path)
     args = parser.parse_args()
-    scene = source(SCENE, args.source_ref)
+    scene = args.scene_source.read_text(encoding="utf-8-sig") if args.scene_source else source(SCENE, args.source_ref)
     owner = source(OWNER, args.source_ref)
     projection = source("src/modules/AF.Module.Prompt/Composition/ScenePromptMessageProjectionComposer.cs", args.source_ref)
     main_owner = source("src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs", args.source_ref)
@@ -87,10 +88,14 @@ def main():
         "UNANSWERED_TARGET": declaration(scene, "private static bool TrySelectUnansweredSceneGroupRelayTarget("),
         "GROUP_CALL": next(line for line in method.splitlines() if "bool explicitGroupAddress =" in line),
         "GROUP_FALLBACK": method[method.index('if (!string.IsNullOrWhiteSpace(cleaned))', selection_begin):tail_begin],
-        "CONSTANT": re.search(r"internal const int AUTO_GROUP_CHAT_MAX_LINES = \d+;", source("src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs", args.source_ref)).group(),
+        "LIMIT_CAPTURE": next(line for line in method.splitlines() if "int maxRelayTurns =" in line),
+        "POST_RELAY_CONTEXT": next(line for line in method.splitlines() if "string relayConversationContext =" in line),
     }
     output = new_run_root(ROOT, "scene-relay-continuation", args.run_root)
     harness = (HERE / "Harness.cs.txt").read_text(encoding="utf-8")
+    relay_settings = declaration(source("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.SceneRelay.cs", args.source_ref), "public partial class DuelSettings")
+    relay_settings = re.sub(r"\s*\[SettingProperty[\s\S]*?\]", "", relay_settings).replace("public partial class", "partial class")
+    harness = harness.replace("@@RELAY_SETTINGS@@", relay_settings)
     system_method = re.search(r'internal static string BuildConversationSystemPrompt\(string system\)\s*=>[^;]+;', main_owner)
     harness = harness.replace('@@MAIN_SYSTEM@@', system_method.group())
     config_path = "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json"
@@ -112,6 +117,9 @@ def main():
     if "@@" in harness: raise ValueError("Unexpanded harness placeholder")
     (output / "Program.cs").write_text(harness, encoding="utf-8")
     assembly_paths = (
+        'src/modules/AF.Module.Prompt/Composition/ConversationContextWindow.cs',
+        "src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs",
+        "src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs",
         "src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs",
         "src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs",
         "src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs",
@@ -124,6 +132,7 @@ def main():
     linked = "".join('<Compile Include="' + str(ROOT / path).replace("\\", "/") + '" />' for path in (
         "AnimusForge.SiegeAftermathIntervention/SiegeNpcResponseEventBudget.cs",
         "AnimusForge.SiegeAftermathIntervention/SiegeNpcResponseLimitProfile.cs"))
+    linked += '<EmbeddedResource Include="' + str(ROOT / 'content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json') + '" LogicalName="AnimusForge.Memory.SourceTexts.json" />'
     (output / "Relay.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup>' + linked + '</ItemGroup></Project>', encoding="utf-8")
     (output / "NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding="utf-8")
     fingerprints = {key: hashlib.sha256(value.encode()).hexdigest() for key, value in snippets.items()}

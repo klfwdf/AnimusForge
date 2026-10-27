@@ -9,7 +9,7 @@ internal static class AnimusForgeModulePaths
 }
 
 // Harness stub: only the rule record type the index depends on (production type is nested in the campaign behavior).
-public class KnowledgeLibraryBehavior
+public partial class KnowledgeLibraryBehavior
 {
     public KnowledgeFile Data = new KnowledgeFile();
     public string ExportRulesJson() => Newtonsoft.Json.JsonConvert.SerializeObject(Data);
@@ -20,14 +20,17 @@ public class KnowledgeLibraryBehavior
         public string Id;
         public List<string> Keywords = new List<string>();
         public List<string> RagShortTexts = new List<string>();
+        public List<string> SemanticPrototypes;
         public List<LoreVariant> Variants = new List<LoreVariant>();
+        public List<LoreTextMapping> TextMappings;
     }
 
     public class KnowledgeFile { public int Version; public List<LoreRule> Rules = new List<LoreRule>(); }
-    public class LoreVariant { public LoreWhen When; public string Content; }
+    public class LoreVariant { public LoreWhen When; public string Content; public int Priority; }
+    public class LoreTextMapping { public string SourceText, Kind, TargetId, EmptyValueText, TrueText, FalseText; public int? AgeMin, AgeMax; }
     public class LoreWhen
     {
-        public List<string> HeroIds, Cultures, KingdomIds, SettlementIds, Roles;
+        public List<string> HeroIds, Cultures, KingdomIds, SettlementIds, Roles, IdentityIds;
         public bool? IsFemale, IsClanLeader;
         public Dictionary<string, int> SkillMin;
     }

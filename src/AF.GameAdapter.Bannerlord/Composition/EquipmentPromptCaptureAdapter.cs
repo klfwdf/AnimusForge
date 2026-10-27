@@ -133,7 +133,9 @@ internal static string BuildNonHeroEquipmentSummaryForPrompt(NpcDataPacket npc, 
 				{
 					itemObject = null;
 				}
-				if (itemObject == null)
+				if (itemObject == null
+					&& equipmentIndex >= EquipmentIndex.WeaponItemBeginSlot
+					&& equipmentIndex < EquipmentIndex.NumAllWeaponSlots)
 				{
 					try
 					{

@@ -7,6 +7,7 @@ Exit code is the harness exit code; mutation switches prove the assertions are l
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import os
 import shutil
 import subprocess
@@ -21,6 +22,7 @@ from output_isolation import new_run_root
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["onnx-commit-on-failure", "collapse-min", "allocation-dup"], help="apply a source mutation that must fail")
 parser.add_argument("--run-root", type=Path, help="new repository-local output directory")
+parser.add_argument("--prompt-host-source", type=Path, help="negative-control host source")
 args = parser.parse_args()
 
 
@@ -37,8 +39,20 @@ output = new_run_root(ROOT, "knowledge-j06-index", args.run_root)
 for name in ("Program.cs", "Stubs.cs", "KnowledgeIndexTests.csproj"):
     shutil.copy(HERE / name, output / name)
 project = (output / "KnowledgeIndexTests.csproj").read_text(encoding="utf-8").replace("../../../../", (str(ROOT) + "/").replace("\\", "/"))
-newtonsoft = os.environ.get("AF_NEWTONSOFT") or str(ROOT / "local/dotnet/8.0.425/sdk/8.0.425/Containers/tasks/net8.0/Newtonsoft.Json.dll")
+newtonsoft = os.environ.get("AF_NEWTONSOFT") or str(dotnet.parent / "sdk/8.0.425/Newtonsoft.Json.dll")
 project = project.replace("@@NEWTONSOFT@@", newtonsoft.replace("\\", "/"))
+spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
+extract = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(extract)
+host = (args.prompt_host_source or ROOT / "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
+methods = "\n".join(extract.declaration(host, marker) for marker in (
+    "private static IReadOnlyList<LoreRule> GetPublishedRulesForIndex(",
+    "private static void PublishPromptRules(",
+    "internal static long PreparePromptLoreRetrieval(",
+    "internal static LoreCandidateRules CollectPromptLoreCandidates(",
+))
+(output / "ColdPrompt.cs").write_text((HERE / "ColdPrompt.cs.txt").read_text(encoding="utf-8").replace("@@HOST_METHODS@@", methods), encoding="utf-8")
+project = project.replace('<Compile Include="Program.cs" />', '<Compile Include="Program.cs" /><Compile Include="ColdPrompt.cs" />')
 if args.mutate:
     src_dir = output / "mutated"
     src_dir.mkdir()

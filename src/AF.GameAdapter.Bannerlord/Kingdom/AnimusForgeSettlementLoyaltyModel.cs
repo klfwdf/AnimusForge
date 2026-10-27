@@ -34,9 +34,12 @@ public sealed class AnimusForgeSettlementLoyaltyModel : SettlementLoyaltyModel
 
 	public override float LowSecurityLoyaltyEffect => _inner.LowSecurityLoyaltyEffect;
 
+#if !BANNERLORD_1_5_OR_GREATER
 	public override float GovernorSameCultureLoyaltyEffect => _inner.GovernorSameCultureLoyaltyEffect;
 
 	public override float GovernorDifferentCultureLoyaltyEffect => _inner.GovernorDifferentCultureLoyaltyEffect;
+
+#endif
 
 	public override float SettlementOwnerDifferentCultureLoyaltyEffect => _inner.SettlementOwnerDifferentCultureLoyaltyEffect;
 

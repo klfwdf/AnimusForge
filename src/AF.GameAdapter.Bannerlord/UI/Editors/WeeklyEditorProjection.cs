@@ -147,7 +147,7 @@ internal static class WeeklyEditorProjection
 			string last = firstDay == lastDay ? first : port.FormatNewsDate(lastDay);
 			return firstDay == lastDay ? first : first + " — " + last;
 		}
-		return !string.IsNullOrWhiteSpace(entry?.CreatedDate) ? entry.CreatedDate.Trim() : T("AF_UI_Timeline_UnknownDate", "Unknown date");
+		return WeeklyReportArchivePolicy.ProjectDateForDisplay(entry?.CreatedDate);
 	}
 
 	internal static string BuildWeeklyReportBrowserDefaultTitle(WeeklyEditorDisplayPort port, string eventKind, string scopeKingdomId, int weekIndex)

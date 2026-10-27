@@ -96,6 +96,33 @@ internal static class Program
             "window eviction alone removes stale transcript even without a new summary");
         var big = M("user", new string('大', 25000));
         Check(ConversationContextWindow.Select(new[] { big }, "", options).Single().Content.Length == 25000, "oversized current input is preserved for explicit budget handling");
+        // Window anchoring: the first kept turn must not change on every request once the window is full.
+        var growing = new List<ConversationMessage>();
+        var anchorOptions = new ConversationContextOptions { RecentTurns = 12, RecentChars = 1000000 };
+        string previousFirst = null; int firstChanges = 0, fullRequests = 0, minTurns = int.MaxValue;
+        for (int turn = 1; turn <= 400; turn++)
+        {
+            growing.Add(M("user", "Anchor question " + turn)); growing.Add(M("assistant", "Anchor answer " + turn));
+            var window = ConversationContextWindow.SelectWindow(growing, "", anchorOptions, out var noRecall);
+            int windowTurns = window.Count(x => x.Role == "user");
+            if (windowTurns > 12) throw new Exception("anchored window exceeded configured turns");
+            if (window.Last().Content != "Anchor answer " + turn) throw new Exception("anchored window dropped the latest turn");
+            if (turn <= 12) continue;
+            fullRequests++; minTurns = Math.Min(minTurns, windowTurns);
+            string first = window.First(x => x.Role == "user").Content;
+            if (previousFirst != null && first != previousFirst) firstChanges++;
+            previousFirst = first;
+        }
+        Check(fullRequests / (double)Math.Max(1, firstChanges) >= 1.8, "anchored window keeps its first turn across consecutive requests (changes=" + firstChanges + "/" + fullRequests + ")");
+        Check(minTurns >= 12 - ConversationContextWindow.MaxAnchorShift, "anchored window shrinks by at most MaxAnchorShift turns");
+        var shortHistory = history.Take(10).ToList();
+        Check(ConversationContextWindow.Select(shortHistory, "", options).SequenceEqual(shortHistory), "window below the turn limit is not anchored or trimmed");
+        var split = ConversationContextWindow.SelectWindow(history, "琥珀口令", options, out var splitRecall);
+        var joined = ConversationContextWindow.Select(history, "琥珀口令", options);
+        Check(splitRecall.Any(x => x.Content.Contains("北门第三盏灯")) && !split.Any(x => x.Content.Contains("北门第三盏灯")),
+            "SelectWindow returns earlier relevant turns separately from the chronological window");
+        Check(split.Count + splitRecall.Count == joined.Count && joined.All(x => split.Contains(x) || splitRecall.Contains(x)),
+            "SelectWindow keeps the same membership as Select");
         Console.WriteLine($"Checks={checks}; summaryCalls={calls}; peakMessages={peakMessages}; peakChars={peakChars}; no HTTP/game/save writes");
     }
 }

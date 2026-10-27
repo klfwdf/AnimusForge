@@ -18,7 +18,7 @@ public static class LipSyncFacialAnimSuppressPatch
 		_patched = true;
 		try
 		{
-			Type type = AccessTools.TypeByName("SandBox.Missions.MissionLogics.MissionFacialAnimationHandler");
+			Type type = AccessTools.TypeByName(BannerlordApiCompat.FacialAnimationHandlerTypeName);
 			if (type == null)
 			{
 				Logger.LogTrace("System", "❌ LipSyncFacialAnimSuppressPatch: MissionFacialAnimationHandler type not found.");

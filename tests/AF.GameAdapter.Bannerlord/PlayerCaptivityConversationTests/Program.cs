@@ -292,4 +292,94 @@ End(); Tick(); Check(EndCaptivityAction.Calls == 0, "recapture invalidates delay
 PlayerCaptivityConversation.Reset();
 Check(!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation()
     && CompanionProactiveChatBehavior.Probes > 0 && ProactiveNpcRequestBehavior.Probes > 0, "ordinary router still visits existing opening sources outside captivity");
+
+// Captor visibility restoration is scoped to the same actual captivity and
+// happens after Leave, without releasing the player or recreating either party.
+pair = Setup(); PlayerCaptivityConversation.TryOpen(pair.lord);
+pair.holder.MobileParty.IsVisible = false;
+var unrelatedParty = new PartyBase { MobileParty = new MobileParty { IsVisible = false } };
+Campaign.Current._tickData.Previous.Add(pair.holder);
+Campaign.Current._tickData.Previous.Add(unrelatedParty);
+Campaign.Current._tickData.Current.Add(pair.holder);
+End(); Tick();
+Check(pair.holder.MobileParty.IsVisible, "Leave restores hidden current captor");
+Check(!unrelatedParty.MobileParty.IsVisible, "Leave does not reveal other parties");
+Check(PlayerCaptivity.IsCaptive && EndCaptivityAction.Calls == 0 && pair.holder.PrisonRoster.Contains(Hero.MainHero.CharacterObject), "visibility restoration preserves captivity and roster");
+Check(!PlayerCaptivityConversation.HasSession && Campaign.Current.TimeControlMode == CampaignTimeControlMode.UnstoppableFastForward, "visibility restoration still completes return and time restoration");
+#if BANNERLORD_1_5_OR_GREATER
+Check(!Campaign.Current._tickData.Previous.Contains(pair.holder) && !Campaign.Current._tickData.Current.Contains(pair.holder)
+    && Campaign.Current._tickData.Previous.Contains(unrelatedParty), "1.5 removes only captor from both transient visibility lists");
+// Native 1.5 skips persistent captors in its visibility computation and then
+// hides leftovers from this previous list. After the correction it stays shown.
+foreach (var oldVisible in Campaign.Current._tickData.Previous) oldVisible.MobileParty.IsVisible = false;
+Check(pair.holder.MobileParty.IsVisible, "next native cleanup cannot re-hide the captor");
+#endif
+pair = Setup(); PlayerCaptivityConversation.TryOpen(pair.lord); pair.holder.MobileParty.IsVisible = false;
+pair.holder.MobileParty.CurrentSettlement = new Settlement(); End(); Tick();
+Check(!pair.holder.MobileParty.IsVisible, "captor entering settlement is not revealed");
+pair = Setup(); PlayerCaptivityConversation.TryOpen(pair.lord); pair.holder.MobileParty.IsVisible = false;
+pair.holder.IsActive = false; End(); Tick();
+Check(!pair.holder.MobileParty.IsVisible, "destroyed or inactive captor is not revived");
+pair = Setup(); PlayerCaptivityConversation.TryOpen(pair.lord); pair.holder.MobileParty.IsVisible = false;
+var changedHolder = new PartyBase { MobileParty = new MobileParty { IsVisible = false } };
+PlayerCaptivity.CaptorParty = changedHolder; Hero.MainHero.PartyBelongedToAsPrisoner = changedHolder;
+changedHolder.PrisonRoster.AddPrisoner(Hero.MainHero.CharacterObject); End(); Tick();
+Check(!pair.holder.MobileParty.IsVisible && !changedHolder.MobileParty.IsVisible, "old conversation cannot reveal transferred captor");
+pair = Setup(); PlayerCaptivityConversation.TryOpen(pair.lord); pair.holder.MobileParty.IsVisible = false;
+Release(pair.lord); End(); Tick();
+Check(!PlayerCaptivity.IsCaptive && !pair.holder.MobileParty.IsVisible, "release does not permanently reveal former captor");
+pair = Setup(true); PlayerCaptivityConversation.TryOpen(pair.lord); End(); Tick();
+Check(Campaign.Current.CurrentMenuContext.GameMenu.StringId == "settlement_wait" && PlayerCaptivity.IsCaptive, "dungeon farewell retains native menu and captivity");
+#if BANNERLORD_1_5_OR_GREATER
+// Auto-resolve/bandit captivity has no eligible lord and may never open a conversation.
+pair = Setup(); pair.holder.LeaderHero = null; pair.holder.MobileParty.LeaderHero = null;
+pair.holder.MobileParty.IsVisible = false;
+Campaign.Current._tickData.Previous.Add(pair.holder); Campaign.Current._tickData.Current.Add(pair.holder);
+PlayerCaptivityConversation.OnPlayerTakenPrisoner(pair.holder, Hero.MainHero); Tick();
+Check(pair.holder.MobileParty.IsVisible && CampaignMapConversation.Calls == 0, "capture entry restores bandit captor without opening conversation");
+Check(!Campaign.Current._tickData.Previous.Contains(pair.holder) && !Campaign.Current._tickData.Current.Contains(pair.holder), "capture entry evicts both stale native visibility entries");
+pair.holder.MobileParty.IsVisible = false; Tick();
+Check(pair.holder.MobileParty.IsVisible, "repair remains available after no-lord auto opening is consumed");
+Check(PlayerCaptivity.IsCaptive && EndCaptivityAction.Calls == 0 && pair.holder.PrisonRoster.Contains(Hero.MainHero.CharacterObject), "entry repair preserves native captivity and prisoners");
+foreach (string blocked in new[] { "results", "battle", "mission", "menu", "settlement", "roster", "inactive", "free", "identity" })
+{
+    pair = Setup(); pair.holder.LeaderHero = null; pair.holder.MobileParty.IsVisible = false;
+    switch (blocked)
+    {
+        case "results": PlayerEncounterCompat.PostBattle = true; break;
+        case "battle": pair.holder.MapEvent = new(); break;
+        case "mission": TaleWorlds.MountAndBlade.Mission.Current = new(); break;
+        case "menu": Campaign.Current.CurrentMenuContext.GameMenu.StringId = "encounter"; break;
+        case "settlement": pair.holder.MobileParty.CurrentSettlement = new(); break;
+        case "roster": pair.holder.PrisonRoster.Remove(Hero.MainHero.CharacterObject); break;
+        case "inactive": pair.holder.IsActive = false; break;
+        case "free": Hero.MainHero.IsPrisoner = false; break;
+        case "identity": Hero.MainHero.PartyBelongedToAsPrisoner = new(); break;
+    }
+    Tick(); Check(!pair.holder.MobileParty.IsVisible, "capture entry preserves native visibility during " + blocked);
+}
+pair = Setup(); pair.holder.LeaderHero = null; pair.holder.MobileParty.IsVisible = false;
+PlayerCaptivityConversation.Register(new CampaignGameStarter()); Tick(1);
+Check(pair.holder.MobileParty.IsVisible && CampaignMapConversation.Calls == 0, "loaded captivity repaired without replaying capture dialogue");
+#endif
+// Native IsCaptive is deliberately unsafe without Campaign and its subsystem.
+foreach (bool partial in new[] { false, true })
+{
+    PlayerCaptivityConversation.Reset();
+    Game.Current = null; Hero.MainHero = null;
+    Campaign.Current = partial ? new Campaign { PlayerCaptivity = null } : null;
+    int reads = PlayerCaptivity.IsCaptiveReads;
+    for (int i = 0; i < 3; i++) Tick(1);
+    Check(PlayerCaptivity.IsCaptiveReads == reads, partial ? "partially constructed campaign skips native captivity getter" : "main menu skips native captivity getter");
+}
+pair = Setup(); Check(PlayerCaptivityConversation.TryOpen(pair.lord), "open session before campaign teardown"); Release(pair.lord);
+Campaign.Current = null; Game.Current = null; Hero.MainHero = null;
+int teardownReads = PlayerCaptivity.IsCaptiveReads;
+Tick(1); Check(PlayerCaptivity.IsCaptiveReads == teardownReads && EndCaptivityAction.Calls == 0, "teardown skips native access and never executes delayed release");
+Campaign.Current = new Campaign(); Game.Current = new(); Hero.MainHero = new(); Tick(1);
+Check(!PlayerCaptivityConversation.HasSession && EndCaptivityAction.Calls == 0, "next campaign retires old session without release");
+pair = Setup(); pair.holder.LeaderHero = null; pair.holder.MobileParty.IsVisible = false; Tick(10);
+#if BANNERLORD_1_5_OR_GREATER
+Check(pair.holder.MobileParty.IsVisible, "initialized campaign still repairs hidden captor after lifecycle transitions");
+#endif
 Console.WriteLine($"PASS {checks} captivity lifecycle checks (production source, fake game ports; live game NOT RUN)");

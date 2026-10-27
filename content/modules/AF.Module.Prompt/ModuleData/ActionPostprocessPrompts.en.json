@@ -47,7 +47,7 @@
     },
     {
       "Tag": "[ACTION:MOOD:ANNOYED]",
-      "Description": "NPC is irritated/annoyed with the player."
+      "Description": "NPC is irritated/annoyed with the player (judge only the NPC's attitude toward the player; arguing with or being angry at another NPC or a third party does not count, output NEUTRAL)."
     }
   ]
 }

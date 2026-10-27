@@ -515,7 +515,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private static IReadOnlyList<LoreRule> GetPublishedRulesForIndex()
 	{
-		return _publishedRulesVersion == Index.Version ? _publishedRules : Instance?._file?.Rules;
+		return _publishedRulesVersion == Index.Version ? _publishedRules : null;
 	}
 
 	// Called on the game thread at most once per data version, never once per prompt.
@@ -600,7 +600,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private static readonly LoreCandidateRetriever Retriever = new LoreCandidateRetriever(Index, Logger.Log);
 
-	/// <summary>Game thread: finish a cold index build before a prompt worker can query it.</summary>
+	/// <summary>Game thread: publish detached rules only. Cold index work belongs to the query worker.</summary>
 	internal static long PreparePromptLoreRetrieval(MentionedWorldEntities mentions)
 	{
 		if (Instance == null || mentions == null || mentions.IsEmpty)
@@ -610,9 +610,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		try
 		{
 			PublishPromptRules();
-			if (!Index.SparseReady) Index.EnsureVectorIndex();
-			if (!Index.OnnxReady && OnnxEmbeddingEngine.Instance?.IsAvailable == true) Index.EnsureOnnxIndex();
-			return Index.SparseReady ? Index.Version : 0L;
+			return Index.Version;
 		}
 		catch
 		{
@@ -631,6 +629,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		try
 		{
 			PromptLoreSettingsScope.Value = settings;
+			if (settings.Enabled)
+			{
+				Index.EnsureVectorIndex(preparedVersion);
+				Index.EnsureOnnxIndex(preparedVersion);
+			}
+			if (Index.Version != preparedVersion) return null;
 			LoreCandidateRules candidates = Retriever.CollectCandidateRules(mentions?.Entities, settings.Enabled);
 			return Index.Version == preparedVersion ? candidates : null;
 		}

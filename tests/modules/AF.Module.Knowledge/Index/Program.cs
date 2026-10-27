@@ -40,6 +40,7 @@ internal static class Program
         Budgets();
         Retriever();
         ImportSupport();
+        ColdPromptCases.Run(Check);
         Console.WriteLine("PASS knowledge-index+lore-retriever checks=" + _checks);
     }
 
@@ -107,7 +108,7 @@ internal static class Program
     {
         var r = new LoreRule { Id = "r", Keywords = new List<string> { " K1 ", "K1", "" }, RagShortTexts = new List<string> { "line\r\ntwo" } };
         Check(KnowledgeRuleIndex.GetRuleTopicSeeds(r).SequenceEqual(new[] { "K1", "line  two" }), "topic seeds dedupe + newline collapse");
-        Check(KnowledgeRuleIndex.GetRuleEvidenceSeeds(r).SequenceEqual(new[] { "K1", "关于K1", "line  two" }), "evidence seeds add 关于 prefix");
+        Check(KnowledgeRuleIndex.GetRuleEvidenceSeeds(r).SequenceEqual(new[] { "K1", "关于K1", "line  two" }), "evidence seeds add 关于 prefix: " + string.Join("|", KnowledgeRuleIndex.GetRuleEvidenceSeeds(r)));
         Check(KnowledgeRuleIndex.BuildRuleSearchText(r) == "K1 K1 line  two" && KnowledgeRuleIndex.BuildRuleRerankText(new LoreRule { Keywords = new List<string> { new string('x', 500) } }).Length == 480, "search text and rerank cap 480");
     }
 

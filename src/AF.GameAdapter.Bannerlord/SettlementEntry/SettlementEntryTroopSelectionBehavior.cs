@@ -3884,9 +3884,17 @@ if (_spawnedAlliedCount > 0)
 					SceneTauntMissionBehavior.ApplyArmedConflictStartCrimeForExternal(
 						Settlement.CurrentSettlement?.MapFaction,
 						"sets_internal_riot_start");
-					SettlementEntryTroopSelectionBehavior.QueueSameKingdomVassalRebellionAfterRiot(
-						Settlement.CurrentSettlement,
-						"sets_internal_riot_start");
+					// 同王国 NPC 先动手属于自卫，不得按玩家发动骚乱排入叛变脱离王国。
+					if (!string.Equals(source, "settlement_resident_hit_player_side", StringComparison.Ordinal))
+					{
+						SettlementEntryTroopSelectionBehavior.QueueSameKingdomVassalRebellionAfterRiot(
+							Settlement.CurrentSettlement,
+							"sets_internal_riot_start");
+					}
+					else
+					{
+						SettlementEntryTroopSelectionLog.Log("Skipped same-kingdom vassal rebellion queue because a settlement resident attacked the player side first. source=" + source);
+					}
 				}
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
 				KeepPlayerEntryFollowersCommandable(refreshFormation: true);

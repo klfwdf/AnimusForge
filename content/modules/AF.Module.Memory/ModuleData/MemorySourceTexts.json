@@ -124,5 +124,11 @@
   "MEM_Raw_122": "任务可能已有部分写入，本轮已停止；请查看日志后再重试。\n\n",
   "MEM_Raw_123": "无",
   "AF_MEM_Compat_PlayerFactBracket": "【AFEF玩家行为补充】",
-  "AF_MEM_Compat_NpcFactBracket": "【AFEF NPC行为补充】"
+  "AF_MEM_Compat_NpcFactBracket": "【AFEF NPC行为补充】",
+  "AF_MEM_Compat_PublicDiplomacyIssuedCn": "本人已正式发布外交公文，来源=diplomacy_document:",
+  "AF_MEM_Compat_PublicDiplomacyReceivedCn": "本人所在王庭已正式收到外交公文，来源=diplomacy_document:",
+  "AF_MEM_Compat_PublicDiplomacyResultCn": "经游戏机制确认的外交结果，来源=diplomacy_document:",
+  "AF_MEM_Compat_PublicDiplomacyIssuedEn": "I have officially published a diplomatic document, source=diplomacy_document:",
+  "AF_MEM_Compat_PublicDiplomacyReceivedEn": "The court where I reside has officially received a diplomatic document, source=diplomacy_document:",
+  "AF_MEM_Compat_PublicDiplomacyResultEn": "Diplomatic result confirmed by game mechanics, source=diplomacy_document:"
 }

@@ -790,7 +790,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_Weekly_Browser_KindRecent" text="Kingdom news" />
   <string id="AF_UI_Weekly_Browser_KindWeekly" text="Weekly archive" />
   <string id="AF_UI_Weekly_Browser_Issue" text="Issue {NUMBER}" />
-  <string id="AF_UI_Weekly_Browser_CalradiaDate" text="Calradia {DATE}" />
+  <string id="AF_UI_Weekly_Browser_CalradiaDate" text="{DATE}" />
   <string id="AF_UI_Weekly_Browser_DayNumber" text="Day {DAY}" />
   <string id="AF_TERMINAL_UI_ApiUrl_Title" text="API URL" />
   <string id="AF_TERMINAL_UI_ApiUrl_Hint" text="Enter your endpoint, for example https://api.openai.com/v1 or https://api.openai.com/v1/chat/completions. When you enter /v1, the mod automatically requests /v1/chat/completions." />
@@ -3420,6 +3420,8 @@ Choose how to proceed:" />
   <string id="AF_UI_KingdomRebellion_LegacyRetired" text="The standalone stability rebellion system has been retired. Uprisings are managed by civil-war factions." />
   <string id="AF_UI_KingdomStability_FactionRoute" text="Uprisings are handled by civil-war factions through demands, responses and the shared war cap; stability does not trigger a separate random rebellion." />
   <string id="AF_UI_KingdomStability_FactionImmunity" text="Player-kingdom immunity prevents faction uprisings." />
+  <string id="AF_MCM_Shout_MaxRelayTurns" text="Maximum scene-shout relay turns" />
+  <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="Maximum total NPC speaking turns after one player shout, including the first reply. Repeated speakers count again. Set to 1 for only the first reply. Range: 1-8; default: 8. Changes apply to the next shout; characters may end the relay earlier." />
   <string id="AF_UI_Developer_Reload_SkippedStaticKingdoms" text="• Skip {COUNT} unmatched non-dynamic kingdom profiles (maximum 3): {PROFILES}" />
   <string id="AF_UI_Editor_LengthStatus" text="Characters: {CURRENT} / {MAX}" />
   <string id="AF_UI_Editor_LengthLimit" text="Maximum: {MAX} characters." />

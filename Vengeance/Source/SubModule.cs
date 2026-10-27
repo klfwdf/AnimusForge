@@ -66,7 +66,7 @@ public sealed class SubModule : MBSubModuleBase
 
         RichExecutionApi.InitializeDefaults();
         ExecutionSitePresetStore.EnsureBuiltInPresetsForAllMethods();
-        starter.AddModel(new ScopedExecutionRelationModel());
+        ExecutionRelationCompatibility.Register(starter);
         starter.AddBehavior(new RichExecutionCampaignBehavior(
             RichExecutionApi.Service,
             RichExecutionApi.Methods,

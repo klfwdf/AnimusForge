@@ -9,7 +9,7 @@
   "AF_TAUNT_PROMPT_MeetingContext": "hero meeting scene",
   "AF_TAUNT_PROMPT_MeetingFightEffect": "This immediately escalates the current meeting to a battle, with consequences handled as if the player attacked your army.",
   "AF_TAUNT_PROMPT_LordContext": "lord interaction in a non-meeting scene",
-  "AF_TAUNT_PROMPT_LordFightEffect": "After an approximately 10-second standoff, the conversation exits automatically and the current scene escalates into an armed conflict. The lord and soldiers present will arm themselves and attack the player. It is also handled as the player openly declaring hostility toward the lord's faction; if needed, the player is first forcibly removed from their current faction before war is declared.",
+  "AF_TAUNT_PROMPT_LordFightEffect": "After an approximately 10-second standoff, the conversation exits automatically and the current scene escalates into an armed conflict. The lord and soldiers present will arm themselves and attack the player. If the lord belongs to a different faction than the player, it is handled as the player openly declaring hostility toward that faction; if they share the same faction, it is only a personal conflict and does not remove the player from the faction or declare war.",
   "AF_TAUNT_PROMPT_NpcContext": "ordinary NPC scene interaction",
   "AF_TAUNT_PROMPT_NpcFightEffect": "After an approximately 10-second standoff, the conversation exits automatically and the current scene escalates into a conflict."
 }

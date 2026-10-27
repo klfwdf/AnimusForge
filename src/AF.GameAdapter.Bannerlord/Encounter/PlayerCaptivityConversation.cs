@@ -339,12 +339,33 @@ internal static class PlayerCaptivityConversation
             session.Manager.EndConversation();
     }
 
-    // Existing engine tick: zero work when idle, one session / at most four validations per second.
+    // One target only, at most four validations per second. 1.5 needs the same
+    // visibility repair on entering captivity (including bandits), without a conversation.
     internal static void Tick()
     {
+        // Application ticks also run before a campaign exists and during teardown.
+        // Native captivity static getters dereference both of these owners.
+        if (Campaign.Current?.PlayerCaptivity == null) return;
         Session session = _session;
-        if ((session == null && _captureOpening?.Pending != true) || Time.ApplicationTime < _nextTick) return;
+        bool maintainCaptor = false;
+#if BANNERLORD_1_5_OR_GREATER
+        maintainCaptor = PlayerCaptivity.IsCaptive;
+#endif
+        if ((session == null && _captureOpening?.Pending != true && !maintainCaptor) || Time.ApplicationTime < _nextTick) return;
         _nextTick = Time.ApplicationTime + 0.25f;
+        if (maintainCaptor && session == null)
+        {
+            try
+            {
+                PartyBase holder = PlayerCaptivity.CaptorParty;
+                string menu = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+                if (Mission.Current == null && Game.Current?.GameStateManager?.ActiveState is MapState map
+                    && !map.MapConversationActive && (menu == "prisoner_wait" || menu == "settlement_wait")
+                    && holder?.MobileParty?.IsVisible == false && IsHolderStable(holder))
+                    CaptivityMapVisibilityCompat.RestoreCurrentCaptor(Campaign.Current, holder);
+            }
+            catch (Exception ex) { Logger.Log("PlayerCaptivity", "capture_visibility_failed " + ex.GetType().Name); }
+        }
         if (session == null) { TryOpenPendingCapture(); return; }
         try
         {
@@ -413,6 +434,7 @@ internal static class PlayerCaptivityConversation
         if (!OwnsCampaign(session)) return;
         if (PlayerCaptivity.IsCaptive && PlayerCaptivity.CaptorParty != null)
         {
+            CaptivityMapVisibilityCompat.RestoreCurrentCaptor(session.Campaign, session.Holder);
             string menu = PlayerCaptivity.CaptorParty.IsSettlement ? "settlement_wait" : "prisoner_wait";
             if (Campaign.Current.CurrentMenuContext?.GameMenu?.StringId != menu) GameMenu.ActivateGameMenu(menu);
             Campaign.Current.TimeControlMode = session.PreviousTime;

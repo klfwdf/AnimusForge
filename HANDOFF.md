@@ -1,18 +1,3 @@
-# 当前源码：场景固定前缀与导演/生图/社交修复（2026-10-27）
-
-- 场景固定公共system、人物资料前置、动态状态后置；缓存按NPC隔离，最新状态与已选历史保持。包含本轮导演API/模型拉取、生图设置、OpenRouter/Gemini尺寸兼容、口头外交刷新和家族结识修复。
-- 远端基线独立源码双API编译通过，缓存CN/EN各151、实际DLL四组各47、结识10项通过；中转真实缓存token、实机及原档未验。未带本地历史/日志或无关未提交改动，无强推。[唯一主台账与代码入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#publish-runtime-fixes-20261027)。
-
----
-
-# 当前源码跟踪：1.5.5参考源码与双语布匿世界书（2026-10-26，SOURCE_VERIFIED / LIVE_NOT_RUN）
-
-- 保留原版1.5.5共8201文件，删除旧1.5.4共8192文件；跟踪CN/EN布匿世界书各1272 JSON及身份映射，清单只引用现存文件。测试桥和本地运行产物不纳入。
-- 2544 JSON及1272条真实英文资源映射通过；未新增产品源码、构建、打包、部署或实机验证。[范围、证据边界与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#source-tracking-worldbooks-20261026)。本次基于远端主线发布，不携带其他本地开发历史。
-
----
-
-# 当前长文本编辑器修复（2026-10-26，离线通过 / 实机未验 / 未部署）
 
 - 按玩家1.6.5反馈和用户推送main授权，基于远端ba3a47e1a完成产品提交17a1950c6：局部排版优化、6万字符截断提醒、中英字数栏及保存回调异常保护。保持原关闭/焦点/业务保存流程，不改其他玩法和版本号。
 - 最终回归146项、排版新旧对照1930项、中英资源/真实绑定及原统一双API/Bootstrap/Coup构建通过。玩家原始闪退及游戏视觉未复现，不等于所有闪退已排除；未打包或部署。
@@ -23,6 +8,259 @@
 - 以远端 `672722b71` 为底，仅合入每日失败隔离 `ea31d53c4`、NPC续期退避 `41a4f9758` 及测试；保留远端三个新增提交，不带入累计开发历史或本地专用资料。
 - 最终候选双API、Bootstrap、双Coup构建通过；两API每日隔离各322、续期退避各87、生命周期各2668、全模块各1491、兵种经验各43项通过；远端海军AI转发回归1.3/1.4分别17/26项通过。既有NPC编排与日志门禁失败保留，不称全部测试通过。
 - 原开发候选实机仅证明政策发布；本次合并候选未重做实机，真实每日故障、sav往返及NPC续期故障仍未验，不部署、不打包。[唯一台账、源码坐标与验证边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#policy-fixes-delivery-20261025)。以下为此前交付记录。
+
+---
+
+
+---
+
+# 最新发行：1.6.5航海修复推送及双包（2026-10-23，PUSHED_PACKAGED / LIVE_NOT_RUN）
+
+- 远端main=672722b710e310da8f81afdc95a298f9de13f318，仅本次航海转发修复及专项测试，不带本地交接历史。
+- AnimusForge_v1.6.5_CN_1023_1029.zip / AnimusForge_v1.6.5_EN_1023_1029.zip已输出到一键编译覆盖推送/packages，CN3530/EN3521文件，layout/markers及全部归档哈希通过，无重建/版本递增；排除布匿与1.5.5，旧包保留。
+- 未新增部署/实机；当前安装CN保持，原版调船等待按要求不改。[主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-package-165-naval-20261023)；证据artifacts/push-package-165-naval-20261023/package-receipt.json。
+
+---
+
+# 当前安装：CN航海AI修复（2026-10-23，DEPLOYED / EXTRA_TESTS_NOT_RUN）
+
+- 按用户要求直接部署现有CN内容与已构建航海AI修复，Bootstrap＋1.3/1.4，原部署流程成功更新78文件；玩家数据/未知文件及原布匿排除保留，未新增1.5.5。
+- 无重建或额外测试，仅保留部署必需保护；未实机/已卡队伍恢复/无DLC启动验证，无打包/push或自动回滚。源码修复不增加DLC依赖。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-naval-fix-20261023)；证据artifacts/deploy-cn-naval-fix-20261023/receipt.json。此前EN当前安装记录由本条取代。
+
+---
+
+# 当前源码：航海AI模型转发修复（2026-10-23，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 补齐1.4港口巡逻距离与定居点威胁半径转发，保留底层航海模型值；回归定位1fa0209e2f（2026-06-22《宴会更新》直接删除原转发并改继承默认模型）。
+- 原双API/Bootstrap/接缝通过，真实DLL 1.3共17项、1.4共26项通过，旧DLL负对照失败。未实机、已卡队伍恢复或岸边登船验证，未部署/打包/push，已安装EN仍为旧版。
+- [唯一主台账及回滚范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#naval-ai-forwarding-fix-20261023)；证据artifacts/naval-ai-forwarding-fix-20261023/receipt.json。
+
+---
+
+# 当前安装：EN本地全量＋选定上游功能（2026-10-23，DEPLOYED / LIVE_NOT_RUN）
+
+- 已部署v1.6.5 EN单模块Bootstrap＋1.3/1.4；当前本地改动补入婚配修复、听众默认排除和交付规则。布匿不纳入候选，已有1.5文件保持。
+- 双实现/Bootstrap/接缝、婚配47、国家导入57、EN源码/DLL与资源检查通过；3521候选、3210更新、6121保护文件部署后核对通过。未实机/旧档/provider，不打包/push，无部署备份或自动回滚。
+- [唯一主台账及回滚范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-en-local-upstream-20261023)；证据 `artifacts/deploy-en-20261023/receipt.json`。以下安装与发布记录为历史范围。
+
+---
+
+# 最新源码推送：三国家容错与指定测试/说明撤销（2026-10-22，PUSHED_VERIFIED）
+
+- 普通推送并核实远端main=`cee4babd9f1a4a4119a046c7732b7b2d66517279`：保留婚配、场景听众默认值、源码交付规则；按用户明确答复撤销1e5740dd和8d49c8d9的内容，加入最多跳过三个普通国家的本地修复。无旧历史合入或强推。
+- 合并源码57项、五文件撤销边界、源码交付扫描及真实pre-push通过。未合并后完整构建/实机/部署/打包；其他本地功能未一并发布。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-selected-remote-20261022)；证据与聚焦回滚位于 `artifacts/push-selected-20261022/receipt.json`。
+
+---
+
+# 当前源码：世界书导入容许三个普通国家不匹配（2026-10-22，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 普通国家最多3个不匹配可跳过，第4个预检拒绝并列出ID/名称；动态国家原有跳过单独计数，确认与完成提示同步CN/EN。
+- 实际源码回放57项、双语资源和1.3/1.4/Bootstrap/接缝检查通过；未实机、部署、打包或push。
+- [唯一主台账与代码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#kingdom-import-tolerance-20261022)；证据及聚焦回滚备份位于 `artifacts/kingdom-import-tolerance-20261022/`。
+
+---
+
+# 最新打包：1.6.5 CN/EN标准双实现（2026-10-22，PACKAGED / EXTRA_CHECKS_NOT_RUN）
+
+- 已输出CN/EN两份 `AnimusForge_v1.6.5_*_1022_1923.zip`，位于一键编译覆盖推送/packages，含Bootstrap和1.3/1.4，排除布匿战争编年史及1.5.5。包含本轮最新状态替换与排序等改动，未部署/push。
+- 用户要求不再检验后，只完成压缩；最终ZIP未额外验证。标准脚本曾遇外部并发清单更新，最终使用本任务冻结清单与原投影/ZIP函数，不覆盖外部修改。[台账及回滚材料](docs/animusforge-refactoring-and-repository-reorganization-plan.md#package-latest-state-20261022)。
+
+---
+
+# 当前源码：最新状态替换与排序（2026-10-22，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 三渠道缓存只采用上游当前完整请求，移除旧动态快照和失效原文重复；原已选历史/AFEF/摘要/角色保留。当前system替换旧版，未变则逐字复用。顺序为system→已选历史/事实→本轮上下文→单独当前输入/接力指引；已入历史的发言不复制。
+- CN/EN各148、日内20、协议13、实际双API×双语各24通过，旧排序DLL负对照失败，双实现/Bootstrap/接缝门禁通过。真实provider命中、费用、实机/原档未验证，未新部署/打包/push；旧安装状态保持，1.5.5排除。
+- [唯一主台账及代码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#latest-request-state-20261022)；`artifacts/latest-request-state-20261022/receipt.json`与before/保存范围、证据和聚焦回滚点。状态替换及system变化之后的前缀可能失配，不承诺整段历史命中。
+
+---
+
+# 当前源码：接力设置／日期前缀／场景历史放大（2026-10-22，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 接力终端/MCM共用原owner，范围1–8、默认8，包含首次回复；新喊话生效。日期不再附加卡拉迪亚/Calradia，旧归档标题/元数据只作显示清理。两种场景历史窗口按红框扩大，滚动/关闭绑定保持。
+- 生产接力90、两API实际设置各28、最终日期各18、双API/Bootstrap/双注册通过；布局几何/资源接线通过。未原生窗口绘制/第三方模组实测/旧档/provider，未新部署/打包/push，1.5.5仍排除。
+- [唯一主台账及代码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-relay-calendar-history-ui-20261022)；两任务receipt/before和calendar任务code-map保存证据与聚焦回滚点。下方发布及安装状态保持原记录，不代表本次新源码已交付游戏。
+
+---
+
+# 最新源码发布：对话历史／缓存修复（2026-10-22，PUSHED_VERIFIED）
+
+- 已拉取远端并无冲突合并本轮15个源码/双语资源/测试文件，普通推送至origin/main，远端核实 `b4e5331d090f36266be0d82aa049677ddac158fd`；不带入本地私密历史或其他未提交改动，1.5.5仍排除。
+- 合并源码缓存CN/EN各68、长聊20、协议13，双API/Bootstrap编译及原双接缝/注册门禁通过。使用独立发布分支，原main/index/锁/工作文件保留；未新部署/打包/实机。
+- [主台账与源码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#pull-merge-push-cache-20261022)；`artifacts/pull-merge-push-cache-20261022/receipt.json`。回滚聚焦公开产品cbadfc5，旧部署与其他作者内容保持。
+
+---
+
+# 当前安装：CN 1.3/1.4 双实现缓存修复（2026-10-22，DEPLOYED / LIVE_NOT_RUN）
+
+- 按用户最新范围只部署标准双版本；最终预算不删已选历史、不跳过稳定前缀缓存，日内摘要继续有效。既有增量去重离线通过，未实现旧状态行原地替换。1.5.5 排除，旧 1.5 文件保持，不能据此认为 1.5 已获得本次修复。
+- CN3530 / EN3521 投影通过，更新10文件；安装哈希及3791保护文件元数据核对通过。未实机、旧档、真实缓存命中、打包或push，无部署备份/自动回滚。
+- [唯一主台账及源码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-dual-cache-20261022)；`artifacts/deploy-cn-dual-cache-20261022/receipt.json`，本地 `codex/deploy-cn-dual-cache-20261022`。旧项目Stage在 `previous-stage/`，源码回滚点详见收据；其他作者/主分支/索引锁保持。下方旧“当前安装”均为历史记录，以本条范围为准。
+
+---
+
+# 当前网站修复：第二章共用卡片与稳定页宽（2026-10-22，LOCAL_BROWSER_VERIFIED / NOT_PUBLISHED）
+
+- `public_manual/index.html` 的第二章七篇复用现有卡片，删除分叉样式；公共外框显式宽度，切页不再按正文内容收缩，窄屏对比栏和长标签正常换行。中英正文及JavaScript保持。
+- 本地33个导航、两语言×三主题及320/390/768/960px回归通过，已保存并检查截图。未上线、未验证线上缓存或其他浏览器；游戏安装/打包状态不变。
+- [主台账及代码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#public-manual-layout-20261022)；证据/回滚原件 `artifacts/manual-layout-20261022/`，本地 `codex/manual-layout-20261022`。其他作者改动及main/index保留。
+
+---
+
+# 最新源码发布：1.5.5 游戏反编译参考目录（2026-10-22，PUSHED_VERIFIED）
+
+- 用户授权后，仅将 `原版游戏本体代码1.5.5/` 的 8201 文件（81 工程、8115 C#）推送到 `origin/main`，提交 `77fad380a4437b5b6c13344e9f60375769235a92`。直接基于远端创建单提交，未带入 AF、本地台账或其他交付历史。
+- 所有路径/新增类型及原始文件 blob 校验通过，远端 SHA 一致；本地分支、共享索引/锁和源码保留。未进行反编译工程重建或实机验收，不改变此前安装与打包状态。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-bannerlord155-source-20261022)；证据 `artifacts/push-bannerlord155-source-20261022/receipt.json`、`source-files.json`、`push.log`。回滚针对该发布提交 revert；本摘要仅本地保留。
+
+---
+
+# 最新打包：AF1.6.4／1.5.5特别版CN+EN（2026-10-22，PACKAGED / LIVE_INSTALL_NOT_RUN）
+
+- 已输出 `AnimusForge_v1.6.4_CN_1022_0922.zip` 与 `AnimusForge_v1.6.4_EN_1022_0922.zip`，位于一键编译覆盖推送/packages。版本保持1.6.4，用户自行改特别版文件名；本次仅含1.5实现，单模块Bootstrap入口，两包保留双语UI，含启动保护和此前修复。
+- 完整投影CN 3527／EN 3518及完整ZIP校验通过；英文源码/实际DLL门禁通过。把六条确切旧公文前缀移至既有兼容资源，三版构建/真实历史68/68/70和包候选启动11通过。无版本递增、正式脚本修改、游戏覆盖或push，未实机新包安装/读档。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#package-164-api15-20261022)；`artifacts/package-164-api15-20261022/receipt.json`、ZIP manifests、before及门禁日志。旧包保留，回滚只针对本次兼容迁移；本机当前安装仍是下方启动热修48d2候选。
+
+---
+
+# 当前安装：CN仅1.5启动崩溃热修（2026-10-22，DEPLOYED / LIVE_RETEST_NOT_RUN）
+
+- 上次新增的被俘可见性Tick在战役未创建时读原版IsCaptive，真实日志确认启动NRE；已补Campaign/PlayerCaptivity入口保护并重新覆盖三项程序文件，其他四项修复保留。新DLL `48d2cd07decf711f8596a44f522962444c6ef7684a348ce2f6a5c379af9e86a8`，安装hash匹配，3364保护文件保留。
+- 旧真实DLL复现同栈；新三版真实API各11项启动回放，生命周期CN/EN旧API各222、1.5各239，三版/Bootstrap/Coup通过。旧fake安全全局CaptorParty已改为原版owner依赖，覆盖主菜单/半初始化/teardown。尚未实机重启或读档复验，不把managed回放当实机。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#captivity-startup-crash-20261022)；`artifacts/captivity-startup-crash-20261022/receipt.json`、deployment receipt、code map、before及正负日志。intent `8af04dd3f24e56dbeaa77584ba292dc650b19c83`，本地 `codex/captivity-startup-crash-20261022`。旧E8E候选已确认会启动崩溃，不静默回退；无部署备份/自动回滚。本条替代下方上一安装状态。
+
+---
+
+# 当前安装：CN仅1.5，含本轮四项修复（2026-10-22，DEPLOYED / LIVE_NOT_RUN）
+
+- 用户“部署”授权后，AF v1.6.4 CN 已安装到 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`，游戏v1.5.5.124170。包含接力正常切人时不再误报结束、九开局具体背景、首次交谈冷索引后台化、坐镇/劫匪被俘隐藏修复；Bootstrap唯一入口，仅1.5实现。
+- 完整CN 3527、EN验证 3518；实际7文件更新，3364保护文件hash/时间戳保留。DLL与已验证候选一致，相关资源匹配Stage；复用接力57、CN/EN履历各189等有效证据，未实机/ZIP/push，未再次载入安装程序集。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn15-relay-background-20261022)；`artifacts/deploy-cn15-relay-background-20261022/receipt.json`、prepared与日志。intent `b1626951ff3d49f1cc91a9076241be2497543f08`，本地 `codex/deploy-cn15-relay-background-20261022`。无部署备份/自动回滚；旧Stage只作检查后的恢复材料。本条替代下方本轮源码修复的未部署状态。
+
+---
+
+# 当前候选：接力提示／开局背景及前两项修复（2026-10-22，SOURCE_VERIFIED / NOT_DEPLOYED）
+
+- 场景正常接力切人保持，仅在最后确定停止时提示结束；九开局背景同步细化 CN/EN Prompt、UI、fallback，旧canonical记录读取即更新。商人具体写作坊、商队与商货/护卫等原版背景。
+- 三版/Bootstrap/Coup通过；接力57与旧控制器负对照、真实1.5 DLL CN/EN各189通过，2028输入hash已记。候选包含上一slice的首次对话冷索引后台化、坐镇/劫匪被俘隐藏修复。尚未实机/部署/打包/push，当前游戏仍为上次安装版。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#relay-notice-start-background-20261022)；`artifacts/relay-notice-start-background-20261022/receipt.json`、`code-map.json`、before；本地 `codex/relay-notice-start-background-20261022`，intent `8211ca867d969a6cff21dfc5df0e4164685969f9`。回滚按聚焦提交逆向处理，不能整文件覆盖其他作者。
+
+---
+
+# 当前修复：首次交谈卡顿／坐镇被俘隐藏（2026-10-22，SOURCE_VERIFIED / NOT_DEPLOYED）
+
+- 冷索引由既有后台检索构建，主线程仅按版本发布规则，作废不等待推理锁；1.5 安全被俘等待阶段独立恢复真实看押者，覆盖无领主劫匪和载入俘虏，原交谈返回保护保留。
+- 三版构建/Bootstrap/Coup 通过；索引88、CN/EN世界书各16、俘虏旧API各215／1.5各231，旧源码负对照失败。未实机/部署/打包/push；游戏仍为下方上次部署版本。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#first-conversation-capture-fixes-20261022)；证据 `artifacts/first-conversation-capture-fixes-20261022/receipt.json` / `code-map.json` / before。intent `cd992e144b6e8afbeca5cf4f8b210b530f654f5a`，分支 `codex/first-conversation-capture-fixes-20261022`，回滚只做聚焦逆向变更。
+
+---
+
+# 当前安装：CN 仅 1.5，含履历及本轮修复（2026-10-22，DEPLOYED / LIVE_NOT_RUN）
+
+- 用户授权“部署”后，AF v1.6.4 CN 已覆盖到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，游戏 v1.5.5.124170，仅 `versions/1.5`、Bootstrap 唯一入口。包含对话历史公文过滤/俘虏者可见性修复、装备空防具槽保护、九开局身份履历与双语 UI。
+- 完整 CN Stage 3527、EN 验证投影 3518；实际更新 7 文件，3359 个保护文件原数据保留。已安装 DLL/资源回放 70 + 174 项通过；载入真实程序集的 initializer 追加六份诊断日志，旧前缀完整保留。未启动游戏实测、未 ZIP/版本递增/push；无部署备份或自动回滚。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn15-fixes-20261021)；证据 `artifacts/deploy-cn15-fixes-20261021/receipt.json` / `prepared.json` / installed replay 日志。intent `ba3e2266988090dfba1c5b13ba884f5e601520cd`，本地分支 `codex/deploy-cn15-fixes-20261021`；此前 Stage 仅作恢复材料，恢复需另行检查并显式部署。本条替代下方三项修复的“未部署”状态，仍未取得实机/玩家原档验收。
+
+---
+
+# 当前修复：对话历史范围与俘虏交谈后俘虏者隐藏（2026-10-21，SOURCE_VERIFIED / NOT_DEPLOYED）
+
+- 对话历史显示查询排除 NPC 自身发布/收到的正式外交公文事实，保留原始 NPC 记忆、玩家交谈和交互行为，编辑/删除 ordinal 不变。俘虏交谈返回时仅恢复仍实际看押玩家的同一活动部队；1.5 清理该部队的过期可见性缓存，已释放/转移/失效/在城镇中不误显形，部队/俘虏 roster 不改。
+- 三版构建/Bootstrap/Coup 通过；真实 DLL 回放 68/68/70 项，俘虏 lifecycle 旧分支 CN/EN 各 215、1.5 分支各 217 项通过；旧 DLL/旧退出源码的对应负对照失败、新候选通过。尚未实机和玩家原档验证，没有新部署/打包/push。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#history-scope-captor-visibility-20261021)；证据/一基符号图 `artifacts/history-scope-captor-visibility-20261021/receipt.json`、`code-map.json`。检查点 `aef12078e935c0b272595b500ed41f9cf76f418b`，聚焦分支 `codex/history-scope-captor-visibility-20261021`，原文件 `before/`。当前游戏仍为先前安装 DLL，尚不含本轮及下方未部署修复。
+
+---
+
+# 当前修复：装备 Prompt 空防具槽越界（2026-10-21，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 产品 `71b95a55de5d`：普通 NPC 与玩家/英雄读取器仅允许武器槽回退到 Agent.Equipment；完整防具、武器后备与 CN/EN 输出保持。20 项生产方法夹具回放通过、越界 0（旧实现可复现）；1.3/1.4/1.5、Bootstrap 和三 Coup 接缝通过。
+- [唯一主台账/源码范围/未验](docs/animusforge-refactoring-and-repository-reorganization-plan.md#equipment-prompt-slot-fix-20261021)；证据 `artifacts/equipment-prompt-slot-fix-20261021/receipt.json`。未部署/打包/push/实机复测；当前安装仍为旧 DLL。回滚 focused inverse `71b95a55de5d`，原字节在证据 `before/`；其他作者 dirty 和 main 保留。
+
+# 最近任务：开局身份写入玩家履历（2026-10-21，SOURCE_VERIFIED / NOT_NEWLY_DEPLOYED）
+
+- 新增 1.5 已确认开局身份的一次性履历记录，保留原履历与知名度/知情规则，CN/EN Prompt 和双语 UI 接通；没有可靠选择不猜测，手动清空后不重建。三版构建及 Coup 接缝、CN/EN 各 174 项真实 DLL 离线回放、存档分块两项检查通过。
+- “周报／快报消息提示”代码默认值、本机 MCM 保存值均为 `true`，终端/MCM/实际消费者同源；未修改设置。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-start-history-20261021) 链接本轮代码地图、源码 hash、候选、测试及未验边界；证据 `artifacts/player-start-history-20261021/receipt.json` / `code-map.json`。回滚点 `2b68c92ec817a60bc02d354fc2c0f40f8feaa5b7`，聚焦交付分支 `codex/player-start-history-20261021`，原文件 `before/`。未实机、新部署、打包或 push，前次 CN 仅 1.5 安装仍在，尚不含本轮新增履历功能。
+
+---
+
+# 当前安装：CN 仅 Bannerlord 1.5（2026-10-21，CN_DEPLOYED / LIVE_NOT_RUN）
+
+- 用户明确授权“部署CN 仅1.5版”。AF v1.6.4 CN 已安装到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；Bootstrap 唯一入口、实现目录只有 `1.5`，针对真实游戏 v1.5.5.124170。现有 10 个 ONNX 文件保持。
+- 完整 CN 3527 项、EN 验证投影 3518 项通过；3527 管理文件部署/hash 验证通过，已安装 DLL 33 项兼容回放通过。没有启动游戏、旧档或真实 provider，未 ZIP/递增版本/push；既有一键/正式双实现流程未改。
+- [唯一主台账/owner/验证/未验](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn15only-20261021)；本机收据 `artifacts/deploy-cn15only-20261021/receipt.json`，干净 Stage 同目录 `stage/AnimusForge/`。本条替代下方本轮适配对 CN 安装的“未部署”状态。
+- intent `f9755c747cdc20047ca32225242a75d5d37fcc7e`，本地分支 `codex/deploy-cn15only-20261021`；main/index 和其他作者 dirty 保留。部署不创建备份或自动回滚；后续恢复需检查现场并按新授权处理。
+
+# 当前本地适配：Bannerlord 1.5.5（2026-10-21，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 从真实 `v1.5.5.124170` 安装生成 `原版游戏本体代码1.5.5/`：81 程序集、8115 C#、81 工程；82 条源哈希复核一致，Epic 101 条已知 SDK 类型注释保留，旧目录不动。
+- 保留 1.3/1.4，新增独立 1.5 编译/Bootstrap 选择，修复忠诚度、王国名称、藏身点、perk、处刑血仇和面部动画接口。三版及 Bootstrap 构建、三版 Coup 接缝通过；兼容回放 23/23/33 项、每版 74 关键 API 和声明式 Harmony 目标检查通过。
+- [唯一主台账/代码范围/未验](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bannerlord155-compat-20261021)；[维护与构建说明](docs/bannerlord_1_5_5_compatibility.md)。本机证据 `artifacts/bannerlord-1.5.5-reference-20261021/receipt.json`，最终 1.5 DLL 在同目录 `candidate15-clamp-final/versions/1.5/`；Bootstrap 在本地 Debug 统一构建产物。未完整 1.5 Stage、CN/EN 打包、部署、push、实机或旧档验收，现有双包不交付 1.5。
+- 一键入口和正式交付 owner 未改。既有 index.lock 保留，intent `3df034e82973cbb45ed93260f28811cec9402a3c` / `codex/checkpoint-bannerlord155-20261021`；本轮切片保存在独立本地分支 `codex/bannerlord155-compat-20261021`，main HEAD 和其他作者 dirty 保持。回滚用 focused inverse；原字节在本机证据的 `before/`。
+
+# 当前交付：v1.6.4 源码已推送（2026-10-21，SOURCE_PUSHED / ZIP_LOCAL / LIVE_NOT_RUN）
+
+- 用户本轮授权“推送”；干净公开提交 `5b82d06240fc4427a413043741151bf1f3a3d718` 已正常fast-forward推至 `origin/main`，并以 `git ls-remote` 独立核实。共97个产品/资源/测试/已脱敏审计文档变更，版本v1.6.4；与已打包本地产品及测试树一致。本地私有历史、artifacts和其他作者dirty保留且不发布。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-1-6-4-20261021)；证据 `artifacts/package-1.6.4-20261021/{publication-ready.json,receipt.json}`。CN/EN ZIP仍在本地，未创建GitHub Release或上传ZIP；未新部署或启动游戏。复用本期Release双API/Bootstrap/Coup/完整投影/ZIP哈希验证，不重复重建。
+- 原生UI、旧档推进未验，provider偶发中文回复仍未解决。公开源码回滚使用本提交focused inverse，不force-push；远端前置基线 `d2d05f0c63bd20d3cb7fa79fc5886d8b5769c9b9`。本条替代下方v1.6.4“未push”状态，不改变未验结论。
+
+# 当前交付：v1.6.4 正式双包（2026-10-21，PACKAGED / NOT_DEPLOYED / NOT_PUSHED）
+
+- 用户本轮只要求打包；原正式入口递增v1.6.3→v1.6.4，Release双API/Bootstrap/Coup/干净Stage及CN/EN完整投影、ZIP逐文件hash与独立CRC检查通过。包在 `一键编译覆盖推送/packages/`，详细文件名/大小/SHA见下方主台账和本机收据。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#package-1-6-4-20261021)；本机证据 `artifacts/package-1.6.4-20261021/receipt.json`。旧包保留；未部署、未push、未启动游戏；当前已安装EN仍v1.6.3。原生UI/旧档未验，provider偶发中文回复仍未解决，不加语言锁。
+- 版本文件回滚原件在同证据目录；源码只focused inverse本次版本提交，保留其他作者dirty。本条替代旧摘要的“未ZIP”，不替代其语言问题与实机未验结论。
+
+# 当前交付：宣言中英篇幅修复；中文回复仍未解决（2026-10-21）
+
+- 产品`4aec88969`已部署EN v1.6.3：CN按字符、EN按词，标题/代笔/生成预算与MCM/终端说明同步；原40/200配置数值保留，旧待办Prompt从v30刷新到v31，不重译已存宣言或加输出语言锁。
+- 截图结盟倡议的最终请求18964字符、0汉字、reasoning=high，原始provider回复中文；同请求重放英文26词，改词单位后英文89词。上一轮high单样本不能证明语言已解决。本轮真实回放：代笔CN115/EN116、文风/迁移各107、口头协定宣言各329；双API/Bootstrap/完整CN3530/EN3521投影和EN门禁通过；387安装文件与3144最新玩家保护hash通过。
+- [唯一主台账与源码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#declaration-language-length-20261021)；本机证据`artifacts/declaration-language-followup-20261021/receipt.json`。实机/旧档未验；中文回复仍属接口输出不稳定，未建立保证。回滚仅focused inverse`4aec88969`（检查点`9f5f15d`），保留其他作者dirty。未ZIP/push。
+
+# 当前交付：EN 接口、事件/GCCZ 投影与快报（2026-10-21，EN_DEPLOYED / LIVE_NOT_RUN）
+
+- 产品 `32236f2ca` / `c2f5a3cea` / `a976ca934`：外交遵循实际API推理设置；事件归档、GCCZ场景记忆/反应事实/城堡分组与结算补齐请求或显示投影；政策改为完整政令写作指导；快报滚动条和正文/短讯字号共用原终端/MCM报刊设置（12—36）。不加输出语言锁，不修改存档原文。
+- 最终Release双API/Bootstrap、Coup门禁/注册、完整CN3530/EN3521投影与EN源码/DLL门禁通过；GCCZ8组合各594、事实回忆CN/EN各1610、事件各183、快报48、最近记忆160项专项通过。已部署EN v1.6.3，387管理文件及3144保护哈希验证一致。旧综合回放有冻结断言/夹具缺类型未通过，不能称全套测试通过。
+- [唯一主台账与源码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-live-diplomacy-gccz-20261021)；本机证据`artifacts/en-live-diplomacy-language-20261021/product-validation-receipt.json`。未验原生UI/旧档推进/新游戏provider回复；`G:/AFMOD/GCCZ`不可访问，未镜像。未ZIP/push。回滚只focused inverse上述产品提交，保留其他作者dirty；不建游戏Recovery或自动回滚。
+
+# 当前修复：内政近期纪事重复与重叠（2026-10-21，OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN）
+
+- 产品 `615872c4c`：面板读取时按同周+完整原文合并重复纪事，回填后续独立事件；不删除历史或改变不满结算。成派条件改为独立纵向行，限制左栏绘制范围，纪事文本按实际内容高度布局，避免跨栏/换行叠字。
+- 两版本分支的真实生成XML与生产投影各31项PASS（旧代码各14项失败）；统一Debug双API/Bootstrap/Coup/注册通过。当前候选同时含前轮气泡修复 `72b84559a`；未部署、打包、push或实机复测。
+- [唯一主台账与源码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#interior-chronicle-20261021)，证据 `artifacts/interior-chronicle-20261021/receipt.json`。检查点 `codex/checkpoint-interior-chronicle-20261021`；源码focused inverse只针对本产品提交，保留其他作者dirty。
+
+# 当前修复：场景喊话气泡坐标（2026-10-21，OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN）
+
+- 产品 `72b84559a` 修正屏幕像素被 Gauntlet 布局二次缩放：使用原版人物标记投影接口，扣除当前层安全区原点，再以 CustomInverseScale 换算布局偏移。原头部锚点/打字/文本保持，上一轮 `6b30db66b` 的像素映射结论在该范围被本条替代。
+- 实际生产定位方法回放：旧440项中419失败，修复后440项通过；覆盖多分辨率/缩放/安全区/中英多行与无效投影隐藏。原统一 Debug 两实现、Bootstrap、双Coup与注册通过；没有实机渲染、部署、打包或推送。
+- [唯一主台账与源码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bubble-position-20261021)；本机证据 `artifacts/bubble-position-20261021/receipt.json`。检查点 `codex/checkpoint-bubble-position-20261021`；回滚只对 `72b84559a` 做focused inverse，保留其他作者dirty。
+
+# 当前公告修正：v1.6.2 → v1.6.3（ANNOUNCEMENT_CORRECTED / PUSH_VERIFIED）
+
+- 用户纠正公告基线：按 2026-10-17 正式 v1.6.2 发行提交 `60f3a8b21`，不是最近一次推送 `8064bea6b`。三份公告已扩为九个模块、中英各49条，覆盖语音、上下文与缓存、外交、场景战后、政策、双语、环境退役及生图。
+- 公告修正已推送并独立核实：`d2d05f0c63bd20d3cb7fa79fc5886d8b5769c9b9`。本条替代下方发行记录对“本期公告基线”的描述；程序、已部署 EN 与两个安装包均未改变，不重做构建或实机验收。
+- [玩家公告](docs/releases/AnimusForge_v1.6.3_zh-CN.md) · [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-1-6-3-notes-baseline-correction-20261020)；本机范围/源提交/校验：`artifacts/release-1.6.3-notes-baseline-correction-20261020/`。回滚检查点 `codex/checkpoint-v1.6.3-notes-baseline-20261020`；既有 dirty 保留。
+
+# 当前交付：v1.6.3 双包、EN 部署与推送（2026-10-20，RELEASED / EN_DEPLOYED / LIVE_NOT_RUN）
+
+- 以远端 `8064bea6b` 为本期公告基线；正式 CN/EN 双包、双 API/Bootstrap/Coup 与最终四组实际 DLL 回放通过。EN 已从本期 ZIP 按原受保护部署 owner 安装，核验 387 项管理文件、3144 项保护哈希及 3236 项其他安装文件元数据。
+- 公开提交 `212eb1c491eb942d3860d70fc34cc38079e47375` 已推送并独立核实；只含本期产品/测试、版本与中英玩家公告，不上传本地私有 artifacts/历史。本条交付状态替代下方 AFEF/EN 补修的 NOT_DEPLOYED 状态。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-1-6-3-20261020)；[玩家公告](docs/releases/AnimusForge_v1.6.3_zh-CN.md)。完整包/安装/远端收据位于 `artifacts/release-1.6.3-20261020/`。未启动游戏、真实 provider 或旧档测试；不强制模型回复语言，不自动翻译未知旧正文。
+- 代码检查点 `codex/checkpoint-release-1.6.3-20261020`；旧 v1.6.2 包保留。无部署备份或自动回滚；后续源码恢复使用 focused inverse，不覆盖用户数据。
+
+# 当前 AFEF 标签兼容复核（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 上轮审查范围不足：本轮实际 DLL 负向回放复现恢复/native/归档/场景入口漏认英文或旧全角 AFEF。已通过 `d1d5998ac` 统一六种前缀识别，保留 NPC/玩家身份、原存档身份和动作协议。
+- 最终 1.3/1.4 × CN/EN 四组各 74 项新增兼容检查、原消息/终端检查、每包 1610 项事实回放及 EN 源码/DLL 门禁通过；未实机/部署/推送，未刷新上一条 EN 候选。
+- 详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#afef-reader-audit-20261020)，本机证据 `artifacts/afef-reader-audit-20261020/receipt.json`；检查点 `codex/checkpoint-afef-reader-audit-20261020`，focused revert `d1d5998ac`。
+
+# 当前 EN 固定文本补修（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 以用户最后要求为准：CN/EN 固定提示词各用其包语言，模型回复不加语言锁；两包 AFEF 标记统一英文。修复最终请求规则头、默认提示词、AFEF 兼容读写、公告分类/解析、日期、Day 0 和战报固定碎片。
+- 产品 `762ede1fc` + 换行保全 `2d2929ce7`；双 API/Bootstrap/干净 Stage、四组实际 DLL 回放和真实首轮请求固定汉字 28→0 已通过；完整最终 CN/EN 投影 3530/3521 项及实际 DLL EN 门禁通过。
+- 完整范围、代码坐标、证据、限制及回滚见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-fixed-text-followup-20261020)和[代码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-fixed-text-followup-20261020-code-map)。证据/本地 EN 候选位于 `artifacts/en-zero-chinese-followup-20261020/`，未部署或推送。
+- 旧生成中文对白/宣言/政策正文保留，未做翻译；真实 provider 和游戏 UI/旧档实机未验，不以离线全英固定文本保证模型输出语言。此条替代本轮临时“强制 EN 回复”的方案；下方交付历史不授权新部署/推送。
 
 # 当前交付：环境 AI 退役与 EN 部署（2026-10-20，离线通过 / EN 已部署 / 实机未验）
 
@@ -123,7 +361,7 @@
 # 进行中：EN 全部后处理标签完整链路测试（2026-10-18，ACTIVE / NOT_ALL_VERIFIED）
 
 - 用户确认72不同模板的完整链路与无限模型预算。已观察NEUTRAL的预期无变化、ANNOYED的耐心80→78/关系-1及历史；决斗真实输出DUEL/胜负台词并进入Mission，但结算PartiallyCompleted，不能算完整通过。其他模板未验，不能称全量完成。
-- [唯一主台账、代码范围与剩余工作](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-postprocess-alltags-20261018)；本机artifacts/en-postprocess-alltags-20261018/{TASK.md,inventory.json}。正在确认测试用EN默认与现有6万字中文自定义提示词的选择；用户原文件保持。
+- [唯一主台账、代码范围与剩余工作](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-postprocess-alltags-20261018)；本机artifacts/en-postprocess-alltags-20261018/{TASK.md,inventory.json}。用户已确认测试进程暂用EN资源并将玩家自定义提示词设为空；原提示词文件与设置保留。
 - run1f4bf8d0457046d88e407d52287cadcc/PID40752发生NORMAL_EXIT_TRANSITION_TIMEOUT，监督器最终报告保护文件未变、生命周期FAIL；当前检查PID已不存在，没有实际执行获准的强杀。用户已批准仅测试进程使用EN包默认并保留原文件/设置，正在用修正桥继续。三处平台缺口与临时profile已修，311 C#/116 Python通过，英雄状态投影另经双桥编译；实机复验未完成。不push/打包/覆盖产品DLL。下方是前轮交付，不能替代本轮验收。
 - 后续EN默认实机a55da62748fd404f9c54f837603d0205/PID7864：519字符profile实际生效、回复英文；[A:P_J_K_V]使玩家kingdom null→empire，并有AFEF owner接受/history一致；摘要来源2次200，修复生效。9HTTP/27534 tokens。入国原生SceneNotification阻断后续控制，正常退出后3170保护未变、仍ERC4 FAIL。现补原生只继续事件与四行分页的权威AFEF回读，双桥311/C#及冷元数据/真实prefab通过；118 Python首跑117通过、1项旧测试只查AF prefab已补原生路径后单项通过。修正实机待跑，不能称72项全过。
 - 第四轮d295276e3952436bbe2fda75dfe9dd7c/PID35352：入国再次成功，AFEF已从实际Drafts直接回读且hash与接受事件一致，history一致；另生成DELIGHTED，耐心80→80（上限夹取，delta=3）、privateLoveDelta=2。通知仍被全局层创建屏幕检查排除，已按原生GlobalLayer实际生命周期修正：只给精确SceneNotificationVM跨屏幕重新归属，屏幕或ActiveData变化作废旧句柄；普通/已释放表面不放行，真实Refresh+registry回归通过，双桥311通过。6HTTP/15845tokens，退出仍ERC4 FAIL；当前无游戏进程，下一轮复验通知返回。完整72项仍未完成。
@@ -151,6 +389,10 @@
 
 
 - 第十轮109b8c687fd14db0a53d16dead625b52/PID5192：空玩家提示词仍实机0字符；主/辅助/后处理当前均gemini-3.8-flash-high，原MCM SHA dcdade86...及自定义SHA 2ed99ab...再次不变。真实MOOD:BORED（turn f900a4fe7ac74776b972bde1e2564bf1/provider attempt4）经production消费、最终dispatch、主线程26应用，Patience55→54/delta-1/privateLoveDelta-1；COMPLETED_WITH_HISTORY且三回复SHA一致，可见英文无tag。两次召集被当前人物因社会关系拒绝、无对应标签；两金币借款拒绝且玩家1000/NPC10000、债务空表不变，均只负向记录，不继续反复付费刷同一拒绝。13HTTP全200/46202tokens，累计十轮115HTTP/691485tokens，币价UNKNOWN。手工session.end已退出、保护不变，原生ERC4/0xFFFFFFFF仍生命周期FAIL，无强杀。当前inventory为16/72模板实际生成、12模板有本任务完整效果/权威回读或预期无AFEF情绪/跟随证据，完整72仍未完成；Duel三/END及其余必要前置、player locomotion/native give-show/政治/部队/任务/婚姻/GCCZ等尚未验证。模型与清空玩家提示词这次调整已实机完成；证据s10-verification.json与s10-*。
+
+- 2026-10-19 清上下文复测纠正：EN新战役首轮赠金前无对话；同会话第二轮只有英文历史、场景跟随trace不完整；全新EN Duel和借款请求均被拒绝。CN误提前跑了一条赠金对照。三条EN/CN赠金/借款样本的NPC原生金币均10000、回复却称无钱；EN为英文、CN为中文。借款的债务回读因SESSION_STOPPED未知，不判未执行。CN临时资源已恢复EN原始哈希，无代码/设置修改。用户指出顺序后停止CN请求。72模板未完成；详见[主台账复测记录](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-postprocess-alltags-20261018)与[复测证据摘要](artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md)。
+- 最新 EN-only 续测获得一个完整正向 `[ACTION:MARRIAGE_FORMAL]` 实测：主角/Zoana配偶与氏族状态互相回读，双方 AFEF owner 接受；但英文首条请求后生成的 AFEF 事实是中文，另有无输入的俘虏自动开场为中文。新增 trace 阶段标签记录不一致；矩阵18/72有实际模型输出、14项完整，EN仍未测完，CN未恢复。三进程已退出、保护不变，原生ERC4仍FAIL；无修复。详见主台账与后续实测报告。
+- 随后的 MARRIAGE_ELOPE / MERGE_TO_PLAYER 英文请求都仅产生 MOOD:NEUTRAL，状态未变；Elope 的无效目标还锁住了该 run 的资产前置。两轮均无正向标签，EN仍未全测，CN未启动；保护未变且进程退出，ERC4仍FAIL。详见主台账与实测报告。
 
 # 当前交付：现有游戏测试桥已部署、连接实测通过（2026-10-18，NATIVE_EXIT_FAIL）
 
@@ -3044,6 +3286,78 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 
 
 
+- 第十一轮 d8f0a2c4e6b8d0f1a3c5e7b9d1f3a5c7 / PID6824（2026-10-19）：现成 F 盘游戏实机继续验证，`--unlimited-model-network`、`EMPTY_PLAYER_PROMPT_PROCESS_ONLY`（0字符），未创建副本。三次真实 EN 对话（GIVE_ASSET 请求、5金币/3天借款、WORLDMAP_ORDER:GO_TO_SETTLEMENT）均由 NPC 明确拒绝；后处理均只输出 `ACTION:MOOD:ANNOYED`，无资产/ADP/世界地图误执行。按本轮输入锚点回读，三段 `Token_Stats.txt` 均为 `model=gemini-3.8-flash-high`，对应片段未出现 `gemini-4-argon`；旧日志中的 `gemini-4-argon` 仍是历史记录。session-result 保护文件未变，进程已退出；生命周期仍 FAIL：`NATIVE_DEVICE_REFERENCES_REMAIN`、`NATIVE_SHUTDOWN_NOT_CLEAN`，原生退出码 `0xFFFFFFFF`。本轮不增加正向标签通过数；72模板完整链路仍未完成。证据：`artifacts/bannerlord-runtime-bridge-20261013/runs/d8f0a2c4e6b8d0f1a3c5e7b9d1f3a5c7/`。
+
+## 2026-10-19 EN 后处理继续实测（gemini-3.8-flash-high）
+
+- 现成 F 盘游戏、运行 ID `f1a3c5e7b9d1f3a5c7e9b1d3f5a7c9e1`、PID 41300；进程临时使用空玩家自定义提示词，原文件/设置未改。
+- 真实 EN 对话追加测试“让 Arcor 的独立队伍跟随玩家三天”：NPC 明确拒绝；真实后处理归一化为 `[ACTION:MOOD:ANNOYED]`，未生成/执行 `WORLDMAP_ORDER:FOLLOW`。权威英雄回读仍为 Arcor 142 名队伍成员、0 俘虏，未发生队伍命令事实。
+- 尝试在同一会话切换 Lucon 以覆盖族长/君主标签，被桥以 `FIXTURE_OWNER_OR_CONTEXT` 拒绝，避免混用上下文；未将其计入测试结果。
+- 本轮 Token_Stats 输入锚点对应的 auxiliary router、正文 `non_stream`、action postprocess 均为 `model=gemini-3.8-flash-high`；对应片段未出现 `gemini-4-argon`。旧日志中的 `gemini-4-argon` 仍为历史记录。
+- session-result：`protectionsUnchanged=true`；生命周期仍 `FAIL`（`NATIVE_DEVICE_REFERENCES_REMAIN`、`NATIVE_SHUTDOWN_NOT_CLEAN`），未声称完整通过。72 个模板完整链路仍未完成，大量标签因缺少专用 fixture/权威回读保持 `NOT_RUN`。
+
+
+## EN 后处理标签实机续测（2026-10-19）
+
+- s18 run 29ef32a1244b483c985694c3019146d4 / PID 10344：新 EN 战役、空玩家自定义提示词、目标 Apolytea relation=100/generosity=2/成年未婚带队；唯一英文请求已完成对话历史。provider 后处理只输出 [ACTION:MOOD:NEUTRAL]，未输出 MARRIAGE_ELOPE。NPC 回复原文未暴露，不能推断其明确同意/拒绝；婚姻字段、AFEF 和末两条 trace 未回读。
+- session 于 360 秒 supervisor 边界自然结束；protectionsUnchanged=true，生命周期 FAIL（ERC4 / NATIVE_SHUTDOWN_NOT_CLEAN），未强杀。证据在 artifacts/en-postprocess-alltags-20261018/s18-* 和 run 目录 artifacts/bannerlord-runtime-bridge-20261013/runs/29ef32a1244b483c985694c3019146d4/。
+- 72 模板 EN 全量仍未完成；CN 暂不启动。继续只测 EN，保留所有未知项，不修复产品。
+
+## EN 后处理标签续测（s19/s20，2026-10-19）
+
+- s19 PID 12124 在玩家输入前自动生成中文俘虏开场；未提交玩家请求。s20 PID 28912 中，私奔和合并队伍两条英文请求均遭 NPC 明确拒绝，真实后处理只输出 `[ACTION:MOOD:NEUTRAL]`；配偶/队伍回读未发生对应机制效果。这两条只记有效负向样本。
+- s20 第三条前往 Diathma 请求的对话历史完成，但 actionTrace、英雄/费用回读及 session.end 因 `TRANSPORT_ArgumentException` 未完成；结果 UNKNOWN。进程之后由 supervisor 退出，保护文件未变，生命周期仍 FAIL（`NATIVE_DEVICE_REFERENCES_REMAIN`、`NATIVE_SHUTDOWN_NOT_CLEAN`）。
+- 矩阵仍 75 行/72 模板，18 个模板有真实 provider 输出，14 个有完整效果和事实回读，57 行 model `NOT_RUN`。EN 未完成，CN 未启动；模型归因/费用收据不完整，第三条不能计通过或失败。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-postprocess-alltags-live-20261019) / [实测报告](artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md) / [矩阵](artifacts/en-postprocess-alltags-20261018/inventory.json)。
+
+## s21 EN 驻城命令实测（2026-10-19）
+
+- 新 EN 战役对 Apolytea 提出“命令自己的队伍驻守 Diathma 三天”（明确非跟随/合并），她明确英文拒绝。provider 后处理只输出 `[ACTION:MOOD:NEUTRAL]`，无 `GO_TO_SETTLEMENT`；普通历史完成，无 AFEF。这是负向标签样本，不是机制故障结论。
+- 测试前目标成年、带队、relation=100、generosity=2。桥业务结果与费用 UNKNOWN；保护检查 PASS，正常退出后进程结束，原生生命周期仍 FAIL（设备引用残留/非干净关闭）。
+- EN 仍未测完，CN 未启动。矩阵正向覆盖不变：75 行/72 模板、18 provider、14 完整效果及事实回读、57 行 model `NOT_RUN`。详情见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-postprocess-alltags-live-20261019)和[实测报告](artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md)。
+
+## s22 EN 私奔异目标重测（2026-10-19）
+
+- 新 EN 战役中，成年、单身、带队的 Epipheria（relation 100、generosity 2）明确拒绝私奔并要求正式婚配；后处理只有 `[ACTION:MOOD:ANNOYED]`，实际耐心/关系/privateLove 变化为 −2/−1/−2，配偶为空且无 AFEF。十事件 trace 和对话历史完整，记负向样本，不增正向覆盖。
+- provider 用量 12,431 tokens/4请求，费用和逐请求模型身份 UNKNOWN。session.end 报 `TRANSPORT_ArgumentException`，进程已自然退出；保护 PASS，原生生命周期 FAIL。
+- EN 未完成、CN 未启动。矩阵仍 75/72、18 provider、14完整、57行 model `NOT_RUN`。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-postprocess-alltags-live-20261019)、[报告](artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md)。
+
+
+## s23 EN 场景引导（2026-10-19）
+
+同一英文请求误提交两次，记录为一组而非两个覆盖样本。第一轮完成 trace 有 SCENE_GUIDE+JOY；第二轮 NPC 表示愿意带路，但 normalizedTags 丢失 SCENE_GUIDE、postprocess.completed 又包含它，阶段追踪不一致。未在离开对话后读回 scene behavior/事实 owner，结果 UNKNOWN。进程已退出，保护未变，原生生命周期 FAIL。EN 继续；CN 未启动。详见[报告](artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md)、[矩阵](artifacts/en-postprocess-alltags-20261018/inventory.json)与[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-postprocess-alltags-live-20261019)。
+
+
+## s24 EN 场景夹具传输失败（2026-10-19）
+
+临时战役及 Diathma/Osarios 状态回读成功；native scene fixture 返回 `TRANSPORT_ArgumentException`，按原 commandId recover 后仍 UNKNOWN。没有重试或发出玩家消息，不是标签样本。自然退出，保护未变，生命周期仍 FAIL。EN 继续、CN 未启。详情见 `artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md`。
+
+
+## s24/s25 EN 标签续测（2026-10-19）
+
+s24 native scene fixture 传输失败；原 commandId 查询仍未知，无玩家请求。s25 新 EN 空提示词战役中 Apolytea 明确拒绝私奔，实际 provider trace 只有 `MOOD:NEUTRAL` 并进入 dispatch；spouseId为空、历史完成、无 AFEF，负向样本不增正向覆盖。4 HTTP 中只有3条用量记录可回读（8,504 tokens），费用未知；模型日志为 `gemini-3.8-flash-high`。保护未变，两个进程原生退出仍 ERC4/FAIL。EN 仍未完成，CN 未启动。见[测试报告](artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md)、[矩阵](artifacts/en-postprocess-alltags-20261018/inventory.json)。
+
+
+## s26 EN 婚配意愿未知样本（2026-10-19）
+
+Apolytea 成年未婚、关系/慷慨度100/2。两条正式婚配英文请求后 provider 都只输出 neutral，spouseId 为空、history完成、factMemory=null；UI截断回复后半，故是否明确同意/拒绝为 UNKNOWN，不计覆盖，不测离婚。7 HTTP 200、23,213 tokens，币价未知，日志模型为 gemini-3.8-flash-high。保护未变，生命周期 ERC4/FAIL。EN 继续，CN未启动。详情见测试报告和 `runs/26e5f7a8b9c04123d4e5f6071829304a`。
+
+
+## s27 EN 俘虏开场预输入中文（2026-10-19）
+
+全新 EN 战役、空玩家提示词、玩家未输入时 provider 自动生成中文俘虏开场94字符；于是终止该测试，不把中文前置语境带进 EN 标签请求，不计标签覆盖。4 HTTP 200、9,201 tokens，日志锚点 gemini-3.8-flash-high，币价未知。保护未变，生命周期 ERC4/FAIL。与 s19 复现相同的自动开场语言问题。EN 未完、CN未启动。详见[报告](artifacts/en-postprocess-alltags-20261018/bilingual-test-20261019/fresh-language-retest-20261019.md)。
+
+
+## s28 EN 巡逻标签正向链路（2026-10-19）
+
+Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 PATROL_SETTLEMENT，生产日志有 `WorldMapCommand start patrol actor=lord_1_1_8 settlement=town_EN2 days=3`。conversation history完成，AFEF owner回读 accepted=true；但AFEF事实预览为中文，确认 EN 事实投影问题。4 HTTP200/10,307 tokens，Token_Stats为 gemini-3.8-flash-high，币价未知。保护未变，生命周期 ERC4/FAIL。矩阵加入一个正向完整标签模板。详情见测试报告与 `runs/28a7b9c0d1e24345f6071829304a5b6c/`。
+- s29 EN 场景动作/引导尝试：run `29b8c0d1e2f34567a8192b3c4d5e6f70` 两条真实请求均完成历史，但鼓掌仅输出MOOD:JOY、带路仅输出MOOD:NEUTRAL；目标标签未输出、回复语义未知，不算通过，也不判拒绝/实现错误。保护不变；PID退出但原生ERC4生命周期FAIL。矩阵保持19/72 provider、15/72完整正向；EN未测完，CN未开始。详见唯一台账和实测报告。
+- s30 EN债务免除：Arcor先生成AD债务5（DebtId `DDE42AA4E`，3天），随后真实provider输出`[ADP:DDE42AA4E]`；Reward owner从5读回无记录/0，AFEF owner接受，history三hash匹配，ADP新完整正向样本。AFEF预览仍为中文。保护未变，PID退出、native ERC4 lifecycle FAIL；无强杀。矩阵经字段计算16/72完整正向、20/72有provider输出；全量EN未完，CN未启。详见主台账/实测报告。
+- s31：EN新战役、空玩家提示词、Arcor原生俘虏前置成功，但NPC在玩家输入前自动生成101字符中文开场（4个opening HTTP 200）；未提交玩家消息，故释放标签不是样本、未继续污染上下文。重复确认s19/s27语言问题。进程退出、保护未变、生命周期ERC4 FAIL。覆盖率仍20/72 provider、16/72完整正向；EN未完，CN未开始。详见主台账/实测报告。
+- s32 `LET_PLAYER_GO`真实英文请求后只输出MOOD:NEUTRAL。NPC回复允许“事情办完后离开”，带条件；对话界面仍开，未证无条件放行或游戏效果，不计通过、不诊断故障。4 HTTP200/11,555tokens；保护未变，PID退出，native ERC4仍FAIL。矩阵正向仍16/72、provider20/72；EN未完、CN未启。详见主台账与实测报告。
+- s33 EN `KING_ABDICATE_TO_PLAYER`：对Empire现任王Lucon（关系/慷慨度100/2）发起英文退位请求；provider仅MOOD:ANNOYED，Lucon明确拒绝，原生ruler仍是Lucon，记有效负向不计正向。4 HTTP200/11,715tokens；保护不变、PID退出、native shutdown FAIL。s32 `LET_PLAYER_GO`也仅条件性“办完事可离开”，未证无条件释放。矩阵仍20/72 provider、16/72完整正向；EN未完、CN未启。
+
+
 ## 日内长聊上下文（2026-10-20）
 
 产品 `e8ebc18b7` 已本地提交：近期12组/20000字符、同日分段摘要、相关原话召回、摘要/窗口变更时重建actor缓存；最终主请求默认100000内容字符及128000估算tokens（含输出），协议转换后门禁，固定/当前内容不可缩减时明确失败。原始草稿与AFEF权威不变，摘要仅派生运行缓存，五设置共用原MCM/终端owner，CN/EN同步。
@@ -3063,3 +3377,43 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 - 产品 `4aebda4fc`：普通/领主俘虏场景处置先检查任务结束、清理和 owner 状态；退出时保留战役结算，停止读取/修改 Agent，正常场景淡出行为保留。
 - 旧源码回归失败，修后18场景、独立工作区双API/Bootstrap/双接缝及注册通过。原报告准确崩溃、实机和旧档未验；EN安装/推送继续暂停。
 - [唯一主台账、代码范围及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#castle-exit-scene-retirement-20261020)；证据 `artifacts/castle-exit-fix-20261020/receipt.json`，源码回滚 `git revert 4aebda4fc`。
+
+
+## 生图目录与Gemini自动路由补充（2026-10-20）
+
+产品b20f85e25：成图/画廊/诊断根改为AnimusForge/image save；OpenAI兼容自动选协议时名称含Gemini（不区分大小写）即选Chat，含nano-banana别名。双实现/Bootstrap及两DLL专项各22项通过，无HTTP。旧图库迁移、用户刚才请求实际端点、实机、部署/打包/push均未验或未执行。详细source范围/验证/边界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-root-gemini-routing-20261020)和本机artifacts/illustrator-root-directory-20261020/receipt.json。focused inverse仅针对产品提交，不覆盖其他作者内容。
+
+
+## 本轮修复（2026-10-21，均为本地验证，未部署）
+
+- `73cdb5872`：政策/外交请求日期及固定AFEF内层标记修复。最终政策/外交组装和两协议wire回放各33项；外层ASCII标签与旧reader兼容保留，不加语言锁，旧中文动态正文仍引用原文。首轮外交全英请求也有接口中文返回，截图政策完整payload缺失。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-request-final-wire-20261021)及[审查报告](docs/localization/en-request-audit-20261021.md)。
+- `8adcfadd3`：场景手动标签菜单及共享打开/延迟确认服从开发者开关；226项相关集成通过，完整UI总入口有既存Folio状态文字重叠断言，未声称全UI通过。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-manual-tags-developer-gate-20261021)。
+- `3d8313f7b`：按最新用户决定取消独立稳定度随机叛乱及强制入口，由有效内战派系独占AF建国队列；旧请求和命名晚结果也不能越过，保留稳定度关系/忠诚度/派系影响、既有国家及原版城镇叛乱。双构建/Bootstrap/Coup通过，四组实际DLL退役各30项、派系生命周期396项、编辑器43项通过。[主台账与代码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#standalone-rebellion-retirement-20261021)。
+
+最终候选在`bin/Debug/single_module_artifacts/`，收据分别位于本机`artifacts/en-request-audit-20261021/`、`artifacts/scene-manual-tag-gate-20261021/`、`artifacts/rebellion-rate-20261021/`。未Stage/打包/部署/push、未实机/旧档/真实provider验收。源码回滚只对对应产品提交focused inverse；本轮未纳入他人台账/运行桥接dirty。
+
+
+## 缓存与生图设置补充（2026-10-21，本地已验，未部署）
+
+产品`bf64b87bc`：按用户确认删除整组缓存设置，固定启用、150000字符/10分钟，实际MCM formatter证明旧字段失效；全部28个生图可调项（总开关/自动生图等）统一到AI页“生图API”和MCM同组。保留原生图字段/值，不恢复独立导演API。此最新用户路由替代旧生图外观UI页/导演Prompt页安排。[主台账与源码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#builtin-cache-image-settings-20261021)。
+
+最终双API/Bootstrap及EN门禁通过；四组实际DLL终端各4694项、两API设置formatter各64项、缓存双语各51项和协议13组通过，并保留此前修复回归。收据`artifacts/builtin-prompt-cache-20261021/receipt.json`；候选`bin/Debug/single_module_artifacts/`。未Stage/ZIP/部署/push、未实机和真实provider。focused inverse仅产品`bf64b87bc`，勿覆盖其他dirty。
+
+
+## EN 已部署（2026-10-21，替代本日“未部署”状态）
+
+按用户明确授权，上文六项产品修复已包含在 `dbcc6ad97` 的 `v1.6.3` EN Release，部署到现有统一模块。重新双实现/Bootstrap/干净Stage及完整CN/EN投影通过；Release四组回放通过，安装后387项管理hash一致、更新14项，3139项玩家内容/配置hash保持，未启动游戏/ZIP/push。实机、旧档、真实provider语言仍未验；旧中文历史不自动翻译。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-all-fixes-deployed-20261021)和本机`artifacts/en-deploy-20261021/receipt.json`；游戏目录无Recovery备份/自动回滚，旧项目Release产物/Stage已保留。
+
+
+# 当前对话维护：最终超限不删历史（2026-10-22，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 用户要求“超就超了”：删除主请求/缓存/信使最终预算裁剪，保留已有压缩/近期窗口/召回和缓存容量。MCM与终端共用owner的两条CN/EN说明同步。
+- 缓存CN/EN各54、长聊20、协议13组、实际双DLL各64项通过；旧源码负控复现删历史，新候选5万字符system＋64000输出仍保留交易约定与付款。官方1.3/1.4＋Bootstrap及双Coup/注册通过。未实机/真实provider/旧档，未部署/打包/push。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#conversation-no-budget-drop-20261022)；源码导航/修订/哈希与回滚见 `artifacts/conversation-no-budget-drop-20261022/code-map.json`、`receipt.json`、`before/`。本地 `codex/conversation-no-budget-drop-20261022` 使用独立索引，不改变main、共享锁及其他作者改动。
+
+
+# 对话缓存接续：超总预算不跳过复用（2026-10-22，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 按用户追加要求，最终字符/token/输出预留目标仅诊断，不再旁路或重置缓存；保留当日压缩/近期窗口/召回及既有150000字符缓存容量与TTL。此条覆盖前一切片的“超标回退”说明；不删已选历史继续有效。CN/EN说明与原双入口同步。
+- 缓存CN/EN各68、长聊20、协议13组、实际双DLL各76项通过，旧实现负控确认绕缓存。native/scene/courier连续两轮完整前缀一致、system一份、旧回复保留、未变状态不重发、变更/移除/当前输入保留；双构建/Bootstrap/Coup/注册通过。未实机/真实provider命中/旧档，未部署/打包/push。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#conversation-cache-no-budget-bypass-20261022)；代码范围、提交、候选哈希和focused回滚见 `artifacts/conversation-no-budget-drop-20261022/cache-prefix/receipt.json`、`code-map.json`、`before/`。本地 `codex/conversation-no-budget-drop-20261022`，独立索引保留共享main/index及其他作者改动。

@@ -1506,6 +1506,11 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		Instance?.QueueDeferredLordSceneDiplomacy(targetHero, reason);
 	}
 
+	internal static void ClearPendingDeferredLordSceneDiplomacyForExternal(string reason)
+	{
+		Instance?.ClearPendingDeferredLordSceneDiplomacy(reason);
+	}
+
 	internal static void HandOffDeferredLordSceneDiplomacyToCriminalJudgmentForExternal(Settlement settlement)
 	{
 		Instance?.TryHandOffDeferredLordSceneDiplomacyToCriminalJudgment(settlement);
@@ -2459,6 +2464,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private float _appliedCrimeRatingAmount;
 
 	private bool _armedDefeatWasCriminalConflict;
+
+	// 口角由 NPC 侧（LLM 冲突标签）发起，且对方与玩家同属一个地图势力。
+	// 这类冲突只保留犯罪/信任惩罚，不得按“玩家公开敌对”强制脱离王国或宣战。
+	private bool _armedDefeatWasNpcInitiatedSameFaction;
+
+	// 冲突开始时定居点由玩家控制（自有封地或玩家统治王国内的封地）；战败不进入逮捕/审判/地牢。
+	private bool _armedDefeatInPlayerControlledSettlement;
 
 	private string _activeTargetKey = "";
 
@@ -5631,6 +5643,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_openedFromVerbalTaunt = fromVerbalTaunt;
 			_suppressSettlementConsequencesForCurrentConflict = flag4;
 			_armedDefeatWasCriminalConflict = flag4;
+			_armedDefeatWasNpcInitiatedSameFaction = fromVerbalTaunt && IsTargetSameMapFactionAsPlayer(targetHero, agent);
+			_armedDefeatInPlayerControlledSettlement = IsCurrentSettlementControlledByPlayer();
 			_playerAgentIndices.Clear();
 			_opponentAgentIndices.Clear();
 			_guardAgentIndices.Clear();
@@ -5659,7 +5673,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			ApplyBaseConsequences(targetCharacter, (flag || flag2 || flag3) ? SceneTauntInitialArmedCrimeAmount : 5f);
 			LogPerfElapsed("startConflict.ApplyBaseConsequences", sectionStart);
 			bool flag6 = SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement() && _armedCarryoverHandledInThisMission;
-			if (flag3)
+			if (flag3 && _armedDefeatWasNpcInitiatedSameFaction)
+			{
+				Logger.Log("SceneTaunt", $"Skipped lord scene diplomacy for NPC-initiated same-faction conflict. Target={targetHero?.Name}");
+			}
+			else if (flag3)
 			{
 				ApplyLordSceneFightConsequences(targetHero);
 			}
@@ -6103,7 +6121,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			bool flag3 = SceneTauntBehavior.IsSceneLordTauntTarget(hero);
 			bool flag4 = IsAgentCarryingRealWeapon(agent);
 			bool flag5 = IsSettlementCriminalConflictTarget(hero, characterObject);
-			bool flag6 = IsActiveSetsUrbanPlayerControlledConflictRuntime();
+			bool flag6 = IsPlayerControlledSettlementConflictRuntime();
 			string factText;
 			if (flag6)
 			{
@@ -6189,7 +6207,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		bool flag2 = SceneTauntBehavior.IsSceneLordTauntTarget(hero);
 		bool flag3 = SceneTauntBehavior.IsSoldierSceneTauntTarget(characterObject);
 		bool flag4 = IsSettlementCriminalConflictTarget(hero, characterObject);
-		if (IsActiveSetsUrbanPlayerControlledConflictRuntime())
+		if (IsPlayerControlledSettlementConflictRuntime())
 		{
 			return BuildSetsConflictLocalizedText(
 				"sets_owned_guard_reaction_fact",
@@ -6715,6 +6733,44 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return _armedDefeatWasCriminalConflict;
 	}
 
+	internal bool WasLastArmedDefeatNpcInitiatedSameFaction()
+	{
+		return _armedDefeatWasNpcInitiatedSameFaction;
+	}
+
+	internal bool WasLastArmedDefeatInPlayerControlledSettlement()
+	{
+		return _armedDefeatInPlayerControlledSettlement;
+	}
+
+	private static bool IsTargetSameMapFactionAsPlayer(Hero targetHero, Agent targetAgent)
+	{
+		try
+		{
+			IFaction playerFaction = PartyBase.MainParty?.MapFaction;
+			if (playerFaction == null || Clan.PlayerClan?.Kingdom == null)
+			{
+				return false;
+			}
+			IFaction targetFaction = targetHero?.MapFaction;
+			if (targetFaction == null)
+			{
+				// 非英雄士兵/卫兵：按其所属定居点势力判断。
+				CharacterObject character = targetAgent?.Character as CharacterObject;
+				if (character == null || character.IsHero)
+				{
+					return false;
+				}
+				targetFaction = Settlement.CurrentSettlement?.MapFaction;
+			}
+			return targetFaction == playerFaction;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	internal static bool ShouldBlockAgentWeaponWieldExternal(Agent agent)
 	{
 		try
@@ -7112,7 +7168,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return ResolveOwnedSettlementAttackRouting(targetAgent) == SetsOwnedSettlementAttackRouting.PassiveSurrender;
 	}
 
-	private static bool IsCurrentSettlementControlledByPlayer()
+	internal static bool IsCurrentSettlementControlledByPlayer()
 	{
 		try
 		{
@@ -7130,9 +7186,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return SettlementEntryTroopSelectionBehavior.IsActiveSetsUrbanConflictMissionForExternal(Mission.Current);
 	}
 
-	private static bool IsActiveSetsUrbanPlayerControlledConflictRuntime()
+	// 冲突已经过 CanInitializePeaceSceneConflict 的和平场景 gate；这里只判断定居点归属，
+	// 不再要求必须是 SETS 进入，否则普通进城时自有城卫兵会被当成敌对执法方。
+	private static bool IsPlayerControlledSettlementConflictRuntime()
 	{
-		return IsActiveSetsUrbanConflictRuntime() && IsCurrentSettlementControlledByPlayer();
+		return IsCurrentSettlementControlledByPlayer();
 	}
 
 	private static string BuildSetsConflictLocalizedText(string id, string englishFallback, string playerName = null)
@@ -7478,7 +7536,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			var agents = Mission.Current?.Agents;
-			bool settlementControlledByPlayer = IsActiveSetsUrbanPlayerControlledConflictRuntime();
+			bool settlementControlledByPlayer = IsPlayerControlledSettlementConflictRuntime();
 			if (agents == null)
 			{
 				return list;
@@ -7549,16 +7607,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		bool isTargetEscort,
 		bool armedConflict)
 	{
-		if (!IsActiveSetsUrbanConflictRuntime())
-		{
-			if ((agent != null && agent == activeTarget) || isTargetEscort)
-			{
-				return SetsCityConflictSide.Opponent;
-			}
-			return armedConflict && IsAuthorityPhysicalAttackTargetForExternal(agent)
-				? SetsCityConflictSide.Opponent
-				: SetsCityConflictSide.None;
-		}
+		// 非 SETS 进入（普通菜单进城）也必须按定居点归属决定卫兵阵营：
+		// 玩家自己的定居点里，非冲突目标的卫兵/士兵站在玩家一边，而不是围攻玩家。
 		return SetsCityConflictPolicy.ResolveSide(
 			settlementControlledByPlayer: IsCurrentSettlementControlledByPlayer(),
 			isSelectedEntryFollower: IsSetsSelectedEntryFollower(agent),
@@ -8361,7 +8411,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_openedAsUnarmedBrawl = false;
 		if (!suppressAnnouncement)
 		{
-			AnimusForgeQuickInfo.Show(IsActiveSetsUrbanPlayerControlledConflictRuntime()
+			AnimusForgeQuickInfo.Show(IsPlayerControlledSettlementConflictRuntime()
 				? BuildSetsConflictLocalizedText(
 					"sets_owned_armed_conflict_notice",
 					"Armed conflict has broken out. Your escort and the local guards are moving to protect you.")
@@ -8781,6 +8831,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return;
 			}
+			// 玩家控制的定居点内不向玩家自己的势力记犯罪值，否则后续会被自家卫兵按罪犯逮捕/敌对。
+			// 自有定居点的代价由忠诚度/信任链路承担。
+			if (IsCurrentSettlementControlledByPlayer() && faction == Settlement.CurrentSettlement?.MapFaction)
+			{
+				Logger.Log("SceneTaunt", $"Skipped scene-taunt crime in player-controlled settlement. Faction={faction.Name}, Amount={num:0.##}, Reason={reason ?? "N/A"}");
+				return;
+			}
 			float num2 = ApplySceneTauntCrimeWithCap(faction, num);
 			float num3 = MathF.Max(0f, num - num2);
 			if (num3 > 0f)
@@ -9083,7 +9140,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			if (IsActiveSetsUrbanPlayerControlledConflictRuntime())
+			if (IsPlayerControlledSettlementConflictRuntime())
 			{
 				return false;
 			}
@@ -9965,6 +10022,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_pendingPlayerBattleDeathKiller = null;
 			_armedDefeatOutcomeHandled = false;
 			_armedDefeatWasCriminalConflict = false;
+			_armedDefeatWasNpcInitiatedSameFaction = false;
+			_armedDefeatInPlayerControlledSettlement = false;
 		}
 	}
 
@@ -10235,6 +10294,12 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 				Logger.Log("SceneTaunt", $"Player was defeated by a criminal-target scene conflict and returned without trial or captivity. Settlement={currentSettlement?.Name}, Captor={party.Name}");
 				return;
 			}
+			// 自有定居点：玩家是这里的权威，不应被自己的卫兵逮捕/审判/关押/处决。
+			if (missionBehavior.WasLastArmedDefeatInPlayerControlledSettlement())
+			{
+				ReturnToSettlementWithoutCaptivity(missionBehavior, currentSettlement, "player_controlled_settlement");
+				return;
+			}
 			float effectiveCrimeRatingForExecution = SceneTauntBehavior.GetEffectiveCrimeRatingForExternal(faction);
 			if (effectiveCrimeRatingForExecution >= SceneTauntBehavior.ForcedExecutionCrimeThreshold)
 			{
@@ -10255,6 +10320,13 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 				}
 				Mission.Current.EndMission();
 				Logger.Log("SceneTaunt", $"Player was defeated after armed escalation and reached execution threshold. Settlement={currentSettlement?.Name}, Faction={faction?.Name}, EffectiveCrime={effectiveCrimeRatingForExecution:0.##}, Executor={hero?.Name}");
+				return;
+			}
+			// 同势力 NPC 先拔刀：不按玩家叛变处理（不审判、不进地牢、不开临时战争、不脱离王国）。
+			// 已累计的犯罪值照常保留，由原版犯罪系统处理。
+			if (missionBehavior.WasLastArmedDefeatNpcInitiatedSameFaction())
+			{
+				ReturnToSettlementWithoutCaptivity(missionBehavior, currentSettlement, "npc_initiated_same_faction");
 				return;
 			}
 			bool flag2 = IsCaptorSameMapFactionAsPlayer(party);
@@ -10311,6 +10383,51 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 			Logger.Log("SceneTaunt", "Committing local dungeon captivity failed: " + ex.Message);
 			missionBehavior.MarkPlayerDefeatOutcomeHandled();
 		}
+	}
+
+	private static void ReturnToSettlementWithoutCaptivity(SceneTauntMissionBehavior missionBehavior, Settlement settlement, string reason)
+	{
+		SceneTauntBehavior.ClearArmedCarryoverForExternal("scene_taunt_defeat_no_captivity_" + reason);
+		SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal("scene_taunt_defeat_no_captivity_" + reason);
+		SceneTauntBehavior.ClearPendingDeferredLordSceneDiplomacyForExternal("scene_taunt_defeat_no_captivity_" + reason);
+		try
+		{
+			string returnMenuId = ResolveSettlementReturnMenuId(settlement);
+			if (!string.IsNullOrWhiteSpace(returnMenuId))
+			{
+				Campaign.Current?.GameMenuManager?.SetNextMenu(returnMenuId);
+			}
+		}
+		catch
+		{
+		}
+		missionBehavior.MarkPlayerDefeatOutcomeHandled();
+		try
+		{
+			Mission.Current.NextCheckTimeEndMission = 0f;
+		}
+		catch
+		{
+		}
+		Mission.Current.EndMission();
+		Logger.Log("SceneTaunt", $"Player was defeated in a scene conflict and returned without arrest or captivity. Settlement={settlement?.Name}, Reason={reason}");
+	}
+
+	private static string ResolveSettlementReturnMenuId(Settlement settlement)
+	{
+		if (settlement == null)
+		{
+			return "";
+		}
+		if (settlement.IsTown)
+		{
+			return "town";
+		}
+		if (settlement.IsCastle)
+		{
+			return "castle";
+		}
+		return settlement.IsVillage ? "village" : "";
 	}
 
 	private static bool IsCaptorSameMapFactionAsPlayer(PartyBase captorParty)

@@ -133,17 +133,34 @@ internal static class WeeklyReportArchivePolicy
     internal static string ProjectDateForDisplay(string rawDate)
     {
         if (string.IsNullOrWhiteSpace(rawDate)) return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
-        string value = rawDate.Trim();
+        string original = rawDate.Trim();
+        string value = StripLegacyCalendarLabel(original);
         if (string.Equals(value, "Unknown date", StringComparison.Ordinal) || string.Equals(value, WorldBulletinPolicyTexts.Raw("WBLT_Raw_044"), StringComparison.Ordinal))
             return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
         if (TryProjectKnownDay(value, out string display)) return display;
         const string separator = " — ";
         int separatorIndex = value.IndexOf(separator, StringComparison.Ordinal);
-        if (separatorIndex >= 0 && value.IndexOf(separator, separatorIndex + separator.Length, StringComparison.Ordinal) < 0
-            && TryProjectKnownDay(value.Substring(0, separatorIndex), out string first)
-            && TryProjectKnownDay(value.Substring(separatorIndex + separator.Length), out string last))
-            return first + separator + last;
-        return rawDate;
+        if (separatorIndex >= 0 && value.IndexOf(separator, separatorIndex + separator.Length, StringComparison.Ordinal) < 0)
+        {
+            string firstDate = StripLegacyCalendarLabel(value.Substring(0, separatorIndex));
+            string lastDate = StripLegacyCalendarLabel(value.Substring(separatorIndex + separator.Length));
+            if (TryProjectKnownDay(firstDate, out string first) && TryProjectKnownDay(lastDate, out string last))
+                return first + separator + last;
+            string range = firstDate + separator + lastDate;
+            if (!string.Equals(range, original, StringComparison.Ordinal)) return range;
+        }
+        return string.Equals(value, original, StringComparison.Ordinal) ? rawDate : value;
+    }
+
+    // Only date fields enter here; prose, names and stored records remain intact.
+    private static string StripLegacyCalendarLabel(string date)
+    {
+        string chinese = WorldBulletinPolicyTexts.Raw("WBLT_Raw_032");
+        if (chinese.Length > 0 && date.Length > chinese.Length && date.StartsWith(chinese, StringComparison.Ordinal))
+            return date.Substring(chinese.Length).TrimStart();
+        const string english = "Calradia ";
+        return date.Length > english.Length && date.StartsWith(english, StringComparison.OrdinalIgnoreCase)
+            ? date.Substring(english.Length).TrimStart() : date;
     }
 
     private static bool TryProjectKnownDay(string value, out string display)
@@ -331,7 +348,6 @@ internal static class WeeklyReportArchivePolicy
     {
         string date = (gameFormattedDate ?? "").Trim();
         if (date.Length == 0) return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
-        if (date.StartsWith(WorldBulletinPolicyTexts.Raw("WBLT_Raw_032"), StringComparison.Ordinal) || date.StartsWith("Calradia", StringComparison.OrdinalIgnoreCase)) return date;
-        return Localize("AF_UI_Weekly_Browser_CalradiaDate", "Calradia {DATE}", ("DATE", date));
+        return Localize("AF_UI_Weekly_Browser_CalradiaDate", "{DATE}", ("DATE", date));
     }
 }

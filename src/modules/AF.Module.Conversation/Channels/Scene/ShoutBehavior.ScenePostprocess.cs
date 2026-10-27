@@ -536,7 +536,16 @@ internal sealed partial class SceneConversationSessionRuntime
 
 				string remaining = plan.RawPostprocessId;
 				bool consumed = false;
-				if (_ports.TryApplyDeferredSceneMoodTag(speakerSnapshot, remaining))
+				// MOOD 会改玩家与该 NPC 的关系/私人好感；接力轮是 NPC 对其他 NPC 说话，不得记到玩家头上。
+				if (!replyIsDirectPlayerResponse
+					&& (remaining ?? "").IndexOf("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) >= 0)
+				{
+					consumed = true;
+					remaining = StripDeferredSceneMoodTags(remaining);
+					Logger.Log("ShoutBehavior", "[DeferredPostprocess] mood_skipped_non_player_turn npc="
+						+ (speakingHero?.StringId ?? speakerSnapshot?.Name ?? "unknown"));
+				}
+				else if (_ports.TryApplyDeferredSceneMoodTag(speakerSnapshot, remaining))
 				{
 					consumed = true;
 					remaining = StripDeferredSceneMoodTags(remaining);

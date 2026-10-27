@@ -186,8 +186,15 @@ public static class LlmApiCompat
             parts.Add(new JObject { ["type"] = "text", ["text"] = system.Substring(marker),
                 ["cache_control"] = new JObject { ["type"] = "ephemeral" } });
             messages[0]["content"] = parts;
-            // At most three explicit breakpoints, including the growing transcript.
-            messages[messages.Count - 1]["cache_control"] = new JObject { ["type"] = "ephemeral" };
+            // At most three explicit breakpoints. The transcript breakpoint goes on the latest
+            // assistant turn: everything after it is the per-request runtime tail and current
+            // input, so marking the final message would write a cache entry that is never read.
+            for (int i = messages.Count - 1; i > 0; i--)
+            {
+                if (messages[i]?["role"]?.ToString() != "assistant") continue;
+                messages[i]["cache_control"] = new JObject { ["type"] = "ephemeral" };
+                break;
+            }
         }
         if (!anthropic && payload["stream"]?.Type == JTokenType.Boolean && payload["stream"].Value<bool>()
             && payload["stream_options"] == null)
@@ -685,6 +692,41 @@ public static class LlmApiCompat
 		}
 		return ExtractContentPartText(token);
 	}
+
+    // Provider-reported usage object for OpenAI-compatible, Anthropic message_start and Gemini native shapes.
+    internal static JObject ExtractUsageObject(JObject json)
+    {
+        if (json == null) return null;
+        return json["usage"] as JObject ?? json["message"]?["usage"] as JObject ?? json["usageMetadata"] as JObject;
+    }
+
+    // Formats provider cache accounting only; missing fields are reported as n/a, never estimated.
+    internal static string FormatPromptCacheUsage(JObject usage)
+    {
+        if (usage == null) return "";
+        int? Read(string path) => usage.SelectToken(path) is JToken token
+            && (token.Type == JTokenType.Integer || token.Type == JTokenType.Float) ? (int)token.Value<double>() : (int?)null;
+        int? prompt = Read("prompt_tokens") ?? Read("promptTokenCount");
+        int? anthropicInput = Read("input_tokens");
+        int? cacheRead = Read("cache_read_input_tokens");
+        int? cacheWrite = Read("cache_creation_input_tokens") ?? Read("prompt_tokens_details.cache_write_tokens");
+        int? cached = Read("prompt_cache_hit_tokens") ?? Read("prompt_tokens_details.cached_tokens")
+            ?? Read("input_tokens_details.cached_tokens") ?? Read("cachedContentTokenCount") ?? cacheRead;
+        if (anthropicInput.HasValue && (cacheRead.HasValue || cacheWrite.HasValue))
+        {
+            // Anthropic input_tokens excludes cache reads and writes.
+            prompt = anthropicInput.Value + (cacheRead ?? 0) + (cacheWrite ?? 0);
+            cached = cacheRead ?? 0;
+        }
+        else if (!prompt.HasValue) prompt = anthropicInput;
+        if (!prompt.HasValue && !cached.HasValue) return "";
+        string rate = prompt.HasValue && prompt.Value > 0 && cached.HasValue
+            ? (100.0 * cached.Value / prompt.Value).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + "%" : "n/a";
+        return "prompt_tokens=" + (prompt?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "n/a")
+            + " cached_tokens=" + (cached?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "n/a")
+            + " cache_write_tokens=" + (cacheWrite?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "n/a")
+            + " hit_rate=" + rate;
+    }
 
 	private static int ReadNonNegativeInt(JToken token)
 	{

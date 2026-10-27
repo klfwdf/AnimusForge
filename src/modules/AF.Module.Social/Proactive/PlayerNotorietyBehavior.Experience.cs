@@ -16,6 +16,7 @@ public sealed partial class PlayerNotorietyBehavior
     private PlayerActionEntry _experienceLastEntry;
     private List<PlayerExperienceMotive> _experienceRecent = new List<PlayerExperienceMotive>();
     private string _experienceHistorySource;
+    private string _experienceHistoryPlayerName;
     private string _experienceHistoryEvidence;
     private string _experienceHistoryVersion;
 
@@ -55,13 +56,16 @@ public sealed partial class PlayerNotorietyBehavior
         if (owner.DoesObserverKnowPlayer(hero))
         {
             string rawHistory = owner._state.MajorSummary ?? "";
-            if (!string.Equals(rawHistory, owner._experienceHistorySource, StringComparison.Ordinal))
+            string playerName = BuildPlayerHistoryDisplayName();
+            if (!string.Equals(rawHistory, owner._experienceHistorySource, StringComparison.Ordinal)
+                || !string.Equals(playerName, owner._experienceHistoryPlayerName, StringComparison.Ordinal))
             {
                 owner._experienceHistorySource = rawHistory;
-                owner._experienceHistoryEvidence = PlayerExperienceContactState.BoundedEvidence(rawHistory, 800);
+                owner._experienceHistoryPlayerName = playerName;
+                owner._experienceHistoryEvidence = PlayerExperienceContactState.BoundedEvidence(RenderPlayerHistoryTextForPrompt(rawHistory, playerName), 800);
                 owner._experienceHistoryVersion = ExperienceHash(rawHistory);
             }
-            string history = RenderPlayerHistoryTextForPrompt(owner._experienceHistoryEvidence, BuildPlayerHistoryDisplayName());
+            string history = RenderPlayerHistoryTextForPrompt(owner._experienceHistoryEvidence, playerName);
             if (!string.IsNullOrWhiteSpace(history))
             {
                 var motive = new PlayerExperienceMotive { Kind = PlayerExperienceContactState.HistoryKind,

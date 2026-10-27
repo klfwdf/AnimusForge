@@ -1133,8 +1133,6 @@ private PendingNativeSceneTauntFight _pendingNativeSceneTauntFight { get => _j17
 
 
 
-	internal const int AUTO_GROUP_CHAT_MAX_LINES = 8;
-
 private Agent _currentStareTarget { get => _j17ScenePassiveInteractionController._currentStareTarget; set => _j17ScenePassiveInteractionController._currentStareTarget = value; }
 
 private float _stareTimer { get => _j17ScenePassiveInteractionController._stareTimer; set => _j17ScenePassiveInteractionController._stareTimer = value; }

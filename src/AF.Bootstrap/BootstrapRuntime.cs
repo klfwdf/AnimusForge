@@ -18,7 +18,8 @@ namespace AnimusForge.Bootstrap
     internal enum BannerlordApiLine
     {
         V13,
-        V14
+        V14,
+        V15
     }
 
     internal sealed class BootstrapRuntime : IDisposable
@@ -81,8 +82,8 @@ namespace AnimusForge.Bootstrap
             BootstrapLog.Initialize(_binDirectory);
 
             BannerlordApiLine apiLine = DetectRuntimeApiLine();
-            SelectedApiText = apiLine == BannerlordApiLine.V13 ? "1.3" : "1.4";
-            string versionFolder = apiLine == BannerlordApiLine.V13 ? "1.3" : "1.4";
+            SelectedApiText = apiLine == BannerlordApiLine.V13 ? "1.3" : apiLine == BannerlordApiLine.V14 ? "1.4" : "1.5";
+            string versionFolder = SelectedApiText;
 
             _selectedImplementationDirectory = Path.GetFullPath(Path.Combine(_binDirectory, "versions", versionFolder));
             _selectedImplementationPath = Path.GetFullPath(Path.Combine(_selectedImplementationDirectory, ImplementationAssemblyFileName));
@@ -232,6 +233,11 @@ namespace AnimusForge.Bootstrap
                         return BannerlordApiLine.V13;
                     }
 
+                    if (version.Major == 1 && version.Minor == 5)
+                    {
+                        return BannerlordApiLine.V15;
+                    }
+
                     if (version.Major == 1 && version.Minor == 4)
                     {
                         return BannerlordApiLine.V14;
@@ -247,7 +253,7 @@ namespace AnimusForge.Bootstrap
             if (versionReadSucceeded)
             {
                 throw new NotSupportedException(
-                    $"Bannerlord version '{RuntimeVersionText}' is unsupported. This package only supports the 1.3.x and 1.4.x game lines.");
+                    $"Bannerlord version '{RuntimeVersionText}' is unsupported. This package only supports the 1.3.x, 1.4.x and 1.5.x game lines.");
             }
 
             BannerlordApiLine? buildInfoLine = DetectRuntimeApiLineFromBuildInfo();
@@ -324,6 +330,12 @@ namespace AnimusForge.Bootstrap
                 return BannerlordApiLine.V13;
             }
 
+            if (buildVersion.Major == 1 && buildVersion.Minor == 5)
+            {
+                BootstrapLog.Warning("Selected Bannerlord API 1.5 from BuildInfo.GameVersion fallback.");
+                return BannerlordApiLine.V15;
+            }
+
             if (buildVersion.Major == 1 && buildVersion.Minor == 4)
             {
                 BootstrapLog.Warning("Selected Bannerlord API 1.4 from BuildInfo.GameVersion fallback.");
@@ -331,7 +343,7 @@ namespace AnimusForge.Bootstrap
             }
 
             throw new NotSupportedException(
-                $"BuildInfo.GameVersion '{buildVersionText}' is unsupported. This package only supports the 1.3.x and 1.4.x game lines.");
+                $"BuildInfo.GameVersion '{buildVersionText}' is unsupported. This package only supports the 1.3.x, 1.4.x and 1.5.x game lines.");
         }
 
         private BannerlordApiLine DetectRuntimeApiLineFromFeature()

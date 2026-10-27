@@ -3490,7 +3490,7 @@ public static class MilitaryExerciseBehavior
 	{
 		try
 		{
-			return party != null && perk != null && party.HasPerk(perk, checkSecondaryRole);
+			return party != null && perk != null && BannerlordApiCompat.PartyHasPerk(party, perk, checkSecondaryRole);
 		}
 		catch
 		{

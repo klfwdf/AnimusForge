@@ -59,7 +59,7 @@ public sealed partial class WorldMapPartyCommandBehavior
 		return new NpcHideoutClearTargetState
 		{
 			Exists = true,
-			Spotted = settlement.Hideout.IsSpotted,
+			Spotted = BannerlordApiCompat.IsHideoutSpotted(settlement.Hideout),
 			HasBandits = HideoutHasBandits(settlement),
 			QuestBusy = settlement.IsSettlementBusy((object)Instance ?? typeof(WorldMapPartyCommandBehavior))
 				|| Campaign.Current.QuestManager.TrackedObjects.ContainsKey(settlement),
@@ -85,7 +85,7 @@ public sealed partial class WorldMapPartyCommandBehavior
 			if (observer == null) return header + noTargets;
 			// Only prompt preparation enumerates known hideouts; hourly runtime resolves
 			// its one target by ID and never scans every hideout or every queue.
-			var targets = Hideout.All.Where(h => h != null && h.IsSpotted && CanOfferHideoutClearTarget(h.Settlement))
+			var targets = Hideout.All.Where(h => h != null && BannerlordApiCompat.IsHideoutSpotted(h) && CanOfferHideoutClearTarget(h.Settlement))
 				.OrderBy(h => observer.Position.DistanceSquared(h.Settlement.GatePosition))
 				.Take(12).Select(h => (h.Settlement.Name?.ToString() ?? h.Settlement.StringId ?? WorldMapPromptTexts.Get("AF_WM_TargetSettlement")).Trim()
 					+ idSeparator + h.Settlement.StringId).ToArray();

@@ -47,7 +47,7 @@
                       },
                       {
                           "Tag":  "[ACTION:MOOD:ANNOYED]",
-                          "Description":  "NPC对玩家恼火反感"
+                          "Description":  "NPC对玩家恼火反感（只看NPC对玩家本人的态度；NPC与其他NPC争吵、对第三方发火不算，输出NEUTRAL）"
                       }
                   ]
 }

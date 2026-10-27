@@ -29,6 +29,8 @@ internal sealed class LlmStreamingResponse
     internal bool ParseFailure { get; set; }
     internal bool Discarded { get; set; }
     internal bool Completed { get; set; }
+    // Latest provider prompt/cache accounting seen in the stream; empty when the provider sent none.
+    internal string PromptCacheUsage { get; set; } = "";
     internal bool IsSuccessStatusCode => (int)StatusCode >= 200 && (int)StatusCode <= 299;
 }
 
@@ -64,6 +66,7 @@ internal static class LlmStreamingTransport
         bool parseFailure = false;
         bool completed = false;
         int contentSequence = 0;
+        string promptCacheUsage = "";
         using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint))
         {
             LlmApiCompat.ApplyAuthenticationHeaders(request, endpoint, apiKey);
@@ -118,6 +121,12 @@ internal static class LlmStreamingTransport
                                     || json.SelectToken("choices[0].finish_reason") is JToken finishReason
                                         && finishReason.Type != JTokenType.Null && !string.IsNullOrEmpty(finishReason.ToString()))
                                     completed = true;
+                                // Usage normally arrives once (final chunk or message_start); output-only deltas keep the prompt figures.
+                                if (LlmApiCompat.ExtractUsageObject(json) is JObject usage)
+                                {
+                                    string usageText = LlmApiCompat.FormatPromptCacheUsage(usage);
+                                    if (usageText.Length > 0) promptCacheUsage = usageText;
+                                }
                                 string reasoningDelta = LlmApiCompat.ExtractStreamReasoningText(json) ?? "";
                                 string contentDelta = LlmApiCompat.ExtractStreamDeltaText(json) ?? "";
                                 if (!string.IsNullOrEmpty(reasoningDelta)) reasoning.Append(reasoningDelta);
@@ -151,7 +160,9 @@ internal static class LlmStreamingTransport
                             }
                         }
                     }
-                    return Snapshot(response.StatusCode, raw, content, reasoning, parseFailure, discarded: false, completed: completed);
+                    LlmStreamingResponse finished = Snapshot(response.StatusCode, raw, content, reasoning, parseFailure, discarded: false, completed: completed);
+                    finished.PromptCacheUsage = promptCacheUsage;
+                    return finished;
                 }
             }
             catch (Exception error)

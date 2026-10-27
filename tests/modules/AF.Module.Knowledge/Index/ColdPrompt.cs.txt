@@ -1,0 +1,70 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+namespace AnimusForge {
+internal sealed class MentionedWorldEntities { internal List<string> Entities=new(); internal bool IsEmpty=>Entities.Count==0; }
+internal sealed class PromptLoreSettings { internal bool Enabled=true; internal int SemanticTopK=4; internal float SemanticMinScore=.21f; }
+internal sealed class OnnxEmbeddingEngine { internal static OnnxEmbeddingEngine Instance=new(); internal bool IsAvailable=>true; }
+public partial class KnowledgeLibraryBehavior {
+ internal static KnowledgeLibraryBehavior Instance;
+ internal KnowledgeFile _file;
+ internal static readonly ColdPorts Ports=new();
+ internal static readonly KnowledgeRuleIndex Index=new(Ports,GetPublishedRulesForIndex);
+ private static readonly LoreCandidateRetriever Retriever=new(Index,Logger.Log);
+ private static readonly AsyncLocal<PromptLoreSettings> PromptLoreSettingsScope=new();
+ private static IReadOnlyList<LoreRule> _publishedRules;
+ private static long _publishedRulesVersion=-1;
+ internal sealed class ColdPorts:IKnowledgeIndexPorts {
+  internal int MainThread,MainCalls,Calls;
+  internal readonly System.Collections.Concurrent.ConcurrentQueue<string> Inputs=new();
+  internal bool Block;
+  internal readonly ManualResetEventSlim Entered=new(false),Continue=new(false);
+  public bool EmbeddingAvailable=>true; public bool RerankerAvailable=>false;
+  public int SemanticTopK=>PromptLoreSettingsScope.Value.SemanticTopK;
+  public float SemanticMinScore=>PromptLoreSettingsScope.Value.SemanticMinScore;
+  public bool TryGetEmbedding(string s,out float[] vector){
+   Interlocked.Increment(ref Calls);
+   Inputs.Enqueue(s);
+   if(Environment.CurrentManagedThreadId==MainThread){MainCalls++;throw new Exception("main-thread inference");}
+   if(Block){Entered.Set();if(!Continue.Wait(10000))throw new Exception("gate timeout");}
+   vector=new[]{1f,0f};return true;
+  }
+  public bool TryScoreBatch(string q,IReadOnlyList<string> docs,out List<float> scores){scores=null;return false;}
+  public void Log(string c,string m){}
+ }
+ @@HOST_METHODS@@
+}
+internal static class ColdPromptCases {
+ internal static void Run(Action<bool,string> check){
+  KnowledgeLibraryBehavior.Instance=new(){_file=new(){Rules=new(){new(){Id="old",Keywords=new(){"NPC"}}}}};
+  var mentions=new MentionedWorldEntities();mentions.Entities.Add("NPC");
+  var ports=KnowledgeLibraryBehavior.Ports;ports.MainThread=Environment.CurrentManagedThreadId;
+  long v=KnowledgeLibraryBehavior.PreparePromptLoreRetrieval(mentions);
+  check(v>0 && ports.MainCalls==0 && ports.Calls==0,"actual game-thread preparation performs zero embeddings");
+  KnowledgeLibraryBehavior.Instance._file.Rules[0].Keywords[0]="edited live text";
+  ports.Block=true;
+  var pending=Task.Run(()=>KnowledgeLibraryBehavior.CollectPromptLoreCandidates(mentions,v,new()));
+  try {
+   check(ports.Entered.Wait(3000),"cold prompt builds on worker");
+   var invalidate=Task.Run(()=>KnowledgeLibraryBehavior.Index.Touch());
+   check(invalidate.Wait(1000),"rule invalidation never waits for gated embedding work");
+   KnowledgeLibraryBehavior.Instance._file.Rules=new(){new(){Id="new",Keywords=new(){"NPC"}}};
+   long next=KnowledgeLibraryBehavior.PreparePromptLoreRetrieval(mentions);
+   check(next!=v && ports.MainCalls==0,"new detached publication needs no inference while old worker blocked");
+   ports.Block=false;ports.Continue.Set();
+   check(pending.Wait(3000)&&pending.Result==null,"stale worker returns no old lore");
+   check(!KnowledgeLibraryBehavior.Index.OnnxReady && !KnowledgeLibraryBehavior.Index.SparseReady,"stale build cannot publish either index for new version");
+   check(!ports.Inputs.Any(x=>x.Contains("edited live text")),"worker index reads detached published rule text");
+   var current=Task.Run(()=>KnowledgeLibraryBehavior.CollectPromptLoreCandidates(mentions,next,new()));
+   check(current.Wait(3000)&&current.Result.OrderedRules.All(x=>x.Id=="new")&&current.Result.OrderedRules.Count==1,"new version retrieves complete current rule");
+   int calls=ports.Calls;
+   KnowledgeLibraryBehavior.PreparePromptLoreRetrieval(mentions);
+   check(ports.Calls==calls && ports.MainCalls==0,"warm game-thread prepare performs no inference");
+   var disabled=Task.Run(()=>KnowledgeLibraryBehavior.CollectPromptLoreCandidates(mentions,next,new(){Enabled=false}));
+   check(disabled.Wait(3000)&&ports.Calls==calls,"disabled retrieval does not build or query embeddings");
+  } finally {ports.Block=false;ports.Continue.Set();}
+ }
+}
+}

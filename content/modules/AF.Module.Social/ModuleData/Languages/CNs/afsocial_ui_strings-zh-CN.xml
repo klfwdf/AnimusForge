@@ -144,8 +144,17 @@
     <string id="AF_SOCIAL_UI_ProactiveNeed_30" text="讨论外交局势" />
     <string id="AF_SOCIAL_UI_ProactiveNeed_31" text="具体请求" />
     <string id="AF_SOCIAL_UI_Century" text="{NUMBER}世纪" />
+    <string id="AF_SOCIAL_UI_PlayerStart_default" text="{PLAYER}离开故乡，以独立家族的名义在卡拉迪亚闯荡。家族的立足之地、财富和声望，仍有待其在旅途中逐步建立。" />
+    <string id="AF_SOCIAL_UI_PlayerStart_king" text="{PLAYER}曾执掌一个王国，统率着由正规士兵与精锐战士组成的队伍，身边有同伴辅佐，也备有供养部众的财货与粮食。其肩上的事务既包括家族与部众，也包括王国政务和各国之间的战事。" />
+    <string id="AF_SOCIAL_UI_PlayerStart_vassal" text="{PLAYER}曾是效忠某个王国的封臣，带着同伴、正规士兵和精锐战士为王国效力，拥有维持队伍的本钱与给养。这段经历使其置身于领主、家族和王国之间的封建关系之中。" />
+    <string id="AF_SOCIAL_UI_PlayerStart_mercenary" text="{PLAYER}曾带着一名同伴和一支混合兵员组成的队伍，受雇为某个王国作战。其手中有维持行军的本钱与粮食，效力关系建立在雇佣契约之上，生计与战事和军役报酬紧密相连。" />
+    <string id="AF_SOCIAL_UI_PlayerStart_trader" text="{PLAYER}原是一位兼营作坊与长途贩运的商人，在城镇经营一家作坊，并委托同伴带领一支商队往来贸易。其身边有同伴与护卫，也备有驮畜、待售货物和周转本钱，营生既系于城中生产，也系于商路上的货物流通。" />
+    <string id="AF_SOCIAL_UI_PlayerStart_outlaw" text="{PLAYER}曾带着一名同伴和一小队匪徒在城镇周边活动，手中有钱财、少量给养和待售货物，却也已在各地背负罪名。其生活游走于法度之外，需要面对官府的敌意与追捕风险。" />
+    <string id="AF_SOCIAL_UI_PlayerStart_beggar" text="{PLAYER}曾流落城镇街头，身无分文，衣着破旧，处在需要为每日温饱奔走的贫困境地。其最初可依靠的物资极少，尚无足以支撑一番事业的财富与产业。" />
+    <string id="AF_SOCIAL_UI_PlayerStart_fleetadmiral" text="{PLAYER}曾为一个王国统率舰队，部众中既有陆战士兵，也有水手，身边有两名同伴协助，并掌握数艘可供航行的舰船与相应给养。这段经历既与海上航行相连，也与王国的军事事务相连。" />
+    <string id="AF_SOCIAL_UI_PlayerStart_merchantventurer" text="{PLAYER}原是一位兼营港口产业与海上贸易的行商，在港口城镇经营一家作坊，并委托同伴带领海上商队。其自己也带着护卫和商货乘商船出航，以船只、货物和周转本钱维系跨海贩运的营生。" />
     <string id="AF_SOCIAL_UI_MarriageInvalidClanSubject" text="家族联姻须指定玩家之外的实际家族成员。" />
-    <string id="AF_SOCIAL_UI_MarriageInvalidApprover" text="当前NPC必须是实际婚配对象所属家族的族长。" />
-    <string id="AF_SOCIAL_UI_MarriageInvalidElopeSubject" text="私奔只能由当前NPC本人与玩家本人结合。" />
-  </strings>
+  <string id="AF_SOCIAL_UI_MarriageInvalidApprover" text="当前NPC必须是实际婚配对象所属家族的族长。" />
+  <string id="AF_SOCIAL_UI_MarriageInvalidElopeSubject" text="私奔只能由当前NPC本人与玩家本人结合。" />
+</strings>
 </base>

@@ -77,6 +77,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	public override void RegisterEvents()
 	{
 		Instance = this;
+		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunchedForStartingHistory);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnNativeConversationEnded);
 		CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleased);
@@ -1156,7 +1157,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				if (compactOnly)
 				{
-					_state.MajorSummary = TrimMajorSummaryFallback(_state.MajorSummary, GetMajorPromptChars());
+					_state.MajorSummary = TrimMajorSummaryFallback(RenderPlayerHistoryTextForPrompt(_state.MajorSummary, playerDisplayName), GetMajorPromptChars());
 				}
 				else
 				{
@@ -1454,8 +1455,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		_state = NormalizeState(_state);
 		string playerName = NormalizePlayerDisplayName(playerDisplayName);
-		string summary = NormalizeMajorSummaryForStorage(_state.MajorSummary);
-		summary = RenderPlayerHistoryTextForPrompt(summary, playerName);
+		string summary = RenderPlayerHistoryTextForPrompt(_state.MajorSummary, playerName);
+		summary = NormalizeMajorSummaryForStorage(summary);
 		StringBuilder sb = new StringBuilder();
 		if (!string.IsNullOrWhiteSpace(summary))
 		{
@@ -1589,13 +1590,21 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	}
 
 	private static string RenderPlayerHistoryTextForPrompt(string rawText, string playerDisplayName)
+        => RenderPlayerHistoryText(rawText, playerDisplayName, forDisplay: false);
+
+    private static string RenderPlayerHistoryTextForDisplay(string rawText, string playerDisplayName)
+        => RenderPlayerHistoryText(rawText, playerDisplayName, forDisplay: true);
+
+    private static string RenderPlayerHistoryText(string rawText, string playerDisplayName, bool forDisplay)
 	{
 		string playerName = NormalizeLine(playerDisplayName).Replace(SocialSourceTexts.Get("S001"), "").Trim();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
 			playerName = BuildPlayerHistoryDisplayName();
 		}
-		string text = RenderPlayerActionTextForPrompt(rawText, playerName);
+		string text = PlayerStartingHistoryRecord.Render(rawText, playerName,
+            forDisplay ? StartingHistoryDisplayFormatter : StartingHistoryPromptFormatter);
+        text = RenderPlayerActionTextForPrompt(text, playerName);
 		foreach (string alias in BuildPlayerHistoryAnonymousAliases(playerName))
 		{
 			text = text.Replace(alias, playerName);
@@ -2292,7 +2301,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			sb.AppendLine();
 		}
 		string playerName = UiText("AF_SOCIAL_UI_Notoriety_Player", "Player");
-		string summary = RenderPlayerHistoryTextForPrompt((_state.MajorSummary ?? "").Trim(), BuildPlayerHistoryDisplayName());
+		string summary = RenderPlayerHistoryTextForDisplay((_state.MajorSummary ?? "").Trim(), BuildPlayerHistoryDisplayName());
 		if (!string.IsNullOrWhiteSpace(summary))
 		{
 			sb.AppendLine(summary);
@@ -2466,7 +2475,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 					("CULTURE", ResolveCultureDisplayName(pair.Key)), ("BASE", FormatScore(pair.Value)), ("EFFECTIVE", FormatScore(effective)), ("LEVEL", GetLevelText(effective))));
 			}
 		}
-		string history = BuildMajorHistoryForPrompt(BuildPlayerHistoryDisplayName());
+		string history = RenderPlayerHistoryTextForDisplay(_state.MajorSummary, BuildPlayerHistoryDisplayName());
 		if (!string.IsNullOrWhiteSpace(history))
 		{
 			sb.AppendLine();
@@ -2497,7 +2506,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				foreach (PlayerHistoryMaterial material in pending.Take(30))
 				{
-					sb.AppendLine(BuildNotorietyActionLineForDisplay(material.Day, material.GameDate, RenderPlayerHistoryTextForPrompt(material.Text, BuildPlayerHistoryDisplayName())));
+					sb.AppendLine(BuildNotorietyActionLineForDisplay(material.Day, material.GameDate, RenderPlayerHistoryTextForDisplay(material.Text, BuildPlayerHistoryDisplayName())));
 				}
 			}
 		}
@@ -2548,7 +2557,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			_state = NormalizeState(_state);
-			string initialText = (_state.MajorSummary ?? "").Trim();
+			string initialText = RenderPlayerHistoryTextForDisplay((_state.MajorSummary ?? "").Trim(), BuildPlayerHistoryDisplayName());
 			string subtitle = UiText("AF_UI_Notoriety_EditorSubtitle", "This edits the summarized major player history. Unsummarized material, recent actions, and notoriety values are unchanged.");
 			string hint = UiText("AF_UI_Notoriety_EditorHint", "Enter a new major history summary; leave blank to clear the summary. Unsummarized material remains available for later compression.");
 			DevTextEditorHelper.ShowLongTextEditor(UiText("AF_UI_Notoriety_EditorTitle", "Edit player history"), subtitle, hint, initialText, delegate(string input)
@@ -3754,6 +3763,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private sealed class PlayerNotorietyState
 	{
 		public bool LowProfileModeEnabled;
+		public bool PlayerStartHistoryRecorded;
 		public double WorldNotoriety;
 		public Dictionary<string, double> CultureNotoriety = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 		public Dictionary<string, PlayerNpcKnowledgeState> NpcKnowledge = new Dictionary<string, PlayerNpcKnowledgeState>(StringComparer.OrdinalIgnoreCase);

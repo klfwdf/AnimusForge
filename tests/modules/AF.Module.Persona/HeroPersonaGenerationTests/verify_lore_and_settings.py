@@ -17,6 +17,7 @@ from output_isolation import new_run_root, resolve_dotnet, minimal_test_environm
 
 p = argparse.ArgumentParser()
 p.add_argument("--settings-only", action="store_true")
+p.add_argument("--lore-only", action="store_true", help="run lore retrieval/rendering without unrelated prompt-setting cases")
 p.add_argument("--prompt-language", choices=["zh-CN", "en"], default="zh-CN")
 p.add_argument("--mutate", choices=["empty-resets-default", "take-last", "ignore-variant-conditions"])
 p.add_argument("--run-root", type=Path)
@@ -45,6 +46,9 @@ if args.mutate == "empty-resets-default":
     assert methods.count(clause) == 1
     methods = methods.replace(clause, 'if (string.IsNullOrWhiteSpace(text)) text = "MUTATED_DEFAULT"; ' + clause, 1)
 fixture = (HERE / "LoreAndSettings.cs.txt").read_text(encoding="utf-8")
+if args.lore_only:
+    assert not args.settings_only
+    fixture = fixture.replace("SettingsCases(args[0],args[1]);", "")
 fixture = fixture.replace("@@SETTINGS@@", methods)
 files = ["Program.cs", "DataPaths.cs"]
 (out/"DataPaths.cs").write_bytes((ROOT/"src/AF.Persistence/AnimusForgeDataPaths.cs").read_bytes())

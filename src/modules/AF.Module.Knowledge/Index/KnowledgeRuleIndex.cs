@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using LoreRule = AnimusForge.KnowledgeLibraryBehavior.LoreRule;
 
 namespace AnimusForge;
@@ -33,7 +34,7 @@ internal sealed class KnowledgeRuleScore
 /// Owner of the rule retrieval indexes (sparse TF-IDF + ONNX embeddings), the ranked candidate cache and
 /// the recall → collapse → select → rerank query chain. Versioned: <see cref="Touch"/> bumps the data version,
 /// drops every index/cache, and queries against a stale index return nothing until <see cref="EnsureVectorIndex"/> /
-/// <see cref="EnsureOnnxIndex"/> are called again (the host only rebuilds on save load — legacy behavior).
+/// <see cref="EnsureOnnxIndex"/> are called again (save-load warmup or a detached prompt worker).
 /// Rule storage, lore composition and Hero facts stay with the host.
 /// </summary>
 internal sealed class KnowledgeRuleIndex
@@ -50,6 +51,8 @@ internal sealed class KnowledgeRuleIndex
 	private readonly Func<IReadOnlyList<LoreRule>> _rules;
 
 	private long _ruleDataVersion = 1L;
+	// Publication/invalidation is short; never make the game thread wait on an embedding build.
+	private readonly object _publicationLock = new object();
 	private readonly object _vectorIndexLock = new object();
 	private List<VectorRuleEntry> _vectorRuleEntries;
 	private Dictionary<string, float> _vectorIdf;
@@ -67,7 +70,7 @@ internal sealed class KnowledgeRuleIndex
 		_rules = rules ?? (() => null);
 	}
 
-	internal long Version => _ruleDataVersion;
+	internal long Version => Interlocked.Read(ref _ruleDataVersion);
 	internal bool RerankerAvailable => _ports.RerankerAvailable;
 	internal bool SparseReady => _vectorRuleEntries != null && _vectorIndexVersion == _ruleDataVersion;
 	internal int SparseEntryCount => _vectorRuleEntries?.Count ?? 0;
@@ -77,44 +80,17 @@ internal sealed class KnowledgeRuleIndex
 	/// <summary>Rule data changed: bump version (wrapping to 1), drop ranked cache and both indexes.</summary>
 	internal void Touch()
 	{
-		_ruleDataVersion++;
-		if (_ruleDataVersion <= 0)
+		lock (_publicationLock)
 		{
-			_ruleDataVersion = 1L;
+			_ruleDataVersion++;
+			if (_ruleDataVersion <= 0) _ruleDataVersion = 1L;
+			_vectorRuleEntries = null;
+			_vectorIdf = null;
+			_vectorIndexVersion = -1L;
+			_onnxRuleEntries = null;
+			_onnxIndexVersion = -1L;
 		}
-		try
-		{
-			lock (_rankedCacheLock)
-			{
-				_rankedCache.Clear();
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			lock (_vectorIndexLock)
-			{
-				_vectorRuleEntries = null;
-				_vectorIdf = null;
-				_vectorIndexVersion = -1L;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			lock (_onnxIndexLock)
-			{
-				_onnxRuleEntries = null;
-				_onnxIndexVersion = -1L;
-			}
-		}
-		catch
-		{
-		}
+		lock (_rankedCacheLock) _rankedCache.Clear();
 	}
 
 	// ---------------------------------------------------------------- budgets
@@ -614,16 +590,19 @@ internal sealed class KnowledgeRuleIndex
 
 	// ---------------------------------------------------------------- index build
 
-	internal void EnsureVectorIndex()
+	internal void EnsureVectorIndex(long expectedVersion = 0L)
 	{
 		try
 		{
+			if (expectedVersion > 0L && Version != expectedVersion) return;
 			if (_vectorRuleEntries != null && _vectorIndexVersion == _ruleDataVersion)
 			{
 				return;
 			}
 			lock (_vectorIndexLock)
 			{
+				long buildVersion = Version;
+				if (expectedVersion > 0L && buildVersion != expectedVersion) return;
 				if (_vectorRuleEntries != null && _vectorIndexVersion == _ruleDataVersion)
 				{
 					return;
@@ -706,9 +685,13 @@ internal sealed class KnowledgeRuleIndex
 					}
 					list.Add(new VectorRuleEntry { Rule = vectorDoc.Rule, Seed = seed, Weights = weights, Norm = norm, IsEvidence = vectorDoc.IsEvidence });
 				}
-				_vectorRuleEntries = list;
-				_vectorIdf = idf;
-				_vectorIndexVersion = _ruleDataVersion;
+				lock (_publicationLock)
+				{
+					if (Version != buildVersion) return;
+					_vectorRuleEntries = list;
+					_vectorIdf = idf;
+					_vectorIndexVersion = buildVersion;
+				}
 			}
 		}
 		catch
@@ -720,16 +703,19 @@ internal sealed class KnowledgeRuleIndex
 	/// Legacy commit rule: engine unavailable → index null; otherwise commit when any embedding succeeded,
 	/// or when there were no rules / no seeds (empty index is valid); embeddings all failed → stay unbuilt.
 	/// </summary>
-	internal void EnsureOnnxIndex()
+	internal void EnsureOnnxIndex(long expectedVersion = 0L)
 	{
 		try
 		{
+			if (expectedVersion > 0L && Version != expectedVersion) return;
 			if (_onnxRuleEntries != null && _onnxIndexVersion == _ruleDataVersion)
 			{
 				return;
 			}
 			lock (_onnxIndexLock)
 			{
+				long buildVersion = Version;
+				if (expectedVersion > 0L && buildVersion != expectedVersion) return;
 				if (_onnxRuleEntries != null && _onnxIndexVersion == _ruleDataVersion)
 				{
 					return;
@@ -777,22 +763,26 @@ internal sealed class KnowledgeRuleIndex
 				catch
 				{
 				}
-				bool noRules = rules == null || rules.Count == 0;
-				bool noSeeds = seedCount <= 0;
-				if (!engineAvailable)
+				lock (_publicationLock)
 				{
-					_onnxRuleEntries = null;
-					_onnxIndexVersion = -1L;
-				}
-				else if (entries.Count > 0 || noRules || noSeeds)
-				{
-					_onnxRuleEntries = entries;
-					_onnxIndexVersion = _ruleDataVersion;
-				}
-				else
-				{
-					_onnxRuleEntries = null;
-					_onnxIndexVersion = -1L;
+					if (Version != buildVersion) return;
+					bool noRules = rules == null || rules.Count == 0;
+					bool noSeeds = seedCount <= 0;
+					if (!engineAvailable)
+					{
+						_onnxRuleEntries = null;
+						_onnxIndexVersion = -1L;
+					}
+					else if (entries.Count > 0 || noRules || noSeeds)
+					{
+						_onnxRuleEntries = entries;
+						_onnxIndexVersion = buildVersion;
+					}
+					else
+					{
+						_onnxRuleEntries = null;
+						_onnxIndexVersion = -1L;
+					}
 				}
 			}
 		}
