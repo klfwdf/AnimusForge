@@ -2040,6 +2040,13 @@ private static string BuildCeremonyRoleFactForPrompt(int agentIndex)
     return SceneAgentIdentityPromptCaptureAdapter.BuildSceneSystemTopPromptIntroForSingle(SceneRoleIntroCapture, npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, promptMentions);
 }
 
+// Scene-only split: current actions belong to the replaceable tail, never the persona prefix.
+internal static string BuildSceneStablePromptIntroForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
+    => SceneAgentIdentityPromptCaptureAdapter.BuildSceneSystemTopPromptIntroForSingle(SceneRoleIntroCapture, npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, promptMentions, includeCurrentAction: false);
+
+internal static string BuildSceneCurrentActionForPrompt(NpcDataPacket npc, Hero hero)
+    => BuildSceneAgentSelfActionFactForPrompt(npc, hero);
+
 public static string BuildHeroStableRoleContextForExternal(Hero hero)
 {
     return SceneAgentIdentityPromptCaptureAdapter.BuildHeroStableRoleContextForExternal(SceneRoleIntroCapture, hero);

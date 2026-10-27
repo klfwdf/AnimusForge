@@ -95,13 +95,14 @@ internal static class AnimusForgeMcmPages
 
     private static string ApiGroup(string owner, ISettingsPropertyDefinition property)
     {
-        if (owner == "AnimusForge_Illustrator_v1") return "{=AF_TERMINAL_GROUP_IMAGE_API}Image generation API";
+        if (owner == "AnimusForge_Illustrator_v1") return property.GroupName.IndexOf("AF_ILL_GROUP_DIRECTOR_API", StringComparison.Ordinal) >= 0
+            ? "{=AF_ILL_GROUP_DIRECTOR_API}Director API" : "{=AF_TERMINAL_GROUP_IMAGE_API}Image generation API";
         if (property.GroupName.IndexOf("{=AF_MCM_Tts_Group}", StringComparison.Ordinal) >= 0) return "{=AF_TERMINAL_GROUP_TTS_API}TTS API";
         return property.GroupName;
     }
 
     private static int ApiOrder(string owner, ISettingsPropertyDefinition property) =>
-        owner == "AnimusForge_Illustrator_v1" ? 50 : property.GroupOrder;
+        owner == "AnimusForge_Illustrator_v1" ? (property.GroupName.IndexOf("AF_ILL_GROUP_DIRECTOR_API", StringComparison.Ordinal) >= 0 ? 51 : 50) : property.GroupOrder;
 
     private sealed class Metadata : IPropertyDefinitionBase, IPropertyDefinitionWithId, IPropertyGroupDefinition, IPropertyDefinitionGroupToggle
     {

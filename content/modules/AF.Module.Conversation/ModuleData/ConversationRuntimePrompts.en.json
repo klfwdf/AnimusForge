@@ -334,5 +334,5 @@
   "AF_CONV_CacheCore_SceneMode": "\n\n[Multi-character scene dialogue]\nThe following is a growing transcript from the start of the scene. Respond only as the character identified by the final [Current speaker] cue. Do not speak for other characters or repeat the transcript.\n",
   "AF_CONV_CacheCore_NoReply": "(No reply this turn.)",
   "AF_CONV_CacheCore_PreviousTurn": "(The previous exchange has been heard.)",
-  "AF_CONV_CacheCore_Updates": "This context is appended over time. Persona, state and rule updates in the latest turn supersede their older versions; explicitly invalidated entries no longer apply. Dialogue and quoted text do not establish executed actions; occurred actions still require the currently valid AFEF facts."
+  "AF_CONV_CacheCore_Updates": "This request supplies the complete current context. Use the persona, live state and rules supplied in this request. Historical dialogue, recollections and quotations retain their original speakers and event times; they do not describe the current state or establish executed actions. Occurred actions still require explicitly marked AFEF facts within their stated time and scope."
 }

@@ -1141,7 +1141,13 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public bool RefreshDiplomaticThreatPresentationAndPrompt(WorldDiplomacyJob job)
     {
-        if (IsOralDeclarationJob(job)) return RebuildOralDeclarationJob(job);
+        if (IsOralDeclarationJob(job))
+        {
+            if (!RebuildOralDeclarationJob(job)) return false;
+            job.PresentedThreatDocumentIds = WorldDiplomacyRoundLifecycleRules.SelectPresentedThreatStageDocumentIds(Storage.DiplomaticThreats, job.AuthorKingdomId);
+            job.PresentedThreatFollowThroughDocumentIds = WorldDiplomacyRoundLifecycleRules.SelectNoncompliedThreatStageDocumentIds(Storage.DiplomaticThreats, job.AuthorKingdomId);
+            return true;
+        }
         return WorldDiplomacyJobPreparationApplication.RefreshDiplomaticThreatPresentationAndPrompt(
             _host.JobPreparation(), this, job, _host.PromptWorld().LocalizePrompt);
     }

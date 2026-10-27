@@ -125,6 +125,22 @@ f.Tick(102);
 Check(GiveGoldAction.Calls == 1 && f.State.Factions.Count == 1, "uncertain money transfer never automatically repeats");
 Check(f.Owner.BuildPlayerKingdomPanel().Factions.Single().Stage.Contains("check the log"), "blocked settlement is visible");
 
+// Returning rebel clans must not end a foreign kingdom's ongoing war with their home kingdom.
+foreach (string outcome in new[] { CivilWarCatalog.CrownVictoryOutcomeId, CivilWarCatalog.NegotiatedOutcomeId })
+{
+    f = new Fixture();
+    var foreignPlayer = new Kingdom { StringId = "foreign_player" };
+    Kingdom.All.Add(foreignPlayer);
+    f.Home.FactionsAtWarWith.Add(foreignPlayer); foreignPlayer.FactionsAtWarWith.Add(f.Home);
+    f.Rebel.FactionsAtWarWith.Add(foreignPlayer); foreignPlayer.FactionsAtWarWith.Add(f.Rebel);
+    f.Faction.DemandId = "revoke_policy";
+    f.Faction.TargetId = "already_removed";
+    f.Faction.ResolutionOutcomeId = outcome;
+    f.Tick(101);
+    Check(f.Follower.Kingdom == f.Home && f.Rebel.IsEliminated, "rebels return and dissolve: " + outcome);
+    Check(f.Home.IsAtWarWith(foreignPlayer) && foreignPlayer.IsAtWarWith(f.Home), "return leaves third-party war unchanged: " + outcome);
+}
+
 // Previously fulfilled demands can finish after the return phase, rather than getting stuck forever.
 f = new Fixture();
 f.Faction.DemandId = "revoke_policy";

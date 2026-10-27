@@ -69,7 +69,7 @@ internal static class TerminalSettingsCoverage
 
     internal static bool IsVisible(string id)
     {
-        if (id == "ScreenNotifications"
+        if (id == "Illustrator.DirectorMaxTokens" || id == "ScreenNotifications"
             || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled"
             || id == "TerminalHotkeyEnabled" || id == "TerminalMapIconEnabled") return false;
         return true;
@@ -77,7 +77,12 @@ internal static class TerminalSettingsCoverage
 
     internal static string ViewGroup(string id, string fallback)
     {
-        if (id.StartsWith("Illustrator.", StringComparison.Ordinal)) return Label("AF_TERMINAL_GROUP_IMAGE_API", "Image generation API");
+        if (id.StartsWith("Illustrator.", StringComparison.Ordinal))
+        {
+            if (BindingById.Value.TryGetValue(id, out Binding illustrator) && illustrator.Group.IndexOf("AF_ILL_GROUP_DIRECTOR_API", StringComparison.Ordinal) >= 0)
+                return Label("AF_ILL_GROUP_DIRECTOR_API", "Director API");
+            return Label("AF_TERMINAL_GROUP_IMAGE_API", "Image generation API");
+        }
         if (id.StartsWith("Coup.", StringComparison.Ordinal)) return Label("AF_TERMINAL_GROUP_COUP", "Armed coup");
         if (id.StartsWith("WorldDiplomacy", StringComparison.Ordinal) || id.StartsWith("EnableWorldDiplomacy", StringComparison.Ordinal)
             || id.StartsWith("EditWorldDiplomacy", StringComparison.Ordinal))
@@ -121,6 +126,7 @@ internal static class TerminalSettingsCoverage
     internal static int ViewGroupOrder(string id)
     {
         if (!BindingById.Value.TryGetValue(id, out Binding binding)) return 0;
+        if (binding.Owner == nameof(IllustratorSettings) && binding.Group.IndexOf("AF_ILL_GROUP_DIRECTOR_API", StringComparison.Ordinal) >= 0) return 51;
         if (binding.Owner == nameof(IllustratorSettings) && binding.Group.IndexOf("AF_ILL_GROUP_IMAGE_API", StringComparison.Ordinal) >= 0) return 50;
         return 0;
     }

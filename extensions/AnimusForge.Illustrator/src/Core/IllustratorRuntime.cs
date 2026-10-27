@@ -233,7 +233,7 @@ namespace AnimusForge.Illustrator.Core
             string directorUrl;
             string directorKey;
             string directorModel;
-            VisualDirectorEngine.ResolveChatConfigForSnapshot(out directorUrl, out directorKey, out directorModel);
+            VisualDirectorEngine.ResolveChatConfigForSnapshot(settings, out directorUrl, out directorKey, out directorModel);
             return new IllustrationOptions(settings, directorUrl, directorKey, directorModel);
         }
 

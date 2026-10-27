@@ -62,6 +62,16 @@ public partial class ShoutBehavior
 	private List<object> BuildStrictSceneMessagesForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 0, bool suppressReplyFormatInstruction = false, IEnumerable<ConversationMessage> injectedHistoryMessages = null, bool includeSceneHistory = true, IEnumerable<ConversationMessage> persistentHistoryMessages = null, IEnumerable<ConversationMessage> pendingCurrentAfefFactMessages = null, bool useSceneDistanceSpeechLabels = true)
 	{ return SceneHistoryMessageAssemblyOwner.Build(CaptureStrictSceneMessageInputForNpc(npcAgentIndex, systemPrompt, prefixUserSections, suffixUserSections, currentInputAlreadyRecorded, currentPlayerInput, maxHistoryMessages, suppressReplyFormatInstruction, injectedHistoryMessages, includeSceneHistory, persistentHistoryMessages, pendingCurrentAfefFactMessages, useSceneDistanceSpeechLabels)); }
 
+	private List<object> BuildStableSceneMessagesForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 0, bool suppressReplyFormatInstruction = false, IEnumerable<ConversationMessage> injectedHistoryMessages = null, bool includeSceneHistory = true, IEnumerable<ConversationMessage> persistentHistoryMessages = null, IEnumerable<ConversationMessage> pendingCurrentAfefFactMessages = null, bool useSceneDistanceSpeechLabels = true, string stablePersona = null, string currentInstructions = null)
+	{
+        var input = CaptureStrictSceneMessageInputForNpc(npcAgentIndex, systemPrompt, prefixUserSections, suffixUserSections,
+            currentInputAlreadyRecorded, currentPlayerInput, maxHistoryMessages, suppressReplyFormatInstruction,
+            injectedHistoryMessages, includeSceneHistory, persistentHistoryMessages, pendingCurrentAfefFactMessages, useSceneDistanceSpeechLabels);
+        input.StablePersona = stablePersona;
+        input.CurrentInstructions = currentInstructions;
+        return SceneHistoryMessageAssemblyOwner.Build(input);
+    }
+
 	internal SceneHistoryMessageAssemblyInput CaptureStrictSceneMessageInputForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 0, bool suppressReplyFormatInstruction = false, IEnumerable<ConversationMessage> injectedHistoryMessages = null, bool includeSceneHistory = true, IEnumerable<ConversationMessage> persistentHistoryMessages = null, IEnumerable<ConversationMessage> pendingCurrentAfefFactMessages = null, bool useSceneDistanceSpeechLabels = true)
 	{
         return SceneHistoryPromptCapture.CaptureStrictSceneMessageInputForNpc(npcAgentIndex, systemPrompt, prefixUserSections, suffixUserSections, currentInputAlreadyRecorded, currentPlayerInput, maxHistoryMessages, suppressReplyFormatInstruction, injectedHistoryMessages, includeSceneHistory, persistentHistoryMessages, pendingCurrentAfefFactMessages, useSceneDistanceSpeechLabels);

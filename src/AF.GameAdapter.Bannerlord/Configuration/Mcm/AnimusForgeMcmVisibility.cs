@@ -24,7 +24,7 @@ internal static class AnimusForgeMcmVisibility
         "{=AF_MCM_Support_Group}", "{=AF_MCM_MainApi_Group}", "{=AF_MCM_AuxApi_Group}",
         "{=AF_MCM_PostprocessApi_Group}", "{=AF_MCM_EventRebellionApi_Group}", "{=AF_MCM_Tts_Group}"
     };
-    private static readonly string[] IllustratorGroups = { "{=AF_ILL_GROUP_IMAGE_API}" };
+    private static readonly string[] IllustratorGroups = { "{=AF_ILL_GROUP_IMAGE_API}", "{=AF_ILL_GROUP_DIRECTOR_API}" };
     private static readonly HashSet<string> MainNonApiProperties = new HashSet<string>(StringComparer.Ordinal)
     {
         "ActionPostprocessHistoryEntryLimit"
@@ -143,7 +143,7 @@ internal static class AnimusForgeMcmVisibility
     {
         if (!IsOwnedId(settingsId)) return true;
         if (settingsId == DialogueUiId || settingsId == CoupId) return false;
-        if (settingsId == IllustratorId) return HasGroup(rawGroup, IllustratorGroups);
+        if (settingsId == IllustratorId) return propertyId != "DirectorMaxTokens" && HasGroup(rawGroup, IllustratorGroups);
         return !MainNonApiProperties.Contains(propertyId) && HasGroup(rawGroup, MainGroups);
     }
 

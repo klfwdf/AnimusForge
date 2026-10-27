@@ -309,7 +309,8 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
         string revision = input.PersistentHistory?.Select(x => x?.PromptContextRevision).FirstOrDefault(x => !string.IsNullOrEmpty(x)) ?? "";
         if (revision.Length > 0 && messages[0] is ConversationPromptMessage first)
             messages[0] = new ConversationPromptMessage(first.role, first.content, revision: revision);
-        AppendSections(messages, input.PrefixUserSections);
+        if (!string.IsNullOrWhiteSpace(input.StablePersona))
+            messages.Add(new ConversationPromptMessage("user", PromptComposerTexts.Format("scene_prefix_persona", ("TEXT", input.StablePersona))));
         var pending = (input.PendingCurrentFacts ?? Enumerable.Empty<ConversationMessage>())
             .Where(x => x != null && IsAfefConversationMessage(x)).Select(BuildCurrentFactIdentity);
         var keys = new HashSet<string>(pending.Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.Ordinal);
@@ -372,6 +373,11 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
                 messages.Add(message);
             }
         }
+        // Keep selected chronological speech/facts ahead of request-varying
+        // recall, runtime state and rules so those updates do not break its prefix.
+        if (!string.IsNullOrWhiteSpace(input.CurrentInstructions))
+            messages.Add(new ConversationPromptMessage("user", PromptComposerTexts.Format("scene_prefix_current", ("TEXT", input.CurrentInstructions))));
+        AppendSections(messages, input.PrefixUserSections);
         AppendSections(messages, input.SuffixUserSections);
         if (input.CurrentInputMessage != null && TryConvertSceneMessageToStrictChatMessage(input.CurrentInputMessage, input.Context, out var current))
             messages.Add(current);
@@ -398,6 +404,7 @@ internal sealed class SceneHistoryMessageContext
 internal sealed class SceneHistoryMessageAssemblyInput
 {
     internal string SystemPrompt;
+    internal string StablePersona, CurrentInstructions;
     internal IEnumerable<string> PrefixUserSections, SuffixUserSections;
     internal IEnumerable<ConversationMessage> PersistentHistory, SceneHistory, InjectedHistory, PendingCurrentFacts;
     internal ConversationMessage CurrentInputMessage;

@@ -55,11 +55,11 @@ internal static class MainPromptMessageAssemblyOwner
 			CreateCourierChatMessage("system", system)
 		};
 		string contextText = context.ToString().Trim();
+		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
 		if (!string.IsNullOrWhiteSpace(contextText))
 		{
 			messages.Add(CreateCourierChatMessage("user", PromptRuleBlockText.ProjectHeadersForPrompt(contextText)));
 		}
-		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
 		StringBuilder current = new StringBuilder();
 		current.AppendLine(PromptComposerTexts.Get("main_courier_003"));
 		current.AppendLine(letterText ?? "");
@@ -121,11 +121,11 @@ internal static class MainPromptMessageAssemblyOwner
 			CreateCourierChatMessage("system", system)
 		};
 		string contextText = context.ToString().Trim();
+		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
 		if (!string.IsNullOrWhiteSpace(contextText))
 		{
 			messages.Add(CreateCourierChatMessage("user", PromptRuleBlockText.ProjectHeadersForPrompt(contextText)));
 		}
-		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
 		StringBuilder current = new StringBuilder();
 		current.AppendLine(PromptComposerTexts.Get("main_courier_011"));
 		current.AppendLine(seed ?? "");
@@ -356,6 +356,9 @@ internal static class MainPromptMessageAssemblyOwner
                 throw new ArgumentOutOfRangeException(nameof(layout));
         }
     }
+
+    internal static string BuildSceneSharedSystemPrompt(string publicRules)
+        => BuildSceneCompositeUserBlock("", publicRules, PromptComposerTexts.Get("scene_prefix_system"));
 
     internal static string BuildSceneReactionSystemPrompt(string identityOverride, string ruleBlock, string customRoleIntro)
         => BuildSceneCompositeUserBlock("", BuildSceneCompositeUserBlock("", identityOverride, ruleBlock), customRoleIntro);

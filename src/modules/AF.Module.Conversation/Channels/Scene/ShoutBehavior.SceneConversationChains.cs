@@ -155,7 +155,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
 			bool includeInventorySummary = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext);
 			bool includeTradePricing = includeInventorySummary;
-			string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(speakerNpc, hero, allNpcData, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
+			string roleTopIntro = BuildSceneStablePromptIntroForSingle(speakerNpc, hero, allNpcData, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
 			string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(speakerNpc, hero, allNpcData, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
 			string singleReplyPlayerName = GetPlayerDisplayNameForShout();
 			if (string.IsNullOrWhiteSpace(singleReplyPlayerName))
@@ -168,14 +168,14 @@ internal sealed partial class SceneConversationSessionRuntime
 			{
 				roleRuntimeContext = AppendPostprocessContextBlockForScene(roleRuntimeContext, WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(hero, characterObject, speakerNpc.AgentIndex));
 			}
-			string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
-			layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
+			string currentInstructions = BuildSceneCompositeUserBlock("", BuildSceneCurrentActionForPrompt(speakerNpc, hero), taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
+			string layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneSharedSystemPrompt(AppendPlayerCustomPromptRuleToSystemPrompt(""));
 			string currentAfefFactBlock = BuildCurrentAfefFactPromptBlock(extraFact);
 			Stopwatch uncompressedSw = Stopwatch.StartNew();
 			List<ConversationMessage> persistentMemoryRoleMessages = memorySnapshot?.UncompressedMessages;
 			uncompressedSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_uncompressed_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + ((persistentMemoryRoleMessages == null) ? 0 : persistentMemoryRoleMessages.Count) + " ms=" + Math.Round(uncompressedSw.Elapsed.TotalMilliseconds, 2));
-			List<object> messages = _ports.BuildStrictSceneMessagesForNpc(speakerNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupFallback, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, local.ToString().Trim(), currentAfefFactBlock, trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages);
+			List<object> messages = _ports.BuildStrictSceneMessagesForNpc(speakerNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupFallback, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, local.ToString().Trim(), currentAfefFactBlock, trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages, stablePersona: roleTopIntro, currentInstructions: currentInstructions);
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_prompt_ready agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length));
 			Stopwatch apiSw = Stopwatch.StartNew();
             using var promptCache = ConversationPromptCache.Begin(messages, "scene", promptGeneration, promptSession, "agent:" + speakerNpc.AgentIndex + "|" + speakerNpc.UnnamedKey + "|" + speakerNpc.TroopId);
@@ -277,7 +277,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
 				bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
 				bool includeTradePricing = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext);
-				string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(data, hero, allNpcData, includeTradePricing: includeTradePricing, partyTransferTopicSelected: partyTransferTopicSelected, promptMentions: ctx?.MentionedEntities);
+				string roleTopIntro = BuildSceneStablePromptIntroForSingle(data, hero, allNpcData, includeTradePricing: includeTradePricing, partyTransferTopicSelected: partyTransferTopicSelected, promptMentions: ctx?.MentionedEntities);
 				string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(data, hero, allNpcData, includeTradePricing: includeTradePricing, partyTransferTopicSelected: partyTransferTopicSelected, promptMentions: ctx?.MentionedEntities);
 				string playerNameForLength = GetPlayerDisplayNameForShout();
 				if (string.IsNullOrWhiteSpace(playerNameForLength))
@@ -296,8 +296,8 @@ internal sealed partial class SceneConversationSessionRuntime
 				{
 					roleRuntimeContext = AppendPostprocessContextBlockForScene(roleRuntimeContext, WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(hero, passiveCharacter, data.AgentIndex));
 				}
-				string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskPreamble, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
-				layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
+				string currentInstructions = BuildSceneCompositeUserBlock("", BuildSceneCurrentActionForPrompt(data, hero), taskPreamble, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
+				string layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneSharedSystemPrompt(AppendPlayerCustomPromptRuleToSystemPrompt(""));
 				swPrompt.Stop();
 				int fixedChars = 0;
 				int deltaChars = CountPromptChars(layeredPrompt);
@@ -338,7 +338,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				string persistedWithoutRecentWindow = "";
 				SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
 				List<ConversationMessage> persistentMemoryRoleMessages = memorySnapshot?.UncompressedMessages;
-				List<object> messages = _ports.BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.Passive, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), "", trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : (ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0693") + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+				List<object> messages = _ports.BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.Passive, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), "", trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : (ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0693") + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages, stablePersona: roleTopIntro, currentInstructions: currentInstructions);
 				Stopwatch swApi = Stopwatch.StartNew();
                 using var promptCache = ConversationPromptCache.Begin(messages, "scene", promptGeneration, promptSession, "agent:" + data.AgentIndex + "|" + data.UnnamedKey + "|" + data.TroopId);
                 string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(promptCache.Messages, 5000, promptRetryOnError: true);
@@ -704,7 +704,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					bool includeInventorySummary = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext);
 					bool includeTradePricing = includeInventorySummary;
 					bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-					string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(currentSpeaker, contextHero, speakableCandidates, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
+					string roleTopIntro = BuildSceneStablePromptIntroForSingle(currentSpeaker, contextHero, speakableCandidates, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
 					string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(currentSpeaker, contextHero, speakableCandidates, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
 					string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, sceneMechanismPromptSection);
 					string combinedRuleInspectionBlock = BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock);
@@ -788,8 +788,8 @@ internal sealed partial class SceneConversationSessionRuntime
 							includeGenericRules: genericSceneMechanismRuleInjected);
 					}
 					string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(currentSpeaker), multiNpcScene, minTokens, maxTokens, singleReplyPlayerName);
-					string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
-					layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
+					string currentInstructions = BuildSceneCompositeUserBlock("", BuildSceneCurrentActionForPrompt(currentSpeaker, contextHero), taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
+					string layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneSharedSystemPrompt(AppendPlayerCustomPromptRuleToSystemPrompt(""));
 					if (duelRuleInjected && speakingHero != null && RewardSystemBehavior.Instance != null)
 					{
 						duelStakeOptions = RewardSystemBehavior.Instance.BuildDuelStakeOptionsForAI(speakingHero);
@@ -800,7 +800,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					Logger.Log("Logic", "[MemoryPerf] group_turn_uncompressed_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + ((persistentMemoryRoleMessages == null) ? 0 : persistentMemoryRoleMessages.Count) + " ms=" + Math.Round(uncompressedSw.Elapsed.TotalMilliseconds, 2));
 					string relayTurnContext = multiNpcScene ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, AUTO_GROUP_CHAT_MAX_LINES - remainingTurns) : null;
 					string relayTurnUserSection = multiNpcScene ? BuildSceneGroupTurnUserSectionForPrompt(firstTurn, relayTurnContext, currentSpeaker, engagedParticipants) : null;
-					List<object> messages = _ports.BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupTurn, privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, "", "", "", "", "", knowledgeExtrasSection, systemRuleBlock), suffixUserSections: new[] { relayTurnUserSection }, persistentHistoryMessages: persistentMemoryRoleMessages);
+					List<object> messages = _ports.BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupTurn, privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, "", "", "", "", "", knowledgeExtrasSection, systemRuleBlock), suffixUserSections: new[] { relayTurnUserSection }, persistentHistoryMessages: persistentMemoryRoleMessages, stablePersona: roleTopIntro, currentInstructions: currentInstructions);
                     using var promptCache = ConversationPromptCache.Begin(messages, "scene", sceneReplyGeneration,
                         sceneReplySessionId, "agent:" + currentSpeaker.AgentIndex + "|" + currentSpeaker.UnnamedKey + "|" + currentSpeaker.TroopId);
                     messages = promptCache.Messages;
@@ -1583,12 +1583,12 @@ internal sealed partial class SceneConversationSessionRuntime
 		string privateRecentWindowSection = "";
 		string persistedWithoutRecentWindow = "";
 		SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
-		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
+		string roleTopIntro = BuildSceneStablePromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
-		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
-		layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneReactionSystemPrompt(gcczIdentityOverrideBlock, systemRuleBlock, layeredPrompt);
+		string currentInstructions = BuildSceneCompositeUserBlock("", gcczIdentityOverrideBlock, systemRuleBlock, BuildSceneCurrentActionForPrompt(targetNpc, contextHero));
+		string layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneSharedSystemPrompt(AppendPlayerCustomPromptRuleToSystemPrompt(""));
 		List<ConversationMessage> persistentMemoryRoleMessages = memorySnapshot?.UncompressedMessages;
-		List<object> messages = _ports.BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.ImmediateReaction, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), factText, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0725") + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0726") }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = _ports.BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.ImmediateReaction, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), factText, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0725") + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0726") }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages, stablePersona: roleTopIntro, currentInstructions: currentInstructions);
 		request = new ImmediateSceneReactionRequest
 		{
 			RequestId = requestId,
@@ -1983,13 +1983,13 @@ internal sealed partial class SceneConversationSessionRuntime
 		string privateRecentWindowSection = "";
 		string persistedWithoutRecentWindow = "";
 		SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
-		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
+		string roleTopIntro = BuildSceneStablePromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
-		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
-		layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneReactionSystemPrompt(gcczIdentityOverrideBlock, systemRuleBlock, layeredPrompt);
+		string currentInstructions = BuildSceneCompositeUserBlock("", gcczIdentityOverrideBlock, systemRuleBlock, BuildSceneCurrentActionForPrompt(targetNpc, contextHero));
+		string layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneSharedSystemPrompt(AppendPlayerCustomPromptRuleToSystemPrompt(""));
 		string extraFactUserBlock = BuildCurrentAfefFactPromptBlock(extraFactLine);
 		List<ConversationMessage> persistentMemoryRoleMessages = memorySnapshot?.UncompressedMessages;
-		List<object> messages = _ports.BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.CompactArrival, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), extraFactUserBlock, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = _ports.BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.CompactArrival, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), extraFactUserBlock, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages, stablePersona: roleTopIntro, currentInstructions: currentInstructions);
             return new SceneCompactReactionInput(messages, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()), generation, session, "agent:" + targetNpc.AgentIndex + "|" + targetNpc.UnnamedKey + "|" + targetNpc.TroopId);
         }, (SceneCompactReactionInput)null).ConfigureAwait(false);
     }

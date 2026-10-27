@@ -27,22 +27,22 @@
     <string id="AF_ILL_ENABLED_HINT" text="Master switch for all image-generation paths. When disabled, encyclopedia, conversation, bulletin, and gallery entries will not send image requests." />
     <string id="AF_ILL_FETCH" text="Fetch" />
     <string id="AF_ILL_FETCH_IMAGE_MODELS" text="Fetch image model list" />
-    <string id="AF_ILL_FETCH_IMAGE_MODELS_HINT" text="Queries the configured endpoint for models. Google native mode uses /models and native authentication. Only the current response page is read; enter a model manually if it is not listed. Image and art models are prioritized." />
+    <string id="AF_ILL_FETCH_IMAGE_MODELS_HINT" text="Queries the configured endpoint for models. OpenRouter uses its image model list. Google native mode uses /models and native authentication. Only the current response page is read; enter a model manually if it is not listed. Image and art models are prioritized." />
     <string id="AF_ILL_GEAR_FIDELITY" text="Preserve AF equipment" />
     <string id="AF_ILL_GEAR_FIDELITY_HINT" text="Preserves equipment identity while allowing narrative changes such as tears, stains, or wetness. When disabled, clothing, armor, weapons, and accessories follow custom director rules; identity and established facts remain. Affects new requests only and never changes game equipment." />
     <string id="AF_ILL_GROUP_BASIC" text="1. Basic Settings" />
-    <string id="AF_ILL_GROUP_DIRECTOR_API" text="3. Visual Director (uses main API)" />
+    <string id="AF_ILL_GROUP_DIRECTOR_API" text="Director API" />
     <string id="AF_ILL_GROUP_DISPLAY" text="4. Bulletins and Display Scenes" />
     <string id="AF_ILL_GROUP_IMAGE_API" text="2. Image API (OpenAI-compatible)" />
     <string id="AF_ILL_GROUP_STORAGE" text="5. Storage and Performance" />
     <string id="AF_ILL_IMAGE_BASE_URL" text="Image API endpoint (Base URL)" />
-    <string id="AF_ILL_IMAGE_BASE_URL_HINT" text="For compatible APIs, enter the service root or /v1. Google native APIs accept the v1beta root or a complete /models/name:generateContent URL. Player2 is detected automatically at http://127.0.0.1:4315 and chooses its model in the Player2 app. With a reference image, /images/edits is preferred; without one, /images/generations is used. The model must support the selected channel." />
+    <string id="AF_ILL_IMAGE_BASE_URL_HINT" text="OpenRouter uses its dedicated image API when the address is https://openrouter.ai/api/v1. For other compatible APIs, enter the service root or /v1. Google native APIs accept the v1beta root or a complete /models/name:generateContent URL. Player2 is detected automatically at http://127.0.0.1:4315 and chooses its model in the Player2 app. Other compatible APIs use /images/edits with references and /images/generations without them. The model must support the selected channel." />
     <string id="AF_ILL_IMAGE_KEY" text="Image API key (API Key)" />
     <string id="AF_ILL_IMAGE_KEY_HINT" text="API key for authentication. Leave blank for endpoints that need no authentication or local proxies." />
     <string id="AF_ILL_IMAGE_MODEL" text="Image model name (Model)" />
     <string id="AF_ILL_IMAGE_MODEL_HINT" text="Image model name. Supports standard image models and native multimodal conversation image models; the channel is detected automatically." />
     <string id="AF_ILL_IMAGE_SIZE" text="Image resolution (Size)" />
-    <string id="AF_ILL_IMAGE_SIZE_HINT" text="Bulletin and fullscreen scene illustrations convert presets to 16:9: the 1024 square and 1280/720 presets become 1280×720; the 1344/1536 presets become 1536×864; the 2048 square becomes 2048×1152. Encyclopedia and standalone-panel scene illustrations use the selected size. The image service must support the corresponding size." />
+    <string id="AF_ILL_IMAGE_SIZE_HINT" text="Bulletin and fullscreen scene illustrations convert presets to 16:9: the 1024 square and 1280/720 presets become 1280×720; the 1344/1536 presets become 1536×864; the 2048 square becomes 2048×1152. Encyclopedia and standalone-panel scene illustrations use the selected size. The image service must support the corresponding size. Gemini 3 image models map pixel presets to 1K/2K tiers and the requested aspect ratio; compatible chat gateways must support the Google image_config extension." />
     <string id="AF_ILL_IMAGE_TIMEOUT" text="Image request timeout" />
     <string id="AF_ILL_IMAGE_TIMEOUT_HINT" text="Maximum total wait for one image request; the default is 240 seconds. Includes Edits attempts, conversation-channel fallback, and downloading the result image. Increase it for high-quality redraws with multiple reference images or a slow relay. Applies to the next image request and does not affect visual director requests or off-screen capture timeouts." />
     <string id="AF_ILL_NEGATIVE_PROMPT" text="Negative prompt (Negative Prompt)" />
@@ -507,5 +507,24 @@
     <string id="AF_ILL_ERROR_PANORAMA_NODES_BUDGET" text="The current environment hierarchy has more than 32768 nodes. The snapshot stopped; an incomplete copy must not be marked as a complete panorama." />
     <string id="AF_ILL_ERROR_IMAGE_PROMPT_BUDGET" text="The image prompt exceeds the {LIMIT}-character budget and cannot be shortened while preserving facts, reference-image constraints and complete paragraphs. No request was sent. Shorten custom styles or requirements, or reduce the material for this request." />
       <string id="AF_ILL_UI_LOCAL_CACHE_PROMPT" text="(A visual chronicle is retained locally)" />
+      <string id="AF_ILL_DIRECTOR_CUSTOM_API" text="Use independent director API" />
+    <string id="AF_ILL_DIRECTOR_CUSTOM_API_HINT" text="Off uses the main chat API. On uses only the director endpoint, key and model below. Applies to the next generation request; incomplete configuration stops generation." />
+    <string id="AF_ILL_DIRECTOR_BASE_URL" text="Director API endpoint (Base URL)" />
+    <string id="AF_ILL_DIRECTOR_BASE_URL_HINT" text="Independent OpenAI-compatible chat endpoint. Enter the service root, /v1, or /chat/completions. Used only when independent director API is enabled; this does not change the image API." />
+    <string id="AF_ILL_DIRECTOR_KEY" text="Director API key" />
+    <string id="AF_ILL_DIRECTOR_KEY_HINT" text="Key for the independent director endpoint. Leave blank for a local service without authentication. The main API key is never borrowed in independent mode." />
+    <string id="AF_ILL_DIRECTOR_MODEL" text="Director model name" />
+    <string id="AF_ILL_DIRECTOR_MODEL_HINT" text="Exact model ID for the independent director API. Use a vision model for reference images; scene capture requires vision. Used only when independent director API is enabled." />
+    <string id="AF_ILL_DIRECTOR_CONFIG_REQUIRED" text="Set the independent director API endpoint and model, or turn off independent director API." />
+      <string id="AF_ILL_DIRECTOR_FETCH" text="Fetch director models" />
+    <string id="AF_ILL_DIRECTOR_FETCH_HINT" text="Fetch the first model page from the director API endpoint using its own key. Select a model below or enter its ID manually. Existing model remains unchanged until selected." />
+    <string id="AF_ILL_DIRECTOR_DROPDOWN" text="Select director model" />
+    <string id="AF_ILL_DIRECTOR_DROPDOWN_HINT" text="After fetching, select a director model. Manual input retains the model name above." />
+    <string id="AF_ILL_DIRECTOR_FETCH_PENDING" text="[Director] Model list is already being fetched." />
+    <string id="AF_ILL_DIRECTOR_FETCH_ENDPOINT" text="[Director] Enter the director API endpoint first." />
+    <string id="AF_ILL_DIRECTOR_FETCH_STARTED" text="[Director] Fetching available models..." />
+    <string id="AF_ILL_DIRECTOR_FETCH_FAILED" text="[Director] Could not fetch the model list. Check the endpoint and key, then try again." />
+    <string id="AF_ILL_DIRECTOR_FETCH_DONE" text="[Director] Fetched {COUNT} models. Select one or keep the current model." />
+    <string id="AF_ILL_DIRECTOR_FETCH_BUSY" text="[Director] Background tasks are busy. Try again later." />
   </strings>
 </base>

@@ -32,8 +32,8 @@ internal sealed class PromptCacheText
         => PromptComposerTexts.FormatTemplate(template, ("ACTOR", actor), ("SECTIONS", sections));
 }
 
-// Pool/lease boundary for the imported submodule algorithms. Scene transcripts
-// are shared per scene/provider, as in PromptCacheSessionPool.GetOrCreateSceneSession.
+// Request-local snapshots and accepted prefix diagnostics, scoped by viewer/provider.
+// The upstream history owner remains the only source of dialogue and recalled state.
 internal sealed class ConversationPromptCacheStore
 {
     internal sealed class Session
@@ -89,15 +89,12 @@ internal sealed class ConversationPromptCacheStore
                 if (!sourceCurrent || string.IsNullOrWhiteSpace(reply) || _candidate == null
                     || _owner._generation != _generation || _session.Ticket != _ticket
                     || !_owner._sessions.TryGetValue(_key, out var live) || !ReferenceEquals(live, _session)) return false;
-                // This is the exact request-local core, never FIFO/system-text attribution.
-                if (_candidate.IsSceneTranscript && _candidate.PendingCue != null)
-                    _candidate.SentHistoryMessages.Add(_candidate.PendingCue);
-                _candidate.PendingCue = null; _candidate.PendingCueText = null;
-                _candidate.SentHistoryMessages.Add(PromptReassembler.CreateMessage("assistant", reply));
-                _candidate.LastAssistantReply = reply; _candidate.LastActiveAt = now;
-                _candidate.AwaitingReply = false;
-                if ((long)Chars + reply.Length > _budget) { _owner._sessions.Remove(_key); return false; }
-                _session.Core = _candidate; _session.Chars = Chars + reply.Length; _session.LastUse = now;
+                // The history owner supplies accepted dialogue on the next request.
+                // Retaining a second transcript here would replay stale runtime state
+                // and could resurrect history the owner has edited or compressed.
+                _candidate.LastActiveAt = now;
+                if (Chars > _budget) { _owner._sessions.Remove(_key); return false; }
+                _session.Core = _candidate; _session.Chars = Chars; _session.LastUse = now;
                 _session.Revisions[_actor] = _revision; _session.Histories[_actor] = _history;
                 _owner.TrimPool(_key);
                 return true;
@@ -109,7 +106,7 @@ internal sealed class ConversationPromptCacheStore
             {
                 if (_settled) return;
                 _settled = true;
-                if (_session != null && _session.Ticket == _ticket && _session.Core.SentHistoryMessages.Count == 0
+                if (_session != null && _session.Ticket == _ticket && _session.Chars == 0
                     && _owner._sessions.TryGetValue(_key, out var live) && ReferenceEquals(live, _session))
                     _owner._sessions.Remove(_key);
             }
@@ -140,7 +137,7 @@ internal sealed class ConversationPromptCacheStore
             bool warm = existed && !historyChanged && session.Policy == text.Policy
                 && session.Core.GlobalRule == (globalRule ?? "")
                 && (now - session.LastUse).TotalMinutes <= ttlMinutes;
-            string reason = warm ? "append" : historyChanged ? "history_rebuilt" : "new_scope";
+            string reason = warm ? "snapshot_replace" : historyChanged ? "history_rebuilt" : "new_scope";
             Session Fresh() => new Session { Core = new ConversationSessionCache(actor, -1) {
                 IsSceneTranscript = shared, SceneKey = key, GlobalRule = globalRule ?? "" },
                 Policy = text.Policy, LastUse = now };
@@ -149,12 +146,6 @@ internal sealed class ConversationPromptCacheStore
             ConversationSessionCache candidate = session.Core.Copy();
             List<PromptCacheMessage> built = Build(candidate, original, actor);
             if (ConversationRequestBudget.Characters(built) > budget)
-            {
-                session = Fresh(); session.Ticket = ticket; _sessions[key] = session;
-                candidate = session.Core.Copy(); built = Build(candidate, original, actor);
-                warm = false; reason = "budget_reset";
-            }
-            if (ConversationRequestBudget.Characters(built) > budget)
             { _sessions.Remove(key); return Passthrough("snapshot_over_budget"); }
             return new Lease(this, key, actor, session, candidate, generation, ticket, built, budget, warm, reason, revision, history);
         }
@@ -162,46 +153,22 @@ internal sealed class ConversationPromptCacheStore
 
     private static List<PromptCacheMessage> Build(ConversationSessionCache core, List<PromptCacheMessage> original, string actor)
     {
-        var source = new List<object>(original.Count);
-        foreach (var item in original) source.Add(PromptReassembler.CreateMessage(item.Role, item.Content));
-        List<object> built;
-        if (core.IsSceneTranscript)
+        // The channel's complete, authoritative request is the replacement snapshot.
+        // Never infer state/history boundaries from headings in player-authored text,
+        // and never feed a previous optimized request back into the next request.
+        // Unchanged system text is reused byte for byte; changed persona/state replaces
+        // its old version instead of sending both versions plus a removal manifest.
+        string system = original[0].Content;
+        if (core.FrozenSystemMessage == null || core.SourceSystem != system)
         {
-            built = PromptReassembler.BuildSceneTranscriptMessages(core, source, actor, 0, 0, 0, out _);
+            core.SourceSystem = system;
+            core.FrozenSystemMessage = new PromptCacheMessage("system",
+                system + "\n\n[AF_PROMPT_CACHE_V1]\n" + PromptCacheCoreTexts.Get("Updates"));
         }
-        else
-        {
-            if (core.FrozenSystemMessage == null)
-            {
-                PromptReassembler.InitializeSession(core, source);
-                core.SourceSystem = original[0].Content;
-                built = PromptReassembler.BuildInitialOptimizedMessages(core, source);
-            }
-            else
-            {
-                // A changed source system is a current tail update; never mutate the frozen prefix.
-                if (core.SourceSystem != original[0].Content)
-                    source.Insert(1, PromptReassembler.CreateMessage("user", PromptCacheCoreTexts.Get("Persona") + original[0].Content));
-                core.SourceSystem = original[0].Content;
-                built = PromptReassembler.ReassembleForCache(core, source);
-            }
-        }
-        if (built == null) throw new InvalidOperationException("prompt_cache_core_build_failed");
-        if (core.FrozenSystemMessage != null
-            && PromptReassembler.TryGetRoleAndContent(core.FrozenSystemMessage, out _, out string system)
-            && !system.Contains("[AF_PROMPT_CACHE_V1]\n"))
-        {
-            core.FrozenSystemMessage = PromptReassembler.CreateMessage("system", system + "\n\n[AF_PROMPT_CACHE_V1]\n" + PromptCacheCoreTexts.Get("Updates"));
-            built[0] = core.FrozenSystemMessage;
-        }
-        core.LastFingerprints = PromptPrefixHasher.Build(built, out int chars);
+        var result = new List<PromptCacheMessage>(original.Count) { (PromptCacheMessage)core.FrozenSystemMessage };
+        for (int i = 1; i < original.Count; i++) result.Add(original[i]);
+        core.LastFingerprints = PromptPrefixHasher.Build(result, out int chars);
         core.LastPromptChars = chars; core.LastPromptHash = PromptPrefixHasher.CombineHash(core.LastFingerprints);
-        var result = new List<PromptCacheMessage>(built.Count);
-        foreach (object item in built)
-        {
-            if (!PromptReassembler.TryGetRoleAndContent(item, out string role, out string content)) throw new InvalidOperationException("prompt_cache_core_message_invalid");
-            result.Add(new PromptCacheMessage(role, content));
-        }
         return result;
     }
 

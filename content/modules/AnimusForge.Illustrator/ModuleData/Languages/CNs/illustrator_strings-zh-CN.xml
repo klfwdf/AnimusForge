@@ -27,22 +27,22 @@
     <string id="AF_ILL_ENABLED_HINT" text="所有生图链路的总开关。关闭后百科、对话、快报、画廊等入口都不会发起生图请求。" />
     <string id="AF_ILL_FETCH" text="点击拉取" />
     <string id="AF_ILL_FETCH_IMAGE_MODELS" text="拉取生图模型列表" />
-    <string id="AF_ILL_FETCH_IMAGE_MODELS_HINT" text="向配置接口查询模型列表，Google原生用其 /models 与原生鉴权；只读取当前返回页，未列出时可手动填写模型名。优先排列图像与绘画模型。" />
+    <string id="AF_ILL_FETCH_IMAGE_MODELS_HINT" text="向配置接口查询模型列表，OpenRouter 使用其生图模型列表；Google原生用其 /models 与原生鉴权；只读取当前返回页，未列出时可手动填写模型名。优先排列图像与绘画模型。" />
     <string id="AF_ILL_GEAR_FIDELITY" text="按 AF 装备保真" />
     <string id="AF_ILL_GEAR_FIDELITY_HINT" text="默认开启，保留装备款式身份，但允许叙事中已发生的撕裂、污渍、湿透等状态变化。关闭后衣服、盔甲、武器和配饰按自定义导演规则或导演构思设计，不锁定AF装备与立绘衣装；面容、发型、体型、人物身份及事件事实仍保留。只影响新请求，不修改游戏装备。" />
     <string id="AF_ILL_GROUP_BASIC" text="1. 基础设置" />
-    <string id="AF_ILL_GROUP_DIRECTOR_API" text="3. 视觉导演（使用主 API）" />
+    <string id="AF_ILL_GROUP_DIRECTOR_API" text="导演 API" />
     <string id="AF_ILL_GROUP_DISPLAY" text="4. 周报与展示场景" />
     <string id="AF_ILL_GROUP_IMAGE_API" text="2. 生图 API 配置 (OpenAI 兼容)" />
     <string id="AF_ILL_GROUP_STORAGE" text="5. 存储与性能" />
     <string id="AF_ILL_IMAGE_BASE_URL" text="生图 API 端点地址 (Base URL)" />
-    <string id="AF_ILL_IMAGE_BASE_URL_HINT" text="兼容接口填写服务根地址或 /v1；Google原生填写 https://generativelanguage.googleapis.com/v1beta 或完整 /models/模型名:generateContent，按原生鉴权发送。Player2填写http://127.0.0.1:4315即可自动识别，模型在Player2应用选择，无需开关。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。" />
+    <string id="AF_ILL_IMAGE_BASE_URL_HINT" text="OpenRouter 填写 https://openrouter.ai/api/v1，自动使用其专用生图接口；其他兼容接口填写服务根地址或 /v1；Google原生填写 https://generativelanguage.googleapis.com/v1beta 或完整 /models/模型名:generateContent，按原生鉴权发送。Player2填写http://127.0.0.1:4315即可自动识别，模型在Player2应用选择，无需开关。其他兼容接口有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。" />
     <string id="AF_ILL_IMAGE_KEY" text="生图 API 密钥 (API Key)" />
     <string id="AF_ILL_IMAGE_KEY_HINT" text="用于鉴权的 API Key。若端点无需鉴权或为本地反代可留空。" />
     <string id="AF_ILL_IMAGE_MODEL" text="生图模型名称 (Model)" />
     <string id="AF_ILL_IMAGE_MODEL_HINT" text="生图模型名称。支持常规生图模型（如 FLUX.1-schnell、dall-e-3、gpt-image-1.5 等）以及对话原生多模态出图模型（如 gemini-3.1-flash-image 等，系统会自动识别并走对话图生图通道）。" />
     <string id="AF_ILL_IMAGE_SIZE" text="生图分辨率 (Size)" />
-    <string id="AF_ILL_IMAGE_SIZE_HINT" text="快报与“全屏覆盖”场景插画按预设转为16:9：1024方形及1280/720档→1280×720；1344/1536档→1536×864；2048方形→2048×1152。百科与“独立面板”场景插画使用所选尺寸。需生图服务支持对应尺寸。" />
+    <string id="AF_ILL_IMAGE_SIZE_HINT" text="快报与“全屏覆盖”场景插画按预设转为16:9：1024方形及1280/720档→1280×720；1344/1536档→1536×864；2048方形→2048×1152。百科与“独立面板”场景插画使用所选尺寸。需生图服务支持对应尺寸。 Gemini 3 生图模型将像素预设映射为 1K/2K 档位与所选画幅；聊天兼容站点需支持 Google image_config 扩展。" />
     <string id="AF_ILL_IMAGE_TIMEOUT" text="生图请求总超时" />
     <string id="AF_ILL_IMAGE_TIMEOUT_HINT" text="单次生图的总等待上限，默认240秒；包含 Edits 尝试、对话通道回退和结果图下载。高画质多参考图重绘或中转较慢时可调大。下一次生图生效；不影响视觉导演请求与离屏采集超时。" />
     <string id="AF_ILL_NEGATIVE_PROMPT" text="负面提示词 (Negative Prompt)" />
@@ -507,5 +507,24 @@
     <string id="AF_ILL_ERROR_PANORAMA_NODES_BUDGET" text="当前环境实体层级超过32768个节点，已停止快照，不能将不完整副本标为完整全景。" />
     <string id="AF_ILL_ERROR_IMAGE_PROMPT_BUDGET" text="生图提示词超过{LIMIT}字符预算，无法在保留事实、参考图约束和完整段落的前提下缩短；请求未发送。请缩短自定义画风/要求或减少本次素材。" />
       <string id="AF_ILL_UI_LOCAL_CACHE_PROMPT" text="（本地已留存历史画卷）" />
+      <string id="AF_ILL_DIRECTOR_CUSTOM_API" text="使用独立导演 API" />
+    <string id="AF_ILL_DIRECTOR_CUSTOM_API_HINT" text="关闭时使用主对话 API；开启后仅使用下方导演地址、Key 和模型。下一次生成请求生效；配置不完整时停止生成。" />
+    <string id="AF_ILL_DIRECTOR_BASE_URL" text="导演 API 地址（Base URL）" />
+    <string id="AF_ILL_DIRECTOR_BASE_URL_HINT" text="独立的 OpenAI 兼容对话接口，可填写服务根地址、/v1 或 /chat/completions 地址。仅在启用独立导演 API 时使用，不改变生图 API。" />
+    <string id="AF_ILL_DIRECTOR_KEY" text="导演 API 密钥（Key）" />
+    <string id="AF_ILL_DIRECTOR_KEY_HINT" text="独立导演接口的密钥；无需认证的本地服务可留空。独立模式不会借用主 API 的密钥。" />
+    <string id="AF_ILL_DIRECTOR_MODEL" text="导演模型名称" />
+    <string id="AF_ILL_DIRECTOR_MODEL_HINT" text="独立导演接口的准确模型 ID。参考图应使用识图模型，自由取景必须支持识图。仅在启用独立导演 API 时使用。" />
+    <string id="AF_ILL_DIRECTOR_CONFIG_REQUIRED" text="请填写独立导演 API 的地址和模型，或关闭“使用独立导演 API”。" />
+      <string id="AF_ILL_DIRECTOR_FETCH" text="拉取导演模型列表" />
+    <string id="AF_ILL_DIRECTOR_FETCH_HINT" text="使用导演 API 地址和独立密钥拉取第一页模型列表。可在下方选择或手动填写模型 ID；选择前保留现有模型。" />
+    <string id="AF_ILL_DIRECTOR_DROPDOWN" text="选择导演模型" />
+    <string id="AF_ILL_DIRECTOR_DROPDOWN_HINT" text="拉取后选择导演模型；选择手动输入时保留上方模型名称。" />
+    <string id="AF_ILL_DIRECTOR_FETCH_PENDING" text="【导演】正在拉取模型列表，请稍候。" />
+    <string id="AF_ILL_DIRECTOR_FETCH_ENDPOINT" text="【导演】请先填写导演 API 地址。" />
+    <string id="AF_ILL_DIRECTOR_FETCH_STARTED" text="【导演】正在拉取可用模型……" />
+    <string id="AF_ILL_DIRECTOR_FETCH_FAILED" text="【导演】无法拉取模型列表，请检查地址和密钥后重试。" />
+    <string id="AF_ILL_DIRECTOR_FETCH_DONE" text="【导演】已拉取 {COUNT} 个模型，可选择模型或保留当前模型。" />
+    <string id="AF_ILL_DIRECTOR_FETCH_BUSY" text="【导演】后台任务繁忙，请稍后重试。" />
   </strings>
 </base>

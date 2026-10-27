@@ -8,167 +8,153 @@ namespace AnimusForge;
 internal static class Program
 {
     private static int checks;
-    private static readonly DateTime Now = new DateTime(2026, 10, 20, 10, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime Now = new DateTime(2026, 10, 22, 10, 0, 0, DateTimeKind.Utc);
     private static readonly PromptCacheText Text = new PromptCacheText { Policy = "edition-policy" };
     private static PromptCacheMessage M(string role, string text, int group = 0, string revision = "") => new PromptCacheMessage(role, text, group, revision);
     private static List<PromptCacheMessage> Input(string actor = "Alice", string state = "sitting", string question = "Q") => new List<PromptCacheMessage> {
         M("system", "GLOBAL\nPersona: " + actor + "\nCurrent action: " + state),
-        M("user", "Memory: " + actor), M("user", "The current time is noon\nYou are at the tavern\nStanding before you: Player\nDistance from you: 3m"),
-        M("user", "[Additional rules]\nRULE_KEEP\n[Knowledge recall]\nKNOWLEDGE_KEEP"),
-        M("assistant", "OLD_SPEECH"), M("user", "[AFEF] EXECUTED_FACT"), M("user", "RELAY_CONTEXT"), M("user", question) };
+        M("user", "Memory: " + actor), M("user", "[State]\nGOLD=1000\n[Knowledge]\nKNOWLEDGE_KEEP"),
+        M("user", "Buy prisoner for 2000.", 1), M("assistant", "Agreed. Pay 2000.", 1),
+        M("user", "[AFEF PLAYER_ACTION] Paid 2000."), M("user", "RELAY_CONTEXT"), M("user", question) };
     private static ConversationPromptCacheStore.Lease Begin(ConversationPromptCacheStore store, List<PromptCacheMessage> source,
         string actor = "Alice", string key = "scene:1", bool scene = true, string global = "GLOBAL", int budget = 100000,
         long generation = 1, DateTime? now = null) => store.Begin(generation, key, actor, source, global, Text, budget, 10, now ?? Now, sceneTranscript: scene);
     private static void Check(bool ok, string label) { if (!ok) throw new Exception("FAIL " + label); checks++; Console.WriteLine("PASS " + label); }
     private static string All(ConversationPromptCacheStore.Lease lease) => string.Join("\n", lease.Messages.Select(x => x.Content));
+    private static int Occurrences(string value, string part) => value.Split(new[] { part }, StringSplitOptions.None).Length - 1;
+    private static void ExactSource(ConversationPromptCacheStore.Lease lease, List<PromptCacheMessage> source, string label)
+    {
+        Check(lease.Messages.Count == source.Count && lease.Messages[0].Content.StartsWith(source[0].Content + "\n\n[AF_PROMPT_CACHE_V1]\n", StringComparison.Ordinal)
+            && lease.Messages.Skip(1).SequenceEqual(source.Skip(1)), label + " preserves every selected message, role and order");
+    }
     private static JObject Payload(ConversationPromptCacheStore.Lease lease, string model) => new JObject {
         ["model"] = model, ["max_tokens"] = 12000, ["stream"] = true,
         ["messages"] = new JArray(lease.Messages.Select(x => new JObject { ["role"] = x.Role, ["content"] = x.Content })) };
     private static void Main()
     {
         var store = new ConversationPromptCacheStore();
-        using var first = Begin(store, Input());
-        foreach (string content in new[] { "Persona: Alice", "Memory: Alice", "RULE_KEEP", "KNOWLEDGE_KEEP", "OLD_SPEECH", "[AFEF] EXECUTED_FACT", "RELAY_CONTEXT", "Distance from you: 3m", "Q" })
-            Check(All(first).Contains(content), "scene preserves " + content);
-        Check(first.Messages.Count == 2 && first.Messages[0].Content.StartsWith("GLOBAL"), "original scene algorithm uses fixed global system and one cue");
-        Check(first.Commit("ALICE_ACTUAL_REPLY", true, Now), "accepted scene response commits");
-        using var bob = Begin(store, Input("Bob", "standing", "BOB_Q"), actor: "Bob");
-        Check(bob.Warm && bob.PrefixAppend && first.Messages.SequenceEqual(bob.Messages.Take(first.Messages.Count)), "switching NPC extends the same scene transcript byte for byte");
-        Check(bob.Messages.Any(x => x.Role == "assistant" && x.Content == "ALICE_ACTUAL_REPLY"), "actual prior speaker reply retains assistant role");
-        Check(bob.Messages.Last().Content.Contains("Bob") && bob.Messages.Last().Content.Contains("BOB_Q"), "last cue selects only the current speaker");
-        Check(bob.Commit("BOB_ACTUAL_REPLY", true, Now.AddSeconds(1)), "second speaker commits");
-        using var alice = Begin(store, Input("Alice", "walking", "ALICE_Q2"));
-        Check(alice.Warm && alice.PrefixAppend && alice.Messages[0].Equals(first.Messages[0]), "speaker action change never rewrites scene system");
-        Check(alice.Messages.Last().Content.Contains("walking") && All(alice).Contains("BOB_ACTUAL_REPLY"), "latest state update and interleaved speaker retained");
-        alice.Dispose();
-        using (var failed = Begin(store, Input("Alice", "FAILED_STATE", "FAILED_INPUT"))) { }
-        using var afterFailure = Begin(store, Input("Alice", "FAILED_STATE", "RETRY_INPUT"));
-        Check(!All(afterFailure).Contains("FAILED_INPUT") && afterFailure.Messages.Last().Content.Contains("FAILED_STATE"), "failed build publishes neither cue nor dedup state");
-        using var newer = Begin(store, Input("Bob", "new", "NEWER"), actor: "Bob");
-        Check(!afterFailure.Commit("LATE_REPLY", true, Now), "superseded reply rejected by exact ticket");
-        Check(!newer.Commit("STALE_REPLY", false, Now), "stale scene reply rejected");
-        using var expired = Begin(store, Input(), now: Now.AddMinutes(11));
-        Check(!expired.Warm && !All(expired).Contains("BOB_ACTUAL_REPLY"), "TTL creates a complete clean snapshot");
-        expired.Commit("EXPIRED_REPLY", true, Now.AddMinutes(11));
-        using var generation = Begin(store, Input(), generation: 2);
-        Check(!generation.Warm, "save generation changes clear transcript");
+        var original = Input();
+        using var first = Begin(store, original);
+        ExactSource(first, original, "initial snapshot");
+        Check(first.Messages.Count(x => x.Role == "system") == 1 && Occurrences(All(first), "[AF_PROMPT_CACHE_V1]") == 1, "single system and cache policy marker");
+        Check(first.Commit("ACCEPTED_REPLY", true, Now), "accepted response commits exact request lease");
+        var changed = Input(state: "walking", question: "Q2");
+        changed[2] = M("user", "[State]\nGOLD=3000\n[Knowledge]\nKNOWLEDGE_KEEP");
+        // The actual history owner, not the transport cache, supplies accepted dialogue.
+        changed.Insert(changed.Count - 1, M("user", "Q", 2));
+        changed.Insert(changed.Count - 1, M("assistant", "ACCEPTED_REPLY", 2));
+        using var latest = Begin(store, changed);
+        ExactSource(latest, changed, "replacement snapshot");
+        Check(latest.Warm && !latest.PrefixAppend && latest.Reason == "snapshot_replace", "state replacement reports changed prefix instead of append-only claim");
+        Check(All(latest).Contains("GOLD=3000") && !All(latest).Contains("GOLD=1000") && !All(latest).Contains("sitting"), "old gold and old system action physically absent");
+        Check(Occurrences(All(latest), "KNOWLEDGE_KEEP") == 1 && All(latest).Contains("ACCEPTED_REPLY"), "unchanged knowledge once and selected accepted dialogue retained");
+        Check(!All(latest).Contains(PromptCacheCoreTexts.Get("Removed").Trim()), "no generated invalidation manifest");
+        latest.Commit("SECOND_REPLY", true, Now);
+        var failedSource = changed.ToList(); failedSource[2] = M("user", "FAILED_STATE"); failedSource[failedSource.Count - 1] = M("user", "FAILED_INPUT");
+        using (var failed = Begin(store, failedSource)) { }
+        using var retry = Begin(store, changed);
+        Check(retry.Warm && !All(retry).Contains("FAILED_INPUT") && !All(retry).Contains("FAILED_STATE"), "failed build neither publishes nor evicts committed snapshot");
+        using var newer = Begin(store, changed);
+        Check(!retry.Commit("LATE_REPLY", true, Now), "superseded ticket rejected");
+        Check(!newer.Commit("STALE_REPLY", false, Now), "stale source reply rejected");
+        using var bob = Begin(store, Input("Bob"), actor: "Bob");
+        Check(bob.Warm && !All(bob).Contains("Memory: Alice") && !All(bob).Contains("SECOND_REPLY") && !All(bob).Contains("Persona: Alice"), "scene speaker switch contains only current viewer context");
+        using var expired = Begin(store, changed, now: Now.AddMinutes(11));
+        Check(!expired.Warm, "TTL resets prefix diagnostics");
+        ExactSource(expired, changed, "TTL reset");
+        expired.Commit("TTL_REPLY", true, Now.AddMinutes(11));
+        using var generation = Begin(store, original, generation: 2);
+        Check(!generation.Warm, "generation change resets pool");
         int count = store.Count;
-        using var stale = Begin(store, Input(), generation: 1);
-        Check(stale.Reason == "stale_generation" && store.Count == count, "late old generation cannot clear new cache");
-        using var otherScene = Begin(store, Input(), key: "scene:2", generation: 2);
-        Check(!otherScene.Warm, "different scene is isolated");
-        using var provider = Begin(store, Input(), key: "scene:1:provider2", generation: 2);
-        Check(!provider.Warm, "different provider is isolated");
-
-        var native = new ConversationPromptCacheStore();
-        using var n1 = Begin(native, Input(), scene: false, global: "", key: "native:Alice");
-        Check(n1.Messages.Any(x => x.Role == "assistant" && x.Content == "OLD_SPEECH"), "first native request preserves source speech roles");
-        n1.Commit("NATIVE_REPLY", true, Now);
-        var nextNative = Input(state: "walking", question: "NATIVE_Q2");
-        nextNative[nextNative.Count - 2] = M("user", "NEW_RELAY_CONTEXT");
-        using var n2 = Begin(native, nextNative, scene: false, global: "", key: "native:Alice");
-        Check(n2.Warm && n2.PrefixAppend && n1.Messages.SequenceEqual(n2.Messages.Take(n1.Messages.Count)), "original native frozen prefix survives action changes without custom rule");
-        Check(n2.Messages.Last().Content.Contains("walking") && n2.Messages.Last().Content.Contains("NEW_RELAY_CONTEXT"), "native changed system and suffix facts are appended");
-        var noRule = new ConversationPromptCacheStore();
-        using var fallbackA = Begin(noRule, Input(), global: ""); fallbackA.Commit("A_PRIVATE", true, Now);
-        using var fallbackB = Begin(noRule, Input("Bob"), actor: "Bob", global: "");
-        Check(!fallbackB.Warm && !All(fallbackB).Contains("A_PRIVATE"), "original no-global-rule fallback keeps NPC systems separate");
-
-        var resetStore = new ConversationPromptCacheStore();
-        using var seed = Begin(resetStore, Input(), budget: 5000); seed.Commit(new string('R', 3000), true, Now);
-        using var reset = Begin(resetStore, Input(question: new string('Q', 2500)), budget: 5000);
-        Check(reset.Reason == "budget_reset" && All(reset).Contains("Persona: Alice") && All(reset).Contains("RULE_KEEP"), "budget rebuild regenerates full snapshot before deduplication");
-        using var oversized = Begin(resetStore, Input(question: new string('L', 10000)), budget: 5000);
-        Check(oversized.Reason == "snapshot_over_budget" && oversized.Messages.Last().Content.Length == 10000, "oversized required request continues unchanged");
-        Check(!oversized.Commit("NO_CACHE", true, Now), "oversized snapshot is not retained");
-        for (int i = 0; i < 40; i++) { using var item = Begin(store, Input(), key: "scope:" + i, generation: 2); item.Commit("ok", true, Now.AddSeconds(i)); }
-        Check(store.Count <= 32, "pool is bounded at request time");
+        using var stale = Begin(store, original, generation: 1);
+        Check(stale.Reason == "stale_generation" && store.Count == count, "old generation cannot clear new cache");
+        using var otherScene = Begin(store, original, key: "scene:2", generation: 2);
+        using var provider = Begin(store, original, key: "scene:1:provider2", generation: 2);
+        Check(!otherScene.Warm && !provider.Warm, "scene and provider scopes isolated");
+        var revisionStore = new ConversationPromptCacheStore();
+        using var revisionFirst = Begin(revisionStore, original); revisionFirst.Commit("OLD", true, Now);
+        var compressed = Input(); compressed[0] = M("system", compressed[0].Content, revision: "compressed-v2");
+        compressed.RemoveRange(3, 2);
+        using var revisionNext = Begin(revisionStore, compressed);
+        Check(revisionNext.Reason == "history_rebuilt" && !All(revisionNext).Contains("Agreed. Pay 2000."), "compression or edit cannot resurrect removed history from transport cache");
+        ExactSource(revisionNext, compressed, "compressed owner selection");
+        var capacity = new ConversationPromptCacheStore();
+        using var small = Begin(capacity, original, budget: 5000);
+        Check(small.Commit(new string('R', 10000), true, Now), "unretained reply length does not evict current snapshot");
+        var largeInput = Input(question: new string('L', 10000));
+        using var large = Begin(capacity, largeInput, budget: 5000);
+        Check(large.Reason == "snapshot_over_budget" && large.Messages.SequenceEqual(largeInput) && !large.Commit("reply", true, Now), "retention cap falls back losslessly without dropping selected messages");
+        for (int i = 0; i < 40; i++) { using var item = Begin(store, original, key: "scope:" + i, generation: 2); item.Commit("ok", true, Now.AddSeconds(i)); }
+        Check(store.Count <= 32, "request-frequency pool remains bounded");
 
         foreach (string model in new[] { "gemini-test", "deepseek-test", "claude-test" })
         {
-            var p1 = JObject.Parse(LlmApiCompat.PrepareChatRequestJson("https://relay.test/v1/chat/completions", Payload(first, model)));
-            var p2 = JObject.Parse(LlmApiCompat.PrepareChatRequestJson("https://relay.test/v1/chat/completions", Payload(bob, model)));
-            Check(p1["messages"].Children().Select((m, i) => JToken.DeepEquals(m["role"], p2["messages"][i]["role"])
-                && JToken.DeepEquals(m["content"], p2["messages"][i]["content"])).All(x => x), "final wire prefix retained for " + model);
-            Check(p2["stream_options"]?["include_usage"]?.Value<bool>() == true, "stream usage requested for " + model);
-            if (model.StartsWith("gemini")) Check(!p2.ToString().Contains("cache_control") && p2["messages"].Count() == 4, "Gemini original alternating transcript has no foreign cache controls");
+            var wire = JObject.Parse(LlmApiCompat.PrepareChatRequestJson("https://relay.test/v1/chat/completions", Payload(latest, model)));
+            string serialized = wire.ToString();
+            Check(!serialized.Contains("GOLD=1000") && serialized.Contains("GOLD=3000") && Occurrences(serialized, "KNOWLEDGE_KEEP") == 1, "final wire latest state exactly once for " + model);
+            Check(serialized.Contains("Agreed. Pay 2000.") && serialized.Contains("Paid 2000.") && serialized.Contains("ACCEPTED_REPLY"), "final wire speech and AFEF retained for " + model);
+            Check(wire["stream_options"]?["include_usage"]?.Value<bool>() == true, "stream usage requested for " + model);
+            if (model.StartsWith("gemini")) Check(!serialized.Contains("cache_control"), "Gemini gets no foreign cache-control directives");
         }
-        var dedup = new ConversationSessionCache("Alice", 1);
-        string baseState = "[State]\nALPHA\nBETA\nGAMMA\nDELTA";
-        DynamicBlockDeduplicator.ApplySections(dedup, baseState, "native");
-        Check(DynamicBlockDeduplicator.ApplySections(dedup, "[State]\nDELTA\nGAMMA\nBETA\nALPHA", "native") == DynamicBlockDeduplicator.NoChangeMarker, "original line-set dedup ignores reranking order in EN headings");
-        string delta = DynamicBlockDeduplicator.ApplySections(dedup, "[State]\nALPHA\nBETA\nGAMMA\nEPSILON", "native");
-        Check(delta.Contains("DELTA") && delta.Contains("EPSILON"), "state delta explicitly invalidates removed lines");
-        string multiBase = "[A]\nONE\n[B]\nTWO\n[C]\nTHREE";
-        DynamicBlockDeduplicator.ApplySections(dedup, multiBase, "scene");
-        Check(DynamicBlockDeduplicator.ApplySections(dedup, "[B]\nTWO", "scene") != DynamicBlockDeduplicator.NoChangeMarker
-            && DynamicBlockDeduplicator.ApplySections(dedup, "", "scene") != DynamicBlockDeduplicator.NoChangeMarker,
-            "vanished multi-section and empty block emit removals and clear state");
-        Check(DynamicBlockDeduplicator.ApplySections(dedup, multiBase, "scene").Contains("THREE"),
-            "cleared state resends full sections after expiry");
 
-        ConversationPromptCache.Clear();
-        var source = Input().Select(x => (object)new ConversationPromptMessage(x.Role, x.Content)).ToList();
-        using var adapterA = ConversationPromptCache.Begin(source, "scene", 1, 5, "Alice"); adapterA.Accept("ADAPTER_REPLY");
-        var sourceB = Input("Bob").Select(x => (object)new ConversationPromptMessage(x.Role, x.Content)).ToList();
-        using var adapterB = ConversationPromptCache.Begin(sourceB, "scene", 1, 5, "Bob");
-        Check(Newtonsoft.Json.JsonConvert.SerializeObject(adapterB.Messages).Contains("ADAPTER_REPLY"), "production adapter shares scene transcript across actors");
-        using var aux = ConversationPromptCache.Begin(sourceB, "scene_auxiliary", 1, 5, "Bob");
-        Check(!Newtonsoft.Json.JsonConvert.SerializeObject(aux.Messages).Contains("ADAPTER_REPLY"), "auxiliary remains separate from main transcript");
-        using var nativeAdapter = ConversationPromptCache.Begin(sourceB, "native", 1, 5, "Bob");
-        Check(!Newtonsoft.Json.JsonConvert.SerializeObject(nativeAdapter.Messages).Contains("ADAPTER_REPLY"), "native remains separate from scene transcript");
-        using var enabled = ConversationPromptCache.Begin(source, "scene", 1, 5, "Alice");
-        Check(Newtonsoft.Json.JsonConvert.SerializeObject(enabled.Messages).Contains("[AF_PROMPT_CACHE_V1]"), "cache is built in without a settings switch");
-        Check(PromptCacheSettings.MaxTranscriptCharacters == 150000 && PromptCacheSettings.Instance.SessionTtlMinutes == 10, "built-in cache retains original capacity and lifetime defaults");
-        DuelSettings.Settings.ConversationContextInputChars = 20000;
-        var huge = new List<object> { new ConversationPromptMessage("system", "GLOBAL"), new ConversationPromptMessage("user", new string('X', 21000), 1), new ConversationPromptMessage("assistant", "DROP", 1), new ConversationPromptMessage("user", "KEEP") };
-        using var overTarget = ConversationPromptCache.Begin(huge, "native", 1, 9, "Alice");
-        string hugeJson = Newtonsoft.Json.JsonConvert.SerializeObject(overTarget.Messages);
-        Check(hugeJson.Contains(new string('X', 21000)) && hugeJson.Contains("DROP") && hugeJson.Contains("KEEP") && huge.Count == 4,
-            "character target overflow keeps every selected history message and role");
-        Check(hugeJson.Contains("[AF_PROMPT_CACHE_V1]"), "character target does not bypass stable-prefix caching");
-        overTarget.Accept("CHARACTER_OVER_TARGET_REPLY");
-        using var hugeNext = ConversationPromptCache.Begin(huge, "native", 1, 9, "Alice");
-        Check(Newtonsoft.Json.JsonConvert.SerializeObject(hugeNext.Messages).Contains("CHARACTER_OVER_TARGET_REPLY"),
-            "character-over-target second turn reuses accepted cached reply");
-        DuelSettings.Settings.ConversationContextInputChars = 100000;
-        DuelSettings.Settings.MainApiMaxTokens = 64000;
-        var purchase = new List<object> {
-            new ConversationPromptMessage("system", new string('规', 50000)),
-            new ConversationPromptMessage("user", "[State]\nDEDUPE_UNCHANGED_KEEP\nDEDUPE_OLD_STATE"),
-            new ConversationPromptMessage("user", "Buy the noble prisoner Leosios for 2000.", 1),
-            new ConversationPromptMessage("assistant", "Agreed. Pay 2000 and take Leosios.", 1),
-            new ConversationPromptMessage("user", "[AFEF PLAYER_ACTION] Paid 2000."),
-            new ConversationPromptMessage("user", "Here you are.") };
-        foreach (string channel in new[] { "native", "scene", "courier" })
+        foreach (string channel in new[] { "native", "scene", "courier", "scene_auxiliary" })
         {
-            using var payment = ConversationPromptCache.Begin(purchase, channel, 1, 10, "Alice");
-            string paymentJson = Newtonsoft.Json.JsonConvert.SerializeObject(payment.Messages);
-            Check(paymentJson.Contains("Buy the noble prisoner Leosios") && paymentJson.Contains("Agreed. Pay 2000")
-                && paymentJson.Contains("Paid 2000") && paymentJson.Contains("Here you are."),
-                channel + " keeps the agreed prisoner deal above input/output token target");
-            Check(paymentJson.Contains("[AF_PROMPT_CACHE_V1]"), channel + " reuses cache regardless of final input/output token target");
-            payment.Accept("Accepted without losing the deal.");
-            var followup = purchase.Take(purchase.Count - 1).Concat(new object[] { new ConversationPromptMessage("user", "Continue the deal.") }).ToList();
-            followup[1] = new ConversationPromptMessage("user", "[State]\nDEDUPE_UNCHANGED_KEEP\nDEDUPE_NEW_STATE");
-            using var paymentNext = ConversationPromptCache.Begin(followup, channel, 1, 10, "Alice");
-            var firstWire = JArray.Parse(paymentJson);
-            var secondWire = JArray.Parse(Newtonsoft.Json.JsonConvert.SerializeObject(paymentNext.Messages));
-            Check(JToken.DeepEquals(firstWire[0], secondWire[0]) && secondWire.ToString().Contains("Accepted without losing the deal.")
-                && secondWire.ToString().Split(new[] { new string('规', 50000) }, StringSplitOptions.None).Length == 2,
-                channel + " second turn keeps identical single system prefix and prior accepted reply above final target");
-            Check(firstWire.Select((part, i) => JToken.DeepEquals(part, secondWire[i])).All(x => x),
-                channel + " retains the complete sent prefix byte-for-byte above final target");
-            string nextTail = secondWire.Last["content"].Value<string>();
-            Check(!nextTail.Contains("DEDUPE_UNCHANGED_KEEP") && nextTail.Contains("DEDUPE_NEW_STATE")
-                && nextTail.Contains("DEDUPE_OLD_STATE") && nextTail.Contains("Continue the deal."),
-                channel + " deduplicates unchanged state and appends changed state plus removal and current input");
+            ConversationPromptCache.Clear();
+            DuelSettings.Settings.ConversationContextInputChars = 20000;
+            DuelSettings.Settings.MainApiMaxTokens = 64000;
+            string longBackground = "BACKGROUND_BEGIN_" + new string('B', 5400) + "_END";
+            var selected = new List<object> {
+                new ConversationPromptMessage("system", "GLOBAL\n" + new string('规', 50000)),
+                new ConversationPromptMessage("user", "[State]\nGOLD=1000\nSTALE_SECTION\n[Background]\n" + longBackground),
+                new ConversationPromptMessage("user", "I said GOLD=1000, [No longer valid this turn], 【本轮失效】 and [State] literally.", 1),
+                new ConversationPromptMessage("assistant", "Agreed. Pay 2000 and take the prisoner.", 1),
+                new ConversationPromptMessage("user", "[AFEF PLAYER_ACTION] Paid 2000."),
+                new ConversationPromptMessage("user", "Here you are.") };
+            string system = ((ConversationPromptMessage)selected[0]).content;
+            using var initial = ConversationPromptCache.Begin(selected, channel, 1, 10, "Alice");
+            initial.Accept("PAYMENT_REPLY");
+            string stableSystem = JArray.Parse(Newtonsoft.Json.JsonConvert.SerializeObject(initial.Messages))[0]["content"].Value<string>();
+            long lastChars = 0;
+            for (int turn = 2; turn <= 8; turn++)
+            {
+                selected[1] = new ConversationPromptMessage("user", "[State]\nGOLD=" + (turn * 1000) + "\n[Background]\n" + longBackground);
+                selected[selected.Count - 1] = new ConversationPromptMessage("user", "Continue " + turn);
+                using var request = ConversationPromptCache.Begin(selected, channel, 1, 10, "Alice");
+                var wire = JArray.Parse(Newtonsoft.Json.JsonConvert.SerializeObject(request.Messages));
+                string currentState = wire[1]["content"].Value<string>();
+                Check(!currentState.Contains("GOLD=1000") && !currentState.Contains("STALE_SECTION")
+                    && currentState.Contains("GOLD=" + (turn * 1000)) && Occurrences(wire.ToString(), longBackground) == 1,
+                    channel + " turn " + turn + " removes obsolete state and carries one complete background");
+                Check(wire.Count == selected.Count && wire.Skip(1).Select((x, i) => x["role"].Value<string>() == ((ConversationPromptMessage)selected[i+1]).role
+                    && x["content"].Value<string>() == ((ConversationPromptMessage)selected[i+1]).content).All(x => x),
+                    channel + " turn " + turn + " preserves selected history, quoted markers, AFEF and input byte for byte");
+                Check(wire[0]["content"].Value<string>() == stableSystem && wire.Count(x => x["role"].Value<string>() == "system") == 1,
+                    channel + " turn " + turn + " retains a single identical system above final budget target");
+                long chars = request.Messages.Sum(x => ((string)x.GetType().GetProperty("content").GetValue(x)).Length);
+                Check(lastChars == 0 || chars == lastChars, channel + " turn " + turn + " input length stays flat instead of accumulating snapshots");
+                lastChars = chars;
+                request.Accept("reply " + turn);
+            }
+            selected[1] = new ConversationPromptMessage("user", "");
+            using var empty = ConversationPromptCache.Begin(selected, channel, 1, 10, "Alice");
+            Check(!Newtonsoft.Json.JsonConvert.SerializeObject(empty.Messages).Contains(longBackground), channel + " empty authoritative state removes old background without invalidation text");
         }
         DuelSettings.Settings.MainApiMaxTokens = 12000;
-        var required = new List<object> { new ConversationPromptMessage("system", new string('S', 30000)), new ConversationPromptMessage("user", "KEEP") };
-        using var continuing = ConversationPromptCache.Begin(required, "native", 1, 9, "Alice");
-        Check(Newtonsoft.Json.JsonConvert.SerializeObject(continuing.Messages).Contains(new string('S', 30000)),
-            "mandatory floor continues over local target without an error");
+        ConversationPromptCache.Clear();
+        List<object> ActorRequest(string actor) => new List<object> {
+            new ConversationPromptMessage("system", "GLOBAL FIXED_SCENE_SYSTEM"),
+            new ConversationPromptMessage("user", "PROFILE_" + actor),
+            new ConversationPromptMessage("user", "PRIVATE_" + actor + " CURRENT_INPUT") };
+        ConversationPromptCacheStore.Lease Lease(ConversationPromptCache.Request request) =>
+            (ConversationPromptCacheStore.Lease)typeof(ConversationPromptCache.Request).GetField("_lease", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(request);
+        using var actorAlice = ConversationPromptCache.Begin(ActorRequest("Alice"), "scene", 1, 90, "Alice");
+        actorAlice.Accept("Alice reply");
+        using var actorBob = ConversationPromptCache.Begin(ActorRequest("Bob"), "scene", 1, 90, "Bob");
+        Check(!Lease(actorBob).Warm, "scene adapter isolates each actor lease instead of overwriting another actor snapshot");
+        actorBob.Accept("Bob reply");
+        using var aliceAgain = ConversationPromptCache.Begin(ActorRequest("Alice"), "scene", 1, 90, "Alice");
+        Check(Lease(aliceAgain).Warm && Lease(aliceAgain).PrefixAppend, "scene adapter retains actor prefix across intervening speakers");
+        Check(!Newtonsoft.Json.JsonConvert.SerializeObject(aliceAgain.Messages).Contains("Bob"), "scene adapter never shares another actor private prompt");
         Console.WriteLine("Checks=" + checks);
     }
 }

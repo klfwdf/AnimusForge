@@ -98,6 +98,26 @@ namespace AnimusForge.Illustrator.Core
             return (width / a) + ":" + (height / a);
         }
 
+        internal static JObject BuildImageConfig(string model, string size, bool chatCompatible)
+        {
+            string name = (model ?? string.Empty).ToLowerInvariant();
+            if (chatCompatible && name.IndexOf("gemini", StringComparison.Ordinal) < 0) return null;
+            var config = new JObject();
+            string ratio = ExactAspectRatio(size);
+            if (ratio != null && SupportedRatios.Contains(ratio))
+                config[chatCompatible ? "aspect_ratio" : "aspectRatio"] = ratio;
+            // 2.5 image and 3.1 Flash Lite image do not offer higher output tiers.
+            bool variableResolution = (name.Contains("gemini-3") || name.Contains("gemini-nano-banana")) && !name.Contains("flash-lite");
+            string[] dimensions = (size ?? string.Empty).Split('x');
+            if (variableResolution && dimensions.Length == 2 && int.TryParse(dimensions[0], out int width)
+                && int.TryParse(dimensions[1], out int height) && width > 0 && height > 0)
+            {
+                int longest = Math.Max(width, height);
+                config[chatCompatible ? "image_size" : "imageSize"] = longest <= 1440 ? "1K" : longest <= 2560 ? "2K" : "4K";
+            }
+            return config.Count > 0 ? config : null;
+        }
+
         internal static JObject ConvertPayload(JObject chatPayload, string size)
         {
             var messages = chatPayload["messages"] as JArray;
@@ -124,8 +144,8 @@ namespace AnimusForge.Illustrator.Core
             }
             if (parts.Count == 0) throw new InvalidOperationException("The native Gemini image request is empty. No request was sent.");
             var config = new JObject { ["responseModalities"] = new JArray("TEXT", "IMAGE") };
-            string ratio = ExactAspectRatio(size);
-            if (ratio != null && SupportedRatios.Contains(ratio)) config["imageConfig"] = new JObject { ["aspectRatio"] = ratio };
+            var imageConfig = BuildImageConfig((string)chatPayload["model"], size, false);
+            if (imageConfig != null) config["imageConfig"] = imageConfig;
             return new JObject { ["contents"] = new JArray(new JObject { ["role"] = "user", ["parts"] = parts }), ["generationConfig"] = config };
         }
 

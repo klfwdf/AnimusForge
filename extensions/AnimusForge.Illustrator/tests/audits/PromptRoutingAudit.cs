@@ -153,12 +153,12 @@ public static class PromptRoutingAudit
             foreach (string output in new[] { valid, "近景画面", "" })
             {
                 string result = (string)Call(director, "ResolveDirectorOutput", output, plan, null);
-                Check(result.Contains("双人动态交互") == (mode == modes[2]), mode + " composition routing: " + output.Length);
+                Check(string.IsNullOrWhiteSpace(output) ? result == "" : result.Contains(output), mode + " preserves supplied composition or returns no body");
                 Check(!result.Contains("NARRATIVE_SENTINEL"), mode + " narrative stays with director: " + output.Length);
                 if (output == valid)
                     Check(result.Contains("FACT_SENTINEL") && !result.Contains("META_SENTINEL"), mode + " successful output keeps visual facts but excludes open suggestions");
                 else
-                    Check(result.Contains("FACT_SENTINEL"), mode + " local fallback retains identity facts: " + output.Length);
+                    Check(string.IsNullOrWhiteSpace(output) ? result == "" : result.Contains("FACT_SENTINEL"), mode + " no silent replacement for empty direction");
             }
             if (mode == modes[0])
             {
@@ -359,9 +359,9 @@ public static class PromptRoutingAudit
             "玩家背着长弓，盾牌挂在马鞍侧面。",
             "马背上的骑士手持圆盾缓缓前行。",
             "A guard stands behind the lord, holding a round shield in front of him." })
-            Check(!(bool)Call(director, "ViolatesShieldVisibility", legitimate, anyPlan), "spatial or idiomatic shield wording is accepted: " + legitimate);
+            Check(((string)Call(director, "ResolveDirectorOutput", legitimate, anyPlan, null)).Contains(legitimate), "spatial or idiomatic wording is retained: " + legitimate);
         foreach (string backShield in new[] { "他背着一面圆盾走向城门。", "鸢盾背在身后，随步伐轻晃。", "身后背负着一面鸢盾。", "a round shield slung across his back" })
-            Check((bool)Call(director, "ViolatesShieldVisibility", backShield, anyPlan), "a shield carried on the back is still rejected: " + backShield);
+            Check(((string)Call(director, "ResolveDirectorOutput", backShield, anyPlan, null)).Contains(backShield), "shield description is no longer a code rejection: " + backShield);
 
         string metaArt = "【已用过的场景母题·须避开】：MOTIF_SENTINEL\n【重绘变体 · 第 3 次绘制】REDRAW_SENTINEL\n【构图自由创作】：DIRECTOR_ONLY_SENTINEL";
         foreach (string mode in modes)
@@ -370,8 +370,8 @@ public static class PromptRoutingAudit
             foreach (string unusable in new[] { "", "近景画面" })
             {
                 string fallback = (string)Call(director, "ResolveDirectorOutput", unusable, metaPlan, null);
-                Check(fallback.Contains("FACT_SENTINEL") && !fallback.Contains("MOTIF_SENTINEL") && !fallback.Contains("REDRAW_SENTINEL") && !fallback.Contains("DIRECTOR_ONLY_SENTINEL"),
-                    mode + " local fallback keeps facts and drops director-only art direction: " + unusable.Length);
+                Check((unusable.Length == 0 ? fallback == "" : fallback.Contains(unusable) && fallback.Contains("FACT_SENTINEL")) && !fallback.Contains("MOTIF_SENTINEL") && !fallback.Contains("REDRAW_SENTINEL") && !fallback.Contains("DIRECTOR_ONLY_SENTINEL"),
+                    mode + " empty direction stays empty; nonempty direction keeps facts without director-only rules: " + unusable.Length);
             }
             string local = (string)Call(director, "BuildLocalSceneDirection", Activator.CreateInstance(planType, new object[] { mode, facts, "", "" }));
             Check(!local.Contains("85mm") && !local.Contains("不把") && !local.Contains("不凭空") && !local.Contains("至少两到三组") && !local.Contains("环境色面向后延伸"),

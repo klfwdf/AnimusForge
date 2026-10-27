@@ -149,9 +149,9 @@ internal static class TerminalSettingsChecks
                     (language == "简体中文" ? "事件驱动的 NPC 人设演变" : "Event-driven NPC persona evolution"), "persona evolution title follows UI language");
                 foreach (string id in new[] { "ScreenNotifications", "DiagnosticsEnabled", "EnemyInterruptRadiusMeters" })
                     Check(defs.ContainsKey(id) && !visible.ContainsKey(id), "hidden UI setting still exists for persistence " + id);
-                foreach (string id in new[] { "ConversationPromptCacheEnabled", "ConversationPromptCacheMaxChars", "ConversationPromptCacheTtlMinutes", "TownAmbientAiShowUsageNotifications", "Illustrator.UseExactEndpointUrl", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.DirectorModelDropdown", "Illustrator.FetchDirectorModelList" })
+                foreach (string id in new[] { "ConversationPromptCacheEnabled", "ConversationPromptCacheMaxChars", "ConversationPromptCacheTtlMinutes", "TownAmbientAiShowUsageNotifications", "Illustrator.UseExactEndpointUrl" })
                     Check(!defs.ContainsKey(id) && !visible.ContainsKey(id), "retired API setting absent from metadata and frontend " + id);
-                foreach (string id in new[] { "Illustrator.ApiBaseUrl", "Illustrator.ApiKey", "Illustrator.ModelName", "Illustrator.FetchModelList" })
+                foreach (string id in new[] { "Illustrator.ApiBaseUrl", "Illustrator.ApiKey", "Illustrator.ModelName", "Illustrator.FetchModelList", "Illustrator.UseCustomDirectorApi", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.DirectorModelDropdown", "Illustrator.FetchDirectorModelList" })
                 {
                     Check(visible.ContainsKey(id), "image API visible " + id);
                     string ai = (string)product.GetType("AnimusForge.TerminalCategories", true).GetField("Ai", S).GetValue(null);
@@ -167,12 +167,14 @@ internal static class TerminalSettingsChecks
                 Type mcmVisibility = product.GetType("AnimusForge.AnimusForgeMcmVisibility", true);
                 foreach (var pair in imageDefinitions)
                 {
-                    Check(visible.ContainsKey(pair.Key) && (string)Property(pair.Value, "TabCategory") == imageApiCategory
-                        && (string)Property(pair.Value, "GroupName") == imageApiGroup, "all image settings visible in one image API group: " + pair.Key);
                     PropertyInfo property = imageOwner.GetProperty(pair.Key.Substring("Illustrator.".Length));
                     object groupAttribute = property.GetCustomAttributes(true).Single(a => a.GetType().Name == "SettingPropertyGroupAttribute");
                     string rawGroup = (string)Property(groupAttribute, "GroupName");
-                    Check(rawGroup.Contains("AF_ILL_GROUP_IMAGE_API") && (bool)Call(mcmVisibility,"IsVisibleProperty","AnimusForge_Illustrator_v1",property.Name,rawGroup),"native MCM image API admission: " + property.Name);
+                    bool directorGroup = rawGroup.Contains("AF_ILL_GROUP_DIRECTOR_API");
+                    string expectedGroup = directorGroup ? (string)Property(defs["Illustrator.DirectorApiBaseUrl"], "GroupName") : imageApiGroup;
+                    Check(visible.ContainsKey(pair.Key) && (string)Property(pair.Value, "TabCategory") == imageApiCategory
+                        && (string)Property(pair.Value, "GroupName") == expectedGroup, "Illustrator setting in its own API group: " + pair.Key);
+                    Check((rawGroup.Contains("AF_ILL_GROUP_IMAGE_API") || rawGroup.Contains("AF_ILL_GROUP_DIRECTOR_API")) && (bool)Call(mcmVisibility,"IsVisibleProperty","AnimusForge_Illustrator_v1",property.Name,rawGroup),"native MCM image API admission: " + property.Name);
                 }
                 Check(visible.Where(pair => pair.Key.StartsWith("Coup.")).Select(pair => Property(pair.Value, "GroupName")).Distinct().Count() == 1, "one armed coup item");
                 Check(visible.Where(pair => !pair.Key.StartsWith("Illustrator.", StringComparison.Ordinal) && (pair.Key.Contains("WeeklyReport") || pair.Key.Contains("WorldBulletin"))).Select(pair => Property(pair.Value, "GroupName")).Distinct().Count() == 1, "one weekly and bulletin item, image options belong to image API");

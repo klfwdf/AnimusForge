@@ -1,3 +1,14 @@
+<a id="publish-runtime-fixes-20261027"></a>
+### 场景固定前缀与本轮API/社交修复发布（2026-10-27，SOURCE_AND_OFFLINE_VERIFIED）
+
+- 场景普通、被动、多人接力、即时及紧凑反应统一使用公共固定system；当前NPC稳定资料在已选历史前，动作、任务、规则及运行状态在历史后按最新版替换。缓存按actor隔离，切换NPC保留各自当前前缀；规则/人物资料编辑生效，历史编辑或压缩不恢复旧快照。保留原历史/AFEF/角色/当前输入，避免旧追加方案重复发送失效状态。CN/EN三组新提示键沿现有reader和内容选版接线。
+- 同步已验证的导演门禁收缩、独立导演API分组/模型拉取、生图设置整理、OpenRouter专用images路由、Gemini原生imageSize与Chat extra_body.google.image_config尺寸映射；API凭据沿原设置owner，不硬编码。另含口头外交威胁重复刷新修复和配偶/家族/同伴结识资格排除；第三方战争误停战未复现，未声称修复该反馈。
+- 生产入口：SceneConversationSessionRuntime五条场景请求 → ShoutBehavior.BuildStableSceneMessagesForNpc → SceneHistoryMessageAssemblyOwner.Build → ConversationPromptCache.Begin/ConversationPromptCacheStore → LlmApiCompat。公共system由MainPromptMessageAssemblyOwner.BuildSceneSharedSystemPrompt生成，人物资料排除当前动作。生图路由位于extensions/AnimusForge.Illustrator/src/Core/UniversalOpenAiImageClient.cs及GeminiNativeImageProtocol.cs；社交资格位于ProactiveCandidateQualification.TryBuildFriendshipNeedSnapshot。
+- 在远端main基线上独立组装并重编译：BannerlordApi=1.3/1.4均零错误；CN/EN缓存各151项、双API×CN/EN实际DLL各47项、人物结识专项10项通过。actual-DLL验证覆盖最终Gemini/DeepSeek/Claude请求体、跨NPC公共system一致、人物资料前置、最新状态、历史引用/事实及资料/规则编辑。导演/生图改动复用本会话既有专项及真实接口证据。本轮无新的付费请求，未验证游戏现场和中转实际缓存token/计费；按用户要求未执行哈希或全仓/Stage门禁。
+- 运行频率仅请求时线性组装，沿现有有界缓存；不新增Tick IO/反射扫描/自动模型请求。本提交从远端main提取具名产品差异，不带入本地累计历史、私密handoff、测试日志、未授权1.5/接力/其他脏改动，也不强推或改写远端历史。EN游戏安装已完成本地部署，但此源码发布不执行新部署/打包。
+
+---
+
 <a id="source-tracking-worldbooks-20261026"></a>
 ## 原版源码目录与双语布匿世界书跟踪（2026-10-26，SOURCE_VERIFIED / LIVE_NOT_RUN）
 

@@ -1,3 +1,9 @@
+## Scene fixed-prefix repair (2026-10-27)
+
+Scene requests now place one shared public system first, then the current NPC's stable persona, selected chronological history/facts, and latest-only task/action/runtime context. Scene leases are keyed by actor; switching speakers does not overwrite another actor's retained prefix. Native/courier entry signatures and history owners remain unchanged. Profile/rule edits refresh the affected content; old dynamic snapshots are not replayed.
+
+`scene_prefix_probe.py --api 1.3|1.4 --edition CN|EN --candidate <DLL> --run-root <fresh artifacts directory>` runs the compiled production composers, cache store and final provider serialization. It covers cross-NPC identical system, stable persona ordering, current-state replacement, literal placeholders, edited history/profile/rules and Gemini/DeepSeek/Claude wire shapes; it also retains the existing four-channel latest-state regression. This probe projects current resources without hash gates, makes no network requests and does not deploy. Actual provider cache tokens and billing require a separate live check.
+
 # Conversation prompt cache verification
 
 `ConversationCacheTests.csproj` links the production cache store, request adapter,
@@ -16,24 +22,36 @@ The last command runs the existing 13 protocol regression groups against the rea
 production sources and catalogs, independently of the old historical source-hash
 projection runner. It does not edit or bypass that runner's validation.
 
-Covered: complete message sections and original roles/order, AFEF/memory/relay
-retention, removal manifests, accepted/failed/cancelled/superseded requests,
-scope/provider/generation isolation, TTL, bounded retained storage, whole-snapshot
-budget reset and lossless fallback, native/auxiliary isolation, private actor
-isolation with a common public prefix, and final Gemini/Anthropic wire shape.
+Covered: authoritative current messages with original roles and order, latest state
+replacement, one copy of unchanged background, vanished/empty state, AFEF and quoted
+old values, failed/stale/superseded requests, TTL/provider/generation scopes,
+compression/edit without resurrecting removed history, bounded retained storage,
+lossless oversized fallback and final Gemini/Anthropic wire behavior.
 
-Final character/token targets govern diagnostics only. Above-target
-requests preserve all history already selected by the shared recent-window and intraday
-summary pipeline, including a just-agreed prisoner purchase followed by payment with a
-50,000-character system prompt and a 64,000-token output allowance. These targets never
-bypass prefix caching: consecutive requests retain the same single system prefix and
-accepted reply. The separate built-in 150000-character retained-storage cap still rebuilds
-or falls back to the complete selected request without removing dialogue groups.
+The cache no longer replays previously optimized requests or appends dynamic-state
+invalidation manifests. The selected history owner supplies accepted dialogue and
+compressed memory for every request. A reply absent from that selected context is
+not resurrected by the transport cache. Character/token targets remain diagnostics;
+the separate 150000-character retained-storage cap never removes selected history.
 
-The runtime deliberately does not put different NPCs' private context into a
-shared transcript. Scene visibility and authoritative history still select the
-public dialogue each NPC can receive. Characters share the stable public prefix;
-each character's accepted transcript appends independently.
+Ordering is system, selected chronological speech/facts, current recall/runtime/rules,
+then current input. Native/scene use the same scene owner; both courier directions
+use the courier owner. Stable history precedes variable state. State replacement can
+break the prefix at its changed position; cache fingerprints are diagnostics, not
+provider usage or a guarantee of billed cache hits. Changed system text also replaces
+its old version; unchanged system text is reused byte for byte.
+
+The actual-DLL probe runs production channel owners, store and final wire serialization
+without starting a game, HTTP request or save. Run on each API and content edition:
+
+```powershell
+python -B tests/modules/AF.Module.Prompt/ConversationCache/latest_state_probe.py --api 1.3 --edition CN --candidate bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll --run-root artifacts/latest-state-13-cn
+```
+
+Use a new run directory for each invocation and repeat for 1.3/1.4 and CN/EN.
+The unrelated legacy source-projection runners currently fail at a PolicySystem
+review hash and missing fixture dependencies; their failures remain recorded.
+The focused actual-DLL probe tests this task without relaxing those old gates.
 
 For actual compiled MCM settings, terminal delegates and disk/JSON round trips,
 use a new workspace output directory for each invocation:

@@ -59,11 +59,11 @@ internal static class ConversationPromptCache
             string provider = auxiliary
                 ? settings.AuxiliaryApiUrl + "\n" + settings.GetEffectiveAuxiliaryModelName()
                 : settings.ApiUrl + "\n" + settings.GetEffectiveMainModelName();
-            // Reuse the submodule's single-scene transcript across successive speakers.
-            // Native and auxiliary conversations retain their own actor-scoped sessions.
+            // The public system text is byte-identical across scene speakers, while
+            // leases and persona/history snapshots remain isolated per viewer.
             bool sceneTranscript = channel == "scene";
             string key = channel + "\n" + sessionId.ToString(CultureInfo.InvariantCulture) + "\n" + provider
-                + (sceneTranscript ? "" : "\n" + actor);
+                + "\n" + actor;
             lease = Store.Begin(generation, key, actor, original, globalRule, text,
                 PromptCacheSettings.MaxTranscriptCharacters,
                 PromptCacheSettings.DefaultSessionTtlMinutes, DateTime.UtcNow,
@@ -72,7 +72,7 @@ internal static class ConversationPromptCache
             foreach (var message in lease.Messages) built.Add(new { role = message.Role, content = message.Content });
             Logger.Log("PromptCache", "channel=" + channel + " session=" + sessionId + " actor=" + actor
                 + " mode=" + lease.Reason + " warm=" + lease.Warm + " chars=" + lease.Chars + " messages=" + built.Count
-                + " prefix_append=" + lease.PrefixAppend + " shared_chars=" + lease.SharedChars + " core=submodule");
+                + " prefix_append=" + lease.PrefixAppend + " shared_chars=" + lease.SharedChars + " core=latest_snapshot");
             return new Request(built, lease, generation);
         }
         catch (Exception ex)

@@ -237,7 +237,9 @@ namespace AnimusForge.Illustrator.Core
                         direction = ResolveDirection(reply.Content, plan, options);
                         ApplyResponseMetadata(direction, reply);
                         direction.UsedTextOnlyDirector = referenceImages == null || reply.VisionUnsupported;
-                        if (plan.IsMissionScreenshot && (direction.UsedLocalFallback || direction.VisionUnsupported || direction.UsedTextOnlyDirector))
+                        if (direction.DirectionStatus == "failed")
+                            fallbackReason = direction.FallbackReason;
+                        else if (plan.IsMissionScreenshot && (direction.UsedLocalFallback || direction.VisionUnsupported || direction.UsedTextOnlyDirector))
                             fallbackReason = "Free-camera generation requires the vision director to plan the scene: " + direction.FallbackReason;
                         else if (!string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt) && direction.UsedLocalFallback)
                             fallbackReason = "Redrawing with a prompt cannot use a local composition: " + direction.FallbackReason;
@@ -362,8 +364,7 @@ namespace AnimusForge.Illustrator.Core
             direction.Prompt = ResolveDirectorBody(direction.Prompt, plan, options, out fallbackReason);
             if (!string.IsNullOrWhiteSpace(fallbackReason))
             {
-                direction.DirectionStatus = "local_fallback";
-                direction.UsedLocalFallback = true;
+                direction.DirectionStatus = "failed";
                 direction.FallbackReason = fallbackReason;
                 direction.Title = string.Empty;
                 direction.Theme = IllustratorText.Raw("Director_996");
@@ -391,111 +392,36 @@ namespace AnimusForge.Illustrator.Core
         {
             fallbackReason = string.Empty;
             output = output ?? string.Empty;
-            if (plan?.IsMissionScreenshot == true)
+            // Judge availability, not artistic content. The director owns composition;
+            // keywords, negation and section lengths cannot establish visual correctness.
+            if (!HasRequiredSceneDescription(output))
             {
-                if (!HasCompleteSceneDescription(output, allowBackgroundOverride: false))
-                {
-                    fallbackReason = string.IsNullOrWhiteSpace(output) ? "The director returned an empty body" : "The director did not return a complete visual plan";
-                    return string.Empty;
-                }
+                fallbackReason = "The director returned an empty body";
+                return string.Empty;
+            }
+            if (plan?.IsMissionScreenshot == true)
                 return output.Trim() + IllustratorText.Get("Director_1001") + plan.HardFacts + "\n" +
                     MissionScreenshotRules.Contract(plan.Mode == MissionScreenshotRules.BattleMode);
-            }
-            // A bulletin is an event illustration. Negated props, quoted event facts and
-            // flexible section layouts do not establish an invalid composition. Preserve
-            // usable direction and metadata; the image prompt still carries game facts
-            // and the selected fidelity contract. Empty bodies keep the existing fallback.
-            if (plan?.IsWeeklyReport == true && !string.IsNullOrWhiteSpace(output))
-                return ComposeFinalPrompt(output, hardFacts: plan.HardFacts, isWeeklyReport: true,
-                    playerRedraw: !string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt),
-                    preserveEquipment: options?.PreserveEquipmentFidelity != false);
-            // These keyword checks cannot distinguish an explicitly requested prop
-            // from an invented one. Directed redraws use the scoped director policy.
-            if (options?.PreserveEquipmentFidelity != false && string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) &&
-                (ViolatesShieldVisibility(output, plan) || ViolatesPortraitComposition(output, plan)))
-            {
-                fallbackReason = "The director output contains unsupported shields, flags, or an unsuitable portrait action";
-                TaleWorlds.Library.Debug.Print("[VisualDirector] Unsupported shield/portrait props rejected; using local portrait fallback without retry.");
-                return SynthesizeRuleBasedPrompt(plan, options);
-            }
-            if (NarrativeFactRouter.HasNarrativeEcho(output, plan.DirectorOnlyFacts, plan.HardFacts, allowVisualNarration: plan.IsConversation))
-            {
-                fallbackReason = "The director repeated the narrative instead of translating it into a visual plan";
-                TaleWorlds.Library.Debug.Print("[VisualDirector] Narrative echo detected; using local visual-fact fallback without retry.");
-                return SynthesizeRuleBasedPrompt(plan, options);
-            }
+
             bool isSingle = plan?.Mode?.Contains(IllustratorText.Raw("Director_1004")) == true || plan?.Mode?.Contains(IllustratorText.Raw("Director_1005")) == true;
-            if (!HasCompleteSceneDescription(output, allowBackgroundOverride: !string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt)))
-            {
-                fallbackReason = string.IsNullOrWhiteSpace(output) ? "The director returned an empty body" : "The director body lacks complete scene, lighting, or spatial details, or the composition does not meet the requirements";
-                TaleWorlds.Library.Debug.Print("[VisualDirector] Missing scene/light/spatial direction; using local scene fallback without retry.");
-                // Preserve a short usable visual paraphrase while supplying the missing scene sections.
-                // Do not retain equipment lists or long non-conforming output as the main direction.
-                // Open art direction is written for the director (redraw quotas, motifs to avoid,
-                // "the director decides" guidance); it never reaches the image endpoint.
-                if (output.Length <= 120 && System.Text.RegularExpressions.Regex.IsMatch(output, IllustratorText.Raw("Director_1008")) &&
-                    !System.Text.RegularExpressions.Regex.IsMatch(output, IllustratorText.Raw("Director_1009"), System.Text.RegularExpressions.RegexOptions.IgnoreCase))
-                    return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + IllustratorText.Get("Director_1010") + output,
-                        hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true, preserveEquipment: options?.PreserveEquipmentFidelity != false);
-                return SynthesizeRuleBasedPrompt(plan, options);
-            }
-            // The director is responsible for composition, but its prose can omit a visual
-            // fact. Keep the authoritative game facts beside the derived direction so the
-            // image endpoint does not have to infer age, equipment, emblems or spatial state
-            // from a reference image alone.
-            return ComposeFinalPrompt(output, hardFacts: plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true,
-                playerRedraw: !string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt), preserveEquipment: options?.PreserveEquipmentFidelity != false);
+            return ComposeFinalPrompt(output, hardFacts: plan?.HardFacts, isSinglePortrait: isSingle,
+                isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true,
+                playerRedraw: !string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt),
+                preserveEquipment: options?.PreserveEquipmentFidelity != false);
         }
 
-        private static readonly string[] RequiredSectionPatterns = new[]
-        {
-            IllustratorText.Raw("Director_1011"),
-            IllustratorText.Raw("Director_1012"),
-            IllustratorText.Raw("Director_1013"),
-            IllustratorText.Raw("Director_1014")
-        };
+        private static readonly System.Text.RegularExpressions.Regex EmptyBodyLabels = new System.Text.RegularExpressions.Regex(
+            @"\[\[AFI_PROTOCOL_[A-Z_]+\]\]|【(?:" +
+            string.Join("|", new[] { IllustratorText.Raw("Director_1011"), IllustratorText.Raw("Director_1012"),
+                IllustratorText.Raw("Director_1013"), IllustratorText.Raw("Director_1014") }) + @")】|[:：]",
+            System.Text.RegularExpressions.RegexOptions.Compiled);
 
-        // CN headings and EN stable protocol markers describe the same sections.
-        // Cache the four parsers once; do not compile patterns for each image request.
-        private static readonly string[] RequiredProtocolMarkers = new[]
-        {
-            "[[AFI_PROTOCOL_SUBJECT]]", "[[AFI_PROTOCOL_SCENE]]",
-            "[[AFI_PROTOCOL_LIGHT]]", "[[AFI_PROTOCOL_SPATIAL]]"
-        };
-        private static readonly System.Text.RegularExpressions.Regex[] RequiredSectionParsers =
-            RequiredSectionPatterns.Select((pattern, index) => new System.Text.RegularExpressions.Regex(
-                "(?:【" + pattern + "】|" + System.Text.RegularExpressions.Regex.Escape(RequiredProtocolMarkers[index])
-                + @")([\s\S]*?)(?=【(?:" + string.Join("|", RequiredSectionPatterns) + @")】|\[\[AFI_PROTOCOL_|$)",
-                System.Text.RegularExpressions.RegexOptions.Compiled)).ToArray();
-        private static readonly int[] RequiredSectionMinimum = { 8, 12, 10, 10 };
-
+        // Kept as the shared availability predicate; section headings alone are not a body.
         internal static bool HasRequiredSceneDescription(string output)
-        {
-            return HasCompleteSceneDescription(output, allowBackgroundOverride: false);
-        }
+            => !string.IsNullOrWhiteSpace(output) && !string.IsNullOrWhiteSpace(EmptyBodyLabels.Replace(output, string.Empty));
 
-        private static bool HasCompleteSceneDescription(string output, bool allowBackgroundOverride)
-        {
-            if (string.IsNullOrWhiteSpace(output)) return false;
-            if (!allowBackgroundOverride && System.Text.RegularExpressions.Regex.IsMatch(output,
-                IllustratorText.Raw("Director_1015"),
-                System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return false;
-            for (int i = 0; i < RequiredSectionParsers.Length; i++)
-            {
-                var match = RequiredSectionParsers[i].Match(output);
-                string value = match.Success ? match.Groups[1].Value.Trim() : string.Empty;
-                // Structural guard only: padding and section ratios do not establish
-                // action/spatial correctness. Keep a small non-whitespace minimum.
-                int length = 0;
-                foreach (char character in value)
-                    if (!char.IsWhiteSpace(character)) length++;
-                if (length < RequiredSectionMinimum[i]) return false;
-            }
-            return true;
-        }
+        // Used only when the player disables the director or no director is configured.
 
-        // Sent directly to the image model: positive wording only, since text encoders
-        // read a named object as a request to draw it. Negatives travel separately.
         internal static string BuildLocalSceneDirection(IllustrationPromptPlan plan)
         {
             if (plan?.IsWeeklyReport == true)
@@ -527,40 +453,6 @@ namespace AnimusForge.Illustrator.Core
                 IllustratorText.Get("Director_1033");
         }
 
-        internal static bool ViolatesShieldVisibility(string output, IllustrationPromptPlan plan)
-        {
-            if (string.IsNullOrWhiteSpace(output)) return false;
-            if (plan?.Mode == IllustratorText.Raw("Director_1034"))
-            {
-                // 百科模式拦截实际出现、手持、携带或展示盾牌的描述，不误杀“不画盾牌/未持盾”或非盾牌词汇
-                if (System.Text.RegularExpressions.Regex.IsMatch(output,
-                    IllustratorText.Raw("Director_1035"),
-                    System.Text.RegularExpressions.RegexOptions.IgnoreCase))
-                    return true;
-            }
-            return BackShieldPattern.IsMatch(output);
-        }
-
-        // A shield carried on someone's back. "身后/背后" are spatial words ("the guard behind
-        // the player holds a shield") and 盾 also occurs in 矛盾/后盾/盾徽, so only an explicit
-        // carrying verb within the same clause counts.
-        private static readonly System.Text.RegularExpressions.Regex BackShieldPattern = new System.Text.RegularExpressions.Regex(
-            IllustratorText.Raw("Director_1036") +
-            IllustratorText.Raw("Director_1037") +
-            @"|shield[^.!?;,\r\n]{0,30}(?:on (?:his|her|their|the) back|slung (?:over|across|on)|strapped to (?:his|her|their|the) back)" +
-            @"|(?:slung|strapped)[^.!?;,\r\n]{0,30}shield[^.!?;,\r\n]{0,20}back",
-            System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
-
-        internal static bool ViolatesPortraitComposition(string output, IllustrationPromptPlan plan)
-        {
-            if (plan?.Mode != IllustratorText.Raw("Director_1038") || string.IsNullOrWhiteSpace(output)) return false;
-            // Natural supported actions are the director's decision, not keyword violations.
-            // Keep only the portrait-specific unsupported flag check here.
-            foreach (string token in new[] { IllustratorText.Raw("Director_1039"), IllustratorText.Raw("Director_1040") })
-                if (output.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0) return true;
-            return false;
-        }
-
         /// <summary>
         /// 重绘变体指令：注入艺术指导区，要求导演刻意切换景别/机位/瞬间，
         /// 避免与上一版雷同构图。redrawIndex 从 2 开始（首次绘制不注入）。
@@ -578,9 +470,20 @@ namespace AnimusForge.Illustrator.Core
             return text.Length <= maxChars ? text : text.Substring(0, maxChars) + "...";
         }
 
-        internal static bool ResolveChatConfigForSnapshot(out string baseUrl, out string apiKey, out string model)
+        internal static bool ResolveChatConfigForSnapshot(IllustratorSettings settings, out string baseUrl, out string apiKey, out string model)
         {
-            // Hidden legacy director overrides must never redirect a request away from the main API.
+            if (settings?.UseCustomDirectorApi == true)
+            {
+                // Resolve one complete credential owner; blank keys support local services.
+                baseUrl = (settings.DirectorApiBaseUrl ?? string.Empty).Trim();
+                apiKey = (settings.DirectorApiKey ?? string.Empty).Trim();
+                model = (settings.DirectorModelName ?? string.Empty).Trim();
+                if (settings.EnableLlmPromptExpansion &&
+                    (string.IsNullOrWhiteSpace(baseUrl) || string.IsNullOrWhiteSpace(model)))
+                    throw new InvalidOperationException(UI.IllustratorUiText.Resolve("AF_ILL_DIRECTOR_CONFIG_REQUIRED",
+                        "Set the independent director API endpoint and model, or turn off independent director API."));
+                return !string.IsNullOrWhiteSpace(baseUrl) && !string.IsNullOrWhiteSpace(model);
+            }
             if (TryGetHostPrimaryChatConfig(out baseUrl, out apiKey, out model)) return true;
             baseUrl = apiKey = model = string.Empty;
             return false;
@@ -686,7 +589,7 @@ namespace AnimusForge.Illustrator.Core
             };
             string reason = reply.FinishReason.ToLowerInvariant();
             reply.Truncated = reason == "length" || reason == "max_tokens" || reason == "max_output_tokens";
-            // An incomplete/absent response terminates generation; only usable text reaches contract fallback.
+            // Incomplete or absent responses terminate generation without a replacement composition.
             if (reply.Truncated) reply.FailureReason = "The director output was truncated at the token limit. The incomplete body was not used";
             else if (reason == "content_filter" || !string.IsNullOrWhiteSpace(message?["refusal"]?.ToString()))
                 reply.FailureReason = "The director refused or filtered this output";

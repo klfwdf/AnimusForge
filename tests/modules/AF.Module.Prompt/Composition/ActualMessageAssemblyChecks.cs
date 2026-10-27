@@ -124,16 +124,16 @@ internal static class ActualMessageAssemblyChecks
             Check(Field(reply[0], "content") == "custom\n" + Text("main_courier_reply_system").Replace("{NPC}", "Alda").Replace("{PLAYER}", "Player") + "\npersona\nexclude", "reply system retains all rules and retains player-selected reply language");
             Check(Field(inbound[0], "content") == "custom\n" + Text("main_courier_inbound_system").Replace("{NPC}", "Alda").Replace("{PLAYER}", "Player").Replace("{KIND}", "private letter").Replace("{CHARS}", "220") + "\npersona\nexclude", "inbound system retains all rules and retains player-selected reply language");
             foreach (string key in new[] { "main_courier_000", "main_courier_001", "main_courier_002" })
-                Check(Field(reply[1], "content").Contains(Text(key)), "reply package heading " + key);
+                Check(Field(reply[6], "content").Contains(Text(key)), "reply package heading " + key);
             foreach (string key in new[] { "main_courier_008", "main_courier_009", "main_courier_010" })
-                Check(Field(inbound[1], "content").Contains(Text(key)), "inbound package heading " + key);
+                Check(Field(inbound[6], "content").Contains(Text(key)), "inbound package heading " + key);
             string[] roles = { "user", "assistant", "user", "user", "user" };
             for (int i = 0; i < history.Count; i++) {
-                Check(Field(reply[i + 2], "role") == roles[i], "Courier role " + i);
-                Check(Field(reply[i + 2], "content") == Field(inbound[i + 2], "content"), "Courier direction history " + i);
+                Check(Field(reply[i + 1], "role") == roles[i], "Courier role " + i);
+                Check(Field(reply[i + 1], "content") == Field(inbound[i + 1], "content"), "Courier direction history " + i);
             }
-            Check(Field(reply[5], "content").Contains(Text("afef_player_action")), "Courier player AFEF actor preserved");
-            Check(Field(reply[6], "content").Contains(Text("afef_npc_action")), "Courier NPC AFEF actor preserved");
+            Check(Field(reply[4], "content").Contains(Text("afef_player_action")), "Courier player AFEF actor preserved");
+            Check(Field(reply[5], "content").Contains(Text("afef_npc_action")), "Courier NPC AFEF actor preserved");
             Check(Field(reply[7], "content").Contains("current letter") && Field(reply[7], "content").Contains("delivery fact"), "Courier current input/fact last");
             Check(Field(reply[7], "content").StartsWith(Text("main_courier_003")), "reply current input package heading");
             Check(Field(inbound[7], "content").StartsWith(Text("main_courier_011")), "inbound current intent package heading");

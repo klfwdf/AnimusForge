@@ -66,7 +66,7 @@ public partial class ShoutBehavior
         BuildPreprocessExcludedRuleIdsForCurrentInteraction = BuildPreprocessExcludedRuleIdsForCurrentInteraction,
         BuildRuntimeSceneMechanismPostprocessRulesForScene = BuildRuntimeSceneMechanismPostprocessRulesForScene,
         BuildScenePresentNpcListBlockForPrompt = BuildScenePresentNpcListBlockForPrompt,
-        BuildStrictSceneMessagesForNpc = BuildStrictSceneMessagesForNpc,
+        BuildStrictSceneMessagesForNpc = BuildStableSceneMessagesForNpc,
         ClearPendingSceneConversationAttentionRelease = ClearPendingSceneConversationAttentionRelease,
         ClearQueuedSceneSpeech = ClearQueuedSceneSpeech,
         DeactivateMultiSceneMovementSuppression = DeactivateMultiSceneMovementSuppression,

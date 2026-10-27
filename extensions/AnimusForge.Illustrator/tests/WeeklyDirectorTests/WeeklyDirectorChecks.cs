@@ -61,7 +61,7 @@ public static class WeeklyDirectorChecks
         fidelity.SetValue(options, true);
 
         string negative = "画面采用横向16:9中近景，机位略低于马背，不画任何背盾或背负长矛。";
-        Check((bool)engine.GetMethod("ViolatesShieldVisibility", Static).Invoke(null, new object[] { negative, Plan(Raw("Director_937")) }), "incident keyword false positive reproduced");
+        Check(engine.GetMethod("ViolatesShieldVisibility", Static) == null, "keyword rejection was removed");
         Accepted(negative, "Chinese negated equipment");
         Accepted("Do not draw a shield strapped to his back. The captive dismounts beside the guards.", "English negated equipment");
         Accepted("A rider dismounts beside the captured lord.", "unstructured visual direction");
@@ -72,11 +72,11 @@ public static class WeeklyDirectorChecks
         var metadata = Resolve("[[AFI_PROTOCOL_TITLE]] Captive\n[[AFI_PROTOCOL_ACTION]] The captive dismounts.\n" + negative, Raw("Director_937"));
         Check(Get<string>(metadata, "Title") == "Captive" && Get<string>(metadata, "ActionSummary").Contains("dismounts"), "director title and action retained");
         foreach (string empty in new[] { "", " \n\t", "[[AFI_PROTOCOL_TITLE]] Captive\n" })
-            Check(Get<bool>(Resolve(empty, Raw("Director_937")), "UsedLocalFallback"), "empty or metadata-only body still falls back");
+            Check(Get<string>(Resolve(empty, Raw("Director_937")), "DirectionStatus") == "failed", "empty or metadata-only body fails without local replacement");
         foreach (string mode in new[] { "Director_1020", "Director_933", "Director_979" })
-            Check(Get<bool>(Resolve(negative, Raw(mode)), "UsedLocalFallback"), mode + ": existing non-weekly guards preserved");
+            Check(!Get<bool>(Resolve(negative, Raw(mode)), "UsedLocalFallback"), mode + ": nonempty direction is retained");
         var screenshot = Resolve(negative, Raw("ScreenshotRules_836"));
-        Check(Get<bool>(screenshot, "UsedLocalFallback") && Get<string>(screenshot, "Prompt") == "", "free-camera incomplete direction still rejected");
+        Check(!Get<bool>(screenshot, "UsedLocalFallback") && Get<string>(screenshot, "Prompt").Contains(negative), "free-camera nonempty direction is retained");
 
         var redraw = Resolve(negative, Raw("Director_937"), "Change the clothing.");
         Check(!Get<bool>(redraw, "UsedLocalFallback") && !Get<string>(redraw, "Prompt").Contains(Facts), "directed redraw does not restore superseded facts");

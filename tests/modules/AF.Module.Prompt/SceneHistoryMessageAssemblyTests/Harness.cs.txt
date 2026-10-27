@@ -53,6 +53,15 @@ internal static class Program
         Check(SceneHistoryMessageAssemblyOwner.TryConvertSceneMessageToStrictChatMessage(sameWordsPlayer,context,out object playerWords) && Field(playerWords,"role")=="user" && Field(playerWords,"content").Contains(systemBody),"same-word player prose is not projected to system fact");
         var stockFact=SceneHistoryMessageAssemblyOwner.BuildScopedAfefFactLineForPrompt("[AFEF NPC行为补充] "+systemBody,true);
         Check(stockFact.StartsWith("【当下行为】[AFEF NPC行为补充]") && stockFact.Contains(PromptComposerTexts.Get("memory_fact_first_unknown")),"exact NPC stock fact projects while protocol scope stays stable");
+        input.PrefixUserSections = new[] { "LATEST_RUNTIME_AND_RECALL" };
+        input.SuffixUserSections = new[] { "LATEST_RULES" };
+        input.CurrentInputMessage = Message(0, "user", "LATEST_INPUT", -1);
+        var ordered = SceneHistoryMessageAssemblyOwner.Build(input);
+        Check(Field(ordered[1], "role") == "assistant" && Field(ordered[1], "content").Contains("hello"), "stable selected history precedes runtime and recall");
+        Check(Field(ordered[2], "content") == "LATEST_RUNTIME_AND_RECALL" && Field(ordered[3], "content") == "LATEST_RULES" && Field(ordered[4], "content").Contains("LATEST_INPUT"), "latest context then rules then final input");
+        input.PrefixUserSections = new[] { "UPDATED_RUNTIME_AND_RECALL" };
+        var reordered = SceneHistoryMessageAssemblyOwner.Build(input);
+        Check(Field(reordered[0], "content") == Field(ordered[0], "content") && Field(reordered[1], "content") == Field(ordered[1], "content"), "runtime replacement preserves system and history prefix");
         var detached = SceneHistoryProjectionOwner.CapturePromptMessages(new[] { self });
         self.Content = "changed after capture";
         Check(detached[0].Content == "Ada: hello" && !ReferenceEquals(detached[0], self)

@@ -56,6 +56,7 @@ namespace AnimusForge.Illustrator
         {
             IllustratorSettingsStorage.EnsureReady();
             FetchModelList = RequestModelListFetch;
+            FetchDirectorModelList = RequestDirectorModelListFetch;
             TestImageApi = () => IllustratorApiTest.StartOrCancel(this);
             BindPromptEditors();
         }
@@ -87,29 +88,29 @@ namespace AnimusForge.Illustrator
 
         // Character portraits are always rendered offscreen (required references); this switch only covers
         // the scene panorama of Mission conversations. Field (map) conversations never use a panorama.
-        [SettingPropertyBool("{=AF_ILL_OFFSCREEN_ENV}Enable off-screen scene rendering (environment panorama)", HintText = "{=AF_ILL_OFFSCREEN_ENV_HINT}When enabled, conversation illustrations render a panorama within 30 meters of the player in the background for buildings, furnishings, and materials. Capture takes a few seconds and uses some GPU. When disabled, the environment uses the current screenshot and textual facts. Character portraits always render off-screen. World-map conversations do not use panoramas.", Order = 1, RequireRestart = false)]
+        [SettingPropertyBool("{=AF_ILL_OFFSCREEN_ENV}Enable off-screen scene rendering (environment panorama)", HintText = "{=AF_ILL_OFFSCREEN_ENV_HINT}When enabled, conversation illustrations render a panorama within 30 meters of the player in the background for buildings, furnishings, and materials. Capture takes a few seconds and uses some GPU. When disabled, the environment uses the current screenshot and textual facts. Character portraits always render off-screen. World-map conversations do not use panoramas.", Order = 18, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool EnableSceneOffscreenRendering { get; set; } = true;
 
-        [SettingPropertyBool("{=AF_ILL_CLEAN_TEMP}Clean temporary files after generation", HintText = "{=AF_ILL_CLEAN_TEMP_HINT}Each extraction task cleans only its own off-screen exports when it finishes. When disabled, heraldry exports are kept for troubleshooting; loaded portrait files still follow the normal release flow. Gallery caches and default illustrations are unaffected.", Order = 3, RequireRestart = false)]
+        [SettingPropertyBool("{=AF_ILL_CLEAN_TEMP}Clean temporary files after generation", HintText = "{=AF_ILL_CLEAN_TEMP_HINT}Each extraction task cleans only its own off-screen exports when it finishes. When disabled, heraldry exports are kept for troubleshooting; loaded portrait files still follow the normal release flow. Gallery caches and default illustrations are unaffected.", Order = 24, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool AutoCleanTempFiles { get; set; } = true;
 
-        [SettingPropertyText("{=AF_ILL_IMAGE_BASE_URL}Image API endpoint (Base URL)", HintText = "{=AF_ILL_IMAGE_BASE_URL_HINT}For compatible APIs, enter the service root or /v1. Google native APIs accept the v1beta root or a complete /models/name:generateContent URL. Player2 is detected automatically at http://127.0.0.1:4315 and chooses its model in the Player2 app. With a reference image, /images/edits is preferred; without one, /images/generations is used. The model must support the selected channel.", Order = 1, RequireRestart = false)]
+        [SettingPropertyText("{=AF_ILL_IMAGE_BASE_URL}Image API endpoint (Base URL)", HintText = "{=AF_ILL_IMAGE_BASE_URL_HINT}OpenRouter uses its dedicated image API when the address is https://openrouter.ai/api/v1. For other compatible APIs, enter the service root or /v1. Google native APIs accept the v1beta root or a complete /models/name:generateContent URL. Player2 is detected automatically at http://127.0.0.1:4315 and chooses its model in the Player2 app. Other compatible APIs use /images/edits with references and /images/generations without them. The model must support the selected channel.", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public string ApiBaseUrl { get; set; } = "https://yjapi.shenlanqaq.com/v1";
 
-        [SettingPropertyText("{=AF_ILL_IMAGE_KEY}Image API key (API Key)", HintText = "{=AF_ILL_IMAGE_KEY_HINT}API key for authentication. Leave blank for endpoints that need no authentication or local proxies.", Order = 3, RequireRestart = false)]
+        [SettingPropertyText("{=AF_ILL_IMAGE_KEY}Image API key (API Key)", HintText = "{=AF_ILL_IMAGE_KEY_HINT}API key for authentication. Leave blank for endpoints that need no authentication or local proxies.", Order = 2, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public string ApiKey { get; set; } = "";
 
-        [SettingPropertyButton("{=AF_ILL_FETCH_IMAGE_MODELS}Fetch image model list", Content = "{=AF_ILL_FETCH}Fetch", Order = 4, RequireRestart = false, HintText = "{=AF_ILL_FETCH_IMAGE_MODELS_HINT}Queries the configured endpoint for models. Google native mode uses /models and native authentication. Only the current response page is read; enter a model manually if it is not listed. Image and art models are prioritized.")]
+        [SettingPropertyButton("{=AF_ILL_FETCH_IMAGE_MODELS}Fetch image model list", Content = "{=AF_ILL_FETCH}Fetch", Order = 4, RequireRestart = false, HintText = "{=AF_ILL_FETCH_IMAGE_MODELS_HINT}Queries the configured endpoint for models. OpenRouter uses its image model list. Google native mode uses /models and native authentication. Only the current response page is read; enter a model manually if it is not listed. Image and art models are prioritized.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Action FetchModelList { get; set; }
 
         private string _modelName = "black-forest-labs/FLUX.1-schnell";
 
-        [SettingPropertyText("{=AF_ILL_IMAGE_MODEL}Image model name (Model)", HintText = "{=AF_ILL_IMAGE_MODEL_HINT}Image model name. Supports standard image models and native multimodal conversation image models; the channel is detected automatically.", Order = 5, RequireRestart = false)]
+        [SettingPropertyText("{=AF_ILL_IMAGE_MODEL}Image model name (Model)", HintText = "{=AF_ILL_IMAGE_MODEL_HINT}Image model name. Supports standard image models and native multimodal conversation image models; the channel is detected automatically.", Order = 3, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public string ModelName
         {
@@ -123,7 +124,7 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyDropdown("{=AF_ILL_SELECT_IMAGE_MODEL}Select image model (dropdown)", Order = 6, RequireRestart = false, HintText = "{=AF_ILL_SELECT_IMAGE_MODEL_HINT}After fetching models above, select one here. Choosing “*manual input*” uses the model name entered above.")]
+        [SettingPropertyDropdown("{=AF_ILL_SELECT_IMAGE_MODEL}Select image model (dropdown)", Order = 5, RequireRestart = false, HintText = "{=AF_ILL_SELECT_IMAGE_MODEL_HINT}After fetching models above, select one here. Choosing “*manual input*” uses the model name entered above.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Dropdown<string> ModelDropdown
         {
@@ -238,7 +239,7 @@ namespace AnimusForge.Illustrator
             return -1;
         }
 
-        [SettingPropertyDropdown("{=AF_ILL_IMAGE_SIZE}Image resolution (Size)", Order = 7, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_SIZE_HINT}Bulletin and fullscreen scene illustrations convert presets to 16:9: the 1024 square and 1280/720 presets become 1280×720; the 1344/1536 presets become 1536×864; the 2048 square becomes 2048×1152. Encyclopedia and standalone-panel scene illustrations use the selected size. The image service must support the corresponding size.")]
+        [SettingPropertyDropdown("{=AF_ILL_IMAGE_SIZE}Image resolution (Size)", Order = 7, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_SIZE_HINT}Bulletin and fullscreen scene illustrations convert presets to 16:9: the 1024 square and 1280/720 presets become 1280×720; the 1344/1536 presets become 1536×864; the 2048 square becomes 2048×1152. Encyclopedia and standalone-panel scene illustrations use the selected size. The image service must support the corresponding size. Gemini 3 image models map pixel presets to 1K/2K tiers and the requested aspect ratio; compatible chat gateways must support the Google image_config extension.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Dropdown<string> SizePresetDropdown
         {
@@ -362,11 +363,11 @@ namespace AnimusForge.Illustrator
         // 预填古典油画预设内容，供玩家查看/改写；仅在画风预设选“提示词”时生效
         public string CustomStylePrompt { get; set; } = IllustratorText.Get("DefaultCustomStyle");
 
-        [SettingPropertyBool("{=AF_ILL_REFERENCE_IMAGE}Send reference image to image model", HintText = "{=AF_ILL_REFERENCE_IMAGE_HINT}Sends captured 3D character references with the request through supported multimodal and image-edit channels. When disabled, references are used only by the prompt director.", Order = 10, RequireRestart = false)]
+        [SettingPropertyBool("{=AF_ILL_REFERENCE_IMAGE}Send reference image to image model", HintText = "{=AF_ILL_REFERENCE_IMAGE_HINT}Sends captured 3D character references with the request through supported multimodal and image-edit channels. When disabled, references are used only by the prompt director.", Order = 13, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool EnableReferenceImageForGeneration { get; set; } = true;
 
-        [SettingPropertyBool("{=AF_ILL_GEAR_FIDELITY}Preserve AF equipment", Order = 11, RequireRestart = false, HintText = "{=AF_ILL_GEAR_FIDELITY_HINT}Preserves equipment identity while allowing narrative changes such as tears, stains, or wetness. When disabled, clothing, armor, weapons, and accessories follow custom director rules; identity and established facts remain. Affects new requests only and never changes game equipment.")]
+        [SettingPropertyBool("{=AF_ILL_GEAR_FIDELITY}Preserve AF equipment", Order = 14, RequireRestart = false, HintText = "{=AF_ILL_GEAR_FIDELITY_HINT}Preserves equipment identity while allowing narrative changes such as tears, stains, or wetness. When disabled, clothing, armor, weapons, and accessories follow custom director rules; identity and established facts remain. Affects new requests only and never changes game equipment.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool PreserveEquipmentFidelity { get; set; } = true;
 
@@ -384,7 +385,7 @@ namespace AnimusForge.Illustrator
 
         private int _imageGenerationTimeoutSeconds = 240;
 
-        [SettingPropertyInteger("{=AF_ILL_IMAGE_TIMEOUT}Image request timeout", 60, 600, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 13, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_TIMEOUT_HINT}Maximum total wait for one image request; the default is 240 seconds. Includes Edits attempts, conversation-channel fallback, and downloading the result image. Increase it for high-quality redraws with multiple reference images or a slow relay. Applies to the next image request and does not affect visual director requests or off-screen capture timeouts.")]
+        [SettingPropertyInteger("{=AF_ILL_IMAGE_TIMEOUT}Image request timeout", 60, 600, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 22, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_TIMEOUT_HINT}Maximum total wait for one image request; the default is 240 seconds. Includes Edits attempts, conversation-channel fallback, and downloading the result image. Increase it for high-quality redraws with multiple reference images or a slow relay. Applies to the next image request and does not affect visual director requests or off-screen capture timeouts.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int ImageGenerationTimeoutSeconds
         {
@@ -397,23 +398,91 @@ namespace AnimusForge.Illustrator
         public bool PreferChatImageProtocol { get; set; } = false;
 
 
+        [SettingPropertyBool("{=AF_ILL_DIRECTOR_CUSTOM_API}Use independent director API", HintText = "{=AF_ILL_DIRECTOR_CUSTOM_API_HINT}Off uses the main chat API. On uses only the director endpoint, key and model below. Applies to the next generation request; incomplete configuration stops generation.", Order = 0, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Director API (OpenAI-compatible)", GroupOrder = 3)]
+        public bool UseCustomDirectorApi { get; set; } = false;
+
+        private string _directorApiBaseUrl = "";
+
+        [SettingPropertyText("{=AF_ILL_DIRECTOR_BASE_URL}Director API endpoint (Base URL)", HintText = "{=AF_ILL_DIRECTOR_BASE_URL_HINT}Independent OpenAI-compatible chat endpoint. Enter the service root, /v1, or /chat/completions. Used only when independent director API is enabled; this does not change the image API.", Order = 1, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Director API (OpenAI-compatible)", GroupOrder = 3)]
+        public string DirectorApiBaseUrl
+        {
+            get => _directorApiBaseUrl;
+            set { string next = (value ?? string.Empty).Trim(); if (_directorApiBaseUrl == next) return; _directorApiBaseUrl = next; InvalidateDirectorModels(); }
+        }
+
+        private string _directorApiKey = "";
+
+        [SettingPropertyText("{=AF_ILL_DIRECTOR_KEY}Director API key", HintText = "{=AF_ILL_DIRECTOR_KEY_HINT}Key for the independent director endpoint. Leave blank for a local service without authentication. The main API key is never borrowed in independent mode.", Order = 2, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Director API (OpenAI-compatible)", GroupOrder = 3)]
+        public string DirectorApiKey
+        {
+            get => _directorApiKey;
+            set { string next = (value ?? string.Empty).Trim(); if (_directorApiKey == next) return; _directorApiKey = next; InvalidateDirectorModels(); }
+        }
+
+        private string _directorModelName = "";
+
+        [SettingPropertyText("{=AF_ILL_DIRECTOR_MODEL}Director model name", HintText = "{=AF_ILL_DIRECTOR_MODEL_HINT}Exact model ID for the independent director API. Use a vision model for reference images; scene capture requires vision. Used only when independent director API is enabled.", Order = 3, RequireRestart = false)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Director API (OpenAI-compatible)", GroupOrder = 3)]
+        public string DirectorModelName
+        {
+            get => _directorModelName;
+            set
+            {
+                string next = (value ?? string.Empty).Trim();
+                if (_directorModelName == next) return;
+                _directorModelName = next;
+                lock (_directorModelLock)
+                {
+                    if (_directorModelDropdown != null)
+                    {
+                        int index = _directorModelDropdown.IndexOf(next);
+                        _directorModelDropdown.SelectedIndex = index >= 0 ? index : 0;
+                    }
+                }
+            }
+        }
+
+        [SettingPropertyButton("{=AF_ILL_DIRECTOR_FETCH}Fetch director models", Content = "{=AF_ILL_FETCH}Fetch", Order = 4, RequireRestart = false,
+            HintText = "{=AF_ILL_DIRECTOR_FETCH_HINT}Fetch the first model page from the director API endpoint using its own key. Select a model below or enter its ID manually. Existing model remains unchanged until selected.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Director API (OpenAI-compatible)", GroupOrder = 3)]
+        public Action FetchDirectorModelList { get; set; }
+
+        [SettingPropertyDropdown("{=AF_ILL_DIRECTOR_DROPDOWN}Select director model", Order = 5, RequireRestart = false,
+            HintText = "{=AF_ILL_DIRECTOR_DROPDOWN_HINT}After fetching, select a director model. Manual input retains the model name above.")]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Director API (OpenAI-compatible)", GroupOrder = 3)]
+        public Dropdown<string> DirectorModelDropdown
+        {
+            get { EnsureDirectorModelDropdown(); return _directorModelDropdown; }
+            set
+            {
+                lock (_directorModelLock)
+                {
+                    ReplaceDirectorModelDropdown(NormalizeModelOptions(value));
+                    DirectorModelSelectionChanged(_directorModelDropdown, new PropertyChangedEventArgs(nameof(Dropdown<string>.SelectedIndex)));
+                }
+            }
+        }
+
         [SettingPropertyInteger("{=AF_ILL_DIRECTOR_MAX_TOKENS}Director maximum output tokens", 512, 64000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_MAX_TOKENS_HINT}max_tokens sent to the director API, default 25000. This is an output budget, not a target length; configure it within the API limits.", Order = 6, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Director API (OpenAI-compatible)", GroupOrder = 3)]
         public int DirectorApiMaxTokens { get; set; } = 25000;
 
         [SettingPropertyInteger("{=AF_ILL_DIRECTOR_REFERENCE_TOKENS}Director prompt reference length (approx. tokens)", 600, 4000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT}A soft length reference, not the API output limit. When forced reduction is enabled, the character budget takes priority; otherwise the complete reply may contain at most 30000 characters. The full four sections are retained without padding.", Order = 9, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Director API (OpenAI-compatible)", GroupOrder = 3)]
         public int DirectorMaxTokens { get; set; } = 2000;
 
         [SettingPropertyButton("{=AF_ILL_CUSTOM_DIRECTOR}Custom director prompt", Content = "{=AF_ILL_OPEN_EDITOR}Open editor", Order = 10, RequireRestart = false,
             HintText = "{=AF_ILL_CUSTOM_DIRECTOR_HINT}Set composition, action, shot, and narrative preferences for encyclopedia, meetings, and bulletins. Blank keeps defaults. Sent only to the Visual Director and cannot override known facts or output format.")]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Director API (OpenAI-compatible)", GroupOrder = 3)]
         public Action EditCustomDirectorPrompt { get; set; }
 
         // Hidden editor text is persisted by IllustratorPromptSettingsPersistence in the existing MCM JSON.
         public string CustomDirectorPrompt { get; set; } = "";
 
-        [SettingPropertyBool("{=AF_ILL_AUTO_GENERATE}Generate images automatically", HintText = "{=AF_ILL_AUTO_GENERATE_HINT}Active only when image generation is enabled. When on, illustrations are generated during bulletin creation; when off, they are generated when the panel opens and the cache misses.", Order = 1, RequireRestart = false)]
+        [SettingPropertyBool("{=AF_ILL_AUTO_GENERATE}Generate images automatically", HintText = "{=AF_ILL_AUTO_GENERATE_HINT}Active only when image generation is enabled. When on, illustrations are generated during bulletin creation; when off, they are generated when the panel opens and the cache misses.", Order = 15, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool AutoGenerateWeeklyReportIllustration { get; set; } = true;
 
@@ -444,7 +513,7 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyBool("{=AF_ILL_AUTO_REDRAW}Redraw scene illustration after NPC replies", HintText = "{=AF_ILL_AUTO_REDRAW_HINT}After the player generates the first illustration, each NPC reply redraws one automatically. Later requests reuse the initial panorama, references, and stable facts while updating the latest two dialogue turns and actions.", Order = 4, RequireRestart = false)]
+        [SettingPropertyBool("{=AF_ILL_AUTO_REDRAW}Redraw scene illustration after NPC replies", HintText = "{=AF_ILL_AUTO_REDRAW_HINT}After the player generates the first illustration, each NPC reply redraws one automatically. Later requests reuse the initial panorama, references, and stable facts while updating the latest two dialogue turns and actions.", Order = 16, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public bool AutoGenerateConversationIllustrationFullscreen { get; set; } = false;
 
@@ -455,7 +524,7 @@ namespace AnimusForge.Illustrator
         };
         private Dropdown<string> _conversationDisplayDropdown;
 
-        [SettingPropertyDropdown("{=AF_ILL_DISPLAY_MODE}Illustration display mode", Order = 5, RequireRestart = false, HintText = "{=AF_ILL_DISPLAY_MODE_HINT}Standalone panel uses the scene illustration panel. Fullscreen overlay fills the conversation background while preserving controls and input. It hides automatically for encyclopedia and menus. Automatic redraw uses this choice.")]
+        [SettingPropertyDropdown("{=AF_ILL_DISPLAY_MODE}Illustration display mode", Order = 17, RequireRestart = false, HintText = "{=AF_ILL_DISPLAY_MODE_HINT}Standalone panel uses the scene illustration panel. Fullscreen overlay fills the conversation background while preserving controls and input. It hides automatically for encyclopedia and menus. Automatic redraw uses this choice.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Dropdown<string> ConversationDisplayDropdown
         {
@@ -477,7 +546,7 @@ namespace AnimusForge.Illustrator
         private int _panoramaFaceExportTimeoutSeconds = 6;
         private int _panoramaCaptureTimeoutSeconds = 40;
 
-        [SettingPropertyInteger("{=AF_ILL_PORTRAIT_TIMEOUT}Character portrait export timeout", 10, 60, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 2, RequireRestart = false,
+        [SettingPropertyInteger("{=AF_ILL_PORTRAIT_TIMEOUT}Character portrait export timeout", 10, 60, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 19, RequireRestart = false,
             HintText = "{=AF_ILL_PORTRAIT_TIMEOUT_HINT}Maximum wait for each off-screen portrait, default 20 seconds. Applies to the next extraction and does not affect AI API timeouts.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int PortraitExportTimeoutSeconds
@@ -486,7 +555,7 @@ namespace AnimusForge.Illustrator
             set => _portraitExportTimeoutSeconds = Math.Max(10, Math.Min(60, value));
         }
 
-        [SettingPropertyInteger("{=AF_ILL_PANORAMA_DIRECTION_TIMEOUT}Panorama direction export timeout", 3, 15, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 3, RequireRestart = false,
+        [SettingPropertyInteger("{=AF_ILL_PANORAMA_DIRECTION_TIMEOUT}Panorama direction export timeout", 3, 15, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 20, RequireRestart = false,
             HintText = "{=AF_ILL_PANORAMA_DIRECTION_TIMEOUT_HINT}Maximum wait for each panorama direction PNG, default 6 seconds. Six directions are captured sequentially and remain subject to the total timeout.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int PanoramaFaceExportTimeoutSeconds
@@ -495,7 +564,7 @@ namespace AnimusForge.Illustrator
             set => _panoramaFaceExportTimeoutSeconds = Math.Max(3, Math.Min(15, value));
         }
 
-        [SettingPropertyInteger("{=AF_ILL_PANORAMA_TOTAL_TIMEOUT}Environment panorama total timeout", 30, 120, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 4, RequireRestart = false,
+        [SettingPropertyInteger("{=AF_ILL_PANORAMA_TOTAL_TIMEOUT}Environment panorama total timeout", 30, 120, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 21, RequireRestart = false,
             HintText = "{=AF_ILL_PANORAMA_TOTAL_TIMEOUT_HINT}Total budget for stage extraction, environment copy construction, and six-direction capture, default 40 seconds. Stops when the budget is reached and does not send missing or duplicate images.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int PanoramaCaptureTimeoutSeconds
@@ -504,7 +573,7 @@ namespace AnimusForge.Illustrator
             set => _panoramaCaptureTimeoutSeconds = Math.Max(30, Math.Min(120, value));
         }
 
-        [SettingPropertyInteger("{=AF_ILL_CACHE_LIMIT}Maximum local cache images", 20, 1000, "{=AF_ILL_UNIT_IMAGES}0 images", HintText = "{=AF_ILL_CACHE_LIMIT_HINT}Maximum number of generated images kept in the persistent local cache to avoid duplicate requests.", Order = 1, RequireRestart = false)]
+        [SettingPropertyInteger("{=AF_ILL_CACHE_LIMIT}Maximum local cache images", 20, 1000, "{=AF_ILL_UNIT_IMAGES}0 images", HintText = "{=AF_ILL_CACHE_LIMIT_HINT}Maximum number of generated images kept in the persistent local cache to avoid duplicate requests.", Order = 23, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int MaxCacheCount { get; set; } = 200;
 
@@ -596,7 +665,7 @@ namespace AnimusForge.Illustrator
             return _cachedModelsFilePath;
         }
 
-        [SettingPropertyButton("{=AF_ILL_TEST_API}Test image API (may incur charges)", Content = "{=AF_ILL_TEST_CANCEL}Test / Cancel", Order = 14, RequireRestart = false,
+        [SettingPropertyButton("{=AF_ILL_TEST_API}Test image API (may incur charges)", Content = "{=AF_ILL_TEST_CANCEL}Test / Cancel", Order = 6, RequireRestart = false,
             HintText = "{=AF_ILL_TEST_API_HINT}Generates one test image with the current configuration and may incur service charges. Sends one request without channel retries. Click again to cancel while running. No save or game capture is needed; the result is saved under Cache/Illustrator/ApiTest/last-result.png.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Action TestImageApi { get; set; }
@@ -681,6 +750,133 @@ namespace AnimusForge.Illustrator
             }
         }
 
+        private readonly object _directorModelLock = new object();
+        private Dropdown<string> _directorModelDropdown;
+        private int _directorConfigRevision;
+        private bool _directorFetchInProgress;
+
+        private void InvalidateDirectorModels()
+        {
+            _directorConfigRevision++;
+            lock (_directorModelLock) ReplaceDirectorModelDropdown(null);
+        }
+
+        private void ReplaceDirectorModelDropdown(Dropdown<string> value)
+        {
+            if (_directorModelDropdown != null) _directorModelDropdown.PropertyChanged -= DirectorModelSelectionChanged;
+            _directorModelDropdown = value;
+            if (_directorModelDropdown != null) _directorModelDropdown.PropertyChanged += DirectorModelSelectionChanged;
+        }
+
+        private void EnsureDirectorModelDropdown()
+        {
+            lock (_directorModelLock)
+            {
+                if (_directorModelDropdown != null) return;
+                var values = new List<string> { ManualModelOption };
+                if (!string.IsNullOrWhiteSpace(DirectorModelName)) values.Add(DirectorModelName);
+                ReplaceDirectorModelDropdown(new Dropdown<string>(values, values.Count > 1 ? 1 : 0));
+            }
+        }
+
+        private void DirectorModelSelectionChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (!ReferenceEquals(sender, _directorModelDropdown) || args.PropertyName != nameof(Dropdown<string>.SelectedIndex)) return;
+            var dropdown = _directorModelDropdown;
+            if (dropdown == null || dropdown.SelectedIndex < 0 || dropdown.SelectedIndex >= dropdown.Count) return;
+            string selected = dropdown[dropdown.SelectedIndex];
+            if (string.IsNullOrWhiteSpace(selected) || IsManualModelOption(selected) || _directorModelName == selected) return;
+            _directorModelName = selected;
+            OnPropertyChanged(nameof(DirectorModelName));
+        }
+
+        private void RequestDirectorModelListFetch()
+        {
+            if (!IllustratorRuntime.IsMainThread) { IllustratorRuntime.Post(RequestDirectorModelListFetch); return; }
+            if (_directorFetchInProgress)
+            {
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_DIRECTOR_FETCH_PENDING", "[Director] Model list is already being fetched.")));
+                return;
+            }
+            string url = DirectorApiBaseUrl;
+            string key = DirectorApiKey;
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_DIRECTOR_FETCH_ENDPOINT", "[Director] Enter the director API endpoint first.")));
+                return;
+            }
+            int revision = _directorConfigRevision;
+            long generation = IllustratorRuntime.LifetimeGeneration;
+            _directorFetchInProgress = true;
+            InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_DIRECTOR_FETCH_STARTED", "[Director] Fetching available models...")));
+            bool started = IllustratorRuntime.Start(async () =>
+            {
+                using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) })
+                    return await FetchDirectorModelsAsync(url, key, client, System.Threading.CancellationToken.None).ConfigureAwait(false);
+            }, (models, error) =>
+            {
+                _directorFetchInProgress = false;
+                if (!ReferenceEquals(Instance, this) || revision != _directorConfigRevision || generation != IllustratorRuntime.LifetimeGeneration) return;
+                if (error != null || models == null || models.Count == 0)
+                {
+                    // Do not display provider response bodies or secrets.
+                    InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_DIRECTOR_FETCH_FAILED", "[Director] Could not fetch the model list. Check the endpoint and key, then try again.")));
+                    return;
+                }
+                ApplyDirectorModels(models);
+                RequestMcmRefresh();
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_DIRECTOR_FETCH_DONE", "[Director] Fetched {COUNT} models. Select one or keep the current model.", "COUNT", models.Count)));
+            });
+            if (!started)
+            {
+                _directorFetchInProgress = false;
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_DIRECTOR_FETCH_BUSY", "[Director] Background tasks are busy. Try again later.")));
+            }
+        }
+
+        internal void ApplyDirectorModels(List<string> models)
+        {
+            lock (_directorModelLock)
+            {
+                var values = new List<string> { ManualModelOption };
+                var seen = new HashSet<string>(StringComparer.Ordinal) { ManualModelOption };
+                foreach (string model in models) if (!string.IsNullOrWhiteSpace(model) && seen.Add(model)) values.Add(model);
+                if (!string.IsNullOrWhiteSpace(DirectorModelName) && seen.Add(DirectorModelName)) values.Add(DirectorModelName);
+                int index = values.IndexOf(DirectorModelName);
+                ReplaceDirectorModelDropdown(new Dropdown<string>(values, index >= 0 ? index : 0));
+            }
+        }
+
+        internal static async Task<List<string>> FetchDirectorModelsAsync(string baseUrl, string apiKey, HttpClient client, System.Threading.CancellationToken token)
+        {
+            string url = (baseUrl ?? string.Empty).Trim().TrimEnd('/');
+            if (url.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
+                url = url.Substring(0, url.Length - "/chat/completions".Length).TrimEnd('/');
+            if (!url.EndsWith("/models", StringComparison.OrdinalIgnoreCase))
+                url += url.EndsWith("/v1", StringComparison.OrdinalIgnoreCase) ? "/models" : "/v1/models";
+            using (var request = new HttpRequestMessage(HttpMethod.Get, url))
+            {
+                if (!string.IsNullOrWhiteSpace(apiKey)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+                using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string body = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, 1048576, token).ConfigureAwait(false));
+                    var data = JObject.Parse(body)["data"] as JArray;
+                    if (data == null) throw new InvalidDataException("Director model list has no data array.");
+                    var result = new List<string>();
+                    var seen = new HashSet<string>(StringComparer.Ordinal);
+                    foreach (var item in data)
+                    {
+                        if (!(item is JObject) || item["id"]?.Type != JTokenType.String) continue;
+                        string id = (item["id"]?.Value<string>() ?? string.Empty).Trim();
+                        if (!string.IsNullOrWhiteSpace(id) && seen.Add(id)) result.Add(id);
+                    }
+                    result.Sort(StringComparer.OrdinalIgnoreCase);
+                    return result;
+                }
+            }
+        }
+
         private bool _modelFetchInProgress;
 
         private void RequestModelListFetch()
@@ -755,7 +951,7 @@ namespace AnimusForge.Illustrator
                 if (await UniversalOpenAiImageClient.DetectPlayer2Async(baseUrl, System.Threading.CancellationToken.None).ConfigureAwait(false))
                     return new ModelListFetchResult { Player2 = true };
                 bool nativeGemini = GeminiNativeImageProtocol.IsNativeUrl(baseUrl);
-                string modelsUrl = baseUrl;
+                string modelsUrl = UniversalOpenAiImageClient.IsOpenRouterImages(baseUrl) ? UniversalOpenAiImageClient.ResolveOpenRouterUrl(baseUrl, true) : baseUrl;
                 if (modelsUrl.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
                     modelsUrl = modelsUrl.Substring(0, modelsUrl.Length - "/chat/completions".Length).TrimEnd('/');
                 if (modelsUrl.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))

@@ -1,5 +1,6 @@
 using AnimusForge;
 using AnimusForge.DiplomacyDialogue;
+using AnimusForge.Refactor.Domain;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -73,6 +74,25 @@ internal static class OralPrivacyAuthorityReplay
     }
     internal static void Run()
     {
+        var threatCase = Fixture();
+        Isolate(threatCase.o, threatCase.job);
+        var threat = new WorldDiplomacyThreat { Status = "open", IssuerKingdomId = "a", TargetKingdomId = "b", StageDocumentId = "threat-1" };
+        threatCase.o.CurrentStorage.DiplomaticThreats.Add(threat);
+        Test.True(WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(threatCase.job, threatCase.o.CurrentStorage.DiplomaticThreats), "oral threat drift detected");
+        Test.True(threatCase.o.RefreshDiplomaticThreatPresentationAndPrompt(threatCase.job)
+            && !WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(threatCase.job, threatCase.o.CurrentStorage.DiplomaticThreats), "oral refresh captures threat snapshot");
+        threatCase.o.PrepareSharedRequest(threatCase.job);
+        Complete(threatCase.o, threatCase.job, Prose(threatCase.item), () => threat.StageDocumentId = "threat-2");
+        Test.True(threatCase.job.Kind == "generate" && threatCase.o.CurrentStorage.Documents.Count == 0
+            && !WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(threatCase.job, threatCase.o.CurrentStorage.DiplomaticThreats), "changed threat discards draft and refreshes snapshot");
+        threatCase.o.PrepareSharedRequest(threatCase.job);
+        Complete(threatCase.o, threatCase.job, Prose(threatCase.item));
+        Test.True(threatCase.job.Kind == "privacy_audit", "stable threat allows draft to reach privacy audit");
+        threatCase.o.PrepareSharedRequest(threatCase.job);
+        Complete(threatCase.o, threatCase.job, "{\"safe\":true,\"agreement_consistent\":true}");
+        Test.True(threatCase.o.ResolveDocument(threatCase.item.DocumentId)?.IsReadyForPublication == true
+            && threatCase.h.TradeExecutions == 1, "refreshed oral declaration publishes exactly once");
+
         foreach (string channel in new[] { "native", "scene", "courier" })
         foreach (bool war in new[] { false, true })
         {

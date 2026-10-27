@@ -87,7 +87,7 @@ class Program
             Set(duel, "EnableDeepTrace", false);
             Check(unsafeArgument.Calls == 0, "baseline diagnostic prefix must not call custom ToString; calls=" + unsafeArgument.Calls);
 #endif
-#if !AF_BASELINE
+#if !AF_BASELINE && !AF_ILLUSTRATOR_ONLY
             SupplementalChecks.Run(af, duel, Check, root);
             SceneTerminalChecks.Run(af, Check);
             SharedMcmChecks.Run(af, duel, root, Check);
@@ -97,6 +97,10 @@ class Program
             object format = Activator.CreateInstance(formatType, Activator.CreateInstance(loggerType));
 #if !AF_BASELINE
             IllustratorRetiredApiChecks.Run(af, format, Check);
+#if AF_ILLUSTRATOR_ONLY
+            Console.WriteLine("PASS focused director API/MCM/terminal/output checks=" + checks);
+            return 0;
+#endif
 #endif
             string Save(BaseSettings o) => (string)formatType.GetMethod("SaveJson").Invoke(format, new object[] { o });
             void Load(BaseSettings o, string json) => formatType.GetMethod("LoadFromJson").Invoke(format, new object[] { o, json });

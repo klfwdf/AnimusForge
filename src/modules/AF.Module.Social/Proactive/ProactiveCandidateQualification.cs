@@ -3232,6 +3232,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 			if (hero == null
 				|| player == null
 				|| hero == player
+				|| RomanceSystemBehavior.IsPlayerCompanionOrFamily(hero)
 				|| candidate.AtWarWithPlayer
 				|| hero.IsDead
 				|| !hero.IsAlive

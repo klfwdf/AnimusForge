@@ -293,8 +293,8 @@ public static class DirectorStatusAudit
         }
         handler = new MemoryHandler();
         handler.Add(HttpStatusCode.OK, Reply("stop", "【画作标题】灯下裁决只有装备清单", null));
-        result = Generate(handler, Options(), References());
-        Check(Property<string>(result, "DirectionStatus") == "local_fallback" && Property<bool>(result, "UsedLocalFallback") && handler.Bodies.Count == 1, "usable but structurally rejected direction keeps the approved local composition fallback");
+        GenerateFailure(handler, Options(), References(), "metadata-only output");
+        Check(handler.Bodies.Count == 1, "metadata without a body stops without local composition or retry");
 
         handler = new MemoryHandler();
         handler.Add(HttpStatusCode.BadRequest, "model does not support image input");

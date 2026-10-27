@@ -1,3 +1,14 @@
+## 导演 API 独立分组与模型拉取（2026-10-27 用户要求）
+
+- 导演 API 在MCM原生API页和终端各自独立分组，沿用IllustratorSettings原owner及JSON/preset。地址、Key、模型、开关、预算和自定义规则集中；显式点击才按导演配置拉取模型列表，提供独立选择与手工输入。模型变更通过原DirectorModelName，不影响生图API；失败不打印原响应/密钥。
+- 拉取使用现有有界后台worker、一次HTTP请求和15秒超时；配置或owner/运行代次变化时丢弃迟到结果，不新增Tick轮询、自动探测或模型调用。CN/EN保持同键接线。
+
+## 导演门禁收缩与独立API恢复（2026-10-27 用户最新要求）
+
+- 本条覆盖历史禁背盾/黑背景/四段字数硬拒绝及独立导演API退役说明。盾牌与构图等原艺术偏好保留在提示词，非空正文不因关键词、否定句、叙事复述或段落篇幅被替换成本地构图；元数据和段落标记本身不算正文。空正文、HTTP/截断/拒绝/取消仍明确停止，无新增付费重试。
+- MCM生图API组与终端同一IllustratorSettings owner提供UseCustomDirectorApi（默认false）、DirectorApiBaseUrl/DirectorApiKey/DirectorModelName。关闭使用主API，开启仅使用独立配置，不混用主API凭据；地址/模型缺失时停止，Key可为空以支持本地服务。旧值只有显式开启后生效，JSON/preset身份沿用，不恢复UseExactEndpointUrl。
+- 仅请求前主线程读取一次并冻结，现有有界后台worker与取消/owner保护保持，不新增Tick反射、扫描或配置IO。本条不授权部署、打包、推送或收费API。
+
 # Illustrator 持久维护规则
 
 ## Gemini 生图自动协议（2026-10-20 用户要求）

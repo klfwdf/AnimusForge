@@ -4743,7 +4743,7 @@ internal static string BuildPlayerCustomPromptRuleBlock()
 
 
 
-internal static string BuildSceneSystemTopPromptIntroForSingle(RoleIntroCapturePorts ports, NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
+internal static string BuildSceneSystemTopPromptIntroForSingle(RoleIntroCapturePorts ports, NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null, bool includeCurrentAction = true)
 
 {
 
@@ -4761,7 +4761,7 @@ internal static string BuildSceneSystemTopPromptIntroForSingle(RoleIntroCaptureP
 
 	}
 
-	string selfActionFact = BuildSceneAgentSelfActionFactForPrompt(ports.Actions, npc, hero);
+	string selfActionFact = includeCurrentAction ? BuildSceneAgentSelfActionFactForPrompt(ports.Actions, npc, hero) : "";
 
 	if (!string.IsNullOrWhiteSpace(selfActionFact))
 

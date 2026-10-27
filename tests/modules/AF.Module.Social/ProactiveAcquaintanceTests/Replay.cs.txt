@@ -1,0 +1,64 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Clan { public static Clan PlayerClan; public int Tier = 3; }
+class Culture { public string StringId = "culture"; }
+class Hero {
+ public static Hero MainHero;
+ public Clan Clan, CompanionOf;
+ public Hero Spouse, Father, Mother;
+ public List<Hero> Children = new();
+ public Culture Culture = new();
+ public bool IsPlayerCompanion, IsDead, IsAlive = true, IsPrisoner, IsFugitive;
+ public object PartyBelongedToAsPrisoner;
+}
+class PlayerNotorietyBehavior {
+ public static int Reads;
+ public static int GetCultureNotorietyForExternal(string culture) { Reads++; return 100; }
+}
+class RomanceSystemBehavior {
+ public static RomanceSystemBehavior Instance = new();
+ public static int Love;
+ public int GetPrivateLove(Hero hero) => Love;
+ @@FAMILY@@
+}
+class ProactiveNpcRequestBehavior {
+ class ProactiveCandidate { public Hero Hero; public bool AtWarWithPlayer; public int PlayerClanTier = 3; }
+ class FriendshipNeedSnapshot { public int CultureNotoriety, PlayerClanTier, PrivateRelation; }
+ static int Clamp(int x,int min,int max) => Math.Clamp(x,min,max);
+ static int SafePlayerClanTier() => 3;
+ @@SNAPSHOT@@
+ @@GREETING@@
+ public static bool Acquaintance(Hero hero) => TryBuildFriendshipNeedSnapshot(new ProactiveCandidate { Hero = hero }, out _);
+ public static bool Greeting(Hero hero) => IsGreetingEligible(hero,out _);
+}
+static class Program {
+ static int count;
+ static void Check(bool ok,string text) { count++; if(!ok) throw new Exception(text); }
+ static Hero Stranger() => new Hero { Clan = new Clan() };
+ static void Main() {
+  Clan.PlayerClan = new Clan(); Hero.MainHero = new Hero { Clan = Clan.PlayerClan };
+  var npc=Stranger();
+  Check(ProactiveNpcRequestBehavior.Acquaintance(npc),"ordinary eligible stranger remains available");
+  npc.Spouse=Hero.MainHero;
+  int reads=PlayerNotorietyBehavior.Reads;
+  Check(!ProactiveNpcRequestBehavior.Acquaintance(npc),"spouse never introduces herself as a stranger at zero private love");
+  Check(PlayerNotorietyBehavior.Reads==reads,"family rejected before notoriety reads");
+  npc.Spouse=null;Hero.MainHero.Spouse=npc;
+  Check(!ProactiveNpcRequestBehavior.Acquaintance(npc),"reverse spouse pointer also excludes acquaintance");
+  Hero.MainHero.Spouse=null;npc.Clan=Clan.PlayerClan;
+  Check(!ProactiveNpcRequestBehavior.Acquaintance(npc),"own clan is not a new acquaintance");
+  npc=Stranger();npc.IsPlayerCompanion=true;
+  Check(!ProactiveNpcRequestBehavior.Acquaintance(npc),"companion is not a new acquaintance");
+  npc=Stranger();npc.Father=Hero.MainHero;
+  Check(!ProactiveNpcRequestBehavior.Acquaintance(npc),"child outside player's clan is not a new acquaintance");
+  npc=Stranger();Hero.MainHero.Father=npc;
+  Check(!ProactiveNpcRequestBehavior.Acquaintance(npc),"parent outside player's clan is not a new acquaintance");
+  Hero.MainHero.Father=null;npc=Stranger();RomanceSystemBehavior.Love=5;
+  Check(!ProactiveNpcRequestBehavior.Acquaintance(npc),"existing private affection rule remains");
+  npc.Spouse=Hero.MainHero;RomanceSystemBehavior.Love=30;
+  Check(ProactiveNpcRequestBehavior.Greeting(npc),"familiar spouse can still use ordinary greeting");
+  Console.WriteLine("PASS acquaintance regression checks="+count+"; production qualification and family helper, simulated campaign objects");
+ }
+}

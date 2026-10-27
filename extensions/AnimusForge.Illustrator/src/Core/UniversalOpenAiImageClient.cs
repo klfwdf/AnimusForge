@@ -30,6 +30,33 @@ namespace AnimusForge.Illustrator.Core
     public static class UniversalOpenAiImageClient
     {
         private static readonly HttpClient HttpClient;
+
+        internal static bool IsOpenRouterImages(string baseUrl)
+        {
+            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri) ||
+                !uri.Host.Equals("openrouter.ai", StringComparison.OrdinalIgnoreCase) ||
+                (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp)) return false;
+            return !uri.AbsolutePath.TrimEnd('/').EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase);
+        }
+
+        internal static string ResolveOpenRouterUrl(string baseUrl, bool models)
+        {
+            var uri = new Uri(baseUrl, UriKind.Absolute);
+            return new UriBuilder(uri) { Path = models ? "/api/v1/images/models" : "/api/v1/images", Fragment = string.Empty }.Uri.AbsoluteUri;
+        }
+
+        internal static void AddOpenRouterDimensions(JObject payload, string size)
+        {
+            string[] parts = (size ?? string.Empty).Split('x');
+            if (parts.Length != 2 || !int.TryParse(parts[0], out int width) || !int.TryParse(parts[1], out int height) || width <= 0 || height <= 0)
+                throw new InvalidDataException("Invalid image dimensions; no request was sent.");
+            int divisor = width, remainder = height;
+            while (remainder != 0) { int next = divisor % remainder; divisor = remainder; remainder = next; }
+            int longest = Math.Max(width, height);
+            payload["resolution"] = longest <= 1440 ? "1K" : longest <= 2560 ? "2K" : "4K";
+            payload["aspect_ratio"] = (width / divisor) + ":" + (height / divisor);
+        }
+
         // One budget covers the whole stage: an Edits attempt, the chat fallback and the
         // result download. High-quality multi-reference redraws routinely exceed 120 s.
         // The per-request budget comes from MCM; the shared client only enforces the MCM maximum.
@@ -139,11 +166,12 @@ namespace AnimusForge.Illustrator.Core
                 GenerationDiagnostics.Current?.RecordStage("image_prompt_sources", new JObject { ["customStyleActive"] = isCustomPreset && !playerRedraw, ["customNegativeActive"] = isCustomPreset && !playerRedraw && !string.IsNullOrWhiteSpace(settings.NegativePrompt), ["directorRuleSource"] = imageEdit ? "current image edit; director bypassed" : playerRedraw ? "player redraw reconciled by director; saved style/negatives only as defaults" : "isolated visual rules; no direct RuleBehaviorPrompts", ["promptChars"] = prompt?.Length ?? 0 });
 
                 bool player2 = settings.UsePlayer2ImageApi;
-                bool nativeGemini = !player2 && GeminiNativeImageProtocol.IsNativeUrl(baseUrl);
-                bool configuredEditsEndpoint = player2 ? requestedRefImages > 0 : IsImagesEditsEndpointUrl(baseUrl);
-                bool isChatProtocol = !player2 && !configuredEditsEndpoint && (nativeGemini || IsChatCompletionProtocol(model, baseUrl)
+                bool openRouter = !player2 && IsOpenRouterImages(baseUrl);
+                bool nativeGemini = !player2 && !openRouter && GeminiNativeImageProtocol.IsNativeUrl(baseUrl);
+                bool configuredEditsEndpoint = !openRouter && (player2 ? requestedRefImages > 0 : IsImagesEditsEndpointUrl(baseUrl));
+                bool isChatProtocol = !player2 && !openRouter && !configuredEditsEndpoint && (nativeGemini || IsChatCompletionProtocol(model, baseUrl)
                     || settings.PreferChatImageProtocol);
-                string endpointUrl = player2 ? ResolvePlayer2Endpoint(baseUrl, false) : nativeGemini
+                string endpointUrl = openRouter ? ResolveOpenRouterUrl(baseUrl, false) : player2 ? ResolvePlayer2Endpoint(baseUrl, false) : nativeGemini
                     ? GeminiNativeImageProtocol.ResolveEndpoint(baseUrl, model)
                     : ResolveEndpointUrl(baseUrl, isChatProtocol);
                 if (nativeGemini) model = GeminiNativeImageProtocol.EndpointModel(endpointUrl);
@@ -154,7 +182,7 @@ namespace AnimusForge.Illustrator.Core
                     : composed.Text;
                 if (imageEdit && (string.IsNullOrWhiteSpace(prompt) || referenceImages?.Count != 1 || referenceImages[0]?.Kind != IllustrationReferenceKind.GeneratedImage))
                     throw new InvalidOperationException("Redrawing from this image requires a valid current image. No request was sent.");
-                string route = nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : configuredEditsEndpoint || requestedRefImages > 0 ? "ImagesEdits" : "Images";
+                string route = openRouter ? "OpenRouterImages" : nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : configuredEditsEndpoint || requestedRefImages > 0 ? "ImagesEdits" : "Images";
                 GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? (player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl)) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
                 if (configuredEditsEndpoint && requestedRefImages == 0)
                 {
@@ -170,7 +198,7 @@ namespace AnimusForge.Illustrator.Core
 
                 // 2. Images 协议 + 有参考图 → 先试 /images/edits（multipart 真正携带参考图）。
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
-                if (!isChatProtocol && requestedRefImages > 0)
+                if (!openRouter && !isChatProtocol && requestedRefImages > 0)
                 {
                     var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2, settings.PreserveEquipmentFidelity, imageEdit).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
@@ -197,7 +225,7 @@ namespace AnimusForge.Illustrator.Core
 
                 if (!success && !stopAfterEditFailure)
                 {
-                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2, settings.PreserveEquipmentFidelity, imageEdit, nativeGemini).ConfigureAwait(false);
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2, settings.PreserveEquipmentFidelity, imageEdit, nativeGemini, openRouter).ConfigureAwait(false);
                     success = attempt.Success;
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
@@ -205,7 +233,7 @@ namespace AnimusForge.Illustrator.Core
                     result.ResolvedPrompt = attempt.ResolvedPrompt;
 
                     // 3. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
-                    if (!player2 && !success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.IsApiTest && !imageEdit && !settings.IsMissionScreenshot)
+                    if (!openRouter && !player2 && !success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.IsApiTest && !imageEdit && !settings.IsMissionScreenshot)
                     {
                         Log(string.Format("[Illustrator] The image endpoint does not support model {0}; trying the existing /chat/completions multimodal fallback...", model));
                         string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw, settings.OutputFrameRequirement, settings.PreserveEquipmentFidelity).Text;
@@ -861,7 +889,7 @@ namespace AnimusForge.Illustrator.Core
             string customStyleHint = null,
             string negativePromptField = null,
             bool playerRedraw = false,
-            int forcedPromptCharacters = 0, bool player2 = false, bool preserveEquipment = true, bool imageEdit = false, bool nativeGemini = false)
+            int forcedPromptCharacters = 0, bool player2 = false, bool preserveEquipment = true, bool imageEdit = false, bool nativeGemini = false, bool openRouter = false)
         {
             JObject payload;
             int actualRefImages = 0;
@@ -1040,8 +1068,44 @@ namespace AnimusForge.Illustrator.Core
                     }
                 };
 
-                // Chat-compatible gateways do not share a top-level aspect_ratio extension.
-                // Keep the requested frame in sentPrompt; vendor fields require a verified route.
+                // New API's documented Google extension converts these to native imageConfig.
+                // Preserve the complete messages and reference images on this same attempt.
+                if (!nativeGemini)
+                {
+                    var imageConfig = GeminiNativeImageProtocol.BuildImageConfig(model, size, true);
+                    if (imageConfig != null)
+                        payload["extra_body"] = new JObject { ["google"] = new JObject { ["image_config"] = imageConfig } };
+                }
+            }
+            else if (openRouter)
+            {
+                var references = new JArray();
+                var guidance = new StringBuilder();
+                if (referenceImages != null && referenceImages.Count > 0)
+                {
+                    if (!imageEdit && !missionScreenshot)
+                        guidance.AppendLine((playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedRedrawRepaint : VisualFidelityRules.ReferenceRepaint);
+                    if (!imageEdit && !missionScreenshot && !playerRedraw && preserveEquipment)
+                        guidance.AppendLine(VisualFidelityRules.SharedReferenceInstructions(referenceImages));
+                    foreach (var reference in referenceImages)
+                    {
+                        string encoded = reference.Base64Image;
+                        string mime = encoded.StartsWith("iVBORw0KGgo", StringComparison.Ordinal) ? "image/png" : "image/jpeg";
+                        references.Add(new JObject { ["type"] = "image_url", ["image_url"] = new JObject { ["url"] = "data:" + mime + ";base64," + encoded } });
+                        actualRefImages++;
+                        if (!imageEdit) guidance.AppendLine(missionScreenshot ? reference.Label + " " + MissionScreenshotRules.SpatialContract : (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedReferenceLabel(reference) : reference.Label);
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(negativePromptField)) guidance.AppendLine(negativePromptField);
+                string suffix = guidance.ToString();
+                int limit = FinalPromptLimit(model, false, forcedPromptCharacters);
+                if (imageEdit) ImagePromptBudget.EnsureFits((effectivePrompt ?? string.Empty).Length + suffix.Length, limit);
+                sentPrompt = FitFinalMain(effectivePrompt, suffix.Length, limit, "OpenRouterImages") + suffix;
+                ImagePromptBudget.EnsureFits(sentPrompt.Length, limit);
+                payload = new JObject { ["model"] = model, ["prompt"] = sentPrompt, ["n"] = 1 };
+                AddOpenRouterDimensions(payload, size);
+                if (references.Count > 0) payload["input_references"] = references;
+                if (quality == "auto" || quality == "low" || quality == "medium" || quality == "high") payload["quality"] = quality;
             }
             else
             {
@@ -1091,8 +1155,8 @@ namespace AnimusForge.Illustrator.Core
                     else request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                 }
 
-                Log($"[Illustrator] Requesting image generation from {SensitiveLogText.SafeUrl(endpointUrl)} (model={model}, protocol={(nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...", apiKey);
-                if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, player2 ? "Player2Generate" : nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : "Images").ConfigureAwait(false);
+                Log($"[Illustrator] Requesting image generation from {SensitiveLogText.SafeUrl(endpointUrl)} (model={model}, protocol={(openRouter ? "OpenRouterImages" : nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...", apiKey);
+                if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, player2 ? "Player2Generate" : openRouter ? "OpenRouterImages" : nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : "Images").ConfigureAwait(false);
 
                 GenerationDiagnostics.Current?.RecordStage("image_http_begin", new JObject { ["endpoint"] = SensitiveLogText.SafeUrl(endpointUrl), ["actualRefs"] = actualRefImages });
                 using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
