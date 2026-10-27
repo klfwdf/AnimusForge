@@ -5208,6 +5208,34 @@ private void OpenKingdomRebellionApiRepairFlow()
 		}
 	}
 
+	// Display-query boundary for the history popup / dialogue auxiliary panel only.
+	// Model-facing callers keep using GetDialogueHistoryEntries*ForExternal (unfiltered).
+	public static List<AnimusForgeDialogueHistoryEntry> GetPlayerFacingDialogueHistoryEntriesForExternal(Hero hero, int maxLines = 260)
+	{
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return myBehavior?._memoryHistoryCommit?.GetPlayerFacingDialogueHistoryEntries(hero, maxLines) ?? new List<AnimusForgeDialogueHistoryEntry>();
+		}
+		catch
+		{
+			return new List<AnimusForgeDialogueHistoryEntry>();
+		}
+	}
+
+	public static List<AnimusForgeDialogueHistoryEntry> GetPlayerFacingDialogueHistoryEntriesByIdForExternal(string memoryId, int maxLines = 260)
+	{
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return myBehavior?._memoryHistoryCommit?.GetPlayerFacingDialogueHistoryEntriesById(memoryId, maxLines) ?? new List<AnimusForgeDialogueHistoryEntry>();
+		}
+		catch
+		{
+			return new List<AnimusForgeDialogueHistoryEntry>();
+		}
+	}
+
 	private List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntries(Hero hero, int maxLines)
 	{
         return _memoryHistoryCommit.GetDialogueHistoryEntries(hero, maxLines);

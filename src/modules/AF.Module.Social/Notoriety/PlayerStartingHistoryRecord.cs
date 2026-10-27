@@ -24,6 +24,18 @@ internal static class PlayerStartingHistoryRecord
         return true;
     }
 
+    internal static bool ContainsToken(string raw)
+        => (raw ?? "").IndexOf(Prefix, StringComparison.Ordinal) >= 0;
+
+    // Recognized canonical tokens stored in the history (normally one leading line).
+    internal static System.Collections.Generic.IEnumerable<string> RecognizedTokens(string raw)
+    {
+        string text = raw ?? "";
+        if (!ContainsToken(text)) yield break;
+        foreach (Match match in Token.Matches(text))
+            if (EnglishUiTemplate(match.Groups["id"].Value) != null) yield return match.Value;
+    }
+
     internal static string Render(string raw, string playerName, Func<string, string, string> render)
     {
         string text = raw ?? "";

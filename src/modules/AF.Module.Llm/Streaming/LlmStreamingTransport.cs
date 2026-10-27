@@ -39,6 +39,19 @@ internal sealed class LlmStreamingResponse
 internal static class LlmStreamingTransport
 {
     internal const string PartialRawDataKey = "af.llm.streaming.partial_raw";
+    internal const string PartialUsageDataKey = "af.llm.streaming.partial_usage";
+
+    // Output-only usage deltas (e.g. Anthropic message_delta) must not replace prompt figures.
+    private static bool HasPromptUsage(JObject usage)
+        => usage["prompt_tokens"] != null || usage["input_tokens"] != null || usage["promptTokenCount"] != null
+            || usage["prompt_cache_hit_tokens"] != null || usage["cache_read_input_tokens"] != null
+            || usage["cachedContentTokenCount"] != null;
+
+    private static string FormatUsage(JObject usage)
+    {
+        try { return LlmApiCompat.FormatPromptCacheUsage(usage); }
+        catch { return ""; }
+    }
 
     internal static async Task<LlmStreamingResponse> SendAsync(
         string endpoint,
@@ -66,7 +79,7 @@ internal static class LlmStreamingTransport
         bool parseFailure = false;
         bool completed = false;
         int contentSequence = 0;
-        string promptCacheUsage = "";
+        JObject lastPromptUsage = null;
         using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint))
         {
             LlmApiCompat.ApplyAuthenticationHeaders(request, endpoint, apiKey);
@@ -121,14 +134,16 @@ internal static class LlmStreamingTransport
                                     || json.SelectToken("choices[0].finish_reason") is JToken finishReason
                                         && finishReason.Type != JTokenType.Null && !string.IsNullOrEmpty(finishReason.ToString()))
                                     completed = true;
-                                // Usage normally arrives once (final chunk or message_start); output-only deltas keep the prompt figures.
-                                if (LlmApiCompat.ExtractUsageObject(json) is JObject usage)
-                                {
-                                    string usageText = LlmApiCompat.FormatPromptCacheUsage(usage);
-                                    if (usageText.Length > 0) promptCacheUsage = usageText;
-                                }
                                 string reasoningDelta = LlmApiCompat.ExtractStreamReasoningText(json) ?? "";
                                 string contentDelta = LlmApiCompat.ExtractStreamDeltaText(json) ?? "";
+                                // Usage is diagnostics only: read after the text, keep the latest object
+                                // carrying prompt figures, and format once when the stream ends.
+                                try
+                                {
+                                    if (LlmApiCompat.ExtractUsageObject(json) is JObject usage && HasPromptUsage(usage))
+                                        lastPromptUsage = usage;
+                                }
+                                catch { }
                                 if (!string.IsNullOrEmpty(reasoningDelta)) reasoning.Append(reasoningDelta);
                                 if (!string.IsNullOrEmpty(contentDelta))
                                 {
@@ -161,7 +176,7 @@ internal static class LlmStreamingTransport
                         }
                     }
                     LlmStreamingResponse finished = Snapshot(response.StatusCode, raw, content, reasoning, parseFailure, discarded: false, completed: completed);
-                    finished.PromptCacheUsage = promptCacheUsage;
+                    finished.PromptCacheUsage = FormatUsage(lastPromptUsage);
                     return finished;
                 }
             }
@@ -170,6 +185,8 @@ internal static class LlmStreamingTransport
                 Exception failure = cancellationToken.IsCancellationRequested
                     ? new OperationCanceledException(cancellationToken) : error;
                 if (raw.Length > 0) failure.Data[PartialRawDataKey] = raw.ToString();
+                string partialUsage = FormatUsage(lastPromptUsage);
+                if (partialUsage.Length > 0) failure.Data[PartialUsageDataKey] = partialUsage;
                 if (!ReferenceEquals(failure, error)) throw failure;
                 throw;
             }

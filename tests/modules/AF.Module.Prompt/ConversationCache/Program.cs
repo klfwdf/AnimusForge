@@ -117,6 +117,23 @@ internal static class Program
             == "prompt_tokens=400 cached_tokens=100 cache_write_tokens=n/a hit_rate=25.0%", "Gemini native usage cache accounting");
         Check(LlmApiCompat.FormatPromptCacheUsage(JObject.Parse("{\"prompt_tokens\":500}"))== "prompt_tokens=500 cached_tokens=n/a cache_write_tokens=n/a hit_rate=n/a", "missing cache fields are not estimated");
         Check(LlmApiCompat.FormatPromptCacheUsage(JObject.Parse("{\"completion_tokens\":5}")) == "", "output-only usage chunk yields no prompt figures");
+        Check(LlmApiCompat.ExtractUsageObject(JObject.Parse("{\"message\":\"ok\"}")) == null
+            && LlmApiCompat.ExtractUsageObject(JObject.Parse("{\"message\":null,\"usage\":null}")) == null,
+            "relay string/null message and null usage do not throw");
+        Check(LlmApiCompat.FormatPromptCacheUsage(LlmApiCompat.ExtractUsageObject(JObject.Parse(
+            "{\"type\":\"message_start\",\"message\":{\"usage\":{\"input_tokens\":50,\"cache_read_input_tokens\":950,\"cache_creation_input_tokens\":0}}}")))
+            == "prompt_tokens=1000 cached_tokens=950 cache_write_tokens=0 hit_rate=95.0%", "Anthropic message_start nested usage extracted");
+        // Stream capture: relay string/null "message" keeps text; output-only delta keeps prompt figures.
+        string sse = "data: {\"message\":\"ok\",\"usage\":null,\"choices\":[{\"delta\":{\"content\":\"A\"}}]}\n\n"
+            + "data: {\"message\":null,\"choices\":[{\"delta\":{\"content\":\"B\"}}]}\n\n"
+            + "data: {\"choices\":[],\"usage\":{\"prompt_tokens\":1000,\"prompt_tokens_details\":{\"cached_tokens\":750}}}\n\n"
+            + "data: {\"type\":\"message_delta\",\"usage\":{\"output_tokens\":7}}\n\ndata: [DONE]\n\n";
+        var streamed = LlmStreamingTransport.SendAsync("http://127.0.0.1/v1/chat/completions", "k", "{}",
+            (req, token) => System.Threading.Tasks.Task.FromResult(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                { Content = new System.Net.Http.StringContent(sse) }), System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+        Check(streamed.Content == "AB" && !streamed.ParseFailure, "usage parsing never drops stream text or flags parse failure");
+        Check(streamed.PromptCacheUsage == "prompt_tokens=1000 cached_tokens=750 cache_write_tokens=n/a hit_rate=75.0%",
+            "stream usage formatted once from the prompt-bearing chunk: " + streamed.PromptCacheUsage);
 
         foreach (string channel in new[] { "native", "scene", "courier", "scene_auxiliary" })
         {

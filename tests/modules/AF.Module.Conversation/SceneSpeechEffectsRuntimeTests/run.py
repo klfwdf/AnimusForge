@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
-p=argparse.ArgumentParser();p.add_argument('--run-root',required=True,type=Path);p.add_argument('--mutation',choices=['duplicate','mission','generation','epoch','completion-order','hall-branch']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--run-root',required=True,type=Path);p.add_argument('--mutation',choices=['duplicate','mission','generation','epoch','completion-order','hall-branch','relay-unnamed']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 src=ROOT/'src/modules/AF.Module.Conversation/Channels/Scene'
 effect=(src/'SceneSpeechEffectController.cs').read_text(encoding='utf-8-sig');effect=effect[effect.index('internal sealed class SceneSpeechEffectController'):]
@@ -16,11 +16,16 @@ mutations={
 'generation': ('!SaveRuntimeGuard.IsCurrentGeneration(item.RuntimeGeneration)', 'false'),
 'epoch': ('!_ports.IsSceneConversationEpochCurrent(item.RequiredConversationEpoch)', 'false'),
 'completion-order': ('_movement.FlushSceneSummonReturnAfterSpeech(agentIndex);', '_movement.FlushSceneGuideReturnAfterSpeech(agentIndex);'),
-'hall-branch': ('if (_ports.TryFlushLordsHallEntry(agentIndex))', 'if (_ports.TryFlushLordsHallEntry(agentIndex) && false)')}
+'hall-branch': ('if (_ports.TryFlushLordsHallEntry(agentIndex))', 'if (_ports.TryFlushLordsHallEntry(agentIndex) && false)'),
+# Unnamed-NPC branch loses the relay exemption (the 388038d5a review finding).
+'relay-unnamed': ('if (relayTurn)', 'if (false)')}
 if a.mutation and a.mutation!='duplicate':
     old,new=mutations[a.mutation]
     if a.mutation.startswith('completion') or a.mutation=='hall-branch':
         assert completion.count(old)==1;completion=completion.replace(old,new,1)
+    elif a.mutation=='relay-unnamed':
+        anchor=effect.index('接力轮不扣无名 NPC 耐心');at=effect.index(old,anchor)
+        effect=effect[:at]+new+effect[at+len(old):]
     else:
         assert effect.count(old)==1;effect=effect.replace(old,new,1)
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@EFFECT@@',effect).replace('@@ITEM@@',item)
@@ -58,6 +63,9 @@ bridge += '\n' + compose
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 from xml.sax.saxutils import escape
 proj=out/'Proof.csproj'
-proj.write_text(proj.read_text().replace('</Project>','<ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(resolve_dotnet(ROOT).parent/'sdk/8.0.426/Newtonsoft.Json.dll'))+'</HintPath></Reference></ItemGroup></Project>'))
+# Any installed 8.0 SDK ships the same Newtonsoft.Json; do not pin one patch version.
+newtonsoft=sorted((resolve_dotnet(ROOT).parent/'sdk').glob('8.0.*/Newtonsoft.Json.dll'))
+if not newtonsoft: raise SystemExit('BLOCKED_ENV: no 8.0 SDK Newtonsoft.Json.dll under '+str(resolve_dotnet(ROOT).parent/'sdk'))
+proj.write_text(proj.read_text().replace('</Project>','<ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(newtonsoft[-1]))+'</HintPath></Reference></ItemGroup></Project>'))
 dotnet=resolve_dotnet(ROOT);r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
 log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

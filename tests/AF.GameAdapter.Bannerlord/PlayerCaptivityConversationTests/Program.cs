@@ -302,7 +302,12 @@ Campaign.Current._tickData.Previous.Add(pair.holder);
 Campaign.Current._tickData.Previous.Add(unrelatedParty);
 Campaign.Current._tickData.Current.Add(pair.holder);
 End(); Tick();
+#if BANNERLORD_1_5_OR_GREATER
 Check(pair.holder.MobileParty.IsVisible, "Leave restores hidden current captor");
+#else
+// 1.3/1.4 native recomputes captor visibility every frame; AF leaves it to vanilla.
+Check(!pair.holder.MobileParty.IsVisible, "1.3/1.4 Leave leaves captor visibility to native recomputation");
+#endif
 Check(!unrelatedParty.MobileParty.IsVisible, "Leave does not reveal other parties");
 Check(PlayerCaptivity.IsCaptive && EndCaptivityAction.Calls == 0 && pair.holder.PrisonRoster.Contains(Hero.MainHero.CharacterObject), "visibility restoration preserves captivity and roster");
 Check(!PlayerCaptivityConversation.HasSession && Campaign.Current.TimeControlMode == CampaignTimeControlMode.UnstoppableFastForward, "visibility restoration still completes return and time restoration");

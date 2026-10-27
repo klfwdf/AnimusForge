@@ -9,7 +9,8 @@ Replay.exe "game-reference-directory|AF-dependencies|Harmony|MCM|ButterLib|UIExt
 ```
 
 Repeat with the verified 1.3 and 1.4 references and matching implementation DLLs.
-This exercises the actual history query, canonical CN/EN fact recognition,
+This exercises the actual player-facing history query (filtered) versus the
+model-facing query (unfiltered), canonical CN/EN fact recognition,
 utterance/interaction/unknown preservation, visible-tail limit, original edit
 ordinals and unchanged NPC memory lists. For 1.5 it instantiates detached native
 Campaign/cache objects and tests the actual previous/current visibility fields,

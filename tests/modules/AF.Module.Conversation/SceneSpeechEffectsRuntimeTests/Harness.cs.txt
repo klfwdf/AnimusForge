@@ -87,11 +87,13 @@ namespace AnimusForge
     internal static class NoblePrisonerExecutionOrderBehavior { internal static bool TryProcessAcceptedTag(Hero h,int i,bool allowed,ref string text,out bool done) { done=false;return false; } }
     internal static class MyBehavior
     {
-        internal static void ApplyPatienceFromSceneHeroResponseExternal(Hero h,ref string text) { }
-        internal static void ApplyPatienceFromSceneUnnamedResponseExternal(string key,string name,ref string text) { }
+        internal static void ApplyPatienceFromSceneHeroResponseExternal(Hero h,ref string text) { Probe.HeroPatience++;PatienceRules.ExtractMoodAndStripTag(ref text); }
+        internal static void ApplyPatienceFromSceneUnnamedResponseExternal(string key,string name,ref string text) { Probe.UnnamedPatience++;PatienceRules.ExtractMoodAndStripTag(ref text); }
         internal static bool TryApplyPartyTransferTagsForExternal(Hero h,CharacterObject c,int i,ref string text,out List<string> facts,out List<string> notifications) { facts=new();notifications=new();if(Probe.TransferPartial) { facts.Add("AFEF observed source debit, partial delivery");return true; }return false; }
         internal static void AppendExternalDialogueHistory(Hero h,string p,string reply,string fact) { }
     }
+    // Leaf substitute: strip-only, counts calls; the real rules are not under test here.
+    internal static class PatienceRules { internal static int ExtractMoodAndStripTag(ref string text) { Probe.MoodStrips++;text=System.Text.RegularExpressions.Regex.Replace(text??"",@"\[ACTION:MOOD:[^\]]*\]","").Trim();return 0; } }
     internal static class VoteDealBehavior { internal static void ProcessAgendaTagsDispatch(Hero h,ref string text) { } }
     internal static class DiplomacyBehavior { internal static void ProcessDiplomacyTagsDispatch(Hero h,ref string text) { } }
     // Module leaf only; current AF bridge source is compiled by the existing runner.
@@ -141,20 +143,21 @@ namespace AnimusForge
     internal static class LlmSourceTexts { internal static string Get(string key)=>key=="Signal_Failed"?"失败":throw new Exception("Unexpected resource key"); }
     internal static class Probe
     {
-        internal static int Effects,IssueEffects,Speech,History,PrivateHistory,Facts,Epoch=1;
+        internal static int Effects,IssueEffects,Speech,History,PrivateHistory,Facts,HeroPatience,UnnamedPatience,MoodStrips,Epoch=1;
+        internal static string LastSpokenText;
         internal static LocalTtsTone LastTone;
         internal static bool TransferPartial; internal static string FailStep;
         internal static List<string> Steps=new();
         internal static void Step(string value) { Steps.Add(value);if(FailStep==value)throw new Exception("synthetic_"+value); }
         static void Require(bool value,string name) { if(!value)throw new Exception("ASSERT "+name); }
-        static void Reset() { Effects=IssueEffects=Speech=History=PrivateHistory=Facts=0;Epoch=1;TransferPartial=false;FailStep=null;Steps.Clear();SaveRuntimeGuard.Generation=1;Mission.Current=new();Mission.Current.Agents.Add(new Agent { Index=7,Character=new CharacterObject() }); }
+        static void Reset() { Effects=IssueEffects=Speech=History=PrivateHistory=Facts=HeroPatience=UnnamedPatience=MoodStrips=0;LastSpokenText=null;Epoch=1;TransferPartial=false;FailStep=null;Steps.Clear();SaveRuntimeGuard.Generation=1;Mission.Current=new();Mission.Current.Agents.Add(new Agent { Index=7,Character=new CharacterObject() }); }
         static SceneSpeechEffectController Owner()=>new(new SceneSpeechEffectPorts
         {
             IsSceneConversationEpochCurrent=e=>e<=0 || e==Epoch,
             ResolveHeroFromAgentIndex=i=>new(),
             TryTriggerOpenLordsHallAction=(NpcDataPacket n,Agent a,ref string text)=>false,
             TryConsumeSceneNpcSurrenderTag=(NpcDataPacket n,ref string text,out Hero h,out CharacterObject c,out int i)=>{h=null;c=null;i=-1;return false;},
-            ShowNpcSpeechOutput=(n,a,text,tts,attach,suppress,tone,pendingTone)=>{LastTone=tone?.Tone ?? LocalTtsTone.Neutral;Speech++;if(FailStep=="speech")throw new Exception("synthetic_speech");return new();},
+            ShowNpcSpeechOutput=(n,a,text,tts,attach,suppress,tone,pendingTone)=>{LastSpokenText=text;LastTone=tone?.Tone ?? LocalTtsTone.Neutral;Speech++;if(FailStep=="speech")throw new Exception("synthetic_speech");return new();},
             RecordResponseForAllNearbySafe=(list,i,name,text,receipt)=>{History++;return true;},
             PersistNpcSpeechToNamedHeroes=(i,name,text,list,receipt)=>{PrivateHistory++;return true;},
             RecordSystemFactForNearbySafe=(list,fact)=>Facts++,
@@ -191,6 +194,22 @@ namespace AnimusForge
             Case("hall-entry-preserves-meeting-worldmap-shortcircuit",()=>{Completion(true).Complete(7);Require(!Steps.Contains("meeting")&&!Steps.Contains("worldmap")&&Steps.Contains("summon_launch")&&Steps.Last()=="lipsync","hall-shortcircuit");});
             Case("completion-failed-group-next-step-continues",()=>{FailStep="meeting";Completion().Complete(7);Require(!Steps.Contains("worldmap")&&Steps.Contains("summon_return")&&Steps.Last()=="lipsync","completion-fail-open-group-order");});
             Case("invalid-completion-no-work",()=>{Completion().Complete(-1);Require(Steps.Count==0,"negative-completion-no-work");});
+            // Relay-turn exemption: "" = NPC-to-NPC relay, player text = direct reply, null = passive/system enqueue.
+            void Relay(string playerText,bool hero,int expectHero,int expectUnnamed,string name)
+            {
+                if(hero)Mission.Current.Agents[0].Character=new CharacterObject{HeroObject=new Hero()};
+                var item=Item();item.Content="reply [ACTION:MOOD:angry]";item.PlayerDirectedActionText=playerText;
+                Dispatch(Owner(),item);
+                Require(HeroPatience==expectHero&&UnnamedPatience==expectUnnamed,name+"-patience");
+                Require(MoodStrips>=1&&LastSpokenText!=null&&LastSpokenText.IndexOf("[ACTION:MOOD:",StringComparison.OrdinalIgnoreCase)<0,name+"-mood-stripped");
+                Require(Speech==1&&item.CompletionSource.Task.Result,name+"-speech-published");
+            }
+            Case("relay-turn-hero-skips-patience",()=>Relay("",true,0,0,"relay-hero"));
+            Case("relay-turn-unnamed-skips-patience",()=>Relay("",false,0,0,"relay-unnamed"));
+            Case("direct-reply-hero-applies-patience",()=>Relay("hello",true,1,0,"direct-hero"));
+            Case("direct-reply-unnamed-applies-patience",()=>Relay("hello",false,0,1,"direct-unnamed"));
+            Case("passive-enqueue-unnamed-applies-patience",()=>Relay(null,false,0,1,"passive-unnamed"));
+            Case("relay-detection-convention",()=>Require(SceneSpeechEffectController.IsNpcRelayTurn("")&&!SceneSpeechEffectController.IsNpcRelayTurn(null)&&!SceneSpeechEffectController.IsNpcRelayTurn("hi")&&!SceneSpeechEffectController.IsNpcRelayTurn(" "),"relay-detection"));
             Console.WriteLine("SceneSpeechEffectsRuntime PASS="+pass+" FAIL=0");
         }
     }

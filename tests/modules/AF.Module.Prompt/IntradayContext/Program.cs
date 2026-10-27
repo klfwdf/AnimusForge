@@ -115,6 +115,11 @@ internal static class Program
         }
         Check(fullRequests / (double)Math.Max(1, firstChanges) >= 1.8, "anchored window keeps its first turn across consecutive requests (changes=" + firstChanges + "/" + fullRequests + ")");
         Check(minTurns >= 12 - ConversationContextWindow.MaxAnchorShift, "anchored window shrinks by at most MaxAnchorShift turns");
+        var smallOptions = new ConversationContextOptions { RecentTurns = 6, RecentChars = 1000000 };
+        int smallMin = int.MaxValue;
+        for (int n = 7; n <= 200; n++)
+            smallMin = Math.Min(smallMin, ConversationContextWindow.SelectWindow(growing.Take(n * 2).ToList(), "", smallOptions, out _).Count(x => x.Role == "user"));
+        Check(smallMin >= 4, "small window (6 turns) gives up at most a third of its turns to the anchor (min=" + smallMin + ")");
         var shortHistory = history.Take(10).ToList();
         Check(ConversationContextWindow.Select(shortHistory, "", options).SequenceEqual(shortHistory), "window below the turn limit is not anchored or trimmed");
         var split = ConversationContextWindow.SelectWindow(history, "琥珀口令", options, out var splitRecall);

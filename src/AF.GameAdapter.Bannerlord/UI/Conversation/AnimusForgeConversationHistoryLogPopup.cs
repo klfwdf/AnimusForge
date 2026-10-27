@@ -53,11 +53,12 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 			ShoutBehavior.TryGetNativeConversationPersistentHistoryTargetForExternal(out Hero targetHero, out string targetName, out string memoryId);
 			ShoutBehavior.TryGetNativeConversationLinkTargetForExternal(out Hero resolvedTargetHero, out CharacterObject targetCharacter);
 			targetHero = targetHero ?? resolvedTargetHero;
-			List<AnimusForgeDialogueHistoryEntry> entries = targetHero != null ? MyBehavior.GetDialogueHistoryEntriesForExternal(targetHero, 260) : new List<AnimusForgeDialogueHistoryEntry>();
+			// Player-facing display query: hides autonomous court document facts only here.
+			List<AnimusForgeDialogueHistoryEntry> entries = targetHero != null ? MyBehavior.GetPlayerFacingDialogueHistoryEntriesForExternal(targetHero, 260) : new List<AnimusForgeDialogueHistoryEntry>();
 			if (entries.Count == 0 && targetHero == null && !string.IsNullOrWhiteSpace(memoryId))
 			{
 				// 读档后非 hero 原生自由对话的 session 历史不存在，右上角必须读取同一个 af_nonhero 持久历史。
-				entries = MyBehavior.GetDialogueHistoryEntriesByIdForExternal(memoryId, 260);
+				entries = MyBehavior.GetPlayerFacingDialogueHistoryEntriesByIdForExternal(memoryId, 260);
 				Logger.Log("NativeConversationHistory", "open source=persistent_nonhero memoryId=" + memoryId + " entries=" + entries.Count);
 			}
 			if (entries.Count == 0)

@@ -1157,7 +1157,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				if (compactOnly)
 				{
-					_state.MajorSummary = TrimMajorSummaryFallback(RenderPlayerHistoryTextForPrompt(_state.MajorSummary, playerDisplayName), GetMajorPromptChars());
+					// Compaction failed three times: keep the newest history, not the head.
+					_state.MajorSummary = TrimMajorSummaryKeepNewest(RenderPlayerHistoryTextForPrompt(_state.MajorSummary, playerDisplayName), _state.MajorSummary, playerDisplayName, GetMajorPromptChars());
 				}
 				else
 				{
@@ -1456,7 +1457,9 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		_state = NormalizeState(_state);
 		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		string summary = RenderPlayerHistoryTextForPrompt(_state.MajorSummary, playerName);
-		summary = NormalizeMajorSummaryForStorage(summary);
+		// Over-limit (e.g. an expanded start record before compaction) drops
+		// older text, never the newest history.
+		summary = TrimMajorSummaryKeepNewest(summary, _state.MajorSummary, playerName, GetMajorPromptChars());
 		StringBuilder sb = new StringBuilder();
 		if (!string.IsNullOrWhiteSpace(summary))
 		{
@@ -2581,7 +2584,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		try
 		{
 			_state = NormalizeState(_state);
-			_state.MajorSummary = NormalizeEditableMajorHistoryText(input);
+			_state.MajorSummary = BuildEditedMajorHistoryForStorage(input, _state.MajorSummary, BuildPlayerHistoryDisplayName());
 			_state.LastSummaryDay = GetCurrentGameDayIndex();
 			_state.SummaryRetryCount = 0;
 			_state.LastSummaryError = "";
@@ -2596,9 +2599,10 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string NormalizeEditableMajorHistoryText(string input)
+	private static string NormalizeEditableMajorHistoryText(string input, string playerName)
 	{
-		return RenderPlayerHistoryTextForPrompt((input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim(), BuildPlayerHistoryDisplayName());
+		string text = (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return text.Length == 0 ? "" : RenderPlayerHistoryTextForPrompt(text, playerName);
 	}
 
 	private static string NormalizeMajorSummaryForStorage(string input)
@@ -2629,14 +2633,79 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			sb.Append(string.IsNullOrWhiteSpace(material.GameDate) ? "" : (material.GameDate.Trim() + "："));
 			sb.Append(text);
 		}
-		return NormalizeMajorSummaryForStorage(sb.ToString());
+		// Materials are appended chronologically; overflow drops older text.
+		return TrimMajorSummaryKeepNewest(sb.ToString(), existingSummary, playerName, GetMajorPromptChars());
 	}
 
+	// Runs on daily tick / material add / summary scheduling only (not per frame).
+	// A stored start token is ~30 chars but projects to 150-330 chars of prompt
+	// prose, so measure what the prompt will actually receive.
 	private bool IsMajorSummaryOverPromptLimit()
 	{
 		int maxChars = GetMajorPromptChars();
 		string summary = (_state?.MajorSummary ?? "").Trim();
-		return maxChars > 0 && summary.Length > maxChars;
+		if (maxChars <= 0)
+		{
+			return false;
+		}
+		if (PlayerStartingHistoryRecord.ContainsToken(summary))
+		{
+			summary = NormalizeLine(RenderPlayerHistoryTextForPrompt(summary, BuildSummaryPlayerDisplayName()));
+		}
+		return summary.Length > maxChars;
+	}
+
+	// Over-limit projection keeps the newest history. If the text begins with the
+	// projected start record and it fits in half the budget, that opening fact is
+	// kept too; older middle content is the part dropped.
+	private static string TrimMajorSummaryKeepNewest(string renderedText, string rawHistory, string playerName, int maxChars)
+	{
+		string text = NormalizeLine(renderedText);
+		if (maxChars <= 0 || text.Length <= maxChars)
+		{
+			return text;
+		}
+		if (maxChars <= 3)
+		{
+			return text.Substring(text.Length - maxChars);
+		}
+		const string Gap = " ... ";
+		foreach (string token in PlayerStartingHistoryRecord.RecognizedTokens(rawHistory))
+		{
+			string opening = NormalizeLine(RenderPlayerHistoryTextForPrompt(token, playerName));
+			if (opening.Length == 0 || opening.Length > maxChars / 2 || !text.StartsWith(opening, StringComparison.Ordinal))
+			{
+				break;
+			}
+			int tailChars = maxChars - opening.Length - Gap.Length;
+			if (tailChars <= 0)
+			{
+				break;
+			}
+			return opening + Gap + text.Substring(text.Length - tailChars).TrimStart();
+		}
+		return "..." + text.Substring(text.Length - (maxChars - 3)).TrimStart();
+	}
+
+	// Editor round-trip: the editor shows the start token as UI-language prose.
+	// If that exact prose is still present on save, store the canonical token
+	// again instead of freezing UI-language text into the prompt history.
+	private static string BuildEditedMajorHistoryForStorage(string input, string storedHistory, string playerName)
+	{
+		string text = (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		foreach (string token in PlayerStartingHistoryRecord.RecognizedTokens(storedHistory))
+		{
+			string prose = NormalizeLine(RenderPlayerHistoryTextForDisplay(token, playerName));
+			int index = prose.Length == 0 ? -1 : text.IndexOf(prose, StringComparison.Ordinal);
+			if (index < 0)
+			{
+				continue;
+			}
+			string before = NormalizeEditableMajorHistoryText(text.Substring(0, index), playerName);
+			string after = NormalizeEditableMajorHistoryText(text.Substring(index + prose.Length), playerName);
+			return string.Join("\n", new[] { before, token, after }.Where(x => !string.IsNullOrWhiteSpace(x)));
+		}
+		return NormalizeEditableMajorHistoryText(text, playerName);
 	}
 
 	private static string TrimMajorSummaryFallback(string input, int maxChars)

@@ -149,14 +149,34 @@ internal static class Program
         harmony.Patch(af.GetType("AnimusForge.MyBehavior", true).GetMethod("CallAuxiliaryApiTextForExternal", All), prefix: new HarmonyMethod(typeof(Program), nameof(InvalidSummary)));
         object compact = NewOwner();
         Record(compact, "trader");
-        Set(State(compact), "MajorSummary", Token("trader") + "\n" + new string('x', 300));
+        string newest = "NEWEST-" + new string('x', 293);
+        Set(State(compact), "MajorSummary", Token("trader") + "\n" + newest);
         Set(State(compact), "SummaryRetryCount", 2);
         ((Task)Call(host, compact, "ProcessSummaryAsync")).GetAwaiter().GetResult();
         string compacted = (string)Field(State(compact), "MajorSummary");
         string expandedMerchant = string.Format(prompt["player_start_trader"], "Ada");
-        Check(compacted.StartsWith(expandedMerchant.Substring(0, Math.Min(80, expandedMerchant.Length)), StringComparison.Ordinal)
-            && compacted.Length <= 120 && !compacted.Contains("AF_PLAYER_START_V1"), "third-failure fallback projects before trim; actual=" + compacted);
+        Check(compacted.Length <= 120 && !compacted.Contains("AF_PLAYER_START_V1") && compacted.EndsWith(new string('x', 100), StringComparison.Ordinal),
+            "third-failure fallback projects before trim and keeps the newest tail; actual=" + compacted);
         Check((int)Field(State(compact), "SummaryRetryCount") == 0 && (double)Field(State(compact), "WorldNotoriety") == 0, "fallback does not award notoriety");
+
+        // Fix 1: the overflow check measures the projected prompt text, not the ~30-char token.
+        // Raw stored text fits the 120 limit, rendered text does not → compaction is due.
+        object nearLimit = NewOwner();
+        Record(nearLimit, "trader");
+        string recentTail = "Latest deed: Ada sacked the bridge fort.";
+        Set(State(nearLimit), "MajorSummary", Token("trader") + "\n" + recentTail);
+        string rawStored = (string)Field(State(nearLimit), "MajorSummary");
+        Check(rawStored.Length <= 120 && Render(rawStored).Length > 120, "fixture: raw fits, rendered overflows");
+        Check((bool)Call(host, nearLimit, "IsMajorSummaryOverPromptLimit"), "overflow check uses rendered length so compaction triggers");
+        object plain = NewOwner();
+        Set(State(plain), "MajorSummary", recentTail);
+        Check(!(bool)Call(host, plain, "IsMajorSummaryOverPromptLimit"), "short plain history is not over limit");
+        // Prompt-side projection keeps the newest history (never trims it to '...').
+        string promptHistory = (string)Call(host, nearLimit, "BuildMajorHistoryForPrompt", "Ada");
+        Check(promptHistory.Length <= 120 && promptHistory.EndsWith(recentTail, StringComparison.Ordinal), "prompt projection keeps newest history; actual=" + promptHistory);
+        // Short opening + long history: opening prose is kept with the newest tail; middle dropped.
+        string keep = (string)Call(host, null, "TrimMajorSummaryKeepNewest", "OPEN. " + new string('m', 200) + " TAIL", "", "Ada", 120);
+        Check(keep.Length <= 120 && keep.StartsWith("...", StringComparison.Ordinal) && keep.EndsWith(" TAIL", StringComparison.Ordinal), "untokened overflow keeps newest tail; actual=" + keep);
 
         Assembly game = Assembly.Load("TaleWorlds.CampaignSystem");
         Type hero = game.GetType("TaleWorlds.CampaignSystem.Hero", true);
@@ -181,6 +201,26 @@ internal static class Program
         _known = false;
         Check(((IList)Call(host, null, "CaptureExperience", observer, false, false)).Count == 0, "history still respects observer knowledge gate");
         host.GetProperty("Instance", All).SetValue(null, null);
+
+        // Fix 2: editor round-trip. Opening shows UI prose; saving it unchanged (or with edits
+        // around it) stores the canonical token again instead of UI-language prose.
+        // Runs after BuildPlayerHistoryDisplayName/GetCurrentGameDayIndex are fixture-patched.
+        object edit = NewOwner();
+        Record(edit, "trader");
+        Set(State(edit), "MajorSummary", Token("trader") + "\n" + recentTail);
+        string shown = (string)Call(host, null, "RenderPlayerHistoryTextForDisplay", (string)Field(State(edit), "MajorSummary"), _fixtureName);
+        Check(!shown.Contains("AF_PLAYER_START_V1"), "editor shows prose, not the token");
+        Call(host, edit, "ApplyPlayerMajorHistoryEditorInput", shown);
+        Check((string)Field(State(edit), "MajorSummary") == Token("trader") + "\n" + recentTail, "unchanged save restores token; actual=" + Field(State(edit), "MajorSummary"));
+        Call(host, edit, "ApplyPlayerMajorHistoryEditorInput", "Prologue note. " + shown + " Added later.");
+        string edited = (string)Field(State(edit), "MajorSummary");
+        Check(edited.StartsWith("Prologue note.\n" + Token("trader") + "\n", StringComparison.Ordinal) && edited.EndsWith("Added later.", StringComparison.Ordinal),
+            "edits around the opening keep the token in place; actual=" + edited);
+        string removedShown = (string)Call(host, null, "RenderPlayerHistoryTextForDisplay", Token("trader"), _fixtureName);
+        Call(host, edit, "ApplyPlayerMajorHistoryEditorInput", recentTail);
+        Check((string)Field(State(edit), "MajorSummary") == recentTail && !removedShown.Contains("AF_PLAYER_START_V1"), "deleting the opening prose removes the record");
+        Call(host, edit, "ApplyPlayerMajorHistoryEditorInput", "");
+        Check((string)Field(State(edit), "MajorSummary") == "", "blank save clears history");
 
         // Exercise the real session capture with actual AdvancedStartOptionsData.
         // Only Campaign.Current / AdvancedStartData getters are isolated.

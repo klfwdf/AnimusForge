@@ -2868,6 +2868,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private bool _settlementCivilianGatherOrderFinalizePending;
 		private bool _enemyFormationChargeOrderIssued;
 		private bool _conflictActive;
+		// Mission-local (not saved): riot crime + same-kingdom rebellion queue applied once.
+		private bool _playerRiotConsequencesApplied;
+		// Resident that struck the player side first; hitting it back is self-defense, not escalation.
+		private int _residentFirstAggressorAgentIndex = -1;
+		private bool _conflictStartedByResident;
 		private bool _ownedSettlementIncidentTriggered;
 		private bool _ownedSettlementMassacreActive;
 		private bool _ownedSettlementMassacreStopRequested;
@@ -3567,6 +3572,11 @@ if (_spawnedAllies
 				}
 				return;
 			}
+			if (_conflictActive && _conflictStartedByResident && !_playerRiotConsequencesApplied)
+			{
+				// A resident-initiated fight the player later escalates becomes the player's riot (once).
+				TryUpgradeResidentInitiatedConflict(affectedAgent, affectorAgent);
+			}
 			if (!_defenderConflictEnabled || _conflictActive || _victoryReached)
 			{
 				return;
@@ -3881,19 +3891,17 @@ if (_spawnedAlliedCount > 0)
 				ShadowApply(SetsUrbanCaptureEvent.StartConflict, legacyAllowed: true, site: "StartConflict");
 				if (!_armedCoup)
 				{
-					SceneTauntMissionBehavior.ApplyArmedConflictStartCrimeForExternal(
-						Settlement.CurrentSettlement?.MapFaction,
-						"sets_internal_riot_start");
-					// 同王国 NPC 先动手属于自卫，不得按玩家发动骚乱排入叛变脱离王国。
-					if (!string.Equals(source, "settlement_resident_hit_player_side", StringComparison.Ordinal))
+					// 定居点居民先动手属于自卫：既不判玩家犯罪，也不按玩家发动骚乱排入叛变脱离王国。
+					// 玩家之后若主动升级（攻击未参战的居民/守卫），由 OnAgentHit 一次性补上后果。
+					_conflictStartedByResident = string.Equals(source, ResidentHitPlayerSideConflictSource, StringComparison.Ordinal);
+					if (_conflictStartedByResident)
 					{
-						SettlementEntryTroopSelectionBehavior.QueueSameKingdomVassalRebellionAfterRiot(
-							Settlement.CurrentSettlement,
-							"sets_internal_riot_start");
+						_residentFirstAggressorAgentIndex = initialEnemy?.Index ?? -1;
+						SettlementEntryTroopSelectionLog.Log("Skipped riot crime and same-kingdom vassal rebellion queue because a settlement resident attacked the player side first. source=" + source);
 					}
 					else
 					{
-						SettlementEntryTroopSelectionLog.Log("Skipped same-kingdom vassal rebellion queue because a settlement resident attacked the player side first. source=" + source);
+						ApplyPlayerRiotStartConsequencesOnce(source);
 					}
 				}
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
@@ -3918,6 +3926,43 @@ if (_spawnedAlliedCount > 0)
 			{
 				SettlementEntryTroopSelectionLog.Log("StartConflict failed. error=" + ex);
 			}
+		}
+
+		private const string ResidentHitPlayerSideConflictSource = "settlement_resident_hit_player_side";
+
+		// Player-initiated riot consequences; guarded so start + later upgrade never double-apply.
+		private void ApplyPlayerRiotStartConsequencesOnce(string source)
+		{
+			if (_playerRiotConsequencesApplied || _armedCoup)
+			{
+				return;
+			}
+			_playerRiotConsequencesApplied = true;
+			SceneTauntMissionBehavior.ApplyArmedConflictStartCrimeForExternal(
+				Settlement.CurrentSettlement?.MapFaction,
+				"sets_internal_riot_start");
+			SettlementEntryTroopSelectionBehavior.QueueSameKingdomVassalRebellionAfterRiot(
+				Settlement.CurrentSettlement,
+				"sets_internal_riot_start");
+			SettlementEntryTroopSelectionLog.Log("Applied player riot consequences. source=" + (source ?? ""));
+		}
+
+		// Per-hit O(1) check, only while a resident-initiated conflict is active and not yet upgraded.
+		// Escalation = the player side strikes a scene defender that was not already fighting it
+		// (not the original aggressor, not a tracked combat enemy).
+		private void TryUpgradeResidentInitiatedConflict(Agent affectedAgent, Agent affectorAgent)
+		{
+			if (!_conflictStartedByResident || !_conflictActive || _victoryReached || _armedCoup || _playerRiotConsequencesApplied
+				|| affectedAgent == null
+				|| affectedAgent.Index == _residentFirstAggressorAgentIndex
+				|| _enemyAgentIndexes.Contains(affectedAgent.Index)
+				|| !IsPlayerSideAgent(affectorAgent)
+				|| IsPlayerSideAgent(affectedAgent)
+				|| !IsSceneConflictTriggerAgent(affectedAgent))
+			{
+				return;
+			}
+			ApplyPlayerRiotStartConsequencesOnce("player_escalated_resident_initiated_conflict");
 		}
 
 		private void SpawnInitialDefenderReserveWave()

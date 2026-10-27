@@ -7,7 +7,7 @@ sys.path.insert(0, str(ROOT/'tests'))
 from output_isolation import new_run_root
 p = argparse.ArgumentParser(); p.add_argument('--run-root', required=True, type=Path); args = p.parse_args()
 out = new_run_root(ROOT, 'scene-effects-mutations', args.run_root)
-for name, assertion in [('duplicate','effect-history-speech-once'),('mission','mission-no-effects'),('generation','generation-no-effects'),('epoch','epoch-before-issue-effect'),('completion-order','completion-order'),('hall-branch','hall-shortcircuit')]:
+for name, assertion in [('duplicate','effect-history-speech-once'),('mission','mission-no-effects'),('generation','generation-no-effects'),('epoch','epoch-before-issue-effect'),('completion-order','completion-order'),('hall-branch','hall-shortcircuit'),('relay-unnamed','relay-unnamed-patience')]:
     child = out/name
     result = subprocess.run([sys.executable,'-B',str(HERE/'run.py'),'--mutation',name,'--run-root',str(child)], cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=120)
     (out/(name+'.log')).write_text(result.stdout+result.stderr,encoding='utf-8')

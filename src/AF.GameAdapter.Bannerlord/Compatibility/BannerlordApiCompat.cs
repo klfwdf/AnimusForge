@@ -22,11 +22,44 @@ namespace AnimusForge;
 /// </summary>
 internal static class BannerlordApiCompat
 {
-#if BANNERLORD_1_5_OR_GREATER
-    internal const string FacialAnimationHandlerTypeName = "TaleWorlds.MountAndBlade.Source.Missions.Handlers.MissionFacialAnimationHandler";
-#else
-    internal const string FacialAnimationHandlerTypeName = "SandBox.Missions.MissionLogics.MissionFacialAnimationHandler";
-#endif
+    // 1.3.x, 1.4.5 and 1.5.5 all declare the handler in TaleWorlds.MountAndBlade
+    // (Source.Missions.Handlers); the SandBox name is only a legacy fallback.
+    // Runtime lookup, no #if: resolved on first use and cached once found. When
+    // neither resolves, the primary name is returned uncached so consumers still
+    // fail closed (type not found -> patch skipped).
+    private const string FacialAnimationHandlerPrimaryTypeName = "TaleWorlds.MountAndBlade.Source.Missions.Handlers.MissionFacialAnimationHandler";
+    private const string FacialAnimationHandlerLegacyTypeName = "SandBox.Missions.MissionLogics.MissionFacialAnimationHandler";
+    private static string _resolvedFacialAnimationHandlerTypeName;
+
+    internal static string FacialAnimationHandlerTypeName
+    {
+        get
+        {
+            string resolved = _resolvedFacialAnimationHandlerTypeName;
+            if (resolved != null) return resolved;
+            if (TryFindType(typeof(Mission).Assembly, FacialAnimationHandlerPrimaryTypeName))
+                resolved = FacialAnimationHandlerPrimaryTypeName;
+            else if (TryFindType(null, FacialAnimationHandlerLegacyTypeName + ", SandBox"))
+                resolved = FacialAnimationHandlerLegacyTypeName;
+            if (resolved == null) return FacialAnimationHandlerPrimaryTypeName;
+            _resolvedFacialAnimationHandlerTypeName = resolved;
+            return resolved;
+        }
+    }
+
+    private static bool TryFindType(Assembly assembly, string typeName)
+    {
+        try
+        {
+            return (assembly != null
+                ? assembly.GetType(typeName, throwOnError: false, ignoreCase: false)
+                : Type.GetType(typeName, throwOnError: false)) != null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     internal static TaleWorlds.Localization.TextObject GetKingdomTitle(Kingdom kingdom)
     {

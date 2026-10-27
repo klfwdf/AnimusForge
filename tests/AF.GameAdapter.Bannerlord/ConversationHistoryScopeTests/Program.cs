@@ -91,14 +91,24 @@ internal static class Program
         raw.AddRange(new[]{"Ada: First exchange", "[AFEF NPC_ACTION] "+envelopes[0], "Caladog: Second exchange", "[AF_SCENE_SESSION:9] [AFEF NPC_ACTION] "+envelopes[1], "[AFEF NPC_ACTION] Accepted the player's gift.", "[AFEF NPC_ACTION] "+envelopes[2]});
         IList days=(IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(dayType));days.Add(day);history["lord_5_1"]=days;
         string[] original=raw.ToArray();
-        IList entries=(IList)Call(adapterType,adapter,"GetDialogueHistoryEntriesById","lord_5_1",2);
+        MethodInfo display=adapterType.GetMethod("GetPlayerFacingDialogueHistoryEntriesById",All,null,new[]{typeof(string),typeof(int)},null);
+        MethodInfo model=adapterType.GetMethod("GetDialogueHistoryEntriesById",All,null,new[]{typeof(string),typeof(int)},null);
+        Check(display!=null&&model!=null,"display and model-facing readers are distinct entry points");
+        IList entries=(IList)display.Invoke(adapter,new object[]{"lord_5_1",2});
         Check(entries.Count==2,"UI tail counts two player interactions, ignoring unrelated court facts");
         Check((int)Field(entries[0],"LineOrdinal")==2&&(int)Field(entries[1],"LineOrdinal")==4,"edit/delete keeps original ordinals");
         Check((string)Field(entries[0],"Kind")=="npc"&&(string)Field(entries[1],"Kind")=="afef_npc","spoken reply and interaction fact retain roles");
         Check(raw.SequenceEqual(original)&&ReferenceEquals(history["lord_5_1"],days),"underlying NPC history and diplomatic memory retained");
-        var all=(IList)Call(adapterType,adapter,"GetDialogueHistoryEntriesById","lord_5_1",260);
+        var all=(IList)display.Invoke(adapter,new object[]{"lord_5_1",260});
         Check(all.Count==3&&(int)Field(all[0],"LineOrdinal")==0,"all UI history remains chronological");
         Check(raw.SequenceEqual(original),"repeated UI open does not delete old memory");
+        // Model-facing reader (ExecutionAddressLlm, RP item introduction, ...) is never scope-filtered.
+        var modelAll=(IList)model.Invoke(adapter,new object[]{"lord_5_1",260});
+        Check(modelAll.Count==6,"model-facing reader keeps court document facts; actual="+modelAll.Count);
+        for(int i=0;i<6;i++) Check((int)Field(modelAll[i],"LineOrdinal")==i,"model-facing reader keeps every original ordinal");
+        var modelTail=(IList)model.Invoke(adapter,new object[]{"lord_5_1",2});
+        Check(modelTail.Count==2&&(int)Field(modelTail[0],"LineOrdinal")==4&&(int)Field(modelTail[1],"LineOrdinal")==5,"model-facing tail includes newest court fact");
+        Check(raw.SequenceEqual(original),"model read does not mutate memory");
     }
     private static void VerifyVisibilityCache(Assembly af, string api)
     {

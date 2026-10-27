@@ -188,7 +188,7 @@ internal static class WeeklyReportArchivePolicy
         if (materials.Count == 0) return;
         string Date(EventMaterialReference m) => string.IsNullOrWhiteSpace(m.Label)
             ? Localize("AF_UI_Weekly_Browser_DayNumber", "Day {DAY}", ("DAY", (m.ActionDay ?? 0).ToString(CultureInfo.InvariantCulture)))
-            : m.Label.Trim();
+            : StripLegacyCalendarLabel(m.Label.Trim()); // material Label is a date field; old saves carry the legacy prefix
         string first=Date(materials[0]), last=Date(materials[materials.Count-1]);
         entry.CreatedDate=first == last ? first : first + " — " + last;
         entry.CreatedDay=materials.Max(m => m.ActionDay ?? 0);

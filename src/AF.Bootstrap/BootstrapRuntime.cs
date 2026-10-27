@@ -379,6 +379,55 @@ namespace AnimusForge.Bootstrap
                     "and the 1.4-only MobilePartyAIModel feature was absent. Bootstrap will not guess that this is 1.3.");
             }
 
+            // 1.5.x keeps the 1.4 port-patrol member, so it must be told apart before
+            // V14 is chosen. Two independent decompiled-reference markers are used
+            // (1.4.5 vs 1.5.5): Kingdom.FormalName was added in 1.5, and
+            // ExecutionRelationModel was removed in 1.5. Only an agreeing 1.4 shape
+            // selects V14; agreeing 1.5 markers select V15; anything else fails closed.
+            // This runs once per Bootstrap load, only after both version sources failed.
+            Assembly campaignSystem = mobilePartyAiModel.Assembly;
+            Type kingdomType;
+            Type executionRelationModelType;
+            try
+            {
+                kingdomType = campaignSystem.GetType(
+                    "TaleWorlds.CampaignSystem.Kingdom", throwOnError: false, ignoreCase: false);
+                executionRelationModelType = campaignSystem.GetType(
+                    "TaleWorlds.CampaignSystem.ComponentInterfaces.ExecutionRelationModel", throwOnError: false, ignoreCase: false);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "Could not inspect the Bannerlord CampaignSystem API for 1.4/1.5 feature markers.", exception);
+            }
+
+            if (kingdomType == null)
+            {
+                throw new NotSupportedException(
+                    "Could not determine the Bannerlord API line: no authoritative version was available and " +
+                    "TaleWorlds.CampaignSystem.Kingdom could not be resolved for the 1.5 feature probe.");
+            }
+
+            bool hasOneFiveFormalName = kingdomType.GetProperty(
+                "FormalName",
+                BindingFlags.Instance | BindingFlags.Public) != null;
+            bool hasPreOneFiveExecutionModel = executionRelationModelType != null;
+
+            if (hasOneFiveFormalName && !hasPreOneFiveExecutionModel)
+            {
+                RuntimeVersionText = "unknown (1.5 API feature detected)";
+                BootstrapLog.Warning("Selected Bannerlord API 1.5 by positive feature fallback.");
+                return BannerlordApiLine.V15;
+            }
+
+            if (hasOneFiveFormalName || !hasPreOneFiveExecutionModel)
+            {
+                throw new NotSupportedException(
+                    "Could not determine a supported Bannerlord API line: no authoritative version was available, " +
+                    $"and the 1.4/1.5 feature markers disagree (Kingdom.FormalName={hasOneFiveFormalName}, " +
+                    $"ExecutionRelationModel={hasPreOneFiveExecutionModel}). Bootstrap will not guess between 1.4 and 1.5.");
+            }
+
             RuntimeVersionText = "unknown (1.4 API feature detected)";
             BootstrapLog.Warning("Selected Bannerlord API 1.4 by positive feature fallback.");
             return BannerlordApiLine.V14;

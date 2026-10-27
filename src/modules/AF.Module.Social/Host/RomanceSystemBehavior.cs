@@ -731,12 +731,35 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
-			return mainHero.Children != null && mainHero.Children.Contains(hero);
+			if (mainHero.Children != null && mainHero.Children.Contains(hero))
+			{
+				return true;
+			}
+			// Former spouses (either side of the record).
+			if ((mainHero.ExSpouses != null && mainHero.ExSpouses.Contains(hero)) || (hero.ExSpouses != null && hero.ExSpouses.Contains(mainHero)))
+			{
+				return true;
+			}
+			// Grandparents / grandchildren. Per-candidate O(children) walk; no global scan.
+			if (IsGrandparentOf(hero, mainHero) || IsGrandparentOf(mainHero, hero))
+			{
+				return true;
+			}
+			return false;
 		}
 		catch
 		{
-			return false;
+			// Fail closed: an unreadable relation is treated as family and excluded.
+			return true;
 		}
+	}
+
+	private static bool IsGrandparentOf(Hero elder, Hero younger)
+	{
+		Hero father = younger.Father;
+		Hero mother = younger.Mother;
+		return (father != null && (father.Father == elder || father.Mother == elder))
+			|| (mother != null && (mother.Father == elder || mother.Mother == elder));
 	}
 
 	public static bool TryGetPrivateLoveAsPlayerRelation(Hero hero, out int relation)

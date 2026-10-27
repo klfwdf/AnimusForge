@@ -171,8 +171,9 @@ public sealed class DialogueAuxiliaryVM : ViewModel
         _entries.Clear(); HistoryDays.Clear();
         ShoutBehavior.TryGetNativeConversationPersistentHistoryTargetForExternal(out var hero, out var name, out var memoryId);
         _hero = hero ?? _hero; _targetName = name ?? DialogueUiLocalization.Text("AFD_UI_Aux_CurrentTarget", "Current conversation target");
-        var entries = _hero != null ? MyBehavior.GetDialogueHistoryEntriesForExternal(_hero, 260)
-            : !string.IsNullOrWhiteSpace(memoryId) ? MyBehavior.GetDialogueHistoryEntriesByIdForExternal(memoryId, 260) : new List<AnimusForgeDialogueHistoryEntry>();
+        // Player-facing display query (court document facts hidden); model reads stay unfiltered.
+        var entries = _hero != null ? MyBehavior.GetPlayerFacingDialogueHistoryEntriesForExternal(_hero, 260)
+            : !string.IsNullOrWhiteSpace(memoryId) ? MyBehavior.GetPlayerFacingDialogueHistoryEntriesByIdForExternal(memoryId, 260) : new List<AnimusForgeDialogueHistoryEntry>();
         if (entries.Count == 0) entries = ShoutBehavior.GetNativeConversationSessionHistoryEntriesForExternal(260);
         _entries.AddRange(entries.Where(x => x != null));
         RefreshDayLabels();

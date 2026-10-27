@@ -697,7 +697,8 @@ public static class LlmApiCompat
     internal static JObject ExtractUsageObject(JObject json)
     {
         if (json == null) return null;
-        return json["usage"] as JObject ?? json["message"]?["usage"] as JObject ?? json["usageMetadata"] as JObject;
+        // Relays may send "message" as a string/null; indexing a JValue would throw.
+        return json["usage"] as JObject ?? (json["message"] as JObject)?["usage"] as JObject ?? json["usageMetadata"] as JObject;
     }
 
     // Formats provider cache accounting only; missing fields are reported as n/a, never estimated.

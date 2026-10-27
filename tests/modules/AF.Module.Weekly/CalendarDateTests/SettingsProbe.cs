@@ -62,6 +62,19 @@ internal static class CalendarDateProbe
                 Check(((string)Get(entry,"BodyText")).Contains("卡拉迪亚") && (string)Get(record,"CreatedDate")==stored,"body and original archive remain intact "+edition);
                 Set(materials[0],"ActionDay",null);entry=Entry();
                 Check(!((string)Get(entry,"Title")).Contains("卡拉迪亚") && !((string)Get(entry,"CreatedDate")).Contains("卡拉迪亚"),"legacy fallback title and metadata cleaned "+edition);
+                // Real RefreshRecentText: legacy material Labels (old saves) are date fields and lose
+                // the CN/EN world prefix in both CreatedDate and the Summary body; snapshot prose stays intact.
+                object recent=Make("MyBehavior+EventRecordEntry");
+                var recentMaterials=(IList)Get(recent,"Materials");
+                foreach(var pair in new[]{(1,"卡拉迪亚1 八月 公元前218年"),(5,"Calradia 5 August 218 BC")}) {
+                    var material=Make("MyBehavior+EventMaterialReference");Set(material,"ActionDay",pair.Item1);Set(material,"Label",pair.Item2);
+                    Set(material,"SnapshotText","卡拉迪亚的消息 "+pair.Item1);recentMaterials.Add(material);
+                }
+                policy.GetMethod("RefreshRecentText",All).Invoke(null,new object[]{recent});
+                string summary=(string)Get(recent,"Summary");
+                Check(summary.StartsWith("1 八月 公元前218年\n",StringComparison.Ordinal) && summary.Contains("\n\n5 August 218 BC\n") && !summary.Contains("Calradia "),"RefreshRecentText summary date lines drop legacy label "+edition+"; actual="+summary);
+                Check(summary.Contains("卡拉迪亚的消息 1") && summary.Contains("卡拉迪亚的消息 5"),"RefreshRecentText keeps snapshot prose "+edition);
+                Check((string)Get(recent,"CreatedDate")=="1 八月 公元前218年 — 5 August 218 BC","RefreshRecentText CreatedDate drops legacy label "+edition);
             }
             Console.WriteLine("Checks="+checks+"; real compiled calendar/UI projection; no game/save/provider");return 0;
         }catch(Exception ex){Console.WriteLine(ex);return 1;}

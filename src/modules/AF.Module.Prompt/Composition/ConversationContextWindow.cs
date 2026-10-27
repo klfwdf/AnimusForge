@@ -60,7 +60,9 @@ internal static class ConversationContextWindow
     internal static int AnchorStart(List<Turn> turns, int start)
     {
         if (start <= 0) return start; // nothing evicted yet: the prefix is already stable
-        int last = Math.Min(start + MaxAnchorShift, turns.Count - 2); // keep at least two turns
+        // Small windows may give up at most a third of their turns to the anchor.
+        int shift = Math.Min(MaxAnchorShift, (turns.Count - start) / 3);
+        int last = Math.Min(start + shift, turns.Count - 2); // keep at least two turns
         for (int i = start; i <= last; i++)
             if (IsAnchor(turns[i])) return i;
         return start;

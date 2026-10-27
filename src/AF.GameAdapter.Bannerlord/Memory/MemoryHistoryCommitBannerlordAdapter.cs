@@ -367,7 +367,24 @@ internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntries(Hero he
 		return GetDialogueHistoryEntriesById(CampaignCharacterRecordCaptureAdapter.GetMemoryHeroId(hero), maxLines);
 	}
 
-internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(string memoryId, int maxLines)
+	// Model-facing/default query: complete NPC memory, no display scope.
+	internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(string memoryId, int maxLines)
+	{
+		return GetDialogueHistoryEntriesById(memoryId, maxLines, playerFacingDisplay: false);
+	}
+
+	// History popup/auxiliary UI only: hides autonomous court document facts.
+	internal List<AnimusForgeDialogueHistoryEntry> GetPlayerFacingDialogueHistoryEntries(Hero hero, int maxLines)
+	{
+		return GetDialogueHistoryEntriesById(CampaignCharacterRecordCaptureAdapter.GetMemoryHeroId(hero), maxLines, playerFacingDisplay: true);
+	}
+
+	internal List<AnimusForgeDialogueHistoryEntry> GetPlayerFacingDialogueHistoryEntriesById(string memoryId, int maxLines)
+	{
+		return GetDialogueHistoryEntriesById(memoryId, maxLines, playerFacingDisplay: true);
+	}
+
+	private List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(string memoryId, int maxLines, bool playerFacingDisplay)
 	{
 		List<AnimusForgeDialogueHistoryEntry> result = new List<AnimusForgeDialogueHistoryEntry>();
 		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
@@ -414,8 +431,9 @@ internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(str
 						continue;
 					}
 					// The player-facing log is the interaction history with this NPC.
-					// Autonomous court correspondence stays in the NPC's memory store.
-					if (PlayerConversationHistoryScope.IsNpcPublicDocumentFact(line)) continue;
+					// Autonomous court correspondence stays in the NPC's memory store
+					// and in every model-facing read (playerFacingDisplay == false).
+					if (playerFacingDisplay && PlayerConversationHistoryScope.IsNpcPublicDocumentFact(line)) continue;
 					ClassifyDialogueHistoryLine(line, out var speaker, out var text, out var kind);
 					result.Add(new AnimusForgeDialogueHistoryEntry
 					{

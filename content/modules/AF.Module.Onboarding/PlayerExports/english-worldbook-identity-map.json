@@ -18816,8 +18816,8 @@
         },
         "knowledge/rules/rule_城邦历史_乔马拉__城邦历史_乔马拉.json": {
           "zh_id": "rule_城邦历史_乔马拉",
-          "en_id": "rule_Settlement_History_乔马拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_乔马拉__Settlement_History_乔马拉.json"
+          "en_id": "rule_Settlement_History_Chomara",
+          "en_file": "knowledge/rules/rule_Settlement_History_Chomara__Settlement_History_Chomara.json"
         },
         "knowledge/rules/rule_城邦历史_亚历山大里亚__城邦历史_亚历山大里亚.json": {
           "zh_id": "rule_城邦历史_亚历山大里亚",
@@ -18831,28 +18831,28 @@
         },
         "knowledge/rules/rule_城邦历史_伊斯乌尔__城邦历史_伊斯乌尔.json": {
           "zh_id": "rule_城邦历史_伊斯乌尔",
-          "en_id": "rule_Settlement_History_伊斯乌尔",
-          "en_file": "knowledge/rules/rule_Settlement_History_伊斯乌尔__Settlement_History_伊斯乌尔.json"
+          "en_id": "rule_Settlement_History_Isuer",
+          "en_file": "knowledge/rules/rule_Settlement_History_Isuer__Settlement_History_Isuer.json"
         },
         "knowledge/rules/rule_城邦历史_伊斯卡__城邦历史_伊斯卡.json": {
           "zh_id": "rule_城邦历史_伊斯卡",
-          "en_id": "rule_Settlement_History_伊斯卡",
-          "en_file": "knowledge/rules/rule_Settlement_History_伊斯卡__Settlement_History_伊斯卡.json"
+          "en_id": "rule_Settlement_History_Isca",
+          "en_file": "knowledge/rules/rule_Settlement_History_Isca__Settlement_History_Isca.json"
         },
         "knowledge/rules/rule_城邦历史_伊科尼翁__城邦历史_伊科尼翁.json": {
           "zh_id": "rule_城邦历史_伊科尼翁",
-          "en_id": "rule_Settlement_History_伊科尼翁",
-          "en_file": "knowledge/rules/rule_Settlement_History_伊科尼翁__Settlement_History_伊科尼翁.json"
+          "en_id": "rule_Settlement_History_Ikonion",
+          "en_file": "knowledge/rules/rule_Settlement_History_Ikonion__Settlement_History_Ikonion.json"
         },
         "knowledge/rules/rule_城邦历史_伊科希姆__城邦历史_伊科希姆.json": {
           "zh_id": "rule_城邦历史_伊科希姆",
-          "en_id": "rule_Settlement_History_伊科希姆",
-          "en_file": "knowledge/rules/rule_Settlement_History_伊科希姆__Settlement_History_伊科希姆.json"
+          "en_id": "rule_Settlement_History_Iy_Kosim",
+          "en_file": "knowledge/rules/rule_Settlement_History_Iy_Kosim__Settlement_History_Iy_Kosim.json"
         },
         "knowledge/rules/rule_城邦历史_伊萨加达兹__城邦历史_伊萨加达兹.json": {
           "zh_id": "rule_城邦历史_伊萨加达兹",
-          "en_id": "rule_Settlement_History_伊萨加达兹",
-          "en_file": "knowledge/rules/rule_Settlement_History_伊萨加达兹__Settlement_History_伊萨加达兹.json"
+          "en_id": "rule_Settlement_History_Isagardaz",
+          "en_file": "knowledge/rules/rule_Settlement_History_Isagardaz__Settlement_History_Isagardaz.json"
         },
         "knowledge/rules/rule_城邦历史_佩拉__城邦历史_佩拉.json": {
           "zh_id": "rule_城邦历史_佩拉",
@@ -18866,33 +18866,33 @@
         },
         "knowledge/rules/rule_城邦历史_内莫索斯__城邦历史_内莫索斯.json": {
           "zh_id": "rule_城邦历史_内莫索斯",
-          "en_id": "rule_Settlement_History_内莫索斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_内莫索斯__Settlement_History_内莫索斯.json"
+          "en_id": "rule_Settlement_History_Nemossos",
+          "en_file": "knowledge/rules/rule_Settlement_History_Nemossos__Settlement_History_Nemossos.json"
         },
         "knowledge/rules/rule_城邦历史_加尔提斯__城邦历史_加尔提斯.json": {
           "zh_id": "rule_城邦历史_加尔提斯",
-          "en_id": "rule_Settlement_History_加尔提斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_加尔提斯__Settlement_History_加尔提斯.json"
+          "en_id": "rule_Settlement_History_Galtis",
+          "en_file": "knowledge/rules/rule_Settlement_History_Galtis__Settlement_History_Galtis.json"
         },
         "knowledge/rules/rule_城邦历史_加扎卡__城邦历史_加扎卡.json": {
           "zh_id": "rule_城邦历史_加扎卡",
-          "en_id": "rule_Settlement_History_加扎卡",
-          "en_file": "knowledge/rules/rule_Settlement_History_加扎卡__Settlement_History_加扎卡.json"
+          "en_id": "rule_Settlement_History_Gazaka",
+          "en_file": "knowledge/rules/rule_Settlement_History_Gazaka__Settlement_History_Gazaka.json"
         },
         "knowledge/rules/rule_城邦历史_加拉马__城邦历史_加拉马.json": {
           "zh_id": "rule_城邦历史_加拉马",
-          "en_id": "rule_Settlement_History_加拉马",
-          "en_file": "knowledge/rules/rule_Settlement_History_加拉马__Settlement_History_加拉马.json"
+          "en_id": "rule_Settlement_History_Garama",
+          "en_file": "knowledge/rules/rule_Settlement_History_Garama__Settlement_History_Garama.json"
         },
         "knowledge/rules/rule_城邦历史_加拜__城邦历史_加拜.json": {
           "zh_id": "rule_城邦历史_加拜",
-          "en_id": "rule_Settlement_History_加拜",
-          "en_file": "knowledge/rules/rule_Settlement_History_加拜__Settlement_History_加拜.json"
+          "en_id": "rule_Settlement_History_Gabai",
+          "en_file": "knowledge/rules/rule_Settlement_History_Gabai__Settlement_History_Gabai.json"
         },
         "knowledge/rules/rule_城邦历史_加达梅斯__城邦历史_加达梅斯.json": {
           "zh_id": "rule_城邦历史_加达梅斯",
-          "en_id": "rule_Settlement_History_加达梅斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_加达梅斯__Settlement_History_加达梅斯.json"
+          "en_id": "rule_Settlement_History_Ghadames",
+          "en_file": "knowledge/rules/rule_Settlement_History_Ghadames__Settlement_History_Ghadames.json"
         },
         "knowledge/rules/rule_城邦历史_加迪尔__城邦历史_加迪尔.json": {
           "zh_id": "rule_城邦历史_加迪尔",
@@ -18906,88 +18906,88 @@
         },
         "knowledge/rules/rule_城邦历史_劳加里西奥__城邦历史_劳加里西奥.json": {
           "zh_id": "rule_城邦历史_劳加里西奥",
-          "en_id": "rule_Settlement_History_劳加里西奥",
-          "en_file": "knowledge/rules/rule_Settlement_History_劳加里西奥__Settlement_History_劳加里西奥.json"
+          "en_id": "rule_Settlement_History_Laugaricio",
+          "en_file": "knowledge/rules/rule_Settlement_History_Laugaricio__Settlement_History_Laugaricio.json"
         },
         "knowledge/rules/rule_城邦历史_卡尔西达瓦__城邦历史_卡尔西达瓦.json": {
           "zh_id": "rule_城邦历史_卡尔西达瓦",
-          "en_id": "rule_Settlement_History_卡尔西达瓦",
-          "en_file": "knowledge/rules/rule_Settlement_History_卡尔西达瓦__Settlement_History_卡尔西达瓦.json"
+          "en_id": "rule_Settlement_History_Carsidava",
+          "en_file": "knowledge/rules/rule_Settlement_History_Carsidava__Settlement_History_Carsidava.json"
         },
         "knowledge/rules/rule_城邦历史_卡拉利斯__城邦历史_卡拉利斯.json": {
           "zh_id": "rule_城邦历史_卡拉利斯",
-          "en_id": "rule_Settlement_History_卡拉利斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_卡拉利斯__Settlement_History_卡拉利斯.json"
+          "en_id": "rule_Settlement_History_Caralis",
+          "en_file": "knowledge/rules/rule_Settlement_History_Caralis__Settlement_History_Caralis.json"
         },
         "knowledge/rules/rule_城邦历史_卡普亚__城邦历史_卡普亚.json": {
           "zh_id": "rule_城邦历史_卡普亚",
-          "en_id": "rule_Settlement_History_卡普亚",
-          "en_file": "knowledge/rules/rule_Settlement_History_卡普亚__Settlement_History_卡普亚.json"
+          "en_id": "rule_Settlement_History_Capua",
+          "en_file": "knowledge/rules/rule_Settlement_History_Capua__Settlement_History_Capua.json"
         },
         "knowledge/rules/rule_城邦历史_卡穆洛杜侬__城邦历史_卡穆洛杜侬.json": {
           "zh_id": "rule_城邦历史_卡穆洛杜侬",
-          "en_id": "rule_Settlement_History_卡穆洛杜侬",
-          "en_file": "knowledge/rules/rule_Settlement_History_卡穆洛杜侬__Settlement_History_卡穆洛杜侬.json"
+          "en_id": "rule_Settlement_History_Camulodunon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Camulodunon__Settlement_History_Camulodunon.json"
         },
         "knowledge/rules/rule_城邦历史_卡苏吉斯__城邦历史_卡苏吉斯.json": {
           "zh_id": "rule_城邦历史_卡苏吉斯",
-          "en_id": "rule_Settlement_History_卡苏吉斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_卡苏吉斯__Settlement_History_卡苏吉斯.json"
+          "en_id": "rule_Settlement_History_Casurgis",
+          "en_file": "knowledge/rules/rule_Settlement_History_Casurgis__Settlement_History_Casurgis.json"
         },
         "knowledge/rules/rule_城邦历史_叙拉古__城邦历史_叙拉古.json": {
           "zh_id": "rule_城邦历史_叙拉古",
-          "en_id": "rule_Settlement_History_叙拉古",
-          "en_file": "knowledge/rules/rule_Settlement_History_叙拉古__Settlement_History_叙拉古.json"
+          "en_id": "rule_Settlement_History_Syracusae",
+          "en_file": "knowledge/rules/rule_Settlement_History_Syracusae__Settlement_History_Syracusae.json"
         },
         "knowledge/rules/rule_城邦历史_叶斯里卜__城邦历史_叶斯里卜.json": {
           "zh_id": "rule_城邦历史_叶斯里卜",
-          "en_id": "rule_Settlement_History_叶斯里卜",
-          "en_file": "knowledge/rules/rule_Settlement_History_叶斯里卜__Settlement_History_叶斯里卜.json"
+          "en_id": "rule_Settlement_History_Yathrib",
+          "en_file": "knowledge/rules/rule_Settlement_History_Yathrib__Settlement_History_Yathrib.json"
         },
         "knowledge/rules/rule_城邦历史_吉尔达__城邦历史_吉尔达.json": {
           "zh_id": "rule_城邦历史_吉尔达",
-          "en_id": "rule_Settlement_History_吉尔达",
-          "en_file": "knowledge/rules/rule_Settlement_History_吉尔达__Settlement_History_吉尔达.json"
+          "en_id": "rule_Settlement_History_Kirtan",
+          "en_file": "knowledge/rules/rule_Settlement_History_Kirtan__Settlement_History_Kirtan.json"
         },
         "knowledge/rules/rule_城邦历史_哈尔莫济凯__城邦历史_哈尔莫济凯.json": {
           "zh_id": "rule_城邦历史_哈尔莫济凯",
-          "en_id": "rule_Settlement_History_哈尔莫济凯",
-          "en_file": "knowledge/rules/rule_Settlement_History_哈尔莫济凯__Settlement_History_哈尔莫济凯.json"
+          "en_id": "rule_Settlement_History_Harmozike",
+          "en_file": "knowledge/rules/rule_Settlement_History_Harmozike__Settlement_History_Harmozike.json"
         },
         "knowledge/rules/rule_城邦历史_哈巴诺兹__城邦历史_哈巴诺兹.json": {
           "zh_id": "rule_城邦历史_哈巴诺兹",
-          "en_id": "rule_Settlement_History_哈巴诺兹",
-          "en_file": "knowledge/rules/rule_Settlement_History_哈巴诺兹__Settlement_History_哈巴诺兹.json"
+          "en_id": "rule_Settlement_History_Habanoz",
+          "en_file": "knowledge/rules/rule_Settlement_History_Habanoz__Settlement_History_Habanoz.json"
         },
         "knowledge/rules/rule_城邦历史_埃克巴坦那__城邦历史_埃克巴坦那.json": {
           "zh_id": "rule_城邦历史_埃克巴坦那",
-          "en_id": "rule_Settlement_History_埃克巴坦那",
-          "en_file": "knowledge/rules/rule_Settlement_History_埃克巴坦那__Settlement_History_埃克巴坦那.json"
+          "en_id": "rule_Settlement_History_Ekbatana",
+          "en_file": "knowledge/rules/rule_Settlement_History_Ekbatana__Settlement_History_Ekbatana.json"
         },
         "knowledge/rules/rule_城邦历史_埃布拉纳__城邦历史_埃布拉纳.json": {
           "zh_id": "rule_城邦历史_埃布拉纳",
-          "en_id": "rule_Settlement_History_埃布拉纳",
-          "en_file": "knowledge/rules/rule_Settlement_History_埃布拉纳__Settlement_History_埃布拉纳.json"
+          "en_id": "rule_Settlement_History_Eblana",
+          "en_file": "knowledge/rules/rule_Settlement_History_Eblana__Settlement_History_Eblana.json"
         },
         "knowledge/rules/rule_城邦历史_塔兰托__城邦历史_塔兰托.json": {
           "zh_id": "rule_城邦历史_塔兰托",
-          "en_id": "rule_Settlement_History_塔兰托",
-          "en_file": "knowledge/rules/rule_Settlement_History_塔兰托__Settlement_History_塔兰托.json"
+          "en_id": "rule_Settlement_History_Tarentum",
+          "en_file": "knowledge/rules/rule_Settlement_History_Tarentum__Settlement_History_Tarentum.json"
         },
         "knowledge/rules/rule_城邦历史_塔奈斯__城邦历史_塔奈斯.json": {
           "zh_id": "rule_城邦历史_塔奈斯",
-          "en_id": "rule_Settlement_History_塔奈斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_塔奈斯__Settlement_History_塔奈斯.json"
+          "en_id": "rule_Settlement_History_Tanais",
+          "en_file": "knowledge/rules/rule_Settlement_History_Tanais__Settlement_History_Tanais.json"
         },
         "knowledge/rules/rule_城邦历史_塔拉科__城邦历史_塔拉科.json": {
           "zh_id": "rule_城邦历史_塔拉科",
-          "en_id": "rule_Settlement_History_塔拉科",
-          "en_file": "knowledge/rules/rule_Settlement_History_塔拉科__Settlement_History_塔拉科.json"
+          "en_id": "rule_Settlement_History_Tarraco",
+          "en_file": "knowledge/rules/rule_Settlement_History_Tarraco__Settlement_History_Tarraco.json"
         },
         "knowledge/rules/rule_城邦历史_塞杰斯提卡__城邦历史_塞杰斯提卡.json": {
           "zh_id": "rule_城邦历史_塞杰斯提卡",
-          "en_id": "rule_Settlement_History_塞杰斯提卡",
-          "en_file": "knowledge/rules/rule_Settlement_History_塞杰斯提卡__Settlement_History_塞杰斯提卡.json"
+          "en_id": "rule_Settlement_History_Segestica",
+          "en_file": "knowledge/rules/rule_Settlement_History_Segestica__Settlement_History_Segestica.json"
         },
         "knowledge/rules/rule_城邦历史_塞琉西亚__城邦历史_塞琉西亚.json": {
           "zh_id": "rule_城邦历史_塞琉西亚",
@@ -18996,43 +18996,43 @@
         },
         "knowledge/rules/rule_城邦历史_塞纳本__城邦历史_塞纳本.json": {
           "zh_id": "rule_城邦历史_塞纳本",
-          "en_id": "rule_Settlement_History_塞纳本",
-          "en_file": "knowledge/rules/rule_Settlement_History_塞纳本__Settlement_History_塞纳本.json"
+          "en_id": "rule_Settlement_History_Cenabon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Cenabon__Settlement_History_Cenabon.json"
         },
         "knowledge/rules/rule_城邦历史_大莱普提斯__城邦历史_大莱普提斯.json": {
           "zh_id": "rule_城邦历史_大莱普提斯",
-          "en_id": "rule_Settlement_History_大莱普提斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_大莱普提斯__Settlement_History_大莱普提斯.json"
+          "en_id": "rule_Settlement_History_Lepqi",
+          "en_file": "knowledge/rules/rule_Settlement_History_Lepqi__Settlement_History_Lepqi.json"
         },
         "knowledge/rules/rule_城邦历史_奥伊乌姆__城邦历史_奥伊乌姆.json": {
           "zh_id": "rule_城邦历史_奥伊乌姆",
-          "en_id": "rule_Settlement_History_奥伊乌姆",
-          "en_file": "knowledge/rules/rule_Settlement_History_奥伊乌姆__Settlement_History_奥伊乌姆.json"
+          "en_id": "rule_Settlement_History_Oium",
+          "en_file": "knowledge/rules/rule_Settlement_History_Oium__Settlement_History_Oium.json"
         },
         "knowledge/rules/rule_城邦历史_奥吉拉__城邦历史_奥吉拉.json": {
           "zh_id": "rule_城邦历史_奥吉拉",
-          "en_id": "rule_Settlement_History_奥吉拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_奥吉拉__Settlement_History_奥吉拉.json"
+          "en_id": "rule_Settlement_History_Augila",
+          "en_file": "knowledge/rules/rule_Settlement_History_Augila__Settlement_History_Augila.json"
         },
         "knowledge/rules/rule_城邦历史_奥尔比亚__城邦历史_奥尔比亚.json": {
           "zh_id": "rule_城邦历史_奥尔比亚",
-          "en_id": "rule_Settlement_History_奥尔比亚",
-          "en_file": "knowledge/rules/rule_Settlement_History_奥尔比亚__Settlement_History_奥尔比亚.json"
+          "en_id": "rule_Settlement_History_Olbia",
+          "en_file": "knowledge/rules/rule_Settlement_History_Olbia__Settlement_History_Olbia.json"
         },
         "knowledge/rules/rule_城邦历史_奥德索斯__城邦历史_奥德索斯.json": {
           "zh_id": "rule_城邦历史_奥德索斯",
-          "en_id": "rule_Settlement_History_奥德索斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_奥德索斯__Settlement_History_奥德索斯.json"
+          "en_id": "rule_Settlement_History_Odessos",
+          "en_file": "knowledge/rules/rule_Settlement_History_Odessos__Settlement_History_Odessos.json"
         },
         "knowledge/rules/rule_城邦历史_奥德里萨__城邦历史_奥德里萨.json": {
           "zh_id": "rule_城邦历史_奥德里萨",
-          "en_id": "rule_Settlement_History_奥德里萨",
-          "en_file": "knowledge/rules/rule_Settlement_History_奥德里萨__Settlement_History_奥德里萨.json"
+          "en_id": "rule_Settlement_History_Odryssa",
+          "en_file": "knowledge/rules/rule_Settlement_History_Odryssa__Settlement_History_Odryssa.json"
         },
         "knowledge/rules/rule_城邦历史_安卡拉__城邦历史_安卡拉.json": {
           "zh_id": "rule_城邦历史_安卡拉",
-          "en_id": "rule_Settlement_History_安卡拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_安卡拉__Settlement_History_安卡拉.json"
+          "en_id": "rule_Settlement_History_Ankyra",
+          "en_file": "knowledge/rules/rule_Settlement_History_Ankyra__Settlement_History_Ankyra.json"
         },
         "knowledge/rules/rule_城邦历史_安条克__城邦历史_安条克.json": {
           "zh_id": "rule_城邦历史_安条克",
@@ -19041,118 +19041,118 @@
         },
         "knowledge/rules/rule_城邦历史_尼亚波利斯__城邦历史_尼亚波利斯.json": {
           "zh_id": "rule_城邦历史_尼亚波利斯",
-          "en_id": "rule_Settlement_History_尼亚波利斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_尼亚波利斯__Settlement_History_尼亚波利斯.json"
+          "en_id": "rule_Settlement_History_Neapolis",
+          "en_file": "knowledge/rules/rule_Settlement_History_Neapolis__Settlement_History_Neapolis.json"
         },
         "knowledge/rules/rule_城邦历史_尼科美底亚__城邦历史_尼科美底亚.json": {
           "zh_id": "rule_城邦历史_尼科美底亚",
-          "en_id": "rule_Settlement_History_尼科美底亚",
-          "en_file": "knowledge/rules/rule_Settlement_History_尼科美底亚__Settlement_History_尼科美底亚.json"
+          "en_id": "rule_Settlement_History_Nikomedeia",
+          "en_file": "knowledge/rules/rule_Settlement_History_Nikomedeia__Settlement_History_Nikomedeia.json"
         },
         "knowledge/rules/rule_城邦历史_巴克特拉__城邦历史_巴克特拉.json": {
           "zh_id": "rule_城邦历史_巴克特拉",
-          "en_id": "rule_Settlement_History_巴克特拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_巴克特拉__Settlement_History_巴克特拉.json"
+          "en_id": "rule_Settlement_History_Baktra",
+          "en_file": "knowledge/rules/rule_Settlement_History_Baktra__Settlement_History_Baktra.json"
         },
         "knowledge/rules/rule_城邦历史_巴加孔__城邦历史_巴加孔.json": {
           "zh_id": "rule_城邦历史_巴加孔",
-          "en_id": "rule_Settlement_History_巴加孔",
-          "en_file": "knowledge/rules/rule_Settlement_History_巴加孔__Settlement_History_巴加孔.json"
+          "en_id": "rule_Settlement_History_Bagacon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Bagacon__Settlement_History_Bagacon.json"
         },
         "knowledge/rules/rule_城邦历史_巴鲁斯塔纳__城邦历史_巴鲁斯塔纳.json": {
           "zh_id": "rule_城邦历史_巴鲁斯塔纳",
-          "en_id": "rule_Settlement_History_巴鲁斯塔纳",
-          "en_file": "knowledge/rules/rule_Settlement_History_巴鲁斯塔纳__Settlement_History_巴鲁斯塔纳.json"
+          "en_id": "rule_Settlement_History_Barustana",
+          "en_file": "knowledge/rules/rule_Settlement_History_Barustana__Settlement_History_Barustana.json"
         },
         "knowledge/rules/rule_城邦历史_布哈拉__城邦历史_布哈拉.json": {
           "zh_id": "rule_城邦历史_布哈拉",
-          "en_id": "rule_Settlement_History_布哈拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_布哈拉__Settlement_History_布哈拉.json"
+          "en_id": "rule_Settlement_History_Bukhara",
+          "en_file": "knowledge/rules/rule_Settlement_History_Bukhara__Settlement_History_Bukhara.json"
         },
         "knowledge/rules/rule_城邦历史_布尔迪加拉__城邦历史_布尔迪加拉.json": {
           "zh_id": "rule_城邦历史_布尔迪加拉",
-          "en_id": "rule_Settlement_History_布尔迪加拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_布尔迪加拉__Settlement_History_布尔迪加拉.json"
+          "en_id": "rule_Settlement_History_Burdigala",
+          "en_file": "knowledge/rules/rule_Settlement_History_Burdigala__Settlement_History_Burdigala.json"
         },
         "knowledge/rules/rule_城邦历史_布拉卡拉__城邦历史_布拉卡拉.json": {
           "zh_id": "rule_城邦历史_布拉卡拉",
-          "en_id": "rule_Settlement_History_布拉卡拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_布拉卡拉__Settlement_History_布拉卡拉.json"
+          "en_id": "rule_Settlement_History_Bracara",
+          "en_file": "knowledge/rules/rule_Settlement_History_Bracara__Settlement_History_Bracara.json"
         },
         "knowledge/rules/rule_城邦历史_希拉__城邦历史_希拉.json": {
           "zh_id": "rule_城邦历史_希拉",
-          "en_id": "rule_Settlement_History_希拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_希拉__Settlement_History_希拉.json"
+          "en_id": "rule_Settlement_History_Hira",
+          "en_file": "knowledge/rules/rule_Settlement_History_Hira__Settlement_History_Hira.json"
         },
         "knowledge/rules/rule_城邦历史_帕加马__城邦历史_帕加马.json": {
           "zh_id": "rule_城邦历史_帕加马",
-          "en_id": "rule_Settlement_History_帕加马",
-          "en_file": "knowledge/rules/rule_Settlement_History_帕加马__Settlement_History_帕加马.json"
+          "en_id": "rule_Settlement_History_Pergamon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Pergamon__Settlement_History_Pergamon.json"
         },
         "knowledge/rules/rule_城邦历史_帕塔维乌姆__城邦历史_帕塔维乌姆.json": {
           "zh_id": "rule_城邦历史_帕塔维乌姆",
-          "en_id": "rule_Settlement_History_帕塔维乌姆",
-          "en_file": "knowledge/rules/rule_Settlement_History_帕塔维乌姆__Settlement_History_帕塔维乌姆.json"
+          "en_id": "rule_Settlement_History_Patavium",
+          "en_file": "knowledge/rules/rule_Settlement_History_Patavium__Settlement_History_Patavium.json"
         },
         "knowledge/rules/rule_城邦历史_帕尔米拉__城邦历史_帕尔米拉.json": {
           "zh_id": "rule_城邦历史_帕尔米拉",
-          "en_id": "rule_Settlement_History_帕尔米拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_帕尔米拉__Settlement_History_帕尔米拉.json"
+          "en_id": "rule_Settlement_History_Palmyra",
+          "en_file": "knowledge/rules/rule_Settlement_History_Palmyra__Settlement_History_Palmyra.json"
         },
         "knowledge/rules/rule_城邦历史_帕恩__城邦历史_帕恩.json": {
           "zh_id": "rule_城邦历史_帕恩",
-          "en_id": "rule_Settlement_History_帕恩",
-          "en_file": "knowledge/rules/rule_Settlement_History_帕恩__Settlement_History_帕恩.json"
+          "en_id": "rule_Settlement_History_Pahn",
+          "en_file": "knowledge/rules/rule_Settlement_History_Pahn__Settlement_History_Pahn.json"
         },
         "knowledge/rules/rule_城邦历史_廷吉斯__城邦历史_廷吉斯.json": {
           "zh_id": "rule_城邦历史_廷吉斯",
-          "en_id": "rule_Settlement_History_廷吉斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_廷吉斯__Settlement_History_廷吉斯.json"
+          "en_id": "rule_Settlement_History_Tingi",
+          "en_file": "knowledge/rules/rule_Settlement_History_Tingi__Settlement_History_Tingi.json"
         },
         "knowledge/rules/rule_城邦历史_弗拉达__城邦历史_弗拉达.json": {
           "zh_id": "rule_城邦历史_弗拉达",
-          "en_id": "rule_Settlement_History_弗拉达",
-          "en_file": "knowledge/rules/rule_Settlement_History_弗拉达__Settlement_History_弗拉达.json"
+          "en_id": "rule_Settlement_History_Phrada",
+          "en_file": "knowledge/rules/rule_Settlement_History_Phrada__Settlement_History_Phrada.json"
         },
         "knowledge/rules/rule_城邦历史_德拉亚希尔__城邦历史_德拉亚希尔.json": {
           "zh_id": "rule_城邦历史_德拉亚希尔",
-          "en_id": "rule_Settlement_History_德拉亚希尔",
-          "en_file": "knowledge/rules/rule_Settlement_History_德拉亚希尔__Settlement_History_德拉亚希尔.json"
+          "en_id": "rule_Settlement_History_Drayashir",
+          "en_file": "knowledge/rules/rule_Settlement_History_Drayashir__Settlement_History_Drayashir.json"
         },
         "knowledge/rules/rule_城邦历史_托勒迈斯·塞隆__城邦历史_托勒迈斯·塞隆.json": {
           "zh_id": "rule_城邦历史_托勒迈斯·塞隆",
-          "en_id": "rule_Settlement_History_托勒迈斯·塞隆",
-          "en_file": "knowledge/rules/rule_Settlement_History_托勒迈斯·塞隆__Settlement_History_托勒迈斯·塞隆.json"
+          "en_id": "rule_Settlement_History_Ptolemais_Theron",
+          "en_file": "knowledge/rules/rule_Settlement_History_Ptolemais_Theron__Settlement_History_Ptolemais_Theron.json"
         },
         "knowledge/rules/rule_城邦历史_托勒迈斯·赫米乌__城邦历史_托勒迈斯·赫米乌.json": {
           "zh_id": "rule_城邦历史_托勒迈斯·赫米乌",
-          "en_id": "rule_Settlement_History_托勒迈斯·赫米乌",
-          "en_file": "knowledge/rules/rule_Settlement_History_托勒迈斯·赫米乌__Settlement_History_托勒迈斯·赫米乌.json"
+          "en_id": "rule_Settlement_History_Ptolemais_Hermiou",
+          "en_file": "knowledge/rules/rule_Settlement_History_Ptolemais_Hermiou__Settlement_History_Ptolemais_Hermiou.json"
         },
         "knowledge/rules/rule_城邦历史_托洛萨__城邦历史_托洛萨.json": {
           "zh_id": "rule_城邦历史_托洛萨",
-          "en_id": "rule_Settlement_History_托洛萨",
-          "en_file": "knowledge/rules/rule_Settlement_History_托洛萨__Settlement_History_托洛萨.json"
+          "en_id": "rule_Settlement_History_Tolosa",
+          "en_file": "knowledge/rules/rule_Settlement_History_Tolosa__Settlement_History_Tolosa.json"
         },
         "knowledge/rules/rule_城邦历史_托莱图姆__城邦历史_托莱图姆.json": {
           "zh_id": "rule_城邦历史_托莱图姆",
-          "en_id": "rule_Settlement_History_托莱图姆",
-          "en_file": "knowledge/rules/rule_Settlement_History_托莱图姆__Settlement_History_托莱图姆.json"
+          "en_id": "rule_Settlement_History_Toletum",
+          "en_file": "knowledge/rules/rule_Settlement_History_Toletum__Settlement_History_Toletum.json"
         },
         "knowledge/rules/rule_城邦历史_拉哈__城邦历史_拉哈.json": {
           "zh_id": "rule_城邦历史_拉哈",
-          "en_id": "rule_Settlement_History_拉哈",
-          "en_file": "knowledge/rules/rule_Settlement_History_拉哈__Settlement_History_拉哈.json"
+          "en_id": "rule_Settlement_History_Raha",
+          "en_file": "knowledge/rules/rule_Settlement_History_Raha__Settlement_History_Raha.json"
         },
         "knowledge/rules/rule_城邦历史_拉达斯博纳__城邦历史_拉达斯博纳.json": {
           "zh_id": "rule_城邦历史_拉达斯博纳",
-          "en_id": "rule_Settlement_History_拉达斯博纳",
-          "en_file": "knowledge/rules/rule_Settlement_History_拉达斯博纳__Settlement_History_拉达斯博纳.json"
+          "en_id": "rule_Settlement_History_Radasbona",
+          "en_file": "knowledge/rules/rule_Settlement_History_Radasbona__Settlement_History_Radasbona.json"
         },
         "knowledge/rules/rule_城邦历史_斯泰纳堡兹__城邦历史_斯泰纳堡兹.json": {
           "zh_id": "rule_城邦历史_斯泰纳堡兹",
-          "en_id": "rule_Settlement_History_斯泰纳堡兹",
-          "en_file": "knowledge/rules/rule_Settlement_History_斯泰纳堡兹__Settlement_History_斯泰纳堡兹.json"
+          "en_id": "rule_Settlement_History_Stainaburgz",
+          "en_file": "knowledge/rules/rule_Settlement_History_Stainaburgz__Settlement_History_Stainaburgz.json"
         },
         "knowledge/rules/rule_城邦历史_新迦太基__城邦历史_新迦太基.json": {
           "zh_id": "rule_城邦历史_新迦太基",
@@ -19161,133 +19161,133 @@
         },
         "knowledge/rules/rule_城邦历史_昔兰尼__城邦历史_昔兰尼.json": {
           "zh_id": "rule_城邦历史_昔兰尼",
-          "en_id": "rule_Settlement_History_昔兰尼",
-          "en_file": "knowledge/rules/rule_Settlement_History_昔兰尼__Settlement_History_昔兰尼.json"
+          "en_id": "rule_Settlement_History_Kyrene",
+          "en_file": "knowledge/rules/rule_Settlement_History_Kyrene__Settlement_History_Kyrene.json"
         },
         "knowledge/rules/rule_城邦历史_普努布斯__城邦历史_普努布斯.json": {
           "zh_id": "rule_城邦历史_普努布斯",
-          "en_id": "rule_Settlement_History_普努布斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_普努布斯__Settlement_History_普努布斯.json"
+          "en_id": "rule_Settlement_History_Pnubs",
+          "en_file": "knowledge/rules/rule_Settlement_History_Pnubs__Settlement_History_Pnubs.json"
         },
         "knowledge/rules/rule_城邦历史_普拉__城邦历史_普拉.json": {
           "zh_id": "rule_城邦历史_普拉",
-          "en_id": "rule_Settlement_History_普拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_普拉__Settlement_History_普拉.json"
+          "en_id": "rule_Settlement_History_Pola",
+          "en_file": "knowledge/rules/rule_Settlement_History_Pola__Settlement_History_Pola.json"
         },
         "knowledge/rules/rule_城邦历史_杜比奥斯__城邦历史_杜比奥斯.json": {
           "zh_id": "rule_城邦历史_杜比奥斯",
-          "en_id": "rule_Settlement_History_杜比奥斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_杜比奥斯__Settlement_History_杜比奥斯.json"
+          "en_id": "rule_Settlement_History_Doubios",
+          "en_file": "knowledge/rules/rule_Settlement_History_Doubios__Settlement_History_Doubios.json"
         },
         "knowledge/rules/rule_城邦历史_杜纳__城邦历史_杜纳.json": {
           "zh_id": "rule_城邦历史_杜纳",
-          "en_id": "rule_Settlement_History_杜纳",
-          "en_file": "knowledge/rules/rule_Settlement_History_杜纳__Settlement_History_杜纳.json"
+          "en_id": "rule_Settlement_History_Duna",
+          "en_file": "knowledge/rules/rule_Settlement_History_Duna__Settlement_History_Duna.json"
         },
         "knowledge/rules/rule_城邦历史_杜马萨__城邦历史_杜马萨.json": {
           "zh_id": "rule_城邦历史_杜马萨",
-          "en_id": "rule_Settlement_History_杜马萨",
-          "en_file": "knowledge/rules/rule_Settlement_History_杜马萨__Settlement_History_杜马萨.json"
+          "en_id": "rule_Settlement_History_Dumatha",
+          "en_file": "knowledge/rules/rule_Settlement_History_Dumatha__Settlement_History_Dumatha.json"
         },
         "knowledge/rules/rule_城邦历史_查巴拉__城邦历史_查巴拉.json": {
           "zh_id": "rule_城邦历史_查巴拉",
-          "en_id": "rule_Settlement_History_查巴拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_查巴拉__Settlement_History_查巴拉.json"
+          "en_id": "rule_Settlement_History_Chabala",
+          "en_file": "knowledge/rules/rule_Settlement_History_Chabala__Settlement_History_Chabala.json"
         },
         "knowledge/rules/rule_城邦历史_格拉__城邦历史_格拉.json": {
           "zh_id": "rule_城邦历史_格拉",
-          "en_id": "rule_Settlement_History_格拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_格拉__Settlement_History_格拉.json"
+          "en_id": "rule_Settlement_History_Gherra",
+          "en_file": "knowledge/rules/rule_Settlement_History_Gherra__Settlement_History_Gherra.json"
         },
         "knowledge/rules/rule_城邦历史_格隆诺斯__城邦历史_格隆诺斯.json": {
           "zh_id": "rule_城邦历史_格隆诺斯",
-          "en_id": "rule_Settlement_History_格隆诺斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_格隆诺斯__Settlement_History_格隆诺斯.json"
+          "en_id": "rule_Settlement_History_Gelonos",
+          "en_file": "knowledge/rules/rule_Settlement_History_Gelonos__Settlement_History_Gelonos.json"
         },
         "knowledge/rules/rule_城邦历史_梅尔夫__城邦历史_梅尔夫.json": {
           "zh_id": "rule_城邦历史_梅尔夫",
-          "en_id": "rule_Settlement_History_梅尔夫",
-          "en_file": "knowledge/rules/rule_Settlement_History_梅尔夫__Settlement_History_梅尔夫.json"
+          "en_id": "rule_Settlement_History_Antiocheia_Enudros",
+          "en_file": "knowledge/rules/rule_Settlement_History_Antiocheia_Enudros__Settlement_History_Antiocheia_Enudros.json"
         },
         "knowledge/rules/rule_城邦历史_欧代蒙阿拉伯__城邦历史_欧代蒙阿拉伯.json": {
           "zh_id": "rule_城邦历史_欧代蒙阿拉伯",
-          "en_id": "rule_Settlement_History_欧代蒙阿拉伯",
-          "en_file": "knowledge/rules/rule_Settlement_History_欧代蒙阿拉伯__Settlement_History_欧代蒙阿拉伯.json"
+          "en_id": "rule_Settlement_History_Eudaimon_Arabia",
+          "en_file": "knowledge/rules/rule_Settlement_History_Eudaimon_Arabia__Settlement_History_Eudaimon_Arabia.json"
         },
         "knowledge/rules/rule_城邦历史_欧塔胡尔马兹__城邦历史_欧塔胡尔马兹.json": {
           "zh_id": "rule_城邦历史_欧塔胡尔马兹",
-          "en_id": "rule_Settlement_History_欧塔胡尔马兹",
-          "en_file": "knowledge/rules/rule_Settlement_History_欧塔胡尔马兹__Settlement_History_欧塔胡尔马兹.json"
+          "en_id": "rule_Settlement_History_Eutahulmaz",
+          "en_file": "knowledge/rules/rule_Settlement_History_Eutahulmaz__Settlement_History_Eutahulmaz.json"
         },
         "knowledge/rules/rule_城邦历史_沃拉泰拉__城邦历史_沃拉泰拉.json": {
           "zh_id": "rule_城邦历史_沃拉泰拉",
-          "en_id": "rule_Settlement_History_沃拉泰拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_沃拉泰拉__Settlement_History_沃拉泰拉.json"
+          "en_id": "rule_Settlement_History_Volaterrae",
+          "en_file": "knowledge/rules/rule_Settlement_History_Volaterrae__Settlement_History_Volaterrae.json"
         },
         "knowledge/rules/rule_城邦历史_法锡斯__城邦历史_法锡斯.json": {
           "zh_id": "rule_城邦历史_法锡斯",
-          "en_id": "rule_Settlement_History_法锡斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_法锡斯__Settlement_History_法锡斯.json"
+          "en_id": "rule_Settlement_History_Phasis",
+          "en_file": "knowledge/rules/rule_Settlement_History_Phasis__Settlement_History_Phasis.json"
         },
         "knowledge/rules/rule_城邦历史_波斯波利斯__城邦历史_波斯波利斯.json": {
           "zh_id": "rule_城邦历史_波斯波利斯",
-          "en_id": "rule_Settlement_History_波斯波利斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_波斯波利斯__Settlement_History_波斯波利斯.json"
+          "en_id": "rule_Settlement_History_Persepolis",
+          "en_file": "knowledge/rules/rule_Settlement_History_Persepolis__Settlement_History_Persepolis.json"
         },
         "knowledge/rules/rule_城邦历史_波隆达瓦__城邦历史_波隆达瓦.json": {
           "zh_id": "rule_城邦历史_波隆达瓦",
-          "en_id": "rule_Settlement_History_波隆达瓦",
-          "en_file": "knowledge/rules/rule_Settlement_History_波隆达瓦__Settlement_History_波隆达瓦.json"
+          "en_id": "rule_Settlement_History_Polondava",
+          "en_file": "knowledge/rules/rule_Settlement_History_Polondava__Settlement_History_Polondava.json"
         },
         "knowledge/rules/rule_城邦历史_海拉法利萨兹__城邦历史_海拉法利萨兹.json": {
           "zh_id": "rule_城邦历史_海拉法利萨兹",
-          "en_id": "rule_Settlement_History_海拉法利萨兹",
-          "en_file": "knowledge/rules/rule_Settlement_History_海拉法利萨兹__Settlement_History_海拉法利萨兹.json"
+          "en_id": "rule_Settlement_History_Hailafalisaz",
+          "en_file": "knowledge/rules/rule_Settlement_History_Hailafalisaz__Settlement_History_Hailafalisaz.json"
         },
         "knowledge/rules/rule_城邦历史_潘提卡派昂__城邦历史_潘提卡派昂.json": {
           "zh_id": "rule_城邦历史_潘提卡派昂",
-          "en_id": "rule_Settlement_History_潘提卡派昂",
-          "en_file": "knowledge/rules/rule_Settlement_History_潘提卡派昂__Settlement_History_潘提卡派昂.json"
+          "en_id": "rule_Settlement_History_Pantikapaion",
+          "en_file": "knowledge/rules/rule_Settlement_History_Pantikapaion__Settlement_History_Pantikapaion.json"
         },
         "knowledge/rules/rule_城邦历史_潘提马拉__城邦历史_潘提马拉.json": {
           "zh_id": "rule_城邦历史_潘提马拉",
-          "en_id": "rule_Settlement_History_潘提马拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_潘提马拉__Settlement_History_潘提马拉.json"
+          "en_id": "rule_Settlement_History_Pantimara",
+          "en_file": "knowledge/rules/rule_Settlement_History_Pantimara__Settlement_History_Pantimara.json"
         },
         "knowledge/rules/rule_城邦历史_瑟蒙__城邦历史_瑟蒙.json": {
           "zh_id": "rule_城邦历史_瑟蒙",
-          "en_id": "rule_Settlement_History_瑟蒙",
-          "en_file": "knowledge/rules/rule_Settlement_History_瑟蒙__Settlement_History_瑟蒙.json"
+          "en_id": "rule_Settlement_History_Thermon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Thermon__Settlement_History_Thermon.json"
         },
         "knowledge/rules/rule_城邦历史_瓦尔图赖多__城邦历史_瓦尔图赖多.json": {
           "zh_id": "rule_城邦历史_瓦尔图赖多",
-          "en_id": "rule_Settlement_History_瓦尔图赖多",
-          "en_file": "knowledge/rules/rule_Settlement_History_瓦尔图赖多__Settlement_History_瓦尔图赖多.json"
+          "en_id": "rule_Settlement_History_Walthuraido",
+          "en_file": "knowledge/rules/rule_Settlement_History_Walthuraido__Settlement_History_Walthuraido.json"
         },
         "knowledge/rules/rule_城邦历史_瓦鲁__城邦历史_瓦鲁.json": {
           "zh_id": "rule_城邦历史_瓦鲁",
-          "en_id": "rule_Settlement_History_瓦鲁",
-          "en_file": "knowledge/rules/rule_Settlement_History_瓦鲁__Settlement_History_瓦鲁.json"
+          "en_id": "rule_Settlement_History_Varu",
+          "en_file": "knowledge/rules/rule_Settlement_History_Varu__Settlement_History_Varu.json"
         },
         "knowledge/rules/rule_城邦历史_科利波__城邦历史_科利波.json": {
           "zh_id": "rule_城邦历史_科利波",
-          "en_id": "rule_Settlement_History_科利波",
-          "en_file": "knowledge/rules/rule_Settlement_History_科利波__Settlement_History_科利波.json"
+          "en_id": "rule_Settlement_History_Collippo",
+          "en_file": "knowledge/rules/rule_Settlement_History_Collippo__Settlement_History_Collippo.json"
         },
         "knowledge/rules/rule_城邦历史_科尔比隆__城邦历史_科尔比隆.json": {
           "zh_id": "rule_城邦历史_科尔比隆",
-          "en_id": "rule_Settlement_History_科尔比隆",
-          "en_file": "knowledge/rules/rule_Settlement_History_科尔比隆__Settlement_History_科尔比隆.json"
+          "en_id": "rule_Settlement_History_Corbilon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Corbilon__Settlement_History_Corbilon.json"
         },
         "knowledge/rules/rule_城邦历史_科尔达__城邦历史_科尔达.json": {
           "zh_id": "rule_城邦历史_科尔达",
-          "en_id": "rule_Settlement_History_科尔达",
-          "en_file": "knowledge/rules/rule_Settlement_History_科尔达__Settlement_History_科尔达.json"
+          "en_id": "rule_Settlement_History_Corda",
+          "en_file": "knowledge/rules/rule_Settlement_History_Corda__Settlement_History_Corda.json"
         },
         "knowledge/rules/rule_城邦历史_科拉克沙亚斯塔纳__城邦历史_科拉克沙亚斯塔纳.json": {
           "zh_id": "rule_城邦历史_科拉克沙亚斯塔纳",
-          "en_id": "rule_Settlement_History_科拉克沙亚斯塔纳",
-          "en_file": "knowledge/rules/rule_Settlement_History_科拉克沙亚斯塔纳__Settlement_History_科拉克沙亚斯塔纳.json"
+          "en_id": "rule_Settlement_History_Kolaxshayastana",
+          "en_file": "knowledge/rules/rule_Settlement_History_Kolaxshayastana__Settlement_History_Kolaxshayastana.json"
         },
         "knowledge/rules/rule_城邦历史_科林斯__城邦历史_科林斯.json": {
           "zh_id": "rule_城邦历史_科林斯",
@@ -19296,33 +19296,33 @@
         },
         "knowledge/rules/rule_城邦历史_米格多尔__城邦历史_米格多尔.json": {
           "zh_id": "rule_城邦历史_米格多尔",
-          "en_id": "rule_Settlement_History_米格多尔",
-          "en_file": "knowledge/rules/rule_Settlement_History_米格多尔__Settlement_History_米格多尔.json"
+          "en_id": "rule_Settlement_History_Migdol",
+          "en_file": "knowledge/rules/rule_Settlement_History_Migdol__Settlement_History_Migdol.json"
         },
         "knowledge/rules/rule_城邦历史_米格多尼亚的安条克__城邦历史_米格多尼亚的安条克.json": {
           "zh_id": "rule_城邦历史_米格多尼亚的安条克",
-          "en_id": "rule_Settlement_History_米格多尼亚的安条克",
-          "en_file": "knowledge/rules/rule_Settlement_History_米格多尼亚的安条克__Settlement_History_米格多尼亚的安条克.json"
+          "en_id": "rule_Settlement_History_Antiokheia_Mygdonia",
+          "en_file": "knowledge/rules/rule_Settlement_History_Antiokheia_Mygdonia__Settlement_History_Antiokheia_Mygdonia.json"
         },
         "knowledge/rules/rule_城邦历史_索斯皮亚__城邦历史_索斯皮亚.json": {
           "zh_id": "rule_城邦历史_索斯皮亚",
-          "en_id": "rule_Settlement_History_索斯皮亚",
-          "en_file": "knowledge/rules/rule_Settlement_History_索斯皮亚__Settlement_History_索斯皮亚.json"
+          "en_id": "rule_Settlement_History_Thospia",
+          "en_file": "knowledge/rules/rule_Settlement_History_Thospia__Settlement_History_Thospia.json"
         },
         "knowledge/rules/rule_城邦历史_纳帕塔__城邦历史_纳帕塔.json": {
           "zh_id": "rule_城邦历史_纳帕塔",
-          "en_id": "rule_Settlement_History_纳帕塔",
-          "en_file": "knowledge/rules/rule_Settlement_History_纳帕塔__Settlement_History_纳帕塔.json"
+          "en_id": "rule_Settlement_History_Napata",
+          "en_file": "knowledge/rules/rule_Settlement_History_Napata__Settlement_History_Napata.json"
         },
         "knowledge/rules/rule_城邦历史_纳瓦鲁姆__城邦历史_纳瓦鲁姆.json": {
           "zh_id": "rule_城邦历史_纳瓦鲁姆",
-          "en_id": "rule_Settlement_History_纳瓦鲁姆",
-          "en_file": "knowledge/rules/rule_Settlement_History_纳瓦鲁姆__Settlement_History_纳瓦鲁姆.json"
+          "en_id": "rule_Settlement_History_Navarum",
+          "en_file": "knowledge/rules/rule_Settlement_History_Navarum__Settlement_History_Navarum.json"
         },
         "knowledge/rules/rule_城邦历史_维松提奥__城邦历史_维松提奥.json": {
           "zh_id": "rule_城邦历史_维松提奥",
-          "en_id": "rule_Settlement_History_维松提奥",
-          "en_file": "knowledge/rules/rule_Settlement_History_维松提奥__Settlement_History_维松提奥.json"
+          "en_id": "rule_Settlement_History_Vesontio",
+          "en_file": "knowledge/rules/rule_Settlement_History_Vesontio__Settlement_History_Vesontio.json"
         },
         "knowledge/rules/rule_城邦历史_罗马__城邦历史_罗马.json": {
           "zh_id": "rule_城邦历史_罗马",
@@ -19331,13 +19331,13 @@
         },
         "knowledge/rules/rule_城邦历史_美狄奥拉侬__城邦历史_美狄奥拉侬.json": {
           "zh_id": "rule_城邦历史_美狄奥拉侬",
-          "en_id": "rule_Settlement_History_美狄奥拉侬",
-          "en_file": "knowledge/rules/rule_Settlement_History_美狄奥拉侬__Settlement_History_美狄奥拉侬.json"
+          "en_id": "rule_Settlement_History_Mediolanon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Mediolanon__Settlement_History_Mediolanon.json"
         },
         "knowledge/rules/rule_城邦历史_美迪奥马特里孔__城邦历史_美迪奥马特里孔.json": {
           "zh_id": "rule_城邦历史_美迪奥马特里孔",
-          "en_id": "rule_Settlement_History_美迪奥马特里孔",
-          "en_file": "knowledge/rules/rule_Settlement_History_美迪奥马特里孔__Settlement_History_美迪奥马特里孔.json"
+          "en_id": "rule_Settlement_History_Mediomatricon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Mediomatricon__Settlement_History_Mediomatricon.json"
         },
         "knowledge/rules/rule_城邦历史_耶路撒冷__城邦历史_耶路撒冷.json": {
           "zh_id": "rule_城邦历史_耶路撒冷",
@@ -19346,63 +19346,63 @@
         },
         "knowledge/rules/rule_城邦历史_胡斯塔纳__城邦历史_胡斯塔纳.json": {
           "zh_id": "rule_城邦历史_胡斯塔纳",
-          "en_id": "rule_Settlement_History_胡斯塔纳",
-          "en_file": "knowledge/rules/rule_Settlement_History_胡斯塔纳__Settlement_History_胡斯塔纳.json"
+          "en_id": "rule_Settlement_History_Hustana",
+          "en_file": "knowledge/rules/rule_Settlement_History_Hustana__Settlement_History_Hustana.json"
         },
         "knowledge/rules/rule_城邦历史_苏西亚__城邦历史_苏西亚.json": {
           "zh_id": "rule_城邦历史_苏西亚",
-          "en_id": "rule_Settlement_History_苏西亚",
-          "en_file": "knowledge/rules/rule_Settlement_History_苏西亚__Settlement_History_苏西亚.json"
+          "en_id": "rule_Settlement_History_Sousia",
+          "en_file": "knowledge/rules/rule_Settlement_History_Sousia__Settlement_History_Sousia.json"
         },
         "knowledge/rules/rule_城邦历史_萨迪斯__城邦历史_萨迪斯.json": {
           "zh_id": "rule_城邦历史_萨迪斯",
-          "en_id": "rule_Settlement_History_萨迪斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_萨迪斯__Settlement_History_萨迪斯.json"
+          "en_id": "rule_Settlement_History_Sardeis",
+          "en_file": "knowledge/rules/rule_Settlement_History_Sardeis__Settlement_History_Sardeis.json"
         },
         "knowledge/rules/rule_城邦历史_萨那__城邦历史_萨那.json": {
           "zh_id": "rule_城邦历史_萨那",
-          "en_id": "rule_Settlement_History_萨那",
-          "en_file": "knowledge/rules/rule_Settlement_History_萨那__Settlement_History_萨那.json"
+          "en_id": "rule_Settlement_History_Sanaa",
+          "en_file": "knowledge/rules/rule_Settlement_History_Sanaa__Settlement_History_Sanaa.json"
         },
         "knowledge/rules/rule_城邦历史_西拉塞纳__城邦历史_西拉塞纳.json": {
           "zh_id": "rule_城邦历史_西拉塞纳",
-          "en_id": "rule_Settlement_History_西拉塞纳",
-          "en_file": "knowledge/rules/rule_Settlement_History_西拉塞纳__Settlement_History_西拉塞纳.json"
+          "en_id": "rule_Settlement_History_Siracena",
+          "en_file": "knowledge/rules/rule_Settlement_History_Siracena__Settlement_History_Siracena.json"
         },
         "knowledge/rules/rule_城邦历史_贝尔加堡兹__城邦历史_贝尔加堡兹.json": {
           "zh_id": "rule_城邦历史_贝尔加堡兹",
-          "en_id": "rule_Settlement_History_贝尔加堡兹",
-          "en_file": "knowledge/rules/rule_Settlement_History_贝尔加堡兹__Settlement_History_贝尔加堡兹.json"
+          "en_id": "rule_Settlement_History_Bergaburgz",
+          "en_file": "knowledge/rules/rule_Settlement_History_Bergaburgz__Settlement_History_Bergaburgz.json"
         },
         "knowledge/rules/rule_城邦历史_贝尔塔海马兹__城邦历史_贝尔塔海马兹.json": {
           "zh_id": "rule_城邦历史_贝尔塔海马兹",
-          "en_id": "rule_Settlement_History_贝尔塔海马兹",
-          "en_file": "knowledge/rules/rule_Settlement_History_贝尔塔海马兹__Settlement_History_贝尔塔海马兹.json"
+          "en_id": "rule_Settlement_History_Berhtahaimaz",
+          "en_file": "knowledge/rules/rule_Settlement_History_Berhtahaimaz__Settlement_History_Berhtahaimaz.json"
         },
         "knowledge/rules/rule_城邦历史_费尔图兰达__城邦历史_费尔图兰达.json": {
           "zh_id": "rule_城邦历史_费尔图兰达",
-          "en_id": "rule_Settlement_History_费尔图兰达",
-          "en_file": "knowledge/rules/rule_Settlement_History_费尔图兰达__Settlement_History_费尔图兰达.json"
+          "en_id": "rule_Settlement_History_Felthulanda",
+          "en_file": "knowledge/rules/rule_Settlement_History_Felthulanda__Settlement_History_Felthulanda.json"
         },
         "knowledge/rules/rule_城邦历史_赫卡托林波斯__城邦历史_赫卡托林波斯.json": {
           "zh_id": "rule_城邦历史_赫卡托林波斯",
-          "en_id": "rule_Settlement_History_赫卡托林波斯",
-          "en_file": "knowledge/rules/rule_Settlement_History_赫卡托林波斯__Settlement_History_赫卡托林波斯.json"
+          "en_id": "rule_Settlement_History_Hekatolympos",
+          "en_file": "knowledge/rules/rule_Settlement_History_Hekatolympos__Settlement_History_Hekatolympos.json"
         },
         "knowledge/rules/rule_城邦历史_辛吉杜侬__城邦历史_辛吉杜侬.json": {
           "zh_id": "rule_城邦历史_辛吉杜侬",
-          "en_id": "rule_Settlement_History_辛吉杜侬",
-          "en_file": "knowledge/rules/rule_Settlement_History_辛吉杜侬__Settlement_History_辛吉杜侬.json"
+          "en_id": "rule_Settlement_History_Singidunon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Singidunon__Settlement_History_Singidunon.json"
         },
         "knowledge/rules/rule_城邦历史_辛纳达__城邦历史_辛纳达.json": {
           "zh_id": "rule_城邦历史_辛纳达",
-          "en_id": "rule_Settlement_History_辛纳达",
-          "en_file": "knowledge/rules/rule_Settlement_History_辛纳达__Settlement_History_辛纳达.json"
+          "en_id": "rule_Settlement_History_Synnada",
+          "en_file": "knowledge/rules/rule_Settlement_History_Synnada__Settlement_History_Synnada.json"
         },
         "knowledge/rules/rule_城邦历史_达奥尔松__城邦历史_达奥尔松.json": {
           "zh_id": "rule_城邦历史_达奥尔松",
-          "en_id": "rule_Settlement_History_达奥尔松",
-          "en_file": "knowledge/rules/rule_Settlement_History_达奥尔松__Settlement_History_达奥尔松.json"
+          "en_id": "rule_Settlement_History_Daorson",
+          "en_file": "knowledge/rules/rule_Settlement_History_Daorson__Settlement_History_Daorson.json"
         },
         "knowledge/rules/rule_城邦历史_迦太基__城邦历史_迦太基.json": {
           "zh_id": "rule_城邦历史_迦太基",
@@ -19411,58 +19411,58 @@
         },
         "knowledge/rules/rule_城邦历史_迪米德__城邦历史_迪米德.json": {
           "zh_id": "rule_城邦历史_迪米德",
-          "en_id": "rule_Settlement_History_迪米德",
-          "en_file": "knowledge/rules/rule_Settlement_History_迪米德__Settlement_History_迪米德.json"
+          "en_id": "rule_Settlement_History_Dimmid",
+          "en_file": "knowledge/rules/rule_Settlement_History_Dimmid__Settlement_History_Dimmid.json"
         },
         "knowledge/rules/rule_城邦历史_阿尔萨莫萨塔__城邦历史_阿尔萨莫萨塔.json": {
           "zh_id": "rule_城邦历史_阿尔萨莫萨塔",
-          "en_id": "rule_Settlement_History_阿尔萨莫萨塔",
-          "en_file": "knowledge/rules/rule_Settlement_History_阿尔萨莫萨塔__Settlement_History_阿尔萨莫萨塔.json"
+          "en_id": "rule_Settlement_History_Arsamosata",
+          "en_file": "knowledge/rules/rule_Settlement_History_Arsamosata__Settlement_History_Arsamosata.json"
         },
         "knowledge/rules/rule_城邦历史_阿拉塔__城邦历史_阿拉塔.json": {
           "zh_id": "rule_城邦历史_阿拉塔",
-          "en_id": "rule_Settlement_History_阿拉塔",
-          "en_file": "knowledge/rules/rule_Settlement_History_阿拉塔__Settlement_History_阿拉塔.json"
+          "en_id": "rule_Settlement_History_Alata",
+          "en_file": "knowledge/rules/rule_Settlement_History_Alata__Settlement_History_Alata.json"
         },
         "knowledge/rules/rule_城邦历史_阿普隆__城邦历史_阿普隆.json": {
           "zh_id": "rule_城邦历史_阿普隆",
-          "en_id": "rule_Settlement_History_阿普隆",
-          "en_file": "knowledge/rules/rule_Settlement_History_阿普隆__Settlement_History_阿普隆.json"
+          "en_id": "rule_Settlement_History_Apulon",
+          "en_file": "knowledge/rules/rule_Settlement_History_Apulon__Settlement_History_Apulon.json"
         },
         "knowledge/rules/rule_城邦历史_阿波罗尼亚__城邦历史_阿波罗尼亚.json": {
           "zh_id": "rule_城邦历史_阿波罗尼亚",
-          "en_id": "rule_Settlement_History_阿波罗尼亚",
-          "en_file": "knowledge/rules/rule_Settlement_History_阿波罗尼亚__Settlement_History_阿波罗尼亚.json"
+          "en_id": "rule_Settlement_History_Apollonia",
+          "en_file": "knowledge/rules/rule_Settlement_History_Apollonia__Settlement_History_Apollonia.json"
         },
         "knowledge/rules/rule_城邦历史_阿金克__城邦历史_阿金克.json": {
           "zh_id": "rule_城邦历史_阿金克",
-          "en_id": "rule_Settlement_History_阿金克",
-          "en_file": "knowledge/rules/rule_Settlement_History_阿金克__Settlement_History_阿金克.json"
+          "en_id": "rule_Settlement_History_Akink",
+          "en_file": "knowledge/rules/rule_Settlement_History_Akink__Settlement_History_Akink.json"
         },
         "knowledge/rules/rule_城邦历史_阿马西亚__城邦历史_阿马西亚.json": {
           "zh_id": "rule_城邦历史_阿马西亚",
-          "en_id": "rule_Settlement_History_阿马西亚",
-          "en_file": "knowledge/rules/rule_Settlement_History_阿马西亚__Settlement_History_阿马西亚.json"
+          "en_id": "rule_Settlement_History_Amaseia",
+          "en_file": "knowledge/rules/rule_Settlement_History_Amaseia__Settlement_History_Amaseia.json"
         },
         "knowledge/rules/rule_城邦历史_马尔瓦__城邦历史_马尔瓦.json": {
           "zh_id": "rule_城邦历史_马尔瓦",
-          "en_id": "rule_Settlement_History_马尔瓦",
-          "en_file": "knowledge/rules/rule_Settlement_History_马尔瓦__Settlement_History_马尔瓦.json"
+          "en_id": "rule_Settlement_History_Malva",
+          "en_file": "knowledge/rules/rule_Settlement_History_Malva__Settlement_History_Malva.json"
         },
         "knowledge/rules/rule_城邦历史_马扎卡__城邦历史_马扎卡.json": {
           "zh_id": "rule_城邦历史_马扎卡",
-          "en_id": "rule_Settlement_History_马扎卡",
-          "en_file": "knowledge/rules/rule_Settlement_History_马扎卡__Settlement_History_马扎卡.json"
+          "en_id": "rule_Settlement_History_Mazaka",
+          "en_file": "knowledge/rules/rule_Settlement_History_Mazaka__Settlement_History_Mazaka.json"
         },
         "knowledge/rules/rule_城邦历史_马科拉巴__城邦历史_马科拉巴.json": {
           "zh_id": "rule_城邦历史_马科拉巴",
-          "en_id": "rule_Settlement_History_马科拉巴",
-          "en_file": "knowledge/rules/rule_Settlement_History_马科拉巴__Settlement_History_马科拉巴.json"
+          "en_id": "rule_Settlement_History_Makoraba",
+          "en_file": "knowledge/rules/rule_Settlement_History_Makoraba__Settlement_History_Makoraba.json"
         },
         "knowledge/rules/rule_城邦历史_马萨利亚__城邦历史_马萨利亚.json": {
           "zh_id": "rule_城邦历史_马萨利亚",
-          "en_id": "rule_Settlement_History_马萨利亚",
-          "en_file": "knowledge/rules/rule_Settlement_History_马萨利亚__Settlement_History_马萨利亚.json"
+          "en_id": "rule_Settlement_History_Massalia",
+          "en_file": "knowledge/rules/rule_Settlement_History_Massalia__Settlement_History_Massalia.json"
         },
         "knowledge/rules/rule_城邦历史_马里卜__城邦历史_马里卜.json": {
           "zh_id": "rule_城邦历史_马里卜",
@@ -19476,8 +19476,8 @@
         },
         "knowledge/rules/rule_城邦历史_黑格拉__城邦历史_黑格拉.json": {
           "zh_id": "rule_城邦历史_黑格拉",
-          "en_id": "rule_Settlement_History_黑格拉",
-          "en_file": "knowledge/rules/rule_Settlement_History_黑格拉__Settlement_History_黑格拉.json"
+          "en_id": "rule_Settlement_History_Hegra",
+          "en_file": "knowledge/rules/rule_Settlement_History_Hegra__Settlement_History_Hegra.json"
         },
         "knowledge/rules/rule_塔兰托卫城地峡攻防战__塔兰托卫城地峡攻防战.json": {
           "zh_id": "rule_塔兰托卫城地峡攻防战",

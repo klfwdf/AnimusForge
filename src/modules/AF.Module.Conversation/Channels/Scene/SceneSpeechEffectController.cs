@@ -114,6 +114,18 @@ internal sealed class SceneSpeechEffectController
 
     { _ports = ports ?? throw new ArgumentNullException(nameof(ports)); _sceneMovement = movement ?? throw new ArgumentNullException(nameof(movement)); }
 
+    /// <summary>
+    /// 接力轮（NPC 对其他 NPC 发言）判定。队列项没有显式接力标志：显式字段要经过被 SceneActions
+    /// 反射校验签名的私有 ShoutBehavior.EnqueueSpeechLineWithOptions，不能改。因此沿用生产方约定：
+    /// QueueSceneMainReplyOnMainThreadAsync / CommitDeferredSceneActionPlan 在 !replyIsDirectPlayerResponse
+    /// 时传 string.Empty，直接回复玩家时传玩家原文，其他入队（被动反应、系统喊话等）传 null。
+    /// 首轮空文本：场景输入（ProcessShoutConfirmedInternal / TryReplayCapturedScenePlayerShout）与
+    /// CoreDialogueClient.Submit 都拒绝空白 playerText，直接回复不会带 ""。即使将来误判，后果也只是
+    /// 跳过对玩家的耐心/MOOD 结算（失败安全方向），不影响动作标签执行。
+    /// </summary>
+    internal static bool IsNpcRelayTurn(string playerDirectedActionText)
+        => playerDirectedActionText != null && playerDirectedActionText.Length == 0;
+
 internal void Publish(SceneSpeechQueueItem item)
 
 	{
@@ -151,6 +163,8 @@ internal void Publish(SceneSpeechQueueItem item)
 				string playerDirectedActionText = item.PlayerDirectedActionText;
 
 				string playerDirectedNpcReplyText = item.PlayerDirectedNpcReplyText;
+
+				bool relayTurn = IsNpcRelayTurn(playerDirectedActionText);
 
 				int requiredConversationEpoch = item.RequiredConversationEpoch;
 
@@ -336,9 +350,7 @@ internal void Publish(SceneSpeechQueueItem item)
 
 							{
 
-								// 场景主回复在接力轮（NPC 对其他 NPC 发言）传入 playerDirectedActionText == ""，
-								// 普通入队为 null。接力轮只剥离 MOOD，不改玩家关系/私人好感/耐心。
-								if (playerDirectedActionText != null && playerDirectedActionText.Length == 0)
+								if (relayTurn)
 								{
 									PatienceRules.ExtractMoodAndStripTag(ref content);
 								}
@@ -538,7 +550,15 @@ internal void Publish(SceneSpeechQueueItem item)
 
 							{
 
-								MyBehavior.ApplyPatienceFromSceneUnnamedResponseExternal(matchedNpc.UnnamedKey, matchedNpc.Name, ref content);
+								// 与 Hero 分支同口径：接力轮不扣无名 NPC 耐心、不按 MOOD 结算王领忠诚度。
+								if (relayTurn)
+								{
+									PatienceRules.ExtractMoodAndStripTag(ref content);
+								}
+								else
+								{
+									MyBehavior.ApplyPatienceFromSceneUnnamedResponseExternal(matchedNpc.UnnamedKey, matchedNpc.Name, ref content);
+								}
 
 								if (allowPlayerDirectedActions && agent != null && agent.Character is CharacterObject worldMapCharacter)
 

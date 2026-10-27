@@ -1506,11 +1506,6 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		Instance?.QueueDeferredLordSceneDiplomacy(targetHero, reason);
 	}
 
-	internal static void ClearPendingDeferredLordSceneDiplomacyForExternal(string reason)
-	{
-		Instance?.ClearPendingDeferredLordSceneDiplomacy(reason);
-	}
-
 	internal static void HandOffDeferredLordSceneDiplomacyToCriminalJudgmentForExternal(Settlement settlement)
 	{
 		Instance?.TryHandOffDeferredLordSceneDiplomacyToCriminalJudgment(settlement);
@@ -7149,14 +7144,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return IsSettlementCriminalConflictTarget(targetCharacter?.HeroObject, targetCharacter);
 	}
 
+	// 与 IsPlayerControlledSettlementConflictRuntime 同口径：不再要求 SETS 进入。
+	// 普通菜单进城攻击自家卫兵/士兵/领主同样走 ArmedConflict（卫兵阵营随定居点归属），
+	// 普通居民仍走 PassiveSurrender。和平场景 gate 由调用方的 IsOwnedSettlementPassiveAttackScene /
+	// TryStartConflictFromPhysicalAttack → CanInitializePeaceSceneConflict 负责，这里不放宽。
 	private static SetsOwnedSettlementAttackRouting ResolveOwnedSettlementAttackRouting(Agent targetAgent)
 	{
-		if (!IsActiveSetsUrbanConflictRuntime())
-		{
-			return IsSettlementCriminalConflictTargetForExternal(targetAgent)
-				? SetsOwnedSettlementAttackRouting.ExistingFlow
-				: SetsOwnedSettlementAttackRouting.PassiveSurrender;
-		}
 		return SetsCityConflictPolicy.ResolveOwnedAttackRouting(
 			settlementControlledByPlayer: IsCurrentSettlementControlledByPlayer(),
 			isSettlementAuthority: IsAuthorityPhysicalAttackTargetForExternal(targetAgent),
@@ -7677,6 +7670,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				return;
 			}
 			_armedDefeatOutcomeHandled = false;
+			// 与 TryStartConflict 同口径：自有/玩家控制定居点内的 carryover 战败也不进入逮捕/地牢。
+			// ClearRuntimeState 的非 preserve 分支负责复位。
+			_armedDefeatInPlayerControlledSettlement = IsCurrentSettlementControlledByPlayer();
 			InitializeArmedConflictReactionSchedule();
 			_baseConsequencesApplied = true;
 			_appliedCrimeRatingAmount = SceneTauntInitialArmedCrimeAmount;
@@ -10387,9 +10383,10 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 
 	private static void ReturnToSettlementWithoutCaptivity(SceneTauntMissionBehavior missionBehavior, Settlement settlement, string reason)
 	{
+		// 只清旧地牢流程会清的 carryover/地牢状态。冲突开始时（或同次到访更早冲突）排队的
+		// 领主场景外交后果必须保留，回到大地图照常结算；否则战败反而比获胜少受惩罚。
 		SceneTauntBehavior.ClearArmedCarryoverForExternal("scene_taunt_defeat_no_captivity_" + reason);
 		SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal("scene_taunt_defeat_no_captivity_" + reason);
-		SceneTauntBehavior.ClearPendingDeferredLordSceneDiplomacyForExternal("scene_taunt_defeat_no_captivity_" + reason);
 		try
 		{
 			string returnMenuId = ResolveSettlementReturnMenuId(settlement);

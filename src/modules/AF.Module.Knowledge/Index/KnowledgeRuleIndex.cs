@@ -60,6 +60,12 @@ internal sealed class KnowledgeRuleIndex
 	private readonly object _onnxIndexLock = new object();
 	private List<OnnxRuleEntry> _onnxRuleEntries;
 	private long _onnxIndexVersion = -1L;
+	// All-embeddings-failed cold build: do not re-embed the same rule version on every request.
+	// Written under _publicationLock; a new rule version (Touch) retries immediately.
+	internal static readonly TimeSpan OnnxFailureCooldown = TimeSpan.FromSeconds(60);
+	internal Func<long> UtcNowTicks = () => DateTime.UtcNow.Ticks;
+	private long _onnxFailedVersion = -1L;
+	private long _onnxFailedAtTicks;
 	private readonly object _rankedCacheLock = new object();
 	private Dictionary<string, RankedCacheItem> _rankedCache = new Dictionary<string, RankedCacheItem>();
 
@@ -701,8 +707,22 @@ internal sealed class KnowledgeRuleIndex
 
 	/// <summary>
 	/// Legacy commit rule: engine unavailable → index null; otherwise commit when any embedding succeeded,
-	/// or when there were no rules / no seeds (empty index is valid); embeddings all failed → stay unbuilt.
+	/// or when there were no rules / no seeds (empty index is valid); embeddings all failed → stay unbuilt
+	/// and skip that same version for <see cref="OnnxFailureCooldown"/> (sparse fallback meanwhile).
+	/// Lock order: _onnxIndexLock → _publicationLock.
 	/// </summary>
+	internal bool OnnxFailureCooldownActive => IsOnnxFailureCooldownActive(Version);
+
+	private bool IsOnnxFailureCooldownActive(long version)
+	{
+		lock (_publicationLock)
+		{
+			if (_onnxFailedVersion != version) return false;
+			long elapsed = UtcNowTicks() - _onnxFailedAtTicks;
+			return elapsed >= 0L && elapsed < OnnxFailureCooldown.Ticks;
+		}
+	}
+
 	internal void EnsureOnnxIndex(long expectedVersion = 0L)
 	{
 		try
@@ -712,6 +732,8 @@ internal sealed class KnowledgeRuleIndex
 			{
 				return;
 			}
+			// Cooldown after a total embedding failure: callers fall back to the sparse path.
+			if (IsOnnxFailureCooldownActive(Version)) return;
 			lock (_onnxIndexLock)
 			{
 				long buildVersion = Version;
@@ -720,6 +742,8 @@ internal sealed class KnowledgeRuleIndex
 				{
 					return;
 				}
+				// A concurrent waiter may have just recorded the failure for this version.
+				if (IsOnnxFailureCooldownActive(buildVersion)) return;
 				List<OnnxRuleEntry> entries = new List<OnnxRuleEntry>();
 				int seedCount = 0;
 				bool engineAvailable = false;
@@ -777,11 +801,14 @@ internal sealed class KnowledgeRuleIndex
 					{
 						_onnxRuleEntries = entries;
 						_onnxIndexVersion = buildVersion;
+						_onnxFailedVersion = -1L;
 					}
 					else
 					{
 						_onnxRuleEntries = null;
 						_onnxIndexVersion = -1L;
+						_onnxFailedVersion = buildVersion;
+						_onnxFailedAtTicks = UtcNowTicks();
 					}
 				}
 			}

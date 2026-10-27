@@ -434,7 +434,9 @@ internal static class PlayerCaptivityConversation
         if (!OwnsCampaign(session)) return;
         if (PlayerCaptivity.IsCaptive && PlayerCaptivity.CaptorParty != null)
         {
-            CaptivityMapVisibilityCompat.RestoreCurrentCaptor(session.Campaign, session.Holder);
+            // Visibility is a cosmetic repair; it must never block the menu/time restore.
+            try { CaptivityMapVisibilityCompat.RestoreCurrentCaptor(session.Campaign, session.Holder); }
+            catch (Exception ex) { Logger.Log("PlayerCaptivity", "restore_visibility_failed " + ex.GetType().Name); }
             string menu = PlayerCaptivity.CaptorParty.IsSettlement ? "settlement_wait" : "prisoner_wait";
             if (Campaign.Current.CurrentMenuContext?.GameMenu?.StringId != menu) GameMenu.ActivateGameMenu(menu);
             Campaign.Current.TimeControlMode = session.PreviousTime;

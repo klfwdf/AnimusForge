@@ -16,6 +16,8 @@
     <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs" Link="LlmVisibleReplyNormalizer.cs" Condition="'$(ProtocolRegression)' == 'true'" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/ConversationPromptCacheStore.cs" Link="ConversationPromptCacheStore.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs" Link="LlmApiCompat.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs" Link="LlmStreamingTransport.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs" Link="LlmNonStreamingTransport.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs" Link="PrimaryChatMessagePolicy.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" Link="LlmSourceTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Application/LlmPromptTexts.cs" Link="LlmPromptTexts.cs" />
