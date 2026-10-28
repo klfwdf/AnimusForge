@@ -14,8 +14,10 @@ internal sealed class OnboardingImportStep
     private readonly Action<OnboardingImportResult> _receive;
     private bool _terminal;
     private readonly int _thread = Thread.CurrentThread.ManagedThreadId;
-    internal OnboardingImportStep(Func<bool> isCurrent, Action<OnboardingImportResult> receive)
-    { _isCurrent = isCurrent; _receive = receive; }
+    // Tolerant steps (terminal database import) judge each file on its own and skip what fails validation.
+    internal bool Tolerant { get; }
+    internal OnboardingImportStep(Func<bool> isCurrent, Action<OnboardingImportResult> receive, bool tolerant = false)
+    { _isCurrent = isCurrent; _receive = receive; Tolerant = tolerant; }
     internal bool CanApply()
     {
         if (_terminal || Thread.CurrentThread.ManagedThreadId != _thread) return false;
@@ -165,13 +167,105 @@ internal sealed class OnboardingDatabaseImportController
         }
     }
 
+    // Terminal database import: reuses the onboarding domain steps and the same duplicate confirmations, but nothing is rejected
+    // for a missing folder, an unmatched file or a file that fails validation. Those parts are skipped and counted.
+    internal void BeginTolerant(string folderName, Func<bool> isCurrent,
+        Func<string, KingdomInspection> inspectKingdom,
+        Func<string, Action<OnboardingImportStep>[]> captureImports,
+        Action<int> completed, Action onReturn)
+    {
+        Retire();
+        try
+        {
+            string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
+            if (string.IsNullOrWhiteSpace(text) || !Directory.Exists(text))
+            {
+                InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Import_failed_export_directory_not_found","Import failed: export directory not found.")));
+                onReturn();
+                return;
+            }
+            if (!PackageHasAnyDomain(text))
+            {
+                InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_DatabaseImport_NothingToImport","The package contains none of the importable folders (personality_background, unnamed_persona, knowledge, voice_mapping, event_data, kingdom_profiles).")));
+                onReturn();
+                return;
+            }
+            if (!isCurrent()) return;
+            KingdomInspection kingdom = null;
+            if (File.Exists(Path.Combine(text, "kingdom_profiles", "KingdomProfiles.json")))
+            {
+                kingdom = inspectKingdom(text);
+                if (kingdom == null || !kingdom.Available || !kingdom.Valid || kingdom.Total <= 0)
+                {
+                    string reason = kingdom == null || !kingdom.Available || string.IsNullOrWhiteSpace(kingdom.Error)
+                        ? DeveloperUiText.T("AF_UI_Onboarding_Import_The_package_contains_no_kingdom_card_that_safely_matches_the","The package contains no kingdom card that safely matches the current world.")
+                        : kingdom.Error;
+                    InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_DatabaseImport_KingdomSkipped","Kingdom strategy/personality skipped: ") + reason));
+                    Logger.Log("OnboardingImport", "tolerant kingdom skipped: " + reason);
+                    kingdom = null;
+                }
+            }
+            Action<OnboardingImportStep>[] imports = captureImports(text);
+            if (imports == null)
+            {
+                InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Import_failed_MyBehavior_is_not_initialized","Import failed: MyBehavior is not initialized.")));
+                onReturn();
+                return;
+            }
+            Run(isCurrent, imports, () =>
+            {
+                if (kingdom == null) return true;
+                bool kingdomImported;
+                try { kingdomImported = kingdom.Import(); }
+                catch (Exception kingdomEx) { kingdomImported = false; Logger.Log("OnboardingImport", "tolerant kingdom import exception=" + kingdomEx.Message); }
+                if (!kingdomImported) { SkippedDomains++; kingdom = null; }
+                return true;
+            }, () =>
+            {
+                if (kingdom != null) InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.F("AF_UI_Onboarding_Import_Kingdom_profiles_imported","Kingdom strategy/personality imported from the package: matched {PROFILE_TOTAL} entries; unmatched {PROFILE_SKIPPED}.", "PROFILE_TOTAL", kingdom.Total.ToString(), "PROFILE_SKIPPED", kingdom.Skipped.ToString())));
+                completed(SkippedDomains);
+            }, result =>
+            {
+                if (result == OnboardingImportResult.Retired || !isCurrent()) return;
+                InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Import_cancelled","Import cancelled.")));
+                onReturn();
+            }, tolerant: true);
+        }
+        catch (Exception ex)
+        {
+            if (!isCurrent()) return;
+            InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Import_failed","Import failed: ") + ex.Message));
+            onReturn();
+        }
+    }
+
+    internal static bool PackageHasAnyDomain(string dir)
+    {
+        try
+        {
+            return Directory.Exists(Path.Combine(dir, "personality_background"))
+                || Directory.Exists(Path.Combine(dir, "unnamed_persona"))
+                || Directory.Exists(Path.Combine(dir, "knowledge"))
+                || File.Exists(Path.Combine(dir, "voice_mapping", "VoiceMapping.json"))
+                || File.Exists(Path.Combine(dir, "VoiceMapping.json"))
+                || Directory.Exists(Path.Combine(dir, "event_data"))
+                || File.Exists(Path.Combine(dir, "kingdom_profiles", "KingdomProfiles.json"));
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     private long _operation;
     internal void Retire() { ++_operation; }
     // Main-thread event continuation. Previously committed domains deliberately remain committed.
+    internal int SkippedDomains { get; private set; }
     internal void Run(Func<bool> isCurrent, Action<OnboardingImportStep>[] imports,
-        Func<bool> finishKingdomAndCheckVoice, Action completed, Action<OnboardingImportResult> rejected)
+        Func<bool> finishKingdomAndCheckVoice, Action completed, Action<OnboardingImportResult> rejected, bool tolerant = false)
     {
         long operation = ++_operation;
+        SkippedDomains = 0;
         bool terminal = false;
         Func<bool> current = () => operation == _operation && isCurrent();
         Action<OnboardingImportResult> reject = result =>
@@ -185,6 +279,7 @@ internal sealed class OnboardingDatabaseImportController
         {
             if (terminal) return;
             if (!current()) { reject(OnboardingImportResult.Retired); return; }
+            OnboardingImportStep step = null;
             try
             {
                 if (index == imports.Length)
@@ -195,19 +290,32 @@ internal sealed class OnboardingDatabaseImportController
                     completed();
                     return;
                 }
-                var step = new OnboardingImportStep(current, result =>
+                step = new OnboardingImportStep(current, result =>
                 {
                     Logger.Log("OnboardingImport", "step=" + index + " result=" + result);
                     if (result == OnboardingImportResult.PendingConfirmation) return;
                     if (result == OnboardingImportResult.Completed) advance(index + 1);
+                    else if (tolerant && result == OnboardingImportResult.Failed)
+                    {
+                        // A domain that cannot be imported is skipped; the remaining domains still run.
+                        SkippedDomains++;
+                        Logger.Log("OnboardingImport", "step=" + index + " skipped (tolerant)");
+                        advance(index + 1);
+                    }
                     else reject(result);
-                });
+                }, tolerant);
                 Logger.Log("OnboardingImport", "step=" + index + " begin");
                 imports[index](step);
             }
             catch (Exception ex)
             {
                 Logger.Log("OnboardingImport", "step=" + index + " exception=" + ex.Message);
+                if (tolerant && step != null)
+                {
+                    // Same rule as a Failed result (skip this domain, keep importing the rest); ignored if the step already finished.
+                    step.Finish(OnboardingImportResult.Failed);
+                    return;
+                }
                 reject(OnboardingImportResult.Failed);
             }
         };

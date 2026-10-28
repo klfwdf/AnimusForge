@@ -142,21 +142,19 @@ public partial class MyBehavior
         => WeeklyEventFiles.TryLoadEventDataFromImportDir(importDir, out payload, out error);
 
 
-	private void ReplaceDatabaseOpeningKnowledge(EventImportPayload payload)
+	// Database import "clear": drops the world/kingdom opening summaries and the canonical week-zero records derived from them.
+	// Dynamic history from later weeks is left byte-for-byte untouched.
+	private int ClearDatabaseOpeningKnowledge()
 	{
-        int removedOpeningRecordCount = WeeklyEventDataImportOwner.ReplaceOpening(payload,
-            ref _weeklyEventRecords.WorldOpening, ref _weeklyEventRecords.KingdomOpenings, ref _weeklyEventRecords.Records,
-            _weeklyReportMaterialRevisions.MarkOpening, out bool removedWorldOpeningRecord);
-		// Opening reload keeps in-flight requests; original source-hash validation still guards their result.
-        _weekZeroShortSummaries.RemovePendingOpeningRequests(IsDatabaseReloadOpeningEventId);
-		// A blank world summary removes the published week-zero world report, so it needs a revision signal even though no new report is upserted.
-		if (removedWorldOpeningRecord && string.IsNullOrWhiteSpace(_eventWorldOpeningSummary))
+		bool removedWorldOpeningRecord = (_weeklyEventRecords.Records ?? new List<EventRecordEntry>()).Any((EventRecordEntry x) => WeeklyEventDataImportOwner.IsCanonicalOpeningEvent(x) && string.Equals((x.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase));
+		WeeklyEventDataImportOwner.ClearOpeningSummaries(ref _weeklyEventRecords.WorldOpening, ref _weeklyEventRecords.KingdomOpenings, _weeklyReportMaterialRevisions.MarkOpening);
+		int removedOpeningRecordCount = _weeklyEventRecords.Records?.RemoveAll(WeeklyEventDataImportOwner.IsCanonicalOpeningEvent) ?? 0;
+		_weekZeroShortSummaries.RemovePendingOpeningRequests(WeeklyEventDataImportOwner.IsCanonicalOpeningEventId);
+		if (removedWorldOpeningRecord)
 		{
 			Interlocked.Increment(ref _weeklyEventRecords.PublishedHistoryRevision);
 		}
-		// Reload owns only canonical week-zero entries.  Skipping the usual global sanitation keeps arbitrary dynamic history byte-for-byte untouched.
-		EnsureWeekZeroOpeningSummaryEvents(sanitizeAfter: false);
-		Logger.Log("DatabaseReload", "replaced static opening knowledge; removedDerivedWeekZeroRecords=" + removedOpeningRecordCount + " kingdomSummaries=" + _eventKingdomOpeningSummaries.Count);
+		return removedOpeningRecordCount;
 	}
 
 
@@ -168,16 +166,6 @@ public partial class MyBehavior
     private static List<string> NormalizeEventMaterialIdListInPlace(List<string> values)
         => WeeklyEventDataImportOwner.NormalizeEventMaterialIdListInPlace(values);
 
-
-    private void RestoreDatabaseReloadWeeklyData(string worldSummary, Dictionary<string,string> openingSummaries,
-        List<EventRecordEntry> restoredRecords, string previousWorldWeeklyProductsFingerprint)
-    {
-        WeeklyEventDataImportOwner.RestoreOpeningAndRecords(worldSummary, openingSummaries, restoredRecords,
-            ref _weeklyEventRecords.WorldOpening, ref _weeklyEventRecords.KingdomOpenings, ref _weeklyEventRecords.Records,
-            _weeklyReportMaterialRevisions.MarkOpening);
-        if (!string.Equals(previousWorldWeeklyProductsFingerprint, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
-            Interlocked.Increment(ref _weeklyEventRecords.PublishedHistoryRevision);
-    }
 
     private bool SetDeveloperWorldOpeningSummary(string input, long generation)
     {

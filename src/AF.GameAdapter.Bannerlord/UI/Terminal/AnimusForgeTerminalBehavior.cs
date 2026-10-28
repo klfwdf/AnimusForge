@@ -765,7 +765,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 			Node("tag_catalog", Ui("AF_TERMINAL_UI_Root_TagCatalog", "Tag catalog"), TerminalCategories.Prompt, "❖", Ui("AF_TERMINAL_UI_Root_TagCatalog_Hint", "View and refresh the body/postprocess tag index or export it to TXT.")),
 
-			Node("reload_database", Ui("AF_TERMINAL_UI_Root_ReloadDatabase", "Reload database"), TerminalCategories.Prompt, "⚡", Ui("AF_TERMINAL_UI_Root_ReloadDatabase_Hint", "Replace non-player knowledge, world/kingdom starting knowledge, kingdom personalities/strategy, and voices.")),
+			Node("database_import", Ui("AF_TERMINAL_UI_Root_DatabaseImport", "Database import"), TerminalCategories.Prompt, "⚡", Ui("AF_TERMINAL_UI_Root_DatabaseImport_Hint", "Import a worldbook/database package: persona, knowledge, voices, opening knowledge and kingdom profiles. Files that fail validation are skipped. Optionally clear the current database data first.")),
 
 
 
@@ -999,15 +999,15 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 
 
-		case "reload_database":
+		case "database_import":
 
 			CloseTerminal();
 
-			if (!MyBehavior.OpenDatabaseReloadFromTerminal(OpenRootMenu))
+			if (!MyBehavior.OpenDatabaseImportFromTerminal(OpenRootMenu))
 
 			{
 
-				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_ReloadDatabaseFailed", "Unable to open the database reload flow.")));
+				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_TERMINAL_UI_DatabaseImportFailed", "Unable to open the database import flow.")));
 
 			}
 
@@ -1015,7 +1015,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 
 
-		case "api_onboarding":
+			case "api_onboarding":
 
 			CloseTerminal();
 

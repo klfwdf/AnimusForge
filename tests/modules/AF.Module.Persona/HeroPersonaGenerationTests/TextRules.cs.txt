@@ -85,12 +85,6 @@ static void TextRuleCases()
   profiles.Save("hero",new(),(_,_)=>{});
   Check(profiles.Get("hero",false)==null,"explicit clear-all still removes the whole entry");
   var clearProfile = new AnimusForge.MyBehavior.NpcPersonaProfile {Description="",SchemaVersion=3,Personality="old",VoiceId="voice"};
-  var importedProfiles = new System.Collections.Generic.Dictionary<string,AnimusForge.MyBehavior.NpcPersonaProfile>{{"hero",clearProfile}};
-  AnimusForge.PersonaImportOwner.ReplaceVoiceAssignments(ref importedProfiles,null,"player",(_,_)=>{},out _);
-  Check(importedProfiles["hero"].Description==""&&importedProfiles["hero"].Personality=="old", "voice import retains explicit clear and legacy payload");
   AnimusForge.PersonaImportOwner.ApplyDeveloperText(clearProfile,"edited",p=>profiles.Save("hero",p,(_,_)=>{}));
   Check(profiles.GetDescription("hero")=="edited"&&clearProfile.Personality=="old", "editor writes canonical body without rewriting legacy data");
-  var restoredProfiles = new System.Collections.Generic.Dictionary<string,AnimusForge.MyBehavior.NpcPersonaProfile>();
-  AnimusForge.PersonaImportOwner.RestoreProfileSnapshot(ref restoredProfiles,importedProfiles);
-  Check(object.ReferenceEquals(restoredProfiles,importedProfiles)&&restoredProfiles["hero"].Description=="edited", "database restoration keeps the normalized authoritative snapshot");
  }

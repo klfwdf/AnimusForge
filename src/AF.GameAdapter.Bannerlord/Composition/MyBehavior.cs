@@ -5636,26 +5636,6 @@ private void OpenKingdomRebellionApiRepairFlow()
 		}
 	}
 
-	// The U-terminal uses this narrow bridge instead of exposing developer import menus or their broader data scopes.
-	public static bool OpenDatabaseReloadFromTerminal(Action onReturn)
-	{
-		try
-		{
-			MyBehavior myBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-			if (myBehavior == null)
-			{
-				return false;
-			}
-			myBehavior.OpenDatabaseReloadFolderPicker(onReturn);
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("DatabaseReload", "[WARN] Failed to open database reload terminal flow: " + ex.Message);
-			return false;
-		}
-	}
-
 	public static void OpenHeroPersonaEditorForExternal(Hero hero)
 	{
 		OpenHeroPersonaEditorForExternal(hero, null);
@@ -8196,14 +8176,6 @@ private void ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(string unna
 
 	// Capture all mutable reload targets before the first replacement.  Serialized copies avoid aliasing existing save objects during rollback.
 
-	// Roll back every subsystem that may have changed before a later subsystem rejected the preflighted plan.
-
-	// Replace only static opening knowledge, then rebuild the derived week-zero entries while leaving all dynamic event records untouched.
-
-	// Only canonical week-zero world/kingdom IDs are derived from opening summaries; every other event record remains save-owned dynamic history.
-	private static bool IsDatabaseReloadOpeningEvent(EventRecordEntry entry) => WeeklyEventDataImportOwner.IsCanonicalOpeningEvent(entry);
-
-	private static bool IsDatabaseReloadOpeningEventId(string eventId) => WeeklyEventDataImportOwner.IsCanonicalOpeningEventId(eventId);
 
 
 

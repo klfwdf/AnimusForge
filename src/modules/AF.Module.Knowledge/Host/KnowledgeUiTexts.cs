@@ -240,13 +240,6 @@ internal static class KnowledgeUiTexts
 	public static string ExportSingleValidationFailed(string detail) => Text("AF_KNOWLEDGE_ExportSingleValidationFailed", "Single-entry knowledge export validation failed: {DETAIL}", ("DETAIL", detail));
 	public static string ExportRuleIdEmpty => Text("AF_KNOWLEDGE_ExportRuleIdEmpty", "RuleId is empty.");
 	public static string ExportRuleNotFound(string id) => Text("AF_KNOWLEDGE_ExportRuleNotFound", "Knowledge entry not found: {ID}", ("ID", id));
-	public static string ReloadNoRules => Text("AF_KNOWLEDGE_ReloadNoRules", "The package contains no reloadable knowledge rules.");
-	public static string ReloadEmptyRuleId => Text("AF_KNOWLEDGE_ReloadEmptyRuleId", "The package contains a knowledge entry with an empty RuleId.");
-	public static string ReloadDuplicateRuleId(string id) => Text("AF_KNOWLEDGE_ReloadDuplicateRuleId", "The package contains duplicate RuleId: {ID}", ("ID", id));
-	public static string ReloadInvalidRule(string id, string detail) => Text("AF_KNOWLEDGE_ReloadInvalidRule", "The package contains an invalid knowledge entry: {ID}{DETAIL}", ("ID", id), ("DETAIL", string.IsNullOrEmpty(detail) ? "" : " (" + detail + ")"));
-	public static string ReloadNoReplaceableRules => Text("AF_KNOWLEDGE_ReloadNoReplaceableRules", "The package contains no replaceable non-player knowledge entries.");
-	public static string ReloadKeywordConflict(string keyword) => Text("AF_KNOWLEDGE_ReloadKeywordConflict", "A knowledge keyword conflicts with retained player data or package rules: {KEYWORD}", ("KEYWORD", keyword));
-	public static string ReloadFailed(string detail) => Text("AF_KNOWLEDGE_ReloadFailed", "Knowledge reload failed: {DETAIL}", ("DETAIL", detail));
 
 	public static string DuplicateVariantCondition(string item, string condition) => Text("AF_KNOWLEDGE_DuplicateCondition", "Identical conditions cannot be used by multiple prompts.\n\nDuplicate item: {ITEM} prompt\n\nCondition:\n{CONDITION}", ("ITEM", item), ("CONDITION", condition));
 	public static string PlayerPersonaCreateFailed => Text("AF_KNOWLEDGE_PlayerPersonaCreateFailed", "Could not open the player profile editor: the knowledge entry could not be created.");

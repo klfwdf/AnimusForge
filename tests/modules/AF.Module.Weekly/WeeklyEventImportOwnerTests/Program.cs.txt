@@ -18,10 +18,9 @@ Check(records.Count==2 && records.Single(x=>x.EventId=="e").Title=="old" && reco
 WeeklyEventDataImportOwner.ApplyRecords(payload,true,ref records,Sanitize);
 Check(records.Single(x=>x.EventId=="e").Title=="new","overwrite records case-insensitive identity");
 var dynamicRecord=new Entry{EventId="dynamic",Title=" byte-for-byte ",WeekIndex=2,Summary=" raw "};records=new(){dynamicRecord,new(){EventId="weekly_report:world:0:id",WeekIndex=0,EventKind="world"},new(){EventId="weekly_report:kingdom:0:id",WeekIndex=0},new(){EventId="weekly_report:world:0:wrongweek",WeekIndex=1}};
-payload=new(){HasWorldSummaryFile=true,WorldSummary="",HasKingdomSummariesFile=true,KingdomSummaries=new(){{"k"," s "}}};
-int removed=WeeklyEventDataImportOwner.ReplaceOpening(payload,ref world,ref kingdoms,ref records,()=>revisions++,out bool removedWorld);
-Check(removed==2 && removedWorld && ReferenceEquals(records[0],dynamicRecord) && dynamicRecord.Title==" byte-for-byte " && records.Count==2,"replacement canonical week0 only/no dynamic normalization");
-try{WeeklyEventDataImportOwner.ReplaceOpening(new(),ref world,ref kingdoms,ref records,()=>{},out _);throw new Exception("expected incomplete rejected");}catch(InvalidOperationException){}
+WeeklyEventDataImportOwner.ClearOpeningSummaries(ref world,ref kingdoms,()=>revisions++);
+int removed=records.RemoveAll(WeeklyEventDataImportOwner.IsCanonicalOpeningEvent);
+Check(removed==2 && world=="" && kingdoms.Count==0 && ReferenceEquals(records[0],dynamicRecord) && dynamicRecord.Title==" byte-for-byte " && records.Count==2,"clear canonical week0 only/no dynamic normalization");
 var oldDebt=new Debt{OwedGold=4};var newDebt=new Debt{OwedGold=7};var debts=new Dictionary<string,Debt>{{"key",oldDebt}};
 var imports=new Dictionary<string,Debt>{{"key",newDebt},{"new",newDebt},{"",newDebt},{"null",null}};
 var merged=DebtImportMergePolicy.ApplyImportedDebtEntries(debts,imports,false);
@@ -60,11 +59,6 @@ WeeklyEventDataImportOwner.NormalizeEventRecordEntriesInPlace(null,x=>x,x=>x,x=>
 Check(WeeklyEventDataImportOwner.NormalizeEventMaterialReferencesInPlace(null,false,x=>x).Count==0&&WeeklyEventDataImportOwner.NormalizeEventMaterialIdListInPlace(null).Count==0,"null list behavior");
 Console.WriteLine("PASS actual Weekly in-place normalization: original parity/list-entry-material-id identity/stable sorting/null/removal/trim/clamp/no cloning LIVE=NOT_RUN SAVE=NOT_RUN");
 
-string restoredWorld="old";var restoredDict=new Dictionary<string,string>();var restoredList=new List<Entry>{new(){EventId="old"}};var inputDict=new Dictionary<string,string>{{"K"," one "},{"k",null}};var inputList=new List<Entry>{new(){EventId=" raw ",Title=" untrimmed "}};var previousList=restoredList;int restoreMarks=0;
-WeeklyEventDataImportOwner.RestoreOpeningAndRecords(null,inputDict,inputList,ref restoredWorld,ref restoredDict,ref restoredList,()=>{Check(ReferenceEquals(restoredList,previousList),"restore mark before assigning records");restoreMarks++;});
-Check(restoredWorld==""&&restoredDict.Count==1&&restoredDict["K"]==""&&restoredDict.Comparer.Equals(StringComparer.OrdinalIgnoreCase)&&!ReferenceEquals(restoredDict,inputDict)&&ReferenceEquals(restoredList,inputList)&&inputList[0].Title==" untrimmed "&&restoreMarks==1,"typed restore exact comparer/null/assignment identity/no sanitize");
-MyBehavior.VerifyWeeklyRestore();
-Console.WriteLine("PASS actual Weekly restore: mark-before-records/OrdinalIgnoreCase/new-dictionary/reference records/fingerprint-difference-only revision LIVE=NOT_RUN SAVE=NOT_RUN");
 
 MyBehavior.VerifyDeveloperEdits();
 var opening=new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);int editMarks=0;

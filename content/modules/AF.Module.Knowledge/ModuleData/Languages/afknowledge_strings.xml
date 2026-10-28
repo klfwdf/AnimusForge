@@ -616,13 +616,6 @@
     <string id="AF_KNOWLEDGE_ExportSingleValidationFailed" text="Single-entry knowledge export validation failed: {DETAIL}" />
     <string id="AF_KNOWLEDGE_ExportRuleIdEmpty" text="RuleId is empty." />
     <string id="AF_KNOWLEDGE_ExportRuleNotFound" text="Knowledge entry not found: {ID}" />
-    <string id="AF_KNOWLEDGE_ReloadNoRules" text="The package contains no reloadable knowledge rules." />
-    <string id="AF_KNOWLEDGE_ReloadEmptyRuleId" text="The package contains a knowledge entry with an empty RuleId." />
-    <string id="AF_KNOWLEDGE_ReloadDuplicateRuleId" text="The package contains duplicate RuleId: {ID}" />
-    <string id="AF_KNOWLEDGE_ReloadInvalidRule" text="The package contains an invalid knowledge entry: {ID}{DETAIL}" />
-    <string id="AF_KNOWLEDGE_ReloadNoReplaceableRules" text="The package contains no replaceable non-player knowledge entries." />
-    <string id="AF_KNOWLEDGE_ReloadKeywordConflict" text="A knowledge keyword conflicts with retained player data or package rules: {KEYWORD}" />
-    <string id="AF_KNOWLEDGE_ReloadFailed" text="Knowledge reload failed: {DETAIL}" />
 
     <string id="AF_KNOWLEDGE_ExistingConditionFallback" text="existing" />
     <string id="AF_KNOWLEDGE_GeneralCondition" text="General (no conditions)" />

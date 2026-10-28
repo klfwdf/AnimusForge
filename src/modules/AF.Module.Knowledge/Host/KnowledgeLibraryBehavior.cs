@@ -4740,21 +4740,28 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	// The terminal calls this read-only pass before confirmation, so malformed source lore cannot start a partial reload.
-	public bool TryValidateDatabaseRulesPreservingPlayer(IEnumerable<LoreRule> sourceRules, out int removedCount, out int importedCount, out string error)
+	// User-triggered database clear: drops every non-player rule and keeps the player's own rule and appearance.
+	// One-shot O(n) pass; normal retrieval never pays this cost.
+	public bool ClearNonPlayerRules(out int removedCount)
 	{
-		return TryBuildDatabaseRulesPreservingPlayer(sourceRules, out var _, out removedCount, out importedCount, out error);
-	}
-
-	// This user-triggered replacement is intentionally a one-shot O(n) operation: it swaps database lore while
-	// retaining the only two player-owned fields, so normal retrieval never pays this cost.
-	public bool ReplaceDatabaseRulesPreservingPlayer(IEnumerable<LoreRule> sourceRules, out int removedCount, out int importedCount, out string error)
-	{
-		if (!TryBuildDatabaseRulesPreservingPlayer(sourceRules, out KnowledgeFile knowledgeFile, out removedCount, out importedCount, out error))
+		removedCount = 0;
+		KnowledgeFile current = _file;
+		if (current?.Rules == null)
 		{
-			return false;
+			return true;
 		}
-		_file = knowledgeFile;
+		List<LoreRule> kept = current.Rules.Where((LoreRule rule) => rule != null && IsPlayerPersonaRule(rule)).ToList();
+		removedCount = current.Rules.Count - kept.Count;
+		if (removedCount <= 0)
+		{
+			return true;
+		}
+		_file = new KnowledgeFile
+		{
+			Version = (current.Version > 0) ? current.Version : 1,
+			PlayerAppearance = NormalizePlayerAppearanceForStorage(current.PlayerAppearance),
+			Rules = kept
+		};
 		StripSemanticPrototypes();
 		try
 		{
@@ -4767,109 +4774,139 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	// Build the replacement on locals first, so validation failure leaves the current save's knowledge untouched.
-	private bool TryBuildDatabaseRulesPreservingPlayer(IEnumerable<LoreRule> sourceRules, out KnowledgeFile replacement, out int removedCount, out int importedCount, out string error)
+	// Tolerant database import: each package rule is judged on its own. A rule that fails validation or whose trigger keyword
+	// belongs to a different rule is skipped and reported; it never rejects the rest. The player's own rule and appearance are
+	// never touched, and the whole batch is stored once (user-triggered, O(n); retrieval never pays this cost).
+	public bool ImportDatabaseRulesTolerant(IEnumerable<LoreRule> sourceRules, bool overwriteExisting, out int importedCount, out int skippedCount, out string firstSkippedRuleId, out string firstSkippedReason)
 	{
-		replacement = null;
-		removedCount = 0;
 		importedCount = 0;
-		error = "";
-		try
+		skippedCount = 0;
+		firstSkippedRuleId = "";
+		firstSkippedReason = "";
+		if (sourceRules == null)
 		{
-			if (sourceRules == null)
-			{
-				error = KnowledgeUiTexts.ReloadNoRules;
-				return false;
-			}
-			List<LoreRule> list = new List<LoreRule>();
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (LoreRule sourceRule in sourceRules)
-			{
-				if (sourceRule == null)
-				{
-					continue;
-				}
-				string text = (sourceRule.Id ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					error = KnowledgeUiTexts.ReloadEmptyRuleId;
-					return false;
-				}
-				// A source package may contain its own player profile, but it must never replace this save's player data.
-				if (IsPlayerPersonaRuleId(text))
-				{
-					continue;
-				}
-				if (!hashSet.Add(text))
-				{
-					error = KnowledgeUiTexts.ReloadDuplicateRuleId(text);
-					return false;
-				}
-				sourceRule.Id = text;
-				if (!TryValidateRagShortTexts(sourceRule, requireAtLeastOne: false, out var text2) || !ValidateVariantConditionsUnique(sourceRule, out var _, out var _))
-				{
-					error = string.IsNullOrWhiteSpace(text2) ? KnowledgeUiTexts.ReloadInvalidRule(text, "") : text2;
-					return false;
-				}
-				list.Add(sourceRule);
-			}
-			if (list.Count <= 0)
-			{
-				error = KnowledgeUiTexts.ReloadNoReplaceableRules;
-				return false;
-			}
-			KnowledgeFile knowledgeFile = _file ?? new KnowledgeFile();
-			List<LoreRule> list2 = knowledgeFile.Rules ?? new List<LoreRule>();
-			LoreRule loreRule = list2.FirstOrDefault(IsPlayerPersonaRule);
-			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			if (loreRule != null)
-			{
-				foreach (string keyword in loreRule.Keywords ?? Enumerable.Empty<string>())
-				{
-					string text3 = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword);
-					if (!string.IsNullOrWhiteSpace(text3))
-					{
-						dictionary[text3] = PlayerPersonaRuleId;
-					}
-				}
-			}
-			foreach (LoreRule loreRule2 in list)
-			{
-				foreach (string keyword2 in loreRule2.Keywords ?? Enumerable.Empty<string>())
-				{
-					string text4 = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword2);
-					if (string.IsNullOrWhiteSpace(text4))
-					{
-						continue;
-					}
-					if (dictionary.TryGetValue(text4, out var value) && !string.Equals(value, loreRule2.Id, StringComparison.OrdinalIgnoreCase))
-					{
-						error = KnowledgeUiTexts.ReloadKeywordConflict(text4);
-						return false;
-					}
-					dictionary[text4] = loreRule2.Id;
-				}
-			}
-			removedCount = list2.Count((LoreRule rule) => rule != null && !IsPlayerPersonaRule(rule));
-			replacement = new KnowledgeFile
-			{
-				Version = (knowledgeFile.Version > 0) ? knowledgeFile.Version : 1,
-				PlayerAppearance = NormalizePlayerAppearanceForStorage(knowledgeFile.PlayerAppearance),
-				Rules = new List<LoreRule>()
-			};
-			if (loreRule != null)
-			{
-				replacement.Rules.Add(loreRule);
-			}
-			replacement.Rules.AddRange(list);
-			importedCount = list.Count;
-			return true;
-		}
-		catch (Exception ex)
-		{
-			error = KnowledgeUiTexts.ReloadFailed(ex.Message);
 			return false;
 		}
+		if (_file == null)
+		{
+			_file = new KnowledgeFile();
+		}
+		if (_file.Rules == null)
+		{
+			_file.Rules = new List<LoreRule>();
+		}
+		List<LoreRule> rules = _file.Rules;
+		Dictionary<string, int> indexById = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, string> keywordOwners = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		for (int i = 0; i < rules.Count; i++)
+		{
+			string existingId = (rules[i]?.Id ?? "").Trim();
+			if (existingId.Length == 0)
+			{
+				continue;
+			}
+			indexById[existingId] = i;
+			foreach (string keyword in KnowledgeImportSupport.GetKnowledgeKeywordsForCompare(rules[i]))
+			{
+				keywordOwners[keyword] = existingId;
+			}
+		}
+		int imported = 0;
+		int skipped = 0;
+		string firstId = "";
+		string firstReason = "";
+		foreach (LoreRule source in sourceRules)
+		{
+			string id = (source?.Id ?? "").Trim();
+			string skipReason = null;
+			if (source == null || id.Length == 0)
+			{
+				skipReason = KnowledgeUiTexts.ImportRuleIdEmpty;
+			}
+			else if (IsPlayerPersonaRuleId(id))
+			{
+				// A package may carry its own player profile; it must never replace this save's player data.
+				continue;
+			}
+			else
+			{
+				source.Id = id;
+				bool exists = indexById.TryGetValue(id, out int index);
+				if (exists && !overwriteExisting)
+				{
+					// The user chose to keep existing entries; this is not a failure.
+					continue;
+				}
+				if (!TryValidateRagShortTexts(source, requireAtLeastOne: false, out string ragError))
+				{
+					skipReason = string.IsNullOrWhiteSpace(ragError) ? KnowledgeUiTexts.ImportWriteFailed : ragError;
+				}
+				else if (!ValidateVariantConditionsUnique(source, out int firstCondition, out int secondCondition))
+				{
+					skipReason = KnowledgeUiTexts.ImportDuplicateCondition(firstCondition + 1, secondCondition + 1);
+				}
+				if (skipReason == null)
+				{
+					List<string> keywords = KnowledgeImportSupport.GetKnowledgeKeywordsForCompare(source).ToList();
+					foreach (string keyword in keywords)
+					{
+						if (keywordOwners.TryGetValue(keyword, out string owner) && !string.Equals(owner, id, StringComparison.OrdinalIgnoreCase))
+						{
+							skipReason = KnowledgeUiTexts.ImportKeywordConflict(keyword, owner, id);
+							break;
+						}
+					}
+					if (skipReason == null)
+					{
+						if (exists)
+						{
+							foreach (string oldKeyword in KnowledgeImportSupport.GetKnowledgeKeywordsForCompare(rules[index]).ToList())
+							{
+								if (keywordOwners.TryGetValue(oldKeyword, out string oldOwner) && string.Equals(oldOwner, id, StringComparison.OrdinalIgnoreCase))
+								{
+									keywordOwners.Remove(oldKeyword);
+								}
+							}
+							rules[index] = source;
+						}
+						else
+						{
+							rules.Add(source);
+							indexById[id] = rules.Count - 1;
+						}
+						foreach (string keyword in keywords)
+						{
+							keywordOwners[keyword] = id;
+						}
+						imported++;
+						continue;
+					}
+				}
+			}
+			skipped++;
+			if (firstReason.Length == 0)
+			{
+				firstId = id;
+				firstReason = skipReason ?? "";
+			}
+		}
+		importedCount = imported;
+		skippedCount = skipped;
+		firstSkippedRuleId = firstId;
+		firstSkippedReason = firstReason;
+		if (imported > 0)
+		{
+			StripSemanticPrototypes();
+			try
+			{
+				_storageJson = JsonConvert.SerializeObject(_file, Formatting.None);
+			}
+			catch
+			{
+			}
+			TouchRuleData();
+		}
+		return true;
 	}
 
 	private static bool ValidateVariantConditionsUnique(LoreRule rule, out int firstIndex, out int secondIndex)
