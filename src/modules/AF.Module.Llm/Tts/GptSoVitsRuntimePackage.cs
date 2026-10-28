@@ -61,7 +61,8 @@ internal sealed class GptSoVitsRuntimePackage
             if (!System.Version.TryParse((string)document["package_version"], out _)) throw new InvalidDataException("package_version_invalid");
             result.Version = (string)document["package_version"];
             result.Engine = (string)document["engine"];
-            if (result.Engine != "gpt-sovits-v2pro") return result.Fail(GptSoVitsPackageState.Incompatible, "engine_unsupported");
+            if (result.Engine != "gpt-sovits-v2pro" && !(edition == "U" && result.Engine == "gpt-sovits-v5"))
+                return result.Fail(GptSoVitsPackageState.Incompatible, "engine_unsupported");
             result.PythonPath = ResolvePath(result.Root, Required(document, "python"));
             result.EntryPath = ResolvePath(result.Root, Required(document, "entrypoint"));
             if (!result.PythonPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ||

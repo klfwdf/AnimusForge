@@ -22,6 +22,7 @@ internal static class TtsTestFeedback
 
     internal static void ReportRuntimeStatus(string state, string reason)
     {
+        Logger.Log("GptSoVitsRuntime", "state=" + state + ";reason=" + reason);
         if (Pending.Count >= 16) return;
         Pending.Enqueue(() => InformationManager.DisplayMessage(new InformationMessage(
             GptSoVitsUiText.Text("RuntimeStatus", "[Local TTS] ") +
