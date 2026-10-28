@@ -1,0 +1,21 @@
+{
+  "GameVersion": "v1.5.6.125053",
+  "AcquiredFrom": "Current local Steam beta installation; read-only export",
+  "GameRoot": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord",
+  "VerifiedVersionSource": "TaleWorlds.Library.dll: global BuildInfo.GameVersion",
+  "SteamAppId": "261550",
+  "SteamBetaKey": "beta",
+  "SteamBuildId": "26242440",
+  "IlSpyVersion": "ilspycmd: 11.0.0.9375\r\nICSharpCode.Decompiler: 11.0.0.9375",
+  "Manifest": "_manifest.json",
+  "AssemblyCount": 81,
+  "CSharpFileCount": 8111,
+  "PreviousReferenceDirectory": "原版游戏本体代码1.5.5",
+  "PreviousReferencesChanged": true,
+  "Comparison": "_comparison_to_1.5.5.json",
+  "GameDeploymentPerformed": false,
+  "AFCompatibility": "NOT_TESTED",
+  "PreviousReferenceDeleted": true,
+  "PreviousReferenceRecoveryCommit": "f022e81ab6f49fba40b3a8bb1f38c3acb118c206",
+  "OtherReferenceDirectoriesChanged": false
+}

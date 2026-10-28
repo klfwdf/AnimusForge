@@ -12564,3 +12564,17 @@ run `33fc0456789abcd0123456789def0123` / PID37308，新EN战役，Lucon原生为
 - 用户明确授权部署 EN；使用产品提交 fff988bff 及当前工作区既有改动的已验证 Debug 1.3/1.4/Bootstrap 构建。部署到 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，沿用此前用户要求的布匿世界书部署排除，不改共享内容清单或玩家世界书。
 - 原内容投影、干净 Stage、EN 候选、路径/reparse/FeatureBridges/构建标记及目标保护检查通过；原 Invoke-ManagedStageDeployment 成功，3521 候选文件，更新 11 文件，9189 保护文件及部署结果逐项核验通过。已有 1.5 文件保留；没有部署备份或自动回滚。旧项目 Stage 保存在 artifacts/deploy-en-oral-threat-20261027/previous-stage，候选、日志及 receipt.json 在同目录。
 - 真实游戏、旧档、API provider 未验证；此前完整外交套件归档路由断言失败未消除。未打包或推送。恢复需检查现场，选择已验证版本重建并另行授权部署。
+
+
+<a id="bannerlord156-reference-20261028"></a>
+
+## Bannerlord 1.5.6 beta 反编译参考更新（2026-10-28，REFERENCE_VERIFIED）
+
+- 用户授权：反编译已升级的游戏，更新仓库原1.5.5参考；后续明确“1.5.5直接删除”，替代本任务最初保留旧树的安排。实际Git根F:/AnimusForge-main，分支main；基线47127cf4f，本地意图检查点f022e81。既有HANDOFF/主台账未提交增量原样保留，不纳入本任务提交。
+- 来源：F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord；TaleWorlds.Library.dll全局BuildInfo.GameVersion=v1.5.6.125053；Steam app261550、BetaKey=beta、buildid=26242440。沿用tools/export_bannerlord_reference.ps1和ILSpy11.0.0.9375，未改导出或一键构建入口。
+- 交付：新增原版游戏本体代码1.5.6/，81程序集/81工程/8111个C#；直接删除原版游戏本体代码1.5.5/，1.3.x/1.4.5保留。源码坐标：新树TaleWorlds.Library/BuildInfo.cs第1–10行，全局BuildInfo及GameVersion；来源与范围见README.md、_source.json、_manifest.json，详细文本差异见_comparison_to_1.5.5.json。没有AF运行源码/资源/存档/API契约变更。
+- 新旧对比：81个程序集DLL均变化；C#文本220变/4删/7891不变/0新增。删除GauntletMapParleyAnimationView、MapParleyAnimationView、MapParleyAnimationVM、MapParleyAnimationParentBrushWidget；文本对比不作为完整API语义审计。
+- 验证：独立盘点81程序集、82处官方DLL来源全部覆盖；81项导出exit0且均有C#及工程；SHA-256复核稳定；CustomBattle/Multiplayer同名程序集全部导出文件一致；无方法反编译失败，仅Epic连接文件101处已知缺失SDK/provider类型诊断。删除前旧树8201文件SHA-256全部未变；git rm仅删除无本地改动/无额外文件/无reparse的具名旧树，随后确认目录不存在。
+- AF输入排除：dotnet msbuild -getItem:Compile,EmbeddedResource,None -p:BannerlordApi=1.5，实际1987/41/21181项无任何游戏参考树；未编译AF，未改变构建输入规则。导出和比较为一次性离线工作，无Tick/运行时扫描或性能影响。
+- 本地证据：artifacts/bannerlord-1.5.6-reference-20261028/，含export.log、export-01逐程序集诊断、official-assembly-inventory.json、evaluated-inputs.json、verify_reference.py、receipt.json、旧树hash和既有文档备份。第一次常规递归删除命令被执行策略拒绝，未执行；随后使用范围更窄、可由Git恢复的受跟踪文件删除成功。
+- NOT-RUN：AF1.5.6适配/构建、原生C++反编译、游戏实机/旧档、部署、打包和push。参考更新不证明AF已兼容新游戏。回滚使用本次源码提交的聚焦inverse，或从f022e81恢复旧参考树；不hard reset、不改他人改动。

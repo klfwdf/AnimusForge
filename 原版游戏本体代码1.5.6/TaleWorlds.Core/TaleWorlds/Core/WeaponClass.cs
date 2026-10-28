@@ -1,0 +1,37 @@
+namespace TaleWorlds.Core;
+
+public enum WeaponClass
+{
+	Undefined,
+	Dagger,
+	OneHandedSword,
+	TwoHandedSword,
+	OneHandedAxe,
+	TwoHandedAxe,
+	Mace,
+	Pick,
+	TwoHandedMace,
+	OneHandedPolearm,
+	TwoHandedPolearm,
+	LowGripPolearm,
+	Arrow,
+	Bolt,
+	SlingStone,
+	Cartridge,
+	Bow,
+	Crossbow,
+	Sling,
+	Stone,
+	Boulder,
+	ThrowingAxe,
+	ThrowingKnife,
+	Javelin,
+	Pistol,
+	Musket,
+	BallistaBoulder,
+	BallistaStone,
+	SmallShield,
+	LargeShield,
+	Banner,
+	NumClasses
+}

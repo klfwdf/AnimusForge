@@ -1,0 +1,368 @@
+using System;
+using System.Collections.Generic;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using TaleWorlds.Localization;
+using TaleWorlds.SaveSystem;
+
+namespace TaleWorlds.CampaignSystem;
+
+public struct CampaignTime : IComparable<CampaignTime>
+{
+	public enum Seasons
+	{
+		Spring,
+		Summer,
+		Autumn,
+		Winter
+	}
+
+	public static int SunRise;
+
+	public static int SunSet;
+
+	public static int MillisecondInSecond;
+
+	public static int SecondsInMinute;
+
+	public static int MinutesInHour;
+
+	public static int HoursInDay;
+
+	public static int DaysInWeek;
+
+	public static int WeeksInSeason;
+
+	public static int SeasonsInYear;
+
+	internal static long TimeTicksPerMillisecond;
+
+	internal static long TimeTicksPerSecond;
+
+	internal static long TimeTicksPerMinute;
+
+	internal static long TimeTicksPerHour;
+
+	internal static long TimeTicksPerDay;
+
+	internal static long TimeTicksPerWeek;
+
+	internal static long TimeTicksPerSeason;
+
+	internal static long TimeTicksPerYear;
+
+	[SaveableField(2)]
+	private readonly long _numTicks;
+
+	public static int DaysInSeason => WeeksInSeason * DaysInWeek;
+
+	public static int DaysInYear => DaysInSeason * SeasonsInYear;
+
+	internal long NumTicks => _numTicks;
+
+	private static long CurrentTicks => Campaign.Current.MapTimeTracker.NumTicks;
+
+	public static CampaignTime DeltaTime => new CampaignTime(Campaign.Current.MapTimeTracker.DeltaTimeInTicks);
+
+	private static long DeltaTimeInTicks => Campaign.Current.MapTimeTracker.DeltaTimeInTicks;
+
+	public static CampaignTime Now => Campaign.Current.MapTimeTracker.Now;
+
+	public static CampaignTime Never => new CampaignTime(long.MaxValue);
+
+	public bool IsFuture => CurrentTicks < _numTicks;
+
+	public bool IsPast => CurrentTicks > _numTicks;
+
+	public bool IsNow => CurrentTicks == _numTicks;
+
+	public bool IsDayTime
+	{
+		get
+		{
+			int num = TaleWorlds.Library.MathF.Floor(CurrentHourInDay);
+			if (num >= SunRise)
+			{
+				return num < SunSet;
+			}
+			return false;
+		}
+	}
+
+	public float CurrentHourInDay
+	{
+		get
+		{
+			float num = SecondsInMinute * MinutesInHour;
+			return (float)(_numTicks % TimeTicksPerDay / TimeTicksPerSecond) / num;
+		}
+	}
+
+	public bool IsNightTime => !IsDayTime;
+
+	public float ElapsedMillisecondsUntilNow => (float)(CurrentTicks - _numTicks) / (float)TimeTicksPerMillisecond;
+
+	public float ElapsedSecondsUntilNow => (float)(CurrentTicks - _numTicks) / (float)TimeTicksPerSecond;
+
+	public float ElapsedHoursUntilNow => (float)(CurrentTicks - _numTicks) / (float)TimeTicksPerHour;
+
+	public float ElapsedDaysUntilNow => (float)(CurrentTicks - _numTicks) / (float)TimeTicksPerDay;
+
+	public float ElapsedWeeksUntilNow => (float)(CurrentTicks - _numTicks) / (float)TimeTicksPerWeek;
+
+	public float ElapsedSeasonsUntilNow => (float)(CurrentTicks - _numTicks) / (float)TimeTicksPerSeason;
+
+	public float ElapsedYearsUntilNow => (float)(CurrentTicks - _numTicks) / (float)TimeTicksPerYear;
+
+	public float RemainingMillisecondsFromNow => (float)(_numTicks - CurrentTicks) / (float)TimeTicksPerMillisecond;
+
+	public float RemainingSecondsFromNow => (float)(_numTicks - CurrentTicks) / (float)TimeTicksPerSecond;
+
+	public float RemainingHoursFromNow => (float)(_numTicks - CurrentTicks) / (float)TimeTicksPerHour;
+
+	public float RemainingDaysFromNow => (float)(_numTicks - CurrentTicks) / (float)TimeTicksPerDay;
+
+	public float RemainingWeeksFromNow => (float)(_numTicks - CurrentTicks) / (float)TimeTicksPerWeek;
+
+	public float RemainingSeasonsFromNow => (float)(_numTicks - CurrentTicks) / (float)TimeTicksPerSeason;
+
+	public float RemainingYearsFromNow => (float)(_numTicks - CurrentTicks) / (float)TimeTicksPerYear;
+
+	public double ToMilliseconds => (double)_numTicks / (double)TimeTicksPerMillisecond;
+
+	public double ToSeconds => (double)_numTicks / (double)TimeTicksPerSecond;
+
+	public double ToMinutes => (double)_numTicks / (double)TimeTicksPerMinute;
+
+	public double ToHours => (double)_numTicks / (double)TimeTicksPerHour;
+
+	public double ToDays => (double)_numTicks / (double)TimeTicksPerDay;
+
+	public double ToWeeks => (double)_numTicks / (double)TimeTicksPerWeek;
+
+	public double ToSeasons => (double)_numTicks / (double)TimeTicksPerSeason;
+
+	public double ToYears => (double)_numTicks / (double)TimeTicksPerYear;
+
+	public int GetHourOfDay => (int)(_numTicks / TimeTicksPerHour % HoursInDay);
+
+	public int GetDayOfWeek => (int)(_numTicks / TimeTicksPerDay % DaysInWeek);
+
+	public int GetDayOfSeason => (int)(_numTicks / TimeTicksPerDay % DaysInSeason);
+
+	public int GetDayOfYear => (int)(_numTicks / TimeTicksPerDay % DaysInYear);
+
+	public int GetWeekOfSeason => (int)(_numTicks / TimeTicksPerWeek % WeeksInSeason);
+
+	public Seasons GetSeasonOfYear => (Seasons)(_numTicks / TimeTicksPerSeason % SeasonsInYear);
+
+	public int GetYear => (int)(_numTicks / TimeTicksPerYear);
+
+	public static CampaignTime Zero => new CampaignTime(0L);
+
+	public static void AutoGeneratedStaticCollectObjectsCampaignTime(object o, List<object> collectedObjects)
+	{
+		((CampaignTime)o).AutoGeneratedInstanceCollectObjects(collectedObjects);
+	}
+
+	private void AutoGeneratedInstanceCollectObjects(List<object> collectedObjects)
+	{
+	}
+
+	internal static object AutoGeneratedGetMemberValue_numTicks(object o)
+	{
+		return ((CampaignTime)o)._numTicks;
+	}
+
+	public static void Initialize()
+	{
+		CampaignTimeModel campaignTimeModel = Campaign.Current.Models.CampaignTimeModel;
+		SunRise = campaignTimeModel.SunRise;
+		SunSet = campaignTimeModel.SunSet;
+		MillisecondInSecond = campaignTimeModel.MillisecondInSecond;
+		SecondsInMinute = campaignTimeModel.SecondsInMinute;
+		MinutesInHour = campaignTimeModel.MinutesInHour;
+		HoursInDay = campaignTimeModel.HoursInDay;
+		DaysInWeek = campaignTimeModel.DaysInWeek;
+		WeeksInSeason = campaignTimeModel.WeeksInSeason;
+		SeasonsInYear = campaignTimeModel.SeasonsInYear;
+		TimeTicksPerMillisecond = campaignTimeModel.TimeTicksPerMillisecond;
+		TimeTicksPerSecond = MillisecondInSecond * TimeTicksPerMillisecond;
+		TimeTicksPerMinute = SecondsInMinute * TimeTicksPerSecond;
+		TimeTicksPerHour = MinutesInHour * TimeTicksPerMinute;
+		TimeTicksPerDay = HoursInDay * TimeTicksPerHour;
+		TimeTicksPerWeek = DaysInWeek * TimeTicksPerDay;
+		TimeTicksPerSeason = WeeksInSeason * TimeTicksPerWeek;
+		TimeTicksPerYear = SeasonsInYear * TimeTicksPerSeason;
+	}
+
+	internal CampaignTime(long numTicks)
+	{
+		_numTicks = numTicks;
+	}
+
+	public bool Equals(CampaignTime other)
+	{
+		return _numTicks == other._numTicks;
+	}
+
+	public override bool Equals(object obj)
+	{
+		if (obj == null)
+		{
+			return false;
+		}
+		if (obj is CampaignTime)
+		{
+			return Equals((CampaignTime)obj);
+		}
+		return false;
+	}
+
+	public override int GetHashCode()
+	{
+		long numTicks = _numTicks;
+		return numTicks.GetHashCode();
+	}
+
+	public int CompareTo(CampaignTime other)
+	{
+		if (_numTicks == other._numTicks)
+		{
+			return 0;
+		}
+		if (_numTicks > other._numTicks)
+		{
+			return 1;
+		}
+		return -1;
+	}
+
+	public static bool operator <(CampaignTime x, CampaignTime y)
+	{
+		return x._numTicks < y._numTicks;
+	}
+
+	public static bool operator >(CampaignTime x, CampaignTime y)
+	{
+		return x._numTicks > y._numTicks;
+	}
+
+	public static bool operator ==(CampaignTime x, CampaignTime y)
+	{
+		return x._numTicks == y._numTicks;
+	}
+
+	public static bool operator !=(CampaignTime x, CampaignTime y)
+	{
+		return !(x == y);
+	}
+
+	public static bool operator <=(CampaignTime x, CampaignTime y)
+	{
+		return x._numTicks <= y._numTicks;
+	}
+
+	public static bool operator >=(CampaignTime x, CampaignTime y)
+	{
+		return x._numTicks >= y._numTicks;
+	}
+
+	public static CampaignTime Milliseconds(long valueInMilliseconds)
+	{
+		return new CampaignTime(valueInMilliseconds * TimeTicksPerMillisecond);
+	}
+
+	public static CampaignTime MillisecondsFromNow(long valueInMilliseconds)
+	{
+		return new CampaignTime(CurrentTicks + valueInMilliseconds * TimeTicksPerMillisecond);
+	}
+
+	public static CampaignTime Seconds(long valueInSeconds)
+	{
+		return new CampaignTime(valueInSeconds * TimeTicksPerSecond);
+	}
+
+	public static CampaignTime SecondsFromNow(long valueInSeconds)
+	{
+		return new CampaignTime(CurrentTicks + valueInSeconds * TimeTicksPerSecond);
+	}
+
+	public static CampaignTime Minutes(long valueInMinutes)
+	{
+		return new CampaignTime(valueInMinutes * TimeTicksPerMinute);
+	}
+
+	public static CampaignTime MinutesFromNow(long valueInMinutes)
+	{
+		return new CampaignTime(CurrentTicks + valueInMinutes * TimeTicksPerMinute);
+	}
+
+	public static CampaignTime Hours(float valueInHours)
+	{
+		return new CampaignTime((long)(valueInHours * (float)TimeTicksPerHour));
+	}
+
+	public static CampaignTime HoursFromNow(float valueInHours)
+	{
+		return new CampaignTime(CurrentTicks + (long)(valueInHours * (float)TimeTicksPerHour));
+	}
+
+	public static CampaignTime Days(float valueInDays)
+	{
+		return new CampaignTime((long)(valueInDays * (float)TimeTicksPerDay));
+	}
+
+	public static CampaignTime DaysFromNow(float valueInDays)
+	{
+		return new CampaignTime(CurrentTicks + (long)(valueInDays * (float)TimeTicksPerDay));
+	}
+
+	public static CampaignTime Weeks(float valueInWeeks)
+	{
+		return new CampaignTime((long)(valueInWeeks * (float)TimeTicksPerWeek));
+	}
+
+	public static CampaignTime WeeksFromNow(float valueInWeeks)
+	{
+		return new CampaignTime(CurrentTicks + (long)(valueInWeeks * (float)TimeTicksPerWeek));
+	}
+
+	public static CampaignTime Years(float valueInYears)
+	{
+		return new CampaignTime((long)(valueInYears * (float)TimeTicksPerYear));
+	}
+
+	public static CampaignTime YearsFromNow(float valueInYears)
+	{
+		return new CampaignTime(CurrentTicks + (long)(valueInYears * (float)TimeTicksPerYear));
+	}
+
+	public static CampaignTime operator +(CampaignTime g1, CampaignTime g2)
+	{
+		return new CampaignTime(g1._numTicks + g2._numTicks);
+	}
+
+	public static CampaignTime operator -(CampaignTime g1, CampaignTime g2)
+	{
+		return new CampaignTime(g1._numTicks - g2._numTicks);
+	}
+
+	public bool StringSameAs(CampaignTime otherTime)
+	{
+		return _numTicks / TimeTicksPerDay == otherTime.NumTicks / TimeTicksPerDay;
+	}
+
+	public override string ToString()
+	{
+		int getYear = GetYear;
+		Seasons getSeasonOfYear = GetSeasonOfYear;
+		int num = GetDayOfSeason + 1;
+		TextObject textObject = GameTexts.FindText("str_date_format");
+		textObject.SetTextVariable("SEASON", GameTexts.FindText("str_season_" + getSeasonOfYear));
+		textObject.SetTextVariable("YEAR", getYear.ToString());
+		textObject.SetTextVariable("DAY", num.ToString());
+		return textObject.ToString();
+	}
+}

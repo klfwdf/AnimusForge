@@ -1,3 +1,0 @@
-namespace TaleWorlds.CampaignSystem.CharacterCreationContent;
-
-public delegate bool NarrativeMenuOptionOnConditionDelegate(CharacterCreationManager characterCreationManager);
