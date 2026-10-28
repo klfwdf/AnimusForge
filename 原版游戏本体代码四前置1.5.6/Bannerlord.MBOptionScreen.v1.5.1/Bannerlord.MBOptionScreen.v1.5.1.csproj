@@ -1,0 +1,124 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Bannerlord.MBOptionScreen.v1.5.1</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="MCM.UI.GUI.Brushes.ButtonBrushes.xml" />
+    <None Remove="MCM.UI.GUI.Brushes.CompatibilityBrushes.xml" />
+    <None Remove="MCM.UI.GUI.Brushes.DividerBrushes.xml" />
+    <None Remove="MCM.UI.GUI.Brushes.ExpandIndicator.xml" />
+    <None Remove="MCM.UI.GUI.Brushes.SettingsBrush.xml" />
+    <None Remove="MCM.UI.GUI.Brushes.TextBrushes.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.DropdownWithHorizontalControl.Checkbox.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.ModOptionsPageView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.ModOptionsView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyBoolView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyButtonView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyCheckboxDropdownView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyDropdownView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyFloatView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyIntView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyStringView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.SettingsItemView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.SettingsPropertyDisplayValueView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.SettingsPropertyGroupView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.SettingsPropertyView.xml" />
+    <None Remove="MCM.UI.GUI.Prefabs.SettingsView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Brushes.ButtonBrushes.xml" LogicalName="MCM.UI.GUI.Brushes.ButtonBrushes.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Brushes.CompatibilityBrushes.xml" LogicalName="MCM.UI.GUI.Brushes.CompatibilityBrushes.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Brushes.DividerBrushes.xml" LogicalName="MCM.UI.GUI.Brushes.DividerBrushes.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Brushes.ExpandIndicator.xml" LogicalName="MCM.UI.GUI.Brushes.ExpandIndicator.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Brushes.SettingsBrush.xml" LogicalName="MCM.UI.GUI.Brushes.SettingsBrush.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Brushes.TextBrushes.xml" LogicalName="MCM.UI.GUI.Brushes.TextBrushes.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.DropdownWithHorizontalControl.Checkbox.xml" LogicalName="MCM.UI.GUI.Prefabs.DropdownWithHorizontalControl.Checkbox.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.ModOptionsPageView.xml" LogicalName="MCM.UI.GUI.Prefabs.ModOptionsPageView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.ModOptionsView.xml" LogicalName="MCM.UI.GUI.Prefabs.ModOptionsView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyBoolView.xml" LogicalName="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyBoolView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyButtonView.xml" LogicalName="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyButtonView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyCheckboxDropdownView.xml" LogicalName="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyCheckboxDropdownView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyDropdownView.xml" LogicalName="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyDropdownView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyFloatView.xml" LogicalName="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyFloatView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyIntView.xml" LogicalName="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyIntView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyStringView.xml" LogicalName="MCM.UI.GUI.Prefabs.Properties.SettingsPropertyStringView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.SettingsItemView.xml" LogicalName="MCM.UI.GUI.Prefabs.SettingsItemView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.SettingsPropertyDisplayValueView.xml" LogicalName="MCM.UI.GUI.Prefabs.SettingsPropertyDisplayValueView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.SettingsPropertyGroupView.xml" LogicalName="MCM.UI.GUI.Prefabs.SettingsPropertyGroupView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.SettingsPropertyView.xml" LogicalName="MCM.UI.GUI.Prefabs.SettingsPropertyView.xml" />
+    <EmbeddedResource Include="MCM.UI.GUI.Prefabs.SettingsView.xml" LogicalName="MCM.UI.GUI.Prefabs.SettingsView.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="TaleWorlds.MountAndBlade">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.MountAndBlade.dll</HintPath>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="MCM.UI.Adapter.MCMv5">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\MCM.UI.Adapter.MCMv5.dll</HintPath>
+    </Reference>
+    <Reference Include="MCMv5">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\MCMv5.dll</HintPath>
+    </Reference>
+    <Reference Include="Bannerlord.UIExtenderEx">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Bannerlord.UIExtenderEx.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Bannerlord.ButterLib">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Bannerlord.ButterLib.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ScreenSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.ScreenSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Library">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Core">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.ViewModelCollection">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.MountAndBlade.ViewModelCollection.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.TwoDimension">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.TwoDimension.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.InputSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine.GauntletUI">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Engine.GauntletUI.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Core.ViewModelCollection">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Core.ViewModelCollection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.CampaignSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.CampaignSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ModuleManager">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.ModuleManager.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.GauntletUI">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.MountAndBlade.GauntletUI.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Engine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

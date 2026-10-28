@@ -52,7 +52,11 @@ internal static class Program
             object runtime = Activator.CreateInstance(runtimeType, true);
             object line = runtimeType.GetMethod("DetectRuntimeApiLineFromBuildInfo", Instance).Invoke(runtime, null);
             Check(line.ToString() == "V" + api.Replace(".", ""), "real BuildInfo selects exact implementation line");
-            VerifyExplicitVersions(runtimeType, runtime, harmony);
+            if (bootstrap.GetCustomAttributes<AssemblyMetadataAttribute>().Any(a =>
+                a.Key == "AnimusForge.SupportedGameVersion" && a.Value == "1.5.6"))
+                Verify156OnlyVersions(runtimeType, runtime, harmony);
+            else
+                VerifyExplicitVersions(runtimeType, runtime, harmony);
 
             af.GetType("AnimusForge.CompatibilityAudit", true).GetMethod("RunStartupAudit", Static).Invoke(null, null);
             string summary = Logs.Single(s => s.StartsWith("Summary CriticalOK="));
@@ -108,6 +112,32 @@ internal static class Program
                 catch (TargetInvocationException e) { rejected = e.InnerException is NotSupportedException; }
                 Check(rejected, "unsupported explicit version rejected: " + version);
             }
+        }
+        finally { harmony.Unpatch(source, HarmonyPatchType.Prefix, harmony.Id); }
+    }
+
+    private static void Verify156OnlyVersions(Type type, object runtime, Harmony harmony)
+    {
+        var policy = type.GetMethod("Validate156RuntimeVersion", Static);
+        foreach (string version in new[] { "v1.5.6.125053", "e1.5.6.125054" })
+        {
+            policy.Invoke(null, new object[] { ApplicationVersion.FromString(version) });
+            Check(true, "1.5.6 release accepts exact patch: " + version);
+        }
+        foreach (string version in new[] { "v1.3.15.1", "v1.4.8.1", "v1.5.5.124170", "v1.5.7.1", "v1.6.0.1", "v2.0.0.1" })
+        {
+            bool rejected = false;
+            try { policy.Invoke(null, new object[] { ApplicationVersion.FromString(version) }); }
+            catch (TargetInvocationException e) { rejected = e.InnerException is NotSupportedException; }
+            Check(rejected, "1.5.6 release rejects other patch: " + version);
+        }
+        var source = AccessTools.Method(typeof(ApplicationVersion), nameof(ApplicationVersion.FromParametersFile));
+        harmony.Patch(source, prefix: new HarmonyMethod(typeof(VersionFixtures), nameof(VersionFixtures.Prefix)));
+        try
+        {
+            VersionFixtures.Value = ApplicationVersion.FromString("v1.4.8.1");
+            Check(type.GetMethod("DetectRuntimeApiLine", Instance).Invoke(runtime, null).ToString() == "V15",
+                "dedicated release uses real BuildInfo instead of parameter override");
         }
         finally { harmony.Unpatch(source, HarmonyPatchType.Prefix, harmony.Id); }
     }

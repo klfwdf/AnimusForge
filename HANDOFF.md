@@ -1,3 +1,9 @@
+# 已交付：AF 1.6.6 / 游戏1.5.6特别版（2026-10-28）
+
+- 四前置已反编译，3处API签名适配及仅1.5.6 Bootstrap完成；CN已部署，安装只留1.5实现。按用户要求停止校验/哈希核对，部署后生成CN/EN双包，位于一键编译覆盖推送/packages/Bannerlord_1.5.6_Special/，文件时间戳1028_1605，AF版本固定1.6.6。包未回读/门禁校验，未实机或旧档。[台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bannerlord156-delivery-20261028)。本地证据artifacts/bannerlord156-delivery-20261028/，恢复点7c689f8；不推送。
+
+---
+
 # 游戏源码参考：1.5.6 beta（2026-10-28，REFERENCE_VERIFIED）
 
 - 已从实际v1.5.6.125053导出81程序集/8111个C#至原版游戏本体代码1.5.6；按用户要求删除1.5.5旧树，1.3.x/1.4.5保留。220个C#变化、4个删除；来源哈希/官方覆盖/工程排除通过，仅保留已知Epic缺SDK诊断。未做AF兼容适配、构建、实机或部署。[台账、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bannerlord156-reference-20261028)；旧树恢复点f022e81。

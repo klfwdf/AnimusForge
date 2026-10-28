@@ -45,7 +45,11 @@ public sealed class ExecutionUsePoint : StandingPoint
         IsDisabledForPlayers = false;
     }
 
+#if BANNERLORD_1_5_OR_GREATER
+    public override TextObject GetDescriptionText(WeakGameEntity gameEntity, Agent requesterAgent) =>
+#else
     public override TextObject GetDescriptionText(WeakGameEntity gameEntity) =>
+#endif
         DescriptionMessage;
 
     public override bool IsDisabledForAgent(Agent agent) =>

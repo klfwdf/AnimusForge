@@ -1,0 +1,127 @@
+using System;
+using Bannerlord.ButterLib.Common.Extensions;
+using Bannerlord.ButterLib.DistanceMatrix;
+using Bannerlord.ButterLib.Extensions;
+using Bannerlord.ButterLib.HotKeys;
+using Bannerlord.ButterLib.Implementation.Common.Extensions;
+using Bannerlord.ButterLib.Implementation.DistanceMatrix;
+using Bannerlord.ButterLib.Implementation.HotKeys;
+using Bannerlord.ButterLib.Implementation.Logging;
+using Bannerlord.ButterLib.Implementation.MBSubModuleBaseExtended;
+using Bannerlord.ButterLib.Implementation.ObjectSystem;
+using Bannerlord.ButterLib.Implementation.SaveSystem;
+using Bannerlord.ButterLib.ObjectSystem;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
+
+namespace Bannerlord.ButterLib.Implementation;
+
+public sealed class SubModule : MBSubModuleBase
+{
+	internal static ILogger? Logger { get; private set; }
+
+	internal static SubModule? Instance { get; private set; }
+
+	private bool ServiceRegistrationWasCalled { get; set; }
+
+	private bool OnBeforeInitialModuleScreenSetAsRootWasCalled { get; set; }
+
+	public void OnServiceRegistration()
+	{
+		ServiceRegistrationWasCalled = true;
+		IServiceCollection services = this.GetServices();
+		if (services != null)
+		{
+			services.AddScoped(typeof(DistanceMatrix<>), typeof(DistanceMatrixImplementation<>));
+			services.AddSingleton<IDistanceMatrixStatic, DistanceMatrixStaticImplementation>();
+			services.AddSingleton<ICampaignExtensions, CampaignExtensionsImplementation>();
+			services.AddScoped<IMBObjectExtensionDataStore, MBObjectExtensionDataStore>();
+			services.AddScoped<IMBObjectFinder, MBObjectFinder>();
+			services.AddScoped<IMBObjectKeeper, MBObjectKeeper>();
+			services.AddScoped<HotKeyManager, HotKeyManagerImplementation>();
+			services.AddSingleton<IHotKeyManagerStatic, HotKeyManagerStaticImplementation>();
+			services.AddSubSystem<DistanceMatrixSubSystem>();
+			services.AddSubSystem<HotKeySubSystem>();
+			services.AddSubSystem<MBSubModuleBaseExSubSystem>();
+			services.AddSubSystem<ObjectSystemSubSystem>();
+			services.AddSubSystem<SaveSystemSubSystem>();
+		}
+	}
+
+	protected override void OnSubModuleLoad()
+	{
+		base.OnSubModuleLoad();
+		Instance = this;
+		IServiceProvider provider = (ServiceRegistrationWasCalled ? this.GetServiceProvider() : this.GetTempServiceProvider());
+		if (!ServiceRegistrationWasCalled)
+		{
+			OnServiceRegistration();
+		}
+		Logger = provider.GetRequiredService<ILogger<SubModule>>();
+		Logger.LogTrace("ButterLib.Implementation: OnSubModuleLoad");
+		Logger.LogInformation("Wrapping DebugManager of type {Type} with DebugManagerWrapper", Debug.DebugManager.GetType());
+		Debug.DebugManager = new DebugManagerWrapper(Debug.DebugManager, provider.GetRequiredService<ILoggerFactory>());
+		DistanceMatrixSubSystem.Instance?.Enable();
+		HotKeySubSystem.Instance?.Enable();
+		MBSubModuleBaseExSubSystem.Instance?.Enable();
+		SaveSystemSubSystem.Instance?.Enable();
+		Logger.LogTrace("ButterLib.Implementation: OnSubModuleLoad: Done");
+	}
+
+	protected override void OnBeforeInitialModuleScreenSetAsRoot()
+	{
+		base.OnBeforeInitialModuleScreenSetAsRoot();
+		Logger.LogTrace("ButterLib.Implementation: OnBeforeInitialModuleScreenSetAsRoot");
+		if (!OnBeforeInitialModuleScreenSetAsRootWasCalled)
+		{
+			OnBeforeInitialModuleScreenSetAsRootWasCalled = true;
+			Logger = this.GetServiceProvider().GetRequiredService<ILogger<SubModule>>();
+			if (!(Debug.DebugManager is DebugManagerWrapper))
+			{
+				Logger.LogWarning("DebugManagerWrapper was replaced with {Type}! Wrapping it with DebugManagerWrapper", Debug.DebugManager.GetType());
+				Debug.DebugManager = new DebugManagerWrapper(Debug.DebugManager, this.GetServiceProvider().GetRequiredService<ILoggerFactory>());
+			}
+			ObjectSystemSubSystem.Instance?.Enable();
+		}
+		Logger.LogTrace("ButterLib.Implementation: OnBeforeInitialModuleScreenSetAsRoot: Done");
+	}
+
+	protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
+	{
+		base.OnGameStart(game, gameStarterObject);
+		Logger.LogTrace("ButterLib.Implementation: OnGameStart");
+		if (game.GameType is Campaign)
+		{
+			CampaignGameStarter campaignGameStarter = (CampaignGameStarter)gameStarterObject;
+			DistanceMatrixSubSystem instance = DistanceMatrixSubSystem.Instance;
+			if (instance != null)
+			{
+				if (instance.IsEnabled)
+				{
+					campaignGameStarter.AddBehavior(new GeopoliticsBehavior());
+				}
+				instance.GameInitialized = true;
+			}
+		}
+		Logger.LogTrace("ButterLib.Implementation: OnGameStart: Done");
+	}
+
+	public override void OnGameEnd(Game game)
+	{
+		base.OnGameEnd(game);
+		Logger.LogTrace("ButterLib.Implementation: OnGameEnd");
+		if (game.GameType is Campaign)
+		{
+			DistanceMatrixSubSystem instance = DistanceMatrixSubSystem.Instance;
+			if (instance != null)
+			{
+				instance.GameInitialized = false;
+			}
+		}
+		Logger.LogTrace("ButterLib.Implementation: OnGameEnd: Done");
+	}
+}

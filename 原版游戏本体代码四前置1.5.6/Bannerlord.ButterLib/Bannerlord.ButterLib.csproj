@@ -1,0 +1,107 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <AssemblyName>Bannerlord.ButterLib</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <UseWindowsForms>True</UseWindowsForms>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="BUTR.CrashReport">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\BUTR.CrashReport.dll</HintPath>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="BUTR.CrashReport.Models">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\BUTR.CrashReport.Models.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="TaleWorlds.SaveSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.SaveSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.MountAndBlade.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Core">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Library">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.ObjectSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.CampaignSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.CampaignSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.InputSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="BUTR.CrashReport.Renderer.WinForms">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\BUTR.CrashReport.Renderer.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="BUTR.CrashReport.Renderer.ImGui">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\BUTR.CrashReport.Renderer.ImGui.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Extensions.Logging">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Serilog.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ModuleManager">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.ModuleManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Memory">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="BUTR.CrashReport.Renderer.Html">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\BUTR.CrashReport.Renderer.Html.dll</HintPath>
+    </Reference>
+    <Reference Include="BUTR.CrashReport.Renderer.Zip">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\BUTR.CrashReport.Renderer.Zip.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

@@ -5,8 +5,10 @@
     <LangVersion>10.0</LangVersion>
     <PlatformTarget>x64</PlatformTarget>
     <NuGetAudit>false</NuGetAudit>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Program.cs" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
     <Reference Include="0Harmony"><HintPath>$(HarmonyCorePath)</HintPath><Private>true</Private></Reference>
     <Reference Include="TaleWorlds.Library"><HintPath>../../../_deps_auto/TaleWorlds.Library.dll</HintPath><Private>false</Private></Reference>

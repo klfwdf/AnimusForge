@@ -2,7 +2,8 @@ param(
     [Parameter(Mandatory = $true)][string]$BannerlordRoot,
     [Parameter(Mandatory = $true)][string]$ReferenceDir,
     [Parameter(Mandatory = $true)][string]$OutputRoot,
-    [ValidateSet('Debug', 'Release')][string]$Configuration = 'Release'
+    [ValidateSet('Debug', 'Release')][string]$Configuration = 'Release',
+    [string]$PrerequisiteReferenceDir = ''
 )
 
 # Explicit local 1.5 candidate only; existing one-click/package/deploy flows stay intact.
@@ -28,13 +29,27 @@ $obj = (Join-Path $output 'obj').Replace('\', '/') + '/'
 $referenceHashes = @(Get-ChildItem -LiteralPath $references -Filter '*.dll' -File | ForEach-Object {
     [ordered]@{ Name = $_.Name; Sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }
 })
+$prerequisiteArguments = @()
+if ($PrerequisiteReferenceDir) {
+    $prerequisiteRoot = (Resolve-Path -LiteralPath $PrerequisiteReferenceDir).Path
+    $prerequisites = [ordered]@{
+        HarmonyCorePath = '0Harmony.dll'; HarmonyPath = 'Bannerlord.Harmony.dll'
+        UIExtenderExPath = 'Bannerlord.UIExtenderEx.dll'; Mcmv5Path = 'MCMv5.dll'
+        MBOptionScreenPath = 'Bannerlord.MBOptionScreen.v1.5.1.dll'
+    }
+    foreach ($property in $prerequisites.Keys) {
+        $dependency = Join-Path $prerequisiteRoot $prerequisites[$property]
+        if (-not (Test-Path -LiteralPath $dependency -PathType Leaf)) { throw "Missing prerequisite snapshot: $dependency" }
+        $prerequisiteArguments += "/p:${property}=$dependency"
+    }
+}
 & dotnet build (Join-Path $project 'AnimusForge.csproj') -c $Configuration @(
     '/p:BannerlordApi=1.5', "/p:VersionedDepsDir=$references", "/p:BannerlordBinDir=$references",
     "/p:NativeBinDir=$references", "/p:SandBoxBinDir=$references", "/p:BannerlordRoot=$BannerlordRoot",
     "/p:OutputPath=$($bin.Replace('\', '/'))/", "/p:BaseIntermediateOutputPath=$obj",
     "/p:IntermediateOutputPath=$obj", "/p:MSBuildProjectExtensionsPath=$obj",
     '/p:AppendTargetFrameworkToOutputPath=false', '/p:CopyLegacyAnimusForgeModuleData=false'
-)
+) @prerequisiteArguments
 if ($LASTEXITCODE -ne 0) { throw 'Bannerlord 1.5 candidate build failed.' }
 $dll = Join-Path $bin 'AnimusForge.dll'
 if ([Reflection.AssemblyName]::GetAssemblyName($dll).Name -ne 'AnimusForge') { throw 'Incorrect assembly identity.' }

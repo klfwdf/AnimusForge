@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Bannerlord.MBOptionScreen</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="ILLink.Substitutions.xml" />
+    <None Remove="ILRepack.List" />
+    <EmbeddedResource Include="ILLink.Substitutions.xml" LogicalName="ILLink.Substitutions.xml" />
+    <EmbeddedResource Include="ILRepack.List" LogicalName="ILRepack.List" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="TaleWorlds.MountAndBlade">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.MountAndBlade.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="0Harmony">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Core">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Library">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.CampaignSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.CampaignSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ModuleManager">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.ModuleManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+</Project>

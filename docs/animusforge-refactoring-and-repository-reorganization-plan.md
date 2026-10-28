@@ -12578,3 +12578,18 @@ run `33fc0456789abcd0123456789def0123` / PID37308，新EN战役，Lucon原生为
 - AF输入排除：dotnet msbuild -getItem:Compile,EmbeddedResource,None -p:BannerlordApi=1.5，实际1987/41/21181项无任何游戏参考树；未编译AF，未改变构建输入规则。导出和比较为一次性离线工作，无Tick/运行时扫描或性能影响。
 - 本地证据：artifacts/bannerlord-1.5.6-reference-20261028/，含export.log、export-01逐程序集诊断、official-assembly-inventory.json、evaluated-inputs.json、verify_reference.py、receipt.json、旧树hash和既有文档备份。第一次常规递归删除命令被执行策略拒绝，未执行；随后使用范围更窄、可由Git恢复的受跟踪文件删除成功。
 - NOT-RUN：AF1.5.6适配/构建、原生C++反编译、游戏实机/旧档、部署、打包和push。参考更新不证明AF已兼容新游戏。回滚使用本次源码提交的聚焦inverse，或从f022e81恢复旧参考树；不hard reset、不改他人改动。
+
+
+<a id="bannerlord156-delivery-20261028"></a>
+
+## AF 1.6.6 / 游戏1.5.6特别版（2026-10-28，DEPLOYED_PACKAGED / USER_SKIPPED_VALIDATION）
+
+- 最新授权：反编译四前置，编译/部署CN，部署后打包；AF固定1.6.6、仅支持游戏1.5.6。用户明确要求只构建1.5.6，并停止校验/哈希核对。此要求替代本任务前期继续验证的安排；不推送。Git根F:/AnimusForge-main/main，基线1c2bb4f0c、意图检查点7c689f8。原有HANDOFF/主台账未提交内容保留且不纳入本任务提交。
+- 四前置：当前Harmony2.4.2.248、ButterLib2.12.0、UIExtenderEx2.13.3、MCM5.12.3，9个核心及1.5实现DLL/1572个C#导出至原版游戏本体代码四前置1.5.6；manifest记录来源和当时诊断，无反编译诊断。原件只在本地ignored artifacts。当前loader没有精确匹配时回退最新实现，所附1.5实现为1.5.1；未修改任何前置DLL。
+- 修改：Vengeance两处GetDescriptionText在1.5分支增加Agent requesterAgent；BannerlordApiCompat.PartyHasPerk改用1.5.6恢复的双参数签名。Bootstrap工程提供显式Bannerlord156Only=true开关，专用产物从已加载TaleWorlds.Library的BuildInfo严格选择1.5.6，缺失/其他补丁拒绝，无参数或特征回退；默认旧入口未改。build_bannerlord15_candidate.ps1可显式传PrerequisiteReferenceDir，引用当前四前置及MCM1.5.1；新增测试覆盖专用启动版本拒绝，测试项目仅编译Program.cs以避免旧obj重复特性。均为编译时签名转接或启动一次检查，无新增Tick扫描/IO/反射。
+- AF身份：SubModule.xml仍v1.6.6、AssemblyFileVersion仍1.6.6.0，AssemblyVersion1.6.5.0和AnimusForge程序集/存档身份保留。中途误用递增规则生成的1.6.7候选已废弃，从未部署或打包；最终只使用candidate-final-166和bootstrap-166。
+- 已发生的离线结果：1.5.6 Release及Bootstrap编译成功，Coup注册/记忆准入通过；真实DLL回放37项、CriticalOK74/CriticalFail0、声明式游戏补丁目标65项无缺失，保留既有可选MissionCameraFadeView缺失。前期1.3/1.4纯构建已执行通过，用户随后要求只构建1.5.6后不再执行或交付旧实现。独立RichExecutions工程不在本工作区，未另行构建。
+- 用户停止后：终止Prepare校验进程，删除未交付的专用验证/部署脚本草案；不再进行Stage契约/双语语义/哈希/ZIP回读/实机。按用户要求用已生成Stage直接拷贝管理文件，未改既有一键流程。实际执行脚本artifacts/bannerlord156-delivery-20261028/deploy_and_package_without_validation.py，部署与打包日志direct-delivery.log、direct-package.log。
+- CN已部署：F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，AF1.6.6，仅Bootstrap+versions/1.5实现。拷贝384个程序/内容文件，按原时间戳/路径规则跳过4415个已有玩家文件；已知1.3/1.4各DLL/PDB/build.json共6个程序文件直接退役。未知文件、玩家设置/自定义Prompt/较新导出、日志/缓存/Recovery及ONNX保留，不声称已作部署后哈希核对。无部署备份/Recovery或自动回滚。direct-deployment.json记录执行结果。
+- 部署成功后打包：一键编译覆盖推送/packages/Bannerlord_1.5.6_Special/AnimusForge_v1.6.6_CN_1028_1605.zip（4799个写入文件）和AnimusForge_v1.6.6_EN_1028_1605.zip（4790个写入文件）。两包均从Stage制作，仅一个AnimusForge根和1.5实现，不含ONNX/第三方前置原件；EN沿用现有资产/世界书映射选版，UI保留双语。包未回读或校验，不标记门禁通过。打包首次因本机缺tzdata失败，已改用UTC+8，仅重跑打包；未重复部署。direct-packages.json记录路径、数量和部署/打包顺序，不含新哈希。
+- NOT-RUN/中止：完整Stage/语言/ZIP门禁、部署后哈希、实机、旧档。保留已有离线证据不冒充实机兼容。源码坐标见同目录code-map.json；回滚点7c689f8，以本次提交做聚焦逆向；游戏需另用明确选定的旧程序手动覆盖，无自动恢复。

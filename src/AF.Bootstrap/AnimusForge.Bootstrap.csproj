@@ -10,6 +10,13 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\bin\**;$(MSBuildProjectDirectory)\obj\**</DefaultItemExcludes>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Bannerlord156Only)' == 'true'">
+    <DefineConstants>$(DefineConstants);BANNERLORD_1_5_6_ONLY</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Bannerlord156Only)' == 'true'">
+    <AssemblyMetadata Include="AnimusForge.SupportedGameVersion" Value="1.5.6" />
+  </ItemGroup>
+
   <PropertyGroup>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == '' and '$(BANNERLORD_ROOT)' != ''">$(BANNERLORD_ROOT)</BannerlordRoot>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>

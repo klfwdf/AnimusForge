@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Bannerlord.UIExtenderEx</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="TaleWorlds.Library">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.MountAndBlade.dll</HintPath>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.GauntletUI">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.GauntletUI.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.GauntletUI.PrefabSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.GauntletUI.PrefabSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Emit.ILGeneration" />
+    <Reference Include="TaleWorlds.Core">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.CampaignSystem">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.CampaignSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ModuleManager">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.ModuleManager.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine.GauntletUI">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Engine.GauntletUI.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine">
+      <HintPath>..\..\artifacts\bannerlord-1.5.6-reference-20261028\export-01\dependencies\TaleWorlds.Engine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
