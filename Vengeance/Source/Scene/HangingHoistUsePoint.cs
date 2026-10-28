@@ -51,7 +51,11 @@ public sealed class HangingHoistUsePoint : StandingPoint
     public override bool IsUsableByAgent(Agent userAgent) =>
         ReferenceEquals(userAgent, _boundVictim);
 
+#if BANNERLORD_1_5_OR_GREATER
+    public override TextObject GetDescriptionText(WeakGameEntity gameEntity, Agent requesterAgent) =>
+#else
     public override TextObject GetDescriptionText(WeakGameEntity gameEntity) =>
+#endif
         TextObject.GetEmpty();
 
     public override void OnUse(Agent userAgent, sbyte agentBoneIndex)

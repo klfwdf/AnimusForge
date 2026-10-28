@@ -1,0 +1,97 @@
+{
+  "GameVersion": "v1.5.6.125053",
+  "Scope": "Installed core prerequisites plus 1.5 implementation candidates; historical implementations excluded",
+  "Decompiler": "ILSpy 11.0.0.9375",
+  "Assemblies": [
+    {
+      "Module": "Bannerlord.Harmony",
+      "AssemblyFile": "0Harmony.dll",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Bannerlord.Harmony\\bin\\Win64_Shipping_Client\\0Harmony.dll",
+      "SHA256": "2EDDA13A18954B79795BAC0D7E0E8FDF0BFA05B96552D6056D90F446CD0A2AB2",
+      "ExitCode": 0,
+      "CSharpFiles": 94,
+      "Diagnostics": [],
+      "Stderr": ""
+    },
+    {
+      "Module": "Bannerlord.Harmony",
+      "AssemblyFile": "Bannerlord.Harmony.dll",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Bannerlord.Harmony\\bin\\Win64_Shipping_Client\\Bannerlord.Harmony.dll",
+      "SHA256": "4BC2F22E63CFCD677B9DE2A9834B103EAACFD8EC0EA4735F4EDF66342A6FD01B",
+      "ExitCode": 0,
+      "CSharpFiles": 62,
+      "Diagnostics": [],
+      "Stderr": ""
+    },
+    {
+      "Module": "Bannerlord.ButterLib",
+      "AssemblyFile": "Bannerlord.ButterLib.dll",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Bannerlord.ButterLib\\bin\\Win64_Shipping_Client\\Bannerlord.ButterLib.dll",
+      "SHA256": "CDFEACE71D2FA58F4A13748E98540524ACF8CB42B829D98692B2331AC35EDE3A",
+      "ExitCode": 0,
+      "CSharpFiles": 138,
+      "Diagnostics": [],
+      "Stderr": ""
+    },
+    {
+      "Module": "Bannerlord.ButterLib",
+      "AssemblyFile": "Bannerlord.ButterLib.Implementation.1.5.1.dll",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Bannerlord.ButterLib\\bin\\Win64_Shipping_Client\\Bannerlord.ButterLib.Implementation.1.5.1.dll",
+      "SHA256": "F41D2CB1892B38388189EC528177894C4090CF7ACA1022CCB3D87121978472CE",
+      "ExitCode": 0,
+      "CSharpFiles": 30,
+      "Diagnostics": [],
+      "Stderr": ""
+    },
+    {
+      "Module": "Bannerlord.UIExtenderEx",
+      "AssemblyFile": "Bannerlord.UIExtenderEx.dll",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Bannerlord.UIExtenderEx\\bin\\Win64_Shipping_Client\\Bannerlord.UIExtenderEx.dll",
+      "SHA256": "4F2782840E51391D66B7D701962CB6202969D34C0949B8EC1591964F9C479F99",
+      "ExitCode": 0,
+      "CSharpFiles": 121,
+      "Diagnostics": [],
+      "Stderr": ""
+    },
+    {
+      "Module": "Bannerlord.MBOptionScreen",
+      "AssemblyFile": "MCMv5.dll",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Bannerlord.MBOptionScreen\\bin\\Win64_Shipping_Client\\MCMv5.dll",
+      "SHA256": "1409F8CF1449D902BF7B12BAA3CC31613F26606AFE5AA6129C93ABF510C995AB",
+      "ExitCode": 0,
+      "CSharpFiles": 340,
+      "Diagnostics": [],
+      "Stderr": ""
+    },
+    {
+      "Module": "Bannerlord.MBOptionScreen",
+      "AssemblyFile": "MCM.UI.Adapter.MCMv5.dll",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Bannerlord.MBOptionScreen\\bin\\Win64_Shipping_Client\\MCM.UI.Adapter.MCMv5.dll",
+      "SHA256": "EC99A2F32D03A1F0B8866E4BBFCAA859F7721A31247C37DC5E2BD55C511A6E3B",
+      "ExitCode": 0,
+      "CSharpFiles": 27,
+      "Diagnostics": [],
+      "Stderr": ""
+    },
+    {
+      "Module": "Bannerlord.MBOptionScreen",
+      "AssemblyFile": "Bannerlord.ModuleLoader.Bannerlord.MBOptionScreen.dll",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Bannerlord.MBOptionScreen\\bin\\Win64_Shipping_Client\\Bannerlord.ModuleLoader.Bannerlord.MBOptionScreen.dll",
+      "SHA256": "A8FEC162853602402B34A942C690E5890716A6A080493A0DAAE174B4A185884F",
+      "ExitCode": 0,
+      "CSharpFiles": 655,
+      "Diagnostics": [],
+      "Stderr": ""
+    },
+    {
+      "Module": "Bannerlord.MBOptionScreen",
+      "AssemblyFile": "Bannerlord.MBOptionScreen.v1.5.1.dll",
+      "SourcePath": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\Bannerlord.MBOptionScreen\\bin\\Win64_Shipping_Client\\Bannerlord.MBOptionScreen.v1.5.1.dll",
+      "SHA256": "F7F1DB0CCD0C9872BE9C03056546B49806A90C1AF5EB83BD96C1C4D63AC21BCF",
+      "ExitCode": 0,
+      "CSharpFiles": 105,
+      "Diagnostics": [],
+      "Stderr": ""
+    }
+  ]
+}

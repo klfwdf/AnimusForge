@@ -1,0 +1,12 @@
+using System;
+
+namespace MCM.Abstractions.Attributes.v2;
+
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+public sealed class SettingPropertyTextAttribute : BaseSettingPropertyAttribute, IPropertyDefinitionText, IPropertyDefinitionBase
+{
+	public SettingPropertyTextAttribute(string displayName, int order = -1, bool requireRestart = true, string hintText = "")
+		: base(displayName, order, requireRestart, hintText)
+	{
+	}
+}

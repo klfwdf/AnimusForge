@@ -1,3 +1,0 @@
-namespace TaleWorlds.MountAndBlade;
-
-public delegate void GetFocusableObjectInteractionTextsDelegate(Agent requesterAgent, IFocusable focusableObject, bool isInteractable, out FocusableObjectInformation focusableObjectInformation);

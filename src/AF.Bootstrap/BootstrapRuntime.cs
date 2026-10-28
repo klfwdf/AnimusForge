@@ -218,6 +218,12 @@ namespace AnimusForge.Bootstrap
 
         private BannerlordApiLine DetectRuntimeApiLine()
         {
+#if BANNERLORD_1_5_6_ONLY
+            // A dedicated release is selected from the loaded game assembly,
+            // never from command-line overrides or a feature-based fallback.
+            return DetectRuntimeApiLineFromBuildInfo()
+                ?? throw new NotSupportedException("This AnimusForge package requires verified Bannerlord 1.5.6 BuildInfo.");
+#else
             bool versionReadSucceeded = false;
 
             try
@@ -263,6 +269,16 @@ namespace AnimusForge.Bootstrap
             }
 
             return DetectRuntimeApiLineFromFeature();
+#endif
+        }
+
+        private static void Validate156RuntimeVersion(ApplicationVersion version)
+        {
+            if (version.Major != 1 || version.Minor != 5 || version.Revision != 6)
+            {
+                throw new NotSupportedException(
+                    $"Bannerlord version '{version}' is unsupported. This AnimusForge package only supports Bannerlord 1.5.6.");
+            }
         }
 
         private BannerlordApiLine? DetectRuntimeApiLineFromBuildInfo()
@@ -324,6 +340,9 @@ namespace AnimusForge.Bootstrap
             }
 
             RuntimeVersionText = buildVersionText + " (BuildInfo)";
+#if BANNERLORD_1_5_6_ONLY
+            Validate156RuntimeVersion(buildVersion);
+#endif
             if (buildVersion.Major == 1 && buildVersion.Minor == 3)
             {
                 BootstrapLog.Warning("Selected Bannerlord API 1.3 from BuildInfo.GameVersion fallback.");

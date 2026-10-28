@@ -82,11 +82,8 @@ internal static class BannerlordApiCompat
     internal static bool PartyHasPerk(MobileParty party,
         TaleWorlds.CampaignSystem.CharacterDevelopment.PerkObject perk, bool secondary)
     {
-#if BANNERLORD_1_5_OR_GREATER
-        return party.HasPerk(perk, out _, secondary);
-#else
+        // 1.5.6 restored the two-argument signature also used by 1.3/1.4.
         return party.HasPerk(perk, secondary);
-#endif
     }
 
 	private const BindingFlags AgentMethodFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;

@@ -1,0 +1,6 @@
+namespace MCM.Abstractions.PerSave;
+
+public interface IPerSaveSettingsContainer : ISettingsContainer, ISettingsContainerHasSettingsDefinitions, ISettingsContainerCanOverride, ISettingsContainerCanReset, ISettingsContainerPresets, ISettingsContainerHasUnavailable, ISettingsContainerHasSettingsPack, ISettingsContainerCanInvalidateCache
+{
+	void LoadSettings();
+}

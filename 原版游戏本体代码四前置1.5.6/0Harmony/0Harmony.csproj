@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>0Harmony</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="MonoMod.Backports">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\MonoMod.Backports.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\MonoMod.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="MonoMod.Core">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\MonoMod.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\..\artifacts\bannerlord156-delivery-20261028\prerequisite-dependencies\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
