@@ -2051,8 +2051,6 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_Root_KingdomNews_Hint" text="View recent diplomatic declarations, policies, bulletins, and news from each kingdom." />
   <string id="AF_TERMINAL_UI_Root_TagCatalog" text="Tag catalog" />
   <string id="AF_TERMINAL_UI_Root_TagCatalog_Hint" text="View and refresh the body/postprocess tag index or export it to TXT." />
-  <string id="AF_TERMINAL_UI_Root_ReloadDatabase" text="Reload database" />
-  <string id="AF_TERMINAL_UI_Root_ReloadDatabase_Hint" text="Replace non-player knowledge, world/kingdom starting knowledge, kingdom personalities/strategy, and voices." />
   <string id="AF_TERMINAL_UI_Root_ApiOnboarding" text="Run API setup again" />
   <string id="AF_TERMINAL_UI_Root_ApiOnboarding_Hint" text="Select and test API configuration again." />
   <string id="AF_TERMINAL_UI_Root_AnalyzeError" text="Analyze latest error" />
@@ -2075,7 +2073,6 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_DiagnosticsLatestError" text="Latest error: {TITLE}&#10;{DETAIL}" />
   <string id="AF_TERMINAL_UI_DiagnosticsNoError" text="No fatal error stack has been recorded in this campaign." />
   <string id="AF_TERMINAL_UI_DiplomaticComposeFailed" text="Failed to open the diplomatic declaration editor." />
-  <string id="AF_TERMINAL_UI_ReloadDatabaseFailed" text="Unable to open the database reload flow." />
   <string id="AF_TERMINAL_UI_ApiOnboardingFailed" text="Unable to open API setup." />
   <string id="AF_TERMINAL_UI_PlayerPersonaNotReady" text="Unable to open the player appearance and background editor: the Knowledge behavior is not initialized." />
   <string id="AF_TERMINAL_UI_PlayerPersonaReturned" text="Returned to player appearance and background settings." />
@@ -2183,7 +2180,6 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Cancel" text="Cancel" />
   <string id="AF_UI_Developer_Choose" text="Choose" />
   <string id="AF_UI_Developer_Choose_a_mod_folder_or_player_export_a_read_only_absolut" text="Choose a mod folder or player export; a read-only absolute path is also accepted." />
-  <string id="AF_UI_Developer_Choose_a_source_package_Knowledge_kingdom_strategy_perso" text="Choose a source package. Knowledge, kingdom strategy/personality, and voice data are validated before confirmation." />
   <string id="AF_UI_Developer_Choose_a_target_folder_existing_contents_may_be_overwrit" text="Choose a target folder (existing contents may be overwritten)." />
   <string id="AF_UI_Developer_Choose_again" text="Choose again" />
   <string id="AF_UI_Developer_Choose_an_operation" text="Choose an operation:" />
@@ -2200,14 +2196,8 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Compressed_memory_management" text="Compressed memory management" />
   <string id="AF_UI_Developer_Confirm" text="Confirm" />
   <string id="AF_UI_Developer_Confirm_clearing_all_data" text="Confirm clearing all data" />
-  <string id="AF_UI_Developer_Confirm_database_reload" text="Confirm database reload" />
-  <string id="AF_UI_Developer_Confirm_reload" text="Confirm reload" />
   <string id="AF_UI_Developer_Continue" text="Continue" />
   <string id="AF_UI_Developer_Current_data_statistics_failed_but_clearing_is_s" text="Current data statistics failed, but clearing is still available." />
-  <string id="AF_UI_Developer_Database_package_validation_body" text="This reload has not modified the save.&#10;&#10;{ERROR}" />
-  <string id="AF_UI_Developer_Database_package_validation_failed" text="Database package validation failed" />
-  <string id="AF_UI_Developer_Database_reload_completed" text="Database reload completed:" />
-  <string id="AF_UI_Developer_Database_reload_failed" text="Database reload failed:" />
   <string id="AF_UI_Developer_DebtPrompt" text="Current gold debt: {GOLD}.&#10;Enter a new gold debt value (0 allowed):" />
   <string id="AF_UI_Developer_DebtTitle" text="Set gold debt - {NPC}" />
   <string id="AF_UI_Developer_Details_show_structured_fields_such_as_time_plac" text=" - Details show structured fields such as time, place, people, clan, kingdom, and settlement ownership" />
@@ -2255,7 +2245,6 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Import_failed" text="Import failed: " />
   <string id="AF_UI_Developer_Import_failed_export_directory_not_found" text="Import failed: export directory not found." />
   <string id="AF_UI_Developer_Import_non_duplicate_data_only" text="Import non-duplicate data only" />
-  <string id="AF_UI_Developer_Kept_and_not_imported_from_the_package" text="Kept and not imported from the package:" />
   <string id="AF_UI_Developer_Kingdom_strategy_and_personality_data_behavior_i" text="Kingdom strategy and personality data behavior is not initialized." />
   <string id="AF_UI_Developer_Knowledge_exported" text="Knowledge exported: {COUNT} entries." />
   <string id="AF_UI_Developer_Leave_blank_for_an_automatic_timestamp_an_existing_name_" text="Leave blank for an automatic timestamp; an existing name overwrites that export." />
@@ -2273,24 +2262,10 @@ Estimated requests: " />
   <string id="AF_UI_Developer_PlayerExports_path_is_unavailable_a_read_only_absolute_p" text="PlayerExports path is unavailable; a read-only absolute path can still be imported." />
   <string id="AF_UI_Developer_Previous_page" text="Previous page" />
   <string id="AF_UI_Developer_Recent_actions" text="Recent actions" />
-  <string id="AF_UI_Developer_Reload_DayZero" text="• Day-zero derived records for the opening Knowledge (after day 7, the current API settings may request short summaries from the LLM)" />
-  <string id="AF_UI_Developer_Reload_DefaultKingdoms" text="• {COUNT} current kingdoms absent from the package will be restored to their current defaults (this does not automatically request a kingdom LLM)" />
-  <string id="AF_UI_Developer_Reload_DuplicateKeywords" text="• {COUNT} duplicate trigger words stay on the original entry so split Knowledge entries do not compete for the same keyword" />
-  <string id="AF_UI_Developer_Reload_DuplicateKnowledgeIds" text="• {COUNT} package entries with duplicate IDs will receive stable file-name-based IDs (package files are not modified)" />
-  <string id="AF_UI_Developer_Reload_KeepNpc" text="• NPC persona, memory, and appearance" />
-  <string id="AF_UI_Developer_Reload_KeepPlayer" text="• Player appearance, background, player-only Knowledge, and direct voice ID" />
-  <string id="AF_UI_Developer_Reload_KeepSettings" text="• Dynamic event records, API configuration, LLM Prompts, and other settings" />
-  <string id="AF_UI_Developer_Reload_KingdomProfiles" text="• Kingdom personality and long-term strategy for {COUNT} kingdoms" />
-  <string id="AF_UI_Developer_Reload_SkippedDynamicKingdoms" text="• Skip {COUNT} unmatched dynamic kingdom profiles and preserve existing save profiles for those IDs. First entries: {PROFILES}" />
-  <string id="AF_UI_Developer_Reload_NonPlayerKnowledge" text="• Non-player Knowledge: {COUNT} entries" />
-  <string id="AF_UI_Developer_Reload_OpeningKnowledge" text="• One world-opening Knowledge entry and {COUNT} kingdom-opening entries" />
-  <string id="AF_UI_Developer_Reload_VoiceMapping" text="• One voice mapping and {COUNT} NPC voice IDs" />
-  <string id="AF_UI_Developer_Reload_database_choose_a_package" text="Reload database - choose a package" />
   <string id="AF_UI_Developer_Search" text="Search" />
   <string id="AF_UI_Developer_Search_NPC" text="Search NPC" />
   <string id="AF_UI_Developer_Set_gold_debt" text="Set gold debt" />
   <string id="AF_UI_Developer_Single_HeroNPC_import_export" text="Single HeroNPC import/export..." />
-  <string id="AF_UI_Developer_Source_package" text="Source package:" />
   <string id="AF_UI_Developer_Summary_Actions" text="NPC action records: {COUNT} people" />
   <string id="AF_UI_Developer_Summary_Debt" text="Debt: {COUNT} people" />
   <string id="AF_UI_Developer_Summary_Dialogue" text="Old dialogue history: {COUNT} people" />
@@ -2305,7 +2280,6 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Switch_NPC" text="Switch NPC" />
   <string id="AF_UI_Developer_There_are_no_editable_NPCs" text="There are no editable NPCs." />
   <string id="AF_UI_Developer_This_NPC_has_no_ID_and_cannot_be_imported_or_exported" text="This NPC has no ID and cannot be imported or exported." />
-  <string id="AF_UI_Developer_This_overwrites_the_database_data_listed_above_in_the_cu" text="This overwrites the database data listed above in the current save. Continue?" />
   <string id="AF_UI_Developer_Unable_to_open_the_package_picker_check_the_PlayerExport" text="Unable to open the package picker; check the PlayerExports path." />
   <string id="AF_UI_Developer_Unknown_error" text="Unknown error." />
   <string id="AF_UI_Developer_Use_a_new_folder_automatic" text="Use a new folder (automatic)" />
@@ -2320,7 +2294,6 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_export_failed_the_previ" text="Warning: kingdom strategy/personality export failed; the previous export was kept. Reason: " />
   <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_import_failed_and_was_s" text="Warning: kingdom strategy/personality import failed and was skipped. Reason: " />
   <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_import_file_is_invalid_" text="Warning: kingdom strategy/personality import file is invalid and was skipped. Reason: " />
-  <string id="AF_UI_Developer_Will_delete_and_reload" text="Will delete and reload:" />
   <string id="AF_UI_Onboarding_Import_Import_cancelled" text="Import cancelled." />
   <string id="AF_UI_Onboarding_Import_Import_failed" text="Import failed: " />
   <string id="AF_UI_Onboarding_Import_Import_failed_MyBehavior_is_not_initialized" text="Import failed: MyBehavior is not initialized." />
@@ -2622,57 +2595,6 @@ Choose how to proceed:" />
   <string id="AF_MCM_Editor_RulerPolicy_Saved" text="[Policy system] NPC ruler policy prompt saved." />
   <string id="AF_MCM_Editor_RulerPolicy_SessionOnly" text="[Policy system] NPC ruler policy prompt is active for this session, but local persistence failed. Check the log." />
   <string id="AF_MCM_Editor_RulerPolicy_SaveFailed" text="[Policy system] Saving the NPC ruler policy prompt failed; click Save again in MCM: " />
-  <string id="AF_UI_Developer_ReloadPlanInvalid" text="The reload plan is invalid." />
-  <string id="AF_UI_Developer_ReloadSnapshotUnavailable" text="The knowledge library or kingdom profile service is unavailable, or a reload rollback snapshot could not be created." />
-  <string id="AF_UI_Developer_ReloadKnowledgeValidationFailed" text="Knowledge rule validation failed." />
-  <string id="AF_UI_Developer_ReloadVoiceMappingImportFailed" text="Voice mapping import failed." />
-  <string id="AF_UI_Developer_ReloadKingdomProfileImportFailed" text="Kingdom personality and strategy import failed: " />
-  <string id="AF_UI_Developer_ReloadCompletedDetail" text="Knowledge removed {REMOVED}, imported {IMPORTED}{DISAMBIGUATION}{DEDUPLICATION}; NPC voice IDs cleared {CLEARED}, imported {VOICE_IMPORTED}; {KINGDOM}" />
-  <string id="AF_UI_Developer_ReloadStableRenames" text=" (stable ID renames: {COUNT})" />
-  <string id="AF_UI_Developer_ReloadKeywordDeduplication" text=" (duplicate trigger keywords removed: {COUNT})" />
-  <string id="AF_UI_Developer_ReloadServicesUnavailable" text="The knowledge library or kingdom profile service is unavailable." />
-  <string id="AF_UI_Developer_ReloadKnowledgeSnapshotExportFailed" text="Could not export the current knowledge library snapshot." />
-  <string id="AF_UI_Developer_ReloadKingdomSnapshotExportFailed" text="Could not export the current kingdom profile snapshot: " />
-  <string id="AF_UI_Developer_ReloadSnapshotCreateFailed" text="Failed to create a rollback snapshot: " />
-  <string id="AF_UI_Developer_ReloadFailed" text="Reload failed" />
-  <string id="AF_UI_Developer_ReloadNoSnapshot" text="; no rollback snapshot is available." />
-  <string id="AF_UI_Developer_ReloadKnowledgeLibrary" text="knowledge library" />
-  <string id="AF_UI_Developer_ReloadVoiceMapping" text="voice mapping" />
-  <string id="AF_UI_Developer_ReloadNpcVoiceIds" text="NPC voice IDs" />
-  <string id="AF_UI_Developer_ReloadOpeningEvents" text="opening knowledge and event records" />
-  <string id="AF_UI_Developer_ReloadKingdomProfiles" text="kingdom personality and strategy" />
-  <string id="AF_UI_Developer_ReloadRollbackSucceeded" text="; the reload was rolled back automatically." />
-  <string id="AF_UI_Developer_ReloadRollbackIncomplete" text="; automatic rollback was incomplete: " />
-  <string id="AF_UI_Developer_ReloadPackageFolderMissing" text="The data package folder was not found." />
-  <string id="AF_UI_Developer_ReloadNoKnowledgeRules" text="The package contains no non-player knowledge rules eligible for reload." />
-  <string id="AF_UI_Developer_ReloadVoiceMappingMissing" text="The package does not contain voice_mapping\VoiceMapping.json." />
-  <string id="AF_UI_Developer_ReloadVoiceMappingInvalid" text="VoiceMapping.json cannot be used for reload: " />
-  <string id="AF_UI_Developer_ReloadKingdomServiceUnavailable" text="The kingdom personality and strategy service is unavailable." />
-  <string id="AF_UI_Developer_ReloadVoiceFileMatchFailed" text="Could not safely match voice file “" />
-  <string id="AF_UI_Developer_ReloadVoiceFileReadFailed" text="Could not read voice file “" />
-  <string id="AF_UI_Developer_ReloadDuplicateNpcVoice" text="The package maps multiple voice files to the same NPC: " />
-  <string id="AF_UI_Developer_ReloadFileMissing" text="The file does not exist." />
-  <string id="AF_UI_Developer_ReloadInvalidUtf8" text="The file is not valid UTF-8." />
-  <string id="AF_UI_Developer_ReloadJsonEmpty" text="The JSON file is empty." />
-  <string id="AF_UI_Developer_ReloadJsonInvalid" text="The JSON content is empty or has an invalid structure." />
-  <string id="AF_UI_Developer_ReloadJsonParseFailed" text="JSON parsing failed: " />
-  <string id="AF_UI_Developer_ReloadFileEmpty" text="The file is empty." />
-  <string id="AF_UI_Developer_ReloadVoiceGroupMissing" text="Voice group is missing: " />
-  <string id="AF_UI_Developer_ReloadVoiceGroupNotArray" text="Voice group “" />
-  <string id="AF_UI_Developer_ReloadVoiceGroupNonString" text="Voice group “" />
-  <string id="AF_UI_Developer_ReloadVoiceGroupDuplicate" text="Voice group “" />
-  <string id="AF_UI_Developer_ReloadVoiceFallbackInvalid" text="fallback must exist and be a string." />
-  <string id="AF_UI_Developer_ReloadKnowledgePackageMissing" text="The knowledge package directory does not exist." />
-  <string id="AF_UI_Developer_ReloadKnowledgeFileReadFailed" text="Could not read knowledge file “" />
-  <string id="AF_UI_Developer_ReloadKnowledgeAggregateReadFailed" text="Could not read the knowledge aggregate file: " />
-  <string id="AF_UI_Developer_ReloadKnowledgeAggregateRulesMissing" text="The knowledge aggregate file has no Rules list." />
-  <string id="AF_UI_Developer_ReloadKnowledgeAggregateEmptyRule" text="The knowledge aggregate file contains an empty rule entry." />
-  <string id="AF_UI_Developer_ReloadKnowledgePackageRulesMissing" text="The package contains neither knowledge\rules files nor knowledge\KnowledgeRules.json." />
-  <string id="AF_UI_Developer_ReloadOpeningFilesMissing" text="The package must contain both event_data\WorldOpeningSummary.json and event_data\KingdomOpeningSummaries.json." />
-  <string id="AF_UI_Developer_ReloadWorldOpeningReadFailed" text="Could not read world opening knowledge: " />
-  <string id="AF_UI_Developer_ReloadKingdomOpeningReadFailed" text="Could not read kingdom opening knowledge: " />
-  <string id="AF_UI_Developer_ReloadEmptyKingdomId" text="Kingdom opening knowledge contains an empty kingdom ID." />
-  <string id="AF_UI_Developer_ReloadDuplicateKingdomId" text="Kingdom opening knowledge contains a duplicate kingdom ID: " />
 
   <string id="AF_MCM_Letter_Group" text="7. Proactive NPC contact/Unsolicited letters" />
   <string id="AF_MCM_Companion_Group" text="7. Proactive NPC contact/Companion proactive chat" />
@@ -3422,10 +3344,24 @@ Choose how to proceed:" />
   <string id="AF_UI_KingdomStability_FactionImmunity" text="Player-kingdom immunity prevents faction uprisings." />
   <string id="AF_MCM_Shout_MaxRelayTurns" text="Maximum scene-shout relay turns" />
   <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="Maximum total NPC speaking turns after one player shout, including the first reply. Repeated speakers count again. Set to 1 for only the first reply. Range: 1-8; default: 8. Changes apply to the next shout; characters may end the relay earlier." />
-  <string id="AF_UI_Developer_Reload_SkippedStaticKingdoms" text="• Skip {COUNT} unmatched non-dynamic kingdom profiles (maximum 3): {PROFILES}" />
   <string id="AF_UI_Editor_LengthStatus" text="Characters: {CURRENT} / {MAX}" />
   <string id="AF_UI_Editor_LengthLimit" text="Maximum: {MAX} characters." />
   <string id="AF_UI_Editor_InputTruncated" text="Some input was truncated at the limit; check the end of your text." />
   <string id="AF_UI_Editor_SaveFailed" text="Could not complete saving. Check the log and verify the saved text before trying again." />
+  <string id="AF_TERMINAL_UI_Root_DatabaseImport" text="Database import" />
+  <string id="AF_TERMINAL_UI_Root_DatabaseImport_Hint" text="Import a worldbook/database package: persona, knowledge, voices, opening knowledge and kingdom profiles. Files that fail validation are skipped. Optionally clear the current database data first." />
+  <string id="AF_TERMINAL_UI_DatabaseImportFailed" text="Unable to open the database import flow." />
+  <string id="AF_UI_DatabaseImport_MenuTitle" text="Database import" />
+  <string id="AF_UI_DatabaseImport_MenuBody" text="Imports persona, knowledge, voices, opening knowledge and kingdom profiles from a package. Files that fail validation are skipped, never rejecting the rest." />
+  <string id="AF_UI_DatabaseImport_ImportOption" text="Import database package" />
+  <string id="AF_UI_DatabaseImport_ClearImportOption" text="Clear current database data, then import" />
+  <string id="AF_UI_DatabaseImport_ChoosePackage" text="Database import - choose a package" />
+  <string id="AF_UI_DatabaseImport_ClearConfirmTitle" text="Clear current database data" />
+  <string id="AF_UI_DatabaseImport_ClearConfirmBody" text="Before importing, this will delete from the current save:&#10;• NPC persona (personality/background) and NPC voice IDs&#10;• Unnamed NPC personas&#10;• Non-player Knowledge&#10;• Voice mapping&#10;• World and kingdom opening summaries (and their week-zero records)&#10;• Kingdom personality/strategy overrides (reset to defaults)&#10;&#10;Kept: dialogue history, memory, debts, other event records, the player's appearance/background/Knowledge/voice, API configuration and prompts.&#10;&#10;Continue?" />
+  <string id="AF_UI_DatabaseImport_ClearConfirm" text="Clear and continue" />
+  <string id="AF_UI_DatabaseImport_NothingToImport" text="The package contains none of the importable folders (personality_background, unnamed_persona, knowledge, voice_mapping, event_data, kingdom_profiles)." />
+  <string id="AF_UI_DatabaseImport_KingdomSkipped" text="Kingdom strategy/personality skipped: " />
+  <string id="AF_UI_DatabaseImport_Completed" text="Database import finished." />
+  <string id="AF_UI_DatabaseImport_CompletedWithSkips" text="Database import finished; {COUNT} part(s) were skipped. Details are in Mod_Logic.txt." />
 </strings>
 </base>

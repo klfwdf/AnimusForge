@@ -2058,8 +2058,6 @@
   <string id="AF_TERMINAL_UI_Root_KingdomNews_Hint" text="查看各国最近的外交宣言、政策、快报与近况。" />
   <string id="AF_TERMINAL_UI_Root_TagCatalog" text="标签列表" />
   <string id="AF_TERMINAL_UI_Root_TagCatalog_Hint" text="查看正文/后处理标签索引，可刷新或导出 TXT。" />
-  <string id="AF_TERMINAL_UI_Root_ReloadDatabase" text="重载数据库" />
-  <string id="AF_TERMINAL_UI_Root_ReloadDatabase_Hint" text="替换非主角知识、世界/王国开局知识、王国性格/战略和声音。" />
   <string id="AF_TERMINAL_UI_Root_ApiOnboarding" text="重新进行 API 首次引导" />
   <string id="AF_TERMINAL_UI_Root_ApiOnboarding_Hint" text="只重新选择和测试 API 配置。" />
   <string id="AF_TERMINAL_UI_Root_AnalyzeError" text="分析最近错误" />
@@ -2082,7 +2080,6 @@
   <string id="AF_TERMINAL_UI_DiagnosticsLatestError" text="最近报错：{TITLE}&#10;{DETAIL}" />
   <string id="AF_TERMINAL_UI_DiagnosticsNoError" text="本局当前未记录到任何致命报错堆栈。" />
   <string id="AF_TERMINAL_UI_DiplomaticComposeFailed" text="打开外交宣言撰写界面失败。" />
-  <string id="AF_TERMINAL_UI_ReloadDatabaseFailed" text="无法打开数据库重载流程。" />
   <string id="AF_TERMINAL_UI_ApiOnboardingFailed" text="无法打开 API 首次引导。" />
   <string id="AF_TERMINAL_UI_PlayerPersonaNotReady" text="无法打开玩家外貌与背景编辑器：Knowledge 行为尚未初始化。" />
   <string id="AF_TERMINAL_UI_PlayerPersonaReturned" text="已返回玩家外貌与背景设置。" />
@@ -2201,7 +2198,6 @@ Knowledge：{KNOWLEDGE}
   <string id="AF_UI_Developer_Cancel" text="取消" />
   <string id="AF_UI_Developer_Choose" text="选择" />
   <string id="AF_UI_Developer_Choose_a_mod_folder_or_player_export_a_read_only_absolut" text="选择 a mod 文件夹 or player export; a read-only absolute 路径 是also accepted." />
-  <string id="AF_UI_Developer_Choose_a_source_package_Knowledge_kingdom_strategy_perso" text="选择来源资料包；系统会在确认前校验知识、王国性格/战略和声音数据。" />
   <string id="AF_UI_Developer_Choose_a_target_folder_existing_contents_may_be_overwrit" text="选择 a target 文件夹 (existing contents may be overwritten)." />
   <string id="AF_UI_Developer_Choose_again" text="选择 again" />
   <string id="AF_UI_Developer_Choose_an_operation" text="请选择要执行的操作：" />
@@ -2224,16 +2220,8 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_Compressed_memory_management" text="压缩记忆管理" />
   <string id="AF_UI_Developer_Confirm" text="确定" />
   <string id="AF_UI_Developer_Confirm_clearing_all_data" text="确定 clearing all 数据" />
-  <string id="AF_UI_Developer_Confirm_database_reload" text="确认重载数据库" />
-  <string id="AF_UI_Developer_Confirm_reload" text="确认重载" />
   <string id="AF_UI_Developer_Continue" text="继续" />
   <string id="AF_UI_Developer_Current_data_statistics_failed_but_clearing_is_s" text="当前 数据 statistics 失败, but clearing 是still 可用." />
-  <string id="AF_UI_Developer_Database_package_validation_body" text="本次重载尚未修改存档。
-
-{ERROR}" />
-  <string id="AF_UI_Developer_Database_package_validation_failed" text="数据库资料包校验失败" />
-  <string id="AF_UI_Developer_Database_reload_completed" text="数据库重载完成：" />
-  <string id="AF_UI_Developer_Database_reload_failed" text="数据库重载失败：" />
   <string id="AF_UI_Developer_DebtPrompt" text="当前金币欠款：{GOLD}。
 输入新的金币欠款数值（允许为 0）：" />
   <string id="AF_UI_Developer_DebtTitle" text="设置金币欠款 - {NPC}" />
@@ -2288,7 +2276,6 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_Import_failed" text="导入失败：" />
   <string id="AF_UI_Developer_Import_failed_export_directory_not_found" text="导入失败：找不到导出目录。" />
   <string id="AF_UI_Developer_Import_non_duplicate_data_only" text="导入 non-duplicate 数据 only" />
-  <string id="AF_UI_Developer_Kept_and_not_imported_from_the_package" text="会保留且不会从资料包导入：" />
   <string id="AF_UI_Developer_Kingdom_strategy_and_personality_data_behavior_i" text="Kingdom strategy and personality 数据 behavior 是不 initialized." />
   <string id="AF_UI_Developer_Knowledge_exported" text="Knowledge exported: {COUNT} 条." />
   <string id="AF_UI_Developer_Leave_blank_for_an_automatic_timestamp_an_existing_name_" text="Leave blank for an 自动 timestamp; an existing name overwrites that export." />
@@ -2306,24 +2293,10 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_PlayerExports_path_is_unavailable_a_read_only_absolute_p" text="Player导出s 路径 是un可用; a read-only absolute 路径 can still be imported." />
   <string id="AF_UI_Developer_Previous_page" text="上一页" />
   <string id="AF_UI_Developer_Recent_actions" text="近期行动" />
-  <string id="AF_UI_Developer_Reload_DayZero" text="• 上述开局知识的第 0 日派生记录（游戏日达到 7 天后，可能按现有 API 设置请求 LLM 生成短摘要）" />
-  <string id="AF_UI_Developer_Reload_DefaultKingdoms" text="• 未出现在资料包的当前王国 {COUNT} 个，将恢复为其当前默认资料（不会因此自动请求王国 LLM）" />
-  <string id="AF_UI_Developer_Reload_DuplicateKeywords" text="• 其中 {COUNT} 个重复触发词只保留在原条目，避免拆分后的知识争抢同一关键词" />
-  <string id="AF_UI_Developer_Reload_DuplicateKnowledgeIds" text="• 资料包内 {COUNT} 个同 ID 知识条目将按文件名生成稳定 ID（不修改资料包文件）" />
-  <string id="AF_UI_Developer_Reload_KeepNpc" text="• NPC 人物设定、记忆和外貌" />
-  <string id="AF_UI_Developer_Reload_KeepPlayer" text="• 主角外貌、背景、主角专用知识和直接声音 ID" />
-  <string id="AF_UI_Developer_Reload_KeepSettings" text="• 动态事件记录、API 配置、LLM 提示词及其他设置" />
-  <string id="AF_UI_Developer_Reload_KingdomProfiles" text="• 王国性格与长期战略 {COUNT} 个王国" />
-  <string id="AF_UI_Developer_Reload_SkippedDynamicKingdoms" text="• 跳过 {COUNT} 条无法匹配的动态王国资料，保留存档中这些 ID 的原有资料。部分条目：{PROFILES}" />
-  <string id="AF_UI_Developer_Reload_NonPlayerKnowledge" text="• 非主角知识：{COUNT} 条" />
-  <string id="AF_UI_Developer_Reload_OpeningKnowledge" text="• 世界开局知识 1 份，以及王国开局知识 {COUNT} 条" />
-  <string id="AF_UI_Developer_Reload_VoiceMapping" text="• 声音映射 1 份，以及 NPC 声音 ID {COUNT} 条" />
-  <string id="AF_UI_Developer_Reload_database_choose_a_package" text="重载数据库 - 选择资料包" />
   <string id="AF_UI_Developer_Search" text="搜索" />
   <string id="AF_UI_Developer_Search_NPC" text="搜索 NPC" />
   <string id="AF_UI_Developer_Set_gold_debt" text="设置金币欠款" />
   <string id="AF_UI_Developer_Single_HeroNPC_import_export" text="Single HeroNPC import/export..." />
-  <string id="AF_UI_Developer_Source_package" text="来源资料包：" />
   <string id="AF_UI_Developer_Summary_Actions" text="NPC 行动 记录: {COUNT} 人" />
   <string id="AF_UI_Developer_Summary_Debt" text="Debt: {COUNT} 人" />
   <string id="AF_UI_Developer_Summary_Dialogue" text="Old dialogue history: {COUNT} 人" />
@@ -2338,7 +2311,6 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_Switch_NPC" text="切换 NPC" />
   <string id="AF_UI_Developer_There_are_no_editable_NPCs" text="There are 没有 editable NPCs." />
   <string id="AF_UI_Developer_This_NPC_has_no_ID_and_cannot_be_imported_or_exported" text="本次NPC has 没有 ID and can不 be imported or exported." />
-  <string id="AF_UI_Developer_This_overwrites_the_database_data_listed_above_in_the_cu" text="本次overwrites the 数据base 数据 listed above in the current save. 继续?" />
   <string id="AF_UI_Developer_Unable_to_open_the_package_picker_check_the_PlayerExport" text="Unable to open the 资料包 picker; check the Player导出s 路径." />
   <string id="AF_UI_Developer_Unknown_error" text="未知错误。" />
   <string id="AF_UI_Developer_Use_a_new_folder_automatic" text="Use a new 文件夹 (自动)" />
@@ -2353,7 +2325,6 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_export_failed_the_previ" text="警告: 国家战略/性格 export 失败; the previous export was kept. 原因： " />
   <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_import_failed_and_was_s" text="警告: 国家战略/性格 import 失败 and was skipped. 原因： " />
   <string id="AF_UI_Developer_Warning_kingdom_strategy_personality_import_file_is_invalid_" text="警告: 国家战略/性格 import file 是invalid and was skipped. 原因： " />
-  <string id="AF_UI_Developer_Will_delete_and_reload" text="将删除并重载：" />
   <string id="AF_UI_Onboarding_Import_Import_cancelled" text="导入 cancelled." />
   <string id="AF_UI_Onboarding_Import_Import_failed" text="导入 失败: " />
   <string id="AF_UI_Onboarding_Import_Import_failed_MyBehavior_is_not_initialized" text="导入 失败: MyBehavior 是不 initialized." />
@@ -2655,57 +2626,6 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Editor_RulerPolicy_Saved" text="[政策系统] NPC统治者政策提示词已保存。" />
   <string id="AF_MCM_Editor_RulerPolicy_SessionOnly" text="[政策系统] NPC统治者政策提示词已用于本局，但写入本地文件失败，请查看日志。" />
   <string id="AF_MCM_Editor_RulerPolicy_SaveFailed" text="[政策系统] 保存NPC统治者政策提示词失败，请在 MCM 中再点一次保存：" />
-  <string id="AF_UI_Developer_ReloadPlanInvalid" text="重载计划无效。" />
-  <string id="AF_UI_Developer_ReloadSnapshotUnavailable" text="知识库、王国资料行为未初始化或无法创建重载回滚快照。" />
-  <string id="AF_UI_Developer_ReloadKnowledgeValidationFailed" text="知识规则校验失败。" />
-  <string id="AF_UI_Developer_ReloadVoiceMappingImportFailed" text="声音映射导入失败。" />
-  <string id="AF_UI_Developer_ReloadKingdomProfileImportFailed" text="王国性格与战略导入失败：" />
-  <string id="AF_UI_Developer_ReloadCompletedDetail" text="知识删除 {REMOVED} 条、导入 {IMPORTED} 条{DISAMBIGUATION}{DEDUPLICATION}；NPC 声音 ID 清除 {CLEARED} 条、导入 {VOICE_IMPORTED} 条；{KINGDOM}" />
-  <string id="AF_UI_Developer_ReloadStableRenames" text="（同 ID 稳定重命名 {COUNT} 条）" />
-  <string id="AF_UI_Developer_ReloadKeywordDeduplication" text="（重复触发词去重 {COUNT} 个）" />
-  <string id="AF_UI_Developer_ReloadServicesUnavailable" text="知识库或王国资料行为未初始化。" />
-  <string id="AF_UI_Developer_ReloadKnowledgeSnapshotExportFailed" text="无法导出当前知识库快照。" />
-  <string id="AF_UI_Developer_ReloadKingdomSnapshotExportFailed" text="无法导出当前王国资料快照：" />
-  <string id="AF_UI_Developer_ReloadSnapshotCreateFailed" text="创建回滚快照失败：" />
-  <string id="AF_UI_Developer_ReloadFailed" text="重载失败" />
-  <string id="AF_UI_Developer_ReloadNoSnapshot" text="；缺少回滚快照。" />
-  <string id="AF_UI_Developer_ReloadKnowledgeLibrary" text="知识库" />
-  <string id="AF_UI_Developer_ReloadVoiceMapping" text="声音映射" />
-  <string id="AF_UI_Developer_ReloadNpcVoiceIds" text="NPC 声音 ID" />
-  <string id="AF_UI_Developer_ReloadOpeningEvents" text="开局知识和事件记录" />
-  <string id="AF_UI_Developer_ReloadKingdomProfiles" text="王国性格与战略" />
-  <string id="AF_UI_Developer_ReloadRollbackSucceeded" text="；已自动回滚本次重载。" />
-  <string id="AF_UI_Developer_ReloadRollbackIncomplete" text="；自动回滚不完整：" />
-  <string id="AF_UI_Developer_ReloadPackageFolderMissing" text="找不到资料包文件夹。" />
-  <string id="AF_UI_Developer_ReloadNoKnowledgeRules" text="资料包中未找到可重载的非主角知识规则。" />
-  <string id="AF_UI_Developer_ReloadVoiceMappingMissing" text="资料包中缺少 voice_mapping\VoiceMapping.json。" />
-  <string id="AF_UI_Developer_ReloadVoiceMappingInvalid" text="VoiceMapping.json 无法用于重载：" />
-  <string id="AF_UI_Developer_ReloadKingdomServiceUnavailable" text="王国性格与战略数据行为尚未初始化。" />
-  <string id="AF_UI_Developer_ReloadVoiceFileMatchFailed" text="无法安全匹配声音文件“" />
-  <string id="AF_UI_Developer_ReloadVoiceFileReadFailed" text="无法读取声音文件“" />
-  <string id="AF_UI_Developer_ReloadDuplicateNpcVoice" text="资料包中有多个声音文件映射到同一 NPC：" />
-  <string id="AF_UI_Developer_ReloadFileMissing" text="文件不存在。" />
-  <string id="AF_UI_Developer_ReloadInvalidUtf8" text="文件不是有效的 UTF-8 编码。" />
-  <string id="AF_UI_Developer_ReloadJsonEmpty" text="JSON 文件为空。" />
-  <string id="AF_UI_Developer_ReloadJsonInvalid" text="JSON 内容为空或结构无效。" />
-  <string id="AF_UI_Developer_ReloadJsonParseFailed" text="JSON 解析失败：" />
-  <string id="AF_UI_Developer_ReloadFileEmpty" text="文件为空。" />
-  <string id="AF_UI_Developer_ReloadVoiceGroupMissing" text="缺少声音分组：" />
-  <string id="AF_UI_Developer_ReloadVoiceGroupNotArray" text="声音分组“" />
-  <string id="AF_UI_Developer_ReloadVoiceGroupNonString" text="声音分组“" />
-  <string id="AF_UI_Developer_ReloadVoiceGroupDuplicate" text="声音分组“" />
-  <string id="AF_UI_Developer_ReloadVoiceFallbackInvalid" text="fallback 必须存在且为字符串。" />
-  <string id="AF_UI_Developer_ReloadKnowledgePackageMissing" text="知识资料包目录不存在。" />
-  <string id="AF_UI_Developer_ReloadKnowledgeFileReadFailed" text="知识文件“" />
-  <string id="AF_UI_Developer_ReloadKnowledgeAggregateReadFailed" text="知识汇总文件无法读取：" />
-  <string id="AF_UI_Developer_ReloadKnowledgeAggregateRulesMissing" text="知识汇总文件缺少 Rules 列表。" />
-  <string id="AF_UI_Developer_ReloadKnowledgeAggregateEmptyRule" text="知识汇总文件包含空知识条目。" />
-  <string id="AF_UI_Developer_ReloadKnowledgePackageRulesMissing" text="资料包中未找到 knowledge\rules 下的知识文件或 knowledge\KnowledgeRules.json。" />
-  <string id="AF_UI_Developer_ReloadOpeningFilesMissing" text="资料包必须同时包含 event_data\WorldOpeningSummary.json 与 event_data\KingdomOpeningSummaries.json。" />
-  <string id="AF_UI_Developer_ReloadWorldOpeningReadFailed" text="世界开局知识无法读取：" />
-  <string id="AF_UI_Developer_ReloadKingdomOpeningReadFailed" text="王国开局知识无法读取：" />
-  <string id="AF_UI_Developer_ReloadEmptyKingdomId" text="王国开局知识包含空王国 ID。" />
-  <string id="AF_UI_Developer_ReloadDuplicateKingdomId" text="王国开局知识包含重复王国 ID：" />
 
   <string id="AF_MCM_Letter_Group" text="7. NPC主动接触/NPC主动来信" />
   <string id="AF_MCM_Companion_Group" text="7. NPC主动接触/队内同伴主动聊天" />
@@ -3456,10 +3376,24 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomStability_FactionImmunity" text="玩家王国叛乱免疫会阻止派系起兵。" />
   <string id="AF_MCM_Shout_MaxRelayTurns" text="场景喊话最大接力轮数" />
   <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="玩家一次喊话后 NPC 最多发言的总次数，包含首次回复，同一人物再次发言也计一次。设为 1 时仅首次回复，不继续接力。范围 1–8，默认 8；下一次喊话生效，人物仍可提前结束接力。" />
-  <string id="AF_UI_Developer_Reload_SkippedStaticKingdoms" text="• 跳过 {COUNT} 个无法匹配的普通国家资料（最多允许 3 个）：{PROFILES}" />
   <string id="AF_UI_Editor_LengthStatus" text="字符：{CURRENT} / {MAX}" />
   <string id="AF_UI_Editor_LengthLimit" text="最多可输入 {MAX} 个字符。" />
   <string id="AF_UI_Editor_InputTruncated" text="部分输入已因长度上限截断，请检查文本末尾。" />
   <string id="AF_UI_Editor_SaveFailed" text="未能完成保存。请检查日志并核对已保存的内容后再重试。" />
+  <string id="AF_TERMINAL_UI_Root_DatabaseImport" text="数据库导入" />
+  <string id="AF_TERMINAL_UI_Root_DatabaseImport_Hint" text="导入世界书/数据库资料包：人物设定、知识库、声音、开局知识和王国策略/性格。未通过校验的文件会被跳过。可选择先清除当前数据库资料。" />
+  <string id="AF_TERMINAL_UI_DatabaseImportFailed" text="无法打开数据库导入流程。" />
+  <string id="AF_UI_DatabaseImport_MenuTitle" text="数据库导入" />
+  <string id="AF_UI_DatabaseImport_MenuBody" text="从资料包导入人物设定、知识库、声音、开局知识和王国策略/性格。未通过校验的文件会被跳过，不会连带拒绝其余内容。" />
+  <string id="AF_UI_DatabaseImport_ImportOption" text="导入数据库资料包" />
+  <string id="AF_UI_DatabaseImport_ClearImportOption" text="先清除当前数据库资料，再导入" />
+  <string id="AF_UI_DatabaseImport_ChoosePackage" text="数据库导入 - 选择资料包" />
+  <string id="AF_UI_DatabaseImport_ClearConfirmTitle" text="清除当前数据库资料" />
+  <string id="AF_UI_DatabaseImport_ClearConfirmBody" text="导入前将从当前存档删除：&#10;• NPC 人物设定（性格/背景）与 NPC 声音 ID&#10;• 无名 NPC 人设&#10;• 非玩家知识库&#10;• 声音映射&#10;• 世界与王国开局摘要（及其第 0 周记录）&#10;• 王国性格/策略覆盖（恢复为默认）&#10;&#10;保留：对话历史、记忆、债务、其他事件记录、玩家的外貌/背景/知识库/声音、API 配置与提示词。&#10;&#10;是否继续？" />
+  <string id="AF_UI_DatabaseImport_ClearConfirm" text="清除并继续" />
+  <string id="AF_UI_DatabaseImport_NothingToImport" text="资料包中没有任何可导入的目录（personality_background、unnamed_persona、knowledge、voice_mapping、event_data、kingdom_profiles）。" />
+  <string id="AF_UI_DatabaseImport_KingdomSkipped" text="已跳过王国策略/性格：" />
+  <string id="AF_UI_DatabaseImport_Completed" text="数据库导入完成。" />
+  <string id="AF_UI_DatabaseImport_CompletedWithSkips" text="数据库导入完成，有 {COUNT} 部分被跳过。详情见 Mod_Logic.txt。" />
 </strings>
 </base>

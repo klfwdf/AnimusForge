@@ -12,10 +12,6 @@ namespace AnimusForge;
 
 internal sealed class DeveloperImportUiPort
 {
- internal delegate bool BuildReloadPlanCapability(string folder, out DatabaseReloadPlan plan, out string error);
- internal delegate bool ApplyReloadPlanCapability(DatabaseReloadPlan plan, out string detail);
- internal BuildReloadPlanCapability TryBuildDatabaseReloadPlan;
- internal ApplyReloadPlanCapability ApplyDatabaseReloadPlan;
  internal Func<long> CaptureGeneration;
  internal Func<long, bool> IsCurrent;
  internal Action ReturnToDevRootMenu;
@@ -622,138 +618,56 @@ internal sealed class DeveloperImportUiController
 	}
 
 
-	internal void OpenDatabaseReloadFolderPicker(Action onReturn)
+	// Terminal "Database import" entry: choose between importing as-is and clearing the covered database data first.
+	// The package picker, the duplicate confirmations and the import itself are supplied by the caller.
+	internal void OpenDatabaseImportMenu(Action onReturn, Action<bool> chooseAndImport, Action<Action, Action> confirmClear)
 	{
 		long generation = _port.CaptureGeneration();
 		if (!_port.IsCurrent(generation)) return;
-		Action action = onReturn ?? delegate
-		{
-    if (!_port.IsCurrent(generation)) return;
-		};
+		Action back = onReturn ?? delegate { };
 		try
 		{
 			List<InquiryElement> list = new List<InquiryElement>
 			{
-				new InquiryElement("__input__", DeveloperUiText.T("AF_UI_Developer_Enter_a_package_folder_path_manually","Enter a package folder/path manually..."), null)
+				new InquiryElement("import", DeveloperUiText.T("AF_UI_DatabaseImport_ImportOption", "Import database package"), null),
+				new InquiryElement("clear_import", DeveloperUiText.T("AF_UI_DatabaseImport_ClearImportOption", "Clear current database data, then import"), null)
 			};
-			string playerExportsRootPath = null;
-			try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
-			catch (Exception)
-			{
-				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_PlayerExports_path_is_unavailable_a_read_only_absolute_p","PlayerExports path is unavailable; a read-only absolute path can still be imported.")));
-			}
-			if (playerExportsRootPath != null)
-				list.Add(new InquiryElement("__latest__", DeveloperUiText.T("AF_UI_Developer_Use_the_latest_player_export_automatic","Use the latest player export (automatic)"), null));
-			AddFolderChoices(list, false, playerExportsRootPath);
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData(DeveloperUiText.T("AF_UI_Developer_Reload_database_choose_a_package","Reload database - choose a package"), DeveloperUiText.T("AF_UI_Developer_Choose_a_source_package_Knowledge_kingdom_strategy_perso","Choose a source package. Knowledge, kingdom strategy/personality, and voice data are validated before confirmation."), list, isExitShown: true, 1, 1, DeveloperUiText.T("AF_UI_Developer_Choose","Choose"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), delegate(List<InquiryElement> selected)
-			{
-    if (!_port.IsCurrent(generation)) return;
-				if (selected == null || selected.Count == 0)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(
+				DeveloperUiText.T("AF_UI_DatabaseImport_MenuTitle", "Database import"),
+				DeveloperUiText.T("AF_UI_DatabaseImport_MenuBody", "Imports persona, knowledge, voices, opening knowledge and kingdom profiles from a package. Files that fail validation are skipped, never rejecting the rest."),
+				list, isExitShown: true, 1, 1, DeveloperUiText.T("AF_UI_Developer_Choose", "Choose"), DeveloperUiText.T("AF_UI_Developer_Back", "Back"),
+				delegate(List<InquiryElement> selected)
 				{
-					action();
-					return;
-				}
-				string text = selected[0].Identifier as string;
-				if (string.Equals(text, "__input__", StringComparison.Ordinal))
+					if (!_port.IsCurrent(generation)) return;
+					string choice = selected != null && selected.Count > 0 ? selected[0].Identifier as string : null;
+					if (choice == "import")
+					{
+						chooseAndImport(false);
+					}
+					else if (choice == "clear_import")
+					{
+						confirmClear(() => chooseAndImport(true), back);
+					}
+					else
+					{
+						back();
+					}
+				},
+				delegate
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData(DeveloperUiText.T("AF_UI_Developer_Enter_package_folder_path","Enter package folder/path"), playerExportsRootPath == null ? DeveloperUiText.T("AF_UI_Developer_Enter_the_complete_read_only_package_folder_path","Enter the complete read-only package folder path.") : DeveloperUiText.T("AF_UI_Developer_Leave_blank_for_the_latest_player_export_names_search_th","Leave blank for the latest player export; names search the mod folder first, or enter a full package path."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, DeveloperUiText.T("AF_UI_Developer_Continue","Continue"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), delegate(string input)
-					{
-    if (!_port.IsCurrent(generation)) return;
-						BeginDatabaseReloadPreflight(input, action);
-					}, delegate
-					{
-    if (!_port.IsCurrent(generation)) return;
-						action();
-					}));
-					return;
-				}
-				BeginDatabaseReloadPreflight(string.Equals(text, "__latest__", StringComparison.Ordinal) ? "" : text, action);
-			}, delegate
-			{
-    if (!_port.IsCurrent(generation)) return;
-				action();
-			}, "", isSeachAvailable: true);
+					if (!_port.IsCurrent(generation)) return;
+					back();
+				}, "", isSeachAvailable: false);
 			MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
-			Logger.Log("DatabaseReload", "[WARN] Failed to open source picker.");
-			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Unable_to_open_the_package_picker_check_the_PlayerExport","Unable to open the package picker; check the PlayerExports path.")));
-			action();
+			Logger.Log("DatabaseImport", "[WARN] Failed to open database import menu: " + ex.Message);
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_TERMINAL_UI_DatabaseImportFailed", "Unable to open the database import flow.")));
+			back();
 		}
 	}
 
-
-	internal void BeginDatabaseReloadPreflight(string folderName, Action onReturn)
-	{
-		long generation = _port.CaptureGeneration();
-		if (!_port.IsCurrent(generation)) return;
-		Action action = onReturn ?? delegate
-		{
-    if (!_port.IsCurrent(generation)) return;
-		};
-		if (!_port.TryBuildDatabaseReloadPlan(folderName, out var plan, out var error))
-		{
-			InformationManager.ShowInquiry(new InquiryData(DeveloperUiText.T("AF_UI_Developer_Database_package_validation_failed","Database package validation failed"), DeveloperUiText.F("AF_UI_Developer_Database_package_validation_body","This reload has not modified the save.\n\n{ERROR}", "ERROR", error), isAffirmativeOptionShown: true, isNegativeOptionShown: false, DeveloperUiText.T("AF_UI_Developer_Choose_again","Choose again"), "", delegate
-			{
-    if (!_port.IsCurrent(generation)) return;
-				OpenDatabaseReloadFolderPicker(action);
-			}, null), pauseGameActiveState: true, prioritize: false);
-			return;
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Source_package","Source package:"));
-		stringBuilder.AppendLine(plan.ImportDirectory);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Will_delete_and_reload","Will delete and reload:"));
-		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_NonPlayerKnowledge","• Non-player Knowledge: {COUNT} entries", "COUNT", plan.KnowledgeRules.Count.ToString()));
-		if (plan.KnowledgeRuleIdDisambiguationCount > 0)
-		{
-			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_DuplicateKnowledgeIds","• {COUNT} package entries with duplicate IDs will receive stable file-name-based IDs (package files are not modified)", "COUNT", plan.KnowledgeRuleIdDisambiguationCount.ToString()));
-		}
-		if (plan.KnowledgeKeywordDeduplicationCount > 0)
-		{
-			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_DuplicateKeywords","• {COUNT} duplicate trigger words stay on the original entry so split Knowledge entries do not compete for the same keyword", "COUNT", plan.KnowledgeKeywordDeduplicationCount.ToString()));
-		}
-		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_OpeningKnowledge","• One world-opening Knowledge entry and {COUNT} kingdom-opening entries", "COUNT", plan.OpeningKnowledge.KingdomSummaries.Count.ToString()));
-		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_DayZero","• Day-zero derived records for the opening Knowledge (after day 7, the current API settings may request short summaries from the LLM)"));
-		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_KingdomProfiles","• Kingdom personality and long-term strategy for {COUNT} kingdoms", "COUNT", (plan.KingdomProfilePlan?.SourceProfilesByTargetId?.Count ?? 0).ToString()));
-		if (plan.KingdomProfilePlan?.SkippedStaticProfileCount > 0)
-		{
-			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_SkippedStaticKingdoms", "• Skip {COUNT} unmatched non-dynamic kingdom profiles (maximum 3): {PROFILES}", "COUNT", plan.KingdomProfilePlan.SkippedStaticProfileCount.ToString(), "PROFILES", string.Join(", ", plan.KingdomProfilePlan.SkippedStaticProfileLabels)));
-		}
-		if (plan.KingdomProfilePlan?.SkippedDynamicProfileCount > 0)
-		{
-			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_SkippedDynamicKingdoms", "• Skip {COUNT} unmatched dynamic kingdom profiles and preserve existing save profiles for those IDs. First entries: {PROFILES}", "COUNT", plan.KingdomProfilePlan.SkippedDynamicProfileCount.ToString(), "PROFILES", string.Join(", ", plan.KingdomProfilePlan.SkippedDynamicProfileLabels)));
-		}
-		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_VoiceMapping","• One voice mapping and {COUNT} NPC voice IDs", "COUNT", plan.NpcVoiceIds.Count.ToString()));
-		if (plan.CurrentKingdomProfilesResetToDefaultCount > 0)
-		{
-			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_DefaultKingdoms","• {COUNT} current kingdoms absent from the package will be restored to their current defaults (this does not automatically request a kingdom LLM)", "COUNT", plan.CurrentKingdomProfilesResetToDefaultCount.ToString()));
-		}
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Kept_and_not_imported_from_the_package","Kept and not imported from the package:"));
-		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepPlayer","• Player appearance, background, player-only Knowledge, and direct voice ID"));
-		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepNpc","• NPC persona, memory, and appearance"));
-		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepSettings","• Dynamic event records, API configuration, LLM Prompts, and other settings"));
-		stringBuilder.AppendLine();
-		stringBuilder.Append(DeveloperUiText.T("AF_UI_Developer_This_overwrites_the_database_data_listed_above_in_the_cu","This overwrites the database data listed above in the current save. Continue?"));
-		Action apply = delegate
-		{
-    if (!_port.IsCurrent(generation)) return;
-			if (_port.ApplyDatabaseReloadPlan(plan, out var detail))
-			{
-				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Database_reload_completed","Database reload completed:") + detail));
-			}
-			else
-			{
-				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Database_reload_failed","Database reload failed:") + detail));
-			}
-			action();
-		};
-  Action[] choices = _confirmation.BeginConfirmation(apply, null, action);
-  InformationManager.ShowInquiry(new InquiryData(DeveloperUiText.T("AF_UI_Developer_Confirm_database_reload","Confirm database reload"), stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, DeveloperUiText.T("AF_UI_Developer_Confirm_reload","Confirm reload"), DeveloperUiText.T("AF_UI_Developer_Cancel","Cancel"), choices[0], choices[2]), pauseGameActiveState: true, prioritize: false);
-	}
 
 
 }

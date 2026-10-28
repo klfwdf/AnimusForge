@@ -120,7 +120,6 @@ public partial class MyBehavior
  private DeveloperImportUiController _developerImportUi;
  private DeveloperImportUiController DeveloperImportUi => _developerImportUi ?? (_developerImportUi = new DeveloperImportUiController(new DeveloperImportUiPort
  {
-  TryBuildDatabaseReloadPlan = TryBuildDatabaseReloadPlan, ApplyDatabaseReloadPlan = ApplyDatabaseReloadPlan,
   CaptureGeneration = SaveRuntimeGuard.CaptureGeneration, IsCurrent = IsMemorySourceEditorCurrent,
   ReturnToDevRootMenu = ReturnToDevRootMenu,
   ExportAllData = ExportAllData,
@@ -168,12 +167,6 @@ public partial class MyBehavior
 
 	private void OpenFolderPickerWithCallback(string title, bool isExport, Action<string> onSelectedFolder, Action onReturn)
 		=> DeveloperImportUi.OpenFolderPickerWithCallback(title, isExport, onSelectedFolder, onReturn);
-
-	private void OpenDatabaseReloadFolderPicker(Action onReturn)
-		=> DeveloperImportUi.OpenDatabaseReloadFolderPicker(onReturn);
-
-	private void BeginDatabaseReloadPreflight(string folderName, Action onReturn)
-		=> DeveloperImportUi.BeginDatabaseReloadPreflight(folderName, onReturn);
 
 	private void ShowDuplicateImportInquiry(string title, string text, Action onOverwrite, Action onSkipDuplicates, Action onCancel)
 		=> DeveloperImportUi.ShowDuplicateImportInquiry(title, text, onOverwrite, onSkipDuplicates, onCancel);

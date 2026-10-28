@@ -237,34 +237,6 @@ internal static class WeeklyEventDataImportOwner
 			return false;
 		}
 	}
-    internal static int ReplaceOpening(EventImportPayload payload, ref string worldSummary,
-        ref Dictionary<string,string> kingdomSummaries, ref List<EventRecordEntry> records,
-        Action markOpening, out bool removedWorldOpeningRecord)
-    {
-		if (payload == null || !payload.HasWorldSummaryFile || !payload.HasKingdomSummariesFile)
-		{
-			throw new InvalidOperationException(WorldBulletinPolicyTexts.Raw("WBLT_Raw_043"));
-		}
-		worldSummary = (payload.WorldSummary ?? "").Trim();
-		kingdomSummaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		foreach (KeyValuePair<string, string> sourceSummary in payload.KingdomSummaries ?? new Dictionary<string, string>())
-		{
-			string kingdomId = (sourceSummary.Key ?? "").Trim();
-			string summary = (sourceSummary.Value ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(kingdomId) && !string.IsNullOrWhiteSpace(summary))
-			{
-				kingdomSummaries[kingdomId] = summary;
-			}
-		}
-		markOpening();
-		if (records == null)
-		{
-			records = new List<EventRecordEntry>();
-		}
-		removedWorldOpeningRecord = records.Any((EventRecordEntry x) => IsCanonicalOpeningEvent(x) && string.Equals((x.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase));
-		int removedOpeningRecordCount = records.RemoveAll(IsCanonicalOpeningEvent);
-		return removedOpeningRecordCount;
-    }
     internal static bool IsCanonicalOpeningEvent(EventRecordEntry entry)
         => entry != null && entry.WeekIndex == 0 && IsCanonicalOpeningEventId(entry.EventId);
     internal static bool IsCanonicalOpeningEventId(string eventId)
@@ -382,18 +354,6 @@ internal static class WeeklyEventDataImportOwner
 		return list;
 	}
 
-
-    internal static void RestoreOpeningAndRecords(string worldSummary, Dictionary<string,string> openingSummaries,
-        List<EventRecordEntry> restoredRecords, ref string currentWorldSummary,
-        ref Dictionary<string,string> currentOpeningSummaries, ref List<EventRecordEntry> currentRecords, Action markOpening)
-    {
-        currentWorldSummary = worldSummary ?? "";
-        currentOpeningSummaries = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
-        foreach (KeyValuePair<string,string> summary in openingSummaries ?? new Dictionary<string,string>())
-            currentOpeningSummaries[summary.Key ?? ""] = summary.Value ?? "";
-        markOpening();
-        currentRecords = restoredRecords;
-    }
 
     internal static void SetWorldOpeningSummary(string input, ref string world, Action markOpening)
     { world = (input ?? "").Trim(); markOpening(); }

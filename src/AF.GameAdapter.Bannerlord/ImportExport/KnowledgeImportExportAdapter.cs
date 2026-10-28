@@ -496,6 +496,11 @@ internal sealed class KnowledgeImportExportAdapter
 			}
 			Action action = delegate
 			{
+				if (completion != null && completion.Tolerant)
+				{
+					ImportKnowledgeTolerantStep(importDir, overwriteExisting: true, completion);
+					return;
+				}
 				if (!ValidateKnowledgeKeywordsForImport(importDir, overwriteExisting: true, out var error))
 				{
 					completion?.Finish(OnboardingImportResult.Failed);
@@ -518,6 +523,11 @@ internal sealed class KnowledgeImportExportAdapter
 };
 			Action onSkipDuplicates = delegate
 			{
+				if (completion != null && completion.Tolerant)
+				{
+					ImportKnowledgeTolerantStep(importDir, overwriteExisting: false, completion);
+					return;
+				}
 				if (!ValidateKnowledgeKeywordsForImport(importDir, overwriteExisting: false, out var error))
 				{
 					completion?.Finish(OnboardingImportResult.Failed);
@@ -556,6 +566,42 @@ internal sealed class KnowledgeImportExportAdapter
 		catch (Exception ex)
 		{
             completion?.Finish(OnboardingImportResult.Failed);
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
+		}
+	}
+
+	// Terminal database import: the package is read file by file, so an unreadable or invalid rule file is skipped and
+	// reported while every other rule is still imported. AIConfig.json is never applied by this path.
+	private void ImportKnowledgeTolerantStep(string importDir, bool overwriteExisting, OnboardingImportStep completion)
+	{
+		try
+		{
+			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
+			if (knowledgeLibraryBehavior == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ImportExportUiText.KnowledgeBehaviorDetail())));
+				completion.Finish(OnboardingImportResult.Failed);
+				return;
+			}
+			List<KnowledgeLibraryBehavior.LoreRule> rules = KnowledgeImportSupport.LoadKnowledgeRulesFromImportDir(importDir);
+			if (rules == null || rules.Count <= 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ImportExportUiText.KnowledgeRulesMissingDetail())));
+				completion.Finish(OnboardingImportResult.Failed);
+				return;
+			}
+			knowledgeLibraryBehavior.ImportDatabaseRulesTolerant(rules, overwriteExisting, out int importedCount, out int skippedCount, out string firstSkippedRuleId, out string firstSkippedReason);
+			if (skippedCount > 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.KnowledgeImportFallbackSummary(importedCount, skippedCount, firstSkippedRuleId, string.IsNullOrWhiteSpace(firstSkippedReason) ? "" : "; reason: " + firstSkippedReason)));
+				Logger.Log("DatabaseImport", "knowledge imported=" + importedCount + " skipped=" + skippedCount + " firstSkipped=" + firstSkippedRuleId + " reason=" + firstSkippedReason);
+			}
+			InformationManager.DisplayMessage(new InformationMessage(overwriteExisting ? ImportExportUiText.ImportCompleted(importDir) : ImportExportUiText.ImportCompletedDuplicates(importDir)));
+			completion.Finish(importedCount > 0 || skippedCount == 0 ? OnboardingImportResult.Completed : OnboardingImportResult.Failed);
+		}
+		catch (Exception ex)
+		{
+			completion.Finish(OnboardingImportResult.Failed);
 			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}

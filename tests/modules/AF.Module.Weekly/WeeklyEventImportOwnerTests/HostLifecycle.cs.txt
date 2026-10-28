@@ -13,7 +13,6 @@
  private string BuildPublishedWorldWeeklyProductsFingerprint(){Order.Add("fingerprint:"+_weeklyReportMaterialRevisions.Capture(0,0).OpeningRevision);return string.Join("|",_eventRecordEntries.Select(x=>x.EventId+":"+x.Title));}
  private void NotifyWorldMessageWeeklyTimelineChanged()=>Order.Add("timeline:"+_publishedWorldWeeklyHistoryRevision);
  private void EnsureWeekZeroOpeningSummaryEvents(bool sanitizeAfter){Order.Add("ensure:"+sanitizeAfter+":"+_weekZeroShortSummaryPendingQueue.Count+":"+_weekZeroShortSummaryGenerationAttempted.Count+":"+_publishedWorldWeeklyHistoryRevision);}
- private static bool IsDatabaseReloadOpeningEventId(string id)=>WeeklyEventDataImportOwner.IsCanonicalOpeningEventId(id);
  private static string NeutralizeWeeklyReportScenarioName(string x)=>WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(x);
  private static string BuildFallbackWeeklyReportShortSummary(string x)=>WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary(x);
  private static string NormalizeWeeklyReportTagText(string x)=>WeeklyGenerationRules.NormalizeWeeklyReportTagText(x);
@@ -23,17 +22,11 @@
   h.Order.Clear();h._eventRecordEntries.Add(new(){EventId="weekly_report:world:0:id",WeekIndex=0,EventKind="world"});
   h._weekZeroShortSummaryPendingQueue.Add(new(){EventId="weekly_report:world:0:id"});h._weekZeroShortSummaryPendingQueue.Add(new(){EventId="dynamic"});
   h._weekZeroShortSummaryGenerationAttempted.Add("weekly_report:world:0:id");h._weekZeroShortSummaryGenerationAttempted.Add("dynamic");h.InFlight["weekly_report:world:0:id"]="old source hash";
-  h.ReplaceDatabaseOpeningKnowledge(new(){HasWorldSummaryFile=true,WorldSummary="",HasKingdomSummariesFile=true});
-  if(h.Order.Single()!="ensure:False:1:1:2"||h.InFlight.Count!=1||h.InFlight.Values.Single()!="old source hash")throw new Exception("actual replace pending clear/inflight keep/revision/unsanitized ensure order");
- }
-
- internal static void VerifyWeeklyRestore(){
-  var h=new MyBehavior();var records=new List<EventRecordEntry>{new(){EventId=" raw ",Title=" raw title "}};
-  h.RestoreDatabaseReloadWeeklyData(" raw world ",new(){{"K"," value "}},records,"");
-  if(h._publishedWorldWeeklyHistoryRevision!=1||!ReferenceEquals(h._eventRecordEntries,records)||h._eventWorldOpeningSummary!=" raw world "||h.Order.Single()!="fingerprint:1")throw new Exception("actual restore domain/fingerprint order/changed revision");
-  string unchanged=h.BuildPublishedWorldWeeklyProductsFingerprint();h.Order.Clear();
-  h.RestoreDatabaseReloadWeeklyData(null,null,records,unchanged);
-  if(h._publishedWorldWeeklyHistoryRevision!=1||h._eventWorldOpeningSummary!=""||h._eventKingdomOpeningSummaries.Count!=0||h.Order.Single()!="fingerprint:2")throw new Exception("actual restore unchanged products no revision despite opening mark");
+  h._eventKingdomOpeningSummaries["k"]="kingdom";var dynamicRecord=h._eventRecordEntries.Single(x=>x.EventId=="e");
+  int removed=h.ClearDatabaseOpeningKnowledge();
+  if(removed!=1||h._eventWorldOpeningSummary!=""||h._eventKingdomOpeningSummaries.Count!=0||!ReferenceEquals(h._eventRecordEntries.Single(),dynamicRecord)||h._publishedWorldWeeklyHistoryRevision!=2)throw new Exception("actual clear opening summaries/canonical week0 only/revision");
+  if(h._weekZeroShortSummaryPendingQueue.Single().EventId!="dynamic"||h._weekZeroShortSummaryGenerationAttempted.Single()!="dynamic"||h.InFlight.Count!=1||h.Order.Count!=0)throw new Exception("actual clear pending opening requests only/inflight keep/no ensure");
+  if(h.ClearDatabaseOpeningKnowledge()!=0||h._publishedWorldWeeklyHistoryRevision!=2)throw new Exception("clear without world record keeps revision");
  }
 
  private bool IsMemorySourceEditorCurrent(long generation)=>generation==17;

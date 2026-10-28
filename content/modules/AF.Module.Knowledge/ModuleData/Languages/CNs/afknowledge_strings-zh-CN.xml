@@ -614,13 +614,6 @@
     <string id="AF_KNOWLEDGE_ExportSingleValidationFailed" text="校验单条知识导出内容失败：{DETAIL}" />
     <string id="AF_KNOWLEDGE_ExportRuleIdEmpty" text="RuleId 为空。" />
     <string id="AF_KNOWLEDGE_ExportRuleNotFound" text="找不到该知识条目：{ID}" />
-    <string id="AF_KNOWLEDGE_ReloadNoRules" text="资料包中没有可重载的知识规则。" />
-    <string id="AF_KNOWLEDGE_ReloadEmptyRuleId" text="资料包中存在 RuleId 为空的知识条目。" />
-    <string id="AF_KNOWLEDGE_ReloadDuplicateRuleId" text="资料包中存在重复 RuleId：{ID}" />
-    <string id="AF_KNOWLEDGE_ReloadInvalidRule" text="资料包中的知识条目无效：{ID}{DETAIL}" />
-    <string id="AF_KNOWLEDGE_ReloadNoReplaceableRules" text="资料包中没有可替换的非主角知识。" />
-    <string id="AF_KNOWLEDGE_ReloadKeywordConflict" text="知识关键词与保留的主角资料或资料包规则冲突：{KEYWORD}" />
-    <string id="AF_KNOWLEDGE_ReloadFailed" text="重载知识库失败：{DETAIL}" />
 
     <string id="AF_KNOWLEDGE_ExistingConditionFallback" text="已有" />
     <string id="AF_KNOWLEDGE_GeneralCondition" text="通用（无条件）" />
