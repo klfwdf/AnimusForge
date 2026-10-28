@@ -13,20 +13,23 @@ internal sealed partial class WorldDiplomacyOrchestration
     // Request/completion only. Obvious affirmative announcements are rejected
     // independently of the semantic auditor; negations and conditional threats
     // still belong to the auditor rather than a broad keyword ban.
-    private static readonly Regex SilenceWarAnnouncement = new(
-        @"(?:即日起|现正式|兹正式|在此正式|特此)[^不未无否。！？\r\n]{0,24}宣战|\bwe\s+(?:(?:hereby|now|formally|officially)\s+)*declare\s+war\b|\ba\s+state\s+of\s+war\s+(?:now\s+)?exists\b",
-        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Lazy<Regex> SilenceWarAnnouncement = new(() => new Regex(
+        DiplomacyCompatibilityTexts.Get("Event_SilenceWarAnnouncementPattern"),
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled));
+    private static readonly Lazy<string[]> SilenceWarTitles = new(() =>
+        DiplomacyCompatibilityTexts.Get("Event_SilenceWarTitles").Split('|'));
+    private static readonly Lazy<string[]> SilenceTitleNegations = new(() =>
+        DiplomacyCompatibilityTexts.Get("Event_SilenceTitleNegations").Split('|'));
 
     private bool ValidateSilenceProse(WorldDiplomacyJob job, JObject draft)
     {
         if (string.IsNullOrEmpty(job.SilenceSourceDocumentId) || job.SilenceConsequence != "ordinary") return true;
         string title = (string)draft?["title"] ?? "", body = (string)draft?["body"] ?? "";
-        bool titleAnnouncement = title.Contains("宣战昭告") || title.Contains("宣战诏告") || title.Contains("宣战公告")
-            || title.Contains("宣战宣言") || title.Contains("宣战书")
+        bool titleAnnouncement = SilenceWarTitles.Value.Any(title.Contains)
             || string.Equals(title.Trim(), "Declaration of war", StringComparison.OrdinalIgnoreCase);
-        bool titleNegated = title.Contains("不") || title.Contains("未") || title.Contains("非")
+        bool titleNegated = SilenceTitleNegations.Value.Any(title.Contains)
             || title.StartsWith("No ", StringComparison.OrdinalIgnoreCase) || title.StartsWith("Not ", StringComparison.OrdinalIgnoreCase);
-        return !(titleAnnouncement && !titleNegated) && !SilenceWarAnnouncement.IsMatch(body);
+        return !(titleAnnouncement && !titleNegated) && !SilenceWarAnnouncement.Value.IsMatch(body);
     }
 
     private string SilenceSourceContext(WorldDiplomacyJob job)

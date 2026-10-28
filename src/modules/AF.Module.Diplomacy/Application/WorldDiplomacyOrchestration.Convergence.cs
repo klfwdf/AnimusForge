@@ -403,6 +403,9 @@ internal sealed partial class WorldDiplomacyOrchestration
             + state.ThreatWeight + "/" + state.AgreementWeight + "/" + state.DeadlockWeight + " draw=" + state.Draw);
     }
 
+    private static readonly Lazy<string[]> RecordedTradeInterestCues = new(() =>
+        DiplomacyCompatibilityTexts.Get("Event_TradeInterestCues").Split('|'));
+
     private static bool HasRecordedTradeInterest(WorldDiplomacyRound round)
     {
         if (round.PotentialActionIntents.Contains("propose_trade")) return true;
@@ -410,7 +413,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         // or new model extraction. The declaration auditor still verifies that
         // the actual final terms serve these interests rather than invent trade.
         string interests = string.Join("\n", round.Participants.SelectMany(x => new[] { x.Agenda, x.PreferredOutcome, x.Alternative }));
-        return new[] { "trade", "commerce", "commercial", "merchant", "caravan", "商路", "贸易", "通商", "商贸", "商队" }
+        return RecordedTradeInterestCues.Value
             .Any(x => interests.IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0);
     }
 

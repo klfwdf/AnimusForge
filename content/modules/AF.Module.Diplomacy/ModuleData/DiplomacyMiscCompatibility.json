@@ -268,5 +268,12 @@
   "OralGeneration_ReceiptExecuted": "外交行动已生效",
   "OralGeneration_ReceiptDeferred": "正式发文暂缓",
   "OralGeneration_ReceiptInvalidTerms": "条款格式无效",
-  "OralGeneration_ReceiptControlRejected": "约定处置未提交"
+  "OralGeneration_ReceiptControlRejected": "约定处置未提交",
+  "Event_PublicSpeechPattern": "(?:发出|作出|发表|发布|递交|提出|送出|送达)[^。！？；\\r\\n]{0,12}(?:回应|回复|答复|警告|抗议|抗词|声明|宣言|国书|通牒|拒绝)|(?:公开|正式|明确|严词|严厉)(?:回应|回复|答复|拒绝|谴责|斥责)|\\b(?:replied|responded|rebutted|protested|issued|announced|declared|publicly\\s+rejected)\\b",
+  "Event_CollectiveDecisionPattern": "(?:各方|双方|[三四五六七八九十两]方|所有参与方|所有国家)[^。！？\\r\\n]{0,55}?(?:(?:均|都|一致)[^。！？\\r\\n]{0,10}?(?:拒绝|同意|接受|承诺|决定)|互不(?:妥协|让步|承认|相让)|(?:无|没有|缺乏)[^。！？\\r\\n]{0,12}?(?:意愿|意向)|不愿(?:妥协|让步|和解))|(?:all\\s+(?:sides|parties|participants)|both\\s+sides)[^.?!\\r\\n]{0,100}?\\b(?:refus\\w*|agreed|accepted|decided|would\\s+not\\s+compromise|(?:no|lack(?:ed)?)\\s+(?:further\\s+)?(?:willingness|desire)\\s+to\\s+compromise)\\b",
+  "Event_InternalHeadingPattern": "(?im)^\\s*(?:\\*\\*|【|\\[)?(?:已有依据|虚构情境|本次构思|主题分析|主题诊断|theme_reason|exploration_theme|theme|source_ids?|existing evidence|fictional scenario|theme analysis)(?:\\*\\*|】|\\])?\\s*[:：]",
+  "Event_SilenceWarAnnouncementPattern": "(?:即日起|现正式|兹正式|在此正式|特此)[^不未无否。！？\\r\\n]{0,24}宣战|\\bwe\\s+(?:(?:hereby|now|formally|officially)\\s+)*declare\\s+war\\b|\\ba\\s+state\\s+of\\s+war\\s+(?:now\\s+)?exists\\b",
+  "Event_TradeInterestCues": "trade|commerce|commercial|merchant|caravan|商路|贸易|通商|商贸|商队",
+  "Event_SilenceWarTitles": "宣战昭告|宣战诏告|宣战公告|宣战宣言|宣战书",
+  "Event_SilenceTitleNegations": "不|未|非"
 }

@@ -10,15 +10,15 @@ namespace AnimusForge;
 internal sealed partial class WorldDiplomacyOrchestration
 {
     private static readonly string[] PositionFields = { "agenda", "gain", "cost", "red_line", "alternative" };
-    private const string PublicSpeechPattern = @"(?:发出|作出|发表|发布|递交|提出|送出|送达)[^。！？；\r\n]{0,12}(?:回应|回复|答复|警告|抗议|抗词|声明|宣言|国书|通牒|拒绝)|(?:公开|正式|明确|严词|严厉)(?:回应|回复|答复|拒绝|谴责|斥责)|\b(?:replied|responded|rebutted|protested|issued|announced|declared|publicly\s+rejected)\b";
-    private static readonly Regex PublicSpeech = new Regex(PublicSpeechPattern,
-        RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    private static string PublicSpeechPattern => DiplomacyCompatibilityTexts.Get("Event_PublicSpeechPattern");
+    private static readonly Lazy<Regex> PublicSpeech = new(() => new Regex(PublicSpeechPattern,
+        RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
     private static readonly Regex PublicInternalIdentity = new Regex(
         @"(?<![a-zA-Z0-9_])(?:diplomacy_(?:document|round)[_:][a-zA-Z0-9_:-]+|ruler_[a-zA-Z0-9_]+|lord_\d+_\d+)(?![a-zA-Z0-9_])",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    private static readonly Regex CollectiveDecision = new Regex(
-        @"(?:各方|双方|[三四五六七八九十两]方|所有参与方|所有国家)[^。！？\r\n]{0,55}?(?:(?:均|都|一致)[^。！？\r\n]{0,10}?(?:拒绝|同意|接受|承诺|决定)|互不(?:妥协|让步|承认|相让)|(?:无|没有|缺乏)[^。！？\r\n]{0,12}?(?:意愿|意向)|不愿(?:妥协|让步|和解))|(?:all\s+(?:sides|parties|participants)|both\s+sides)[^.?!\r\n]{0,100}?\b(?:refus\w*|agreed|accepted|decided|would\s+not\s+compromise|(?:no|lack(?:ed)?)\s+(?:further\s+)?(?:willingness|desire)\s+to\s+compromise)\b",
-        RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    private static readonly Lazy<Regex> CollectiveDecision = new(() => new Regex(
+        DiplomacyCompatibilityTexts.Get("Event_CollectiveDecisionPattern"),
+        RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
 
     private void ProjectEventPublicIdentities(WorldDiplomacyRound round, JObject draft)
     {
@@ -57,7 +57,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         foreach (string field in new[] { "title", "background", "body" })
         {
             string text = draft[field]?.Type == JTokenType.String ? (string)draft[field] : "";
-            if (Regex.IsMatch(text, @"(?im)^\s*(?:\*\*|【|\[)?(?:已有依据|虚构情境|本次构思|主题分析|主题诊断|theme_reason|exploration_theme|theme|source_ids?|existing evidence|fictional scenario|theme analysis)(?:\*\*|】|\])?\s*[:：]"))
+            if (Regex.IsMatch(text, DiplomacyCompatibilityTexts.Get("Event_InternalHeadingPattern")))
             { reason = "public_narrative_internal_heading:" + field + ";use_natural_attributed_narrative_only"; return false; }
             if (Regex.IsMatch(text, @"(?i)\b(?:lore:[a-f0-9]{16,}|persona:[a-z0-9_]+|world:current)\b"))
             { reason = "public_narrative_source_id:" + field + ";keep_source_keys_in_internal_fields_only"; return false; }
@@ -80,7 +80,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                 return false;
             }
             if (!unanswered) continue;
-            var match = CollectiveDecision.Match(text);
+            var match = CollectiveDecision.Value.Match(text);
             if (!match.Success) continue;
             reason = "unanswered_player_collective_decision:field=" + field + ";phrase=" + match.Value
                 + ";human_has_no_further_published_reply;attribute_each_actual_NPC_position_separately_and_describe_unresolved_outcomes_without_inventing_a_collective_human_choice";
@@ -122,7 +122,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             if (!TryReadNarrativeSubject(fact, out string subject, out _)
                 || _host.IsPlayerParty(subject)) continue;
-            if ((string)fact["kind"] != "allegation" && !PublicSpeech.IsMatch((string)fact["text"] ?? "")) continue;
+            if ((string)fact["kind"] != "allegation" && !PublicSpeech.Value.IsMatch((string)fact["text"] ?? "")) continue;
             var source = ResolveDocument((string)fact["source"]);
             if (source?.IsReadyForPublication == true && source.AuthorKingdomId == subject) continue;
             reason = "player_opening_npc_allegation_requires_published_source_document:subject=" + subject
