@@ -99,6 +99,13 @@ internal static class Program
             Check(CourierVisibleLetterSanitizer.Clean(status) == status, "player letter literal retained: " + key);
             Check(CourierVisibleLetterSanitizer.CleanNpcLetter("prose\n" + status) == "prose", "NPC letter status removed: " + key);
         }
+        foreach (string wrapper in new[] { "【回信】", "[Reply]" })
+        {
+            string wrappedStatus = wrapper + DiplomacyMiscPromptTexts.GetRequired("OralDiplomacy_InvalidFormat");
+            Check(DiplomacyReplyTextRules.CleanNpcText(wrappedStatus) == "", "both embedded reply wrappers recognize exact status across packages");
+            string ordinary = wrapper + "Keep this actual reply and its conditions.";
+            Check(DiplomacyReplyTextRules.CleanNpcText(ordinary) == ordinary, "reply wrapper never removes ordinary prose");
+        }
         foreach (var pair in Ui.Where(pair => pair.Key.StartsWith("AF_DIP_STATUS_") && keys.Contains(pair.Key.Substring("AF_DIP_STATUS_".Length))))
         {
             string status = pair.Value.Replace("{REASON}", "opaque reason");

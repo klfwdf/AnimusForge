@@ -11,44 +11,7 @@ namespace AnimusForge.Refactor.Domain;
 
 public static class WorldDiplomacyRoundLifecycleRules
 {
-    public static WorldDiplomacyRoundReconcileDecision EvaluateReconcileAfterLoad(
-        WorldDiplomacyRoundReconcileInput input)
-    {
-        if (input == null || !input.RoundActive)
-        {
-            return WorldDiplomacyRoundReconcileDecision.Of(WorldDiplomacyRoundReconcileAction.None);
-        }
-        if (input.CurrentDay >= input.HardEndDay)
-        {
-            return WorldDiplomacyRoundReconcileDecision.Of(
-                WorldDiplomacyRoundReconcileAction.CloseHardEndAfterLoad);
-        }
-        if (input.HasPersistedWork || input.PlayerWaiting)
-        {
-            return WorldDiplomacyRoundReconcileDecision.Of(WorldDiplomacyRoundReconcileAction.None);
-        }
-        if (input.ResultSettlementPending)
-        {
-            return WorldDiplomacyRoundReconcileDecision.Of(
-                WorldDiplomacyRoundReconcileAction.ScheduleResultSettlementTurn,
-                clearOrphanedRelayWait: true);
-        }
-        if (input.RelayPlanned)
-        {
-            return WorldDiplomacyRoundReconcileDecision.Of(
-                WorldDiplomacyRoundReconcileAction.ScheduleRelayImmediately,
-                clearOrphanedRelayWait: true);
-        }
-        if (!input.HasRootDocument)
-        {
-            return WorldDiplomacyRoundReconcileDecision.Of(
-                WorldDiplomacyRoundReconcileAction.CloseMissingRootDocument,
-                clearOrphanedRelayWait: true);
-        }
-        return WorldDiplomacyRoundReconcileDecision.Of(
-            WorldDiplomacyRoundReconcileAction.None,
-            clearOrphanedRelayWait: true);
-    }
+
 
     public static bool IsHardEndReached(int currentDay, int hardEndDay)
     {
@@ -138,29 +101,6 @@ public static class WorldDiplomacyRoundLifecycleRules
         return plannedDay;
     }
 
-    public static WorldDiplomacyRelayPassAccountingDecision EvaluateRelayPassAccounting(
-        WorldDiplomacyRelayPassAccountingInput input)
-    {
-        if (input == null || input.RelayPassNumber <= 0
-            || input.LastAccountedRelayPassNumber >= input.RelayPassNumber)
-        {
-            return new WorldDiplomacyRelayPassAccountingDecision
-            {
-                ShouldAccount = false,
-                ActionOccurred = false,
-                NewConsecutiveNoActionPasses = input?.ConsecutiveNoActionPasses ?? 0
-            };
-        }
-        bool actionOccurred = input.DiplomaticActionAttemptCount > input.ActionAttemptCountAtPassStart;
-        return new WorldDiplomacyRelayPassAccountingDecision
-        {
-            ShouldAccount = true,
-            ActionOccurred = actionOccurred,
-            NewConsecutiveNoActionPasses = actionOccurred
-                ? 0
-                : Math.Min(3, input.ConsecutiveNoActionPasses + 1)
-        };
-    }
 
     public static int ClampNoActionPassCount(int consecutiveNoActionPasses)
     {
@@ -177,32 +117,6 @@ public static class WorldDiplomacyRoundLifecycleRules
         return Math.Max(0, lastAccountedPassNumber);
     }
 
-    public static bool CanScheduleResultSettlementTurn(WorldDiplomacySettlementTurnGateInput input)
-    {
-        return input != null && input.ResultSettlementPending && input.RelayPlanned
-            && input.RoundActive && !input.HasPendingArrival && !input.HasPendingJob;
-    }
-
-    public static WorldDiplomacySettlementSlotAction EvaluateSettlementSlotAction(
-        WorldDiplomacySettlementSlotEvaluationInput input)
-    {
-        if (input == null || !input.HasSlot)
-        {
-            return WorldDiplomacySettlementSlotAction.CloseRound;
-        }
-        if (!input.ReceiverEligible || input.ActionableTargetCount <= 0)
-        {
-            return WorldDiplomacySettlementSlotAction.SkipSlot;
-        }
-        return input.ReceiverIsPlayer
-            ? WorldDiplomacySettlementSlotAction.WaitForPlayer
-            : WorldDiplomacySettlementSlotAction.ScheduleNpc;
-    }
-
-    public static string ResolveSettlementCloseReason(string closeReason)
-    {
-        return string.IsNullOrWhiteSpace(closeReason) ? "result_settled" : closeReason;
-    }
 
     public static string ResolveSettlementPreviousSpeaker(
         IReadOnlyList<string> relatedKingdomIds,
@@ -224,119 +138,6 @@ public static class WorldDiplomacyRoundLifecycleRules
             : initiatorKingdomId;
     }
 
-    public static WorldDiplomacyRoundTerminalAction EvaluateRoundTerminalClose(
-        bool hasRunningJob, bool resultSettlementPending)
-    {
-        if (hasRunningJob)
-        {
-            return WorldDiplomacyRoundTerminalAction.WaitForRunningJob;
-        }
-        return resultSettlementPending
-            ? WorldDiplomacyRoundTerminalAction.CloseResultSettlement
-            : WorldDiplomacyRoundTerminalAction.CloseRelay;
-    }
-
-    public static bool IsPlayerSlotWaitingExpired(
-        string slotStatus, int playerWaitingSinceDay, int currentDay)
-    {
-        return string.Equals(slotStatus, "waiting_player", StringComparison.OrdinalIgnoreCase)
-            && playerWaitingSinceDay > 0
-            && currentDay >= playerWaitingSinceDay + 5;
-    }
-
-    public static bool IsWaitingPlayerSlot(string slotStatus)
-    {
-        return string.Equals(slotStatus, "waiting_player", StringComparison.OrdinalIgnoreCase);
-    }
-
-    public static bool IsActiveRelayParticipant(
-        bool selectedForRelay, bool isPlayerAsync, string participantState)
-    {
-        return selectedForRelay && !isPlayerAsync
-            && !string.Equals(participantState, "withdrawn", StringComparison.OrdinalIgnoreCase);
-    }
-
-    public static bool IsArrivalStale(bool roundActive, long arrivalSequence, long currentSequence)
-    {
-        return !roundActive || arrivalSequence != currentSequence;
-    }
-
-    public static WorldDiplomacyRelayArrivalAction EvaluateArrivalAction(
-        WorldDiplomacyArrivalEvaluationInput input)
-    {
-        if (input == null)
-        {
-            return WorldDiplomacyRelayArrivalAction.IgnoreArrival;
-        }
-        if (input.SettlementPending)
-        {
-            if (!input.SettlementSlotFound || !input.CurrentSlotMatches)
-            {
-                return WorldDiplomacyRelayArrivalAction.RescheduleSettlementTurn;
-            }
-            if (!input.ReceiverEligible)
-            {
-                return WorldDiplomacyRelayArrivalAction.SkipSettlementSlotAndReschedule;
-            }
-            return WorldDiplomacyRelayArrivalAction.DeliverSettlementTurn;
-        }
-        if (!input.RouteIndexFound || !input.ReceiverEligible)
-        {
-            return WorldDiplomacyRelayArrivalAction.AdvanceRelay;
-        }
-        return input.ReceiverIsPlayer
-            ? WorldDiplomacyRelayArrivalAction.AdvanceRelayAfterPlayerOpportunity
-            : WorldDiplomacyRelayArrivalAction.DeliverRelayTurn;
-    }
-
-    public static int NextTechnicalFailureCount(int currentFailures, int maxFailures)
-    {
-        return Math.Min(maxFailures, Math.Max(0, currentFailures) + 1);
-    }
-
-    public static bool ShouldTripTechnicalCircuitBreaker(int failures, int maxFailures)
-    {
-        return failures >= maxFailures;
-    }
-
-    public static WorldDiplomacyRejectedGenerationAction EvaluateRejectedGenerationAction(
-        WorldDiplomacyRejectedGenerationInput input)
-    {
-        if (input == null || !input.IsRelayTurn || !input.RoundActive)
-        {
-            return WorldDiplomacyRejectedGenerationAction.CompleteExchange;
-        }
-        if (input.CircuitBreakerTripped)
-        {
-            return WorldDiplomacyRejectedGenerationAction.CloseRound;
-        }
-        return input.ResultSettlementPending
-            ? WorldDiplomacyRejectedGenerationAction.SkipSettlementSlotAndReschedule
-            : WorldDiplomacyRejectedGenerationAction.AdvanceRelayImmediately;
-    }
-
-    public static bool IsReminderDue(bool reminderSent, int currentDay, int mandatorySinceDay)
-    {
-        return !reminderSent && currentDay >= mandatorySinceDay + 3;
-    }
-
-    public static bool IsMandatoryTimeoutExpired(int currentDay, int mandatorySinceDay)
-    {
-        return currentDay >= mandatorySinceDay + 5;
-    }
-
-    public static bool IsNoActionExpiryEligible(
-        bool resultSettlementPending, bool isNoActionDeclaration, bool hasSlotId, bool hasAuthor)
-    {
-        return resultSettlementPending && isNoActionDeclaration && hasSlotId && hasAuthor;
-    }
-
-    public static bool ShouldExpireSettlementOffer(
-        string offerStatus, bool targetsAuthor, bool sourceInSlot)
-    {
-        return string.Equals(offerStatus, "open", StringComparison.OrdinalIgnoreCase)
-            && targetsAuthor && sourceInSlot;
-    }
 
     public static int ComputeNextRoundDay(int baseDay, int intervalDays)
     {
@@ -843,77 +644,6 @@ public static class WorldDiplomacyRoundLifecycleRules
         return WorldDiplomacyMandatoryReplyAction.Schedule;
     }
 
-    public static bool IsValidatedSubstantiveProgress(
-        WorldDiplomacyDocument document,
-        List<WorldDiplomacyRoundOffer> pendingOffers,
-        List<WorldDiplomacyThreat> diplomaticThreats,
-        bool successfulMechanicalAction)
-    {
-        if (document == null) return false;
-        if (successfulMechanicalAction) return true;
-        if (document.Actions?.Count > 0)
-        {
-            if ((diplomaticThreats ?? new List<WorldDiplomacyThreat>()).Any(x => x != null
-                && string.Equals(x.StageDocumentId, document.DocumentId, StringComparison.OrdinalIgnoreCase))) return true;
-            if ((pendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Any(x => x != null
-                && string.Equals(x.SourceDocumentId, document.DocumentId, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase))) return true;
-            foreach (WorldDiplomacyDocumentAction action in document.Actions.Where(x => x != null))
-            {
-                string proposal = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(action.Intent);
-                if (string.IsNullOrWhiteSpace(proposal)) continue;
-                string expected = action.Intent.StartsWith("accept_", StringComparison.OrdinalIgnoreCase) ? "accepted" : "rejected";
-                if ((pendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Any(x => x != null
-                    && string.Equals(x.SourceDocumentId, action.RespondingToOfferDocumentId, StringComparison.OrdinalIgnoreCase)
-                    && (string.IsNullOrWhiteSpace(action.RespondingToOfferActionId)
-                        || string.Equals(x.SourceActionId, action.RespondingToOfferActionId, StringComparison.OrdinalIgnoreCase))
-                    && string.Equals(x.Status, expected, StringComparison.OrdinalIgnoreCase))) return true;
-            }
-            return false;
-        }
-        string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(document.Intent);
-        if (intent == "warning" || intent == "ultimatum")
-        {
-            return (diplomaticThreats ?? new List<WorldDiplomacyThreat>()).Any(x => x != null
-                && string.Equals(x.StageDocumentId, document.DocumentId, StringComparison.OrdinalIgnoreCase));
-        }
-        if (intent == "apology" || intent == "concession")
-        {
-            return !string.IsNullOrWhiteSpace(document.TargetKingdomId)
-                && !string.Equals(document.AuthorKingdomId, document.TargetKingdomId, StringComparison.OrdinalIgnoreCase);
-        }
-        if (WorldDiplomacyIntentVocabulary.IsProposalIntent(intent))
-        {
-            return (pendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Any(x => x != null
-                && string.Equals(x.SourceDocumentId, document.DocumentId, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(x.ProposerKingdomId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase));
-        }
-        string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
-        if (string.IsNullOrWhiteSpace(proposalIntent)) return false;
-        string expectedStatus = intent.StartsWith("accept_", StringComparison.OrdinalIgnoreCase) ? "accepted" : "rejected";
-        return (pendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Any(x => x != null
-            && string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(x.Intent), proposalIntent, StringComparison.OrdinalIgnoreCase)
-            && string.Equals(x.TargetKingdomId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
-            && (string.IsNullOrWhiteSpace(document.TargetKingdomId)
-                || string.Equals(x.ProposerKingdomId, document.TargetKingdomId, StringComparison.OrdinalIgnoreCase))
-            && (string.IsNullOrWhiteSpace(document.RespondingToOfferDocumentId)
-                || string.Equals(x.SourceDocumentId, document.RespondingToOfferDocumentId, StringComparison.OrdinalIgnoreCase))
-            && string.Equals(x.Status, expectedStatus, StringComparison.OrdinalIgnoreCase));
-    }
-
-    public static bool IsValidatedDiplomaticActionAttempt(
-        WorldDiplomacyDocument document,
-        List<WorldDiplomacyRoundOffer> pendingOffers,
-        List<WorldDiplomacyThreat> diplomaticThreats,
-        bool successfulMechanicalAction)
-    {
-        if (document == null) return false;
-        if (successfulMechanicalAction) return true;
-        string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(document.Intent);
-        if (!WorldDiplomacyIntentVocabulary.IsRoundDiplomaticBehaviorIntent(intent)) return false;
-        return IsValidatedSubstantiveProgress(document, pendingOffers, diplomaticThreats, successfulMechanicalAction: false);
-    }
 
     public static bool NeedsCanonicalHistoryRetry(WorldDiplomacyDocument document)
     {
@@ -988,7 +718,6 @@ public static class WorldDiplomacyRoundLifecycleRules
         retryAfterHours[normalizedId] = currentHour + delayHours;
         WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(documentIdSet, documentIds, normalizedId);
     }
-
 
 
     public static int GetRoundParticipantLimit(int activityLevel, int maxRelayParticipants)
@@ -1254,90 +983,6 @@ public static class WorldDiplomacyRoundLifecycleRules
         return true;
     }
 
-    public static string MergeSettlementSlotKind(string existingKind, string addedKind)
-    {
-        if (string.IsNullOrWhiteSpace(addedKind)) return existingKind ?? "";
-        if (string.IsNullOrWhiteSpace(existingKind)) return addedKind;
-        return SettlementSlotKindContains(existingKind, addedKind)
-            ? existingKind
-            : existingKind + "+" + addedKind;
-    }
-
-    public static string DefaultSettlementSlotKind(string kind)
-    {
-        return string.IsNullOrWhiteSpace(kind) ? "route" : kind;
-    }
-
-    public static HashSet<string> CollectSpokenAuthorIds(
-        List<WorldDiplomacyDocument> documents,
-        string roundId)
-    {
-        return new HashSet<string>((documents ?? new List<WorldDiplomacyDocument>())
-            .Where(x => x != null && x.IsReadyForPublication
-                && string.Equals(x.RoundId, roundId, StringComparison.OrdinalIgnoreCase))
-            .Select(x => x.AuthorKingdomId)
-            .Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
-    }
-
-    public static WorldDiplomacyThreatSettlementSlotDecision EvaluateThreatSettlementSlot(
-        WorldDiplomacyThreat threat)
-    {
-        WorldDiplomacyThreatSettlementSlotDecision decision = new WorldDiplomacyThreatSettlementSlotDecision();
-        if (threat == null) return decision;
-        if (string.Equals(threat.TargetDecision, "pending", StringComparison.OrdinalIgnoreCase))
-        {
-            decision.Applies = true;
-            decision.KingdomId = threat.TargetKingdomId;
-            decision.Kind = "threat_response";
-            decision.SourceDocumentId = threat.StageDocumentId;
-            decision.RelatedKingdomId = threat.IssuerKingdomId;
-            return decision;
-        }
-        if (string.Equals(threat.TargetDecision, "noncomplied", StringComparison.OrdinalIgnoreCase))
-        {
-            decision.Applies = true;
-            decision.KingdomId = threat.IssuerKingdomId;
-            decision.Kind = "threat_followthrough";
-            decision.SourceDocumentId = threat.StageDocumentId;
-            decision.RelatedKingdomId = threat.TargetKingdomId;
-        }
-        return decision;
-    }
-
-    public static bool IsWarResponseSlotAction(
-        bool changedDiplomaticState, string intent, string targetKingdomId)
-    {
-        return changedDiplomaticState
-            && string.Equals(intent, "declare_war", StringComparison.Ordinal)
-            && !string.IsNullOrWhiteSpace(targetKingdomId);
-    }
-
-    public static string ComposeWarResponseActionKey(string documentId, string actionId)
-    {
-        return (documentId ?? "") + "#" + (actionId ?? "");
-    }
-
-    public static WorldDiplomacyResultSettlementSlot SelectSettlementSlot(
-        List<WorldDiplomacyResultSettlementSlot> slots,
-        string slotId,
-        string kingdomId)
-    {
-        return (slots ?? new List<WorldDiplomacyResultSettlementSlot>()).FirstOrDefault(x => x != null
-            && ((!string.IsNullOrWhiteSpace(slotId)
-                    && string.Equals(x.SlotId, slotId, StringComparison.OrdinalIgnoreCase))
-                || (string.IsNullOrWhiteSpace(slotId)
-                    && string.Equals(x.KingdomId, kingdomId, StringComparison.OrdinalIgnoreCase))));
-    }
-
-    public static WorldDiplomacyResultSettlementSlot SelectSettlementSlotBySlotAndKingdom(
-        List<WorldDiplomacyResultSettlementSlot> slots,
-        string slotId,
-        string kingdomId)
-    {
-        return (slots ?? new List<WorldDiplomacyResultSettlementSlot>()).FirstOrDefault(x => x != null
-            && string.Equals(x.SlotId, slotId, StringComparison.OrdinalIgnoreCase)
-            && string.Equals(x.KingdomId, kingdomId, StringComparison.OrdinalIgnoreCase));
-    }
 
     public static bool IsThreatRequiredSpeaker(WorldDiplomacyThreat threat, string kingdomId)
     {
@@ -1638,14 +1283,14 @@ public static class WorldDiplomacyRoundLifecycleRules
             : warningDelta;
     }
 
-    public static string DescribeThreatStage(string stage, Func<string, string, string> localize = null)
+    public static string DescribeThreatStage(string stage)
     {
-        return stage == "warning" ? (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageDenunciation", "denunciation") : (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageUltimatum", "ultimatum");
+        return stage == "warning" ? DiplomacyCompatibilityTexts.Get("Threat_StageDenunciation") : DiplomacyCompatibilityTexts.Get("Threat_StageUltimatum");
     }
 
-    public static string DescribeThreatStageDiplomaticLabel(string stage, Func<string, string, string> localize = null)
+    public static string DescribeThreatStageDiplomaticLabel(string stage)
     {
-        return stage == "warning" ? (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageDiplomaticDenunciation", "diplomatic denunciation") : (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageUltimatum", "ultimatum");
+        return stage == "warning" ? DiplomacyCompatibilityTexts.Get("Threat_StageDiplomaticDenunciation") : DiplomacyCompatibilityTexts.Get("Threat_StageUltimatum");
     }
 
     public static bool IsThreatBetweenParties(
@@ -1879,14 +1524,14 @@ public static class WorldDiplomacyRoundLifecycleRules
         return string.Equals(stage, "ultimatum", StringComparison.OrdinalIgnoreCase) ? "ultimatum" : "warning";
     }
 
-    public static string DescribeThreatStageFormal(string stage, Func<string, string, string> localize = null)
+    public static string DescribeThreatStageFormal(string stage)
     {
-        return string.Equals(stage, "ultimatum", StringComparison.OrdinalIgnoreCase) ? (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageWarUltimatum", "war ultimatum") : (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageDenunciation", "denunciation");
+        return string.Equals(stage, "ultimatum", StringComparison.OrdinalIgnoreCase) ? DiplomacyCompatibilityTexts.Get("Threat_StageWarUltimatum") : DiplomacyCompatibilityTexts.Get("Threat_StageDenunciation");
     }
 
     public static string DescribeThreatExpectedFollowThrough(string stage)
     {
-        return stage == "ultimatum" ? DiplomacyMiscPromptTexts.Get("Threat_ActionDeclareWar", "declare war") : DiplomacyMiscPromptTexts.Get("Threat_ActionEscalateUltimatum", "escalate to an ultimatum");
+        return stage == "ultimatum" ? DiplomacyCompatibilityTexts.Get("Threat_ActionDeclareWar") : DiplomacyCompatibilityTexts.Get("Threat_ActionEscalateUltimatum");
     }
 
     public static string ResolveThreatCommitmentLevel(string stage)
@@ -2840,18 +2485,6 @@ public static class WorldDiplomacyRoundLifecycleRules
         return null;
     }
 
-    public static List<string> SelectEligibleAiPartyIds(
-        IEnumerable<string> kingdomIds,
-        Func<string, bool> hasIndependentAuthority,
-        Func<string, bool> canAuthor)
-    {
-        return (kingdomIds ?? Enumerable.Empty<string>())
-            .Where(id => !string.IsNullOrWhiteSpace(id)
-                && hasIndependentAuthority(id)
-                && canAuthor(id))
-            .OrderBy(id => id, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-    }
 
     public static bool HasCompleteLegacyPropagationCoverage(
         WorldDiplomacyDocument document,
@@ -2994,7 +2627,10 @@ public static class WorldDiplomacyRoundLifecycleRules
         job.ResultSettlementSlotId ??= "";
         job.LlmMessages ??= new List<WorldDiplomacyLlmMessage>();
         job.CompressionRoundIds ??= new List<string>();
-        job.ForcedIntent = "";
+        bool routing = (job.Kind is "event_boundary" or "event_boundary_audit") && job.ForcedIntent is "started" or "ended"
+            || job.Kind == "player_lifecycle" && job.ForcedIntent == "recover_published_lifecycle"
+            || job.Kind == "player_decision" && job.ForcedIntent is "opening" or "join_known_event" or "reconsider_temporarily_refused_dispute";
+        if (!routing) job.ForcedIntent = "";
     }
 
     public static bool IsJobOfKind(WorldDiplomacyJob job, string kind)
@@ -3842,14 +3478,6 @@ public static class WorldDiplomacyRoundLifecycleRules
             || WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress"));
     }
 
-    public static bool HasOpenDiplomaticThreatForRound(
-        IEnumerable<WorldDiplomacyThreat> threats, string roundId)
-    {
-        if (string.IsNullOrWhiteSpace(roundId)) return false;
-        return (threats ?? Enumerable.Empty<WorldDiplomacyThreat>()).Any(x =>
-            IsOpenDiplomaticThreatStatus(x?.Status)
-            && IsThreatLinkedToRound(x, roundId));
-    }
 
     public static string PairKey(string first, string second)
     {
@@ -3858,50 +3486,6 @@ public static class WorldDiplomacyRoundLifecycleRules
         return string.Compare(a, b, StringComparison.OrdinalIgnoreCase) <= 0 ? a + "|" + b : b + "|" + a;
     }
 
-    public static bool IsWarResponseNoActionAllowed(
-        WorldDiplomacyRound round, string slotId, string authorId, string targetId,
-        Func<string, WorldDiplomacyDocument> resolveDocument)
-    {
-        if (round == null
-            || !IsWarResponseSlotAuthorized(
-                round.ResultSettlementPending,
-                !string.IsNullOrWhiteSpace(authorId),
-                !string.IsNullOrWhiteSpace(targetId),
-                IsActiveRoundState(round.State),
-                !string.IsNullOrWhiteSpace(slotId),
-                string.Equals(round.ResultSettlementCurrentSlotId, slotId, StringComparison.OrdinalIgnoreCase))) return false;
-        WorldDiplomacyResultSettlementSlot slot = SelectSettlementSlotBySlotAndKingdom(
-            round.ResultSettlementSlots, slotId, authorId);
-        if (!(slot != null && SettlementSlotKindContains(slot.Kind, "war_response"))) return false;
-        if (!IsSettlementSlotRelatedTo(slot, targetId)) return false;
-        foreach (string sourceDocumentId in slot.SourceDocumentIds ?? new List<string>())
-        {
-            WorldDiplomacyDocument war = resolveDocument(sourceDocumentId);
-            if (!IsWarResponseSourceDocument(
-                war, round.RoundId, targetId)) continue;
-            if (war.Actions?.Any(x => x != null
-                && IsWarDeclarationAction(
-                    x.ChangedDiplomaticState, WorldDiplomacyIntentVocabulary.NormalizeIntent(x.Intent), x.TargetKingdomId, authorId)) == true) return true;
-            if (IsWarDeclarationDocument(
-                war.Actions != null && war.Actions.Count > 0,
-                war.ChangedDiplomaticState,
-                WorldDiplomacyIntentVocabulary.NormalizeIntent(war.Intent),
-                war.TargetKingdomId,
-                authorId)) return true;
-        }
-        return false;
-    }
-
-
-    public static bool IsImmediateWarResponsePeaceSuppressed(
-        WorldDiplomacyRound round, string slotId, string authorId, string targetId,
-        Func<string, WorldDiplomacyDocument> resolveDocument)
-    {
-        return IsWarResponseNoActionAllowed(
-            round,
-            FirstNonEmpty(slotId, round?.ResultSettlementCurrentSlotId),
-            authorId, targetId, resolveDocument);
-    }
 
     public static bool TryResolveUniqueOpenProposalForRound(
         WorldDiplomacyRound round, string responderId, string proposerId, string proposalIntent,
@@ -4014,9 +3598,6 @@ public static class WorldDiplomacyRoundLifecycleRules
 		float multiWar = Clamp01(otherWars / 2f) * 10f;
 		return Math.Max(0f, Math.Min(100f, progress + strength + territory + casualties + multiWar));
 	}
-
-
-
 
 
 	public static void ClearRoundScopedQueuesAndExpireOpportunities(WorldDiplomacyStorage storage, WorldDiplomacyRound round)
@@ -4148,85 +3729,6 @@ public static class WorldDiplomacyRoundLifecycleRules
 		}
 	}
 
-	public static WorldDiplomacyThreat SelectBreachedThreatFollowThrough(
-		WorldDiplomacyDocument document,
-		IReadOnlyList<WorldDiplomacyThreat> threats, string authorKingdomId)
-	{
-		if (document == null || string.IsNullOrWhiteSpace(authorKingdomId)) return null;
-		WorldDiplomacyThreat threat = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatIssuedBy(threats, authorKingdomId);
-		if (!WorldDiplomacyRoundLifecycleRules.IsThreatFollowThroughObligationPending(
-			threat, document.PresentedThreatFollowThroughDocumentIds)) return null;
-		WorldDiplomacyDocumentAction matchingAction = WorldDiplomacyRoundLifecycleRules.SelectThreatDecisionAction(
-			document.Actions, threat.TargetKingdomId);
-		bool targetsThreatTarget = WorldDiplomacyRoundLifecycleRules.ThreatDeclarationTargetsThreatTarget(
-			matchingAction != null, threat.TargetKingdomId, document.TargetKingdomId);
-		WorldDiplomacyThreatStateRuleResult result = WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-			threat.TargetDecision,
-			threat.Stage,
-			threat.StageDocumentId,
-			currentStageWasPresented: true,
-			WorldDiplomacyIntentVocabulary.NormalizeIntent(matchingAction?.Intent ?? document.Intent),
-			targetsThreatTarget,
-			matchingAction?.ChangedDiplomaticState ?? document.ChangedDiplomaticState);
-		return result == WorldDiplomacyThreatStateRuleResult.MarkFollowThroughBreached ? threat : null;
-	}
-
-	public static bool CompleteUnresolvableDiplomaticThreatDomesticPenalty(
-		WorldDiplomacyThreat threat,
-		out int affectedClanCount, int currentDay, Action<string> log)
-	{
-		affectedClanCount = 0;
-		if (threat == null) return false;
-		threat.DomesticPenaltyEligibleClanIds ??= new List<string>();
-		threat.DomesticPenaltyAppliedClanIds ??= new List<string>();
-		threat.DomesticPenaltySkippedClanIds ??= new List<string>();
-		HashSet<string> applied = new HashSet<string>(threat.DomesticPenaltyAppliedClanIds, StringComparer.OrdinalIgnoreCase);
-		HashSet<string> skipped = new HashSet<string>(threat.DomesticPenaltySkippedClanIds, StringComparer.OrdinalIgnoreCase);
-		foreach (string clanId in WorldDiplomacyRoundLifecycleRules.SelectUnresolvedClanIds(
-			threat.DomesticPenaltyEligibleClanIds.Where(x => !string.IsNullOrWhiteSpace(x)), applied))
-		{
-			skipped.Add(clanId);
-		}
-		WorldDiplomacyRoundLifecycleRules.FinalizeUnresolvedThreatDomesticPenalty(threat, skipped, currentDay);
-		affectedClanCount = applied.Count;
-		log?.Invoke("ultimatum compliance domestic penalty finalized without kingdom object threat=" + threat.ThreatId
-			+ " applied=" + applied.Count.ToString(CultureInfo.InvariantCulture)
-			+ " skipped=" + skipped.Count.ToString(CultureInfo.InvariantCulture));
-		return true;
-	}
-
-	public static bool CompleteUnresolvableDiplomaticThreatIssuerRelationReward(
-		WorldDiplomacyThreat threat,
-		out int affectedClanCount,
-		int issuerRewardAmount, int currentDay, Action<string> log)
-	{
-		affectedClanCount = 0;
-		if (threat == null) return false;
-		threat.IssuerRewardEligibleClanIds ??= new List<string>();
-		threat.IssuerRewardAppliedClanIds ??= new List<string>();
-		threat.IssuerRewardSkippedClanIds ??= new List<string>();
-		if (!threat.IssuerRewardSnapshotCaptured)
-		{
-			threat.IssuerRewardAmount = issuerRewardAmount;
-		}
-		HashSet<string> applied = new HashSet<string>(threat.IssuerRewardAppliedClanIds, StringComparer.OrdinalIgnoreCase);
-		HashSet<string> skipped = new HashSet<string>(threat.IssuerRewardSkippedClanIds, StringComparer.OrdinalIgnoreCase);
-		foreach (string clanId in WorldDiplomacyRoundLifecycleRules.SelectUnresolvedClanIds(
-			threat.IssuerRewardEligibleClanIds.Where(x => !string.IsNullOrWhiteSpace(x)), applied))
-		{
-			skipped.Add(clanId);
-		}
-		WorldDiplomacyRoundLifecycleRules.FinalizeUnresolvedThreatIssuerReward(threat, skipped, currentDay);
-		affectedClanCount = applied.Count;
-		if (WorldDiplomacyRoundLifecycleRules.IsIssuerRewardHistoryEmpty(threat.IssuerRewardAmount, applied.Count))
-		{
-			threat.IssuerRewardHistoryRecorded = true;
-		}
-		log?.Invoke("diplomatic threat issuer relation reward finalized without kingdom object threat=" + threat.ThreatId
-			+ " applied=" + applied.Count.ToString(CultureInfo.InvariantCulture)
-			+ " skipped=" + skipped.Count.ToString(CultureInfo.InvariantCulture));
-		return true;
-	}
 
 	public static void InvalidateOtherThreatsBoundToSettledPolicy(
 		WorldDiplomacyThreat settledThreat,
@@ -4246,63 +3748,6 @@ public static class WorldDiplomacyRoundLifecycleRules
 		}
 	}
 
-	public static int FindPriorityThreatRelayIndex(WorldDiplomacyRound round, List<string> route, List<WorldDiplomacyThreat> threats, Func<string, bool> hasIndependentAuthority)
-	{
-		if (round == null || route == null || route.Count < 2) return -1;
-		string currentKingdomId = round.RelayCursor >= 0 && round.RelayCursor < route.Count
-			? route[round.RelayCursor]
-			: "";
-		foreach (WorldDiplomacyThreat threat in OrderThreatsByUpdatedDay(
-			(threats ?? new List<WorldDiplomacyThreat>()).Where(x => x != null && IsOpenDiplomaticThreatStatus(x.Status))))
-		{
-			string requiredSpeakerId = ResolveThreatRequiredSpeakerId(threat);
-			if (string.IsNullOrWhiteSpace(requiredSpeakerId)
-				|| string.Equals(requiredSpeakerId, currentKingdomId, StringComparison.OrdinalIgnoreCase)) continue;
-			int index = route.FindIndex(x => string.Equals(x, requiredSpeakerId, StringComparison.OrdinalIgnoreCase));
-			if (index >= 0 && hasIndependentAuthority(requiredSpeakerId)) return index;
-		}
-		return -1;
-	}
-
-	public static void CompleteRelayPassProgressAccounting(WorldDiplomacyRound round, Action<string> log)
-	{
-		WorldDiplomacyRelayPassAccountingDecision accounting = EvaluateRelayPassAccounting(
-			new WorldDiplomacyRelayPassAccountingInput
-			{
-				RelayPassNumber = round?.RelayPassNumber ?? 0,
-				LastAccountedRelayPassNumber = round?.LastAccountedRelayPassNumber ?? 0,
-				DiplomaticActionAttemptCount = round?.DiplomaticActionAttemptCount ?? 0,
-				ActionAttemptCountAtPassStart = round?.ActionAttemptCountAtPassStart ?? 0,
-				ConsecutiveNoActionPasses = round?.ConsecutiveNoActionPasses ?? 0
-			});
-		if (round == null || !accounting.ShouldAccount) return;
-		round.ConsecutiveNoActionPasses = accounting.NewConsecutiveNoActionPasses;
-		round.ActionAttemptCountAtPassStart = round.DiplomaticActionAttemptCount;
-		round.LastAccountedRelayPassNumber = round.RelayPassNumber;
-		log?.Invoke("relay pass progress accounted round=" + round.RoundId
-			+ " pass=" + round.RelayPassNumber.ToString(CultureInfo.InvariantCulture)
-			+ " action=" + accounting.ActionOccurred
-			+ " consecutive_no_action=" + round.ConsecutiveNoActionPasses.ToString(CultureInfo.InvariantCulture));
-	}
-
-	public static void TripAutomaticRoundCircuitBreaker(WorldDiplomacyStorage storage, WorldDiplomacyRound round, string reason, Action<string> log)
-	{
-		if (round == null || round.AutomaticCircuitBreakerTripped)
-		{
-			return;
-		}
-		round.AutomaticCircuitBreakerTripped = true;
-		foreach (WorldDiplomacyRoundParticipant participant in round.Participants ?? new List<WorldDiplomacyRoundParticipant>())
-		{
-			if (participant == null) continue;
-			participant.MandatoryReplyPending = false;
-			participant.MandatorySinceDay = 0;
-		}
-		ClearRoundScopedQueuesAndExpireOpportunities(storage, round);
-		log?.Invoke("round circuit breaker tripped round=" + round.RoundId
-			+ " documents=" + round.AutomaticDocumentsStarted.ToString(CultureInfo.InvariantCulture)
-			+ " reason=" + (reason ?? ""));
-	}
 
 	public static void RecordPlayerOpportunity(WorldDiplomacyRound round, string playerKingdomId, List<WorldDiplomacyPlayerOpportunity> opportunities, List<WorldDiplomacyDocument> documents, int currentDay)
 	{
@@ -4338,99 +3783,6 @@ public static class WorldDiplomacyRoundLifecycleRules
 		}
 		aiDocumentsStartedToday++;
 		return true;
-	}
-
-	public static void ExpireUnansweredSettlementOffersForNoActionDeclaration(
-		WorldDiplomacyRound round,
-		WorldDiplomacyDocument document,
-		Action<string> log)
-	{
-		if (!IsNoActionExpiryEligible(
-			round?.ResultSettlementPending == true,
-			document != null && (document.IsRoundResponseNoActionDeclaration
-				|| document.IsWarResponseNoActionDeclaration),
-			!string.IsNullOrWhiteSpace(document?.ResultSettlementSlotId),
-			!string.IsNullOrWhiteSpace(document?.AuthorKingdomId))) return;
-		WorldDiplomacyResultSettlementSlot slot = SelectSettlementSlotBySlotAndKingdom(
-			round.ResultSettlementSlots, document.ResultSettlementSlotId, document.AuthorKingdomId);
-		if (slot == null || slot.SourceDocumentIds == null || slot.SourceDocumentIds.Count == 0) return;
-		HashSet<string> sourceIds = new HashSet<string>(
-			slot.SourceDocumentIds.Where(x => !string.IsNullOrWhiteSpace(x)),
-			StringComparer.OrdinalIgnoreCase);
-		if (sourceIds.Count == 0) return;
-		int expired = 0;
-		foreach (WorldDiplomacyRoundOffer offer in (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
-			.Where(x => x != null
-				&& ShouldExpireSettlementOffer(
-					x.Status,
-					string.Equals(x.TargetKingdomId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase),
-					sourceIds.Contains(x.SourceDocumentId ?? ""))))
-		{
-			offer.Status = "expired";
-			expired++;
-		}
-		if (expired > 0)
-		{
-			log?.Invoke("round response statement left settlement offers unaccepted round=" + round.RoundId
-				+ " slot=" + slot.SlotId
-				+ " author=" + document.AuthorKingdomId
-				+ " expired=" + expired.ToString(CultureInfo.InvariantCulture));
-		}
-	}
-
-	public static void ConsumeResultSettlementSpeaker(WorldDiplomacyRound round, WorldDiplomacyDocument document, Action<string> log)
-	{
-		if (round == null || document == null || !round.ResultSettlementPending) return;
-		round.ResultSettlementSlots ??= new List<WorldDiplomacyResultSettlementSlot>();
-		WorldDiplomacyResultSettlementSlot slot = SelectSettlementSlot(
-			round.ResultSettlementSlots, document.ResultSettlementSlotId, document.AuthorKingdomId);
-		if (slot == null) return;
-		round.ResultSettlementSlots.Remove(slot);
-		if (string.Equals(round.ResultSettlementCurrentSlotId, slot.SlotId, StringComparison.OrdinalIgnoreCase))
-		{
-			round.ResultSettlementCurrentSlotId = "";
-			round.ResultSettlementPlayerWaitingSinceDay = 0;
-		}
-		round.RelayWaiting = false;
-		log?.Invoke("round result settlement turn consumed round=" + round.RoundId
-			+ " slot=" + slot.SlotId + " author=" + document.AuthorKingdomId);
-	}
-
-	public static int FindNextRelayIndex(WorldDiplomacyRound round, int start, Func<string, bool> hasIndependentAuthority)
-	{
-		List<string> route = round?.RelayRouteKingdomIds ?? new List<string>();
-		for (int index = start; index >= 0 && index < route.Count; index += round.RelayDirection)
-		{
-			if (!hasIndependentAuthority(route[index]))
-			{
-				continue;
-			}
-			WorldDiplomacyRoundParticipant participant = (round.Participants ?? new List<WorldDiplomacyRoundParticipant>())
-				.FirstOrDefault(x => x != null && string.Equals(x.KingdomId, route[index], StringComparison.OrdinalIgnoreCase));
-			if (participant == null || !string.Equals(participant.State, "withdrawn", StringComparison.OrdinalIgnoreCase)) return index;
-		}
-		return -1;
-	}
-
-
-
-	public static void SkipResultSettlementSlot(WorldDiplomacyRound round, string slotId, string kingdomId, string reason, List<WorldDiplomacyThreat> threats, int currentDay, Action<string> log)
-	{
-		if (round == null || !round.ResultSettlementPending) return;
-		WorldDiplomacyResultSettlementSlot slot = SelectSettlementSlot(
-			round.ResultSettlementSlots, slotId, kingdomId);
-		if (slot == null) return;
-		InvalidateUnserviceableResultSettlementObligations(round, threats, slot.KingdomId,
-			"result_settlement_" + (reason ?? "technical_skip"), currentDay);
-		round.ResultSettlementSlots.Remove(slot);
-		if (string.Equals(round.ResultSettlementCurrentSlotId, slot.SlotId, StringComparison.OrdinalIgnoreCase))
-		{
-			round.ResultSettlementCurrentSlotId = "";
-			round.ResultSettlementPlayerWaitingSinceDay = 0;
-		}
-		round.RelayWaiting = false;
-		log?.Invoke("round result settlement slot skipped round=" + round.RoundId
-			+ " slot=" + slot.SlotId + " kingdom=" + slot.KingdomId + " reason=" + (reason ?? ""));
 	}
 
 
@@ -4529,7 +3881,6 @@ public static class WorldDiplomacyRoundLifecycleRules
                 }
             }
         }
-
 
 
         public static void RemoveOfferCooldown(
@@ -4830,6 +4181,15 @@ public static class WorldDiplomacyRoundLifecycleRules
     {
 
         if (summary == null || summary.ArchiveSchemaVersion >= 1) return;
+        // Preserve the original evidence before creating a non-authoritative legacy projection.
+        summary.LegacySummaryOriginal = summary.Summary ?? "";
+        summary.LegacyFactsOriginal = (summary.Facts ?? new List<WorldDiplomacyRoundFact>())
+            .Where(x => x != null).Select(x => new WorldDiplomacyRoundFact
+            {
+                Kind = x.Kind, Text = x.Text,
+                SourceDocumentIds = new List<string>(x.SourceDocumentIds ?? new List<string>()),
+                KingdomIds = new List<string>(x.KingdomIds ?? new List<string>())
+            }).ToList();
         WorldDiplomacyRound round = resolveRound(summary.RoundId);
         List<WorldDiplomacyDocument> documents = WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(storage.Documents.Where(x => x != null
                 && (WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, summary.RoundId)
@@ -4838,11 +4198,11 @@ public static class WorldDiplomacyRoundLifecycleRules
         if (round == null || documents.Count == 0)
         {
             summary.ArchiveSchemaVersion = 1;
-            summary.Summary = DiplomacyCompatibilityTexts.Get("History_LegacySummaryPrefix") + WorldDiplomacyTextRules.Limit(summary.Summary, 1200);
+            summary.Summary = DiplomacyCompatibilityTexts.Get("History_LegacySummaryPrefix") + (summary.Summary ?? "");
             summary.Facts = (summary.Facts ?? new List<WorldDiplomacyRoundFact>()).Where(x => x != null).Select(x => new WorldDiplomacyRoundFact
             {
                 Kind = "declaration",
-                Text = DiplomacyCompatibilityTexts.Get("History_LegacySummaryBracketPrefix") + WorldDiplomacyTextRules.Limit(x.Text, 360),
+                Text = DiplomacyCompatibilityTexts.Get("History_LegacySummaryBracketPrefix") + (x.Text ?? ""),
                 SourceDocumentIds = x.SourceDocumentIds ?? new List<string>(),
                 KingdomIds = x.KingdomIds ?? new List<string>()
             }).ToList();
@@ -4982,7 +4342,6 @@ public static class WorldDiplomacyRoundLifecycleRules
         }
 
 
-
         public static void RegisterRelayProposalOffer(
             WorldDiplomacyRound round,
             WorldDiplomacyDocument document,
@@ -5055,56 +4414,7 @@ public static class WorldDiplomacyRoundLifecycleRules
         }
     }
 
-    public static WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(
-        WorldDiplomacyRound round,
-        string authorKingdomId,
-        string resultSettlementSlotId,
-        bool isExternalResponseOnly,
-        string sourceDocumentId,
-        bool requireAnyOpenPeaceOffer = false)
-    {
-        if (round == null || string.IsNullOrWhiteSpace(authorKingdomId)) return null;
-        IEnumerable<WorldDiplomacyRoundOffer> openPeaceOffers = (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
-            .Where(x => WorldDiplomacyRoundLifecycleRules.IsOpenOfferToTarget(x, authorKingdomId)
-                && string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(x.Intent), "propose_peace", StringComparison.OrdinalIgnoreCase));
-        if (isExternalResponseOnly && !string.IsNullOrWhiteSpace(sourceDocumentId))
-        {
-            WorldDiplomacyRoundOffer exactSource = openPeaceOffers.FirstOrDefault(x => string.Equals(
-                x.SourceDocumentId,
-                sourceDocumentId,
-                StringComparison.OrdinalIgnoreCase));
-            return exactSource;
-        }
-        if (round.ResultSettlementPending == true
-            && !string.IsNullOrWhiteSpace(resultSettlementSlotId)
-            && string.Equals(resultSettlementSlotId, round.ResultSettlementCurrentSlotId, StringComparison.OrdinalIgnoreCase))
-        {
-            WorldDiplomacyResultSettlementSlot slot = (round.ResultSettlementSlots ?? new List<WorldDiplomacyResultSettlementSlot>())
-                .FirstOrDefault(x => x != null
-                    && string.Equals(x.SlotId, resultSettlementSlotId, StringComparison.OrdinalIgnoreCase)
-                    && string.Equals(x.KingdomId, authorKingdomId, StringComparison.OrdinalIgnoreCase)
-                    && (x != null && WorldDiplomacyRoundLifecycleRules.SettlementSlotKindContains(x.Kind, "offer_response")));
-            if (slot != null)
-            {
-                HashSet<string> sourceIds = new HashSet<string>(
-                    slot.SourceDocumentIds ?? new List<string>(),
-                    StringComparer.OrdinalIgnoreCase);
-                WorldDiplomacyRoundOffer slotOffer = openPeaceOffers
-                    .Where(x => sourceIds.Contains(x.SourceDocumentId ?? ""))
-                    .OrderBy(x => x.CreatedDay)
-                    .ThenBy(x => x.SourceDocumentId, StringComparer.OrdinalIgnoreCase)
-                    .ThenBy(x => x.SourceActionId, StringComparer.OrdinalIgnoreCase)
-                    .FirstOrDefault();
-                if (slotOffer != null) return slotOffer;
-            }
-        }
-        if (!requireAnyOpenPeaceOffer) return null;
-        return openPeaceOffers
-            .OrderBy(x => x.CreatedDay)
-            .ThenBy(x => x.SourceDocumentId, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(x => x.SourceActionId, StringComparer.OrdinalIgnoreCase)
-            .FirstOrDefault();
-    }
+
 
     public static List<string> BuildLegalDiplomaticActionIntents(
         WorldDiplomacyRound round,
@@ -5114,44 +4424,8 @@ public static class WorldDiplomacyRoundLifecycleRules
         Func<string, WorldDiplomacyDocument> resolveDocument, bool playerDiplomacy = false)
     {
         List<string> actions = buildPotentialActions?.Invoke() ?? new List<string>();
-        if (!playerDiplomacy && round != null && !string.IsNullOrWhiteSpace(authorKingdomId) && !string.IsNullOrWhiteSpace(targetKingdomId)
-            && TryResolveUniqueOpenProposalForRound(round, authorKingdomId, targetKingdomId, "propose_peace", out _))
-        {
-            actions.Clear();
-            actions.Add("accept_peace");
-            actions.Add("reject_peace");
-            return actions;
-        }
-        if (!playerDiplomacy && IsImmediateWarResponsePeaceSuppressed(round, round?.ResultSettlementCurrentSlotId,
-                authorKingdomId, targetKingdomId, resolveDocument))
-        {
-            actions.RemoveAll(x => string.Equals(
-                WorldDiplomacyIntentVocabulary.NormalizeIntent(x),
-                "propose_peace",
-                StringComparison.OrdinalIgnoreCase));
-        }
-        if (!playerDiplomacy && round?.ResultSettlementPending == true && !string.IsNullOrWhiteSpace(authorKingdomId) && !string.IsNullOrWhiteSpace(targetKingdomId))
-        {
-            WorldDiplomacyResultSettlementSlot currentSlot = SelectSettlementSlotBySlotAndKingdom(
-                round.ResultSettlementSlots, round.ResultSettlementCurrentSlotId, authorKingdomId);
-            bool hasAnswerableOfferForTarget = currentSlot != null
-                && (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
-                    .Any(x => IsOpenDirectedOffer(x, targetKingdomId, authorKingdomId));
-            if (hasAnswerableOfferForTarget)
-            {
-                actions.Clear();
-                AppendOpenOfferResponseIntents(round, authorKingdomId, targetKingdomId, actions);
-                return NormalizeIdListPreserveOrder(actions);
-            }
-        }
-        if (!playerDiplomacy && round != null && !string.IsNullOrWhiteSpace(authorKingdomId) && !string.IsNullOrWhiteSpace(targetKingdomId))
-        {
-            HashSet<string> ownOpenProposalIntents = new HashSet<string>((round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
-                .Where(x => IsOpenDirectedOffer(x, authorKingdomId, targetKingdomId))
-                .Select(x => WorldDiplomacyIntentVocabulary.NormalizeIntent(x.Intent)), StringComparer.OrdinalIgnoreCase);
-            actions.RemoveAll(ownOpenProposalIntents.Contains);
-            if (ownOpenProposalIntents.Count > 0) actions.Add("withdraw_offer");
-        }
+        if (round?.PendingOffers?.Any(x => IsOpenDirectedOffer(x, authorKingdomId, targetKingdomId)) == true)
+            actions.Add("withdraw_offer");
         AppendOpenOfferResponseIntents(round, authorKingdomId, targetKingdomId, actions);
         return NormalizeIdListPreserveOrder(actions);
     }
@@ -5232,24 +4506,13 @@ public static class WorldDiplomacyRoundLifecycleRules
         string authorKingdomId,
         WorldDiplomacyDocument responseSource,
         List<WorldDiplomacyThreat> threats,
-        Func<List<string>> resolveSettlementTargetIds,
         Func<string, bool> isTargetUnavailable,
         Func<string, List<string>> buildDeclarationIntents)
     {
-List<string> ids = new List<string>();
-        if (job.IsRelayTurn && round?.ResultSettlementPending == true
-            && !string.IsNullOrWhiteSpace(job.ResultSettlementSlotId))
-        {
-            ids.AddRange(resolveSettlementTargetIds?.Invoke() ?? new List<string>());
-        }
-        else if (job.IsRelayTurn && round?.RelayRouteKingdomIds != null) ids.AddRange(round.RelayRouteKingdomIds);
-        else if (!string.IsNullOrWhiteSpace(job.TargetKingdomId)) ids.Add(job.TargetKingdomId);
-        else if (job.CandidateKingdomIds?.Count > 0) ids.AddRange(job.CandidateKingdomIds);
-        else if (round?.RelayRouteKingdomIds != null) ids.AddRange(round.RelayRouteKingdomIds);
+        var ids = GetAuthorizedGenerationTargetIds(job, round, authorKingdomId, id => true);
         StringBuilder state = new StringBuilder();
         state.Append(authorKingdomId).Append('|').Append(round?.RoundId ?? "")
-            .Append("|slot=").Append(job.ResultSettlementSlotId ?? "")
-            .Append("|current_slot=").Append(round?.ResultSettlementCurrentSlotId ?? "");
+            ;
         foreach (WorldDiplomacyPolicySignal signal in (round?.AttachedPolicySignals ?? new List<WorldDiplomacyPolicySignal>())
             .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SignalKey))
             .OrderBy(x => x.SignalKey, StringComparer.OrdinalIgnoreCase))
@@ -5298,25 +4561,12 @@ List<string> ids = new List<string>();
         WorldDiplomacyJob source,
         WorldDiplomacyRound round,
         string authorKingdomId,
-        Func<List<string>> resolveSettlementTargetIds,
         Func<string, bool> isCandidateAuthorized)
     {
         if (source == null || string.IsNullOrWhiteSpace(authorKingdomId)) return new List<string>();
-        List<string> ids = new List<string>();
-        bool resultSettlementRepair = source.IsRelayTurn
-            && round?.ResultSettlementPending == true
-            && !string.IsNullOrWhiteSpace(source.ResultSettlementSlotId);
-        if (!resultSettlementRepair && !string.IsNullOrWhiteSpace(source.TargetKingdomId)) ids.Add(source.TargetKingdomId);
-        if (source.AllowUntargeted) ids.AddRange(source.CandidateKingdomIds ?? new List<string>());
-        if (source.IsRelayTurn)
-        {
-            if (resultSettlementRepair)
-            {
-                ids.AddRange(resolveSettlementTargetIds?.Invoke() ?? new List<string>());
-            }
-            else ids.AddRange(round?.RelayRouteKingdomIds ?? new List<string>());
-        }
-        if (ids.Count == 0) ids.AddRange(source.CandidateKingdomIds ?? new List<string>());
+        var ids = round?.Participants?.Where(x => x.State == "active"
+            || x.State == "observer" && x.KingdomId == source.TargetKingdomId)
+            .Select(x => x.KingdomId).ToList() ?? new List<string>();
         return NormalizeIdListPreserveOrder(ids
             .Where(x => !string.Equals(x, authorKingdomId, StringComparison.OrdinalIgnoreCase)))
             .Where(x => isCandidateAuthorized == null || isCandidateAuthorized(x))
@@ -5341,25 +4591,26 @@ List<string> ids = new List<string>();
             reason = "semantic_envelope_incomplete";
             return false;
         }
-        json["responding_to_offer_document_id"] = "";
-        json["responding_to_offer_action_id"] = "";
+        string claimedOfferId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_offer_document_id");
+        string claimedActionId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_offer_action_id");
         json["responding_to_threat_document_id"] = "";
         json["responding_to_threat_action_id"] = "";
         string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
         if (!string.IsNullOrWhiteSpace(proposalIntent))
         {
-            if (string.IsNullOrWhiteSpace(targetKingdomId) || !TryResolveUniqueOpenProposalForRound(round, authorKingdomId, targetKingdomId, proposalIntent, out string offerId, out string offerActionId))
+            var offers = (round?.PendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Where(x => x.Status == "open"
+                && x.ProposerKingdomId == targetKingdomId && x.TargetKingdomId == authorKingdomId
+                && WorldDiplomacyIntentVocabulary.NormalizeIntent(x.Intent) == proposalIntent
+                && (string.IsNullOrEmpty(claimedOfferId) || x.SourceDocumentId == claimedOfferId)
+                && (string.IsNullOrEmpty(claimedActionId) || x.SourceActionId == claimedActionId)).Take(2).ToList();
+            if (string.IsNullOrWhiteSpace(targetKingdomId) || offers.Count != 1)
             {
                 reason = "offer_response_without_unique_open_offer";
                 return false;
             }
+            string offerId = offers[0].SourceDocumentId, offerActionId = offers[0].SourceActionId;
             json["responding_to_offer_document_id"] = offerId;
             json["responding_to_offer_action_id"] = offerActionId;
-            if (string.Equals(intent, "accept_peace", StringComparison.OrdinalIgnoreCase))
-            {
-                WorldDiplomacyDocument source = resolveDocument(offerId);
-                json["peace_terms"] = WorldDiplomacyEnvelopeJsonRules.BuildPeaceTermsJson(WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offerActionId));
-            }
             return true;
         }
         if (!string.Equals(intent, "comply_ultimatum", StringComparison.OrdinalIgnoreCase)) return true;
@@ -5382,7 +4633,6 @@ List<string> ids = new List<string>();
     }
 
 
-
         public static WorldDiplomacyJob BuildGeneratedDeclarationRepairJob(
         WorldDiplomacyJob source,
         WorldDiplomacyRound repairRound,
@@ -5391,9 +4641,6 @@ List<string> ids = new List<string>();
         List<string> authorizedTargetIds,
         string newJobId)
     {
-        bool resultSettlementRepair = source.IsRelayTurn
-            && repairRound?.ResultSettlementPending == true
-            && !string.IsNullOrWhiteSpace(source.ResultSettlementSlotId);
         WorldDiplomacyJob repair = new WorldDiplomacyJob
         {
             JobId = newJobId,
@@ -5413,14 +4660,9 @@ List<string> ids = new List<string>();
             ForcedIntent = "",
             IsExternalResponseOnly = source.IsExternalResponseOnly,
             IsReminder = source.IsReminder,
-            IsRelayTurn = source.IsRelayTurn,
             AllowUntargeted = source.AllowUntargeted,
-            PreviousKingdomId = source.PreviousKingdomId ?? "",
-            ResultSettlementSlotId = source.ResultSettlementSlotId ?? "",
             AllowAutonomousNoAction = false,
-            CandidateKingdomIds = resultSettlementRepair
-                ? new List<string>(authorizedTargetIds)
-                : new List<string>(source.CandidateKingdomIds ?? new List<string>()),
+            CandidateKingdomIds = new List<string>(authorizedTargetIds ?? new List<string>()),
             PresentedThreatDocumentIds = new List<string>(source.PresentedThreatDocumentIds ?? new List<string>()),
             PresentedThreatFollowThroughDocumentIds = new List<string>(source.PresentedThreatFollowThroughDocumentIds ?? new List<string>()),
             WasAtWarWhenQueued = source.WasAtWarWhenQueued,
@@ -5588,4 +4830,59 @@ List<string> ids = new List<string>();
             out string resolvedTargetKingdomId,
             out string reason);
 
+	public static bool CompleteUnresolvableDiplomaticThreatDomesticPenalty(
+		WorldDiplomacyThreat threat,
+		out int affectedClanCount, int currentDay, Action<string> log)
+	{
+		affectedClanCount = 0;
+		if (threat == null) return false;
+		threat.DomesticPenaltyEligibleClanIds ??= new List<string>();
+		threat.DomesticPenaltyAppliedClanIds ??= new List<string>();
+		threat.DomesticPenaltySkippedClanIds ??= new List<string>();
+		HashSet<string> applied = new HashSet<string>(threat.DomesticPenaltyAppliedClanIds, StringComparer.OrdinalIgnoreCase);
+		HashSet<string> skipped = new HashSet<string>(threat.DomesticPenaltySkippedClanIds, StringComparer.OrdinalIgnoreCase);
+		foreach (string clanId in WorldDiplomacyRoundLifecycleRules.SelectUnresolvedClanIds(
+			threat.DomesticPenaltyEligibleClanIds.Where(x => !string.IsNullOrWhiteSpace(x)), applied))
+		{
+			skipped.Add(clanId);
+		}
+		WorldDiplomacyRoundLifecycleRules.FinalizeUnresolvedThreatDomesticPenalty(threat, skipped, currentDay);
+		affectedClanCount = applied.Count;
+		log?.Invoke("ultimatum compliance domestic penalty finalized without kingdom object threat=" + threat.ThreatId
+			+ " applied=" + applied.Count.ToString(CultureInfo.InvariantCulture)
+			+ " skipped=" + skipped.Count.ToString(CultureInfo.InvariantCulture));
+		return true;
+	}
+	public static bool CompleteUnresolvableDiplomaticThreatIssuerRelationReward(
+		WorldDiplomacyThreat threat,
+		out int affectedClanCount,
+		int issuerRewardAmount, int currentDay, Action<string> log)
+	{
+		affectedClanCount = 0;
+		if (threat == null) return false;
+		threat.IssuerRewardEligibleClanIds ??= new List<string>();
+		threat.IssuerRewardAppliedClanIds ??= new List<string>();
+		threat.IssuerRewardSkippedClanIds ??= new List<string>();
+		if (!threat.IssuerRewardSnapshotCaptured)
+		{
+			threat.IssuerRewardAmount = issuerRewardAmount;
+		}
+		HashSet<string> applied = new HashSet<string>(threat.IssuerRewardAppliedClanIds, StringComparer.OrdinalIgnoreCase);
+		HashSet<string> skipped = new HashSet<string>(threat.IssuerRewardSkippedClanIds, StringComparer.OrdinalIgnoreCase);
+		foreach (string clanId in WorldDiplomacyRoundLifecycleRules.SelectUnresolvedClanIds(
+			threat.IssuerRewardEligibleClanIds.Where(x => !string.IsNullOrWhiteSpace(x)), applied))
+		{
+			skipped.Add(clanId);
+		}
+		WorldDiplomacyRoundLifecycleRules.FinalizeUnresolvedThreatIssuerReward(threat, skipped, currentDay);
+		affectedClanCount = applied.Count;
+		if (WorldDiplomacyRoundLifecycleRules.IsIssuerRewardHistoryEmpty(threat.IssuerRewardAmount, applied.Count))
+		{
+			threat.IssuerRewardHistoryRecorded = true;
+		}
+		log?.Invoke("diplomatic threat issuer relation reward finalized without kingdom object threat=" + threat.ThreatId
+			+ " applied=" + applied.Count.ToString(CultureInfo.InvariantCulture)
+			+ " skipped=" + skipped.Count.ToString(CultureInfo.InvariantCulture));
+		return true;
+	}
 }

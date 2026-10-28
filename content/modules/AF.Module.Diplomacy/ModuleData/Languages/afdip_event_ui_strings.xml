@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_DIP_EVENT_Title" text="Diplomatic event" />
+    <string id="AF_DIP_EVENT_Started" text="Event begins" />
+    <string id="AF_DIP_EVENT_Ended" text="Event concludes" />
+    <string id="AF_DIP_EVENT_Participants" text="Participating kingdoms" />
+    <string id="AF_DIP_EVENT_InitialEffects" text="Immediate effects" />
+    <string id="AF_DIP_EVENT_FinalEffects" text="Effects at conclusion" />
+    <string id="AF_DIP_EVENT_NoEffects" text="No confirmed changes to display." />
+    <string id="AF_DIP_EVENT_Acknowledge" text="Acknowledge" />
+    <string id="AF_DIP_EVENT_Chronicle" text="Chronicles of diplomacy" />
+    <string id="AF_DIP_EVENT_Separator" text=", " />
+    <string id="AF_DIP_EVENT_PreviewStartAction" text="Preview event beginning" />
+    <string id="AF_DIP_EVENT_PreviewEndAction" text="Preview event conclusion" />
+    <string id="AF_DIP_EVENT_PreviewHint" text="Preview the illustrated event window. Does not publish an event or apply effects." />
+    <string id="AF_DIP_EVENT_PreviewUnavailable" text="The event preview could not open. Close other dialogs and try again." />
+    <string id="AF_DIP_EVENT_PreviewStartTitle" text="The bloodstained mantle (preview)" />
+    <string id="AF_DIP_EVENT_PreviewEndTitle" text="A weary peace (preview)" />
+    <string id="AF_DIP_EVENT_PreviewStartBody" text="Rhagaea raises the late emperor's bloodstained mantle once more, accusing the northern Senate of complicity in his death. Lucon denies the charge, claiming the south is exploiting an old crime to seize the throne.&#10;&#10;Now the southern eagle standards advance north. The truth remains uncertain, but an old grievance has become a new war." />
+    <string id="AF_DIP_EVENT_PreviewEndBody" text="After a long campaign, neither side has secured a decisive advantage. Exhausted armies return to their camps as envoys agree to suspend the fighting.&#10;&#10;The accusations surrounding the emperor's death remain unresolved. The treaty quiets the border, but does not settle the grievance." />
+    <string id="AF_DIP_EVENT_South" text="Southern Empire" />
+    <string id="AF_DIP_EVENT_North" text="Northern Empire" />
+    <string id="AF_DIP_EVENT_PreviewMobilization" text="Southern Empire · Northern campaign: increased recruitment growth" />
+    <string id="AF_DIP_EVENT_PreviewBorderPressure" text="Northern Empire · Border pressure: reduced prosperity growth" />
+    <string id="AF_DIP_EVENT_PreviewRemoveMobilization" text="Southern Empire · Northern campaign: recruitment bonus removed" />
+    <string id="AF_DIP_EVENT_PreviewRemovePressure" text="Northern Empire · Border pressure: prosperity penalty removed" />
+    <string id="AF_DIP_EVENT_PreviewRecovery" text="Both empires · Postwar recovery: temporary recovery effects begin" />
+    <string id="AF_DIP_EVENT_PreviewNotice" text="Preview only. No event is published and no gameplay effects are applied." />
+  </strings>
+</base>

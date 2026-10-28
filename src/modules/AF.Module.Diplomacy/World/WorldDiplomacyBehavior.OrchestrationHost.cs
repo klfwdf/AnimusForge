@@ -14,11 +14,22 @@ public sealed partial class WorldDiplomacyBehavior
     // Leaf-only host adapter for WorldDiplomacyOrchestration. Every member is a
     // synchronous identity/snapshot/settings/effect capability; no member calls
     // back into an Application or into the orchestration itself.
-    private sealed partial class OrchestrationHost : IWorldDiplomacyOrchestrationHost
+    private sealed partial class OrchestrationHost : IWorldDiplomacyOrchestrationHost, IDiplomacyModelConfiguration, IDiplomacyMaterialWorld, IWorldDiplomacySemanticSource
     {
         private readonly WorldDiplomacyBehavior _owner;
+        private System.Threading.Tasks.Task<bool> _embeddingInitialization;
         internal OrchestrationHost(WorldDiplomacyBehavior owner) => _owner = owner;
 
+        public float[] Embed(string text)
+        {
+            var engine = OnnxEmbeddingEngine.Instance;
+            // IsAvailable performs synchronous initialization; keep even the cold
+            // model load off the game thread and capture its path here only once.
+            var initialization = _embeddingInitialization ??= engine.InitializeAsync(AnimusForgeModulePaths.GetCurrentModuleRoot());
+            return _owner._historyEmbeddings.Get(text, SaveRuntimeGuard.CaptureGeneration(), engine,
+                input => initialization.GetAwaiter().GetResult() && engine.TryGetEmbedding(input, out var vector) ? vector : null);
+        }
+        public IReadOnlyList<string> OwnedSettlementIds(string id) => ResolveKingdom(id)?.Fiefs?.Select(x => x.StringId).ToArray() ?? Array.Empty<string>();
         public int CurrentDay() => WorldDiplomacyBehavior.CurrentDay();
         public int CurrentHour() => WorldDiplomacyBehavior.CurrentHour();
         public double CurrentCampaignHours() => WorldDiplomacyBehavior.CurrentDiplomacyHours();
@@ -42,6 +53,7 @@ public sealed partial class WorldDiplomacyBehavior
         public int MaxPriorityPlayerResponsesPerDocument() => WorldDiplomacyBehavior.MaxPriorityPlayerResponsesPerDocument;
         public int MaxRelayParticipants() => WorldDiplomacyBehavior.MaxRelayParticipants;
         public int RoundParticipantLimit() => WorldDiplomacyBehavior.GetRoundParticipantLimit();
+        public int NewEventIntervalDays() => GetNewEventIntervalDays();
         public int OrdinaryRoundLimit() => WorldDiplomacyBehavior.GetOrdinaryRoundLimit();
         public int RoundTargetDurationDays() => WorldDiplomacyBehavior.GetRoundLengthDays();
         public int RoundHardDurationDays(int targetDurationDays) => WorldDiplomacyBehavior.GetRoundHardDurationDays(targetDurationDays);
@@ -70,6 +82,7 @@ public sealed partial class WorldDiplomacyBehavior
         public int CompressionOutputTokenReserve() => WorldDiplomacyBehavior.CompressionOutputTokenReserve;
         public int CompressionRetryMaximumHours() => WorldDiplomacyBehavior.CompressionRetryMaximumHours;
         public int CompressionRetryInitialHours() => WorldDiplomacyBehavior.CompressionRetryInitialHours;
+        public string ConfigurationFingerprint() => WorldDiplomacyLlmClient.ConfigurationFingerprint();
         public int ConfiguredOutputTokenLimit() => WorldDiplomacyLlmClient.GetConfiguredOutputTokenLimit();
         public int TradeAllianceFailedProposalCooldownDays() => WorldDiplomacyBehavior.GetTradeAllianceFailedProposalCooldownDays();
         public int PolicyHistorySyncBatchSize() => WorldDiplomacyBehavior.PolicyHistorySyncBatchSize;
@@ -226,15 +239,10 @@ public sealed partial class WorldDiplomacyBehavior
             string authorKingdomId, string authorRulerId, string relatedKingdomId, bool isWorldLevel, int day, string gameDate) =>
             MyBehavior.RecordWorldDiplomacyWeeklyMaterialForExternal(stableKey, title, text,
                 authorKingdomId, authorRulerId, relatedKingdomId, isWorldLevel, day, gameDate);
-        public bool TryBuildKingdomStrategicProfilePrompt(string kingdomId, string marker, out string prompt) =>
-            WorldDiplomacyBehavior.TryBuildKingdomStrategicProfilePrompt(WorldDiplomacyBehavior.ResolveKingdom(kingdomId), marker, out prompt);
-        public void LogKingdomStrategicProfileInjection(WorldDiplomacyJob job, string profilePrompt) =>
-            WorldDiplomacyBehavior.LogKingdomStrategicProfileInjection(job, profilePrompt);
 
         // Leaf port factories - bounded snapshots, no Application calls behind them.
         public IWorldDiplomacyActionSelectionPort ActionSelection() => new ActionSelectionPort(_owner, null);
-        public IWorldDiplomacyNoActionPort NoActionPort(string authorId, string targetId) =>
-            new NoActionPort(_owner, WorldDiplomacyBehavior.ResolveKingdom(authorId), WorldDiplomacyBehavior.ResolveKingdom(targetId));
+
         public IWorldDiplomacyPeaceAdmissionPort PeaceAdmission() => new PeaceAdmissionPort(_owner);
         public IWorldDiplomacyPromptWorld PromptWorld() => new PromptWorld(_owner);
         public IWorldDiplomacyDraftRepairWorld DraftRepairWorld() => new PromptWorld(_owner);
@@ -243,9 +251,8 @@ public sealed partial class WorldDiplomacyBehavior
         public IWorldDiplomacyJobPreparationPort JobPreparation() => new JobPreparationPort(_owner);
         public IWorldDiplomacyHistoryCapturePort HistoryCapture() => new HistoryCapturePort(_owner);
         public IWorldDiplomacyInitialPeacePort InitialPeace() => new InitialPeacePort(_owner);
-        public IWorldDiplomacyPrestigePort Prestige() => new PrestigePort();
+
         public IWorldDiplomacyThreatSettlementPort ThreatSettlement() => new ThreatSettlementPort(_owner);
-        public IWorldDiplomacyThreatBindingPort ThreatBinding() => new ThreatBindingPort(_owner);
         public IWorldDiplomacyAnalysisPort AnalysisPort() => new AnalysisPort(_owner);
         public IWorldDiplomacyOfferActionPort OfferAction() => new OfferActionPort(_owner);
         public IWorldDiplomacyImmediateActionPort ImmediateAction() => new ImmediateActionPort(_owner);
@@ -272,6 +279,11 @@ public sealed partial class WorldDiplomacyBehavior
             (WorldDiplomacyBehavior.ResolveKingdom(kingdomId) is Kingdom kingdom
                 ? (kingdom.Leader ?? kingdom.RulingClan?.Leader)?.Name?.ToString()
                 : null);
+        public string RealmRulerTitle(string kingdomId)
+        {
+            Kingdom kingdom = WorldDiplomacyBehavior.ResolveKingdom(kingdomId);
+            return WorldDiplomacyBehavior.ResolveRealmRulerTitle(kingdom, kingdom?.Leader ?? kingdom?.RulingClan?.Leader);
+        }
         public int GetRoundParticipantLimit() => WorldDiplomacyBehavior.GetRoundParticipantLimit();
         public string CanAiAuthorDocumentBlockReason(string id) =>
             WorldDiplomacyBehavior.CanAiAuthorDiplomaticDocument(WorldDiplomacyBehavior.ResolveKingdom(id), out string reason) ? null : reason;

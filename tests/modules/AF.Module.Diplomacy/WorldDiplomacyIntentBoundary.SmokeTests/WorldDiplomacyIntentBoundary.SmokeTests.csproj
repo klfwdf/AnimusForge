@@ -6,7 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\src\modules\AF.Module.Diplomacy\Rules\WorldDiplomacyThreatStateRules.cs" Link="WorldDiplomacyThreatStateRules.cs" />
     <Compile Include="..\..\..\..\src\modules\AF.Module.Diplomacy\Rules\WorldDiplomacyOfferCooldownRules.cs" Link="WorldDiplomacyOfferCooldownRules.cs" />
   </ItemGroup>
 </Project>

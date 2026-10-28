@@ -32,8 +32,19 @@ def verify():
     assert len(expressions)==5
     return expressions
 
-def callsite_harness():
-    expressions=verify()
+def callsite_harness(current_callers=False):
+    if current_callers:
+        expressions=[]
+        for review in REVIEWS:
+            text=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs').read_text(encoding='utf-8-sig')
+            for patch in review['patches']:
+                expression=patch['after']
+                if 'BuildSceneSingleSpeakerPrefixSections(' not in expression: continue
+                assert expression in text, 'Current Scene callsite changed: '+patch['symbol']
+                expressions.append(expression)
+        assert len(expressions)==5
+    else:
+        expressions=verify()
     cases=[]
     for expression in expressions:
         layout=expression.split('SceneSingleSpeakerLayout.',1)[1].split(',',1)[0]

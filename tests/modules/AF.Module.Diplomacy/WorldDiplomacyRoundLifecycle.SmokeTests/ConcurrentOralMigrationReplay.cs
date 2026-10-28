@@ -15,6 +15,9 @@ internal static class ConcurrentOralMigrationReplay
         internal bool PublishEnabled;
         internal bool PlayerAwareExecution;
         internal bool OralEffectPortsEnabled;
+        internal bool WorldWar;
+        public override bool PartiesAtWar(string first, string second) => WorldWar;
+        public override IWorldDiplomacyWarAdmissionPort WarAdmission(string first, string second) => new ActionSelectionReplay.Admission(true);
         internal (int minimum, int maximum)? OralRange;
         public override (int minimum, int maximum) DeclarationCharacterRange() => OralRange ?? base.DeclarationCharacterRange();
         internal readonly List<string> Notices = new();
@@ -56,10 +59,9 @@ internal static class ConcurrentOralMigrationReplay
         public override string ResolvePropagationReceiverId(string kingdomId, string settlementId) => kingdomId ?? settlementId;
         public override IWorldDiplomacyHistoryCapturePort HistoryCapture() => new HistoryPort(this);
         public override IWorldDiplomacyDocumentExecutionPort DocumentExecution() => PublishEnabled
-            ? new DocumentExecutionReplay.Port { Owner = Owner, PlayerKingdomId = PlayerAwareExecution ? "p" : null } : null;
+            ? new DocumentExecutionReplay.Port { Owner = Owner, PlayerKingdomId = "p" } : null;
         public override IWorldDiplomacyActionSelectionPort ActionSelection() => PublishEnabled ? new SelectionPort(this) : null;
-        public override IWorldDiplomacyThreatBindingPort ThreatBinding() => PublishEnabled ? new SelectionPort(this) : null;
-        public override IWorldDiplomacyPrestigePort Prestige() => PublishEnabled ? new PrestigeApplicationReplay.Port() : null;
+
         public bool RulerAlive(string id) => !Dead;
         public bool IsPlayerRuler(string id) => id == "ruler_p";
         public string RulerName(string id) => id;
@@ -69,7 +71,7 @@ internal static class ConcurrentOralMigrationReplay
         public MemoryCommitResult CommitFact(string ruler, string source, string fact, int day,
             string location, int hour = -1, string npcName = null, string gameDate = "")
         { Facts.Add(source); return new MemoryCommitResult(MemoryCommitStatus.Applied); }
-        public string PersonalMemory(string ruler, string topic, string counterpart) => "PRIVATE_MEMORY";
+        public virtual string PersonalMemory(string ruler, string topic, string counterpart) => "PRIVATE_MEMORY";
     }
     private sealed class PublicationPort : IWorldDiplomacyPublicationPort
     {
@@ -94,7 +96,7 @@ internal static class ConcurrentOralMigrationReplay
         public int CourtDeliveryDays => 7;
         public void Log(string message) { }
     }
-    private sealed class SelectionPort : IWorldDiplomacyActionSelectionPort, IWorldDiplomacyThreatBindingPort
+    private sealed class SelectionPort : IWorldDiplomacyActionSelectionPort
     {
         private readonly Host _h;
         internal SelectionPort(Host h) => _h = h;
@@ -115,7 +117,7 @@ internal static class ConcurrentOralMigrationReplay
         public int WarPrestigeReward => 0;
         public void Log(string message) { }
         public IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second) => new ActionSelectionReplay.Admission(_h.OralEffectPortsEnabled);
-        public IWorldDiplomacyNoActionPort CaptureNoActionPort(string author, string target) => new ActionSelectionReplay.NoActionPort(author, target);
+
     }
     private sealed class HistoryPort : IWorldDiplomacyHistoryCapturePort
     {
@@ -153,7 +155,7 @@ internal static class ConcurrentOralMigrationReplay
         public WorldDiplomacyStorage Storage => _h.Owner.CurrentStorage;
         public int CurrentDay => _h.CurrentDayValue;
         public bool CanAiAuthor(string author, out string reason) => _h.CanAiAuthorParty(author, out reason);
-        public bool IsPlayerDiplomacy(WorldDiplomacyDocument doc) => doc.TargetKingdomId == "p";
+
         public WorldDiplomacyImmediateActionReceipt DeclareWar(string a, string t, WorldDiplomacyDocument doc)
         { _h.Effects++; return new(true, "war applied"); }
         public WorldDiplomacyImmediateActionReceipt BreakAlliance(string a, string t, WorldDiplomacyDocument doc)
@@ -207,11 +209,8 @@ internal static class ConcurrentOralMigrationReplay
         Test.True(a.RelayCursor == 0 && a.RelayWaiting && o.CurrentStorage.RelayArrivals.Single().ToKingdomId == "c",
             "priority merging preserves the original relay cursor, wait state and next speaker");
         var reply = Doc("priority_reply", a, "b", "p"); reply.IsRelayTurn = true; reply.IsExternalResponseOnly = true;
-        int moved = 0;
-        WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(reply, o.CurrentStorage,
-            o.ResolveRound, o.ResolveDocument, () => 12, (_, _, _, _) => moved++, (_, _) => moved++, (_, _) => moved++,
-            _ => moved++, (_, _) => moved++, _ => moved++, _ => moved++, _ => moved++, _ => { });
-        Test.True(moved == 0 && a.RelayCursor == 0 && a.RelayWaiting && reply.RoundProgressHandled,
+        o.HandleRoundDocumentProcessed(reply);
+        Test.True(a.RelayCursor == 0 && a.RelayWaiting && reply.RoundProgressHandled,
             "completed priority reply uses original external-response accounting without consuming the relay hop");
         var rejectedPriority = new WorldDiplomacyJob { JobId = "rejected_priority", Kind = "generate", RoundId = a.RoundId,
             AuthorKingdomId = "b", IsRelayTurn = true, IsExternalResponseOnly = true };
@@ -340,11 +339,8 @@ internal static class ConcurrentOralMigrationReplay
         Test.True(followup.PendingOffers.Count == 0 && followup.ExternalOpeningContext == string.Format(DiplomacyMiscPromptTexts.Get("Scheduling_OriginalEventClosedFormat", ""), a.RoundId), "followup does not revive old treaty proposals");
         var carried = followup.PlayerResponses.First();
         var carriedSource = o.ResolveDocument(carried.SourceDocumentId);
-        Test.True(WorldDiplomacyNoActionApplication.IsAllowed(followup, null,
-            new ActionSelectionReplay.NoActionPort(carried.KingdomId, carriedSource.AuthorKingdomId), true, false, carriedSource),
-            "follow-up responder may substantively reply to the original player statement without an unrelated diplomatic action");
-        for (int i = 0; i < 8; i++) WorldDiplomacyDocumentApplication.Add(o.CurrentStorage,
-            new WorldDiplomacyDocument { DocumentId = "archive_noise_" + i, Day = 200 + i }, 3, () => { });
+        Test.True(o.BuildLegalDiplomaticDeclarationIntents(followup, carried.KingdomId, carriedSource.AuthorKingdomId, false, null, false, carriedSource).Contains("statement"),
+            "carried response uses common declaration options without a no-action seat");
         Test.True(followup.PlayerResponses.All(x => o.ResolveDocument(x.SourceDocumentId) != null),
             "archive display limit never prunes pending player sources in follow-up events");
     }

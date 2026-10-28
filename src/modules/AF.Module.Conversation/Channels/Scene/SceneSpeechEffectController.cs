@@ -358,6 +358,8 @@ internal void Publish(SceneSpeechQueueItem item)
 								{
 									MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref content);
 								}
+                                string diplomacyEvidenceOnly = "";
+                                DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref diplomacyEvidenceOnly);
 
 								if (allowPlayerDirectedActions)
 

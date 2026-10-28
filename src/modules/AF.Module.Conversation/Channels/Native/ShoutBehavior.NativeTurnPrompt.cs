@@ -218,7 +218,7 @@ namespace AnimusForge;
             string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, nativeSceneActionInstruction, ctx?.PreprocessExcludedRuleBlock);
             layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
             string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
-        string[] nativePromptPrefixSections = new string[5] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock), admission.MeetingElapsedContext };
+        string[] nativePromptPrefixSections = new string[5] { RequestRecallBudget.WrapPersonal(privateRecentWindowSection), RequestRecallBudget.WrapPersonal(persistedWithoutRecentWindow), sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock), admission.MeetingElapsedContext };
         string[] nativePromptSuffixSections = new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" };
         messages = _ports.BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, nativePromptPrefixSections, nativePromptSuffixSections, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: null, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
         nativeDetachedMainPromptSections = null;

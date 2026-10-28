@@ -116,6 +116,20 @@ internal static class WorldDiplomacyOfferApplication
         if (WorldDiplomacyIntentVocabulary.IsProposalIntent(intent)
             && !string.IsNullOrWhiteSpace(document.TargetKingdomId))
         {
+            if (round.EventConvergence?.AllowsNewObligation(document, intent) == false)
+            {
+                // A structured counteroffer bound to the exact original offer
+                // rejects those terms; it cannot create another final offer.
+                // Unbound prose does not imply rejection or consent.
+                var original = round.PendingOffers.FindAll(x => x.Status == "open"
+                    && x.SourceDocumentId == document.RespondingToOfferDocumentId
+                    && x.SourceActionId == document.RespondingToOfferActionId
+                    && x.TargetKingdomId == document.AuthorKingdomId && x.ProposerKingdomId == document.TargetKingdomId);
+                if (original.Count == 1) original[0].Status = "rejected";
+                document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Offer_EndingNoNewProposal", "This event is concluding; no additional proposal was registered.");
+                log?.Invoke("diplomacy.ending_new_offer_blocked document=" + document.DocumentId);
+                return WorldDiplomacyOfferOutcome.None;
+            }
             (bool blocked, string blockReason) = proposalViolation(intent, document);
             if (blocked)
             {

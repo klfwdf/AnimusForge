@@ -6,10 +6,11 @@ internal static class NativeDiplomacyFallbackReplay
     {
         internal bool Formal;
         internal bool ThrowFormal;
+        internal bool Reviewing;
         internal string Result = "";
         internal readonly List<string> Calls = new();
     }
-    private readonly struct Source : IDiplomacyOralTagSource, IDiplomacyCommitmentTagSource
+    private readonly struct Source : IDiplomacyOralTagSource, IDiplomacyCommitmentTagSource, IDiplomacyCommitmentReviewSource
     {
         private readonly State _state;
         internal Source(State state) => _state=state;
@@ -18,6 +19,7 @@ internal static class NativeDiplomacyFallbackReplay
         public string SpeakerHeroId => "ruler";
         public string SpeakerKingdomId => "npc";
         public bool UseFormalCommitments => _state.Formal;
+        public bool CaptureCommitmentReview(string hints) => _state.Reviewing;
         private string Call(string action,string payload){_state.Calls.Add(action+":"+payload);return _state.Result;}
         public string SubmitCommitment(string payload){if(_state.ThrowFormal)throw new InvalidOperationException();return Call("formal",payload);}
         public string ControlCommitment(string payload)=>Call("control",payload);
@@ -71,6 +73,13 @@ internal static class NativeDiplomacyFallbackReplay
         state.Calls.Clear();Run("COMMIT:action=DeclareWar;move=NewMatter;target=third");Test.True(state.Calls.Single().StartsWith("formal:"),"enabled COMMIT submits formal document only");
         state.ThrowFormal=true;state.Calls.Clear();Run("COMMIT:action=DeclareWar;move=NewMatter;target=third");Test.True(state.Calls.Count==0,"formal submission failure never falls back to immediate native action");
         foreach(bool enabled in new[]{true,false}){state.Formal=enabled;state.Calls.Clear();Run("INDEPENDENT_CLAN_PEACE");Test.True(state.Calls.SequenceEqual(new[]{"independent:"}),"independent clan peace unchanged in both modes");}
+        state.Reviewing = true; state.Formal = true; state.ThrowFormal = false;
+        state.Calls.Clear(); Run("INDEPENDENT_CLAN_PEACE");
+        Test.True(state.Calls.SequenceEqual(new[] { "independent:" }), "production composition: active commitment review preserves independent clan peace");
+        state.Calls.Clear(); Run("DECLARE_WAR:player:npc");
+        Test.True(state.Calls.SequenceEqual(new[] { "war:player:npc" }), "production composition: active commitment review preserves player ruler immediate war executor");
+        state.Calls.Clear(); Run("DECLARE_WAR:npc:third");
+        Test.True(state.Calls.Count == 0, "NPC war remains owned by speech review and cannot execute twice through its hint");
         string root=Directory.GetCurrentDirectory();while(!File.Exists(Path.Combine(root,"AnimusForge.csproj")))root=Directory.GetParent(root)!.FullName;
         var rules=Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Path.Combine(root,"content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json")));
         var rule=rules.Descendants().OfType<Newtonsoft.Json.Linq.JObject>().Single(x=>(string?)x["Id"]=="diplomacy");

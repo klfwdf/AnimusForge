@@ -30,6 +30,8 @@ internal static class PeaceProposalReplay
         internal readonly PeaceAdmissionReplay.Port Peace = new()
             { KingdomIds = new[] { "new_kingdom", "empire_s", "a", "b" }, Owner = "new_kingdom" };
         internal readonly DocumentExecutionReplay.Port ExecutionPort = new();
+        internal readonly HashSet<string> WarTargets = new() { "empire_s" };
+        public override bool PartiesAtWar(string first, string second) => Peace.War && (WarTargets.Contains(first) || WarTargets.Contains(second));
         private readonly PromptWorldFixture _prompt = new();
         public override bool IsPlayerAffiliatedParty(string id) => id == "new_kingdom";
         public override bool IsPlayerParty(string id) => id == "new_kingdom";
@@ -128,7 +130,7 @@ internal static class PeaceProposalReplay
             Test.True(!Offers(owner, doc).Any(), "duplicate rejected completion cannot execute: " + invalid);
         }
 
-        var (_, pairOwner, pairDoc) = Fixture(); var pairJson = LogJson();
+        var (pairHost, pairOwner, pairDoc) = Fixture(); pairHost.WarTargets.Add("b"); var pairJson = LogJson();
         var first = (JObject)pairJson["actions"][0];
         first["peace_terms"] = Terms(150, "new_kingdom", "empire_s");
         var second = (JObject)first.DeepClone(); second["target_kingdom_id"] = "b";

@@ -164,3 +164,29 @@ public sealed class WorldDiplomacyCanonicalHistoryEntry
 
     [JsonProperty("answeredPlayerDocumentIds")] public List<string> AnsweredPlayerDocumentIds { get; set; } = new List<string>();
 }
+
+// Temporary compaction work. The authoritative source remains unchanged until every range is audited.
+public sealed class DiplomacyHistoryFragmentWork
+{
+    public string Id { get; set; } = "";
+    public string EntryId { get; set; } = "";
+    public long Sequence { get; set; }
+    public bool Snapshot { get; set; }
+    public string OriginalHash { get; set; } = "";
+    public string SourceText { get; set; } = "";
+    public string SourceHash { get; set; } = "";
+    public string SourceKind { get; set; } = "";
+    public bool SourceVerified { get; set; }
+    public int Offset { get; set; }
+    public int PendingLength { get; set; }
+    public string PendingSummary { get; set; } = "";
+    public int Pass { get; set; }
+    public int TargetTokens { get; set; }
+    public List<DiplomacyHistoryFragmentPiece> Pieces { get; set; } = new();
+}
+public sealed class DiplomacyHistoryFragmentPiece
+{
+    public int Offset { get; set; }
+    public int Length { get; set; }
+    public string Summary { get; set; } = "";
+}

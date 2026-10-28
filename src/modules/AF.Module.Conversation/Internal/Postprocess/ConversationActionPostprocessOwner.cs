@@ -3391,6 +3391,12 @@ internal static string NormalizeVassalagePostprocessTagsForScene(string raw, Lis
 		{
 			moodTag = AIConfigHandler.ActionPostprocessFallbackMoodTag;
 		}
+		// Signing retains the original exact, runtime-bound whitelist. Only the later
+		// unilateral release directive uses the shared parameterized normalizer.
+		string releaseTags = NormalizeDiplomacyPostprocessTagsForScene(raw,
+			(rules ?? new List<PostprocessRuleEntry>()).Where(rule =>
+				(rule?.Tag ?? "").StartsWith("[ACTION:DIPLOMACY:RELEASE_SUBJECT:", StringComparison.OrdinalIgnoreCase)).ToList());
+		if (!string.IsNullOrWhiteSpace(releaseTags)) accepted.Add(releaseTags);
 		return string.Join("\n", accepted.Concat(new string[1] { moodTag }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 	}
 

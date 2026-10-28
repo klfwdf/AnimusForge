@@ -54,8 +54,8 @@ internal static class WorldDiplomacyPlayerDraftRules
 
     internal static int GetOutputTokenBudget(WorldDiplomacyPlayerDraftInput input)
     {
-        // Reserve for package-selected CN characters or EN words plus JSON.
-        // max_tokens is capacity, not a required spend.
+        // CJK tokenization varies by provider. Leave room for the full requested
+        // range and JSON overhead; max_tokens is capacity, not a required spend.
         return input.MaximumCharacters * 4 + 256;
     }
 

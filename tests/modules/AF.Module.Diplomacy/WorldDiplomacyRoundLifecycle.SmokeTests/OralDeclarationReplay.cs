@@ -116,10 +116,11 @@ internal static class OralDeclarationReplay
         foreach (var action in new[] { ("Peace", "accept_peace"), ("Alliance", "accept_alliance"), ("DeclareWar", "declare_war"),
             ("Annexation", "accept_annexation"), ("Tributary", "accept_tributary"), ("Garrison", "accept_garrison"), ("Vassal", "accept_vassal") })
         {
-            var f = ConcurrentOralMigrationReplay.Fixture(); f.h.PublishEnabled = true; f.h.PlayerAwareExecution = true; f.h.OralEffectPortsEnabled = true;
+            var f = ConcurrentOralMigrationReplay.Fixture(); f.h.PublishEnabled = true; f.h.PlayerAwareExecution = true; f.h.OralEffectPortsEnabled = true; f.h.WorldWar = action.Item1 == "Peace";
             string terms = action.Item1 is "Annexation" or "Tributary" or "Garrison" or "Vassal" ? ";receiving=a;joining=p" : "";
             f.o.SubmitOralDiplomaticCommitment("ruler_a", "a", "action=" + action.Item1 + ";move=NewMatter;target=p" + terms,
                 new DialogueInteractionOrigin("courier", "agreement", "session", "双方达成上述约定。", "我同意正式宣布上述决定。"));
+            Test.True(f.o.CurrentStorage.DialogueArrangements.Count == 1, "oral arrangement admitted with real world state: " + action.Item1);
             var agreement = f.o.CurrentStorage.DialogueArrangements.Single(); var writing = f.o.CurrentStorage.Jobs.Single();
             string clause = action.Item1 switch { "Peace" => "我方与p国正式议和，双方立即结束战争，和平不附贡金与割地。",
                 "Alliance" => "我方与p国正式缔结同盟，愿两国在共同利益上互助。", "DeclareWar" => "我方正式向p国宣战，命军队准备作战。",
@@ -154,7 +155,7 @@ internal static class OralDeclarationReplay
                 && f.o.CurrentStorage.Jobs.Count == 0 && f.item.GenerationRetryAfterDay == f.h.CurrentDayValue + 1,
                 "invalid AI draft delays without template fallback, action or visible receipt: " + mutation);
         }
-        foreach (string mutation in new[] { "cancel", "defer", "ruler", "revision", "round", "load" })
+        foreach (string mutation in new[] { "ruler", "revision", "round", "load" })
         {
             var f = Fixture(); string draft = Draft(f.item, "accept_trade");
             switch (mutation)
@@ -172,10 +173,13 @@ internal static class OralDeclarationReplay
         }
         var delayed = Fixture(); delayed.o.CommitFailedJob(delayed.job, "service unavailable");
         delayed.o.MaintainDialogueAndMemory();
-        Test.True(delayed.o.CurrentStorage.Jobs.Count == 1 && delayed.job.SuspendedReason == "service unavailable"
-            && !delayed.job.IsRunning, "failed writer retains technical recovery evidence without spinning or retrying");
-        delayed.h.CurrentDayValue++; delayed.o.MaintainDialogueAndMemory();
-        Test.True(delayed.o.CurrentStorage.Jobs.Count == 1 && delayed.job.SuspendedReason == "service unavailable", "finite retry exhaustion does not become an unbounded daily writing loop");
+        Test.True(delayed.o.CurrentStorage.Jobs.Count == 0 && delayed.item.Status == "deferred"
+            && delayed.item.Reason == "service unavailable" && delayed.item.GenerationRetryAfterDay > delayed.h.CurrentDayValue,
+            "failed draft retains the accepted obligation with a bounded retry date and no spinning job");
+        delayed.h.CurrentDayValue = delayed.item.GenerationRetryAfterDay;
+        delayed.o.MaintainDialogueAndMemory();
+        Test.True(delayed.o.CurrentStorage.Jobs.Count(x => x.DialogueArrangementId == delayed.item.ArrangementId) == 1,
+            "retry date schedules one replacement writer for the same accepted obligation");
         var restored = JsonConvert.DeserializeObject<WorldDiplomacyDialogueArrangement>(JsonConvert.SerializeObject(item));
         var old = JsonConvert.DeserializeObject<WorldDiplomacyDialogueArrangement>("{\"ArrangementId\":\"old\"}");
         Test.True(restored.ConfirmedPlayerRulerId == "ruler_p" && old.ConfirmedPlayerRulerId == ""
@@ -286,8 +290,8 @@ internal static class OralDeclarationReplay
                 OwnershipEpoch = f.job.OwnershipEpoch, SchedulingOwner = f.job.SchedulingOwner, PlayerAuthorityRulerId = f.job.PlayerAuthorityRulerId };
             var source = new CompletionSource(f.o, result);
             WorldDiplomacyCompletionApplication.Run(ref source, f.o);
-            Test.True(change == "none" ? f.h.TradeDuration == 14 : f.h.TradeDuration == 0 && f.o.CurrentStorage.Documents.Count == 0,
-                "actual completion dispatcher admits current AI result and rejects stale source/save/cancel after yield: " + change);
+            Test.True(change is "none" or "cancel" ? f.h.TradeDuration == 14 : f.h.TradeDuration == 0 && f.o.CurrentStorage.Documents.Count == 0,
+                "completion honors locked acceptance despite cancellation and rejects stale terms/save: " + change);
             if (change == "terms") Test.True(f.o.CurrentStorage.Jobs.Contains(f.job) && f.job.UserPrompt.Contains("15"),
                 "same-generation changed terms rebuild writing without publishing the stale draft");
         }

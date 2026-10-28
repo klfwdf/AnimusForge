@@ -25,6 +25,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     // each source and recovers memory writes without replaying diplomacy effects.
     private void RecordDiplomaticDocumentPersonalMemories(WorldDiplomacyDocument document)
     {
+        if (ResolveRound(document.RoundId)?.EventSystemVersion > 0) return;
         string author = document.AuthorRulerId;
         if (DialogueHost?.RulerAlive(author) == true)
             RecordDiplomaticDocumentPersonalMemory(author, document, true);
@@ -41,6 +42,7 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private void RecordDiplomaticDocumentPersonalMemory(string ruler, WorldDiplomacyDocument document, bool author, int receivedDay = -1)
     {
+        if (ResolveRound(document?.RoundId)?.EventSystemVersion > 0) return;
         if (ruler == null || DialogueHost?.IsPlayerRuler(ruler) == true || DialogueHost?.RulerAlive(ruler) != true || document?.IsReadyForPublication != true) return;
         int memoryDay = author ? document.Day : (receivedDay >= 0 ? receivedDay : _host.CurrentDay());
         document.PendingPersonalMemoryRulers ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);

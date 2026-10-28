@@ -36,7 +36,7 @@ Mutate { param($v) $v.Duel.PostprocessRules[1].Tag = '[AD:value:days:N/P]' }
 Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en } 'Debt field cannot be dropped' 'Prompt variable/protocol changed:'
 Mutate { param($v) $v.RulePrompts[12].PostprocessRules[0].Tag = $v.RulePrompts[12].PostprocessRules[0].Tag.Replace('action=Peace', 'action=War') }
 Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en } 'Commit action remains exact' 'Prompt variable/protocol changed:'
-Mutate { param($v) $v.RulePrompts[13].PostprocessRules[0].Tag = $v.RulePrompts[13].PostprocessRules[0].Tag.Replace('receiving=', 'recipient=') }
+Mutate { param($v) $v.RulePrompts[13].PostprocessRules[3].Tag = $v.RulePrompts[13].PostprocessRules[3].Tag.Replace('target=', 'recipient=') }
 Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en } 'Commit parameter names remain exact' 'Prompt variable/protocol changed:'
 Mutate { param($v) $v.RulePrompts[0].Id = $v.RulePrompts[0].Id + '_changed' }
 Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en } 'Stable identity remains exact' 'Stable JSON identity changed:'

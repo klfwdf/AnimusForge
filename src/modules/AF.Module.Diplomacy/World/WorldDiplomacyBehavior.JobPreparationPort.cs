@@ -15,7 +15,5 @@ public sealed partial class WorldDiplomacyBehavior
         public WorldDiplomacyRound ResolveRound(string id) => _owner.ResolveRound(id);
         public string CommonContract(WorldDiplomacyRound round) => _owner.GetCommonDiplomacyContract(round);
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
-        public bool TryBuildProfile(string authorId, string marker, out string prompt) => TryBuildKingdomStrategicProfilePrompt(ResolveKingdom(authorId), marker, out prompt);
-        public void LogProfile(WorldDiplomacyJob job, string prompt) => LogKingdomStrategicProfileInjection(job, prompt);
     }
 }

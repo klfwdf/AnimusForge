@@ -1202,8 +1202,8 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Hint" text="Edits immediate-bulletin writing requirements separately; applies to the next request. Clearing them retains the built-in format and fact constraints." />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Group" text="Weekly reports / bulletins/Bulletin" />
   <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Title" text="Diplomatic judgment and writing preferences" />
-  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="Adjust diplomatic interests, action priorities, and writing style. Custom writing preferences take precedence over default phrasing. The scribe uses only writing instructions consistent with player intent, preserving all terms when drafting or rewriting without adding substantive clauses. Blank adds no custom preferences; facts, authority, legal action requirements, and output rules remain in force." />
-  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="Edit interests, action priorities and style. Restore defaults inside the editor, then save. Blank adds no preference; facts, authority, accepted terms and output rules remain binding." />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Group" text="AI diplomacy" />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Title" text="Enable Companion Proactive Chat" />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Hint" text="Allows companions, family members, and other Heroes in the player main party to proactively request conversations through map notifications." />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Group" text="7. NPC proactive contact/Companion proactive chat" />
@@ -1252,9 +1252,9 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Title" text="Enable Weekly Report Reading XP Reward" />
   <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Hint" text="When enabled, opening a weekly report from a map notification and staying for 10 full seconds accumulates experience from the character counts of its three columns. After every 20 reports studied, Charm, Leadership, and Steward experience is awarded to the player in one batch." />
   <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Group" text="Weekly reports / bulletins" />
-  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Title" text="Enable World Diplomacy" />
-  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Hint" text="When enabled, kingdoms publish diplomatic declarations, negotiate, and take diplomatic actions on their own. Diplomacy and scribe drafting reuse the event and kingdom-rebellion API, falling back to the main API if the configuration is incomplete. When disabled, native kingdom diplomatic decisions resume." />
-  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Group" text="17. AI diplomacy (testing)/1. Basics" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Title" text="Enable AI diplomacy" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Hint" text="Disabling pauses ongoing diplomacy and restores native decisions. Existing effects keep their original expiry. Enabling resumes after checking current facts. After fixing a failed API or model configuration, disable and re-enable to retry held requests with a fresh limited budget. Already executed actions are preserved; uncertain execution results require evidence review." />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Group" text="AI diplomacy" />
   <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Title" text="Enable World Diplomacy Map Notifications" />
   <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Hint" text="Delivered diplomatic declarations appear as text messages at the bottom left, instead of right-side notifications. Disabling this does not affect negotiations, distribution, bulletin material, or kingdom notices." />
   <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Group" text="17. AI diplomacy (testing)/1. Basics" />
@@ -1534,18 +1534,18 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Title" text="Weekly Report Requests Per Minute" />
   <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Hint" text="Limits the weekly-report generation request rate during development. Default: 5; maximum 20. Helps accommodate RPM or concurrency limits of some API channels." />
   <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Group" text="Weekly reports / bulletins/Weekly report" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Title" text="World Diplomacy Activity Dropdown" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Hint" text="Low: at most 2 kingdoms; moderate: at most 3; high: at most 5, all including the initiating kingdom. Selects only kingdoms with actual diplomatic matters and does not fill the count artificially. Default: moderate. This is the participant count for one event, not the number of concurrent events." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Title" text="Event participant count" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Hint" text="Low: 70% for 2 countries; standard: 70% for 3; high: 70% for 4. The other two sizes each have a 15% chance. Direct parties are always retained; remaining places use weighted selection without a score threshold. Limited by available independent countries. Applies to new selections; existing events keep their countries. Default: standard." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Group" text="17. AI diplomacy (testing)/2. Event pacing" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Title" text="World Diplomacy Continent Spread Days" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Hint" text="Schedules when local nobles and civilians learn of diplomatic declarations according to distance. Default: 21 days. Does not control how often events automatically start or replace court delivery times." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Group" text="17. AI diplomacy (testing)/3. Distribution" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Title" text="World Diplomacy Court Maximum Delivery Days" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="Allocates court delivery times by distance. Controls delivery to the farthest court and the relay pace for one round of a new event; not every kingdom waits this fixed number of days. Default: 7 days; lower values produce more frequent replies." />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="17. AI diplomacy (testing)/3. Distribution" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Title" text="Declaration propagation (farthest court days)" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="Distance determines delivery. Farthest court: 3–14 days, default 7; civilian spread takes three times as long. Opening and ending announcements are public immediately." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="AI diplomacy" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="Suggested declaration length upper bound" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. This is not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects generation capacity, subject to the API output limit. The editor capacity remains 6000 characters." />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="Suggested upper length for declarations and scribe drafts, including punctuation. Default 300; range 1–1000. No minimum length or text cutoff; complete terms take priority. Does not limit player editing." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="AI diplomacy" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="Suggested declaration length lower bound" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
@@ -1567,9 +1567,9 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Title" text="World Diplomacy Round Length Dropdown" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Hint" text="Typical end time for new events: compact about 15 days, standard about 21 days, relaxed about 28 days. Events may finish early on reaching an outcome or extend briefly to conclude. Default: standard; affects only new events." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Group" text="17. AI diplomacy (testing)/2. Event pacing" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Title" text="World Diplomacy Start New Game At Peace" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Hint" text="Applies only to newly created saves, ending kingdom wars already present at the start. Disabled by default; toggling this does not reset wars in the current save." />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Group" text="17. AI diplomacy (testing)/1. Basics" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Title" text="Peace at the start of a new game" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Hint" text="Enabled by default. Ends initial kingdom wars only in a newly created campaign. Existing saved settings and wars in loaded saves are preserved." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Group" text="AI diplomacy" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Title" text="World Diplomacy Threat Compliance Issuer Relation Reward" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Hint" text="After the target kingdom explicitly complies with a condemnation or ultimatum, leaders of the issuing kingdom formal, non-mercenary vassal clans gain this relation with the current king. Settled only once per threat. Default: 10; 0 disables the reward." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Group" text="17. AI diplomacy (testing)/5. War and proposal protection" />
@@ -2035,11 +2035,11 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_CategoryAiCore" text="AI core" />
   <string id="AF_TERMINAL_UI_CategoryDuelTroops" text="Duel and troops" />
   <string id="AF_TERMINAL_UI_CategoryCharacters" text="Characters and companions" />
-  <string id="AF_TERMINAL_UI_Root_KingdomNotices" text="Kingdom notices" />
-  <string id="AF_TERMINAL_UI_Root_KingdomNotices_Hint" text="Open the subpanel for notices and local policies." />
+  <string id="AF_TERMINAL_UI_Root_KingdomNotices" text="Write policies" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNotices_Hint" text="Choose custom or local policies to write." />
   <string id="AF_TERMINAL_UI_Root_ComposeNotice" text="Compose kingdom notice" />
   <string id="AF_TERMINAL_UI_Root_ComposeNotice_Hint" text="Continue to custom policy or diplomatic declaration." />
-  <string id="AF_TERMINAL_UI_Root_CustomPolicy" text="Compose custom policy" />
+  <string id="AF_TERMINAL_UI_Root_CustomPolicy" text="Custom policy" />
   <string id="AF_TERMINAL_UI_Root_CustomPolicy_Hint" text="Open the custom policy editor." />
   <string id="AF_TERMINAL_UI_Root_DiplomaticDocument" text="Compose diplomatic declaration" />
   <string id="AF_TERMINAL_UI_Root_DiplomaticDocument_Hint" text="Publish a diplomatic declaration." />
@@ -2681,17 +2681,17 @@ Choose how to proceed:" />
   <string id="AF_MCM_Policy_RulerCustomTokens" text="Custom maximum output tokens" />
   <string id="AF_MCM_Policy_RulerCustomTokens_Hint" text="Used only when following the selected API token limit is disabled. Affects NPC ruler policies only; range 1000–100000 and does not change other API global limits." />
   <string id="AF_MCM_Diplomacy_Enable" text="Enable AI diplomacy" />
-  <string id="AF_MCM_Diplomacy_Enable_Hint" text="When enabled, kingdoms publish declarations, negotiate, and take diplomatic actions. Diplomacy and clerk drafting reuse the event/rebellion API and fall back to the main API when incomplete. When disabled, native kingdom diplomacy decisions resume." />
+  <string id="AF_MCM_Diplomacy_Enable_Hint" text="Disabling pauses ongoing diplomacy and restores native decisions. Existing effects keep their original expiry. Enabling resumes after checking current facts. After fixing a failed API or model configuration, disable and re-enable to retry held requests with a fresh limited budget. Already executed actions are preserved; uncertain execution results require evidence review." />
   <string id="AF_MCM_Diplomacy_NewGamePeace" text="Peace at the start of a new game" />
-  <string id="AF_MCM_Diplomacy_NewGamePeace_Hint" text="Applies only to newly created saves and ends kingdom wars present at campaign start. Disabled by default; changing it does not reset wars in the current save." />
+  <string id="AF_MCM_Diplomacy_NewGamePeace_Hint" text="Enabled by default. Ends initial kingdom wars only in a newly created campaign. Existing saved settings and wars in loaded saves are preserved." />
   <string id="AF_MCM_Diplomacy_MapNotice" text="Show declaration delivery notices" />
   <string id="AF_MCM_Diplomacy_MapNotice_Hint" text="Delivered diplomatic declarations show a lower-left text notice instead of a right-side notification. Hiding notices does not affect negotiation, propagation, bulletin material, or kingdom announcements." />
   <string id="AF_MCM_Diplomacy_MaxRounds" text="Maximum concurrent ordinary diplomacy events" />
   <string id="AF_MCM_Diplomacy_MaxRounds_Hint" text="Shared by ordinary automatic diplomacy and policy triggers; default 3. When full, policy work remains pending while existing talks finish. Lowering the limit does not cancel existing events. At most one opens per day; player diplomacy and verbal-promise events do not use this slot." />
-  <string id="AF_MCM_Diplomacy_Activity" text="Countries per diplomacy event" />
-  <string id="AF_MCM_Diplomacy_Activity_Hint" text="Low allows up to 2 countries, medium up to 3, and high up to 5, including the initiator. Only countries with real diplomatic business are selected. Default: medium; this is per-event participation, not the concurrent-event count." />
-  <string id="AF_MCM_Diplomacy_CourtDays" text="Farthest court delivery (days)" />
-  <string id="AF_MCM_Diplomacy_CourtDays_Hint" text="Assigns court delivery time by distance. Controls the farthest court and the relay pace for a new event round; countries do not all wait this many days. Default: 7; lower values produce denser replies." />
+  <string id="AF_MCM_Diplomacy_Activity" text="Event participant count" />
+  <string id="AF_MCM_Diplomacy_Activity_Hint" text="Low: 70% for 2 countries; standard: 70% for 3; high: 70% for 4. The other two sizes each have a 15% chance. Direct parties are always retained; remaining places use weighted selection without a score threshold. Limited by available independent countries. Applies to new selections; existing events keep their countries. Default: standard." />
+  <string id="AF_MCM_Diplomacy_CourtDays" text="Declaration propagation (farthest court days)" />
+  <string id="AF_MCM_Diplomacy_CourtDays_Hint" text="Distance determines delivery. Farthest court: 3–14 days, default 7; civilian spread takes three times as long. Opening and ending announcements are public immediately." />
   <string id="AF_MCM_Diplomacy_ContinentDays" text="Declaration spreads across the continent (days)" />
   <string id="AF_MCM_Diplomacy_ContinentDays_Hint" text="Schedules when local nobles and civilians learn a declaration by distance. Default: 21 days; does not control automatic opening frequency or replace court delivery time." />
   <string id="AF_MCM_Diplomacy_RoundLength" text="Diplomacy event target duration" />
@@ -2699,7 +2699,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Diplomacy_DeclarationMin" text="Suggested declaration length lower bound" />
   <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing." />
   <string id="AF_MCM_Diplomacy_DeclarationMax" text="Suggested declaration length upper bound" />
-  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. This is not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects generation capacity, subject to the API output limit. The editor capacity remains 6000 characters." />
+  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="Suggested upper length for declarations and scribe drafts, including punctuation. Default 300; range 1–1000. No minimum length or text cutoff; complete terms take priority. Does not limit player editing." />
   <string id="AF_MCM_Diplomacy_WarCooldown" text="Proactive-war cooldown (days)" />
   <string id="AF_MCM_Diplomacy_WarCooldown_Hint" text="After a kingdom starts a proactive war, wait at least this many days before starting another. Default: 42; does not limit other diplomatic declarations." />
   <string id="AF_MCM_Diplomacy_PeaceProtection" text="Peace protection period (days)" />
@@ -2713,7 +2713,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Diplomacy_CompressTarget" text="Archive compression target (thousand estimated tokens)" />
   <string id="AF_MCM_Diplomacy_CompressTarget_Hint" text="Target combined size of the long-term snapshot and protected facts after each batch. Default: 48 (about 48k tokens), maximum 60k; declarations use only relevant material. Actual summaries also follow the selected API output-token limit." />
   <string id="AF_MCM_Diplomacy_Edit" text="Diplomatic judgment and writing preferences" />
-  <string id="AF_MCM_Diplomacy_Edit_Hint" text="Adjust diplomatic interests, action priorities, and writing style. Custom writing preferences take precedence over default phrasing. The scribe uses only writing instructions consistent with player intent, preserving all terms when drafting or rewriting without adding substantive clauses. Blank adds no custom preferences; facts, authority, legal action requirements, and output rules remain in force." />
+  <string id="AF_MCM_Diplomacy_Edit_Hint" text="Edit interests, action priorities and style. Restore defaults inside the editor, then save. Blank adds no preference; facts, authority, accepted terms and output rules remain binding." />
   <string id="AF_MCM_Diplomacy_Edit_Content" text="Open editor" />
   <string id="AF_MCM_Diplomacy_Restore" text="Restore default diplomatic judgment and writing preferences" />
   <string id="AF_MCM_Diplomacy_Restore_Hint" text="After confirmation, restore default diplomatic judgment and writing preferences, replacing current custom preferences. Restores preference text only; does not reset event limits, distribution, length, or protection settings." />
@@ -2915,9 +2915,9 @@ Choose how to proceed:" />
   <string id="AF_MCM_Option_ModelEmpty" text="(empty)" />
   <string id="AF_MCM_Option_DeviceCpu" text="CPU (default)" />
   <string id="AF_MCM_Option_DeviceGpu" text="GPU (CUDA / NVIDIA)" />
-  <string id="AF_MCM_Option_DiplomacySmall" text="Small" />
-  <string id="AF_MCM_Option_DiplomacyMedium" text="Medium" />
-  <string id="AF_MCM_Option_DiplomacyLarge" text="Large" />
+  <string id="AF_MCM_Option_DiplomacySmall" text="Low" />
+  <string id="AF_MCM_Option_DiplomacyMedium" text="Standard" />
+  <string id="AF_MCM_Option_DiplomacyLarge" text="High" />
   <string id="AF_MCM_Option_DiplomacyCompact" text="Compact (about 15 days)" />
   <string id="AF_MCM_Option_DiplomacyStandard" text="Standard (about 21 days)" />
   <string id="AF_MCM_Option_DiplomacyRelaxed" text="Relaxed (about 28 days)" />
@@ -3363,5 +3363,20 @@ Choose how to proceed:" />
   <string id="AF_UI_DatabaseImport_KingdomSkipped" text="Kingdom strategy/personality skipped: " />
   <string id="AF_UI_DatabaseImport_Completed" text="Database import finished." />
   <string id="AF_UI_DatabaseImport_CompletedWithSkips" text="Database import finished; {COUNT} part(s) were skipped. Details are in Mod_Logic.txt." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyWarTendency_Group" text="AI diplomacy" />
+  <string id="AF_UI_DiplomacyEntry_Title" text="Write declaration" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundIntervalDays_Group" text="AI diplomacy" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyWarTendency_Hint" text="Ending route base weights (threat/agreement/stalemate): below 50 = 50/40/10; exactly 50 = 60/30/10; above 50 = 70/20/10. Three tiers, not continuous probabilities; bounded world-state adjustments and legality apply. Native peace scoring remains. Never overrides human decisions or accepted promises." />
+      <string id="AF_TERMINAL_UI_WorldDiplomacyPlayerContactIntervalDays_Hint" text="Minimum game days between new NPC diplomatic contacts or invitations to the player. Default 5. Published contacts count once; mentions, replies, retries and player initiatives do not count. Existing obligations are never delayed." />
+    <string id="AF_DIP_UI_MaterialDraftFailed" text="The diplomatic draft could not be completed. No event was published; the unused opportunity has been released." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundIntervalDays_Hint" text="Game days between autonomous event openings, including policy-triggered cases. Default: 3; range 1–30. Does not delay player-initiated matters or accepted verbal commitments." />
+  <string id="AF_UI_DiplomacyEntry_Hint" text="Write a diplomatic declaration." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundIntervalDays_Title" text="New event interval (days)" />
+    <string id="AF_DIP_UI_EventEndingDelayed" text="The conclusion of {EVENT} could not be published. The negotiation record is preserved; the event has not ended." />
+  <string id="AF_UI_DiplomacyEntry_RulerOnly" text="Only the ruler can write a diplomatic declaration." />
+    <string id="AF_TERMINAL_UI_WorldDiplomacyPlayerContactIntervalDays_Title" text="NPC contact interval about the player (days)" />
+  <string id="AF_UI_DiplomacyEntry_AiDisabled" text="AI diplomacy is not enabled." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyWarTendency_Title" text="War tendency" />
+    <string id="AF_DIP_UI_EventProcessingDelayed" text="Diplomatic processing for {EVENT} could not complete after bounded repairs. The draft and negotiation record are preserved; this is a technical pause, not political silence." />
 </strings>
 </base>

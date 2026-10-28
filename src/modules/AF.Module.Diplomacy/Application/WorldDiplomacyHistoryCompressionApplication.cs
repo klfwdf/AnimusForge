@@ -8,6 +8,38 @@ using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
 
+internal interface IDiplomacyModelConfiguration
+{
+    string ConfigurationFingerprint();
+}
+internal static class DiplomacyCompressionBudget
+{
+    internal const int DefaultInput = 32768, MinimumInput = 4096, MaximumFailures = 4;
+    internal static int Input(WorldDiplomacyStorage storage) => storage.CompressionInputBudgetTokens <= 0
+        ? DefaultInput : Math.Max(MinimumInput, Math.Min(DefaultInput, storage.CompressionInputBudgetTokens));
+    internal static bool Held(WorldDiplomacyStorage storage) => storage.CompressionRetryAttempts >= MaximumFailures;
+    internal static void Resume(WorldDiplomacyStorage storage, bool changedConfiguration)
+    {
+        storage.CompressionRetryAttempts = 0; storage.CompressionRetryAfterHour = 0; storage.CompressionHoldReason = "";
+        if (changedConfiguration) storage.CompressionInputBudgetTokens = DefaultInput;
+    }
+    internal static void Fail(WorldDiplomacyStorage storage, WorldDiplomacyJob job, string error, int hour, int initialHours, int maximumHours)
+    {
+        // A late response from a replaced provider must not exhaust the new configuration.
+        if (!string.IsNullOrEmpty(job.CompressionConfigurationFingerprint)
+            && job.CompressionConfigurationFingerprint != storage.CompressionConfigurationFingerprint) return;
+        storage.DiplomacyCompressionPending = true;
+        storage.CompressionRetryAttempts = Math.Min(MaximumFailures, Math.Max(0, storage.CompressionRetryAttempts) + 1);
+        string value = (error ?? "").ToLowerInvariant();
+        bool capacity = value.Contains("context_length") || value.Contains("maximum context") || value.Contains("context window")
+            || value.Contains("input budget") || value.Contains("too many tokens") || value.Contains("prompt is too long");
+        if (capacity) storage.CompressionInputBudgetTokens = Math.Max(MinimumInput, Input(storage) / 2);
+        int wait = Math.Min(Math.Max(1, maximumHours), Math.Max(1, initialHours) << (storage.CompressionRetryAttempts - 1));
+        storage.CompressionRetryAfterHour = Held(storage) ? int.MaxValue : hour + wait;
+        storage.CompressionHoldReason = Held(storage) ? "compression_retry_exhausted" : "";
+    }
+}
+
 // Owns ordered canonical-state updates through existing synchronous dependency ports.
 internal static class WorldDiplomacyHistoryCompressionApplication
 {
@@ -25,6 +57,7 @@ public static void CommitCompression(
 {
     if (job == null) throw new InvalidOperationException("missing compression job");
     ensureInitialized();
+    if (WorldDiplomacyHistoryFragmentApplication.TryCommit(storage, job, raw, estimateTokens, compressionTriggerTokens, invalidateRenderCache)) return;
     WorldDiplomacyCanonicalHistoryState history = storage.CanonicalHistory;
     long cutoff = Math.Max(0L, job.CompressionThroughSequence);
     if (cutoff < history.Snapshot.CoveredThroughSequence) throw new InvalidOperationException("compression cutoff predates current snapshot");
@@ -94,6 +127,7 @@ public static void CommitCompression(
     storage.LastDiplomacyCompressionDay = currentDay();
     storage.CompressionRetryAfterHour = 0;
     storage.CompressionRetryAttempts = 0;
+    storage.CompressionHoldReason = "";
     invalidateRenderCache();
     WorldDiplomacyRoundLifecycleRules.RecalculateCanonicalHistoryTokens(storage, compressionTriggerTokens);
     log("token compression committed batch=" + summary.BatchId
@@ -113,12 +147,12 @@ public static void TryScheduleTokenCompression(
         int compressionTargetTokens,
         Action<long, long, int> enqueueCompressionJob)
 {
-    if (!diplomacyEnabled()) return;
+    if (!diplomacyEnabled() || DiplomacyCompressionBudget.Held(storage)) return;
     ensureInitialized();
     syncSources();
     long threshold = compressionTriggerTokens;
     WorldDiplomacyJobSelectionView jobs = WorldDiplomacyJobSelectionView.For(storage);
-    storage.DiplomacyCompressionPending = storage.CanonicalHistory.EstimatedTokens >= threshold
+    storage.DiplomacyCompressionPending = storage.CanonicalHistory.EstimatedTokens >= threshold || storage.HistoryFragmentWork != null
         || jobs.HasAwaiting(storage);
     if (!storage.DiplomacyCompressionPending || currentHour() < storage.CompressionRetryAfterHour) return;
     if (jobs.HasCompression(storage)) return;
@@ -148,13 +182,16 @@ public static void EnqueueCompressionJob(
         Action<WorldDiplomacyJob, long> captureHistory,
         Action<string> log, Func<string, string, string> localize = null)
 {
+    if (DiplomacyCompressionBudget.Held(storage)) return;
     ensureInitialized();
     WorldDiplomacyCanonicalHistoryState history = storage.CanonicalHistory;
     (int minimumCharacters, int maximumCharacters) = declarationCharacterRange();
     string systemPrompt = WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt(commonSystemPrefix(), minimumCharacters, maximumCharacters, localize);
     // Reserve room for the request contract, mode parameters, archive headings and message framing.
-    long inputBudget = Math.Min(compressionTriggerTokens, WorldDiplomacyRequestHistoryApplication.CompressionInputLimit)
+    long inputBudget = Math.Min(compressionTriggerTokens, DiplomacyCompressionBudget.Input(storage))
         - WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens(systemPrompt, estimateTokens) - 2048L;
+    if (WorldDiplomacyHistoryFragmentApplication.TryQueue(storage, systemPrompt, inputBudget, throughSequence,
+        estimateTokens, newId, currentDay(), compressionJobPriority, maxPendingJobs, resolveOutputTokenLimit(), localize)) return;
     throughSequence = WorldDiplomacyPolicyHistoryRules.SelectCompressionPrefix(
         history.Snapshot.CoveredThroughSequence, history.Snapshot.EstimatedTokens,
         WorldDiplomacyRoundLifecycleRules.SelectDeltaEntriesThrough(history.DeltaEntries, throughSequence),
@@ -194,6 +231,7 @@ public static void EnqueueCompressionJob(
         Priority = compressionJobPriority,
         CreatedDay = currentDay(),
         CompressionBatchId = batchId,
+        CompressionConfigurationFingerprint = storage.CompressionConfigurationFingerprint,
         CompressionTokenCount = Math.Max(0L, tokenCount),
         CompressionThroughSequence = Math.Max(0L, throughSequence),
         CompressionOverallTargetTokens = overallTargetTokens,

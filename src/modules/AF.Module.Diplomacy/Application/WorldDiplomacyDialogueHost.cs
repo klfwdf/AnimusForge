@@ -7,6 +7,11 @@ namespace AnimusForge;
 
 // Detached values and leaf effects only. The orchestration owns consent,
 // revisions, publication and recovery; this port never republishes or retries.
+internal interface IWorldDiplomacyPersonalRecall
+{
+    string PersonalMemory(string rulerId, string topic, string counterpart, string selectedDiplomaticHistory);
+}
+
 internal interface IWorldDiplomacyDialogueHost
 {
     bool RulerAlive(string rulerId);

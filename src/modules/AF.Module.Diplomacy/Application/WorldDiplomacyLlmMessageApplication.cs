@@ -17,7 +17,7 @@ public static List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(WorldDiploma
 		{
 			new WorldDiplomacyLlmMessage { Role = "system", Content = job?.SystemPrompt ?? "" }
 		};
-		if (WorldDiplomacyRoundLifecycleRules.UsesCanonicalHistory(job))
+		if (WorldDiplomacyRoundLifecycleRules.UsesCanonicalHistory(job) && string.IsNullOrEmpty(job.CompressionFragmentId))
 		{
 			source.Add(new WorldDiplomacyLlmMessage
 			{

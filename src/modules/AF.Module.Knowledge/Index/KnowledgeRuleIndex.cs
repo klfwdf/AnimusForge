@@ -596,7 +596,9 @@ internal sealed class KnowledgeRuleIndex
 
 	// ---------------------------------------------------------------- index build
 
-	internal void EnsureVectorIndex(long expectedVersion = 0L)
+	internal void EnsureVectorIndex(long expectedVersion = 0L) => EnsureVectorIndex(null, expectedVersion);
+
+	internal void EnsureVectorIndex(IReadOnlyList<LoreRule> detachedRules, long expectedVersion = 0L)
 	{
 		try
 		{
@@ -615,7 +617,7 @@ internal sealed class KnowledgeRuleIndex
 				}
 				List<VectorDoc> docs = new List<VectorDoc>();
 				Dictionary<string, int> df = new Dictionary<string, int>(StringComparer.Ordinal);
-				IReadOnlyList<LoreRule> rules = _rules();
+				IReadOnlyList<LoreRule> rules = detachedRules ?? _rules();
 				if (rules != null)
 				{
 					foreach (LoreRule rule in rules)
@@ -723,7 +725,9 @@ internal sealed class KnowledgeRuleIndex
 		}
 	}
 
-	internal void EnsureOnnxIndex(long expectedVersion = 0L)
+	internal void EnsureOnnxIndex(long expectedVersion = 0L) => EnsureOnnxIndex(null, expectedVersion);
+
+	internal void EnsureOnnxIndex(IReadOnlyList<LoreRule> detachedRules, long expectedVersion = 0L)
 	{
 		try
 		{
@@ -751,7 +755,7 @@ internal sealed class KnowledgeRuleIndex
 				try
 				{
 					engineAvailable = _ports.EmbeddingAvailable;
-					rules = _rules();
+					rules = detachedRules ?? _rules();
 					if (engineAvailable && rules != null)
 					{
 						for (int i = 0; i < rules.Count; i++)

@@ -19,7 +19,8 @@ public sealed partial class WorldDiplomacyBehavior
             {
                 if (kingdom == null) continue;
                 var queue = new List<int>();
-                foreach (var decision in kingdom.UnresolvedDecisions.Where(IsNativeDiplomacyDecision).ToList())
+                foreach (var decision in kingdom.UnresolvedDecisions.Where(x => IsNativeDiplomacyDecision(x)
+                    && !(x is MakePeaceKingdomDecision peace && AllowsNativePeace(kingdom, peace.FactionToMakePeaceWith as Kingdom))).ToList())
                 { queue.Add(tokens.Count); tokens.Add((kingdom, decision)); }
                 yield return queue;
             }
@@ -28,6 +29,8 @@ public sealed partial class WorldDiplomacyBehavior
         {
             var entry = tokens[token]; Kingdom host = entry.host; KingdomDecision decision = entry.decision;
             if (host == null || decision == null) return null;
+            if (CaptureNativeAidDecision(host, decision)) return null;
+            if (decision is MakePeaceKingdomDecision permitted && AllowsNativePeace(host, permitted.FactionToMakePeaceWith as Kingdom)) return null;
             Kingdom target = null; string action = "";
             if (decision is DeclareWarDecision war) { target = war.FactionToDeclareWarOn as Kingdom; action = "declare_war"; }
             else if (decision is MakePeaceKingdomDecision peace) { target = peace.FactionToMakePeaceWith as Kingdom; action = "propose_peace"; }

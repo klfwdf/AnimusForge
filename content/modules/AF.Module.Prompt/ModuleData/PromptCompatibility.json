@@ -1,4 +1,9 @@
 {
+  "recall_legacy_diplomacy_published": "本人已正式发布外交公文，来源=",
+  "recall_legacy_diplomacy_received": "本人所在王庭已正式收到外交公文，来源=",
+  "recall_legacy_diplomacy_body": "。原文：",
+  "recall_legacy_diplomacy_ending": "。此项只确认公文已发布或收到，不证明提案已经被接受或外交动作已经执行。",
+  "recall_legacy_source_separator": "，",
   "RuleBlockHeaderPrefix": "【附加规则:",
   "config_migration_old_key_placeholder": "（旧配置键占位符，将被忽略）",
   "config_migration_deprecated_value": "（已废弃的配置值）",

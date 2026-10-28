@@ -35,6 +35,35 @@ internal readonly struct WorldDiplomacyClanSnapshot
 
 internal static class WorldDiplomacyWorldProfileRules
 {
+    internal sealed class NearbyForeignFort
+    {
+        public string kingdom_id, settlement_id, settlement_name;
+        public float distance;
+    }
+
+    // Reuse the native distance matrix from the daily/ownership-invalidated
+    // border capture. One nearest fort per foreign realm, within its radius.
+    internal static Dictionary<string, List<NearbyForeignFort>> BuildFortGeography(
+        IReadOnlyList<WorldDiplomacyFortSnapshot> forts, float[,] distances, float radius)
+    {
+        var result = new Dictionary<string, List<NearbyForeignFort>>(StringComparer.Ordinal);
+        for (int i = 0; i < forts.Count; i++)
+        {
+            var nearest = new Dictionary<string, NearbyForeignFort>(StringComparer.Ordinal);
+            for (int j = 0; j < forts.Count; j++)
+            {
+                float distance = distances[i, j];
+                if (i == j || forts[i].KingdomId == forts[j].KingdomId || float.IsNaN(distance)
+                    || distance < 0 || distance > radius) continue;
+                if (nearest.TryGetValue(forts[j].KingdomId, out var old) && old.distance <= distance) continue;
+                nearest[forts[j].KingdomId] = new NearbyForeignFort { kingdom_id = forts[j].KingdomId,
+                    settlement_id = forts[j].Id, settlement_name = forts[j].Name, distance = distance };
+            }
+            result[forts[i].Id] = nearest.Values.OrderBy(x => x.distance).ThenBy(x => x.kingdom_id, StringComparer.Ordinal).ToList();
+        }
+        return result;
+    }
+
     internal const float MinimumBorderDistance = 24f;
     private const float MaximumBorderDistance = 72f, BorderDistanceMedianMultiplier = 3.5f;
     private const int BorderForeignNeighborCount = 2;

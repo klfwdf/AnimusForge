@@ -17,7 +17,6 @@ internal static class WorldDiplomacyFailureApplication
         Func<WorldDiplomacyJob, string> buildFallbackAnalysisJson,
         Action<WorldDiplomacyJob, string> commitAnalysis,
         Action<WorldDiplomacyJob> logThreatFallbackPublished,
-        Action<WorldDiplomacyJob, string> commitRoundPlan,
         Func<WorldDiplomacyJob, string> buildFallbackRoundCompressionJson,
         Action<WorldDiplomacyJob, string> commitRoundCompression,
         Action<string> removeJob, Action<string> log)
@@ -45,21 +44,12 @@ internal static class WorldDiplomacyFailureApplication
         }
         else if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress"))
         {
-            storage.DiplomacyCompressionPending = true;
-            storage.CompressionRetryAttempts = Math.Min(31, Math.Max(0, storage.CompressionRetryAttempts) + 1);
-            int retryHours = storage.CompressionRetryAttempts >= 6
-                ? compressionRetryMaximumHours
-                : Math.Min(compressionRetryMaximumHours,
-                    compressionRetryInitialHours << Math.Max(0, storage.CompressionRetryAttempts - 1));
-            storage.CompressionRetryAfterHour = currentHour() + retryHours;
+            DiplomacyCompressionBudget.Fail(storage, job, error, currentHour(), compressionRetryInitialHours, compressionRetryMaximumHours);
+            int retryHours = DiplomacyCompressionBudget.Held(storage) ? -1 : Math.Max(0, storage.CompressionRetryAfterHour - currentHour());
             log("token compression retained for retry batch=" + (job.CompressionBatchId ?? "")
                 + " attempt=" + storage.CompressionRetryAttempts.ToString(CultureInfo.InvariantCulture)
                 + " retry_hours=" + retryHours.ToString(CultureInfo.InvariantCulture)
                 + " retry_after_hour=" + storage.CompressionRetryAfterHour.ToString(CultureInfo.InvariantCulture));
-        }
-        else if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "round_plan"))
-        {
-            commitRoundPlan?.Invoke(job, DiplomacyMiscPromptTexts.Get("Failure_DefaultFallbackTopicJson", "{\"topic\":\"Diplomatic Negotiation\",\"selected_kingdom_ids\":[]}"));
         }
         else if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "round_compress"))
         {

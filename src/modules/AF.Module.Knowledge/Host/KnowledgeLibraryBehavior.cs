@@ -52,6 +52,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		public int Version = 1;
 
+		// Stable across save/load; changed only when the library is edited or imported.
+		public string ContentRevision = "";
+
 		public string PlayerAppearance = "";
 
 		public List<LoreRule> Rules = new List<LoreRule>();
@@ -773,8 +776,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		sb.AppendLine(text);
 	}
 
-	private static void TouchRuleData()
+	private static void TouchRuleData(bool contentChanged = true)
 	{
+		if (contentChanged && Instance?._file != null)
+		{
+			Instance._file.ContentRevision = Guid.NewGuid().ToString("N");
+			Instance._knowledgeLoadFailed = false;
+		}
 		Index.Touch();
 		_publishedRules = null;
 		_publishedRulesVersion = -1L;
@@ -1217,7 +1225,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return string.IsNullOrEmpty(text) ? "player_slot=off" : ("player_slot=" + text);
 	}
 
-	private bool TryAppendExactKeywordSlotLore(StringBuilder stringBuilder, ref bool wroteHeader, LoreRule rule, bool includePlayerPersona, string matchMode, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader, string npcDisplayName, string inputText, string secondaryInput, HashSet<string> injectedRuleIds)
+	private bool TryAppendExactKeywordSlotLore(StringBuilder stringBuilder, ref bool wroteHeader, LoreRule rule, bool includePlayerPersona, string matchMode, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader, string npcDisplayName, string inputText, string secondaryInput, HashSet<string> injectedRuleIds, List<string> completeRecords = null)
 	{
 		if (rule == null || !CanInjectKnowledgeRule(rule, includePlayerPersona))
 		{
@@ -1311,6 +1319,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		stringBuilder.AppendLine(knowledgeHeader);
 		stringBuilder.AppendLine(text3);
+		// Collect at the renderer boundary, never split prose or infer boundaries
+		// from translated headings. Each record retains its full selected variant.
+		completeRecords?.Add(knowledgeHeader + Environment.NewLine + text3);
 		if (!string.IsNullOrEmpty(text) && injectedRuleIds != null)
 		{
 			injectedRuleIds.Add(text);
@@ -1569,7 +1580,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	public KnowledgeLibraryBehavior()
 	{
 		Instance = this;
-		TouchRuleData();
+		TouchRuleData(false);
+		Logger.Log("KnowledgeAvailability", "source=new_behavior rules=0");
 	}
 
 	public override void RegisterEvents()
@@ -1658,7 +1670,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		else if (dataStore != null && dataStore.IsLoading)
 		{
 			_storageJson = LoadStorageJson(dataStore);
-			if (TryDeserializeKnowledgeFile(_storageJson, out var knowledgeFile))
+			bool loaded = TryDeserializeKnowledgeFile(_storageJson, out var knowledgeFile);
+			_knowledgeLoadFailed = !loaded && !string.IsNullOrWhiteSpace(_storageJson);
+			if (loaded)
 			{
 				_file = knowledgeFile;
 			}
@@ -1674,7 +1688,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		StripSemanticPrototypes();
 		if (dataStore != null && dataStore.IsLoading)
 		{
-			TouchRuleData();
+			if (string.IsNullOrEmpty(_file.ContentRevision) && !string.IsNullOrEmpty(_storageJson))
+			{
+				using var hash = System.Security.Cryptography.SHA256.Create();
+				_file.ContentRevision = BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(_storageJson))).Replace("-", "");
+			}
+			TouchRuleData(false);
+			Logger.Log("KnowledgeAvailability", "source=save_load rules=" + (_file.Rules?.Count ?? 0) + " failed=" + _knowledgeLoadFailed);
 			BuildIndexesForLoadedSave();
 		}
 	}
@@ -3716,12 +3736,66 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return BuildLoreContextInternal(inputText, npcHero, secondaryInput, mentionedEntities, includePlayerContext: false, null);
 	}
 
+	private readonly Dictionary<string, System.Threading.Tasks.Task<LoreCandidateRules>> _externalLoreSelections = new(StringComparer.Ordinal);
+	private long _externalLoreSelectionVersion = -1;
+	// Capture on the game thread; the worker receives only published rule copies,
+	// settings and mention strings. Cold index creation and ONNX stay off-thread.
+	internal System.Threading.Tasks.Task<LoreCandidateRules> StartExternalLoreSelection(MentionedWorldEntities mentions, CancellationToken cancellation, out long version)
+	{
+		PublishPromptRules();
+		var rules = _publishedRules;
+		version = Index.Version;
+		long capturedVersion = version;
+		var settings = CapturePromptLoreSettings();
+		var capturedMentions = mentions.Clone();
+		if (_externalLoreSelectionVersion != version)
+		{ _externalLoreSelections.Clear(); _externalLoreSelectionVersion = version; }
+		string cacheKey = JsonConvert.SerializeObject(new { capturedVersion, settings, capturedMentions.Entities });
+		// Only completed immutable candidate selections are reused. Rendering still
+		// rechecks live identities/visibility; pending workers keep their own token.
+		if (_externalLoreSelections.TryGetValue(cacheKey, out var cached) && cached.Status == System.Threading.Tasks.TaskStatus.RanToCompletion
+			&& cached.Result != null)
+		{ cancellation.ThrowIfCancellationRequested(); return cached; }
+		if (_externalLoreSelections.Count >= 64) _externalLoreSelections.Clear();
+		var task = System.Threading.Tasks.Task.Run(() =>
+		{
+			cancellation.ThrowIfCancellationRequested();
+			if (Index.Version != capturedVersion) return null;
+			Index.EnsureVectorIndex(rules, capturedVersion);
+			Index.EnsureOnnxIndex(rules, capturedVersion);
+			cancellation.ThrowIfCancellationRequested();
+			return CollectPromptLoreCandidates(capturedMentions, capturedVersion, settings);
+		}, cancellation);
+		_externalLoreSelections[cacheKey] = task;
+		return task;
+	}
+
+	internal string BuildExternalLoreWithCandidates(string input, Hero hero, MentionedWorldEntities mentions, LoreCandidateRules candidates, string source = "diplomacy_event_material")
+	{
+		if (candidates == null) throw new ArgumentNullException(nameof(candidates));
+		return BuildLoreContextInternal(input, hero, source, mentions, false, candidates);
+	}
+
+	internal IReadOnlyList<string> BuildExternalLoreRecordsWithCandidates(string input, Hero hero, MentionedWorldEntities mentions, LoreCandidateRules candidates)
+	{
+		if (candidates == null) throw new ArgumentNullException(nameof(candidates));
+		var records = new List<string>();
+		BuildLoreContextInternal(input, hero, "diplomacy_event_material", mentions, false, candidates, records);
+		return records;
+	}
+
+	private bool _knowledgeLoadFailed;
+
+	internal (string state, int count, string revision) ReadWorldBookAvailability() =>
+		(_knowledgeLoadFailed ? "load_failed" : (_file?.Rules?.Count ?? 0) == 0 ? "empty" : "ready",
+		_file?.Rules?.Count ?? 0, _file?.ContentRevision ?? "");
+
 	public long GetRuleDataVersionForExternal()
 	{
 		return Index.Version;
 	}
 
-	private string BuildLoreContextInternal(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, bool includePlayerContext, LoreCandidateRules preselectedCandidates)
+	private string BuildLoreContextInternal(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, bool includePlayerContext, LoreCandidateRules preselectedCandidates, List<string> completeRecords = null)
 	{
 		string text = (inputText ?? "").Trim();
 		MentionedWorldEntities loreMentionedEntities = mentionedEntities?.Clone() ?? new MentionedWorldEntities();
@@ -3806,7 +3880,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text8 = (text7 ?? "").Replace("|", " ").Trim();
 		LogLoreContextTrace("hero", text2, "", text3, text4, text6, text5, flag, flag2, "", text);
 		long ruleDataVersion = Index.Version;
-		bool allowLoreContextCache = !HasAnyTextMappings();
+		// A cached joined string cannot recover rule boundaries. The diplomacy
+		// capture owner caches complete records under its existing revision guard.
+		bool allowLoreContextCache = completeRecords == null && !HasAnyTextMappings();
 		string mentionSignature = LoreCandidateRetriever.BuildMentionSignature(loreMentionedEntities.Entities, KnowledgeRuleIndex.GetLoreInjectLimit(Index.GetKnowledgeReturnCap()));
 		string key = KnowledgeRuleIndex.Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_context={(includePlayerContext ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
@@ -3868,7 +3944,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					break;
 				}
 				if (TryFindRuleByExactKeyword(entityTerm, hashSet, out var matchedEntityRule)
-					&& TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedEntityRule, includePlayerPersona, "keyword_slot_external_entity", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+					&& TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedEntityRule, includePlayerPersona, "keyword_slot_external_entity", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet, completeRecords))
 				{
 					num3++;
 					num2++;
@@ -3883,7 +3959,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				{
 					break;
 				}
-				if (TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, item, includePlayerPersona, matchMode, npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+				if (TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, item, includePlayerPersona, matchMode, npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet, completeRecords))
 				{
 					num3++;
 					num2++;
@@ -3895,7 +3971,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			num2++;
 		}
-		if (!string.IsNullOrWhiteSpace(text7Keyword) && TryFindRuleByExactKeyword(text7Keyword, hashSet, out var matchedNpcRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedNpcRule, includePlayerPersona, "keyword_slot_npc", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+		if (!string.IsNullOrWhiteSpace(text7Keyword) && TryFindRuleByExactKeyword(text7Keyword, hashSet, out var matchedNpcRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedNpcRule, includePlayerPersona, "keyword_slot_npc", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet, completeRecords))
 		{
 			num2++;
 		}

@@ -24,6 +24,12 @@ internal sealed partial class WorldDiplomacyOrchestration
         => SubmitOralDiplomaticCommitment(rulerId, actorId, payload, capturedOrigin, out _);
 
     internal string SubmitOralDiplomaticCommitment(string rulerId, string actorId, string payload, DialogueInteractionOrigin capturedOrigin, out bool registered)
+        => SubmitReviewedOralCommitment(rulerId, actorId, payload, capturedOrigin, out registered, "");
+
+    private DialogueCommitmentRequest _reviewedOralEventRequest;
+
+    private string SubmitReviewedOralCommitment(string rulerId, string actorId, string payload, DialogueInteractionOrigin capturedOrigin,
+        out bool registered, string reviewedEventId)
     {
         registered = false;
         var owner = this;
@@ -33,6 +39,12 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!DialogueRulerIsCurrent(actor, rulerId) || _host.IsPlayerParty(actor))
             return DiplomacyMiscPromptTexts.Get("OralDiplomacy_Unauthorized", "Diplomatic commitment not established: the other party does not have authority to represent the kingdom for official documentation.");
         if (parsed.Move == DialogueDiplomaticMove.Discussion) return "";
+        if (DialogueRoutingRules.UsesLegacyOralVassalage(parsed, actor, CurrentPlayerAuthority()))
+        {
+            _host.Log("oral commitment routed to original vassalage entry action=" + parsed.Action);
+            return DiplomacyMiscPromptTexts.Get("OralVassalage_UseOriginalEntry",
+                "This oral submission uses the original vassalage signing entry; no formal publication commitment was created.");
+        }
         var terms = parsed.Terms;
         if (!DialogueTermsValidation.Validate(parsed.Action, terms, actor, parsed.TargetKingdomId, out string termsError)
             && parsed.Move == DialogueDiplomaticMove.NewMatter)
@@ -52,13 +64,23 @@ internal sealed partial class WorldDiplomacyOrchestration
             source = usable[0].Source;
             if (terms.Equals(new DialogueDiplomaticTerms())) terms = usable[0].Terms;
         }
+        // Event hints are not authority. Exact proposal replies use their source;
+        // new matters may reuse only a separately reviewed event association.
+        string eventId = parsed.Move == DialogueDiplomaticMove.NewMatter ? reviewedEventId ?? "" : "";
         string fingerprint = rulerId + "|" + actor + "|" + parsed.TargetKingdomId + "|" + parsed.Action + "|" + parsed.Move
-            + "|" + JsonConvert.SerializeObject(WorldDiplomacyDialogueTerms.From(terms)) + "|" + source?.DocumentId + "|" + source?.ActionId;
+            + "|" + JsonConvert.SerializeObject(WorldDiplomacyDialogueTerms.From(terms)) + "|" + source?.DocumentId + "|" + source?.ActionId + "|" + eventId;
         if (!string.IsNullOrEmpty(parsed.SupersedesArrangementId)) fingerprint += "|" + parsed.SupersedesArrangementId + "|" + parsed.SupersedesVersion;
         var duplicate = owner.Storage.DialogueArrangements?.FirstOrDefault(x => x.Fingerprint == fingerprint
             && (x.Status == "accepted" || x.Status == "deferred"
                 || (x.Status == "published" && owner.IsLiveRound(owner.ResolveRound(x.RoundId)))
                 || (x.Status == "executed" && x.CreatedDay == _host.CurrentDay())));
+        duplicate ??= owner.Storage.DialogueArrangements?.FirstOrDefault(x => capturedOrigin != null
+            && !string.IsNullOrEmpty(capturedOrigin.InteractionId) && x.SourceInteractionId == capturedOrigin.InteractionId
+            && x.SourceChannel == capturedOrigin.Channel && x.SourceSessionId == capturedOrigin.SessionId
+            && x.RulerId == rulerId && x.ActorKingdomId == actor && x.TargetKingdomId == parsed.TargetKingdomId
+            && x.Action == parsed.Action && x.Move == parsed.Move && x.Terms.ToTerms().Equals(terms)
+            && x.SourceDocumentId == (source?.DocumentId ?? "") && x.SourceActionId == (source?.ActionId ?? "")
+            && IsRegisteredDialogueCommitment(x));
         if (duplicate != null)
         {
             registered = IsRegisteredDialogueCommitment(duplicate);
@@ -68,12 +90,20 @@ internal sealed partial class WorldDiplomacyOrchestration
         var origin = capturedOrigin ?? new DialogueInteractionOrigin("legacy_domain");
         var request = new DialogueCommitmentRequest(id, parsed.SupersedesVersion > 0 ? parsed.SupersedesVersion + 1 : 1,
             origin.InteractionId, rulerId, actor, parsed.TargetKingdomId,
-            parsed.Action, parsed.Move, terms, source, origin, parsed.SupersedesArrangementId, parsed.SupersedesVersion, parsed.RevisionReason);
-        var result = DialogueSubmission.Submit(request, owner.DialogueAuthority(request), owner);
+            parsed.Action, parsed.Move, terms, source, origin, parsed.SupersedesArrangementId, parsed.SupersedesVersion, parsed.RevisionReason, eventId);
+        var previousReviewedRequest = _reviewedOralEventRequest;
+        DialogueSubmissionResult result;
+        try
+        {
+            _reviewedOralEventRequest = string.IsNullOrEmpty(eventId) ? null : request;
+            result = DialogueSubmission.Submit(request, owner.DialogueAuthority(request), owner);
+        }
+        finally { _reviewedOralEventRequest = previousReviewedRequest; }
         var saved = owner.Storage.DialogueArrangements?.FirstOrDefault(x => x.ArrangementId == id);
         if (saved != null) saved.Fingerprint = fingerprint;
         _host.Log("oral commitment ruler=" + rulerId + " action=" + parsed.Action
-            + " move=" + parsed.Move + " route=" + result.Decision.Route + " reason=" + result.Decision.Reason);
+            + " move=" + parsed.Move + " route=" + result.Decision.Route + " reason=" + result.Decision.Reason
+            + " event=" + saved?.RoundId + " binding=" + (source != null ? "source_proposal" : saved?.RoundId == eventId ? "reviewed_existing" : "new_independent"));
         if (!result.Submitted) return string.Format(DiplomacyMiscPromptTexts.Get("OralDiplomacy_SubmissionRejected", "Diplomatic commitment not submitted: {0}."), result.Decision.Reason);
         // This flag means accepted for publication, not that the treaty has taken effect.
         registered = IsRegisteredDialogueCommitment(saved);
@@ -89,14 +119,22 @@ internal sealed partial class WorldDiplomacyOrchestration
     internal string BuildOralArrangementContext(string rulerId, string actor)
     {
         if (!DialogueRulerIsCurrent(actor, rulerId) || _host.IsPlayerParty(actor)) return "";
-        var body = new StringBuilder(DiplomacyPromptTexts.Get("OralArrangementHeader", "[Oral diplomacy and formal declarations]\nOnly an explicit promise constitutes an agreement to publish; oral assent first becomes your formal declaration. New matters or revised terms open independent rounds; responses to existing proposals must bind the declaration and action. A bilateral agreement explicitly settled with the player ruler is fulfilled when your declaration is published and does not require another player acceptance declaration; matters without a third kingdom's consent remain proposals. Only the player may publish player declarations. Internal arrangement IDs, status, technical reasons and system receipts must not appear in your speech.\n"));
+        var body = new StringBuilder(DiplomacyPromptTexts.Get("OralArrangementHeader", "[Oral diplomacy and formal declarations]\nOnly explicit final assent creates a binding commitment. The declaration expresses the accepted decision; drafting cannot reconsider it. For a decision about a known existing event, append event=event_ID and continue that case; omit event only for a genuinely independent matter. Never guess attribution from recency. Accepted commitments must be fulfilled and cannot be cancelled, postponed or replaced with new terms; reject or clarify conflicting requests before giving another promise. Bilateral terms expressly agreed with the player ruler may execute after your formal declaration; third-party assent and conditions remain required. Only the player publishes player declarations. Keep internal IDs, technical status and receipts out of speech.\n"));
+        body.AppendLine(DiplomacyPromptTexts.Get("CommittedDeclaration_AllianceTerms", "This alliance establishes non-aggression and cooperation. Joining a particular war requires separate agreement; aid expressly promised will be fulfilled."));
+        body.AppendLine(DiplomacyPromptTexts.Get("Oral_AllianceBeforeAssent", "Before proposing or accepting an ordinary alliance, explain the preceding scope naturally in your actual reply, not only after a future refusal."));
         body.AppendLine(DiplomacyPromptTexts.Format("OralArrangementParties", "Your represented kingdom ID={ACTOR}; player kingdom ID={PLAYER}", "ACTOR", actor, "PLAYER", _host.PlayerKingdomId()));
+        var knownDocumentIds = CollectKnownDocumentIds(null, Storage.NobleKnowledge, Storage.KingdomKnowledge, null, actor, true, true);
+        var knownEvents = new HashSet<string>(Storage.Documents.Where(x => x.IsReadyForPublication && (x.AuthorKingdomId == actor || knownDocumentIds.Contains(x.DocumentId)))
+            .Select(x => x.RoundId), StringComparer.OrdinalIgnoreCase);
+        knownEvents.UnionWith(Storage.EventAnnouncements.Where(x => x.State == "public").Select(x => x.EventId));
+        foreach (var round in GetLiveRounds().Where(x => IsLiveRound(x) && knownEvents.Contains(x.RoundId)).Take(12))
+            body.AppendLine(DiplomacyPromptTexts.Format("OralArrangementEvent", "Known active event={ID}; topic={TOPIC}. Bind event when this decision concerns that dispute.", "ID", round.RoundId, "TOPIC", round.RoundTopic));
         var offers = GetLiveRounds().Where(IsLiveRound).SelectMany(x => x.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
             .Where(x => x != null && x.Status == "open" && x.TargetKingdomId == actor && DialogueDocumentKnown(actor, x.SourceDocumentId)).ToList();
         foreach (var offer in offers.Take(12)) body.AppendLine(DiplomacyPromptTexts.Get("OralArrangementOriginalProposal", "Original proposal document=") + offer.SourceDocumentId + ";action=" + offer.SourceActionId
             + ";proposer=" + offer.ProposerKingdomId + ";intent=" + offer.Intent + ";terms=" + JsonConvert.SerializeObject(WorldDiplomacyDialogueTerms.From(ResolveDialogueTerms(ResolveDocument(offer.SourceDocumentId), offer.SourceActionId))));
         if (offers.Count > 12) body.AppendLine(DiplomacyPromptTexts.Get("OralArrangementMoreProposals", "Further proposals are not listed; uniqueness must not be assumed. Identify the source explicitly."));
-        foreach (var item in (Storage.DialogueArrangements ?? new List<WorldDiplomacyDialogueArrangement>()).Where(x => x.RulerId == rulerId).OrderByDescending(x => x.CreatedDay).Take(6))
+        foreach (var item in (Storage.DialogueArrangements ?? new List<WorldDiplomacyDialogueArrangement>()).Where(x => x.RulerId == rulerId && x.Status is "accepted" or "deferred" or "execution_uncertain" or "published").Take(12))
             body.AppendLine(DiplomacyPromptTexts.Format("OralArrangementPrevious", "Previous arrangement ID={ID};version={VERSION};action={ACTION};target={TARGET};status={STATUS};formal declaration={DOCUMENT};result={REASON}",
                 "ID", item.ArrangementId, "VERSION", item.Version.ToString(), "ACTION", item.Action.ToString(), "TARGET", item.TargetKingdomId, "STATUS", item.Status, "DOCUMENT", item.DocumentId, "REASON", item.Reason));
         return body.ToString();
@@ -114,6 +152,12 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private WorldDiplomacyRound CreateIndependentDialogueRound(string author, string target, string arrangementId)
     {
+        string source = arrangementId == "player_manual_declaration" ? "player" : arrangementId == "npc_player_agenda" ? "npc_player_agenda" : "dialogue_commitment";
+        return CreateIndependentEventRound(author, target, arrangementId, source, source is "player" or "npc_player_agenda");
+    }
+
+    private WorldDiplomacyRound CreateIndependentEventRound(string author, string target, string arrangementId, string source, bool playerLane)
+    {
         int day = _host.CurrentDay(), duration = _host.RoundTargetDurationDays();
         var round = new WorldDiplomacyRound { SchemaVersion = _host.RelaySchemaVersion(),
             RoundId = _host.NewId("diplomacy_round"), InitiatorKingdomId = author,
@@ -122,13 +166,13 @@ internal sealed partial class WorldDiplomacyOrchestration
             RelayPassDurationDays = _host.CourtMaxDeliveryDays(), DialogueArrangementId = arrangementId,
             RoundTopic = arrangementId == "player_manual_declaration" ? DiplomacyMiscPromptTexts.Get("Dialogue_PlayerDiplomacyDeclaration", "Player Diplomatic Declaration") : DiplomacyMiscPromptTexts.Get("Dialogue_OralDiplomacyAgreement", "Oral Diplomatic Agreement"),
             IsPlayerInsertion = arrangementId == "player_manual_declaration",
-            EventSourceType = arrangementId == "player_manual_declaration" ? "player" : "dialogue_commitment" };
+            EventSourceType = source, CountryAdmissionVersion = source is "player" or "npc_player_agenda" or "dialogue_commitment" ? DiplomacyCountryAdmission.CurrentVersion : 0 };
         Storage.ConcurrentRounds ??= new List<WorldDiplomacyRound>();
         Storage.ConcurrentRounds.Add(round);
         InvalidateDialogueIndex();
         EnsureRoundParticipant(round, author, "active", false);
         EnsureRoundParticipant(round, target, "observer", false);
-        InitializeEventOwner(round, true);
+        InitializeEventOwner(round, playerLane);
         return round;
     }
 
@@ -207,10 +251,21 @@ internal sealed partial class WorldDiplomacyOrchestration
             return new DialogueWorkReceipt(false, request.ArrangementId, request.Version, "", reason);
         if (!TryValidateDialogueRevision(request, out var previous, out reason))
             return new DialogueWorkReceipt(false, request.ArrangementId, request.Version, "", reason);
-        var round = source == null ? CreateIndependentDialogueRound(ResolveDialogueParty(request.ActorKingdomId),
-            ResolveDialogueParty(request.TargetKingdomId), request.ArrangementId) : ResolveRound(source.RoundId);
+        WorldDiplomacyRound existingEvent = null;
+        if (source == null && ReferenceEquals(request, _reviewedOralEventRequest) && !string.IsNullOrEmpty(request.EventRoundId))
+        {
+            existingEvent = ResolveRound(request.EventRoundId);
+            if (!IsLiveRound(existingEvent)
+                || (!Storage.EventAnnouncements.Any(x => x.EventId == request.EventRoundId && x.State == "public")
+                    && !Storage.Documents.Any(x => x.RoundId == request.EventRoundId && x.IsReadyForPublication
+                        && DialogueDocumentKnown(request.ActorKingdomId, x.DocumentId))))
+                existingEvent = null; // Changed/unknown event falls back without losing the accepted promise.
+        }
+        var round = existingEvent ?? (source == null ? CreateIndependentDialogueRound(ResolveDialogueParty(request.ActorKingdomId),
+            ResolveDialogueParty(request.TargetKingdomId), request.ArrangementId) : ResolveRound(source.RoundId));
         if (!IsLiveRound(round)) return new DialogueWorkReceipt(false, request.ArrangementId, request.Version, "", "source_round_closed");
-        TransferEvent(round, true, "oral_commitment");
+        EnsureRoundParticipant(round, request.ActorKingdomId, "active", false);
+        RefreshEventRequests(round, "oral_commitment");
         var arrangement = new WorldDiplomacyDialogueArrangement {
             ArrangementId = request.ArrangementId, Version = request.Version, SourceInteractionId = request.SourceInteractionId,
             SourceChannel = request.Origin?.Channel ?? "legacy_domain", SourceSessionId = request.Origin?.SessionId ?? "",
@@ -222,17 +277,26 @@ internal sealed partial class WorldDiplomacyOrchestration
             CreatedDay = _host.CurrentDay(), Status = "accepted" };
         if (request.Move == DialogueDiplomaticMove.NewMatter && _host.IsPlayerParty(request.TargetKingdomId)
             && DialogueHost?.IsPlayerRuler(_host.PartyRulerId(request.TargetKingdomId)) == true
-            && request.Origin != null && !string.IsNullOrWhiteSpace(request.Origin.PlayerText)
+            && request.Origin != null && request.Origin.PlayerConsentConfirmed != false && !string.IsNullOrWhiteSpace(request.Origin.PlayerText)
             && !string.IsNullOrWhiteSpace(request.Origin.NpcText))
             arrangement.ConfirmedPlayerRulerId = _host.PartyRulerId(request.TargetKingdomId);
         Storage.DialogueArrangements.Add(arrangement);
-        if (previous != null) SupersedeDialogueArrangement(previous, arrangement, request.RevisionReason);
+        if (HasCurrentPlayerConsent(arrangement) && (arrangement.Action == DialogueDiplomaticAction.Alliance
+            || arrangement.Action == DialogueDiplomaticAction.Trade)) arrangement.TreatyExecutionState = "pending";
         RecordDialogueArrangementFact(arrangement, "consent", string.Format(DiplomacyMiscPromptTexts.Get("Dialogue_PromisedDeclarationOnTopic", "I have explicitly promised to issue a formal declaration regarding {0}; an oral agreement does not yet mean the treaty has taken effect."), _host.PartyNameOrEmpty(ResolveDialogueParty(request.TargetKingdomId))));
         PublishDialogueArrangement(arrangement);
         return new DialogueWorkReceipt(true, request.ArrangementId, request.Version, round.RoundId, arrangement.Reason);
     }
 
     public void CancelUnpublishedCommitmentWork(string arrangementId, int version, string reason)
+    {
+        // Public cancellation requests cannot revoke an accepted promise. The
+        // validator may terminate it only after reading objective current facts.
+        var item = Storage.DialogueArrangements?.FirstOrDefault(x => x.ArrangementId == arrangementId && x.Version == version);
+        if (CanInvalidateDialogueArrangement(item)) TryValidateOralDeclarationWork(item, out _);
+    }
+
+    private void InvalidateImpossibleCommitment(string arrangementId, int version, string reason)
     {
         var item = Storage.DialogueArrangements?.FirstOrDefault(x => x.ArrangementId == arrangementId && x.Version == version);
         if (!CanInvalidateDialogueArrangement(item)) return;
@@ -256,13 +320,17 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private void MaintainDialogueArrangements()
     {
+        if (!_host.WorldDiplomacyEnabled()) return;
         RecoverLegacyOralDrafts();
-        foreach (var item in (Storage.DialogueArrangements ?? Enumerable.Empty<WorldDiplomacyDialogueArrangement>())
-            .Where(x => x.Status == "accepted" || x.Status == "deferred")) RecoverDialoguePublicationReceipt(item);
+        foreach (var item in Storage.DialogueArrangements ?? Enumerable.Empty<WorldDiplomacyDialogueArrangement>())
+        {
+            RecoverSkippedOralTreaty(item);
+            if (item.Status == "accepted" || item.Status == "deferred") RecoverDialoguePublicationReceipt(item);
+        }
         foreach (var item in (Storage.DialogueArrangements ?? new List<WorldDiplomacyDialogueArrangement>())
             .Where(x => x.Status == "accepted" || x.Status == "deferred").ToList())
             if (!HasCurrentDiplomaticRulerMemorySnapshot(ResolveDialogueParty(item.ActorKingdomId), item.RulerId))
-                CancelUnpublishedCommitmentWork(item.ArrangementId, item.Version, "original_ruler_no_longer_authorized");
+                InvalidateImpossibleCommitment(item.ArrangementId, item.Version, "original_ruler_no_longer_authorized");
         foreach (var item in (Storage.DialogueArrangements ?? new List<WorldDiplomacyDialogueArrangement>())
             .Where(x => (x.Status == "accepted" || (x.Status == "deferred" && !x.ExplicitlyDeferred))
                 && x.GenerationRetryAfterDay <= _host.CurrentDay()).Take(4).ToList()) PublishDialogueArrangement(item);
@@ -301,7 +369,8 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         if (item == null || (item.Status != "accepted" && item.Status != "deferred")) return false;
         var document = ResolveDocument(item.DocumentId);
-        if (document?.IsReadyForPublication != true) return false;
+        if (document?.IsReadyForPublication != true || document.EventExecutionPending
+            || item.TreatyExecutionState is "pending" or "started" or "uncertain") return false;
         item.Status = document.ChangedDiplomaticState ? "executed" : "published";
         item.Reason = document.MechanicalResult ?? "publication_receipt_recovered";
         return true;
@@ -310,6 +379,8 @@ internal sealed partial class WorldDiplomacyOrchestration
     private void PublishDialogueArrangementCore(WorldDiplomacyDialogueArrangement item)
     {
         if (!TryValidateOralDeclarationWork(item, out _)) return;
+        if (ResolveDocument(item.DocumentId)?.EventExecutionPending == true)
+        { CommitPendingEventDocuments(ResolveRound(item.RoundId), true); return; }
         if (Storage.Jobs.Any(x => x.DialogueArrangementId == item.ArrangementId
             && x.DialogueArrangementVersion == item.Version)) return;
         var job = new WorldDiplomacyJob { JobId = _host.NewId("oral_declaration"), Kind = "generate",
@@ -317,7 +388,12 @@ internal sealed partial class WorldDiplomacyOrchestration
             RoundId = item.RoundId, ExchangeId = item.RoundId, SourceDocumentId = item.SourceDocumentId,
             DialogueArrangementId = item.ArrangementId, DialogueArrangementVersion = item.Version,
             IsResponse = item.IsWithdrawal || item.Move != DialogueDiplomaticMove.NewMatter, Priority = 95, CreatedDay = _host.CurrentDay() };
-        if (RebuildOralDeclarationJob(job)) EnqueueJob(job);
+        if (item.GenerationFailureAttempts >= 3)
+        {
+            EnqueueJob(job);
+            CommitOralDeclaration(job, BuildCommittedDeclaration(item));
+        }
+        else if (RebuildOralDeclarationJob(job)) EnqueueJob(job);
     }
 
     // The counterparty negotiated this face to face, so its court knows the declaration at once instead of

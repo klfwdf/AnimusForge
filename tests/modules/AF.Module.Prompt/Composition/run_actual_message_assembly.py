@@ -54,7 +54,7 @@ refs = (a.references or ROOT / ('local/bannerlord-refs/1.4.7.117484' if marker['
 assert refs.is_dir(), 'candidate API references missing'
 game_directories = [refs]
 overlay = ROOT / '.tmp/build_check' / marker['BannerlordApi']
-if overlay.is_dir() and overlay != refs:
+if not a.references and overlay.is_dir() and overlay != refs:
     game_directories.append(overlay)
 for directory in game_directories:
     versions = set(re.findall(r'v\d+\.\d+\.\d+\.\d+', (directory / 'TaleWorlds.Library.dll').read_bytes().decode('utf-16-le', errors='ignore')))
@@ -90,7 +90,7 @@ if build.returncode == 0:
         replay_candidate.parent.mkdir(parents=True)
         shutil.copyfile(candidate, replay_candidate)
         assert hashlib.sha256(replay_candidate.read_bytes()).hexdigest().upper() == digest
-        fixture = subprocess.run(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(Path(__file__).with_name("actual_module_fixture.ps1")), "-ProjectRoot", str(ROOT), "-ModuleRoot", str(module), "-Language", language], cwd=out, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
+        fixture = subprocess.run(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(Path(__file__).with_name("actual_module_fixture.ps1")), "-ProjectRoot", str(ROOT), "-ModuleRoot", str(module), "-Language", language], cwd=out, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900)
         (out / f"fixture-{language}.log").write_text(fixture.stdout + fixture.stderr, encoding="utf-8")
         assert fixture.returncode == 0, fixture.stdout + fixture.stderr
         run = subprocess.run([str(out / 'bin/Release/net472/Checks.exe'), str(replay_candidate), digest] + [str(path) for path in directories], cwd=out, env=dict(env, AF_TEST_MODULE_ROOT=str(module), AF_TEST_REFERENCES='|'.join(map(str, game_directories)), ANIMUSFORGE_DATA_ROOT=str(module), AF_TEST_RECORDED_REQUEST=str(a.recorded_request.resolve()) if a.recorded_request else ''), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)

@@ -11,6 +11,7 @@ internal static class MainPromptMessageAssemblyOwner
 {
 	internal static List<object> BuildCourierReplyMessages(string npcName, string playerName, string letterText, string extras, string deliveryFact, string history, IEnumerable<ConversationMessage> persistentMemoryRoleMessages, string npcRoleContext, string preprocessExcludedRuleBlock, string recentFacts, string senderIdentity, string senderRelationship, string currentLocationLine, string currentDateFact, string playerCustomRuleBlock, IEnumerable<ConversationMessage> recallMessages = null)
 	{
+        var projectedMemories = ApplyRecallBudget(ref extras, ref history, ref persistentMemoryRoleMessages, ref recallMessages, npcName, playerName);
 		string system = PromptComposerTexts.Format("main_courier_reply_system", ("NPC", npcName), ("PLAYER", playerName));
 		if (!string.IsNullOrWhiteSpace(npcRoleContext))
 		{
@@ -55,7 +56,7 @@ internal static class MainPromptMessageAssemblyOwner
 			CreateCourierChatMessage("system", system)
 		};
 		string contextText = context.ToString().Trim();
-		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
+		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName, projectedMemories);
 		AppendCourierRecallMessage(messages, recallMessages, npcName, playerName);
 		if (!string.IsNullOrWhiteSpace(contextText))
 		{
@@ -78,6 +79,7 @@ internal static class MainPromptMessageAssemblyOwner
 
 	internal static List<object> BuildInboundNpcLetterMessages(string npcName, string playerName, string seed, string extras, string fact, string history, IEnumerable<ConversationMessage> persistentMemoryRoleMessages, string npcRoleContext, string preprocessExcludedRuleBlock, string recentFacts, string playerIdentity, string playerRelationship, string currentLocationLine, string currentDateFact, int targetChars, string letterKind, string playerCustomRuleBlock, IEnumerable<ConversationMessage> recallMessages = null)
 	{
+        var projectedMemories = ApplyRecallBudget(ref extras, ref history, ref persistentMemoryRoleMessages, ref recallMessages, npcName, playerName);
 		string system = PromptComposerTexts.Format("main_courier_inbound_system", ("NPC", npcName), ("PLAYER", playerName), ("KIND", letterKind), ("CHARS", targetChars));
 		if (!string.IsNullOrWhiteSpace(npcRoleContext))
 		{
@@ -122,7 +124,7 @@ internal static class MainPromptMessageAssemblyOwner
 			CreateCourierChatMessage("system", system)
 		};
 		string contextText = context.ToString().Trim();
-		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
+		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName, projectedMemories);
 		AppendCourierRecallMessage(messages, recallMessages, npcName, playerName);
 		if (!string.IsNullOrWhiteSpace(contextText))
 		{
@@ -142,6 +144,27 @@ internal static class MainPromptMessageAssemblyOwner
 		messages.Add(CreateCourierChatMessage("user", current.ToString().Trim()));
 		return messages;
 	}
+
+    internal static object CreateMemoryChatMessage(string role, string content, Action<int> lengthSink)
+    { lengthSink?.Invoke((content ?? "").Length); return CreateCourierChatMessage(role, content); }
+
+    private static Dictionary<ConversationMessage, object> ApplyRecallBudget(ref string extras, ref string history,
+        ref IEnumerable<ConversationMessage> memories, ref IEnumerable<ConversationMessage> recalls, string npcName, string playerName)
+    {
+        var budget = new RequestRecallBudget(new[] { extras, RequestRecallBudget.WrapPersonal(history) });
+        var projected = new Dictionary<ConversationMessage, object>();
+        var original = (memories ?? Enumerable.Empty<ConversationMessage>()).Where(x => x != null).ToList();
+        var recalled = (recalls ?? Enumerable.Empty<ConversationMessage>()).Where(x => x != null).ToList();
+        var selected = new HashSet<ConversationMessage>(budget.SelectMessages(original.Concat(recalled), item => {
+            int length = 0;
+            if (TryConvertCourierMemoryMessageToChatMessage(item, npcName, playerName, out var message, x => length = x)) projected[item] = message;
+            return length;
+        }, x => x.PromptFactScopeCaptured && x.PromptIsCurrentFact));
+        memories = original.Where(selected.Contains).ToList();
+        recalls = recalled.Where(selected.Contains).ToList();
+        string[] sections = budget.FinishSections(); extras = sections[0]; history = sections[1];
+        return projected;
+    }
 
 	internal static object CreateCourierChatMessage(string role, string content)
 	{
@@ -178,7 +201,7 @@ internal static class MainPromptMessageAssemblyOwner
 		builder.AppendLine(content.Trim());
 	}
 
-	internal static void AppendCourierPersistentMemoryRoleMessages(List<object> messages, IEnumerable<ConversationMessage> historyMessages, string npcName, string playerName)
+	internal static void AppendCourierPersistentMemoryRoleMessages(List<object> messages, IEnumerable<ConversationMessage> historyMessages, string npcName, string playerName, Dictionary<ConversationMessage, object> projected = null)
 	{
 		if (messages == null || historyMessages == null)
 		{
@@ -192,7 +215,7 @@ internal static class MainPromptMessageAssemblyOwner
 		foreach (ConversationMessage message in history)
 		{
             if (message.Role != "system" && (group == 0 || message.Role == "user")) group++;
-			if (TryConvertCourierMemoryMessageToChatMessage(message, npcName, playerName, out var chatMessage))
+			if ((projected != null && projected.TryGetValue(message, out var chatMessage)) || TryConvertCourierMemoryMessageToChatMessage(message, npcName, playerName, out chatMessage))
 			{
                 if (message.Role != "system" && group < totalGroups && chatMessage is ConversationPromptMessage speech)
                     chatMessage = new ConversationPromptMessage(speech.role, speech.content, group);
@@ -215,7 +238,7 @@ internal static class MainPromptMessageAssemblyOwner
 			messages.Add(CreateCourierChatMessage("user", PromptComposerTexts.Format("scene_prefix_recall", ("TEXT", string.Join("\n", lines)))));
 	}
 
-	internal static bool TryConvertCourierMemoryMessageToChatMessage(ConversationMessage message, string npcName, string playerName, out object chatMessage)
+	internal static bool TryConvertCourierMemoryMessageToChatMessage(ConversationMessage message, string npcName, string playerName, out object chatMessage, Action<int> lengthSink = null)
 	{
 		chatMessage = null;
 		if (message == null)
@@ -235,22 +258,22 @@ internal static class MainPromptMessageAssemblyOwner
 		string metadata = BuildCourierMemoryMetadataPrefix(message, string.IsNullOrWhiteSpace(speaker) ? PromptComposerTexts.Get("residual_record") : speaker);
 		if (ConversationRoleClassificationOwner.IsViewerAssistant(message, npcName, null, -1, useStableIdentity: false))
 		{
-			chatMessage = CreateCourierChatMessage("assistant", metadata + StripCourierSpeakerPrefix(content, npcName));
+			chatMessage = CreateMemoryChatMessage("assistant", metadata + StripCourierSpeakerPrefix(content, npcName), lengthSink);
 			return true;
 		}
 		if (role.Equals("system", StringComparison.OrdinalIgnoreCase))
 		{
-			chatMessage = CreateCourierChatMessage("user", metadata + PromptComposerTexts.Get("history_section_scope_historical") + MemorySystemFactProjection.ProjectNpcFact(StripCourierPromptScopeLabel(content)));
+			chatMessage = CreateMemoryChatMessage("user", metadata + PromptComposerTexts.Get("history_section_scope_historical") + MemorySystemFactProjection.ProjectNpcFact(StripCourierPromptScopeLabel(content)), lengthSink);
 			return true;
 		}
 		if (role.Equals("assistant", StringComparison.OrdinalIgnoreCase))
 		{
 			string otherSpeaker = string.IsNullOrWhiteSpace(speaker) ? PromptComposerTexts.Get("residual_other_npc") : speaker;
-			chatMessage = CreateCourierChatMessage("user", metadata + PromptComposerTexts.Get("residual_past_heard") + otherSpeaker + PromptComposerTexts.Get("residual_says") + StripCourierSpeakerPrefix(content, otherSpeaker));
+			chatMessage = CreateMemoryChatMessage("user", metadata + PromptComposerTexts.Get("residual_past_heard") + otherSpeaker + PromptComposerTexts.Get("residual_says") + StripCourierSpeakerPrefix(content, otherSpeaker), lengthSink);
 			return true;
 		}
 		string player = string.IsNullOrWhiteSpace(playerName) ? PromptComposerTexts.Raw("player_fallback") : playerName.Trim();
-		chatMessage = CreateCourierChatMessage("user", metadata + StripCourierSpeakerPrefix(content, player));
+		chatMessage = CreateMemoryChatMessage("user", metadata + StripCourierSpeakerPrefix(content, player), lengthSink);
 		return true;
 	}
 
@@ -351,6 +374,8 @@ internal static class MainPromptMessageAssemblyOwner
         string privateRecent, string persistedHistory, string runtime, string local,
         string currentFact, string trust, string misc, string patience, string knowledge, string rules)
     {
+        privateRecent = RequestRecallBudget.WrapPersonal(privateRecent);
+        persistedHistory = RequestRecallBudget.WrapPersonal(persistedHistory);
         string ruleBlock = BuildSceneCompositeUserBlock("", knowledge, rules);
         switch (layout)
         {

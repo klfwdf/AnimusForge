@@ -6,11 +6,27 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyStorage
 {
+    [JsonProperty("materialCountrySchemaVersion")] public int MaterialCountrySchemaVersion { get; set; }
+    [JsonProperty("lastNpcPlayerContactDay")] public int LastNpcPlayerContactDay { get; set; } = -1;
+    [JsonProperty("npcPlayerContactCount")] public int NpcPlayerContactCount { get; set; }
+    [JsonProperty("publishedPlayerContacts")] public HashSet<string> PublishedPlayerContacts { get; set; } = new(StringComparer.Ordinal);
+    [JsonProperty("materialInvestigations")] public Dictionary<string, DiplomacyMaterialInvestigation> MaterialInvestigations { get; set; } = new(StringComparer.Ordinal);
+    [JsonProperty("materialLeads")] public List<DiplomacyMaterialLead> MaterialLeads { get; set; } = new();
+    [JsonProperty("countryParticipation")] public Dictionary<string, DiplomacyCountryParticipation> CountryParticipation { get; set; } = new(StringComparer.Ordinal);
+    [JsonProperty("speechReviews")] public List<DiplomacySpeechReview> SpeechReviews { get; set; } = new();
+    [JsonProperty("reviewedSpeechSources")] public List<string> ReviewedSpeechSources { get; set; } = new();
+    [JsonProperty("legacyPreservedJobs")] public List<WorldDiplomacyJob> LegacyPreservedJobs { get; set; } = new();
+    [JsonProperty("aidRequests")] public List<DiplomacyAidRequest> AidRequests { get; set; } = new();
+    [JsonProperty("eventAnnouncements")] public List<DiplomacyEventAnnouncement> EventAnnouncements { get; set; } = new();
+    [JsonProperty("eventEffects")] public List<DiplomacyEventEffectState> EventEffects { get; set; } = new();
+    [JsonProperty("recentEventImages")] public List<string> RecentEventImages { get; set; } = new();
+    [JsonProperty("eventsPausedAtHour")] public double EventsPausedAtHour { get; set; } = -1;
     [JsonProperty("playerLifecycleSchemaVersion")] public int PlayerLifecycleSchemaVersion { get; set; }
     [JsonProperty("playerLifecycleRecoveryRoundIds")] public List<string> PlayerLifecycleRecoveryRoundIds { get; set; } = new();
     [JsonProperty("playerDiplomacySchemaVersion")] public int PlayerDiplomacySchemaVersion { get; set; }
     [JsonProperty("nextPlayerAgendaDay")] public int NextPlayerAgendaDay { get; set; }
     [JsonProperty("playerAgendaCursor")] public int PlayerAgendaCursor { get; set; }
+    [JsonProperty("oralServiceRetryAfterUtcTicks")] public long OralServiceRetryAfterUtcTicks { get; set; }
     [JsonProperty("playerServiceRetryAfterUtcTicks")] public long PlayerServiceRetryAfterUtcTicks { get; set; }
     [JsonProperty("lastPlayerAgendaEvaluationDay")] public int LastPlayerAgendaEvaluationDay { get; set; } = -1;
     [JsonProperty("playerAgendaCandidates")] public List<WorldDiplomacyPlayerAgendaCandidate> PlayerAgendaCandidates { get; set; } = new();
@@ -186,6 +202,13 @@ public sealed class WorldDiplomacyStorage
 
 	[JsonProperty("compressionSequence")]
 	public int CompressionSequence { get; set; }
+
+    [JsonProperty("historyFragmentWork")] public DiplomacyHistoryFragmentWork HistoryFragmentWork { get; set; }
+    [JsonProperty("compressionInputBudgetTokens")] public int CompressionInputBudgetTokens { get; set; }
+    [JsonProperty("speechServiceOutage")] public bool SpeechServiceOutage { get; set; }
+    [JsonProperty("speechServiceRecoveryEpoch")] public long SpeechServiceRecoveryEpoch { get; set; }
+    [JsonProperty("compressionConfigurationFingerprint")] public string CompressionConfigurationFingerprint { get; set; } = "";
+    [JsonProperty("compressionHoldReason")] public string CompressionHoldReason { get; set; } = "";
 
 	[JsonProperty("compressionRetryAfterHour")]
 	public int CompressionRetryAfterHour { get; set; }

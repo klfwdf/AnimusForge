@@ -150,16 +150,6 @@ internal static class WorldDiplomacyStorageNormalizationApplication
         {
             try
             {
-                WorldDiplomacyStorageMigration.MigrateResultSettlementStateIfNeeded(
-                    storage, source.ResultSettlementStateSchemaVersion,
-                    orchestration.BeginOrExtendRoundResultSettlement, source.Log);
-            }
-            catch (Exception ex)
-            {
-                source.Log("round result-settlement migration deferred after error=" + ex.Message);
-            }
-            try
-            {
                 WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(
                     storage, source.DiplomacyPromptContractVersion, source.HasCampaignWorld,
                     orchestration.TryRebuildPendingJob, orchestration.CompleteExchange,

@@ -144,7 +144,8 @@ internal static class CivilWarWorld
 		{
 			if (first == null || second == null || first == second || first.IsEliminated || second.IsEliminated) return;
 			if (!first.IsAtWarWith(second)) return;
-			MakePeaceAction.Apply(first, second);
+            WorldDiplomacyBehavior.RunAuthorizedEventPeace(first as Kingdom, second as Kingdom,
+                () => MakePeaceAction.Apply(first, second));
 		}
 		catch (Exception ex)
 		{

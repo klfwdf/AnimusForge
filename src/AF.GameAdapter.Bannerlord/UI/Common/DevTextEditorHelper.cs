@@ -8,7 +8,7 @@ namespace AnimusForge;
 
 public static class DevTextEditorHelper
 {
-	public static void ShowLongTextEditor(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSave, Action onCancel, string saveText = null, string cancelText = null)
+	public static void ShowLongTextEditor(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSave, Action onCancel, string saveText = null, string cancelText = null, Func<string> resetText = null)
 	{
 		saveText = saveText ?? new TextObject("{=AF_UI_Common_Save}Save").ToString();
 		cancelText = cancelText ?? new TextObject("{=AF_UI_Common_Back}Back").ToString();
@@ -17,10 +17,11 @@ public static class DevTextEditorHelper
 		{
 			InvokeSaveSafely(onSave, text);
 		};
-		if (DevHistoryEditPopup.Show(titleText, subtitleText, safeInitialText, initialText, safeOnSave, onCancel, inputHintText, saveText, cancelText))
+		if (DevHistoryEditPopup.Show(titleText, subtitleText, safeInitialText, initialText, safeOnSave, onCancel, inputHintText, saveText, cancelText, resetText))
 		{
 			return;
 		}
+		if (resetText != null) throw new InvalidOperationException(new TextObject("{=AF_UI_Editor_OpenFailed}The text editor could not be opened. Close it and try again.").ToString());
 		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, BuildFallbackDescription(subtitleText, inputHintText), isAffirmativeOptionShown: true, isNegativeOptionShown: true, saveText, cancelText, safeOnSave, onCancel, shouldInputBeObfuscated: false, null, "", safeInitialText));
         if (initialWasTruncated) NotifyInputTruncated();
 	}

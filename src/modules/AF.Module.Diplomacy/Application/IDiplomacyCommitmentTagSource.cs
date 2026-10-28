@@ -8,3 +8,8 @@ internal interface IDiplomacyCommitmentTagSource
     string ControlCommitment(string payload);
     string SubmitLegacyCommitment(string action, string payload);
 }
+
+internal interface IDiplomacyCommitmentReviewSource
+{
+    bool CaptureCommitmentReview(string tagHints);
+}

@@ -43,6 +43,11 @@
                 </Widget>
                 <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="55" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="10" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                   <Children>
+                    <ButtonWidget IsVisible="@CanRestoreDefaults" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="55" MarginRight="26" VerticalAlignment="Center" Brush="Popup.Cancel.Button" Command.Click="ExecuteRestoreDefaults" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Text="@RestoreDefaultsText" />
+                      </Children>
+                    </ButtonWidget>
                     <ButtonWidget DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="55" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Cancel.Button" Command.Click="ExecuteCancel" UpdateChildrenStates="true">
                       <Children>
                         <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="30" MarginRight="25" Brush="Popup.Button.Text" Text="@CancelText" />

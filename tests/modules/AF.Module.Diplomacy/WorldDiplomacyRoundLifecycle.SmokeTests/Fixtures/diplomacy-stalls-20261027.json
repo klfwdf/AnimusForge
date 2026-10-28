@@ -1,0 +1,44 @@
+{
+  "evidence": "Token_Stats.txt:559748, Mod_Logic.txt:776796/777244; 2026-10-27 installed baseline c754916e5",
+  "merged": {
+    "round_id": "diplomacy_event:65a7be3d36c148a2beac43766592bbfb",
+    "job_id": "diplomacy_generate:40a807a367274f66b9acd365fcdfc81b",
+    "draft_digest": "10af079e6f9c73d1",
+    "title": "告南帝国书：违法庇叛，兵戎相见",
+    "body": "拉盖娅：贵方公然蔑视北帝国之法统，庇护叛逆、干涉内政，铁证如山，无可诡辩。先前之警告既遭蔑视，今日唯有兵戎相见，以清君侧、定国基。北帝国之领土与法理不容宵小践踏，战端既开，尔等自承其果！",
+    "required_sources": [
+      {
+        "source": "diplomacy_document:b25cfa1ffc5444679f199d2bdbbc346a",
+        "author": "empire_s",
+        "body": "卢孔陛下：贵方自诩法纪，却对国内离心离德的封臣残暴清算，致使内乱频生、众叛亲离，此乃贵方失政之果，何故诿过于南帝国？南帝国向来秉持独立主权，不惧任何无端恐吓与严厉警告。至于贵方内政之变与臣属进言，本皇向来冷眼旁观，亦不屑于迎合贵方独裁之法理。若欲加之罪，南帝国奉陪到底，倒要看看贵方如何自负其果！",
+        "required_answer": true
+      },
+      {
+        "source": "diplomacy_document:c3abc3e2d76642d2b6794a12664551db",
+        "author": "khuzait",
+        "body": "卢孔：尔等在定居世界的内部争斗与虚浮警告，与草原无关。库赛特的铁骑只看重力量与实际利益，对尔等之纷争冷眼旁观。若把这视为软弱或受尔等规束，那是痴心妄想。唯有战马所踏之地，方为真实法则。",
+        "required_answer": true
+      },
+      {
+        "source": "diplomacy_document:91fd74269c1447d5a7440423916ffc6d",
+        "author": "nord",
+        "body": "卢孔陛下，听闻你正忙于整肃内政、清算异己，帝国上下风声鹤唳。诺德人只信奉刀剑与黄金，对你们争夺正统的法理游戏毫无兴趣。南方若因内乱而生动荡，长船与商队自然会循着血腥味与财宝南下。我们冷眼旁观尔等内讧，莫将无谓的警告施加于诺德的长船之上。",
+        "required_answer": true
+      }
+    ]
+  },
+  "silence": {
+    "round_id": "diplomacy_round:d38e13ea43e64fe79cd629cfec508a70",
+    "source_id": "diplomacy_document:d957311f023143ee8231c738e29a161c",
+    "closure_id": "diplomacy_document:b0ed06b80e9c4b82867b4db53d97f0f0",
+    "issuer": "empire",
+    "target": "empire_w",
+    "title": "北帝国宣战昭告",
+    "consequence": "ordinary",
+    "intent": "statement",
+    "changed_diplomatic_state": false,
+    "threat_status": "open",
+    "target_decision": "pending",
+    "player_waits": []
+  }
+}

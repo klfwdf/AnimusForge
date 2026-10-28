@@ -12,6 +12,165 @@ namespace AnimusForge;
 internal static class WorldDiplomacyThreatSettlementApplication
 {
 
+
+	internal static bool TryApplyDiplomaticThreatPolicyConditionCancellation(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration, WorldDiplomacyThreat threat)
+	{
+		WorldDiplomacyPolicyCancellationDispatch dispatch =
+			WorldDiplomacyRoundLifecycleRules.EvaluateThreatPolicyCancellationDispatch(threat);
+		if (dispatch == WorldDiplomacyPolicyCancellationDispatch.Reject) return false;
+		if (dispatch == WorldDiplomacyPolicyCancellationDispatch.AlreadyComplete) return true;
+		if (dispatch == WorldDiplomacyPolicyCancellationDispatch.MarkNotBound)
+		{
+			threat.PolicyConditionCancellationCompleted = true;
+			threat.PolicyConditionCancellationStatus = "not_bound";
+			return true;
+		}
+
+		bool completed = _port.CancelPolicy(
+			threat.PolicyConditionPolicyId,
+			threat.PolicyConditionOwnerKingdomId,
+			DiplomacyMiscPromptTexts.Get("ThreatSettlement_CancelPolicyReasonPrefix", "Diplomatic threat concession: ") + threat.ThreatId,
+			out string policyName,
+			out string result);
+		if (!completed)
+		{
+			_port.Log("diplomatic threat policy cancellation deferred threat=" + threat.ThreatId
+				+ " policy=" + threat.PolicyConditionPolicyId + " result=" + (result ?? ""));
+			return false;
+		}
+		if (!string.IsNullOrWhiteSpace(policyName)) threat.PolicyConditionPolicyName = WorldDiplomacyTextRules.Limit(policyName.Trim(), 80);
+		threat.PolicyConditionCancellationCompleted = true;
+		threat.PolicyConditionCancellationStatus = WorldDiplomacyRoundLifecycleRules.ResolvePolicyCancellationStatus(result);
+		threat.PolicyConditionCancellationDay = _port.CurrentDay();
+		threat.UpdatedDay = Math.Max(threat.UpdatedDay, threat.PolicyConditionCancellationDay);
+		_storage?.PendingPolicySignals?.RemoveAll(signal => WorldDiplomacyRoundLifecycleRules.IsPolicySignalBoundTo(
+			signal, threat.PolicyConditionPolicyId, threat.PolicyConditionOwnerKingdomId));
+		foreach (var round in WorldDiplomacyLiveRoundRules.Live(_storage))
+			WorldDiplomacyRoundLifecycleRules.RemoveSettledPolicySignalContextFromActiveRound(
+				round, threat.PolicyConditionPolicyId, threat.PolicyConditionOwnerKingdomId);
+		WorldDiplomacyRoundLifecycleRules.InvalidateOtherThreatsBoundToSettledPolicy(
+			threat, _storage?.DiplomaticThreats, _port.CurrentDay(), _port.Log);
+		_port.Log("diplomatic threat policy cancellation settled threat=" + threat.ThreatId
+			+ " policy=" + threat.PolicyConditionPolicyId
+			+ " owner=" + threat.PolicyConditionOwnerKingdomId
+			+ " result=" + threat.PolicyConditionCancellationStatus);
+		return true;
+	}
+
+
+	internal static bool ResolveDiplomaticThreatCompliance(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration, WorldDiplomacyDocument document, string compliantKingdom, string issuer)
+	{
+		if (document == null || compliantKingdom == null || issuer == null) return false;
+		WorldDiplomacyThreat threat = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(_storage?.DiplomaticThreats?.Where(x => x.StageRoundId == document.RoundId).ToList(), issuer, compliantKingdom)
+			?? WorldDiplomacyRoundLifecycleRules.SelectComplianceRecordedThreat(
+				_storage.DiplomaticThreats, issuer, compliantKingdom,
+				document.DocumentId, document.ProcessingActionId);
+		if (WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAlreadyRecorded(threat, document.DocumentId))
+		{
+			document.ChangedDiplomaticState = true;
+			document.MechanicalResult = DiplomacyMiscPromptTexts.Get("ThreatSettlement_CompliedStagePrefix", "Explicitly complied with stage=") + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage);
+			return true;
+		}
+		if (!WorldDiplomacyRoundLifecycleRules.IsThreatComplianceStageMatch(
+			threat, document.RespondingToThreatDocumentId, document.RespondingToThreatActionId)) return false;
+
+		WorldDiplomacyRoundLifecycleRules.ApplyThreatComplianceResolution(threat, document, _port.CurrentDay());
+		int prestigeChange = WorldDiplomacyRoundLifecycleRules.ResolveCompliancePrestigeDelta(
+			threat.Stage, _port.UltimatumCompliancePrestigeChange, _port.WarningCompliancePrestigeChange);
+		_orchestration.ApplyNationalPrestigeDelta(issuer, prestigeChange, document,
+			string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_ForcedOpponentComplyFormat", "Forced {0} to comply with {1}"), _port.KingdomName(compliantKingdom), WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage)));
+		_orchestration.ApplyNationalPrestigeDelta(compliantKingdom, -prestigeChange, document,
+			string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_CompliedUnderPressureFormat", "Complied with {0}'s {1} under pressure"), _port.KingdomName(issuer), WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage)));
+		bool domesticPenaltyCompleted = TryApplyUltimatumComplianceDomesticPenalty(_storage, _port, _orchestration, threat, compliantKingdom, out int affectedClanCount);
+		bool policyCancellationCompleted = TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, _orchestration, threat);
+		bool issuerRewardCompleted = TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, _orchestration, threat, issuer, out int rewardedClanCount);
+		document.ChangedDiplomaticState = true;
+		document.MechanicalResult = DiplomacyMiscPromptTexts.Get("ThreatSettlement_CompliedStagePrefix", "Explicitly complied with stage=") + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage)
+			+ (WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled(threat.PolicyConditionCancellationStatus)
+			? string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_AttachedPolicyCancelledFormat", "; Attached policy \"{0}\" was cancelled"), WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.PolicyConditionPolicyName, threat.PolicyConditionPolicyId))
+				: "");
+		_port.Log("diplomatic threat complied threat=" + threat.ThreatId
+			+ " issuer=" + issuer + " target=" + compliantKingdom
+			+ " domestic_penalty_completed=" + domesticPenaltyCompleted
+			+ " domestic_penalty_applied_clans=" + affectedClanCount.ToString(CultureInfo.InvariantCulture)
+			+ " policy_cancellation_completed=" + policyCancellationCompleted
+			+ " policy=" + threat.PolicyConditionPolicyId
+			+ " issuer_reward_completed=" + issuerRewardCompleted
+			+ " issuer_reward_applied_clans=" + rewardedClanCount.ToString(CultureInfo.InvariantCulture));
+		return true;
+	}
+
+
+	internal static void RetryDiplomaticThreatComplianceConsequences(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration)
+	{
+		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
+			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsPolicyCancellationRetry, 8))
+		{
+			threat.UpdatedDay = _port.CurrentDay();
+			TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, _orchestration, threat);
+			WorldDiplomacyRoundLifecycleRules.UpdateDiplomaticThreatComplianceDocumentResult(threat, _port.ResolveDocument);
+		}
+
+		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
+			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsIssuerRewardSettlementRetry, 8))
+		{
+			threat.UpdatedDay = _port.CurrentDay();
+			WorldDiplomacyConsequenceParty issuerParty = _port.ReadParty(threat.IssuerKingdomId);
+			string issuer = issuerParty?.Id;
+			bool cannotCaptureEliminatedKingdomSnapshot = WorldDiplomacyRoundLifecycleRules.CannotCaptureThreatConsequenceSnapshot(
+				issuerParty?.IsEliminated == true, issuerParty?.HasRulingClan != true,
+				threat.IssuerRewardSnapshotCaptured);
+			bool completed = issuer != null && !cannotCaptureEliminatedKingdomSnapshot
+				? TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, _orchestration, threat, issuer, out int affectedClanCount)
+				: WorldDiplomacyRoundLifecycleRules.CompleteUnresolvableDiplomaticThreatIssuerRelationReward(
+				threat, out affectedClanCount, _port.GetThreatComplianceIssuerRelationReward(), _port.CurrentDay(), _port.Log);
+			if (!completed) continue;
+			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult(threat);
+		}
+	}
+
+	internal static void RetryDiplomaticThreatHistoryResults(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration)
+	{
+		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
+			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsNonComplianceHistoryRetry, 8))
+		{
+			WorldDiplomacyThreatHistoryApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(threat, _orchestration.TryAppendDiplomaticThreatNonComplianceHistoryResult);
+		}
+		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
+			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsThreatResultHistoryRetry, 8))
+		{
+			threat.UpdatedDay = _port.CurrentDay();
+			if (string.Equals(threat.Status, "breached", StringComparison.OrdinalIgnoreCase))
+			{
+				_orchestration.TryAppendDiplomaticThreatHistoryResult(threat);
+				continue;
+			}
+			WorldDiplomacyDocument source = _port.ResolveDocument(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.ComplianceDocumentId, threat.ResolutionDocumentId));
+			if (source == null || !source.ChangedDiplomaticState) continue;
+			try
+			{
+				_orchestration.AppendCanonicalDocumentEvents(source);
+				WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(source,
+			_storage?.DiplomaticThreats, _orchestration.TryAppendDiplomaticThreatHistoryResult,
+			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult,
+			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult);
+			}
+			catch (Exception ex)
+			{
+				_port.Log("threat history retry failed threat=" + threat.ThreatId + " error=" + ex.Message);
+			}
+		}
+		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
+			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsDomesticPenaltyHistoryRetry, 8))
+		{
+			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(threat);
+		}
+		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
+			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsIssuerRewardHistoryRetry, 8))
+		{
+			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult(threat);
+		}
+	}
 	internal static bool TryApplyUltimatumComplianceDomesticPenalty(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration,
 		WorldDiplomacyThreat threat,
 		string compliantKingdom,
@@ -170,51 +329,6 @@ internal static class WorldDiplomacyThreatSettlementApplication
 			+ " completed=" + threat.DomesticPenaltyCompleted);
 		return threat.DomesticPenaltyCompleted;
 	}
-
-	internal static bool TryApplyDiplomaticThreatPolicyConditionCancellation(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration, WorldDiplomacyThreat threat)
-	{
-		WorldDiplomacyPolicyCancellationDispatch dispatch =
-			WorldDiplomacyRoundLifecycleRules.EvaluateThreatPolicyCancellationDispatch(threat);
-		if (dispatch == WorldDiplomacyPolicyCancellationDispatch.Reject) return false;
-		if (dispatch == WorldDiplomacyPolicyCancellationDispatch.AlreadyComplete) return true;
-		if (dispatch == WorldDiplomacyPolicyCancellationDispatch.MarkNotBound)
-		{
-			threat.PolicyConditionCancellationCompleted = true;
-			threat.PolicyConditionCancellationStatus = "not_bound";
-			return true;
-		}
-
-		bool completed = _port.CancelPolicy(
-			threat.PolicyConditionPolicyId,
-			threat.PolicyConditionOwnerKingdomId,
-			DiplomacyMiscPromptTexts.Get("ThreatSettlement_CancelPolicyReasonPrefix", "Diplomatic threat concession: ") + threat.ThreatId,
-			out string policyName,
-			out string result);
-		if (!completed)
-		{
-			_port.Log("diplomatic threat policy cancellation deferred threat=" + threat.ThreatId
-				+ " policy=" + threat.PolicyConditionPolicyId + " result=" + (result ?? ""));
-			return false;
-		}
-		if (!string.IsNullOrWhiteSpace(policyName)) threat.PolicyConditionPolicyName = WorldDiplomacyTextRules.Limit(policyName.Trim(), 80);
-		threat.PolicyConditionCancellationCompleted = true;
-		threat.PolicyConditionCancellationStatus = WorldDiplomacyRoundLifecycleRules.ResolvePolicyCancellationStatus(result);
-		threat.PolicyConditionCancellationDay = _port.CurrentDay();
-		threat.UpdatedDay = Math.Max(threat.UpdatedDay, threat.PolicyConditionCancellationDay);
-		_storage?.PendingPolicySignals?.RemoveAll(signal => WorldDiplomacyRoundLifecycleRules.IsPolicySignalBoundTo(
-			signal, threat.PolicyConditionPolicyId, threat.PolicyConditionOwnerKingdomId));
-		foreach (var round in WorldDiplomacyLiveRoundRules.Live(_storage))
-			WorldDiplomacyRoundLifecycleRules.RemoveSettledPolicySignalContextFromActiveRound(
-				round, threat.PolicyConditionPolicyId, threat.PolicyConditionOwnerKingdomId);
-		WorldDiplomacyRoundLifecycleRules.InvalidateOtherThreatsBoundToSettledPolicy(
-			threat, _storage?.DiplomaticThreats, _port.CurrentDay(), _port.Log);
-		_port.Log("diplomatic threat policy cancellation settled threat=" + threat.ThreatId
-			+ " policy=" + threat.PolicyConditionPolicyId
-			+ " owner=" + threat.PolicyConditionOwnerKingdomId
-			+ " result=" + threat.PolicyConditionCancellationStatus);
-		return true;
-	}
-
 	internal static bool TryApplyDiplomaticThreatIssuerRelationReward(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration,
 		WorldDiplomacyThreat threat,
 		string issuerKingdom,
@@ -370,49 +484,6 @@ internal static class WorldDiplomacyThreatSettlementApplication
 			+ " completed=" + threat.IssuerRewardCompleted);
 		return threat.IssuerRewardCompleted;
 	}
-
-	internal static bool ResolveDiplomaticThreatCompliance(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration, WorldDiplomacyDocument document, string compliantKingdom, string issuer)
-	{
-		if (document == null || compliantKingdom == null || issuer == null) return false;
-		WorldDiplomacyThreat threat = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(_storage?.DiplomaticThreats, issuer, compliantKingdom)
-			?? WorldDiplomacyRoundLifecycleRules.SelectComplianceRecordedThreat(
-				_storage.DiplomaticThreats, issuer, compliantKingdom,
-				document.DocumentId, document.ProcessingActionId);
-		if (WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAlreadyRecorded(threat, document.DocumentId))
-		{
-			document.ChangedDiplomaticState = true;
-			document.MechanicalResult = DiplomacyMiscPromptTexts.Get("ThreatSettlement_CompliedStagePrefix", "Explicitly complied with stage=") + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage);
-			return true;
-		}
-		if (!WorldDiplomacyRoundLifecycleRules.IsThreatComplianceStageMatch(
-			threat, document.RespondingToThreatDocumentId, document.RespondingToThreatActionId)) return false;
-
-		WorldDiplomacyRoundLifecycleRules.ApplyThreatComplianceResolution(threat, document, _port.CurrentDay());
-		int prestigeChange = WorldDiplomacyRoundLifecycleRules.ResolveCompliancePrestigeDelta(
-			threat.Stage, _port.UltimatumCompliancePrestigeChange, _port.WarningCompliancePrestigeChange);
-		_orchestration.ApplyNationalPrestigeDelta(issuer, prestigeChange, document,
-			string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_ForcedOpponentComplyFormat", "Forced {0} to comply with {1}"), _port.KingdomName(compliantKingdom), WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage)));
-		_orchestration.ApplyNationalPrestigeDelta(compliantKingdom, -prestigeChange, document,
-			string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_CompliedUnderPressureFormat", "Complied with {0}'s {1} under pressure"), _port.KingdomName(issuer), WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage)));
-		bool domesticPenaltyCompleted = TryApplyUltimatumComplianceDomesticPenalty(_storage, _port, _orchestration, threat, compliantKingdom, out int affectedClanCount);
-		bool policyCancellationCompleted = TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, _orchestration, threat);
-		bool issuerRewardCompleted = TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, _orchestration, threat, issuer, out int rewardedClanCount);
-		document.ChangedDiplomaticState = true;
-		document.MechanicalResult = DiplomacyMiscPromptTexts.Get("ThreatSettlement_CompliedStagePrefix", "Explicitly complied with stage=") + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage)
-			+ (WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled(threat.PolicyConditionCancellationStatus)
-			? string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_AttachedPolicyCancelledFormat", "; Attached policy \"{0}\" was cancelled"), WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.PolicyConditionPolicyName, threat.PolicyConditionPolicyId))
-				: "");
-		_port.Log("diplomatic threat complied threat=" + threat.ThreatId
-			+ " issuer=" + issuer + " target=" + compliantKingdom
-			+ " domestic_penalty_completed=" + domesticPenaltyCompleted
-			+ " domestic_penalty_applied_clans=" + affectedClanCount.ToString(CultureInfo.InvariantCulture)
-			+ " policy_cancellation_completed=" + policyCancellationCompleted
-			+ " policy=" + threat.PolicyConditionPolicyId
-			+ " issuer_reward_completed=" + issuerRewardCompleted
-			+ " issuer_reward_applied_clans=" + rewardedClanCount.ToString(CultureInfo.InvariantCulture));
-		return true;
-	}
-
 	internal static void ApplyDiplomaticThreatReputationPenalty(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration,
 		WorldDiplomacyThreat threat,
 		WorldDiplomacyDocument document)
@@ -437,7 +508,6 @@ internal static class WorldDiplomacyThreatSettlementApplication
 			+ " stage=" + threat.Stage + " penalty=" + threat.ReputationPenaltyAmount.ToString(CultureInfo.InvariantCulture)
 			+ " prestige=" + after.ToString(CultureInfo.InvariantCulture));
 	}
-
 	internal static void RetryDiplomaticThreatDomesticPenalties(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration)
 	{
 		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
@@ -473,77 +543,6 @@ internal static class WorldDiplomacyThreatSettlementApplication
 				}
 			}
 			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(threat);
-		}
-	}
-
-	internal static void RetryDiplomaticThreatComplianceConsequences(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration)
-	{
-		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
-			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsPolicyCancellationRetry, 8))
-		{
-			threat.UpdatedDay = _port.CurrentDay();
-			TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, _orchestration, threat);
-			WorldDiplomacyRoundLifecycleRules.UpdateDiplomaticThreatComplianceDocumentResult(threat, _port.ResolveDocument);
-		}
-
-		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
-			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsIssuerRewardSettlementRetry, 8))
-		{
-			threat.UpdatedDay = _port.CurrentDay();
-			WorldDiplomacyConsequenceParty issuerParty = _port.ReadParty(threat.IssuerKingdomId);
-			string issuer = issuerParty?.Id;
-			bool cannotCaptureEliminatedKingdomSnapshot = WorldDiplomacyRoundLifecycleRules.CannotCaptureThreatConsequenceSnapshot(
-				issuerParty?.IsEliminated == true, issuerParty?.HasRulingClan != true,
-				threat.IssuerRewardSnapshotCaptured);
-			bool completed = issuer != null && !cannotCaptureEliminatedKingdomSnapshot
-				? TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, _orchestration, threat, issuer, out int affectedClanCount)
-				: WorldDiplomacyRoundLifecycleRules.CompleteUnresolvableDiplomaticThreatIssuerRelationReward(
-				threat, out affectedClanCount, _port.GetThreatComplianceIssuerRelationReward(), _port.CurrentDay(), _port.Log);
-			if (!completed) continue;
-			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult(threat);
-		}
-	}
-
-	internal static void RetryDiplomaticThreatHistoryResults(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration)
-	{
-		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
-			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsNonComplianceHistoryRetry, 8))
-		{
-			WorldDiplomacyThreatHistoryApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(threat, _orchestration.TryAppendDiplomaticThreatNonComplianceHistoryResult);
-		}
-		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
-			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsThreatResultHistoryRetry, 8))
-		{
-			threat.UpdatedDay = _port.CurrentDay();
-			if (string.Equals(threat.Status, "breached", StringComparison.OrdinalIgnoreCase))
-			{
-				_orchestration.TryAppendDiplomaticThreatHistoryResult(threat);
-				continue;
-			}
-			WorldDiplomacyDocument source = _port.ResolveDocument(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.ComplianceDocumentId, threat.ResolutionDocumentId));
-			if (source == null || !source.ChangedDiplomaticState) continue;
-			try
-			{
-				_orchestration.AppendCanonicalDocumentEvents(source);
-				WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(source,
-			_storage?.DiplomaticThreats, _orchestration.TryAppendDiplomaticThreatHistoryResult,
-			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult,
-			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult);
-			}
-			catch (Exception ex)
-			{
-				_port.Log("threat history retry failed threat=" + threat.ThreatId + " error=" + ex.Message);
-			}
-		}
-		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
-			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsDomesticPenaltyHistoryRetry, 8))
-		{
-			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(threat);
-		}
-		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
-			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsIssuerRewardHistoryRetry, 8))
-		{
-			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult(threat);
 		}
 	}
 }

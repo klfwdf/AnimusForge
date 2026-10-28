@@ -848,6 +848,8 @@ internal sealed partial class NativeConversationGameEffectsRuntime
 
 			{
 
+                using var diplomacyOrigin = DiplomacyDialogueSourceScope.Begin(initial, "native", expectedConversationToken.ToString(),
+                    playerText, completion?.NpcReplyText ?? initial, completion?.DiplomacyInteractionId ?? "");
 				NativeConversationGameActionResult result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData,
 
 					sceneSummonTargets, sceneGuideTargets, initial, playerText, expectedConversationManager, expectedConversationToken);
@@ -856,6 +858,9 @@ internal sealed partial class NativeConversationGameEffectsRuntime
 
 				{
 
+                    // Even an empty postprocess has an accepted spoken reply to review.
+                    string diplomacyEvidenceOnly = "";
+                    DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(targetHero, ref diplomacyEvidenceOnly);
 					RunNativeAcceptedReplySideEffects(completion);
 
 					result.FinalVisible = CompleteNativeConversationReplyOnMainThread(completionScope, result);

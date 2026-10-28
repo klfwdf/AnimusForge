@@ -46,6 +46,7 @@ internal static class ApplicationTickComposition
 		DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded();
 		// RichText handlers queue layer changes so encyclopedia navigation never mutates layers during widget event dispatch.
 		EncyclopediaEntityLinkNavigationCoordinator.ProcessPending();
+		DiplomacyEventPopup.OnApplicationTick();
 		PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded();
 		PlayerRpForgePopup.ProcessDeferredCloseIfNeeded();
 		AnimusForgeApiOnboardingPopup.ProcessDeferredCloseIfNeeded();
@@ -90,6 +91,7 @@ internal static class ApplicationTickComposition
 			RunWatchedTickPhase("SubModule.DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded", () => DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded());
 			// Preserve the same next-frame RichText navigation ordering while detailed performance scopes are enabled.
 			RunWatchedTickPhase("SubModule.EncyclopediaEntityLinkNavigationCoordinator.ProcessPending", () => EncyclopediaEntityLinkNavigationCoordinator.ProcessPending());
+			RunWatchedTickPhase("SubModule.DiplomacyEventPopup.OnApplicationTick", () => DiplomacyEventPopup.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded", () => PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.PlayerRpForgePopup.ProcessDeferredCloseIfNeeded", () => PlayerRpForgePopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.AnimusForgeApiOnboardingPopup.ProcessDeferredCloseIfNeeded", () => AnimusForgeApiOnboardingPopup.ProcessDeferredCloseIfNeeded());

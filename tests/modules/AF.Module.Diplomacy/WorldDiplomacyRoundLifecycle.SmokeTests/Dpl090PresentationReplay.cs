@@ -19,41 +19,11 @@ internal static class Dpl090PresentationReplay
         Test.True(EqualityComparer<T>.Default.Equals(expected, actual), message + $": expected={expected}, actual={actual}");
     internal static void Run()
     {
-        DateProjection();
         Queries();
         Notifications();
+        NotificationSignatures();
         Commands();
         Boundaries();
-    }
-
-    private static void DateProjection()
-    {
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "English UI resources remain selectable");
-        Equal("Year 2, spring 3", DiplomacyDateProjection.ForUi("2年春季3天"),
-            "known persisted campaign date projects to English UI");
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("简体中文"), "Chinese UI resources remain selectable");
-        Equal("2年 春季 3日", DiplomacyDateProjection.ForUi("2年春季3天"),
-            "known persisted campaign date projects to Chinese UI");
-        const string unknown = "玩家自定义日期：原样保留";
-        Equal(unknown, DiplomacyDateProjection.ForUi(unknown), "unknown dynamic date remains unchanged");
-
-        var document = Document("date-notice", 3);
-        document.GameDate = "2年春季3天";
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "English UI resources remain selectable for notice");
-        string englishNotice = WorldDiplomacyTextRules.BuildNotificationDescription(document, day => "day" + day,
-            DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi);
-        Test.True(englishNotice.StartsWith("Year 2, spring 3", StringComparison.Ordinal),
-            "map notification projects persisted date for English UI");
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("简体中文"), "Chinese UI resources remain selectable for notice");
-        string chineseNotice = WorldDiplomacyTextRules.BuildNotificationDescription(document, day => "day" + day,
-            DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi);
-        Test.True(chineseNotice.StartsWith("2年 春季 3日", StringComparison.Ordinal),
-            "map notification projects persisted date for Chinese UI");
-        document.GameDate = unknown;
-        Test.True(WorldDiplomacyTextRules.BuildNotificationDescription(document, day => "day" + day,
-            DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi).StartsWith(unknown, StringComparison.Ordinal),
-            "map notification preserves unknown dynamic date");
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage(SmokeLocalizationEnvironment.EnglishUi ? "English" : "简体中文"), "smoke UI language restored");
     }
 
     private static WorldDiplomacyDocument Document(string id, int day) => new()
@@ -89,17 +59,6 @@ internal static class Dpl090PresentationReplay
         Test.True(!full[1].IsRead, "timeline read marker is a snapshot");
         var detail = WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "日期" + day);
         Equal((SmokeLocalizationEnvironment.EnglishUi ? "作者国 · 统治者 · 日期2 · Diplomatic announcement" : "作者国 · 统治者 · 日期2 · 外交公告"), detail.Subtitle, "detail subtitle and localized type preserved");
-        second.GameDate = "2年春季3天";
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "English UI resources remain selectable for detail");
-        Test.True(WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "day" + day).Subtitle
-            .Contains("Year 2, spring 3", StringComparison.Ordinal), "detail subtitle projects persisted date for English UI");
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("简体中文"), "Chinese UI resources remain selectable for detail");
-        Test.True(WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "day" + day).Subtitle
-            .Contains("2年 春季 3日", StringComparison.Ordinal), "detail subtitle projects persisted date for Chinese UI");
-        second.GameDate = "玩家自定义日期：原样保留";
-        Test.True(WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "day" + day).Subtitle
-            .Contains("玩家自定义日期：原样保留", StringComparison.Ordinal), "detail subtitle preserves unknown dynamic date");
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage(SmokeLocalizationEnvironment.EnglishUi ? "English" : "简体中文"), "smoke UI language restored after detail projection");
         Equal(42L, detail.Generation, "detail carries lifecycle value only");
         Test.True(detail.CanReply && !second.IsRead, "query does not mark read");
         Test.True(WorldDiplomacyTimelineApplication.MarkRead(storage, second.DocumentId) && second.IsRead, "read command marks canonical record");
@@ -136,7 +95,7 @@ internal static class Dpl090PresentationReplay
         for (int i = 0; i < 500; i++) storage.Documents.Add(Document(i.ToString(), i));
         Equal(420, WorldDiplomacyPresentationQueries.Timeline(storage, 900).Documents.Count, "timeline hard cap");
         Equal(242, WorldDiplomacyPresentationQueries.Archive(storage, _ => "日期", _ => null!, _ => null!).Count, "archive retains 240-document cap plus summaries");
-        Test.True(WorldDiplomacyPresentationQueries.Standing(storage, "author").StartsWith(SmokeLocalizationEnvironment.EnglishUi ? "【National prestige and international reputation】" : "【国家威望与国际声誉】"), "encyclopedia heading preserved");
+        Equal("", WorldDiplomacyPresentationQueries.Standing(storage, "author"), "Q50 retired global prestige/reputation no longer has an encyclopedia projection");
         Equal("", WorldDiplomacyPresentationQueries.Standing(storage, null!), "no faction yields empty encyclopedia block");
         storage.Documents = null!;
         var empty = WorldDiplomacyPresentationQueries.Timeline(storage, 40);
@@ -173,6 +132,40 @@ internal static class Dpl090PresentationReplay
             RoutedNotices.Add(notice);
         }
         public void Log(string text) => Logs.Add(text);
+    }
+
+    private static void NotificationSignatures()
+    {
+        var storage = new WorldDiplomacyStorage();
+        var document = Document("snapshot-author", 1);
+        document.AuthorKingdomName = "Old Realm {BODY}";
+        document.AuthorRulerName = "Former Ruler $1";
+        document.Body = "德泰尔国王：\n\nOriginal statement {SPEAKER}";
+        storage.Documents.Add(document);
+        var realmOnly = Document("realm-only", 2);
+        realmOnly.AuthorRulerName = " ";
+        storage.Documents.Add(realmOnly);
+        var rulerOnly = Document("ruler-only", 3);
+        rulerOnly.AuthorKingdomName = null;
+        storage.Documents.Add(rulerOnly);
+        var unknown = Document("unknown-author", 4);
+        unknown.AuthorKingdomName = ""; unknown.AuthorRulerName = null;
+        storage.Documents.Add(unknown);
+        var sink = new Sink();
+        var owner = new WorldDiplomacyNotificationApplication();
+        var now = new DateTime(2026, 10, 27);
+        owner.Poll(storage, now, sink);
+        owner.Poll(storage, now.AddSeconds(1), sink);
+        string header = SmokeLocalizationEnvironment.EnglishUi ? "\n【Speaker | " : "\n【发言者｜";
+        Test.True(sink.RoutedNotices[0].Description.EndsWith(header + "Old Realm {BODY} · Former Ruler $1】\n德泰尔国王：\n\nOriginal statement {SPEAKER}"),
+            "publication speaker has a labeled standalone header; recipient salutation, blank lines and literal slots remain in the separate body");
+        Test.True(sink.RoutedNotices[1].Description.EndsWith(header + "作者国】\n正文"), "legacy kingdom-only author has no invented current ruler");
+        Test.True(sink.RoutedNotices[2].Description.EndsWith(header + "统治者】\n正文"), "legacy ruler-only author has no empty separator");
+        Test.True(sink.RoutedNotices[3].Description.EndsWith(header + (SmokeLocalizationEnvironment.EnglishUi ? "Unrecorded issuer" : "未记载的发布者") + "】\n正文"),
+            "missing publication identity has localized honest fallback");
+        Equal("Old Realm {BODY}", document.AuthorKingdomName, "notice projection never rewrites stored author");
+        Equal("Former Ruler $1", document.AuthorRulerName, "notice projection never rewrites stored ruler");
+        Equal("德泰尔国王：\n\nOriginal statement {SPEAKER}", document.Body, "notice projection never rewrites original speech");
     }
 
     private static void Notifications()
@@ -215,7 +208,7 @@ internal static class Dpl090PresentationReplay
         storage.Documents.Add(suppressed);
         sink.MapNotificationsEnabled = false;
         owner.Poll(storage, now.AddSeconds(2), sink);
-        Test.True(suppressed.FormalNoticeShown && suppressed.IsNotified, "disabled right notices actually display text and consume shown records including pre-read player notices");
+        Test.True(!suppressed.FormalNoticeShown && !suppressed.IsNotified, "disabled declaration display preserves pending pre-read notices");
         sink.MapNotificationsEnabled = true;
         owner.Poll(storage, now.AddSeconds(3), sink);
         Test.True(sink.Notices.Count(x => x == "suppressed") == 1, "reenabling does not repeat the text notice");
@@ -226,9 +219,9 @@ internal static class Dpl090PresentationReplay
         sink.Ready = false;
         owner.Poll(storage, now.AddSeconds(4), sink);
         Test.True(!deferred.FormalNoticeShown, "non-map state defers formal notice");
-        sink.Ready = true; sink.Registered = false;
+        sink.Ready = true; sink.Registered = false; deferred.HasReachedPlayerCourt = false;
         owner.Poll(storage, now.AddSeconds(5), sink);
-        Test.True(!deferred.FormalNoticeShown, "registration failure defers formal notice");
+        Test.True(!deferred.FormalNoticeShown, "undelivered notice remains pending independently of widget registration");
         sink.Registered = true;
         deferred.HasReachedPlayerCourt = false;
         owner.Poll(storage, now.AddSeconds(6), sink);
@@ -279,10 +272,10 @@ internal static class Dpl090PresentationReplay
         var routeOwner = new WorldDiplomacyNotificationApplication();
         var routeSink = new Sink { Registered = false };
         routeOwner.Poll(routed, now, routeSink);
-        Equal("unrelated", string.Join(",", routeSink.Notices), "unavailable player-realm widgets do not block unrelated foreign text");
-        Test.True(!routeSink.RoutedNotices.Single().ShowOnMap && !domestic.FormalNoticeShown && !foreign.FormalNoticeShown,
-            "author and explicit player target both remain retryable until the widget registers");
-        Equal(1, routeSink.Registrations, "widget registration is probed once for both player-realm notices in a poll");
+        Equal("domestic,foreign,unrelated", string.Join(",", routeSink.Notices), "all delivered declarations use text independently of right widgets");
+        Test.True(routeSink.RoutedNotices.All(x => !x.ShowOnMap) && domestic.FormalNoticeShown && foreign.FormalNoticeShown,
+            "author and explicit player target both receive full declaration text");
+        Equal(0, routeSink.Registrations, "text delivery never requires right widget registration");
         Test.True(routeSink.Logs.Any(s => s.Contains("document=unrelated") && s.Contains("route=text")
             && s.Contains("author=author") && s.Contains("targets=other") && s.Contains("player=player")),
             "third-party text route records its author, targets and current player realm");
@@ -293,9 +286,9 @@ internal static class Dpl090PresentationReplay
         routeSink.Registered = true;
         routeOwner.Poll(routed, now.AddSeconds(2), routeSink);
         Test.True(domestic.FormalNoticeShown && foreign.FormalNoticeShown
-            && routeSink.RoutedNotices.Where(n => n.DocumentId != "unrelated").All(n => n.ShowOnMap),
-            "same-country author and foreign player target both restore right icons on registration recovery, ignoring ID case");
-        Test.True(routeSink.Logs.Any(s => s.Contains("document=foreign") && s.Contains("route=map")
+            && routeSink.RoutedNotices.Where(n => n.DocumentId != "unrelated").All(n => !n.ShowOnMap),
+            "same-country author and foreign player target stay delivered without duplicates after registration changes");
+        Test.True(routeSink.Logs.Any(s => s.Contains("document=foreign") && s.Contains("route=text")
             && s.Contains("targets=player") && s.Contains("player=player")), "direct player map publication has a distinguishable route diagnostic");
         Test.True(!playerWritten.FormalNoticeShown && !notArrived.FormalNoticeShown,
             "existing self-authored exclusion and court-delivery gates remain");
@@ -322,10 +315,10 @@ internal static class Dpl090PresentationReplay
         var targetSink = new Sink();
         targetOwner.Poll(targetStorage, now, targetSink);
         Equal("action-target,addressed-target,represented-target", string.Join(",", targetSink.Notices),
-            "foreign multi-action, explicit addressed list and mechanically represented addressee use capped right-icon publication");
-        Test.True(targetSink.RoutedNotices.All(n => n.ShowOnMap), "non-changing action targets still concern the player realm");
+            "foreign multi-action, explicit addressed list and mechanically represented addressee use capped text publication");
+        Test.True(targetSink.RoutedNotices.All(n => !n.ShowOnMap), "non-changing action targets still concern the player realm");
         targetOwner.Poll(targetStorage, now.AddSeconds(1), targetSink);
-        Test.True(explicitWithActions.FormalNoticeShown && targetSink.RoutedNotices.Last().ShowOnMap,
+        Test.True(explicitWithActions.FormalNoticeShown && !targetSink.RoutedNotices.Last().ShowOnMap,
             "explicit document target remains eligible even when the action list has another target");
         Test.True(readTarget.FormalNoticeShown && targetSink.Notices.Contains("read-target")
             && readTarget.ActualPlayerNoticeHour == 245, "pre-read player-target document is actually notified once");
@@ -345,9 +338,9 @@ internal static class Dpl090PresentationReplay
         disabledStorage.Documents.AddRange(new[] { disabledOwn, disabledForeign });
         var disabledSink = new Sink { MapNotificationsEnabled = false };
         new WorldDiplomacyNotificationApplication().Poll(disabledStorage, now, disabledSink);
-        Test.True(disabledOwn.FormalNoticeShown && disabledForeign.FormalNoticeShown && disabledSink.Notices.Count == 2 && disabledSink.Registrations == 0
-            && disabledSink.RoutedNotices.All(x => !x.ShowOnMap) && disabledForeign.ActualPlayerNoticeHour == 245,
-            "disabled right notices use actual text display without widget registration and record display time");
+        Test.True(!disabledOwn.FormalNoticeShown && !disabledForeign.FormalNoticeShown && disabledSink.Notices.Count == 0 && disabledSink.Registrations == 0
+            && disabledSink.RoutedNotices.All(x => !x.ShowOnMap) && disabledForeign.ActualPlayerNoticeHour < 0,
+            "disabled declaration display cannot claim delivery or start reply timers");
     }
 
     private sealed class PlayerWorld : IWorldDiplomacyPlayerWorld

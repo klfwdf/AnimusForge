@@ -110,16 +110,18 @@ public sealed class DialogueCommitmentRequest
     public string SupersedesArrangementId { get; }
     public int SupersedesVersion { get; }
     public string RevisionReason { get; }
+    public string EventRoundId { get; }
     public DialogueCommitmentRequest(string arrangementId, int version, string sourceInteractionId, string rulerId,
         string actorKingdomId, string targetKingdomId, DialogueDiplomaticAction action, DialogueDiplomaticMove move,
         DialogueDiplomaticTerms terms = null, DialogueProposalReference claimedProposal = null,
-        DialogueInteractionOrigin origin = null, string supersedesArrangementId = "", int supersedesVersion = 0, string revisionReason = "")
+        DialogueInteractionOrigin origin = null, string supersedesArrangementId = "", int supersedesVersion = 0, string revisionReason = "", string eventRoundId = "")
     {
         ArrangementId = arrangementId; Version = version; SourceInteractionId = sourceInteractionId; RulerId = rulerId;
         ActorKingdomId = actorKingdomId; TargetKingdomId = targetKingdomId; Action = action; Move = move;
         Terms = terms ?? new DialogueDiplomaticTerms(); ClaimedProposal = claimedProposal;
         Origin = origin; SupersedesArrangementId = supersedesArrangementId ?? "";
         SupersedesVersion = supersedesVersion; RevisionReason = revisionReason ?? "";
+        EventRoundId = eventRoundId ?? "";
     }
 }
 

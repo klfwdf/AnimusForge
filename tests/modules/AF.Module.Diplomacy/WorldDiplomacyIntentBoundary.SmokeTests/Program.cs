@@ -530,7 +530,7 @@ internal static class Program
 		RunMultiTargetDeclarationContractTests(source, roundRecords, threatRecords);
 		RunPermanentAllianceContractTests(source);
         RunPolicyThreatComplianceConsequenceContractTests(source, roundRecords, threatRecords);
-        RunThreatStateRuleTests();
+
         RunOfferCooldownRuleTests();
         RunOfferCooldownIntegrationContractTests(source);
         RunRelayPromptDecisionContextParityContractTests(source);
@@ -4154,154 +4154,9 @@ internal static class Program
             "schema v3 threat records must normalize policy state and all issuer-reward idempotency lists");
     }
 
-	private static void RunThreatStateRuleTests()
-    {
-        const string StageDocumentId = "diplomacy_document:threat-stage-1";
 
-        // `statement` is deliberately retained only as a legacy published-document
-        // fixture here. New DECLARE/ANALYZE contracts and publication guards must not
-        // create it, but an old save containing one must still settle threat state.
 
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "pending", StageDocumentId, true, "comply_ultimatum", StageDocumentId, true),
-            WorldDiplomacyThreatStateRuleResult.MarkTargetComplied,
-            "an exact first-declaration compliance must comply");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "pending", StageDocumentId, true, "statement", "", false),
-            WorldDiplomacyThreatStateRuleResult.MarkTargetNoncomplied,
-            "any other first published intent must be noncompliance");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "pending", StageDocumentId, true, "comply_ultimatum", "diplomacy_document:other", true),
-            WorldDiplomacyThreatStateRuleResult.MarkTargetNoncomplied,
-            "compliance with the wrong source must not comply");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "pending", StageDocumentId, true, "comply_ultimatum", StageDocumentId, false),
-            WorldDiplomacyThreatStateRuleResult.MarkTargetNoncomplied,
-            "compliance addressed to another kingdom must not comply");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "noncomplied", StageDocumentId, false, "comply_ultimatum", StageDocumentId, true),
-            WorldDiplomacyThreatStateRuleResult.RejectLateCompliance,
-            "compliance after a noncompliance decision must be rejected");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "complied", StageDocumentId, false, "comply_ultimatum", StageDocumentId, true),
-            WorldDiplomacyThreatStateRuleResult.RejectLateCompliance,
-            "a duplicate compliance after the decision must be rejected");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "pending", StageDocumentId, false, "statement", "", false),
-            WorldDiplomacyThreatStateRuleResult.RebuildStaleStageSnapshot,
-            "an unseen current target stage must rebuild before publication");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "pending", StageDocumentId, false, "comply_ultimatum", StageDocumentId, true),
-            WorldDiplomacyThreatStateRuleResult.RebuildStaleStageSnapshot,
-            "even an apparently exact compliance must rebuild when its stage snapshot is stale");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "pending", "", true, "statement", "", false),
-            WorldDiplomacyThreatStateRuleResult.RebuildStaleStageSnapshot,
-            "a missing current target stage id must rebuild before publication");
 
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "warning", StageDocumentId, true, "ultimatum", true, false),
-            WorldDiplomacyThreatStateRuleResult.MarkFollowThroughSatisfied,
-            "a rejected warning must be followed by an ultimatum to the same target");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "warning", StageDocumentId, true, "declare_war", true, true),
-            WorldDiplomacyThreatStateRuleResult.MarkFollowThroughBreached,
-            "declaring war directly must not replace the promised warning-to-ultimatum step");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "warning", StageDocumentId, true, "ultimatum", false, false),
-            WorldDiplomacyThreatStateRuleResult.MarkFollowThroughBreached,
-            "an ultimatum to another kingdom must breach the warning obligation");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "ultimatum", StageDocumentId, true, "declare_war", true, true),
-            WorldDiplomacyThreatStateRuleResult.MarkFollowThroughSatisfied,
-            "a rejected ultimatum requires a successful war declaration");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "ultimatum", StageDocumentId, true, "declare_war", true, false),
-            WorldDiplomacyThreatStateRuleResult.DeferFollowThroughForTechnicalFailure,
-            "the correct war intent with a failed mechanic must defer instead of breach");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "ultimatum", StageDocumentId, true, "statement", true, false),
-            WorldDiplomacyThreatStateRuleResult.MarkFollowThroughBreached,
-            "a non-war declaration must breach an ultimatum obligation");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "ultimatum", StageDocumentId, false, "statement", true, false),
-            WorldDiplomacyThreatStateRuleResult.RebuildStaleStageSnapshot,
-            "an unseen current follow-through stage must rebuild rather than breach or bypass");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "ultimatum", StageDocumentId, false, "declare_war", true, true),
-            WorldDiplomacyThreatStateRuleResult.RebuildStaleStageSnapshot,
-            "even a successful-looking war declaration must rebuild when its stage snapshot is stale");
-        AssertStateRule(
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "unknown", StageDocumentId, true, "statement", true, false),
-            WorldDiplomacyThreatStateRuleResult.RebuildStaleStageSnapshot,
-            "an unknown stage must rebuild rather than publish around the obligation");
-
-        WorldDiplomacyThreatStateRuleResult normalTargetStatement =
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "pending", StageDocumentId, true, "statement", "", false);
-        WorldDiplomacyThreatStateRuleResult fallbackTargetStatement =
-            WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-                "pending", StageDocumentId, true, "statement", "", false);
-        Test.True(normalTargetStatement == fallbackTargetStatement
-            && fallbackTargetStatement == WorldDiplomacyThreatStateRuleResult.MarkTargetNoncomplied,
-            "a published fallback target statement must settle exactly like a normal statement");
-
-        WorldDiplomacyThreatStateRuleResult normalIssuerStatement =
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "warning", StageDocumentId, true, "statement", true, false);
-        WorldDiplomacyThreatStateRuleResult fallbackIssuerStatement =
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "warning", StageDocumentId, true, "statement", true, false);
-        Test.True(normalIssuerStatement == fallbackIssuerStatement
-            && fallbackIssuerStatement == WorldDiplomacyThreatStateRuleResult.MarkFollowThroughBreached,
-            "a published fallback issuer statement must settle exactly like a normal statement");
-
-        WorldDiplomacyThreatStateRuleResult normalMechanicalFailure =
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "ultimatum", StageDocumentId, true, "declare_war", true, false);
-        WorldDiplomacyThreatStateRuleResult fallbackMechanicalFailure =
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "ultimatum", StageDocumentId, true, "declare_war", true, false);
-        Test.True(normalMechanicalFailure == fallbackMechanicalFailure
-            && fallbackMechanicalFailure == WorldDiplomacyThreatStateRuleResult.DeferFollowThroughForTechnicalFailure,
-            "a fallback war action with a mechanical failure must defer exactly like a normal declaration");
-
-        WorldDiplomacyThreatStateRuleResult normalStaleFollowThrough =
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "warning", StageDocumentId, false, "ultimatum", true, false);
-        WorldDiplomacyThreatStateRuleResult fallbackStaleFollowThrough =
-            WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-                "noncomplied", "warning", StageDocumentId, false, "ultimatum", true, false);
-        Test.True(normalStaleFollowThrough == fallbackStaleFollowThrough
-            && fallbackStaleFollowThrough == WorldDiplomacyThreatStateRuleResult.RebuildStaleStageSnapshot,
-            "a stale fallback must rebuild exactly like a stale normal declaration");
-    }
-
-    private static void AssertStateRule(
-        WorldDiplomacyThreatStateRuleResult actual,
-        WorldDiplomacyThreatStateRuleResult expected,
-        string message)
-    {
-        Test.True(actual == expected, $"{message}; expected={expected}, actual={actual}");
-    }
 
     private static string FindRepositoryFile(string fileName)
     {

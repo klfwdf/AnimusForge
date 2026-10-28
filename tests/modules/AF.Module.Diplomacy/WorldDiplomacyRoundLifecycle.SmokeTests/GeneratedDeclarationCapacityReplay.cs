@@ -90,7 +90,7 @@ internal static class GeneratedDeclarationCapacityReplay
                     DocumentId = "created", AuthorKingdomId = author, TargetKingdomId = target, Title = title, Body = text
                 };
             },
-            day => day.ToString(), _ => { }, _ => { },
+            day => day.ToString(), _ => { },
             (_, _, _, reason) => throw new InvalidOperationException("Unexpected abandon: " + reason),
             (_, original, _, _, reason, parsed) =>
             {

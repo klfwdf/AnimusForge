@@ -109,7 +109,6 @@ internal static class WorldDiplomacyPresentation
         {
             representedPolicies.Add(policy.HistoryKey);
             WorldEventCountryData group = GetOrCreateArchiveGroup(groups, policy.KingdomId, policy.KingdomName);
-            string policyDate = DiplomacyDateProjection.ForUi(policy.DateText);
             group.Records.Add(new WorldEventRecordData
             {
                 EventId = "policy_history:" + policy.HistoryKey,
@@ -117,15 +116,15 @@ internal static class WorldDiplomacyPresentation
                 CanDelete = policy.CanDelete,
                 KindLabel = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_CustomPolicy", "Custom policy"),
                 HeaderRightText = policy.StatusText,
-                DateText = policyDate,
+                DateText = policy.DateText,
                 TitleText = policy.TitleText,
-                MetaText = policyDate + "  ·  " + policy.StatusText + "  ·  " + policy.KingdomName,
+                MetaText = policy.DateText + "  ·  " + policy.StatusText + "  ·  " + policy.KingdomName,
                 BodySectionTitleText = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_PolicyRecord", "Policy record"),
                 BodyText = policy.BodyText,
                 ImpactSectionTitleText = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_PolicyImpact", "Policy effects"),
                 ImpactText = policy.ImpactText,
                 HasImpact = !string.IsNullOrWhiteSpace(policy.ImpactText),
-                IndexMetaText = policyDate + "  ·  " + policy.StatusText,
+                IndexMetaText = policy.DateText + "  ·  " + policy.StatusText,
                 PolicyRecordId = policy.RecordId,
                 ShowReReview = policy.SourceKind == "player_kingdom",
                 CanReReview = policy.CanReReview
@@ -142,7 +141,7 @@ internal static class WorldDiplomacyPresentation
                 || CustomPolicyBehavior.Instance != null && CustomPolicyBehavior.IsPolicyAnnouncementDeleted(entry))) continue;
             string kingdomId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomId, "policy_unknown");
             WorldEventCountryData group = GetOrCreateArchiveGroup(groups, kingdomId, WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomName, DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_UnknownCountry", "Unknown kingdom")));
-            string date = DiplomacyDateProjection.ForUi(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.GameDate, entry.Day > 0 ? FormatArchiveDay(entry.Day) : DiplomacyUiLocalization.Text("AF_DIP_UI_Common_UnknownDate", "Unknown date")));
+            string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.GameDate, entry.Day > 0 ? FormatArchiveDay(entry.Day) : DiplomacyUiLocalization.Text("AF_DIP_UI_Common_UnknownDate", "Unknown date"));
             bool showReReview = TryResolveWorldEventPolicyReReview(
                 entry,
                 out string policyRecordId,

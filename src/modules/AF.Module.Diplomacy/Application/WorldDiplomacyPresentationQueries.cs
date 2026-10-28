@@ -33,55 +33,11 @@ internal static class WorldDiplomacyPresentationQueries
 
     internal static string BuildImpactText(WorldDiplomacyDocument document)
     {
-        if (document == null) return "";
-        List<WorldDiplomacyStandingChange> changes = document.DiplomaticStandingChanges
-            ?? new List<WorldDiplomacyStandingChange>();
-        List<WorldDiplomacyStandingChange> authorChanges = changes
-            .Where(x => x != null && string.Equals(x.KingdomId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase))
-            .ToList();
-        WorldDiplomacyStandingChange international = authorChanges.LastOrDefault(x =>
-            string.Equals(x.Kind, "international_reputation", StringComparison.OrdinalIgnoreCase));
-        List<WorldDiplomacyStandingChange> prestigeChanges = authorChanges.Where(x =>
-            string.Equals(x.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase)).ToList();
-        int prestigeDelta = prestigeChanges.Sum(x => x.Delta);
-        string prestigeReason = string.Join("；", prestigeChanges.Select(x => x.Reason)
-            .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
-        StringBuilder sb = new StringBuilder();
-        if (!string.IsNullOrWhiteSpace(document.MechanicalResult))
-        {
-            sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactResultSection", "【Diplomatic result】"));
-            sb.AppendLine(WorldDiplomacyAnalysisApplication.ProjectMechanicalResultForDisplay(document.MechanicalResult).Trim());
-            sb.AppendLine();
-        }
-        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReputationSection", "【International reputation】"));
-        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(document, international, DiplomacyUiLocalization.Text));
-        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel", "Reason: ") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(international?.Reason,
-            document.InternationalReputationEvaluationReason,
-            DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactNoReputationChange", "This declaration produced no clear change in international reputation.")));
-        sb.AppendLine();
-        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection", "【National prestige】"));
-        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.FormatSignedStandingDelta(prestigeDelta, DiplomacyUiLocalization.Text));
-        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel", "Reason: ") + (prestigeChanges.Count == 0 || string.IsNullOrWhiteSpace(prestigeReason)
-            ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactNoPrestigeChange", "This declaration triggered no national prestige settlement.")
-            : prestigeReason));
-        bool hasOtherKingdomImpact = false;
-        foreach (WorldDiplomacyStandingChange other in changes.Where(x => x != null
-            && !string.Equals(x.KingdomId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)))
-        {
-            sb.AppendLine();
-            if (!hasOtherKingdomImpact)
-            {
-                sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactOtherKingdomsSection", "【Impact on other kingdoms】"));
-                hasOtherKingdomImpact = true;
-            }
-            sb.AppendLine(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(other.KingdomName, other.KingdomId, DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_UnknownKingdom", "Unknown kingdom")) + ": "
-                + (string.Equals(other.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase)
-                    ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection", "【National prestige】")
-                    : DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReputationSection", "【International reputation】")));
-            sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.FormatSignedStandingDelta(other.Delta, DiplomacyUiLocalization.Text));
-            sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel", "Reason: ") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(other.Reason, DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactNoReason", "no explanation given")));
-        }
-        return sb.ToString().TrimEnd();
+        if (document?.SilenceConsequenceSettled == true && document.SilenceConsequence == "ordinary")
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_SilenceLoyaltyPenalty", "Ignored diplomatic correspondence: all current towns in your kingdom lose 0.5 loyalty daily for 7 days. Overlapping penalties extend the duration without stacking their strength.");
+        if (string.IsNullOrWhiteSpace(document?.MechanicalResult)) return "";
+        return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactResultSection", "【Diplomatic result】")
+            + "\n" + WorldDiplomacyAnalysisApplication.ProjectMechanicalResultForDisplay(document.MechanicalResult).Trim();
     }
 
     internal static WorldDiplomacyDocumentDetail Detail(WorldDiplomacyDocument document, WorldDiplomacyRound round,
@@ -98,10 +54,8 @@ internal static class WorldDiplomacyPresentationQueries
     internal static WorldDiplomacyDocumentDetail Detail(WorldDiplomacyDocument document, long generation,
         bool canReply, Func<int, string> formatDate, bool canRetryAnalysis = false)
     {
-        string date = DiplomacyDateProjection.ForUi(
-            WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day)));
         string subtitle = document.AuthorKingdomName + " · " + document.AuthorRulerName + " · "
-            + date + " · "
+            + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day)) + " · "
             + WorldDiplomacyTextRules.DocumentTypeLabel(document, DiplomacyUiLocalization.Text);
         return new WorldDiplomacyDocumentDetail(document.DocumentId, document.RoundId, generation,
             WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text), subtitle,
@@ -123,7 +77,7 @@ internal static class WorldDiplomacyPresentationQueries
             }
             string kingdomId = document.AuthorKingdomId;
             string kingdomName = document.AuthorKingdomName;
-            string date = DiplomacyDateProjection.ForUi(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day)));
+            string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day));
             string typeLabel = WorldDiplomacyTextRules.DocumentTypeLabel(document, DiplomacyUiLocalization.Text);
             string eventMeta = WorldDiplomacyTextRules.BuildDocumentEventMeta(document, resolveRound, resolveDocument);
             string targetSummary = document.Actions?.Count > 1
@@ -175,7 +129,7 @@ internal static class WorldDiplomacyPresentationQueries
                 EventId: "diplomacy_summary:" + summary.BatchId,
                 KindLabel: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_HistoryCompactionKind", "Diplomatic history compaction"),
                 HeaderRightText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_LongTermMemory", "Long-term diplomatic memory"),
-                DateText: DiplomacyDateProjection.ForUi(formatDate(summary.CreatedDay)),
+                DateText: formatDate(summary.CreatedDay),
                 TitleText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_HistoryCompactionTitle", "Diplomatic history compaction record"),
                 MetaText: DiplomacyUiLocalization.Format("AF_DIP_UI_WorldDiplomacy_CompactionMeta", "Compacted after {TOKENS} accumulated tokens", ("TOKENS", summary.TokenCount.ToString("N0", CultureInfo.InvariantCulture))),
                 BodyText: summary.Summary,
@@ -189,14 +143,7 @@ internal static class WorldDiplomacyPresentationQueries
     }
     internal static string Standing(WorldDiplomacyStorage storage, string kingdomId)
     {
-        if (kingdomId == null) return "";
-            int prestige = WorldDiplomacyReputationRules.GetNationalPrestige(storage?.NationalPrestigeByKingdom, kingdomId);
-            int reputation = WorldDiplomacyReputationRules.GetInternationalReputation(storage?.InternationalReputationByKingdom, kingdomId);
-            return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingSection", "【National prestige and international reputation】") + "\n"
-                + DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingPrestigeLabel", "National prestige: ") + prestige.ToString(CultureInfo.InvariantCulture)
-                + DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingPrestigeHint", "/100 (this kingdom's diplomatic credit and deterrence; too low a value damages relations with its nobles)") + "\n"
-                + DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingReputationLabel", "International reputation: ") + reputation.ToString(CultureInfo.InvariantCulture)
-                + DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingReputationHint", "/100 (how other kingdoms judge this one; affects willingness to cooperate and to apply pressure)");
+        return "";
     }
     internal static string ArchiveSubtitle(WorldDiplomacyStorage storage,
         Func<string, WorldDiplomacyDocument> resolveDocument, Func<string, string> representativeName,

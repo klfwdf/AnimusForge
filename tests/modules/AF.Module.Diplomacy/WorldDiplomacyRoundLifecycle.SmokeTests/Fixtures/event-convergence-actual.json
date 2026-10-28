@@ -1,0 +1,158 @@
+{
+  "evidence_kind": "historical_model_drafts_not_publication_receipts",
+  "binding": "Replay preserves original prose and intent; source IDs, actors and publication are controlled test inputs. No live provider or game evidence.",
+  "scenarios": [
+    {
+      "scenario": "sovereignty",
+      "source_path": "artifacts/diplomacy-null-terms-20261021/actual-drafts.json",
+      "source_sha256": "f9601ec68c525aa699f1488d71bfbd0b354bf2afd3b73e880e69f2ca17467d59",
+      "samples": [
+        {
+          "source_index": 0,
+          "original_draft": {
+            "title": "致北帝国元老院与皇帝的最后答复",
+            "body": "卢孔及其狄亚特马的元老院诸公：你们那纸充斥着蛮横与傲慢的最后通牒，不过是试图掩盖门阀私利的虚伪面具。南帝国的法统与城邦自治由南方人民与珀特洛斯家族世代守护，绝不容许任何自命正统的北方僭妄者指手画脚。你们口中所谓查没的账目与无端指控，全系对南方自主的恶意污蔑。拉盖娅在此正告北帝国：南帝国对你们强加的无理干涉与最后通牒予以坚决回绝！若北帝国执意以法统为借口挑起事端、侵犯南方主权，南帝国必将奉陪到底，彻底断绝南北商路并以雷霆手段迎头痛击一切来犯之敌！",
+            "actions": [
+              {
+                "target_kingdom_id": "empire",
+                "intent": "condemn",
+                "commitment": "non_binding",
+                "negotiation_move": "state_position",
+                "peace_terms": null
+              }
+            ],
+            "mentioned_kingdom_ids": [
+              "empire"
+            ],
+            "tone": "hostile",
+            "requires_response": false,
+            "round_participation": "continue",
+            "round_status": "continue",
+            "response_requests": [],
+            "answered_player_document_ids": [
+              "diplomacy_document:d4c5a496252843a3b80bd73d55f89ca8"
+            ]
+          }
+        },
+        {
+          "source_index": 1,
+          "original_draft": {
+            "title": "致北帝国元老院与卢孔之公开回音",
+            "body": "狄亚特马的诸位莫将寡头私利的遮羞布当作无上法理。我南方城邦自立于阳光之下，自治之权容不得尔等以“秘密之手”的莫须有罪名肆意践踏。若北帝国执意以虚伪的法统攻势干涉南方内政，南帝国绝不妥协，必将奉陪到底。",
+            "actions": [
+              {
+                "target_kingdom_id": "empire",
+                "intent": "condemn",
+                "commitment": "non_binding",
+                "negotiation_move": "statement",
+                "peace_terms": null
+              }
+            ],
+            "mentioned_kingdom_ids": [
+              "empire"
+            ],
+            "tone": "firm",
+            "requires_response": false,
+            "round_participation": "continue",
+            "round_status": "continue",
+            "response_requests": [],
+            "answered_player_document_ids": [
+              "diplomacy_document:d4c5a496252843a3b80bd73d55f89ca8"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "interference",
+      "source_path": "artifacts/diplomacy-pipeline-audit-20261021/actual-responses.json",
+      "source_sha256": "3b399d4989eafd4e4e2314c6c9a12ce21fe83141e782b36ff31476fdc5872d90",
+      "samples": [
+        {
+          "source_index": 21,
+          "original_draft": {
+            "title": "至高王卡拉多格致北帝国卢孔的严正声明",
+            "body": "卡拉多格：巴旦尼亚的内部事务不容任何外部势力染指。卢孔，管好你的人，切莫妄想借巴旦尼亚的家务事行渔利之举。",
+            "actions": [
+              {
+                "target_kingdom_id": "empire",
+                "intent": "statement",
+                "commitment": "non_binding",
+                "negotiation_move": "statement",
+                "peace_terms": null
+              }
+            ],
+            "mentioned_kingdom_ids": [
+              "empire"
+            ],
+            "tone": "firm",
+            "requires_response": false,
+            "round_participation": "continue",
+            "round_status": "continue",
+            "response_requests": [],
+            "answered_player_document_ids": []
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "trade_routes",
+      "source_path": "artifacts/diplomacy-audit-latency-20261022/actual-responses.json",
+      "source_sha256": "d4b89630ccaa6afe94674ec341ab1c4399c31816a69edb364af8572326146ea5",
+      "samples": [
+        {
+          "source_index": 1,
+          "original_draft": {
+            "title": "致库赛特可汗的回复",
+            "body": "库赛特的来信已至。哈尔达尔与诺德之民行事，凭的是长船所至的实用与海风铸就的直觉，而非草原上虚张声势的戒律。你们内部因战利品分配不均而生出的裂痕，以及阿契特部暗中递来的使节，皆说明汗庭并非无懈可击。诺德人不惧威胁，若欲让我们止步，唯有拿出对等的诚意与商路特许权，否则休想以空洞的警告约束北境。",
+            "actions": [
+              {
+                "target_kingdom_id": "khuzait",
+                "intent": "condemn",
+                "commitment": "non_binding",
+                "negotiation_move": "statement",
+                "peace_terms": null
+              }
+            ],
+            "mentioned_kingdom_ids": [
+              "khuzait"
+            ],
+            "tone": "firm",
+            "requires_response": true,
+            "round_participation": "continue",
+            "round_status": "continue",
+            "response_requests": [],
+            "answered_player_document_ids": []
+          }
+        },
+        {
+          "source_index": 21,
+          "original_draft": {
+            "title": "哈尔达尔致库赛特可汗书",
+            "body": "库赛特人的最后通牒未免过早动怒。汗庭因战利品分配不均及阿契特部暗流而产生的裂痕，草原上下心知肚明，并非几句恫吓便能掩盖。北境行事凭实用与直觉，若无切实对等的商路特许权与诚意，诺德的长船绝不因空洞的威胁而退却。",
+            "actions": [
+              {
+                "target_kingdom_id": "khuzait",
+                "intent": "statement",
+                "commitment": "non_binding",
+                "negotiation_move": "state_position",
+                "peace_terms": null
+              }
+            ],
+            "mentioned_kingdom_ids": [
+              "khuzait"
+            ],
+            "tone": "firm",
+            "requires_response": true,
+            "round_participation": "continue",
+            "round_status": "continue",
+            "response_requests": [],
+            "answered_player_document_ids": [
+              "diplomacy_document:58258f6feafb423da01b338105e4e7ea"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

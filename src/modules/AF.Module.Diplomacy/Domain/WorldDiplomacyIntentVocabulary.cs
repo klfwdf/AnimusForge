@@ -1,21 +1,10 @@
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace AnimusForge.Refactor.Domain;
 
 public static class WorldDiplomacyIntentVocabulary
 {
-    private static class EnglishTopicPatterns
-    {
-        internal static readonly Regex Peace = Load("Topic_EnglishPeacePattern");
-        internal static readonly Regex War = Load("Topic_EnglishWarPattern");
-        internal static readonly Regex Trade = Load("Topic_EnglishTradePattern");
-        internal static readonly Regex Alliance = Load("Topic_EnglishAlliancePattern");
-        private static Regex Load(string key) => new Regex(global::AnimusForge.DiplomacyCompatibilityTexts.Get(key),
-            RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-    }
-
     public static string NormalizeToken(string value)
     {
         return (value ?? "").Trim().ToLowerInvariant().Replace('-', '_').Replace(' ', '_');
@@ -26,18 +15,17 @@ public static class WorldDiplomacyIntentVocabulary
         string token = NormalizeToken(value);
         return token switch
         {
-            "make_peace" or "peace" or "peace_proposal" or "peace_statement" => "propose_peace",
-            "form_alliance" or "alliance" or "alliance_proposal" or "alliance_treaty" => "propose_alliance",
-            "make_trade" or "trade" or "trade_proposal" or "trade_agreement" => "propose_trade",
+            "make_peace" or "peace" or "peace_proposal" => "propose_peace",
+            "form_alliance" or "alliance" or "alliance_proposal" => "propose_alliance",
+            "make_trade" or "trade" or "trade_proposal" => "propose_trade",
             "terminate_alliance" => "break_alliance",
             "end_trade" or "terminate_trade" => "cancel_trade",
-            "war" or "declarewar" or "war_declaration" or "declaration_of_war" => "declare_war",
+            "war" or "declarewar" => "declare_war",
             "complyultimatum" or "comply_with_ultimatum" => "comply_ultimatum",
-            "threat" or "border_warning" => "warning",
+            "threat" => "warning",
             "denounce" => "condemn",
             "accept" => "accept",
             "reject" => "reject",
-            "declare" or "declaration" or "foreign_policy_statement" or "policy_statement" or "declare_policy" or "announcement" => "statement",
             _ => token
         };
     }
@@ -303,10 +291,10 @@ public static class WorldDiplomacyIntentVocabulary
 	public static string InferTopicCategory(string topic, bool initiatorAndTargetAtWar)
 	{
 		string value = topic ?? "";
-		if (value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_033"), StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_034"), StringComparison.OrdinalIgnoreCase) >= 0 || EnglishTopicPatterns.Peace.IsMatch(value)) return "peace_terms";
-		if (ContainsAny(value, global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_035"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_036"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_037"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_ultimatum"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_warning"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_038"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_039"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_040")) || EnglishTopicPatterns.War.IsMatch(value)) return "war_escalation";
-		if (ContainsAny(value, global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_041"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_042"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_043"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_044"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_045"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_046"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_047")) || EnglishTopicPatterns.Trade.IsMatch(value)) return "trade_order";
-		if (value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_048"), StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_049"), StringComparison.OrdinalIgnoreCase) >= 0 || EnglishTopicPatterns.Alliance.IsMatch(value)) return "alliance_duties";
+		if (value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_033"), StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_034"), StringComparison.OrdinalIgnoreCase) >= 0) return "peace_terms";
+		if (ContainsAny(value, global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_035"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_036"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_037"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_ultimatum"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_warning"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_038"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_039"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_040"))) return "war_escalation";
+		if (ContainsAny(value, global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_041"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_042"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_043"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_044"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_045"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_046"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_047"))) return "trade_order";
+		if (value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_048"), StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_049"), StringComparison.OrdinalIgnoreCase) >= 0) return "alliance_duties";
 		if (initiatorAndTargetAtWar) return "war_conduct";
 		return "regional_security";
 	}

@@ -24,6 +24,7 @@ using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Map.MapNotificationTypes;
+using TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement.Diplomacy;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Engine.GauntletUI;
@@ -92,7 +93,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int UltimatumComplianceRoyalRelationPenalty = -20;
 	private const int DecisionArchitectureVersion = 1;
 	private const int HistoryMemorySchemaVersion = 4;
-	private const int DiplomacyPromptContractVersion = 31;
+	private const int DiplomacyPromptContractVersion = 32;
 	private const int RelaySchemaVersion = 23;
 	private const int RelayPassDurationDays = 7;
 	private const int RelayTargetDurationDays = 21;
@@ -111,13 +112,15 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private NotificationWorld NotificationSink => _notificationSink ?? (_notificationSink = new NotificationWorld(this));
 	private readonly Dictionary<string, WarSituationSnapshot> _warSituationCache = new Dictionary<string, WarSituationSnapshot>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _courtSettlementCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-	private readonly Dictionary<string, string> _realmInstitutionalVoiceCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, string> _realmInstitutionalVoiceCache = new Dictionary<string, string>(StringComparer.Ordinal);
 	private readonly Dictionary<string, WorldDiplomacyRealmRelationProfile> _realmRelationProfileCache = new Dictionary<string, WorldDiplomacyRealmRelationProfile>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, WorldDiplomacyBorderRelation> _kingdomBorderCache = new Dictionary<string, WorldDiplomacyBorderRelation>(StringComparer.OrdinalIgnoreCase);
 	private WorldDiplomacyRequestLeaseCoordinator _llmRequestLease => _orchestration.RequestLeases;
 	private int _kingdomBorderCacheDay = -1;
+    private Dictionary<string, List<WorldDiplomacyWorldProfileRules.NearbyForeignFort>> _fortGeography = new(StringComparer.Ordinal);
 	private float _kingdomBorderDistanceThreshold = WorldDiplomacyWorldProfileRules.MinimumBorderDistance;
 	private long _realmInstitutionalVoiceRuleVersion = -1L;
+	private KnowledgeLibraryBehavior _realmInstitutionalVoiceLibrary;
 
 	// Canonical state is owned by the application-side store inside the
 	// orchestration; this alias only projects the current snapshot for leaf
@@ -194,11 +197,14 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	internal void RetireCampaignRuntime(string reason)
 	{
+		_eventMaterialCaptures.Dispose();
+		_historyEmbeddings.Dispose();
 		_runtimeGeneration = 0;
 		_orchestration.RequestLeases.Reset();
 		while (_completedJobs.TryDequeue(out _)) { }
 		if (ReferenceEquals(Instance, this)) Instance = null;
 		WorldDiplomacyComposePopup.CloseForCampaignEnd();
+		DiplomacyEventPopup.CloseForCampaignEnd();
 	}
 
 	public static void RegisterHarmonyPatches(Harmony harmony)
@@ -209,6 +215,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		_patchesApplied = true;
 		Harmony patcher = harmony ?? new Harmony("com.AnimusForge.world_diplomacy");
+        RegisterEventNativeAdmission(patcher);
+            RegisterAidTakeover(patcher);
 		try
 		{
 			MethodInfo addDecision = AccessTools.Method(typeof(Kingdom), nameof(Kingdom.AddDecision), new[]
@@ -248,6 +256,14 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				if (refreshValues != null)
 				{
 					patcher.Patch(refreshValues, postfix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_DiplomacyProposalActionItem_Constructed_Postfix)));
+				}
+				foreach (string methodName in new[] { "OnSetCurrentDiplomacyItem", "RefreshValues" })
+				{
+					MethodInfo refreshPage = AccessTools.Method(typeof(KingdomDiplomacyVM), methodName);
+					if (refreshPage != null)
+					{
+						patcher.Patch(refreshPage, postfix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_DiplomacyPage_Refreshed_Postfix)));
+					}
 				}
 				Log("kingdom diplomacy proposal button disable patches applied.");
 			}
@@ -469,6 +485,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		_orchestration.HandleWarDeclared(first.StringId, second.StringId);
+        if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility)
+        {
+            string warIdentity = first.GetStanceWith(second)?.WarStartDate.ToHours.ToString("R", System.Globalization.CultureInfo.InvariantCulture) ?? "";
+            _orchestration.CapturePlayerHostility(first.StringId, second.StringId, warIdentity);
+        }
 		InvalidateWarSituation(first, second);
 	}
 	private void OnMakePeace(IFaction faction1, IFaction faction2, MakePeaceAction.MakePeaceDetail detail)
@@ -556,6 +577,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void ResetTransientRuntime(string reason)
 	{
+		_eventMaterialCaptures.Dispose();
+		_historyEmbeddings.Dispose();
 		_runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		_llmRequestLease.Reset();
 		while (_completedJobs.TryDequeue(out _))
@@ -569,6 +592,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_kingdomBorderCache.Clear();
 		_kingdomBorderCacheDay = -1;
 		_realmInstitutionalVoiceRuleVersion = -1L;
+		_realmInstitutionalVoiceLibrary = null;
 		DiplomacyModuleServices.Policy.Clear();
 
 		_cacheHitTokensThisSession = 0;
@@ -595,32 +619,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		GetDiplomaticDeclarationCharacterRange(out int minimum, out int maximum);
 		return (minimum, maximum);
-	}
-
-	private static void LogKingdomStrategicProfileInjection(WorldDiplomacyJob job, string profilePrompt)
-	{
-		Log("strategic profile injected job=" + (job?.JobId ?? "")
-			+ " author=" + (job?.AuthorKingdomId ?? "")
-			+ " relay=" + (job?.IsRelayTurn == true).ToString()
-			+ " chars=" + (profilePrompt?.Length ?? 0).ToString(CultureInfo.InvariantCulture));
-	}
-	private static bool TryBuildKingdomStrategicProfilePrompt(Kingdom kingdom, string marker, out string prompt)
-	{
-		prompt = "";
-		KingdomStrategicProfileBehavior profiles = KingdomStrategicProfileBehavior.Instance;
-		if (kingdom == null || profiles == null
-			|| !profiles.TryGetOrCreateEffectiveProfile(kingdom, out string nationalPersonality, out string longTermStrategy))
-		{
-			return false;
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.AppendLine(marker);
-		sb.AppendLine(DiplomacyPromptTexts.Get("StrategicProfileVersion", "Profile version=") + WorldDiplomacyPromptContractRules.StablePromptHash((nationalPersonality ?? "") + "\n" + (longTermStrategy ?? "")));
-		sb.AppendLine(DiplomacyPromptTexts.Get("StrategicProfilePersonality", "National personality=") + (nationalPersonality ?? ""));
-		sb.AppendLine(DiplomacyPromptTexts.Get("StrategicProfileStrategy", "Long-term strategy=") + (longTermStrategy ?? ""));
-		sb.Append(DiplomacyPromptTexts.Get("AF_DIP_Compatibility_008", "Find reasons for the long-term strategy, especially war, based on current circumstances; use real interests, disputes or security concerns as public reasons."));
-		prompt = sb.ToString();
-		return true;
 	}
 
 	private void LogPromptCacheShape(WorldDiplomacyJob job)
@@ -760,7 +758,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
     {
         int day = CurrentDay();
         if (_kingdomBorderCacheDay == day) return;
-        _kingdomBorderCacheDay = day;
+        using var borderTiming = PerfProbe.Scope("WorldDiplomacy.BorderCache");
         _kingdomBorderCache.Clear();
         var raw = new List<WorldDiplomacyFortSnapshot>();
         var live = new List<Settlement>();
@@ -789,6 +787,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
         foreach (var pair in WorldDiplomacyWorldProfileRules.BuildBorders(
             selected.Select(i => raw[i]).ToList(), distances, out _kingdomBorderDistanceThreshold))
             _kingdomBorderCache[pair.Key] = pair.Value;
+        _fortGeography = WorldDiplomacyWorldProfileRules.BuildFortGeography(
+            selected.Select(i => raw[i]).ToList(), distances, _kingdomBorderDistanceThreshold);
+        // Failed native reads must leave the cache eligible for a bounded retry,
+        // rather than exposing an empty/partial snapshot as neutral geography.
+        _kingdomBorderCacheDay = day;
         Log("kingdom border cache rebuilt day=" + day.ToString(CultureInfo.InvariantCulture)
             + " forts=" + selected.Count.ToString(CultureInfo.InvariantCulture)
             + " threshold=" + _kingdomBorderDistanceThreshold.ToString("0.0", CultureInfo.InvariantCulture)
@@ -893,6 +896,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+            if (CaptureNativeAidDecision(__instance, kingdomDecision)) return false;
 			if (_internalDiplomaticActionDepth > 0 || !IsWorldDiplomacyEnabled())
 			{
 				return true;
@@ -908,36 +912,51 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			Log("native decision prefix failed open: " + ex.Message);
-			return true;
+			Log("native decision prefix failed: " + ex.Message);
+            return !AidTakeoverActive || (kingdomDecision is not ProposeCallToWarAgreementDecision && kingdomDecision is not AcceptCallToWarAgreementDecision);
 		}
 	}
-	private static void Patch_DiplomacyProposalActionItem_Constructed_Postfix(object __instance)
+	private static void Patch_DiplomacyProposalActionItem_Constructed_Postfix(KingdomDiplomacyProposalActionItemVM __instance)
 	{
-		if (__instance == null || !IsWorldDiplomacyEnabled())
+		if (__instance == null || !IsWorldDiplomacyEnabled() || !IsPlayerKingdom(Clan.PlayerClan?.Kingdom))
 		{
 			return;
 		}
 		try
 		{
-			TextObject explanation = DiplomacyUiLocalization.Object("AF_DIP_UI_WorldDiplomacy_ManagedByAi", "This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins.");
-			TextObject hint = DiplomacyUiLocalization.Object("AF_DIP_UI_WorldDiplomacy_ManagedByAi", "This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins.");
-			AccessTools.Property(__instance.GetType(), "IsEnabled")?.SetValue(__instance, false);
-			AccessTools.Property(__instance.GetType(), "Explanation")?.SetValue(__instance, explanation.ToString());
-			AccessTools.Property(__instance.GetType(), "Hint")?.SetValue(__instance, new HintViewModel(hint));
+			TextObject hint = DiplomacyUiLocalization.Object("AF_DIP_UI_WorldDiplomacy_ManagedByAi", "This action is managed by AI diplomacy.");
+			__instance.IsEnabled = false;
+			__instance.Explanation = string.Empty;
+			__instance.Hint = new HintViewModel(hint);
 		}
 		catch (Exception ex)
 		{
 			Log("disable diplomacy proposal item failed: " + ex.Message);
 		}
 	}
+	private static void Patch_DiplomacyPage_Refreshed_Postfix(KingdomDiplomacyVM __instance)
+	{
+		if (__instance?.Actions == null || !IsWorldDiplomacyEnabled() || !IsPlayerKingdom(Clan.PlayerClan?.Kingdom))
+		{
+			return;
+		}
+		// The native page rebuilds this small action list when the selected kingdom changes.
+		// Apply after item refreshes so exactly one explanation survives language refreshes too.
+		var actions = __instance.Actions;
+		string explanation = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ManagedByAi", "This action is managed by AI diplomacy.");
+		int center = actions.Count / 2;
+		for (int i = 0; i < actions.Count; i++)
+		{
+			actions[i].Explanation = i == center ? explanation : string.Empty;
+		}
+	}
 	private static bool Patch_DiplomacyProposalActionItem_Execute_Prefix()
 	{
-		if (!IsWorldDiplomacyEnabled())
+		if (!IsWorldDiplomacyEnabled() || !IsPlayerKingdom(Clan.PlayerClan?.Kingdom))
 		{
 			return true;
 		}
-		InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ManagedByAi", "This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins.")));
+		InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ManagedByAi", "This action is managed by AI diplomacy.")));
 		return false;
 	}
 	private bool CaptureNativeDiplomacyDecision(Kingdom hostKingdom, KingdomDecision decision)
@@ -950,7 +969,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private static bool IsNativeDiplomacyDecision(KingdomDecision decision)
 	{
-		return decision is DeclareWarDecision
+		return decision is ProposeCallToWarAgreementDecision || decision is AcceptCallToWarAgreementDecision
+            || decision is DeclareWarDecision
 			|| decision is MakePeaceKingdomDecision
 			|| decision is StartAllianceDecision
 			|| decision is TradeAgreementDecision;
@@ -982,7 +1002,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
                 __result.PreprocessRuleIds, proactiveDiscussion);
 			if (!string.IsNullOrWhiteSpace(block))
 			{
-				__result.Extras = (__result.Extras ?? "").TrimEnd() + "\n\n" + block;
+				__result.Extras = (__result.Extras ?? "").TrimEnd() + "\n\n" + RequestRecallBudget.WrapDiplomacy(block);
 			}
 		}
 		catch (Exception ex)
@@ -998,7 +1018,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
         Hero hero = DiplomacyIdentityResolver.Hero(heroId);
         snapshot = new WorldDiplomacyMemorySnapshot(owner._storage,
             WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(hero?.Clan?.Kingdom?.StringId, kingdomOverride),
-            owner.GetKnownDocumentIdsForHero(hero, kingdomOverride));
+            owner.GetKnownDocumentIdsForHero(hero, kingdomOverride), hero?.StringId);
         return true;
     }
 
@@ -1043,7 +1063,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private static string BuildCommonDiplomacySystemPrefix()
 	{
-		return DuelSettings.LocalizeWorldDiplomacyContractForPrompt(DuelSettings.GetWorldDiplomacyCommonContractForExternal() ?? "");
+		return DuelSettings.LocalizeWorldDiplomacyContractForPrompt(DuelSettings.GetWorldDiplomacyCommonContractForExternal() ?? "")
+            + "\n" + string.Format(DiplomacyPromptTexts.Get("Event_WarTendency", "NPC war tendency: {0}/100. Ending base weights (threat/agreement/stalemate): below 50 = 50/40/10; exactly 50 = 60/30/10; above 50 = 70/20/10. The program applies bounded world-state adjustments and legal availability once. Native peace scoring is unchanged. Never override human decisions or accepted promises."), GetWarTendency());
 	}
 	private string GetCommonDiplomacyContract(WorldDiplomacyRound round)
 	{
@@ -1093,10 +1114,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		string compactPersona = WorldDiplomacyTextRules.CompactPromptFact(MyBehavior.GetNpcPersonaDescriptionForExternal(ruler), 700);
 		string compactExpandedPersona = WorldDiplomacyTextRules.CompactPromptFact(MyBehavior.GetNpcPersonaContextForExternal(ruler), 520);
-		string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
-			kingdom?.EncyclopediaRulerTitle?.ToString(),
-			ruler.Clan?.Name?.ToString(),
-			DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown"));
+		string title = ResolveRealmRulerTitle(kingdom, ruler);
 
 		return "RulerPersona{name=" + (ruler.Name?.ToString() ?? DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown"))
 			+ ",kingdom=" + KingdomName(kingdom)
@@ -1108,7 +1126,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ "}";
 	}
 	private string BuildRealmInstitutionalVoiceContext(Kingdom kingdom)
+		=> BuildRealmInstitutionalVoiceContext(kingdom, false, out _);
+	private string BuildRealmInstitutionalVoiceContext(Kingdom kingdom, bool prepare, out bool ready)
 	{
+		ready = true;
 		if (kingdom == null)
 		{
 			return "";
@@ -1125,12 +1146,15 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			if (library != null && ruler != null)
 			{
 				long ruleVersion = library.GetRuleDataVersionForExternal();
-				if (_realmInstitutionalVoiceRuleVersion != ruleVersion)
+				if (!ReferenceEquals(_realmInstitutionalVoiceLibrary, library) || _realmInstitutionalVoiceRuleVersion != ruleVersion)
 				{
 					_realmInstitutionalVoiceCache.Clear();
 					_realmInstitutionalVoiceRuleVersion = ruleVersion;
+					_realmInstitutionalVoiceLibrary = library;
 				}
-				string cacheKey = (kingdom.StringId ?? "") + "|" + (ruler.StringId ?? "") + "|" + (kingdom.Culture?.StringId ?? "") + "|" + rulerTitle;
+				string cacheKey = JsonConvert.SerializeObject(new[] { kingdom.StringId, kingdomName,
+					ruler.StringId, ruler.Name?.ToString(), kingdom.Culture?.StringId, cultureName,
+					ruler.Culture?.StringId, ruler.Clan?.StringId, ruler.IsFemale.ToString(), rulerTitle });
 				if (_realmInstitutionalVoiceCache.TryGetValue(cacheKey, out string cached))
 				{
 					return cached ?? "";
@@ -1153,7 +1177,13 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				string query = kingdomName + " " + cultureName + " " + (ruler.Name?.ToString() ?? "")
 				+ " " + DiplomacyMiscPromptTexts.Get("Prompt_RulerFallback", "Ruler");
 
-				lore = library.BuildLoreContextWithoutPlayerContext(query, ruler, "world_diplomacy_realm_voice", entities);
+				// Eager job construction may use only hard facts. The dispatch gate
+				// waits for the complete lore, then rebuilds the actual request.
+				if (!prepare)
+					return WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, "", DiplomacyPromptTexts.Get);
+				lore = _eventMaterialCaptures.Advance("realm_voice:" + ruleVersion + ":" + cacheKey,
+					SaveRuntimeGuard.CaptureGeneration(), token => CaptureRealmVoiceLore(library, kingdom, ruler, entities, query, token).GetEnumerator(), Log);
+				if (lore == null) { ready = false; return ""; }
 				string result = WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, lore, DiplomacyPromptTexts.Get);
 				if (_realmInstitutionalVoiceCache.Count >= 32)
 				{
@@ -1165,37 +1195,43 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+			if (prepare) throw;
 			lore = "";
 		}
 		return WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, lore, DiplomacyPromptTexts.Get);
 	}
+	private IEnumerable<string> CaptureRealmVoiceLore(KnowledgeLibraryBehavior library, Kingdom kingdom, Hero ruler,
+		MentionedWorldEntities entities, string query, CancellationToken cancellation)
+	{
+		var work = library.StartExternalLoreSelection(entities, cancellation, out long version);
+		while (!work.IsCompleted) yield return null;
+		var candidates = work.GetAwaiter().GetResult();
+		cancellation.ThrowIfCancellationRequested();
+		if (candidates == null || !ReferenceEquals(library, KnowledgeLibraryBehavior.Instance)
+			|| library.GetRuleDataVersionForExternal() != version || kingdom.IsEliminated
+			|| !ruler.IsAlive || (kingdom.Leader ?? kingdom.RulingClan?.Leader) != ruler)
+			throw new InvalidOperationException("realm_voice_stale_capture");
+		yield return library.BuildExternalLoreWithCandidates(query, ruler, entities, candidates, "world_diplomacy_realm_voice") ?? "";
+	}
 	private static string ResolveRealmRulerTitle(Kingdom kingdom, Hero ruler)
 	{
-		string kingdomId = (kingdom?.StringId ?? "").Trim().ToLowerInvariant();
-		if (string.Equals(kingdomId, "empire_n", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(kingdomId, "empire_w", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(kingdomId, "empire_s", StringComparison.OrdinalIgnoreCase))
+		// Use the active game's ruler-title registration, including mod overrides.
+		// EncyclopediaRulerTitle may describe officials (vanilla Empires use Senator).
+		string cultureId = kingdom?.Culture?.StringId;
+		if (ruler != null && !string.IsNullOrWhiteSpace(cultureId))
 		{
-			return ruler?.IsFemale == true ? DiplomacyPromptTexts.Get("RulerVoicePrompt_006", "Empress") : DiplomacyPromptTexts.Get("RulerVoicePrompt_007", "Emperor");
+			try
+			{
+				if (GameTexts.TryGetText("str_faction_ruler", out TextObject title, cultureId + (ruler.IsFemale ? "_f" : ""))
+					&& !string.IsNullOrWhiteSpace(title?.ToString())) return title.ToString();
+			}
+			catch { }
 		}
-		return WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(kingdom?.EncyclopediaRulerTitle?.ToString(), DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown"));
-
+		return "";
 	}
 	private static string BuildCanonicalRealmGovernmentHardFact(Kingdom kingdom, string rulerTitle)
 	{
-		string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(rulerTitle, DiplomacyPromptTexts.Get("RulerVoicePrompt_003", "Unknown ruler"));
-
-		switch ((kingdom?.StringId ?? "").Trim().ToLowerInvariant())
-		{
-			case "empire_n":
-			return DiplomacyPromptTexts.Get("RulerVoicePrompt_008", "The Northern Empire is an imperial regime based on the senate and senatorial political traditions; the supreme ruler’s personal title is ") + title + DiplomacyPromptTexts.Get("RulerVoicePrompt_009", ". The senate is a state institution, not the ruler’s personal identity; do not call the ruler a senator, legislator or consul.");
-			case "empire_w":
-			return DiplomacyPromptTexts.Get("RulerVoicePrompt_010", "The Western Empire is an imperial regime whose legitimacy rests on military acclamation, military merit and military political traditions; the supreme ruler’s personal title is ") + title + DiplomacyPromptTexts.Get("RulerVoicePrompt_011", "; do not substitute king, general, senator or consul. The Western Empire is not a senatorial regime.");
-			case "empire_s":
-			return DiplomacyPromptTexts.Get("RulerVoicePrompt_012", "The Southern Empire is an imperial monarchy whose legitimacy rests on dynastic succession and monarchical authority; the supreme ruler’s personal title is ") + title + DiplomacyPromptTexts.Get("RulerVoicePrompt_013", "; do not substitute king, queen, senator, legislator or consul. The Southern Empire is not a senatorial regime.");
-			default:
-			return DiplomacyPromptTexts.Get("RulerVoicePrompt_014", "The supreme ruler’s personal title confirmed by the current game identity is ") + title + DiplomacyPromptTexts.Get("RulerVoicePrompt_015", "; this title is a hard fact. Institutional terminology or character background must not replace it.");
-		}
+		return WorldDiplomacyPromptContractRules.BuildRealmIdentitySourceText(rulerTitle, DiplomacyPromptTexts.Get);
 	}
 	private static string BuildRulerVoiceTraitSummary(Hero ruler)
 	{
@@ -1449,18 +1485,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
         return new WorldDiplomacyActionSelectionApplication(new ActionSelectionPort(this, author, target)).BuildLegalDiplomaticActionIntents(round, author?.StringId, target?.StringId);
     }
-	private static WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(
-		WorldDiplomacyRound round,
-		Kingdom author,
-		string resultSettlementSlotId,
-		bool isExternalResponseOnly,
-		string sourceDocumentId,
-		bool requireAnyOpenPeaceOffer = false)
-	{
-		return WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(
-			round, author?.StringId, resultSettlementSlotId, isExternalResponseOnly,
-			sourceDocumentId, requireAnyOpenPeaceOffer);
-	}
+
 
 	private WorldDiplomacyDocument CreateDocument(
 		Kingdom author,
@@ -1551,17 +1576,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private static Hero ResolveHeroById(string heroId)
 	{
 		string normalized = (heroId ?? "").Trim();
-		if (normalized.Length == 0) return null;
-		try
-		{
-			Hero hero = Game.Current?.ObjectManager?.GetObject<Hero>(normalized);
-			if (hero != null) return hero;
-		}
-		catch
-		{
-		}
-		return (Hero.AllAliveHeroes ?? new List<Hero>()).FirstOrDefault(x => x != null
-			&& string.Equals(x.StringId, normalized, StringComparison.OrdinalIgnoreCase));
+		return DiplomacyIdentityResolver.Hero(normalized);
 	}
 
 	private WorldDiplomacyDocument ResolveDocument(string documentId)
@@ -1730,17 +1745,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	internal static void GetDiplomaticDeclarationCharacterRange(out int minimumCharacters, out int maximumCharacters)
 	{
-		minimumCharacters = DuelSettings.DefaultWorldDiplomacyDeclarationMinCharacters;
+		minimumCharacters = 0;
 		int configuredMaximumCharacters = DuelSettings.DefaultWorldDiplomacyDeclarationMaxCharacters;
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
-			minimumCharacters = Math.Max(
-				DuelSettings.WorldDiplomacyDeclarationCharactersMin,
-				Math.Min(
-					DuelSettings.WorldDiplomacyDeclarationCharactersMax,
-					settings?.WorldDiplomacyDeclarationMinCharacters
-					?? DuelSettings.DefaultWorldDiplomacyDeclarationMinCharacters));
 			configuredMaximumCharacters = Math.Max(
 				DuelSettings.WorldDiplomacyDeclarationCharactersMin,
 				Math.Min(
@@ -1754,6 +1763,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		maximumCharacters = Math.Max(minimumCharacters, configuredMaximumCharacters);
 	}
+	private static int GetNewEventIntervalDays() => Math.Max(1, Math.Min(30, DuelSettings.GetSettings()?.WorldDiplomacyRoundIntervalDays ?? 3));
+	private static int GetWarTendency() => Math.Max(0, Math.Min(100, DuelSettings.GetSettings()?.WorldDiplomacyWarTendency ?? 50));
+
 	private static bool IsWorldDiplomacyEnabled()
 	{
 		try
@@ -1776,31 +1788,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return true;
 		}
 	}
-	private static int GetOrdinaryRoundLimit()
-	{
-		try
-		{
-			return Math.Max(1, Math.Min(DuelSettings.WorldDiplomacyMaxConcurrentOrdinaryRoundsMax,
-                DuelSettings.GetSettings()?.WorldDiplomacyMaxConcurrentOrdinaryRounds
-                ?? DuelSettings.DefaultWorldDiplomacyMaxConcurrentOrdinaryRounds));
-		}
-		catch
-		{
-			return DuelSettings.DefaultWorldDiplomacyMaxConcurrentOrdinaryRounds;
-		}
-	}
-	private static int GetActivityLevel()
-	{
-		try
-		{
-			int index = DuelSettings.GetSettings()?.WorldDiplomacyActivityDropdown?.SelectedIndex ?? 1;
-			return Math.Max(0, Math.Min(2, index));
-		}
-		catch
-		{
-			return 1;
-		}
-	}
+	private static int GetOrdinaryRoundLimit() => 1;
+	private static int GetActivityLevel() => 2;
 
 	private int GetOfferCooldownLastFailedRoundDay(WorldDiplomacyOfferCooldownKey key)
 	{
@@ -1810,7 +1799,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private static int GetRoundParticipantLimit()
 	{
-		return WorldDiplomacyRoundLifecycleRules.GetRoundParticipantLimit(GetActivityLevel(), MaxRelayParticipants);
+		return MaxRelayParticipants;
 	}
 
 	private static int GetCourtMaxDeliveryDays()
@@ -1824,67 +1813,15 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return 7;
 		}
 	}
-	private static int GetCivilianSpreadDays()
-	{
-		try
-		{
-			return Math.Max(7, Math.Min(42, DuelSettings.GetSettings()?.WorldDiplomacyContinentSpreadDays ?? 21));
-		}
-		catch
-		{
-			return 21;
-		}
-	}
-	private static int GetRoundLengthDays()
-	{
-		try
-		{
-			int index = DuelSettings.GetSettings()?.WorldDiplomacyRoundLengthDropdown?.SelectedIndex ?? 1;
-			return index <= 0 ? 15 : index >= 2 ? 28 : 21;
-		}
-		catch
-		{
-			return RelayTargetDurationDays;
-		}
-	}
+	private static int GetCivilianSpreadDays() => GetCourtMaxDeliveryDays() * 3;
+	private static int GetRoundLengthDays() => RelayTargetDurationDays;
 	private static int GetRoundHardDurationDays(int targetDurationDays)
 	{
 		return WorldDiplomacyEventRules.RoundHardDurationDays(targetDurationDays);
 	}
-	private static int GetOffensiveWarCooldownDays()
-	{
-		try
-		{
-			return Math.Max(7, Math.Min(120, DuelSettings.GetSettings()?.WorldDiplomacyOffensiveWarCooldownDays ?? 42));
-		}
-		catch
-		{
-			return 42;
-		}
-	}
-	private static int GetPeaceProtectionDays()
-	{
-		try
-		{
-			return Math.Max(0, Math.Min(60, DuelSettings.GetSettings()?.WorldDiplomacyPeaceProtectionDays ?? 21));
-		}
-		catch
-		{
-			return 21;
-		}
-	}
-	private static int GetTradeAllianceFailedProposalCooldownDays()
-	{
-		try
-		{
-			return Math.Max(0, Math.Min(DaysPerYear * 8,
-				DuelSettings.GetSettings()?.WorldDiplomacyTradeAllianceFailedProposalCooldownDays ?? DaysPerYear * 2));
-		}
-		catch
-		{
-			return DaysPerYear * 2;
-		}
-	}
+	private static int GetOffensiveWarCooldownDays() => 0;
+	private static int GetPeaceProtectionDays() => 0;
+	private static int GetTradeAllianceFailedProposalCooldownDays() => 0;
 
 	private static int GetThreatComplianceIssuerRelationReward()
 	{
@@ -1902,36 +1839,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return DuelSettings.DefaultWorldDiplomacyThreatComplianceIssuerRelationReward;
 		}
 	}
-	private static int GetHistoryCompressionTargetTokens()
-	{
-		try
-		{
-			int thousands = Math.Max(DuelSettings.WorldDiplomacyHistoryCompressionTargetThousandsMin,
-				Math.Min(DuelSettings.WorldDiplomacyHistoryCompressionTargetThousandsMax,
-					DuelSettings.GetSettings()?.WorldDiplomacyHistoryCompressionTargetThousands
-					?? DuelSettings.DefaultWorldDiplomacyHistoryCompressionTargetThousands));
-			return thousands * 1000;
-		}
-		catch
-		{
-			return DuelSettings.DefaultWorldDiplomacyHistoryCompressionTargetThousands * 1000;
-		}
-	}
-	private static long GetHistoryCompressionTriggerTokens()
-	{
-		try
-		{
-			int thousands = Math.Max(DuelSettings.WorldDiplomacyHistoryCompressionTriggerThousandsMin,
-				Math.Min(DuelSettings.WorldDiplomacyHistoryCompressionTriggerThousandsMax,
-					DuelSettings.GetSettings()?.WorldDiplomacyHistoryCompressionTriggerThousands
-					?? DuelSettings.DefaultWorldDiplomacyHistoryCompressionTriggerThousands));
-			return thousands * 1000L;
-		}
-		catch
-		{
-			return DuelSettings.DefaultWorldDiplomacyHistoryCompressionTriggerThousands * 1000L;
-		}
-	}
+	private static int GetHistoryCompressionTargetTokens() => 48000;
+	private static long GetHistoryCompressionTriggerTokens() => 128000L;
 	private static WorldDiplomacyBehavior ResolveInstance()
 	{
         var owner = Instance ?? Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();

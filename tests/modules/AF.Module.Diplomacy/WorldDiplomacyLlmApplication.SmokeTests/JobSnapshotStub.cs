@@ -9,7 +9,4 @@ internal sealed class WorldDiplomacyJob
     public string ExchangeId { get; set; }
     public int RequestAttempt { get; set; }
     public long RoundConversationRevision { get; set; }
-    public int OwnershipEpoch { get; set; }
-    public string SchedulingOwner { get; set; }
-    public string PlayerAuthorityRulerId { get; set; }
 }

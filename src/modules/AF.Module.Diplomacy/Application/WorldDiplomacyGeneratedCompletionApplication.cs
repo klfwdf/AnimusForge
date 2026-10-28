@@ -24,7 +24,6 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
             Func<WorldDiplomacyDocument, JObject, string, string, bool, bool, bool> tryApplySemanticEnvelope,
             Func<string, string, string, string, string, bool, bool, string, WorldDiplomacyDocument> createDocument,
             Func<int, string> formatCampaignDate,
-            Action<WorldDiplomacyRound> scheduleResultSettlement,
             Action<WorldDiplomacyRound> pruneInvalidOffers,
             Action<WorldDiplomacyJob, string, string, string> abandonRejectedGeneration,
             Action<WorldDiplomacyJob, string, string, string, string, JObject> rejectDraft,
@@ -34,22 +33,6 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
         {
             if (job == null) return;
             WorldDiplomacyRound jobRound = resolveRound?.Invoke(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(job.RoundId, job.ExchangeId));
-            if (jobRound?.ResultSettlementPending == true)
-            {
-                WorldDiplomacyResultSettlementSlot currentSlot = (jobRound.ResultSettlementSlots ?? new List<WorldDiplomacyResultSettlementSlot>())
-                    .FirstOrDefault(x => x != null
-                        && string.Equals(x.SlotId, job.ResultSettlementSlotId, StringComparison.OrdinalIgnoreCase)
-                        && string.Equals(x.KingdomId, job.AuthorKingdomId, StringComparison.OrdinalIgnoreCase));
-                if (currentSlot == null
-                    || !string.Equals(jobRound.ResultSettlementCurrentSlotId, job.ResultSettlementSlotId, StringComparison.OrdinalIgnoreCase))
-                {
-                    log?.Invoke("stale result-settlement generation discarded job=" + job.JobId
-                        + " round=" + jobRound.RoundId + " author=" + (job.AuthorKingdomId ?? ""));
-                    jobRound.RelayWaiting = false;
-                    scheduleResultSettlement?.Invoke(jobRound);
-                    return;
-                }
-            }
             string authorId = resolveKingdomId?.Invoke(job.AuthorKingdomId);
             string fallbackTargetId = resolveKingdomId?.Invoke(job.TargetKingdomId);
             if (string.IsNullOrWhiteSpace(authorId))
@@ -101,11 +84,11 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
             string targetId = resolvedTargetId;
             WorldDiplomacyDocument sourceDocument = resolveDocument?.Invoke(job.SourceDocumentId);
             string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
-                WorldDiplomacyEnvelopeJsonRules.ReadTitle(json),
+                WorldDiplomacyEnvelopeJsonRules.ReadString(json, "title"),
                 job.IsResponse ? DiplomacyMiscPromptTexts.Get("Document_DefaultReplyTitle", "Diplomatic Reply") : DiplomacyMiscPromptTexts.Get("Document_DefaultKingdomDeclarationTitle", "Kingdom Diplomatic Declaration"));
             title = WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(title), 100);
             string body = DiplomacyReplyTextRules.CleanNpcText(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(
-                WorldDiplomacyEnvelopeJsonRules.ReadBody(json)));
+                WorldDiplomacyEnvelopeJsonRules.ReadString(json, "body", "public_document", "document")));
             // Reject before the storage normalizer can truncate already validated terms.
             // The preferred writing range is soft; the document capacity is not.
             if (body.Length > 6000)
@@ -129,12 +112,13 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
                 job.IsResponse,
                 job.ExchangeId);
             document.RoundId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(job.RoundId, job.ExchangeId);
-            if (job.IsRelayTurn && job.CreatedDay >= 0 && !DiplomacyPlayerEventRules.IsPlayer(jobRound))
+            document.EndingRecoveryDocumentId = job.EndingRecoveryDocumentId;
+            if (job.IsRelayTurn && job.CreatedDay >= 0 && !DiplomacyEventRules.IsPlayer(jobRound))
             {
                 document.Day = job.CreatedDay;
                 document.GameDate = formatCampaignDate?.Invoke(job.CreatedDay);
             }
-            document.HiddenIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadIntent(json));
+            document.HiddenIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "author_intent.intent", "intent", "author_intent"));
             document.HiddenCommitment = WorldDiplomacyIntentVocabulary.NormalizeCommitment(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "author_intent.commitment", "commitment"));
             document.PeaceTerms = targetId == null ? null : parsePeaceTerms?.Invoke(json, authorId, targetId);
             document.SourceDocumentId = job.SourceDocumentId ?? "";
@@ -155,17 +139,6 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
             document.RoundStatus = WorldDiplomacyIntentVocabulary.NormalizeToken(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "round_status"));
             if (document.RoundStatus != "resolved" && document.RoundStatus != "deadlocked") document.RoundStatus = "continue";
             document.MadeDiplomaticProgress = WorldDiplomacyEnvelopeJsonRules.ReadBool(json, "made_progress");
-            document.HasEmbeddedRoundPlan = WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(job);
-            // Kept only for old saves. New opening documents are always actionable.
-            document.IsAutonomousNoActionDeclaration = false;
-            if (document.HasEmbeddedRoundPlan)
-            {
-                // The public title is the authoritative topic. This prevents a hidden round_plan label
-                // from leaking a private long-term strategy into later prompts or the player archive.
-                document.PlannedRoundTopic = WorldDiplomacyTextRules.Limit(title, 120);
-                document.PlannedKingdomIds = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "round_plan.selected_kingdom_ids")
-                    .Where(x => job.CandidateKingdomIds.Contains(x, StringComparer.OrdinalIgnoreCase)));
-            }
             document.AutomaticReplyDepth = job.IsResponse ? Math.Max(1, (sourceDocument?.AutomaticReplyDepth ?? 0) + 1) : 0;
             if (tryApplySemanticEnvelope?.Invoke(document, json, authorId, targetId, job.AllowUntargeted,
                 job.IsRelayTurn) != true)
@@ -175,7 +148,6 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
                 return;
             }
             if (jobRound != null) jobRound.ConsecutiveTechnicalGenerationFailures = 0;
-            WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(document, json);
             if (string.Equals(document.RoundParticipation, "withdraw", StringComparison.OrdinalIgnoreCase)
                 && !WorldDiplomacyIntentVocabulary.IsTerminalNegotiationMove(document.NegotiationMove))
             {

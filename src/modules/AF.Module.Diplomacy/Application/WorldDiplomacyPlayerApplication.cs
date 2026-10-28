@@ -30,9 +30,9 @@ internal static class WorldDiplomacyPlayerApplication
             if (document.Actions != null)
                 foreach (var action in document.Actions) if (action != null && isPlayer(action.TargetKingdomId)) return true;
         }
-        if (DiplomacyPlayerEventRules.IsPlayer(round) || round?.IsPlayerInsertion == true) return true;
-        if (round?.RelayRouteKingdomIds != null)
-            foreach (string id in round.RelayRouteKingdomIds) if (isPlayer(id)) return true;
+        if (DiplomacyEventRules.IsPlayer(round) || round?.IsPlayerInsertion == true) return true;
+        if (round?.Participants != null)
+            foreach (var party in round.Participants) if (party.State == "active" && isPlayer(party.KingdomId)) return true;
         return false;
     }
 
@@ -78,14 +78,6 @@ internal static class WorldDiplomacyPlayerApplication
             exchangeId: round?.RoundId ?? "");
         document.RoundId = round?.RoundId ?? "";
         document.SourceDocumentId = sourceDocument?.DocumentId ?? "";
-        WorldDiplomacyResultSettlementSlot playerSettlementSlot = round?.ResultSettlementPending == true
-            ? WorldDiplomacyRoundLifecycleRules.SelectWaitingPlayerSettlementSlot(
-                round.ResultSettlementSlots, round.ResultSettlementCurrentSlotId, playerKingdom)
-            : null;
-        if (playerSettlementSlot != null)
-        {
-            document.ResultSettlementSlotId = playerSettlementSlot.SlotId ?? "";
-        }
         orchestration.AddDocument(document);
         if (round != null)
         {

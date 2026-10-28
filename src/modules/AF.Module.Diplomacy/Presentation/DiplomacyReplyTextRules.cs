@@ -33,28 +33,18 @@ internal static class DiplomacyReplyTextRules
         "SubjectRelease_WorldDiplomacyUnavailable", "SubjectRelease_VassalageTerminatedFormat"
     };
     private static readonly Lazy<Regex> ReceiptLine = new Lazy<Regex>(BuildReceiptLine);
-    private static readonly Lazy<Dictionary<string, string[]>> Variants = new Lazy<Dictionary<string, string[]>>(LoadVariants);
-
-    internal static bool MatchesExact(string key, string text)
+    private sealed class ReceiptPattern { public string Key { get; set; } public string Value { get; set; } }
+    private sealed class ReceiptCorpus { public string[] ReplyWrappers { get; set; } public ReceiptPattern[] Patterns { get; set; } }
+    private static readonly Lazy<ReceiptCorpus> Corpus = new Lazy<ReceiptCorpus>(() =>
     {
-        if (!Variants.Value.TryGetValue(key, out string[] variants)) return false;
-        foreach (string variant in variants)
-            if (string.Equals(variant, text, StringComparison.Ordinal)) return true;
-        return false;
-    }
-
-    internal static IEnumerable<string> SourcesFor(string key)
-    {
-        yield return DiplomacyMiscPromptTexts.Get(key, "");
-        foreach (string id in new[] { key, "AF_DIP_STATUS_" + key })
-            if (Variants.Value.TryGetValue(id, out string[] values))
-                foreach (string value in values) yield return value;
-    }
+        using (var stream = typeof(DiplomacyReplyTextRules).Assembly.GetManifestResourceStream("AnimusForge.Diplomacy.ReceiptCompatibility.json"))
+        using (var reader = new StreamReader(stream ?? throw new InvalidDataException("Missing embedded diplomacy receipt compatibility.")))
+            return JsonConvert.DeserializeObject<ReceiptCorpus>(reader.ReadToEnd());
+    });
 
     internal static string CleanNpcText(string text, string speakerName = null)
     {
         if (string.IsNullOrEmpty(text)) return text;
-        string replyPrefix = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0462");
         StringBuilder result = null;
         int keptStart = 0;
         for (int start = 0; start < text.Length;)
@@ -69,7 +59,8 @@ internal static class DiplomacyReplyTextRules
                     && (line[speakerName.Length] == ':' || line[speakerName.Length] == '：'))
                     line = line.Substring(speakerName.Length + 1).TrimStart();
             }
-            if (line.StartsWith(replyPrefix, StringComparison.Ordinal)) line = line.Substring(replyPrefix.Length).TrimStart();
+            foreach (string wrapper in Corpus.Value.ReplyWrappers)
+                if (line.StartsWith(wrapper, StringComparison.Ordinal)) { line = line.Substring(wrapper.Length).TrimStart(); break; }
             int next = newline < 0 ? text.Length : newline + 1;
             if (line.Length > 0 && ReceiptLine.Value.IsMatch(line))
             {
@@ -87,23 +78,8 @@ internal static class DiplomacyReplyTextRules
     private static Regex BuildReceiptLine()
     {
         var patterns = new HashSet<string>(StringComparer.Ordinal);
-        var values = Variants.Value;
-        foreach (string key in Keys)
-            foreach (string id in new[] { key, "AF_DIP_STATUS_" + key })
-                if (values.TryGetValue(id, out string[] variants))
-                    foreach (string value in variants) AddPattern(patterns, id, value);
+        foreach (var pattern in Corpus.Value.Patterns) AddPattern(patterns, pattern.Key, pattern.Value);
         return new Regex("\\A(?:" + string.Join("|", patterns) + ")\\z", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    }
-
-    private static Dictionary<string, string[]> LoadVariants()
-    {
-        var assembly = typeof(DiplomacyReplyTextRules).Assembly;
-        // Recognition-only legacy receipts: both languages remain readable after a pack switch.
-        using (var stream = assembly.GetManifestResourceStream("AnimusForge.Diplomacy.ReceiptCompatibility.json"))
-        using (var reader = new StreamReader(stream ?? throw new InvalidDataException("Missing embedded diplomacy receipt compatibility.")))
-        {
-            return JsonConvert.DeserializeObject<Dictionary<string, string[]>>(reader.ReadToEnd());
-        }
     }
 
     private static void AddPattern(HashSet<string> patterns, string key, string value)

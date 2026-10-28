@@ -68,7 +68,7 @@ internal static class ReplyShortcutReplay
                 "vassal cannot submit from either entry after losing ruler authority");
         }
 
-        var promptWorld = new PromptWorldFixture();
+        var promptWorld = new PromptWorldFixture { PackagePrompts = true };
         var promptOrch = new PromptOrch(promptWorld);
         var draft = new WorldDiplomacyDocument
         {

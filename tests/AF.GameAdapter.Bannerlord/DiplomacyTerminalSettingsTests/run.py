@@ -16,6 +16,7 @@ from output_isolation import new_run_root, resolve_dotnet, minimal_test_environm
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--run-root", type=Path)
+parser.add_argument("--material-country", action="store_true", help="Verify the new contact setting without retired terminal controls")
 parser.add_argument("--mcm", type=Path, default=ROOT / ".tmp/build_check/1.4/MCMv5.dll")
 args = parser.parse_args()
 out = new_run_root(ROOT, "diplomacy-terminal-settings", args.run_root)
@@ -26,7 +27,7 @@ for name in ("DefaultWorldDiplomacyDeclarationMinCharacters", "DefaultWorldDiplo
              "WorldDiplomacyDeclarationCharactersMin", "WorldDiplomacyDeclarationCharactersMax"):
     constants.append(re.search(r"public const int " + name + r"\s*=\s*\d+;", source)[0])
 properties = []
-for name in ("WorldDiplomacyDeclarationMinCharacters", "WorldDiplomacyDeclarationMaxCharacters"):
+for name in ("WorldDiplomacyDeclarationMinCharacters", "WorldDiplomacyDeclarationMaxCharacters", "WorldDiplomacyPlayerContactIntervalDays"):
     end = source.index("public int " + name)
     start = source.rfind("[SettingPropertyInteger", 0, end)
     end = source.index("\n", end)
@@ -42,8 +43,10 @@ fallback = (ROOT / "src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsLo
 base = ROOT / "content/modules/AF.Module.UI/ModuleData/Languages"
 cn = {n.get("id"): n.get("text") for n in ET.parse(base / "CNs/af_ui_strings-zh-CN.xml").iter("string")}
 en = {n.get("id"): n.get("text") for n in ET.parse(base / "af_ui_strings.xml").iter("string")}
-for prop in ("WorldDiplomacyDeclarationMinCharacters", "WorldDiplomacyDeclarationMaxCharacters",
+for prop in ("WorldDiplomacyDeclarationMinCharacters", "WorldDiplomacyDeclarationMaxCharacters", "WorldDiplomacyPlayerContactIntervalDays",
              "EditWorldDiplomacyPrompt", "RestoreDefaultWorldDiplomacyPrompt", "EventAndRebellionApiTemperature"):
+    if args.material_country and prop != "WorldDiplomacyPlayerContactIntervalDays":
+        continue
     line = next(line for line in registry.splitlines() if 'new TerminalSettingDef("' + prop + '"' in line)
     literals = [json.loads(x) for x in re.findall(r'"(?:\\.|[^"\\])*"', line)]
     for suffix, value in (("Title", literals[2]), ("Hint", literals[3])):
@@ -53,14 +56,17 @@ for prop in ("WorldDiplomacyDeclarationMinCharacters", "WorldDiplomacyDeclaratio
     if "Characters" in prop:
         assert "1f, 1000f" in line and "s => s." + prop in line
         assert "s." + prop + " = Convert.ToInt32(v)" in line
-assert "300" in en["AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint"]
-assert "generation capacity" in en["AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint"]
-assert "主API温度" in cn["AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint"]
-assert "main API temperature" in en["AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint"]
-assert "起草或重写" in cn["AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint"]
-assert "drafting or rewriting" in en["AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint"]
+    if prop == "WorldDiplomacyPlayerContactIntervalDays":
+        assert "1f, 30f" in line and "s => s." + prop in line and "s." + prop + " = Convert.ToInt32(v)" in line
+if not args.material_country:
+    assert "300" in en["AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint"]
+    assert "generation capacity" in en["AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint"]
+    assert "主API温度" in cn["AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint"]
+    assert "main API temperature" in en["AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint"]
+    assert "起草或重写" in cn["AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint"]
+    assert "drafting or rewriting" in en["AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint"]
 ui_keys = {"AF_TERMINAL_UI_" + prop + "_" + suffix
-           for prop in ("WorldDiplomacyDeclarationMinCharacters", "WorldDiplomacyDeclarationMaxCharacters",
+           for prop in ("WorldDiplomacyDeclarationMinCharacters", "WorldDiplomacyDeclarationMaxCharacters", "WorldDiplomacyPlayerContactIntervalDays",
                         "EditWorldDiplomacyPrompt", "RestoreDefaultWorldDiplomacyPrompt", "EventAndRebellionApiTemperature")
            for suffix in ("Title", "Hint")}
 ui_keys.update("AF_MCM_Diplomacy_" + suffix for suffix in (
@@ -68,6 +74,8 @@ ui_keys.update("AF_MCM_Diplomacy_" + suffix for suffix in (
     "Edit", "Edit_Hint", "Restore", "Restore_Hint"))
 ui_keys.add("AF_MCM_EventRebellionApi_Temperature_Hint")
 ui_keys.update("AF_MCM_Editor_Diplomacy_" + suffix for suffix in ("Title", "Description", "Hint", "RestoreTitle"))
+if args.material_country:
+    ui_keys = {"AF_TERMINAL_UI_WorldDiplomacyPlayerContactIntervalDays_" + s for s in ("Title", "Hint")}
 (out / "expected-ui.json").write_text(json.dumps({"en": {k: en[k] for k in sorted(ui_keys)},
                                                 "cn": {k: cn[k] for k in sorted(ui_keys)}}, ensure_ascii=False), encoding="utf-8")
 

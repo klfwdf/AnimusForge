@@ -3,7 +3,7 @@ import importlib.util, os, subprocess, sys, argparse, json, hashlib
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "tests"))
-from output_isolation import minimal_test_environment
+from output_isolation import minimal_test_environment, resolve_dotnet
 s=importlib.util.spec_from_file_location('extract', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 m=importlib.util.module_from_spec(s); s.loader.exec_module(m)
 parser=argparse.ArgumentParser();parser.add_argument('--run-root',type=Path);parser.add_argument('--package-language',choices=['zh-CN','en'],default='zh-CN');parser.add_argument('--wilderness-current',action='store_true');parser.add_argument('--native-history-current',action='store_true');parser.add_argument('--lore-current',action='store_true');parser.add_argument('--public-targeted-current',action='store_true');parser.add_argument('--uncompressed-family-current',action='store_true');parser.add_argument('--uncompressed-family-host-current',action='store_true');parser.add_argument('--uncompressed-family-original',action='store_true');parser.add_argument('--uncompressed-family-mutate-inclusion',action='store_true');parser.add_argument('--strict-capture-current',action='store_true');parser.add_argument('--pure-message-current',action='store_true');parser.add_argument('--persisted-history-current',action='store_true');parser.add_argument('--api-line',choices=['1.3','1.4'],default='1.3');args=parser.parse_args()
@@ -29,7 +29,7 @@ if args.persisted_history_current:
     for path in paths: read(path)
     (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>disable</Nullable><ImplicitUsings>enable</ImplicitUsings></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(ROOT/path)+'" />' for path in paths)+'</ItemGroup></Project>',encoding='utf-8')
     (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-    dotnet=ROOT/'local/dotnet/8.0.425/dotnet.exe';env=minimal_test_environment(dotnet,out)
+    dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
     run=subprocess.run([str(dotnet),'run','--project',str(out/'Tests.csproj'),'-c','Release']+(['-p:DefineConstants=BANNERLORD_1_4_OR_GREATER'] if args.api_line=='1.4' else []),cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
     (out/'run.log').write_text(run.stdout+run.stderr,encoding='utf-8')
     after=[dict(path=x['path'],rawSha256=hashlib.sha256((ROOT/x['path']).read_bytes()).hexdigest()) for x in receipts]
@@ -37,6 +37,10 @@ if args.persisted_history_current:
     (out/'receipt.json').write_text(json.dumps(dict(api=args.api_line,exitCode=run.returncode,inputs=receipts,after=after,sourceClass='current exact persisted-history orchestration and whole real dispatcher/registry/generation',controlledLeaves=['game Mission/Hero/Agent','history capture/render leaf; not whole SharedHistoryWork proof']),indent=2),encoding='utf-8')
     print(run.stdout+run.stderr,end='');raise SystemExit(run.returncode)
 create=m.declaration((ROOT/'src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs').read_text(encoding='utf-8-sig'),'internal static object CreateCourierChatMessage(')
+create+=m.declaration((ROOT/'src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs').read_text(encoding='utf-8-sig'),'internal static object CreateMemoryChatMessage(')
+system_source=(ROOT/'src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs').read_text(encoding='utf-8-sig')
+system_start=system_source.index('internal static string BuildConversationSystemPrompt(')
+create+=system_source[system_start:system_source.index(';',system_start)+1]
 metadata=m.declaration((ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutUtils.cs').read_text(encoding='utf-8-sig'),'public static string StripConversationMetadataPrefix(')
 harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').split('// @@PERSISTED_HISTORY_CURRENT_CASES@@')[0].split('// @@PURE_MESSAGE_CURRENT_CASES@@')
 program=harness[0].split('// @@STRICT_CAPTURE_CURRENT@@')[0].replace('@@CREATE@@',create).replace('@@METADATA@@',metadata)
@@ -195,8 +199,23 @@ if args.uncompressed_family_current:
     if args.uncompressed_family_host_current:cases=cases.replace('AnimusForge.Refactor.Adapters.SceneHistoryPromptCaptureAdapter.BuildUncompressedMemoryRoleMessagesForPrompt(', 'AnimusForge.ShoutBehavior.BuildUncompressedMemoryRoleMessagesForPrompt(')
     program=program.replace('Console.WriteLine("PASS strict/native history current "+Count);',cases+'Console.WriteLine("PASS strict/native history current "+Count);')
 (out/'Program.cs').write_text(program,encoding='utf-8')
-paths=['src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs','src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs']
+paths=['src/modules/AF.Module.Prompt/Composition/RequestRecallBudget.cs','src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs','src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs']
 paths += ['src/modules/AF.Module.Conversation/Internal/History/SceneHistoryProjectionOwner.cs']
+paths += ['src/modules/AF.Module.Prompt/Composition/ConversationContextWindow.cs']
+paths += ['src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs', 'src/modules/AF.Module.Llm/Tts/LocalTtsSpeech.cs']
+paths += ['src/modules/AF.Module.Llm/Tts/GptSoVitsLanguage.cs']
+paths += ['src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs']
+if not args.pure_message_current:
+    paths += ['src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs']
+paths += ['src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs']
+# Compile the real scalar memory record used by the shared role classifier.
+if 'class DailyMemoryLine' not in program:
+    record_source=(ROOT/'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs').read_text(encoding='utf-8-sig')
+    start=record_source.index('internal sealed class DailyMemoryLine')
+    opening=record_source.index('{',start); depth=1; end=opening+1
+    while depth:
+        depth += (record_source[end]=='{') - (record_source[end]=='}'); end+=1
+    (out/'DailyMemoryLine.cs').write_text('namespace AnimusForge;\n'+record_source[start:end],encoding='utf-8')
 if args.public_targeted_current: paths += ['src/AF.Contracts/Internal/InteractionContracts.cs','src/AF.Contracts/Internal/LlmContracts.cs','src/modules/AF.Module.Prompt/Configuration/LegacyDetachedRuleSelector.cs']
 if args.native_history_current: paths += ['src/modules/AF.Module.Conversation/Channels/Native/NativeConversationSessionOwner.cs','src/modules/AF.Module.Memory/Records/AnimusForgeDialogueHistoryEntry.cs','src/modules/AF.Module.Conversation/Internal/History/NativeHistoryIdentityProjectionOwner.cs']
 if args.strict_capture_current: paths += ['src/modules/AF.Module.Conversation/Internal/History/SceneConversationHistoryOwner.cs','src/modules/AF.Module.Prompt/Composition/HistorySectionProjectionOwner.cs','src/modules/AF.Module.Conversation/Channels/Scene/ScenePendingAfefFactsOwner.cs']
@@ -211,10 +230,18 @@ if args.strict_capture_current and not (args.native_history_current or args.wild
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Prompt/Composition'))
 from fixture_resources import add_history_resources
-add_history_resources(ROOT,out,out/'Tests.csproj',args.package_language)
+add_history_resources(ROOT,out,out/'Tests.csproj',args.package_language,diplomacy_receipts=True)
+# These unrelated fact domains are opaque leaves in this history-order/budget fixture.
+(out/'SharedFactDomainLeaves.cs').write_text('namespace AnimusForge { internal static class SocialFactPromptProjection {internal static string ProjectForPrompt(string x)=>x;} internal static class EconomyActionFactProjection {internal static string ProjectForPrompt(string x)=>x;} } namespace AnimusForge.SiegeAftermathIntervention {internal static class SiegeSceneMemoryPromptProjection {internal static string ProjectFact(string x,bool english)=>x;}}',encoding='utf-8')
+project=out/'Tests.csproj';text=project.read_text('utf-8')
+memory_resource=ROOT/'content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json'
+llm_resource=ROOT/'content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json'
+text=text.replace('</Project>','<ItemGroup><EmbeddedResource Include="'+str(llm_resource)+'" LogicalName="AnimusForge.Llm.RuntimeSources.json" /></ItemGroup></Project>')
+text=text.replace('</Project>','<ItemGroup><EmbeddedResource Include="'+str(memory_resource)+'" LogicalName="AnimusForge.Memory.SourceTexts.json" /></ItemGroup></Project>')
+project.write_text(text,encoding='utf-8')
 if args.package_language=='en':
  f=out/'Program.cs';value=f.read_text('utf-8');value=value.replace('【你听见】Borin说：heard','[You hear] Borin says: heard');f.write_text(value,encoding='utf-8')
-dotnet=ROOT/'local/dotnet/8.0.425/dotnet.exe'
+dotnet=resolve_dotnet(ROOT)
 env=minimal_test_environment(dotnet,out)
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Tests.csproj'),'-c','Release']+(['-p:DefineConstants=BANNERLORD_1_4_OR_GREATER'] if args.api_line=='1.4' else []),cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
 (out/'run.log').write_text(r.stdout+r.stderr,encoding='utf-8')

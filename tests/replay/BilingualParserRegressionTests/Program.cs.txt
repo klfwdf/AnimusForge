@@ -55,16 +55,13 @@ internal static class Program
         Equal("null fallback","regional_security",WorldDiplomacyIntentVocabulary.InferTopicCategory(null,false));
     }
     static void RealmCases() {
-        foreach(var row in new[]{("empire_s","南帝国的元老院已经决定"),("empire_s","The Senate of the Southern Empire has decided."),
-            ("empire_s","The Southern Empire's Senate has decided."),("empire_s","Our senate has decided."),
-            ("empire_w","西帝国的元老院已经决定"),("empire_w","The Western Empire's Senate has decided."),
-            ("empire_n","Lucon国王万岁"),("empire_n","Long live King Lucon!"),("empire_n","Lucon is a king."),
-            ("empire_n","KING LUCON has spoken.")})
-            Equal("realm reject "+row.Item2,true,WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(row.Item1,"Lucon",row.Item2,out _));
-        foreach(var row in new[]{("empire_n","The Northern Empire's senate has decided."),("empire_s","The Northern Empire's senate has decided."),
-            ("empire_n","Emperor Lucon has spoken."),("empire_n","Lucon met King Derthert."),("empire_n","King Luconshire has spoken."),
-            ("vlandia","King Lucon has spoken."),("empire_n","We march north.")})
-            Equal("realm allow "+row.Item2,false,WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(row.Item1,"Lucon",row.Item2,out _));
+        foreach(var text in new[]{"Lucon国王万岁", "Long live King Lucon!", "Lucon is a king.", "KING LUCON has spoken."})
+            Equal("sourced imperial title rejects "+text,true,WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation("Emperor","Lucon",text,out _));
+        foreach(var row in new[]{("Emperor","Our senate has decided."),("Empress","The Southern Empire's Senate has decided."),
+            ("Emperor","The Western Empire's Senate has decided."),("Emperor","Emperor Lucon has spoken."),
+            ("Emperor","Lucon met King Derthert."),("Emperor","King Luconshire has spoken."),
+            ("King","King Lucon has spoken."),("","Consul Lucon has spoken."),("empire_n","King Lucon has spoken.")})
+            Equal("sourced realm allow "+row.Item2,false,WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(row.Item1,"Lucon",row.Item2,out _));
     }
     static void PolicyCases() {
         foreach(var row in new[]{("后三座城镇","BottomN:3"),("bottom 3 towns","BottomN:3"),("BOTTOM 12 CASTLES","BottomN:12"),

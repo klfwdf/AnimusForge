@@ -44,8 +44,7 @@ internal static class DiplomacyDialogueStatusUi
         if (string.IsNullOrEmpty(message)) return message;
         foreach (string key in Keys)
         {
-          foreach (string source in DiplomacyReplyTextRules.SourcesFor(key))
-          {
+            string source = DiplomacyMiscPromptTexts.Get(key, "");
             if (string.IsNullOrEmpty(source)) continue;
             if (message == source) return Text(key);
             if (key.EndsWith("Prefix", StringComparison.Ordinal) && message.StartsWith(source, StringComparison.Ordinal))
@@ -65,7 +64,6 @@ internal static class DiplomacyDialogueStatusUi
                         "Diplomatic commitment not submitted: {REASON}.",
                         ("REASON", message.Substring(prefix.Length, message.Length - prefix.Length - ending.Length)));
             }
-          }
         }
         return message;
     }

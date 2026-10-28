@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_DIP_EVENT_Title" text="外交事件" />
+    <string id="AF_DIP_EVENT_Started" text="事件开始" />
+    <string id="AF_DIP_EVENT_Ended" text="事件结束" />
+    <string id="AF_DIP_EVENT_Participants" text="参与国家" />
+    <string id="AF_DIP_EVENT_InitialEffects" text="即时影响" />
+    <string id="AF_DIP_EVENT_FinalEffects" text="结束时的效果" />
+    <string id="AF_DIP_EVENT_NoEffects" text="暂无已确认的效果变化。" />
+    <string id="AF_DIP_EVENT_Acknowledge" text="知晓" />
+    <string id="AF_DIP_EVENT_Chronicle" text="外交纪事" />
+    <string id="AF_DIP_EVENT_Separator" text="、" />
+    <string id="AF_DIP_EVENT_PreviewStartAction" text="预览事件开始弹窗" />
+    <string id="AF_DIP_EVENT_PreviewEndAction" text="预览事件结束弹窗" />
+    <string id="AF_DIP_EVENT_PreviewHint" text="预览带插画的事件弹窗，不会发布事件或施加效果。" />
+    <string id="AF_DIP_EVENT_PreviewUnavailable" text="事件预览未能打开，请关闭其他弹窗后重试。" />
+    <string id="AF_DIP_EVENT_PreviewStartTitle" text="血袍北伐（预览）" />
+    <string id="AF_DIP_EVENT_PreviewEndTitle" text="疲惫的和约（预览）" />
+    <string id="AF_DIP_EVENT_PreviewStartBody" text="拉盖娅再度举起先皇的血袍，指控北方元老院与皇帝之死有关。卢孔拒绝指控，坚称南方正借旧案谋求帝位。&#10;&#10;如今，南方鹰旗已向北推进。真相依旧扑朔迷离，两国的宿怨却已化为新的战火。" />
+    <string id="AF_DIP_EVENT_PreviewEndBody" text="久战之后，双方都未能取得决定性的优势。疲惫的军队陆续退回营地，使者终于议定停战。&#10;&#10;围绕先皇之死的指控仍无定论。这纸和约暂时平息了边境的战火，却未能化解两国的旧怨。" />
+    <string id="AF_DIP_EVENT_South" text="南帝国" />
+    <string id="AF_DIP_EVENT_North" text="北帝国" />
+    <string id="AF_DIP_EVENT_PreviewMobilization" text="南帝国 · 北伐动员：征募增长提高" />
+    <string id="AF_DIP_EVENT_PreviewBorderPressure" text="北帝国 · 边境承压：繁荣增长降低" />
+    <string id="AF_DIP_EVENT_PreviewRemoveMobilization" text="南帝国 · 北伐动员：移除征募增长加成" />
+    <string id="AF_DIP_EVENT_PreviewRemovePressure" text="北帝国 · 边境承压：移除繁荣增长惩罚" />
+    <string id="AF_DIP_EVENT_PreviewRecovery" text="南北两国 · 战后休整：开始施加临时恢复效果" />
+    <string id="AF_DIP_EVENT_PreviewNotice" text="仅供预览：不会发布事件，也不会施加实际效果。" />
+  </strings>
+</base>

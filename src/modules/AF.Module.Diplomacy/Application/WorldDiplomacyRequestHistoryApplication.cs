@@ -1,395 +1,103 @@
 using System;
-
 using System.Collections.Generic;
-
 using System.Linq;
-
 using System.Runtime.CompilerServices;
-
 using System.Text;
-
 using AnimusForge.Refactor.Domain;
-
-
+using Newtonsoft.Json;
 
 namespace AnimusForge;
 
-
-
-// The saved archive and a declaration's reading window have different lifetimes.
-
-// Append-only document indexes grow once per new document, not once per tick/request.
-
+// Current sources are exact and known. Other events enter only through topic
+// retrieval, never through a recent-event quota. The saved archive is unchanged.
 internal static class WorldDiplomacyRequestHistoryApplication
-
 {
-
     internal static string ContextMarker => DiplomacyMiscPromptTexts.Get("History_ContextMarker", "[Relevant Diplomatic History for this Event]");
-
     internal const int DeclarationInputLimit = 32000;
-
     internal const int CompressionInputLimit = 128000;
-
-    internal const int ContextCharacterLimit = 20000;
-
-    private const int RecentDays = 21;
-
-    private static readonly ConditionalWeakTable<WorldDiplomacyStorage, DocumentIndex> Indexes =
-
-        new ConditionalWeakTable<WorldDiplomacyStorage, DocumentIndex>();
-
+    internal const int ContextCharacterLimit = 16000;
+    private static readonly ConditionalWeakTable<WorldDiplomacyStorage, DocumentIndex> Indexes = new();
     internal static void InvalidateDocumentRouting(WorldDiplomacyStorage storage) => Indexes.Remove(storage);
-
-
-
-    internal static long InputLimit(WorldDiplomacyJob job, long configuredLimit) =>
-
-        Math.Min(configuredLimit, WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress")
-
-            ? CompressionInputLimit : DeclarationInputLimit);
-
-
-
+    internal static long InputLimit(WorldDiplomacyJob job, long configuredLimit) => Math.Min(configuredLimit,
+        WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress") ? CompressionInputLimit : DeclarationInputLimit);
     internal static long WindowBudget(WorldDiplomacyJob job, Func<string, int> estimateTokens)
-
     {
-
         long Count(string value) => Math.Max(0, estimateTokens?.Invoke(value ?? "") ?? (value?.Length ?? 0));
-
-        // Leave room for framing plus one rejected answer/correction. Rules and
-
-        // exact current source documents are never silently truncated to fit.
-
-        return Math.Max(0L, Math.Min(16000L, DeclarationInputLimit - Count(job?.SystemPrompt)
-
-            - Count(job?.UserPrompt) - 4096L));
-
+        return Math.Max(0L, Math.Min(16000L, DeclarationInputLimit - Count(job?.SystemPrompt) - Count(job?.UserPrompt) - 4096L));
     }
-
-
-
     internal static string Build(WorldDiplomacyStorage storage, WorldDiplomacyJob job, int currentDay,
-
-        long tokenBudget = 16000L, Func<string, int> estimateTokens = null,
-        Func<string, string, string> localize = null)
-
+        long tokenBudget = 16000L, Func<string, int> estimateTokens = null, Func<string, float[]> embed = null)
     {
-
-        string Text(string key, string fallback) => localize?.Invoke(key, fallback)
-            ?? DiplomacyMiscPromptTexts.Get(key, fallback);
-        var text = new StringBuilder(Text("History_ContextMarker", "[Relevant Diplomatic History for this Event]"));
-
-        text.AppendLine();
-
-        text.AppendLine(Text("History_ContextIntroduction", "The following is a limited window into this event and recent materials, not a complete archive. Absence does not mean it did not happen; excerpts must not be used to infer unlisted terms. Current status and precise original terms are governed by current dynamic materials. Declarations/proposals do not equal execution; only [Executed by game] is a confirmed outcome."));
-
+        if (storage == null || job == null || tokenBudget <= 0) return "";
         long Count(string value) => Math.Max(0, estimateTokens?.Invoke(value) ?? value.Length);
-
-        long remainingTokens = Math.Max(0L, tokenBudget - Count(text.ToString()));
-
-        bool AddSection(string line)
-
+        var text = new StringBuilder(); long remaining = tokenBudget;
+        bool Add(string row)
         {
-
-            long tokens = Count(line) + 2L;
-
-            if (tokens > remainingTokens || !Append(text, line)) return false;
-
-            remainingTokens -= tokens;
-
-            return true;
-
+            if (string.IsNullOrWhiteSpace(row)) return false;
+            long cost = Count(row) + Environment.NewLine.Length;
+            if (cost > remaining || text.Length + row.Length + Environment.NewLine.Length > ContextCharacterLimit) return false;
+            text.AppendLine(row); remaining -= cost; return true;
         }
-
-        if (storage == null || job == null) return text.ToString();
-
-        var index = Indexes.GetValue(storage, _ => new DocumentIndex());
-
-        index.Update(storage.Documents);
-
-        var knownIds = WorldDiplomacyRoundLifecycleRules.CollectKnownDocumentIds(null,
-
+        if (!Add(ContextMarker)) return "";
+        var index = Indexes.GetValue(storage, _ => new DocumentIndex()); index.Update(storage.Documents);
+        var known = WorldDiplomacyRoundLifecycleRules.CollectKnownDocumentIds(null,
             storage.NobleKnowledge, storage.KingdomKnowledge, null, job.AuthorKingdomId, true, true);
-
-        bool KnowsDocument(WorldDiplomacyDocument document) => document != null
-
-            && (string.Equals(document.AuthorKingdomId, job.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
-
-                || knownIds.Contains(document.DocumentId ?? ""));
-
-        bool KnowsSource(string id)
-
-        {
-
-            // Non-document world facts keep their existing visibility. A fact
-
-            // attached to a retained diplomacy document follows its delivery.
-
-            var document = index.Find(id);
-
-            return document == null || KnowsDocument(document);
-
-        }
-
+        foreach (var id in index.Own(job.AuthorKingdomId)) known.Add(id);
+        bool Knows(WorldDiplomacyDocument d) => d?.IsReadyForPublication == true && known.Contains(d.DocumentId ?? "");
         var selected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        var kingdoms = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        AddId(kingdoms, job.AuthorKingdomId);
-
-        AddId(kingdoms, job.TargetKingdomId);
-
-        foreach (string id in (job.CandidateKingdomIds ?? new List<string>()).Take(8)) AddId(kingdoms, id);
-
-        int documentCount = 0;
-
-        void Document(WorldDiplomacyDocument doc)
-
+        void Document(WorldDiplomacyDocument d)
         {
-
-            if (doc == null || !doc.IsReadyForPublication || !KnowsDocument(doc) || documentCount >= 16
-
-                || !selected.Add(doc.DocumentId ?? "")) return;
-
-            string line = Text("History_DocPrefix", "[Document ") + Clip(doc.DocumentId, 96) + "; " + Clip(DiplomacyDateProjection.ForPrompt(doc.GameDate, localize ?? DiplomacyPromptTexts.Get), 80)
-
-                + "; " + Clip(doc.AuthorKingdomId, 96) + "→" + Clip(doc.TargetKingdomId, 96)
-
-                + "] " + Clip(doc.Title, 160) + "\n" + Text("History_ExcerptPrefix", "[Excerpt] ") + Clip(doc.Body, 1200);
-
-            if (doc.ChangedDiplomaticState) line += "\n" + Text("History_ExecutedPrefix", "[Executed by game] ") + Clip(doc.MechanicalResult, 600);
-
-            if (AddSection(line)) documentCount++;
-
+            if (!Knows(d) || selected.Contains(d.DocumentId ?? "")) return;
+            if (Add(JsonConvert.SerializeObject(new { source = d.DocumentId, GameDate = DiplomacyPromptTexts.ProjectCalendarDate(d.GameDate, DiplomacyPromptTexts.Get), d.AuthorKingdomId, d.TargetKingdomId,
+                d.Title, d.Body, d.Intent, d.Commitment, d.ChangedDiplomaticState, d.MechanicalResult }))) selected.Add(d.DocumentId);
         }
-
         Document(index.Find(job.SourceDocumentId));
-
-        foreach (string id in (job.TriggerDocumentIds ?? new List<string>()).Take(8)) Document(index.Find(id));
-
+        foreach (string id in (job.TriggerDocumentIds ?? new()).Take(8)) Document(index.Find(id));
         string roundId = string.IsNullOrWhiteSpace(job.RoundId) ? job.ExchangeId : job.RoundId;
-
-        foreach (var doc in index.RecentRound(roundId).Take(8)) Document(doc);
-
-        var recentGroups = string.IsNullOrWhiteSpace(job.TargetKingdomId)
-
-            ? kingdoms.Select(index.RecentKingdom)
-
-            : new[] { index.RecentPair(job.AuthorKingdomId, job.TargetKingdomId) };
-
-        foreach (var recent in recentGroups)
-
+        foreach (var d in index.Round(roundId).Where(Knows).Take(8)) Document(d);
+        var round = WorldDiplomacyLiveRoundRules.Live(storage).Concat(storage.CompletedRounds ?? new())
+            .FirstOrDefault(x => x?.RoundId == roundId);
+        var source = index.Find(job.SourceDocumentId);
+        string query = (round?.RoundTopic ?? "") + " " + (Knows(source) ? source.Title + " " + source.Body : "");
+        // No topic means no historical filler. Never use the system rules as a query.
+        if (!string.IsNullOrWhiteSpace(query))
         {
-
-            int added = 0;
-
-            foreach (var doc in recent)
-
-            {
-
-                if (doc.Day < currentDay - RecentDays || doc.Day > currentDay) continue;
-
-                int before = documentCount;
-
-                Document(doc);
-
-                if (documentCount > before && ++added >= 5) break;
-
-            }
-
+            var snapshot = new WorldDiplomacyMemorySnapshot(storage, job.AuthorKingdomId, known, job.PersonalMemoryRulerId);
+            string recalled = WorldDiplomacyMemoryApplication.Build(snapshot, query, day => day.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                Math.Min(7000, ContextCharacterLimit - text.Length), embed, selected);
+            foreach (string row in recalled.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)) Add(row);
         }
-
-        // Round summaries are already a bounded retained collection. Do not inject
-
-        // the unstructured global snapshot, which contains unrelated countries/rules.
-
-        var summaries = (storage.RoundSummaries ?? new List<WorldDiplomacyRoundSummary>())
-
-            .Where(s => s != null && !string.Equals(s.RoundId, roundId, StringComparison.OrdinalIgnoreCase)
-
-                && (s.KingdomIds ?? new List<string>()).Contains(job.AuthorKingdomId, StringComparer.OrdinalIgnoreCase)
-
-                && (s.SourceDocumentIds ?? new List<string>()).All(KnowsSource)
-
-                && (string.IsNullOrWhiteSpace(job.TargetKingdomId)
-
-                    || (s.KingdomIds ?? new List<string>()).Contains(job.TargetKingdomId, StringComparer.OrdinalIgnoreCase)))
-
-            .OrderByDescending(s => s.CreatedDay).Take(2);
-
-        foreach (var summary in summaries)
-
-            AddSection(Text("History_RelatedOldRoundPrefix", "[Related prior round ") + Clip(summary.RoundId, 96) + "] " + Clip(summary.Summary, 1400));
-
-        var facts = storage.CanonicalHistory?.Snapshot?.ProtectedFacts;
-
-        if (facts != null)
-
-        {
-
-            foreach (var fact in facts.Where(f => f != null && KnowsSource(f.SourceId) && KnowsSource(f.RelatedSourceId)
-
-                && (kingdoms.Contains(f.AuthorKingdomId ?? "")
-
-                || (f.TargetKingdomIds ?? new List<string>()).Any(kingdoms.Contains)))
-
-                .OrderByDescending(f => f.Sequence).Take(8))
-
-                AddSection(Text("History_ProtectedFactPrefix", "[Protected historical fact; kind=") + Clip(fact.Kind, 64) + "; source="
-
-                    + Clip(fact.SourceId, 96) + "] " + Clip(fact.Text, 600));
-
-        }
-
         return text.ToString();
-
     }
-
-
-
-    private static void AddId(HashSet<string> ids, string id) { if (!string.IsNullOrWhiteSpace(id)) ids.Add(id); }
-
-    private static bool Append(StringBuilder text, string line)
-
-    {
-
-        if (text.Length + line.Length + 2 > ContextCharacterLimit) return false;
-
-        text.AppendLine(line);
-
-        return true;
-
-    }
-
-    private static string Clip(string value, int length)
-
-    {
-
-        if (string.IsNullOrEmpty(value)) return "";
-
-        if (value.Length <= length) return value;
-
-        if (char.IsHighSurrogate(value[length - 1])) length--;
-
-        return value.Substring(0, length) + "…";
-
-    }
-
-
-
     private sealed class DocumentIndex
-
     {
-
         private List<WorldDiplomacyDocument> _documents;
-
         private int _count;
-
-        private readonly Dictionary<string, WorldDiplomacyDocument> _byId = new Dictionary<string, WorldDiplomacyDocument>(StringComparer.OrdinalIgnoreCase);
-
-        private readonly Dictionary<string, List<WorldDiplomacyDocument>> _byRound = new Dictionary<string, List<WorldDiplomacyDocument>>(StringComparer.OrdinalIgnoreCase);
-
-        private readonly Dictionary<string, List<WorldDiplomacyDocument>> _byKingdom = new Dictionary<string, List<WorldDiplomacyDocument>>(StringComparer.OrdinalIgnoreCase);
-
-        private readonly Dictionary<string, List<WorldDiplomacyDocument>> _byPair = new Dictionary<string, List<WorldDiplomacyDocument>>(StringComparer.OrdinalIgnoreCase);
-
+        private readonly Dictionary<string, WorldDiplomacyDocument> _byId = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, List<WorldDiplomacyDocument>> _byRound = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, HashSet<string>> _own = new(StringComparer.OrdinalIgnoreCase);
         internal void Update(List<WorldDiplomacyDocument> documents)
-
         {
-
             if (!ReferenceEquals(_documents, documents) || (documents?.Count ?? 0) < _count)
-
-            {
-
-                _documents = documents; _count = 0;
-
-                _byId.Clear(); _byRound.Clear(); _byKingdom.Clear(); _byPair.Clear();
-
-            }
-
+            { _documents = documents; _count = 0; _byId.Clear(); _byRound.Clear(); _own.Clear(); }
             if (documents == null) return;
-
             for (; _count < documents.Count; _count++)
-
             {
-
-                var doc = documents[_count];
-
-                if (doc == null) continue;
-
-                _byId[doc.DocumentId ?? ""] = doc;
-
-                Add(_byRound, doc.RoundId, doc, 32);
-
-                Add(_byKingdom, doc.AuthorKingdomId, doc, 32);
-
-                if (!string.Equals(doc.AuthorKingdomId, doc.TargetKingdomId, StringComparison.OrdinalIgnoreCase))
-
+                var d = documents[_count]; if (d == null || string.IsNullOrEmpty(d.DocumentId)) continue;
+                _byId[d.DocumentId] = d;
+                if (!string.IsNullOrEmpty(d.AuthorKingdomId))
                 {
-
-                    Add(_byKingdom, doc.TargetKingdomId, doc, 32);
-
-                    if (!string.IsNullOrWhiteSpace(doc.AuthorKingdomId) && !string.IsNullOrWhiteSpace(doc.TargetKingdomId))
-
-                        Add(_byPair, PairKey(doc.AuthorKingdomId, doc.TargetKingdomId), doc, 32);
-
+                    if (!_own.TryGetValue(d.AuthorKingdomId, out var ids)) _own[d.AuthorKingdomId] = ids = new(StringComparer.OrdinalIgnoreCase);
+                    ids.Add(d.DocumentId);
                 }
-
-                foreach (string id in (doc.AddressedKingdomIds ?? new List<string>()).Distinct(StringComparer.OrdinalIgnoreCase))
-
-                    if (!string.Equals(id, doc.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
-
-                        && !string.Equals(id, doc.TargetKingdomId, StringComparison.OrdinalIgnoreCase))
-
-                    {
-
-                        Add(_byKingdom, id, doc, 32);
-
-                        if (!string.IsNullOrWhiteSpace(doc.AuthorKingdomId) && !string.IsNullOrWhiteSpace(id))
-
-                            Add(_byPair, PairKey(doc.AuthorKingdomId, id), doc, 32);
-
-                    }
-
+                if (string.IsNullOrEmpty(d.RoundId)) continue;
+                if (!_byRound.TryGetValue(d.RoundId, out var rows)) _byRound[d.RoundId] = rows = new();
+                rows.Add(d); rows.Sort((a, b) => a.Day != b.Day ? b.Day.CompareTo(a.Day) : b.CreatedUtcTicks.CompareTo(a.CreatedUtcTicks));
+                if (rows.Count > 32) rows.RemoveAt(rows.Count - 1);
             }
-
         }
-
-        private static void Add(Dictionary<string, List<WorldDiplomacyDocument>> index, string key, WorldDiplomacyDocument doc, int capacity)
-
-        {
-
-            if (string.IsNullOrWhiteSpace(key)) return;
-
-            if (!index.TryGetValue(key, out var list)) index[key] = list = new List<WorldDiplomacyDocument>();
-
-            list.Add(doc);
-
-            list.Sort((a, b) => a.Day != b.Day ? b.Day.CompareTo(a.Day) : b.CreatedUtcTicks.CompareTo(a.CreatedUtcTicks));
-
-            if (list.Count > capacity) list.RemoveAt(list.Count - 1);
-
-        }
-
-        internal WorldDiplomacyDocument Find(string id) => !string.IsNullOrWhiteSpace(id) && _byId.TryGetValue(id, out var doc) ? doc : null;
-
-        internal IEnumerable<WorldDiplomacyDocument> RecentRound(string id) => Get(_byRound, id);
-
-        internal IEnumerable<WorldDiplomacyDocument> RecentKingdom(string id) => Get(_byKingdom, id);
-
-        internal IEnumerable<WorldDiplomacyDocument> RecentPair(string first, string second) =>
-
-            string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(second) ? Enumerable.Empty<WorldDiplomacyDocument>() : Get(_byPair, PairKey(first, second));
-
-        private static string PairKey(string first, string second) => StringComparer.OrdinalIgnoreCase.Compare(first, second) <= 0
-
-            ? first + "\0" + second : second + "\0" + first;
-
-        private static IEnumerable<WorldDiplomacyDocument> Get(Dictionary<string, List<WorldDiplomacyDocument>> index, string id) =>
-
-            !string.IsNullOrWhiteSpace(id) && index.TryGetValue(id, out var list) ? list : Enumerable.Empty<WorldDiplomacyDocument>();
-
+        internal IEnumerable<string> Own(string id) => id != null && _own.TryGetValue(id, out var rows) ? rows : Enumerable.Empty<string>();
+        internal WorldDiplomacyDocument Find(string id) => id != null && _byId.TryGetValue(id, out var row) ? row : null;
+        internal IEnumerable<WorldDiplomacyDocument> Round(string id) => id != null && _byRound.TryGetValue(id, out var rows) ? rows : Enumerable.Empty<WorldDiplomacyDocument>();
     }
-
 }
-

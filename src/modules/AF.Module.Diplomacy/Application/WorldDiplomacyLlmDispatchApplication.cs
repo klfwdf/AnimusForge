@@ -69,7 +69,7 @@ internal sealed class WorldDiplomacyJobSelectionView
     internal int MinimumAwaitingTarget(WorldDiplomacyStorage storage, int fallback)
     { EnsureSummary(storage); return _minimumAwaitingTarget > 0 ? Math.Min(_minimumAwaitingTarget, fallback) : fallback; }
 
-    internal WorldDiplomacyJob Select(WorldDiplomacyStorage storage, int currentHour, string lastCacheAffinityKey, Func<WorldDiplomacyJob, bool> eligible = null, Func<WorldDiplomacyJob, int> priority = null)
+    internal WorldDiplomacyJob Select(WorldDiplomacyStorage storage, int currentHour, string lastCacheAffinityKey, Func<WorldDiplomacyJob, bool> eligible = null, Func<WorldDiplomacyJob, long> priority = null)
     {
         EnsureSummary(storage);
         if (eligible == null && storage.ServiceCooldownUntilHour > currentHour) return null;
@@ -89,8 +89,8 @@ internal sealed class WorldDiplomacyJobSelectionView
             if (candidate == null || string.IsNullOrWhiteSpace(candidate.JobId) || candidate.IsRunning
                 || (candidate.AwaitingHistoryCompression && currentHour < storage.CompressionRetryAfterHour)) continue;
             if (eligible != null && !eligible(candidate)) continue;
-            int candidatePriority = priority?.Invoke(candidate) ?? candidate.Priority;
-            int selectedPriority = _selected == null ? int.MinValue : priority?.Invoke(_selected) ?? _selected.Priority;
+            long candidatePriority = priority?.Invoke(candidate) ?? candidate.Priority;
+            long selectedPriority = _selected == null ? long.MinValue : priority?.Invoke(_selected) ?? _selected.Priority;
             bool affinityMatch = string.Equals(
                 (WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(candidate) ?? "").Trim(),
                 affinity, StringComparison.OrdinalIgnoreCase);
@@ -155,7 +155,6 @@ internal static class WorldDiplomacyLlmDispatchApplication
             orchestration.TryRebuildPendingJob,
             source.GetAuthorBlockReason,
             (j, reason) => orchestration.AbandonRejectedGeneration(j, j?.AuthorKingdomId, j?.TargetKingdomId, reason),
-            orchestration.EnsureGenerationJobHasKingdomStrategicProfile,
             source.GetLlmConfigError,
             scheduler == null ? source.TryConsumeRequestBudget : _ => true,
             j => orchestration.CaptureCanonicalHistoryForJob(j, syncSources: true),
@@ -235,7 +234,6 @@ internal static class WorldDiplomacyLlmDispatchApplication
         Func<WorldDiplomacyJob, bool> rebuildPendingJob,
         Func<WorldDiplomacyJob, string> authorBlockReason,
         Action<WorldDiplomacyJob, string> abandonGeneration,
-        Func<WorldDiplomacyJob, bool> ensureStrategicProfile,
         Func<string> llmConfigError,
         Func<bool, bool> tryConsumeRequestBudget,
         Action<WorldDiplomacyJob> captureCanonicalHistory,
@@ -248,14 +246,14 @@ internal static class WorldDiplomacyLlmDispatchApplication
         Action scheduleTokenCompression,
         Action<WorldDiplomacyJob, string> commitFailedJob,
         Action<string> removeJob,
-        Action<string> log, Func<WorldDiplomacyJob, bool> eligible = null, Action<WorldDiplomacyJob> prepareShared = null, Func<WorldDiplomacyJob, int> priority = null)
+        Action<string> log, Func<WorldDiplomacyJob, bool> eligible = null, Action<WorldDiplomacyJob> prepareShared = null, Func<WorldDiplomacyJob, long> priority = null)
     {
         preparedMessages = null;
         if (storage == null || (storage.Jobs?.Count ?? 0) == 0) return null;
         WorldDiplomacyJob job = WorldDiplomacyJobSelectionView.For(storage)
             .Select(storage, currentHour, lastCacheAffinityKey, eligible, priority);
         if (job == null) return null;
-        if (WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(job, storage?.DiplomaticThreats))
+        if (WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(job, WorldDiplomacyThreatScope.For(storage, job.AuthorKingdomId, job.RoundId)))
         {
             if (refreshThreatPresentation?.Invoke(job) != true)
             {
@@ -309,16 +307,11 @@ internal static class WorldDiplomacyLlmDispatchApplication
                 return null;
             }
         }
-        if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")
-            && ensureStrategicProfile?.Invoke(job) != true)
-        {
-            abandonGeneration?.Invoke(job, "missing_kingdom_strategic_profile");
-            if (string.IsNullOrEmpty(job.SuspendedReason)) removeJob?.Invoke(job.JobId);
-            return null;
-        }
         // Refreshing legal actions or repairing a persisted prompt can replace its
         // tail. Freeze the event/player sources only after those refreshes finish.
         prepareShared?.Invoke(job);
+        // Material preparation can yield without spending an API request or sending an old prompt.
+        if (job.RequestPreparationPending || job.RetryAfterUtcTicks > DateTime.UtcNow.Ticks || !string.IsNullOrEmpty(job.SuspendedReason)) return null;
         if (string.IsNullOrWhiteSpace(job.SystemPrompt))
         {
             commitFailedJob?.Invoke(job, "empty prompt");
@@ -333,18 +326,14 @@ internal static class WorldDiplomacyLlmDispatchApplication
         if (tryConsumeRequestBudget?.Invoke(false) != true) return null;
         if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate"))
         {
-            if (ensureStrategicProfile?.Invoke(job) != true)
-            {
-                abandonGeneration?.Invoke(job, "missing_kingdom_strategic_profile");
-                if (string.IsNullOrEmpty(job.SuspendedReason)) removeJob?.Invoke(job.JobId);
-                return null;
-            }
             // Ordinary queued generations consume the newest committed archive at actual send time.
             // Semantic repairs carry explicit messages and intentionally retain their rejected
             // request's frozen prefix.
             if (job.LlmMessages == null || job.LlmMessages.Count == 0)
             {
-                captureCanonicalHistory?.Invoke(job);
+                try { captureCanonicalHistory?.Invoke(job); }
+                catch (WorldDiplomacyPreparationPendingException) { job.RequestPreparationPending = true; return null; }
+                catch (WorldDiplomacyPreparationException ex) { commitFailedJob?.Invoke(job, ex.Message); return null; }
             }
         }
         JArray requestMessages = buildMessageArray?.Invoke(job);
@@ -379,6 +368,34 @@ internal static class WorldDiplomacyLlmDispatchApplication
             job.AwaitingHistoryCompression = false;
             return true;
         }
+        if (job.ForcedIntent == "ended" && job.Kind is "event_boundary" or "event_boundary_audit")
+        {
+            // Only request projections are reduced. Drafts, exact outcomes/terms,
+            // source documents and audit digests remain unchanged.
+            foreach (int excerptLimit in new[] { 800, 300, 0 })
+            {
+                foreach (JObject message in messages.OfType<JObject>().Where(x => (string)x["role"] == "user"))
+                {
+                    if (!WorldDiplomacyEnvelopeJsonRules.TryParseJsonObject((string)message["content"], out var request)
+                        || (string)request["stage"] != "ended") continue;
+                    foreach (var doc in (request["public_documents"] as JArray ?? new()).OfType<JObject>())
+                    {
+                        string body = (string)doc["Body"] ?? "";
+                        if (body.Length <= excerptLimit) continue;
+                        doc["Body"] = body.Substring(0, excerptLimit); doc["body_is_excerpt"] = true;
+                    }
+                    foreach (string field in new[] { "source_material", "setting_and_known_history", "world_book_sources", "world", "narrative_actors" }) request.Remove(field);
+                    request["ending_evidence_contract"] = "excerpt_only;exact_action_receipts_retained;no_new_facts_or_inferred_consent";
+                    string compact = request.ToString(Newtonsoft.Json.Formatting.None);
+                    if ((string)message["content"] == job.UserPrompt) job.UserPrompt = compact;
+                    message["content"] = compact;
+                }
+                inputTokens = messages.Sum(message => (long)WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens((string)message["content"], estimateTokens)
+                    + WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens((string)message["role"], estimateTokens) + 4L);
+                if (inputTokens <= limit)
+                { job.AwaitingHistoryCompression = false; log?.Invoke("diplomacy.ending_context_compacted job=" + job.JobId + " excerpt=" + excerptLimit); return true; }
+            }
+        }
         if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate"))
         {
             // Compressing the saved global archive cannot shrink an already selected
@@ -389,7 +406,8 @@ internal static class WorldDiplomacyLlmDispatchApplication
                 + "; reduce custom prompt/current document; full archive retained");
             return false;
         }
-        commitFailedJob?.Invoke(job, "input budget exceeded before send: " + inputTokens + "/" + limit
+        commitFailedJob?.Invoke(job, (job.Kind is "event_progress" or "event_progress_audit"
+            ? "event_required_input_budget_exceeded: " : "input budget exceeded before send: ") + inputTokens + "/" + limit
             + "; single archive entry/snapshot or non-history prompt requires reduction");
         return false;
     }

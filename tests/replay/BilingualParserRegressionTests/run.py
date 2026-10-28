@@ -80,6 +80,10 @@ for name, signatures in groups.items():
     body = "\n".join(extract(path, sig) for sig in signatures)
     (out / (name + ".cs")).write_text(headers + "namespace AnimusForge.Refactor.Domain {public static class " + name + " {" + body + "}}", encoding="utf-8")
 
+# The shared disclosure validator now delegates to the production duration owner.
+if "WorldDiplomacyDurationDisclosure" in (out / "WorldDiplomacyGenerationValidationRules.cs").read_text(encoding="utf-8"):
+    (out / "WorldDiplomacyDurationDisclosure.cs").write_text(read(domain + "WorldDiplomacyDurationDisclosure.cs"), encoding="utf-8")
+
 policy = "PolicySystem/Targets/PolicyTargetPlanRouter.cs"
 methods = ["private static void ApplyCardinalityFromText(", "private static int ParseRequestedCount(",
            "private static bool HasRequestedCountContext(", "private static bool ContainsAny(",

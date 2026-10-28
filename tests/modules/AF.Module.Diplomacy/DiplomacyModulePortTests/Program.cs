@@ -167,13 +167,13 @@ static class Program
         WorldDiplomacyBehavior.Instance=null;DiplomacyModuleServices.World.OnEngineTick();Check(next.Ticks==10101,"null owner tick no-op");
         var enabledTick=new TickReplaySource { Owner=true, Enabled=true, Steps=new() };
         WorldDiplomacyTickApplication.Run(ref enabledTick, new RecordingOrchestration(enabledTick.Steps));
-        Check(enabledTick.Steps.SequenceEqual(new[]{"popup","clear","completed","compress","start","publish"}),"enabled tick order");
+        Check(enabledTick.Steps.SequenceEqual(new[]{"capture","popup","clear","completed","compress","start","publish"}),"enabled tick order");
         var disabledTick=new TickReplaySource { Owner=true, Enabled=false, Steps=new() };
         WorldDiplomacyTickApplication.Run(ref disabledTick, new RecordingOrchestration(disabledTick.Steps));
-        Check(disabledTick.Steps.SequenceEqual(new[]{"popup","disable","completed"}),"disabled tick drains completion after one cleanup");
+        Check(disabledTick.Steps.SequenceEqual(new[]{"capture","popup","disable","completed"}),"disabled tick drains completion after one cleanup");
         var disabledAgain=new TickReplaySource { Owner=true, Enabled=false, Disabled=true, Steps=new() };
         WorldDiplomacyTickApplication.Run(ref disabledAgain, new RecordingOrchestration(disabledAgain.Steps));
-        Check(disabledAgain.Steps.SequenceEqual(new[]{"popup","completed"}),"disabled tick does not repeat cleanup");
+        Check(disabledAgain.Steps.SequenceEqual(new[]{"capture","popup","completed"}),"disabled tick does not repeat cleanup");
         var noOwner=new TickReplaySource { Steps=new() };
         WorldDiplomacyTickApplication.Run(ref noOwner, null);
         Check(noOwner.Steps.Count==0,"missing tick owner has no effects");
@@ -217,6 +217,9 @@ internal struct TickReplaySource : IWorldDiplomacyTickSource
     public bool HasOwner => Owner;
     public bool IsEnabled => Enabled;
     public bool DisabledStateApplied => Disabled;
+    public bool MonitorTimings => true;
+    public void ReportSlowPhase(string phase, double milliseconds) { }
+    public void AdvanceMaterialCapture() => Steps.Add("capture");
     public void ProcessComposePopup() => Steps.Add("popup");
     public void ClearDisabledState() => Steps.Add("clear");
 }

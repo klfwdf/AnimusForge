@@ -3740,10 +3740,6 @@ namespace AnimusForge
 
 		public class KingdomAgendaVM : ViewModel
 		{
-			// Resolve fixed labels when bound, after the UI language is available.
-			[DataSourceProperty] public string InteriorAgendaSectionText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaSection", "Kingdom agendas");
-			[DataSourceProperty] public string InteriorAgendaEmptyText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaEmpty", "No agenda in progress");
-
 			public sealed class Snapshot
 			{
 				public KingdomDecision Decision;
@@ -4085,9 +4081,6 @@ namespace AnimusForge
 
 	public class KingdomAgendaItemVM : ViewModel
 	{
-		// Resolve fixed labels when bound, after the UI language is available.
-		[DataSourceProperty] public string InteriorAgendaNoDetailText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaNoDetail", "No voting details for this agenda yet");
-
 		private string _titleText;
 		private string _decisionTypeText;
 		private string _daysRemainingText;
@@ -4560,9 +4553,6 @@ namespace AnimusForge
 		}
 	public class AgendaOptionVM : ViewModel
 	{
-		// Resolve fixed labels when bound, after the UI language is available.
-		[DataSourceProperty] public string InteriorLeadingText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Leading", "Leading");
-
 		private string _name;
 		private string _description;
 		private string _sponsorName;
@@ -4783,10 +4773,6 @@ namespace AnimusForge
 		[ViewModelMixin("RefreshValues", true)]
 		internal sealed class KingdomAgendaVMMixin : BaseViewModelMixin<KingdomManagementVM>
 		{
-			// Resolve fixed labels when bound, after the UI language is available.
-			[DataSourceProperty] public string InteriorTitleText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Title", "Interior affairs");
-			[DataSourceProperty] public string InteriorSelectHintText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_SelectHint", "Select an entry on the left to view details");
-
 
 			[DataSourceProperty]
 			public string AgendaTabText { get; set; }

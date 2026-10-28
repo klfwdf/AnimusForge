@@ -47,6 +47,13 @@ internal static class WorldDiplomacyThreatBindingApplication
         IWorldDiplomacyOrchestration orchestration)
     {
         if (document == null || issuerId == null || targetId == null || issuerId == targetId) return false;
+        if (port.ResolveRound(document.RoundId)?.EventConvergence?.AllowsNewObligation(document, stage) == false
+            && storage.DiplomaticThreats?.Any(x => x.StageRoundId == document.RoundId && x.Status == "open"
+                && x.IssuerKingdomId == issuerId && x.TargetKingdomId == targetId) != true)
+        {
+            port.Log("diplomacy.ending_new_threat_blocked document=" + document.DocumentId);
+            return false;
+        }
         return RegisterOrAdvanceDiplomaticThreat(document, issuerId, targetId, stage,
             () => storage.DiplomaticThreats ??= new List<WorldDiplomacyThreat>(), port.CurrentDay(), port.EscalationPrestigeReward,
             port.NewId, () =>
@@ -60,8 +67,8 @@ internal static class WorldDiplomacyThreatBindingApplication
         bool recordTargetDecisions, IWorldDiplomacyThreatBindingPort port, IWorldDiplomacyOrchestration orchestration)
     {
         ProcessDiplomaticThreatDocument(document, authorId, targetId, recordTargetDecisions,
-            storage?.DiplomaticThreats, port.CurrentDay(), port.WarPrestigeReward,
-            (d, a, t, intent) => WorldDiplomacyThreatApplication.RecordTargetDecision(storage, d, a, t, intent, port.CurrentDay, port.Log),
+            storage?.DiplomaticThreats?.Where(x => x.StageRoundId == document.RoundId).ToList(), port.CurrentDay(), port.WarPrestigeReward,
+            null, // Target decisions settle once at the shared publication boundary.
             (d, a, t, intent) => Register(storage, d, a, t, intent, port, orchestration),
             (d, a, t) => orchestration.ResolveDiplomaticThreatCompliance(d, a, t), (id, delta, doc, r) => orchestration.ApplyNationalPrestigeDelta(id, delta, doc, r));
     }
@@ -96,7 +103,13 @@ internal static class WorldDiplomacyThreatBindingApplication
             return false;
         }
         List<WorldDiplomacyThreat> threats = resolveThreats?.Invoke();
-        WorldDiplomacyThreat existing = SelectOpenThreatIssuedBy(threats, issuerKingdomId);
+        WorldDiplomacyThreat existing = SelectOpenThreatIssuedBy(threats?.Where(x => x.StageRoundId == document.RoundId && x.TargetKingdomId == targetKingdomId).ToList(), issuerKingdomId);
+        if (existing == null && threats?.Any(x => x.StageRoundId == document.RoundId
+            && x.IssuerKingdomId == issuerKingdomId && x.TargetKingdomId == targetKingdomId && x.Status != "open") == true)
+        {
+            log?.Invoke("diplomacy.threat_reopen_blocked event=" + document.RoundId + " issuer=" + issuerKingdomId + " target=" + targetKingdomId);
+            return false;
+        }
         int day = currentDay;
         WorldDiplomacyThreatRegistrationDecision registration = EvaluateThreatRegistration(
             existing, normalizedStage, document.DocumentId, targetKingdomId);

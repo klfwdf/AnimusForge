@@ -28,7 +28,7 @@ internal static class Program
             PersistentHistory = new[] { fact }, SceneHistory = new[] { self, other }, PendingCurrentFacts = new[] { fact }, HistoryLineLimit = 1 };
         var output = SceneHistoryMessageAssemblyOwner.Build(input);
         Check(output.Count == 3, "history cap retains AFEF plus most recent dialogue");
-        Check(Field(output[1], "content").Contains("【当下行为】[AFEF NPC行为补充] delivered"), "pending AFEF current scope");
+        Check(Field(output[1], "content").Contains(PromptComposerTexts.Get("history_section_scope_current") + "[AFEF NPC_ACTION] delivered"), "pending AFEF current scope");
         Check(Field(output[2], "role") == "assistant", "stable self role");
         Check(Field(output[2], "content").Contains("Autumn 11") && Field(output[2], "content").Contains("square"), "complete detached metadata");
         input.HistoryLineLimit = 5;
@@ -36,7 +36,7 @@ internal static class Program
         Check(Field(output[2], "role") == "user" && Field(output[2], "content").Contains("【你听见】Borin说：heard"), "other speaker observer role");
         input.PendingCurrentFacts = null;
         output = SceneHistoryMessageAssemblyOwner.Build(input);
-        Check(Field(output[1], "content").Contains("【过往行为】"), "consumed facts no longer current");
+        Check(Field(output[1], "content").Contains(PromptComposerTexts.Get("history_section_scope_historical")), "consumed facts no longer current");
         input.CurrentInputMessage = Message(0, "user", "question", -1);
         Check(SceneHistoryMessageAssemblyOwner.Build(input).Count == output.Count + 1, "unrecorded current input appended once");
         input.CurrentInputMessage = null;
@@ -52,7 +52,7 @@ internal static class Program
         var sameWordsPlayer=Message(0,"user",systemBody,-1);
         Check(SceneHistoryMessageAssemblyOwner.TryConvertSceneMessageToStrictChatMessage(sameWordsPlayer,context,out object playerWords) && Field(playerWords,"role")=="user" && Field(playerWords,"content").Contains(systemBody),"same-word player prose is not projected to system fact");
         var stockFact=SceneHistoryMessageAssemblyOwner.BuildScopedAfefFactLineForPrompt("[AFEF NPC行为补充] "+systemBody,true);
-        Check(stockFact.StartsWith("【当下行为】[AFEF NPC行为补充]") && stockFact.Contains(PromptComposerTexts.Get("memory_fact_first_unknown")),"exact NPC stock fact projects while protocol scope stays stable");
+        Check(stockFact.StartsWith(PromptComposerTexts.Get("history_section_scope_current") + "[AFEF NPC_ACTION]") && stockFact.Contains(PromptComposerTexts.Get("memory_fact_first_unknown")),"exact NPC stock fact projects while protocol scope stays stable");
         input.PrefixUserSections = new[] { "LATEST_RUNTIME_AND_RECALL" };
         input.SuffixUserSections = new[] { "LATEST_RULES" };
         input.CurrentInputMessage = Message(0, "user", "LATEST_INPUT", -1);
@@ -62,6 +62,21 @@ internal static class Program
         input.PrefixUserSections = new[] { "UPDATED_RUNTIME_AND_RECALL" };
         var reordered = SceneHistoryMessageAssemblyOwner.Build(input);
         Check(Field(reordered[0], "content") == Field(ordered[0], "content") && Field(reordered[1], "content") == Field(ordered[1], "content"), "runtime replacement preserves system and history prefix");
+
+        var longMemory = Enumerable.Range(0,80).Select(i=>Message(i+10,"system","older record "+i+new string('x',450))).ToList();
+        input.PersistentHistory=longMemory; input.SceneHistory=new[]{self}; input.HistoryLineLimit=1000;
+        input.PrefixUserSections=new[]{RequestRecallBudget.WrapPersonal(new string('h',19000)),"WORLD_RULES\n"+RequestRecallBudget.WrapDiplomacy("{\"source\":\"known\",\"Body\":\"public account\"}")};
+        input.CurrentInputMessage=Message(0,"user","CURRENT_REQUEST",-1);
+        input.PendingCurrentFacts=new[]{fact}; input.InjectedHistory=new[]{fact};
+        var limited=SceneHistoryMessageAssemblyOwner.Build(input);
+        string all=string.Join("\n",limited.Select(x=>Field(x,"content")));
+        Check(all.Contains("WORLD_RULES") && all.Contains("CURRENT_REQUEST") && all.Contains("delivered") && all.Contains("hello"),"scene budget retains current input, actual fact, active scene and rules");
+        Check(!all.Contains("<af-recall") && !all.Contains(new string('h',19000)),"scene strips internal markers and defers whole oversized recalled paragraph");
+        Check(limited.Count<80 && all.Length<RequestRecallBudget.MaximumChars+2000,"scene personal and diplomatic material share final projected budget");
+        Check(longMemory.Count==80 && longMemory[0].Content.Contains(new string('x',450)),"scene does not mutate persistent source during selection");
+        input.SceneHistory=null; input.InjectedHistory=null; input.PendingCurrentFacts=null;
+        limited=SceneHistoryMessageAssemblyOwner.Build(input);
+        Check(Field(limited.Last(),"content").Contains("CURRENT_REQUEST"),"native shared assembler keeps current player request last under recall pressure");
         var detached = SceneHistoryProjectionOwner.CapturePromptMessages(new[] { self });
         self.Content = "changed after capture";
         Check(detached[0].Content == "Ada: hello" && !ReferenceEquals(detached[0], self)

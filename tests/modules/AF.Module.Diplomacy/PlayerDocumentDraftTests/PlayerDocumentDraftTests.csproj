@@ -7,17 +7,13 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs" Link="PrimaryChatMessagePolicy.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" Link="LlmSourceTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Llm/Application/LlmPromptTexts.cs" Link="LlmPromptTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptLanguageAudit.cs" Link="PromptLanguageAudit.cs" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" />
-    <Compile Include="../../../../src/AF.Contracts/Internal/InteractionContracts.cs" />
-    <Compile Include="../../../../src/AF.Contracts/Internal/LlmContracts.cs" />
-    <Compile Include="../../../../src/AF.Contracts/Internal/FeatureBridgeContracts.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/World/LegacyWorldDiplomacyLlmGateway.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptLanguageAudit.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Llm/Application/LlmPromptTexts.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Conversation/Internal/ConversationRuntimeTexts.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyReceiptCompatibility.json" LogicalName="AnimusForge.Diplomacy.ReceiptCompatibility.json" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs" Link="DiplomacyReplyTextRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="PromptComposerTexts.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(USERPROFILE)/.nuget/packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll</HintPath></Reference>
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyPlayerDraftRules.cs" Link="WorldDiplomacyPlayerDraftRules.cs" />
@@ -32,8 +28,6 @@
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs" Link="AnimusForgeTextInputSanitizer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyReceiptCompatibility.json" LogicalName="AnimusForge.Diplomacy.ReceiptCompatibility.json" />
-    <EmbeddedResource Include="../../../../content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json" LogicalName="AnimusForge.Conversation.RuntimeCompatibility.json" />
     <EmbeddedResource Include="../../../../content/foundation/AF.Foundation.Localization/ModuleData/RuntimeStaleRequestCompatibility.txt" LogicalName="AnimusForge.Foundation.StaleRequestError.txt" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" />
   </ItemGroup>

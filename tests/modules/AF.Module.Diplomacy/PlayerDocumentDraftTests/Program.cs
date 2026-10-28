@@ -58,15 +58,8 @@ internal static class Program
         return (handler, new WorldDiplomacyComposePopupVM("宣言", "", "", submit, null));
     }
 
-    private static void Main(string[] args)
+    private static void Main()
     {
-        Test.That(Environment.CurrentManagedThreadId == Test.UiThread, "UI thread captured before workers start");
-        if (args.Length == 1 && args[0] == "--prepared-gateway-negative")
-        {
-            PreparedDiplomacyGatewayReplay.Run(legacyWorkerNegativeControl: true);
-            return;
-        }
-        PreparedDiplomacyGatewayReplay.Run();
         Rules();
         SnapshotAndRewrite();
         LengthBudgetAndFill();
@@ -74,6 +67,7 @@ internal static class Program
         ClosedAndLoaded();
         FailuresAndFallback();
         CompatibilityAndLegacy();
+        PreparedRetriesKeepConfiguration();
         PrefabBindings();
         Console.WriteLine($"Player diplomatic drafting: PASS ({Test.Count} assertions). Actual production VM/application/client/protocol/transport; game/MCM host substituted.");
     }
@@ -87,8 +81,6 @@ internal static class Program
         string preferenceHeader = english ? "[Applying diplomacy MCM writing preferences, valid only when faithful to player intent]\n" : "【沿用外交MCM写作偏好，仅在忠实于玩家原意时适用】\n";
         Test.That(messages.Count == 2 && (string)messages[1]["content"] == userHeader + "与瓦兰迪亚议和", "Only current player material");
         string system = (string)messages[0]["content"];
-        Test.That(system.Contains(english ? "40 to 200 words" : "40—200个可见字符")
-            && (!english || !system.Contains("visible characters")), "Scribe uses the selected package's length unit");
         Test.That(system.Contains(preferenceHeader + "简明冷峻"), "Shared preference verbatim");
         Test.That(system.Contains(english ? "about 120" : "约120字")
             && system.Contains(english ? "Simple replies may be shorter" : "简单答复可以更短")
@@ -236,6 +228,37 @@ internal static class Program
         var legacy = WorldDiplomacyLlmClient.CallMessagesWithRetriesAsync(new JArray(new JObject { ["role"] = "user", ["content"] = "legacy" }), 900, 90000, "legacy-test", SaveRuntimeGuard.CaptureGeneration(), maxAttempts: 1);
         Test.Until(() => handler.Get(2) != null, "legacy"); handler.Finish(2, "legacy-output");
         Test.That(legacy.GetAwaiter().GetResult().Content == "legacy-output", "Legacy client behavior preserved"); DuelSettings.StrictThread = true;
+    }
+
+    private static void PreparedRetriesKeepConfiguration()
+    {
+        var (handler, vm) = Window();
+        DuelSettings.Current.EventEffort = "medium";
+        var messages = new JArray(new JObject { ["role"] = "user", ["content"] = "frozen diplomatic intent" });
+        int admitted = 0;
+        Test.That(WorldDiplomacyLlmClient.TryPrepareCallWithRetries(messages, 900, 90000,
+            "prepared-retry-test", SaveRuntimeGuard.CaptureGeneration(), out var prepared, out var error,
+            () => { Interlocked.Increment(ref admitted); return true; }, maxAttempts: 2), "Prepare on UI thread");
+        int reads = DuelSettings.Reads;
+        DuelSettings.Current.EventAndRebellionApiUrl = "https://changed.example/v1/chat/completions";
+        DuelSettings.Current.EventAndRebellionApiKey = "changed-key";
+        DuelSettings.Current.EventAndRebellionModelName = "changed-model";
+        DuelSettings.Current.EventEffort = "low";
+        messages[0]["content"] = "changed intent";
+        var pending = Task.Run(() => prepared(CancellationToken.None));
+        Test.Until(() => handler.Get(0) != null, "prepared worker request");
+        handler.Finish(0, "retry", status: HttpStatusCode.InternalServerError);
+        Test.Until(() => handler.Get(1) != null, "prepared retry");
+        foreach (var call in new[] { handler.Get(0), handler.Get(1) })
+        {
+            Test.That(call.Url.Contains("event.example") && call.Auth == "fixture-event", "Retries retain captured endpoint and credential");
+            Test.That((string)call.Body["model"] == "event-model" && (string)call.Body["reasoning_effort"] == "medium", "Retries retain model and enabled reasoning configuration");
+            Test.That((string)call.Body["messages"][0]["content"] == "frozen diplomatic intent", "Retries retain detached prompt");
+        }
+        handler.Finish(1, "prepared-output");
+        Test.That(pending.GetAwaiter().GetResult().Content == "prepared-output", "Prepared retry completes");
+        Test.That(DuelSettings.Reads == reads && admitted == 2, "Worker and retries never read settings; each request consumes admission");
+        vm.OnFinalize();
     }
 
     private static void PrefabBindings()

@@ -4,7 +4,7 @@ namespace AnimusForge.Refactor.Persistence;
 
 internal static class WorldDiplomacyNotificationStateMigration
 {
-    internal const int CurrentSchemaVersion = 1;
+    internal const int CurrentSchemaVersion = 2;
 
     public static void Migrate(WorldDiplomacyStorage storage)
     {
@@ -14,15 +14,12 @@ internal static class WorldDiplomacyNotificationStateMigration
         foreach (WorldDiplomacyDocument document in storage.Documents)
         {
             if (document == null) continue;
-            if (document.IsPlayerAuthored)
+            // On upgrade, old published declarations remain archived without
+            // replaying notices or starting a new silence deadline.
+            if (document.IsReadyForPublication || document.IsPlayerAuthored)
             {
+                document.LegacyNoticeSuppressed = true;
                 document.RumorNotified = true;
-                document.FormalNoticeShown = true;
-                continue;
-            }
-            if (document.IsReadyForPublication) document.RumorNotified = true;
-            if (document.IsNotified || document.IsRead || document.IsCompressed)
-            {
                 document.FormalNoticeShown = true;
             }
         }

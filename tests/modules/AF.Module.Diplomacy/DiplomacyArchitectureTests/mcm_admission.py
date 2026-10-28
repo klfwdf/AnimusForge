@@ -1,32 +1,38 @@
-"""Check the two configuration surfaces against each other and the approved defaults."""
+"""Seven diplomacy entries, retained persistence and paired real UI resources."""
 from pathlib import Path
-from collections import Counter
 import re
+import xml.etree.ElementTree as ET
 
 root = Path(__file__).resolve().parents[4]
-mcm = (root / "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs").read_text(encoding="utf-8-sig")
-terminal = (root / "src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs").read_text(encoding="utf-8-sig")
-settings = {}
-for match in re.finditer(r'\[SettingProperty(?:Bool|Integer|Dropdown|Button)\("([^"\n]+)"[^\n]*\]\s*\[SettingPropertyGroup\("(17\.[^"\n]+)"[^\n]*\]\s*public [^\n]+? (\w+)\s*\{', mcm):
-    title, group, key = match.groups()
-    hint = re.search(r'HintText = "([^"]*)"', match[0])
-    settings[key] = (title, group, hint[1])
-definitions = {}
-for match in re.finditer(r'new TerminalSettingDef\("([^"]+)", "[^"]+", "(17\.[^"]+)", "([^"]+)", "([^"]*)"', terminal):
-    key, group, title, hint = match.groups()
-    assert key not in definitions, key
-    definitions[key] = (title, group, hint)
-assert len(settings) == 18, len(settings)
-assert settings == definitions, "MCM and terminal must have the same keys, groups, titles and hints"
-assert sorted(Counter(x[1] for x in settings.values()).values()) == [2, 2, 3, 3, 4, 4]
-assert "WorldDiplomacyRoundIntervalDays" not in settings
-assert re.search(r'public int WorldDiplomacyRoundIntervalDays \{ get; set; \} = 3;', mcm)
-for key, value in [("DefaultWorldDiplomacyMaxConcurrentOrdinaryRounds", 3),
-                   ("DefaultWorldDiplomacyDeclarationMinCharacters", 100),
-                   ("DefaultWorldDiplomacyDeclarationMaxCharacters", 500),
-                   ("WorldDiplomacyDeclarationCharactersMin", 1),
-                   ("WorldDiplomacyDeclarationCharactersMax", 1000)]:
-    assert re.search(rf'public const int {key} = {value};', mcm), key
-assert 'TerminalSettingType.Integer, 1f, 12f' in next(line for line in terminal.splitlines() if 'new TerminalSettingDef("WorldDiplomacyMaxConcurrentOrdinaryRounds"' in line)
-assert settings["WorldDiplomacyMaxConcurrentOrdinaryRounds"][0] == "同时进行的普通外交事件上限"
-print("Diplomacy MCM/terminal: PASS (18 consistent settings, 6 groups, defaults and legacy key)")
+def read(path):
+    return (root / path).read_text(encoding="utf-8-sig")
+mcm = read("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs")
+terminal = read("src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs")
+coverage = read("src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs")
+localization = read("src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsLocalization.cs")
+expected = {"EnableWorldDiplomacy", "WorldDiplomacyStartNewGameAtPeace", "WorldDiplomacyRoundIntervalDays", "WorldDiplomacyCourtMaxDeliveryDays", "WorldDiplomacyWarTendency", "WorldDiplomacyDeclarationMaxCharacters", "EditWorldDiplomacyPrompt"}
+rows = re.findall(r'new TerminalSettingDef\("([^"]+)", TerminalCategories\.(\w+), "([^"]+)"', terminal)
+actual = {key for key, category, group in rows if category == "Diplomacy" and group.startswith("17.")}
+assert actual == expected, (actual, expected)
+assert sum(key == "EnableWorldDiplomacyMapNotifications" and category == "Ui" for key, category, group in rows) == 1
+retired = set(re.findall(r'"(\w+)"', coverage.split("RetiredDiplomacySettings =")[1].split("};")[0]))
+assert len(retired) == 12
+for key in retired:
+    assert re.search(r'public [^\n]+ '+key+r'\s*\{', mcm), key
+    assert key not in actual
+assert "if (RetiredDiplomacySettings.Contains(id)) return false;" in coverage
+assert 'WorldDiplomacyStartNewGameAtPeace { get; set; } = true;' in mcm
+assert 'WorldDiplomacyRoundIntervalDays { get; set; } = 3;' in mcm
+assert 'WorldDiplomacyWarTendency { get; set; } = 50;' in mcm
+for relative in ["af_ui_strings.xml", "CNs/af_ui_strings-zh-CN.xml"]:
+    elements = list(ET.parse(root / "content/modules/AF.Module.UI/ModuleData/Languages" / relative).iter("string"))
+    strings = {e.attrib["id"]: e.attrib["text"] for e in elements}
+    assert len(strings) == len(elements), "duplicate localization key"
+    for key in expected:
+        for part in ["Title", "Hint", "Group"]:
+            assert strings.get("AF_TERMINAL_UI_"+key+"_"+part), (relative,key,part)
+        assert '"'+key+'",' in localization, key
+popup = ET.parse(root / "content/modules/AF.Module.UI/GUI/Prefabs/DevHistoryEditPopup.xml")
+assert any(e.attrib.get("Command.Click")=="ExecuteRestoreDefaults" and e.attrib.get("IsVisible")=="@CanRestoreDefaults" for e in popup.iter())
+assert '() => DefaultWorldDiplomacyPreference' in mcm
+print("Diplomacy settings: PASS (7 entries, UI notice, 12 retired fields, CN/EN consumers, editor restore)")

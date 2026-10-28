@@ -38,6 +38,9 @@ for name,file in refs.items():
 for resource in original.findall('./ItemGroup/EmbeddedResource'):
     attrs=dict(resource.attrib);attrs['Include']=str((HERE/attrs['Include']).resolve())
     ET.SubElement(items,'EmbeddedResource',**attrs)
+for resource in original.findall('./ItemGroup/Content'):
+    attrs=dict(resource.attrib);attrs['Include']=str((HERE/attrs['Include']).resolve())
+    ET.SubElement(items,'Content',**attrs)
 ET.ElementTree(project).write(out/'Replay.csproj',encoding='utf-8',xml_declaration=True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 (out/'sources.json').write_text(json.dumps({str(s):hashlib.sha256(s.read_bytes()).hexdigest() for s in sorted(sources)},indent=2),encoding='utf-8')

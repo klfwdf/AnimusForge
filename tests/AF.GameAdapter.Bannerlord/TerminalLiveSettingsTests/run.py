@@ -16,12 +16,14 @@ p.add_argument('--baseline', action='store_true')
 p.add_argument('--tts-visibility-ui', action='store_true', help='Include native MCM provider visibility and selector/undo tests; requires 1.4 UI dependencies.')
 p.add_argument('--illustrator-only', action='store_true', help='Run focused real MCM/terminal/director request checks without native UI or external HTTP.')
 p.add_argument('--tts-only', action='store_true', help='Run focused native MCM/terminal TTS configuration checks, excluding unrelated feature suites.')
+p.add_argument('--country-selection-only', action='store_true', help='Verify diplomacy count settings with actual MCM/terminal/JSON/host consumers.')
 p.add_argument('--content-language', choices=['zh-CN', 'en'], default='zh-CN')
 p.add_argument('--run-root', type=Path)
 a = p.parse_args()
 if a.tts_visibility_ui and (not a.tts_only or a.api != '1.4'): p.error('--tts-visibility-ui requires --tts-only --api 1.4')
 if a.illustrator_only and (a.baseline or a.tts_only): p.error('--illustrator-only requires the current candidate and cannot be combined with --tts-only')
 if a.tts_only and a.baseline: p.error('--tts-only cannot be combined with --baseline')
+if a.country_selection_only and (a.baseline or a.tts_only): p.error('--country-selection-only cannot be combined with --baseline or --tts-only')
 candidate = a.candidate.resolve(strict=True)
 digest = hashlib.sha256(candidate.read_bytes()).hexdigest().upper()
 refs = ROOT / ('_deps_auto' if a.api == '1.3' else '.tmp/build_check/1.4')
@@ -44,6 +46,7 @@ framework = a.framework or Path('C:/Users/29310/.nuget/packages/microsoft.netfra
 deps = ROOT / '.tmp/build_check/1.4'
 sources = [Path(__file__).with_name('Program.cs'), ROOT / 'tests/modules/AF.Module.Prompt/Composition/TerminalSettingsChecks.cs']
 if not a.baseline:
+    sources.append(Path(__file__).with_name('CountrySelectionSettingsChecks.cs'))
     sources.append(Path(__file__).with_name('SupplementalChecks.cs'))
     sources.append(Path(__file__).with_name('SceneTerminalChecks.cs'))
     sources.append(Path(__file__).with_name('SharedMcmChecks.cs'))
@@ -66,6 +69,7 @@ if not code:
     if a.api == '1.4' and not a.baseline:
         command.append(str(ui))
         command.append(str(a.butterlib or ui.parents[2] / 'Bannerlord.ButterLib/bin/Win64_Shipping_Client'))
+    if a.country_selection_only: command.append('--country-selection-only')
     run = subprocess.run(command, cwd=out, capture_output=True, text=True, encoding='utf-8', errors='replace', env=dict(env, AF_TEST_MODULE_ROOT=str(module), ANIMUSFORGE_DATA_ROOT=str(module)))
     code = run.returncode
     (out / 'run.log').write_text(run.stdout + run.stderr, encoding='utf-8')
@@ -73,6 +77,6 @@ if not code:
 else:
     print(build.stdout + build.stderr)
 assert hashlib.sha256(candidate.read_bytes()).hexdigest().upper() == digest
-(out / 'receipt.json').write_text(json.dumps({'candidate': str(candidate), 'sha256': digest, 'api': a.api, 'contentLanguage': a.content_language, 'baseline': a.baseline, 'ttsOnly': a.tts_only, 'illustratorOnly': a.illustrator_only, 'exit': code, 'scope': 'Workspace fixture, actual MCM JSON/terminal setters; no live UI or native/HTTP' if a.tts_only else 'Workspace fixture, actual MCM JSON/product VMs; no live UI or native/HTTP'}, indent=2))
+(out / 'receipt.json').write_text(json.dumps({'candidate': str(candidate), 'sha256': digest, 'api': a.api, 'contentLanguage': a.content_language, 'baseline': a.baseline, 'ttsOnly': a.tts_only, 'illustratorOnly': a.illustrator_only, 'countrySelectionOnly': a.country_selection_only, 'exit': code, 'scope': 'Workspace fixture, actual MCM JSON/terminal setters; no live UI or native/HTTP' if a.tts_only else 'Workspace fixture, actual MCM JSON/product VMs; no live UI or native/HTTP'}, indent=2))
 print(out)
 sys.exit(code)

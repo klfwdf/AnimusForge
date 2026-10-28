@@ -32,7 +32,7 @@ public partial class DuelSettings
                 {
                     Corpus corpus = JsonConvert.DeserializeObject<Corpus>(reader.ReadToEnd(),
                         new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error, MaxDepth = 8 });
-                    if (corpus == null || corpus.SchemaVersion != 1 || corpus.Values == null || corpus.Values.Count != 54)
+                    if (corpus == null || corpus.SchemaVersion != 1 || corpus.Values == null || corpus.Values.Count != 56)
                         throw new InvalidDataException("Invalid historical settings prompt corpus.");
                     foreach (var pair in corpus.Values)
                         if (string.IsNullOrWhiteSpace(pair.Key) || string.IsNullOrEmpty(pair.Value))

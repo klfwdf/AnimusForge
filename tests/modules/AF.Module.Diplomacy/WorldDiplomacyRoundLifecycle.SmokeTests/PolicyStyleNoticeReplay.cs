@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 internal static class PolicyStyleNoticeReplay
 {
-    private sealed class Sink : IWorldDiplomacyNotificationSink
+    private sealed class Sink : IWorldDiplomacyNotificationSink, IWorldDiplomacyPlayerLocationSink
     {
         public bool MapNotificationsEnabled { get; set; } = true;
         public bool Registered = true;
@@ -12,6 +12,7 @@ internal static class PolicyStyleNoticeReplay
         public int Registrations;
         public double CurrentHour { get; set; } = 300;
         public string PlayerKingdomId => "player";
+        public string PlayerSettlementId { get; set; } = "";
         public int CurrentDay => 10;
         public readonly List<WorldDiplomacyNotice> Notices = new();
         public readonly List<string> Rumors = new();
@@ -46,25 +47,34 @@ internal static class PolicyStyleNoticeReplay
         foreach (bool enabled in new[] { true, false })
         {
             var foreign = Document("foreign");
+            foreign.IsRead = true;
             var related = Document("related", "player"); related.IsRead = true;
             var authored = Document("written", "foreign"); authored.IsPlayerAuthored = true;
             var notArrived = Document("unreceived"); notArrived.HasReachedPlayerCourt = false;
             var pending = Document("unpublished"); pending.IsReadyForPublication = false;
-            var storage = new WorldDiplomacyStorage(); storage.Documents.AddRange(new[] { foreign, related, authored, notArrived, pending });
+            foreign.RoundId = "event_1";
+            var storage = new WorldDiplomacyStorage { ActiveRound = new() { RoundId = "event_1", RoundTopic = "The disputed crown", State = "active" } }; storage.Documents.AddRange(new[] { foreign, related, authored, notArrived, pending });
             var originalBody = foreign.Body;
             var owner = new WorldDiplomacyNotificationApplication(); var sink = new Sink { MapNotificationsEnabled = enabled };
             owner.Poll(storage, now, sink);
+            if (!enabled)
+            {
+                Test.True(sink.Notices.Count == 0 && related.ActualPlayerNoticeHour < 0 && !foreign.FormalNoticeShown,
+                    "disabled display preserves pending notices and never starts reply timers");
+                sink.MapNotificationsEnabled = true;
+                owner.Poll(storage, now.AddSeconds(1), sink);
+            }
             Test.True(sink.Notices.Count == 2 && sink.Notices.All(n => n.DocumentId != "written"), "player-authored/unpublished/unreceived documents never announce");
             var text = sink.Notices.Single(n => n.DocumentId == "foreign");
             Test.True(!text.ShowOnMap && text.Description.EndsWith(originalBody), "foreign text notification contains full published body, including its tail");
             string expected = SmokeLocalizationEnvironment.EnglishUi
-                ? "[Diplomatic Declaration] Realm {TITLE} issued \"Treaty {BODY}\": " + originalBody
-                : "【外交宣言】Realm {TITLE}发布《Treaty {BODY}》：" + originalBody;
+                ? "【Diplomatic Event: The disputed crown】" + originalBody
+                : "【外交事件：The disputed crown】" + originalBody;
             Test.True(text.Description == expected, "real UI resource and literal author/title/body placeholders compose correctly");
             Test.True(!text.Description.Contains("MAP_DATE") && !text.Description.Contains("Click to") && !text.Description.Contains("点击查看全文"), "text is readable declaration, without map metadata or click instruction");
             var playerNotice = sink.Notices.Single(n => n.DocumentId == "related");
-            Test.True(playerNotice.ShowOnMap == enabled, "player-related document takes exactly the enabled route, even when pre-read");
-            Test.True(enabled ? !playerNotice.Description.Contains("PUBLIC_START") : playerNotice.Description.EndsWith(related.Body), "right widget keeps its existing compact description; disabled widget gets full text");
+            Test.True(!playerNotice.ShowOnMap && sink.Registrations == 0, "all delivered declarations use bottom-left text, including player-related pre-read documents");
+            Test.True(playerNotice.Description.EndsWith(related.Body), "player-related declaration also includes the complete published body");
             Test.True(related.ActualPlayerNoticeHour == 300 && related.FormalNoticeShown && sink.Shown.Count == 2, "notification timestamps recorded only after actual delivery in either route");
             Test.True(!authored.FormalNoticeShown && authored.ActualPlayerNoticeHour == -1 && !notArrived.FormalNoticeShown && !pending.FormalNoticeShown, "excluded publications are never marked shown or timed");
             Test.True(storage.Documents.Count == 5 && foreign.Body == originalBody && sink.Rumors.Count == 0, "public archive data and suppressed rumor-display behavior remain untouched");
@@ -77,7 +87,7 @@ internal static class PolicyStyleNoticeReplay
         }
 
         var retryStorage = new WorldDiplomacyStorage(); var retry = Document("retry", "player"); retryStorage.Documents.Add(retry);
-        var retryOwner = new WorldDiplomacyNotificationApplication(); var retrySink = new Sink { MapNotificationsEnabled = false, Throw = true };
+        var retryOwner = new WorldDiplomacyNotificationApplication(); var retrySink = new Sink { MapNotificationsEnabled = true, Throw = true };
         retryOwner.Poll(retryStorage, now, retrySink);
         Test.True(retry.ActualPlayerNoticeHour == -1 && !retry.FormalNoticeShown && retrySink.Shown.Count == 0, "failed text display never starts response clock");
         retrySink.Throw = false; retrySink.CurrentHour = 310;
@@ -88,9 +98,18 @@ internal static class PolicyStyleNoticeReplay
         registrationStorage.Documents.AddRange(new[] { map, third });
         var registrationOwner = new WorldDiplomacyNotificationApplication(); var registrationSink = new Sink { Registered = false };
         registrationOwner.Poll(registrationStorage, now, registrationSink);
-        Test.True(!map.FormalNoticeShown && registrationSink.Notices.Single().DocumentId == "third", "missing right widget defers player notice without blocking third-party full text");
+        Test.True(map.FormalNoticeShown && registrationSink.Notices.Count == 2 && registrationSink.Registrations == 0, "right widget registration is irrelevant to delivery of both declarations");
         registrationSink.Registered = true; registrationOwner.Poll(registrationStorage, now.AddSeconds(1), registrationSink);
-        Test.True(registrationSink.Notices.Single(n => n.DocumentId == "map").ShowOnMap, "restored player widget publishes once to right, without a text duplicate");
+        Test.True(!registrationSink.Notices.Single(n => n.DocumentId == "map").ShowOnMap && registrationSink.Notices.Count == 2, "no duplicate notice after another poll");
+
+        var civilianStorage = new WorldDiplomacyStorage(); var local = Document("civilian"); local.HasReachedPlayerCourt = false;
+        civilianStorage.Documents.Add(local);
+        var civilianOwner = new WorldDiplomacyNotificationApplication(); var civilianSink = new Sink { PlayerSettlementId = "town_a" };
+        civilianOwner.Poll(civilianStorage, now, civilianSink);
+        Test.True(civilianSink.Notices.Count == 0, "no civilian announcement before local propagation arrives");
+        civilianStorage.SettlementKnowledge.Add(new() { SettlementId = "town_a", DocumentIds = new() { local.DocumentId } });
+        civilianOwner.Poll(civilianStorage, now.AddSeconds(1), civilianSink);
+        Test.True(civilianSink.Notices.Count == 1 && !local.HasReachedPlayerCourt, "local civilian delivery shows text without fabricating a court receipt");
 
         var queuedStorage = new WorldDiplomacyStorage(); var first = Document("first"); var reclassified = Document("reclassified");
         queuedStorage.Documents.AddRange(new[] { first, reclassified });

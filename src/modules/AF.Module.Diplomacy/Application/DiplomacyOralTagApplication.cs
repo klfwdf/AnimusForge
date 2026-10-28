@@ -36,8 +36,9 @@ internal static class DiplomacyOralTagApplication
     internal static void Process<TSource>(TSource source, ref string responseText, List<string> receipts = null)
         where TSource : struct, IDiplomacyOralTagSource
     {
-        if (string.IsNullOrEmpty(responseText)) return;
-        if (responseText.IndexOf("DIPLOMACY", StringComparison.OrdinalIgnoreCase) < 0) return;
+        bool reviewing = source.HasSpeaker && source.IsAvailable && source is IDiplomacyCommitmentReviewSource review
+            && review.CaptureCommitmentReview(responseText);
+        if (string.IsNullOrEmpty(responseText) || responseText.IndexOf("DIPLOMACY", StringComparison.OrdinalIgnoreCase) < 0) return;
         if (!source.HasSpeaker || !source.IsAvailable)
         {
             source.Log("[Dispatch] Instance is null, abort.");
@@ -47,6 +48,15 @@ internal static class DiplomacyOralTagApplication
 
         responseText = TagRegex.Replace(responseText, match =>
         {
+            // The review owns NPC promises. Immediate player actions still pass
+            // through their existing authority/consent checks in the executor.
+            string action = match.Groups[1].Value;
+            bool immediate = string.Equals(action, "RELEASE_SUBJECT", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(action, "INDEPENDENT_CLAN_PEACE", StringComparison.OrdinalIgnoreCase)
+                || (string.Equals(action, "DECLARE_WAR", StringComparison.OrdinalIgnoreCase)
+                    && source is IDiplomacyCommitmentTagSource actor
+                    && !string.Equals(match.Groups[2].Value.Split(':')[0].Trim(), actor.SpeakerKingdomId, StringComparison.OrdinalIgnoreCase));
+            if (reviewing && !immediate) return "";
             string status = ProcessSingle(source, match.Groups[1].Value, match.Groups[2].Value);
             if (!string.IsNullOrWhiteSpace(status)) source.Log("[Outcome] " + status);
             // All modes keep outcomes in diagnostics/owned facts and notifications.

@@ -6,7 +6,7 @@ namespace AnimusForge;
 
 public sealed partial class WorldDiplomacyBehavior
 {
-    private sealed partial class OrchestrationHost : IWorldDiplomacyDialogueHost
+    private sealed partial class OrchestrationHost : IWorldDiplomacyDialogueHost, IWorldDiplomacyPersonalRecall
     {
         public bool RulerAlive(string id) => !string.IsNullOrEmpty(id) && Hero.Find(id)?.IsAlive == true;
         public bool IsPlayerRuler(string id) => Hero.MainHero?.StringId == id;
@@ -45,6 +45,8 @@ public sealed partial class WorldDiplomacyBehavior
         public MemoryCommitResult CommitFact(string rulerId, string sourceId, string fact, int day,
             string locationId, int hour = -1, string npcName = null, string gameDate = "") =>
             !_owner.IsLiveCampaign ? new MemoryCommitResult(MemoryCommitStatus.Rejected, "diplomacy_persistence_unavailable") : MyBehavior.CommitDiplomacyFactForExternal(Hero.Find(rulerId), sourceId, fact, day, locationId, hour, npcName, gameDate);
+        public string PersonalMemory(string rulerId, string topic, string counterpart, string selectedDiplomaticHistory) =>
+            MyBehavior.BuildDiplomacyPersonalMemoryForExternal(Hero.Find(rulerId), topic, counterpart, selectedDiplomaticHistory);
         public string PersonalMemory(string rulerId, string topic, string counterpart) =>
             MyBehavior.BuildDiplomacyPersonalMemoryForExternal(Hero.Find(rulerId), topic, counterpart);
     }

@@ -6,7 +6,8 @@ namespace AnimusForge;
 
 public partial class KnowledgeLibraryBehavior
 {
-    public class KnowledgeFile { public List<LoreRule> Rules = new List<LoreRule>(); }
+    private bool _knowledgeLoadFailed;
+    public class KnowledgeFile { public string ContentRevision = ""; public List<LoreRule> Rules = new List<LoreRule>(); }
     public class LoreRule
     {
         public string Id;
@@ -26,7 +27,26 @@ public partial class KnowledgeLibraryBehavior
         public string SourceText, Kind, TargetId, EmptyValueText, TrueText, FalseText;
         public int? AgeMin, AgeMax;
     }
-    private sealed class FakeIndex { internal long Version = 1; internal void Touch() { Version++; } }
+    private sealed class FakeIndex
+    {
+        internal long Version = 1;
+        internal void Touch() { Version++; }
+        internal void EnsureVectorIndex(IReadOnlyList<LoreRule> rules, long version) { }
+        internal void EnsureOnnxIndex(IReadOnlyList<LoreRule> rules, long version)
+        { WorkerEntered.Set(); if (!WorkerRelease.Wait(5000)) throw new Exception("worker test timeout"); }
+    }
+    internal static readonly System.Threading.ManualResetEventSlim WorkerEntered = new(false), WorkerRelease = new(false);
+    internal sealed class LoreCandidateRules { internal string Term; }
+    internal sealed class MentionedWorldEntities
+    {
+        internal string Term;
+        public List<string> Entities => new() { Term };
+        internal MentionedWorldEntities Clone() => new() { Term = Term };
+    }
+    internal static int Setting = 1;
+    private static object CapturePromptLoreSettings() => new { Enabled=true, SemanticTopK=Setting };
+    private static LoreCandidateRules CollectPromptLoreCandidates(MentionedWorldEntities mentions, long version, object settings)
+        => version == Index.Version ? new() { Term = mentions.Term } : null;
     private static readonly FakeIndex Index = new FakeIndex();
     private static IReadOnlyList<LoreRule> _publishedRules;
     private static long _publishedRulesVersion = -1;
@@ -37,6 +57,9 @@ public partial class KnowledgeLibraryBehavior
     internal static void Load(KnowledgeFile file) { Instance = new KnowledgeLibraryBehavior { _file = file }; TouchRuleData(); }
     internal static IReadOnlyList<LoreRule> Publish() { PublishPromptRules(); return GetPublishedRulesForIndex(); }
     internal static void Change() => TouchRuleData();
+    internal static void Reload(KnowledgeFile file) { Instance = new KnowledgeLibraryBehavior { _file = file }; TouchRuleData(false); }
+    internal static void FailLoad() { Instance._knowledgeLoadFailed = true; }
+    internal static bool LoadFailed => Instance._knowledgeLoadFailed;
     internal static long Version => Index.Version;
 }
 
@@ -51,6 +74,28 @@ internal static class Program
     }
     private static void Run()
     {
+        KnowledgeLibraryBehavior.Load(new KnowledgeLibraryBehavior.KnowledgeFile());
+        var mentions = new KnowledgeLibraryBehavior.MentionedWorldEntities { Term = "original" };
+        var worker = KnowledgeLibraryBehavior.Instance.StartExternalLoreSelection(mentions, System.Threading.CancellationToken.None, out long captured);
+        Check(KnowledgeLibraryBehavior.WorkerEntered.Wait(5000) && !worker.IsCompleted, "actual host method returns while cold retrieval is still blocked on worker");
+        mentions.Term = "changed on main thread";
+        KnowledgeLibraryBehavior.WorkerRelease.Set();
+        Check(worker.GetAwaiter().GetResult().Term == "original" && captured == KnowledgeLibraryBehavior.Version, "worker receives cloned mention strings and captured rule generation");
+        var originalMentions=new KnowledgeLibraryBehavior.MentionedWorldEntities{Term="original"};
+        Check(ReferenceEquals(worker,KnowledgeLibraryBehavior.Instance.StartExternalLoreSelection(originalMentions,System.Threading.CancellationToken.None,out _)),
+            "completed same-input retrieval is reused across material batches");
+        var other=KnowledgeLibraryBehavior.Instance.StartExternalLoreSelection(mentions,System.Threading.CancellationToken.None,out _);
+        Check(!ReferenceEquals(worker,other)&&other.GetAwaiter().GetResult().Term==mentions.Term,"different mentions have independent candidates");
+        KnowledgeLibraryBehavior.Setting++;
+        var setting=KnowledgeLibraryBehavior.Instance.StartExternalLoreSelection(originalMentions,System.Threading.CancellationToken.None,out _);
+        Check(!ReferenceEquals(worker,setting)&&setting.GetAwaiter().GetResult()!=null,"changed settings invalidate selection");
+        var cancel=new System.Threading.CancellationTokenSource();cancel.Cancel();bool cancelled=false;
+        try{KnowledgeLibraryBehavior.Instance.StartExternalLoreSelection(originalMentions,cancel.Token,out _);}
+        catch(OperationCanceledException){cancelled=true;}
+        Check(cancelled,"completed cache cannot bypass cancellation");cancel.Dispose();
+        KnowledgeLibraryBehavior.Change();
+        var refreshed=KnowledgeLibraryBehavior.Instance.StartExternalLoreSelection(originalMentions,System.Threading.CancellationToken.None,out _);
+        Check(!ReferenceEquals(setting,refreshed)&&refreshed.GetAwaiter().GetResult()!=null,"rule version invalidates completed retrieval");
         var rule = new KnowledgeLibraryBehavior.LoreRule
         {
             Id = "r", Keywords = new List<string> { "first" }, RagShortTexts = new List<string> { "short" },
@@ -62,6 +107,16 @@ internal static class Program
         };
         var file = new KnowledgeLibraryBehavior.KnowledgeFile { Rules = new List<KnowledgeLibraryBehavior.LoreRule> { rule } };
         KnowledgeLibraryBehavior.Load(file);
+        string revision = file.ContentRevision;
+        Check(!string.IsNullOrEmpty(revision), "successful import assigns a persisted content revision");
+        var restored = Newtonsoft.Json.JsonConvert.DeserializeObject<KnowledgeLibraryBehavior.KnowledgeFile>(Newtonsoft.Json.JsonConvert.SerializeObject(file));
+        KnowledgeLibraryBehavior.Reload(restored);
+        Check(restored.ContentRevision == revision, "save/load invalidates runtime indexes without changing persisted content identity");
+        KnowledgeLibraryBehavior.Reload(file);
+        KnowledgeLibraryBehavior.FailLoad();
+        KnowledgeLibraryBehavior.Change();
+        Check(file.ContentRevision != revision && file.Rules.Count == 1 && !KnowledgeLibraryBehavior.LoadFailed,
+            "same-count edits/imports change identity and clear prior load failure");
         long version = KnowledgeLibraryBehavior.Version;
         var first = KnowledgeLibraryBehavior.Publish();
         Check(first.Count == 1 && !ReferenceEquals(first[0], rule), "rules detached once");

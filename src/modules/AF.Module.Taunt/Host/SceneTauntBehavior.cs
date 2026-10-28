@@ -405,7 +405,8 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			IFaction factionById2 = ResolveFactionById(_pendingTemporaryDungeonWarEnemyFactionId);
 			if (factionById != null && factionById2 != null && factionById != factionById2 && FactionManager.IsAtWarAgainstFaction(factionById, factionById2))
 			{
-				MakePeaceAction.Apply(factionById, factionById2);
+                WorldDiplomacyBehavior.RunAuthorizedEventPeace(factionById as Kingdom, factionById2 as Kingdom,
+                    () => MakePeaceAction.Apply(factionById, factionById2));
 				Logger.Log("SceneTaunt", $"Temporary dungeon war ended after player release. PlayerFaction={factionById.Name}, EnemyFaction={factionById2.Name}, Detail={detail}");
 			}
 			else

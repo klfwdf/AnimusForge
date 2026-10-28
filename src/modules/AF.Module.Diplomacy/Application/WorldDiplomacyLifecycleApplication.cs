@@ -20,7 +20,6 @@ internal static class WorldDiplomacyLifecycleApplication
             return;
         }
         orchestration.NormalizeStorage(allowWorldValidation: true);
-        orchestration.RecoverUnsettledAiInternationalReputation();
         orchestration.RecoverPlayerCourtReceiptsFromKnowledge();
         orchestration.EnsureScheduleInitialized();
         source.ResetTransientRuntime(lifecycle == WorldDiplomacyLifecycleEvent.Loaded ? "game-loaded" : "session-launched");

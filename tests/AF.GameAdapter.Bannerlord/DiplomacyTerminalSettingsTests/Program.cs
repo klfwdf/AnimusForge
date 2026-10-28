@@ -46,9 +46,9 @@ internal static class Program
         // Loading and saving use MCM's real format and settings converter.
         var format = new JsonSettingsFormat(new DefaultBUTRLogger<JsonSettingsFormat>());
         var defaults = new DuelSettings();
-        Check(Discoverer.GetProperties(defaults).Count() == 6,
-              "The real MCM discoverer recognizes all six active fixture settings");
-        Check(JObject.Parse(format.SaveJson(defaults)).Properties().Count() == 6,
+        Check(Discoverer.GetProperties(defaults).Count() == 7,
+              "The real MCM discoverer recognizes all seven active fixture settings");
+        Check(JObject.Parse(format.SaveJson(defaults)).Properties().Count() == 7,
               "The actual MCM format discovers the active properties through its service lookup");
         Check(defaults.WorldDiplomacyDeclarationMinCharacters == 100
               && defaults.WorldDiplomacyDeclarationMaxCharacters == 300, "New defaults are 100 to 300");
@@ -76,6 +76,8 @@ internal static class Program
             [retired[5]] = 12
         };
         var loaded = (DuelSettings)format.LoadFromJson(new DuelSettings(), old.ToString());
+        Check(loaded.WorldDiplomacyPlayerContactIntervalDays == 5, "Missing contact interval receives default without changing existing fields");
+        loaded.WorldDiplomacyPlayerContactIntervalDays = 17;
         Check(loaded != null, "MCM accepts old JSON containing all six removed fields");
         Check(loaded.WorldDiplomacyDeclarationMinCharacters == 230
               && loaded.WorldDiplomacyDeclarationMaxCharacters == 875,
@@ -90,6 +92,7 @@ internal static class Program
         Check((int)saved["WorldDiplomacyDeclarationMaxCharacters"] == 875,
               "Saving does not replace the user's upper bound with the new default");
         var roundTrip = (DuelSettings)format.LoadFromJson(new DuelSettings(), saved.ToString());
+        Check(roundTrip.WorldDiplomacyPlayerContactIntervalDays == 17, "Original MCM owner saves and restores contact interval");
         Check(roundTrip.WorldDiplomacyDeclarationMinCharacters == 230
               && roundTrip.WorldDiplomacyDeclarationMaxCharacters == 875
               && roundTrip.WorldDiplomacyPrompt == loaded.WorldDiplomacyPrompt,

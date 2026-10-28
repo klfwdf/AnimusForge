@@ -162,6 +162,8 @@ public partial class ShoutBehavior
 internal sealed class NativeConversationCompletionRequest
     {
         internal string PlayerText;
+        internal string NpcReplyText;
+        internal string DiplomacyInteractionId;
         internal ConversationRewriteTurn RewriteTurn;
         internal string OpeningFact;
         internal bool TtsAlreadyDispatched;

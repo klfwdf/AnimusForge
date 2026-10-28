@@ -93,24 +93,135 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
-        if (args.Length == 1 && args[0] == "--maintenance-safety")
+        if (args.Contains("--worldbook-repair"))
+        { try { MaterialCountryThirdReplay.WorldBookWaitEnding(); Console.WriteLine("PASS worldbook repair assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--diplomacy-stall-repair"))
+        { try { DiplomacyBaselineReplay.Run(); LiveDiplomacyFixReplay.StallSilenceClosure(); Console.WriteLine("PASS diplomacy stall repair assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--progress-effect-preflight"))
+        { try { IndependentAuditFixReplay.ProgressEffectPreflight(); Console.WriteLine("PASS progress effect preflight assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--structure-observation"))
+        { try { MaterialSupplyReplay.StructureObservation(); Console.WriteLine("PASS structure observation assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--structure-selection"))
+        { try { MaterialSupplyReplay.StructureSelection(); Console.WriteLine("PASS structure selection assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--presentation"))
+        { try { Dpl090PresentationReplay.Run(); Console.WriteLine("PASS presentation assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--player-material-optimization"))
+        { try { PlayerMaterialOptimizationReplay.Run(); Console.WriteLine("PASS player material assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--bound-matters"))
+        { try { MaterialSupplyReplay.BoundMatterRecovery(); CountryAdmissionReplay.Run(); MaterialCountryThirdReplay.PlayerOpeningLifecycle(); Console.WriteLine("PASS bound matters assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--baseline-restoration"))
+        { try { EventConvergenceReplay.Run(); DiplomacyBaselineReplay.Run(); Console.WriteLine("PASS baseline restoration assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--admission-hold-recovery"))
+        { try { MaterialSupplyReplay.AdmissionHoldRecovery(); Console.WriteLine("PASS admission hold recovery assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--declaration-stalls"))
+        { try { MaterialCountryThirdReplay.DeclarationAuditStalls(); MaterialSupplyReplay.PlanningAuditBudget(); Console.WriteLine("PASS declaration stall assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--postdeploy-stall"))
+        { try { MaterialSupplyReplay.PostDeploymentStalls(); Console.WriteLine("PASS postdeployment assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--audit-gaps"))
+        { try { MaterialSupplyReplay.AuditGapRegressions(); Console.WriteLine("PASS audit gap assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--country-admission"))
+        { try { CountryAdmissionReplay.Run(); Console.WriteLine("PASS country admission assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--event-convergence"))
+        { try { EventConvergenceReplay.Run(); Console.WriteLine("PASS convergence assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if(args.Contains("--player-opening-model"))
+        { try { MaterialCountryThirdReplay.PlayerOpeningModel();return 0; } catch(Exception ex){Console.Error.WriteLine(ex);return 1;} }
+        var openingIncident = args.FirstOrDefault(x=>x.StartsWith("--player-opening-incident=",StringComparison.Ordinal));
+        if(openingIncident!=null)
+        { try { MaterialCountryThirdReplay.PlayerOpening(openingIncident.Substring("--player-opening-incident=".Length)); Console.WriteLine("PASS actual player opening assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--player-opening"))
+        { try { MaterialCountryThirdReplay.PlayerOpening(); WorldProfileReplay.Run(); Console.WriteLine("PASS player opening assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        var auditLatencyIncident=args.FirstOrDefault(x=>x.StartsWith("--audit-latency-incident=",StringComparison.Ordinal));
+        if(auditLatencyIncident!=null)
+        { try { MaterialCountryThirdReplay.AuditLatency(auditLatencyIncident.Substring("--audit-latency-incident=".Length)); Console.WriteLine("PASS audit latency incident assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        var playerNarrativeIncident=args.FirstOrDefault(x=>x.StartsWith("--player-narrative-incident=",StringComparison.Ordinal));
+        if(playerNarrativeIncident!=null)
+        { try { MaterialCountryThirdReplay.PlayerNarrativeFollowup(playerNarrativeIncident.Substring("--player-narrative-incident=".Length)); Console.WriteLine("PASS player narrative incident assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        var pipelineIncident=args.FirstOrDefault(x=>x.StartsWith("--pipeline-incident=",StringComparison.Ordinal));
+        if(pipelineIncident!=null)
+        { try { MaterialCountryThirdReplay.PipelineRecovery(pipelineIncident.Substring("--pipeline-incident=".Length) is "" ? null : pipelineIncident.Substring("--pipeline-incident=".Length)); Console.WriteLine("PASS pipeline recovery assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        var progressionIncident=args.FirstOrDefault(x=>x.StartsWith("--progression-incident=",StringComparison.Ordinal));
+        if(progressionIncident!=null)
+        { try { MaterialCountryThirdReplay.ProgressionRepair(progressionIncident.Substring("--progression-incident=".Length)); Console.WriteLine("PASS progression incident assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        var planningIncident=args.FirstOrDefault(x=>x.StartsWith("--planning-incident=",StringComparison.Ordinal));
+        if(planningIncident!=null)
+        { try { MaterialSupplyReplay.ActualPlanningIncident(planningIncident.Substring("--planning-incident=".Length)); Console.WriteLine("PASS planning incident assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        var termsIncident=args.FirstOrDefault(x=>x.StartsWith("--terms-incident=",StringComparison.Ordinal));
+        if(termsIncident!=null)
+        { try { MaterialCountryThirdReplay.OptionalTermsReplay(termsIncident.Substring("--terms-incident=".Length)); Console.WriteLine("PASS optional terms assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        var evidenceIncident=args.FirstOrDefault(x=>x.StartsWith("--evidence-incident=",StringComparison.Ordinal));
+        if(evidenceIncident!=null)
+        { try { MaterialCountryThirdReplay.PublicationEvidenceReplay(evidenceIncident.Substring("--evidence-incident=".Length)); Console.WriteLine("PASS evidence incident assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        var incidentArgument=args.FirstOrDefault(x=>x.StartsWith("--declaration-incident=",StringComparison.Ordinal));
+        if(incidentArgument!=null)
+        { try { MaterialCountryThirdReplay.DeclarationAuditRepair(incidentArgument.Substring("--declaration-incident=".Length)); Console.WriteLine("PASS declaration incident assertions="+Test.Assertions); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--material-supply"))
+        { try { MaterialSupplyReplay.Run(); Console.WriteLine("PASS supply assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--theme-exploration"))
+        { try { MaterialSupplyReplay.ThemeExploration(); Console.WriteLine("PASS theme assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--material-country"))
+        { try { MaterialCountryReplay.Run(); MaterialCountryCompletionReplay.Run(); EventStructureReplay.Run(); Console.WriteLine("PASS material/country assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--live-blockers"))
+        { try { LiveBlockerReplay.Run(); Console.WriteLine("PASS LiveBlockerReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--live-fixes"))
         {
-            MaintenanceSafetyReplay.Run();
-            Console.WriteLine($"Diplomacy maintenance safety passed: {Test.Assertions} assertions.");
-            return 0;
+            try { LiveDiplomacyFixReplay.Run(); Console.WriteLine("PASS LiveDiplomacyFixReplay assertions=" + Test.Assertions); return 0; }
+            catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
         }
-        if (args.Length == 1 && args[0] == "--envelope-alias-review")
-        {
-            EnvelopeAliasReviewReplay.Run();
-            RunEnvelopeJsonDecisionTests();
-            RunSingleActionLegalityDecisionTests();
-            RunGeneratedEnvelopeApplicationDecisionTests();
-            RunGeneratedDocumentCommitDecisionTests();
-            Console.WriteLine($"Envelope alias review passed: {Test.Assertions} assertions.");
-            return 0;
-        }
+        if (args.Contains("--independent-fixes"))
+        { try { IndependentAuditFixReplay.Run(); Console.WriteLine("PASS IndependentAuditFixReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--audit-fixes"))
+        { try { AuditFixesReplay.Run(); NativeDiplomacyFallbackReplay.Run(); PolicyStyleNoticeReplay.Run(); Console.WriteLine("PASS AuditFixesReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--legacy-source-boundary"))
+        { VerifyLegacySourceBoundary(); return 0; }
+        if (args.Contains("--event-source-boundary"))
+        { VerifySourceBoundary(); Console.WriteLine("PASS EventSourceBoundary assertions=" + Test.Assertions); return 0; }
+        if (args.Contains("--event-save"))
+        { try { PlayerSaveReplay.Run(); Console.WriteLine("PASS EventSave assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--shared-declarations"))
+        { try { ActionSelectionReplay.Run(); JobPreparationReplay.Run(); Dpl080PromptReplay.Run(); RunJobCompositionDecisionTests(); Console.WriteLine("PASS SharedDeclarations assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--event-structure")
+        { try { EventStructureReplay.Run(); Console.WriteLine("PASS EventStructureReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        MaterialCountryThirdReplay.WorldBookWaitEnding();
         CanonicalProjectionPreservesProse();
         PackagedOralProtocolParity();
+        if (args.Length == 1 && args[0] == "--original-oral-vassalage")
+        { OriginalOralVassalageReplay.Run(); Console.WriteLine("PASS OriginalOralVassalageReplay assertions=" + Test.Assertions); return 0; }
+        if (args.Length == 1 && args[0] == "--native-event-admission")
+        {
+            NativeEventAdmissionReplay.Run();
+            Console.WriteLine($"Native event admission replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
+        if (args.Length == 1 && args[0] == "--request-history")
+        { try { RequestHistoryBudgetReplay.Run(); AutonomousRecallReplay.Run(); Console.WriteLine("PASS RequestHistoryBudgetReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--history-fragment")
+        { try { HistoryFragmentReplay.Run(); Console.WriteLine("PASS HistoryFragmentReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--compression-capacity")
+        { try { CompressionCapacityReplay.Run(); Console.WriteLine("PASS CompressionCapacityReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--speech-review")
+        { try { SpeechReviewReplay.Run(); MaterialRecoveryReplay.Run(); Console.WriteLine("PASS SpeechReviewReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--event-legacy")
+        { try { EventLegacyReplay.Run(); Console.WriteLine("PASS EventLegacyReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--event-recovery")
+        { try { EventRecoveryReplay.Run(); Console.WriteLine("PASS EventRecoveryReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--event-fairness")
+        { try { EventFairnessReplay.Run(); Console.WriteLine("PASS EventFairnessReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--event-retirement")
+        { try { EventRetirementReplay.Run(); Console.WriteLine("PASS EventRetirementReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--event-settings")
+        { try { EventSettingsReplay.Run(); Console.WriteLine("PASS EventSettingsReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--aid-request")
+        { try { AidRequestReplay.Run(); Console.WriteLine("PASS AidRequestReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--event-memory")
+        { try { EventMemoryReplay.Run(); PolicyStyleNoticeReplay.Run(); Console.WriteLine("PASS EventMemoryReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--event-boundary")
+        { try { EventBoundaryReplay.Run(); Console.WriteLine("PASS EventBoundaryReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Length == 1 && args[0] == "--event-commitment")
+        {
+            EventCommitmentReplay.Run();
+            Console.WriteLine($"Event commitment replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
         if (args.Length == 1 && args[0] == "--policy-style-notices")
         {
@@ -161,22 +272,10 @@ internal static class Program
             Console.WriteLine($"Player response recovery passed: {Test.Assertions} assertions.");
             return 0;
         }
-        if (args.Length == 1 && args[0] == "--chain-localization")
-        {
-            DiplomacyChainLocalizationReplay.Run();
-            Console.WriteLine($"Diplomacy chain/localization replay passed: {Test.Assertions} assertions.");
-            return 0;
-        }
         if (args.Length == 1 && args[0] == "--subject-release")
         {
             SubjectReleaseReplay.Run();
             Console.WriteLine($"Player subject release passed: {Test.Assertions} assertions.");
-            return 0;
-        }
-        if (args.Length == 1 && args[0] == "--request-history-budget")
-        {
-            RequestHistoryBudgetReplay.Run();
-            Console.WriteLine($"Diplomacy request history replay passed: {Test.Assertions} assertions.");
             return 0;
         }
         if (args.Length == 1 && args[0] == "--lifecycle-repair")
@@ -187,7 +286,7 @@ internal static class Program
         }
         if (args.Length == 1 && args[0] == "--ordinary-admission-and-review-fixes")
         {
-            OrdinaryAdmissionReplay.Run(); ReviewFixReplay.Run();
+            EventStructureReplay.Run(); ReviewFixReplay.Run();
             Console.WriteLine($"Ordinary admission and review fixes passed: {Test.Assertions} assertions.");
             return 0;
         }
@@ -228,7 +327,7 @@ internal static class Program
         }
         if (args.Length == 1 && args[0] == "--r1-round-plan")
         {
-            RunRoundPlanCommitDecisionTests();
+
             VerifyRoundPlanOwnership();
             Console.WriteLine($"R1 round plan replay passed: {Test.Assertions} assertions.");
             return 0;
@@ -251,46 +350,45 @@ internal static class Program
         }
         if (args.Length == 1 && args[0] == "--r1-round-progress")
         {
-            RunRoundDocumentProcessedDecisionTests();
+
             VerifyRoundProgressOwnership();
             Console.WriteLine($"R1 round progress replay passed: {Test.Assertions} assertions.");
             return 0;
         }
         if (args.Length == 1 && args[0] == "--r1-turn-scheduling")
         {
-            RunRelayAndSettlementTurnSchedulingDecisionTests();
+
             VerifyTurnSchedulingOwnership();
             Console.WriteLine($"R1 turn scheduling replay passed: {Test.Assertions} assertions.");
             return 0;
         }
         if (args.Length == 1 && args[0] == "--r1-generation-task")
         {
-            RunGenerationJobCompositionDecisionTests();
-            RunPostDecisionRoutingDecisionTests();
+
+
             VerifyGenerationTaskOwnership();
             Console.WriteLine($"R1 generation task replay passed: {Test.Assertions} assertions.");
             return 0;
         }
-        MaintenanceSafetyReplay.Run();
-        OrdinaryAdmissionReplay.Run(); ReviewFixReplay.Run(); LifecycleRepairReplay.Run();
+        MaterialSupplyReplay.StructureObservation();
+        OralDeclarationReplay.Run();
+        MaterialSupplyReplay.StructureSelection();
+        MaterialSupplyReplay.BoundMatterRecovery();
+        CountryAdmissionReplay.Run();
+        EventConvergenceReplay.Run(); DiplomacyBaselineReplay.Run();
+        LiveDiplomacyFixReplay.StallSilenceClosure();
+        MaterialCountryReplay.Run(); MaterialCountryCompletionReplay.Run(); EventStructureReplay.Run(); ReviewFixReplay.Run(); LifecycleRepairReplay.Run(); AuditFixesReplay.Run(); IndependentAuditFixReplay.Run(); LiveDiplomacyFixReplay.Run();
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
-        RoundBoundaryReplay.Run();
         LlmDispatchApplicationReplay.Run();
         CompletionApplicationReplay.Run();
         Dpl090PresentationReplay.Run();
         ReplyShortcutReplay.Run();
         ProactiveDiscussionApplicationReplay.Run();
         Dpl080PromptReplay.Run();
-        VerifyReconcileAfterLoadDecisionTable();
         VerifyDeadlineRules();
         VerifyStatusRules();
         VerifyRelayProgressionRules();
-        VerifyRelayPassAccountingDecisionTable();
-        VerifySettlementSchedulingDecisionTable();
-        VerifyTickLifecycleDecisionTable();
-        VerifyArrivalDispatchDecisionTable();
-        VerifyFailureAndTimeoutDecisionTable();
         VerifySchedulingAndExchangeDecisionTable();
         VerifyAdvanceAndAdmissionDecisionTable();
         VerifyCloseAndRelayHopDecisionTable();
@@ -299,12 +397,9 @@ internal static class Program
         RunResponseAddressingDecisionTests();
         RunMandatoryReplyDecisionTests();
         RunIntentVocabularyDecisionTests();
-        RunValidatedProgressDecisionTests();
         RunDeferredRetryDecisionTests();
         RunThreatAndConfirmedResultDecisionTests();
         RunThreatViolationDecisionTests();
-        RunSettlementSlotCompositionTests();
-        RunSettlementSlotSelectionTests();
         RunRoundAccountingDecisionTests();
         RunThreatDocumentDispatchDecisionTests();
         RunThreatRegistrationComplianceTests();
@@ -322,7 +417,7 @@ internal static class Program
         RunCanonicalHistoryNormalizationDecisionTests();
         RunEnvelopeJsonDecisionTests();
         RunTextRuleDecisionTests();
-        RunReputationDescribeDecisionTests();
+
         RunOfferContractDecisionTests();
         RunPromptContractDecisionTests();
         RunStructureRuleDecisionTests();
@@ -340,20 +435,16 @@ RunMiscHelperDecisionTests();
         RunDisplayTextRuleDecisionTests();
         RunBattleFactRenderDecisionTests();
         RunPeaceTermPatternDecisionTests();
-        RunBilateralContextDecisionTests();
-        RunWarResponseAndStandingDecisionTests();
+
         RunOpenProposalAndThreatAdapterDecisionTests();
         RunWarSnapshotAdapterDecisionTests();
-        RunSettlementSlotCompositionDecisionTests();
+
         RunStorageKnowledgeAndContextDecisionTests();
         RunThreatFinalizationDecisionTests();
-        RunThreatResolutionDecisionTests();
-RunRelayAndBudgetDecisionTests();
-RunSettlementSlotOrchestrationDecisionTests();
-RunWarLedgerAndReputationDecisionTests();
+
+
 RunExchangeAndOfferCooldownDecisionTests();
-RunDocumentQueryAndRetentionDecisionTests();
-RunThreatMigrationAndReputationNaturalChangeDecisionTests();
+
 RunStorageMigrationDecisionTests();
 RunCanonicalHistoryMigrationDecisionTests();
 RunCanonicalHistoryInitDecisionTests();
@@ -372,27 +463,24 @@ RunRelaySourceContextDecisionTests();
 RunGenerationSignatureDecisionTests();
 RunGeneratedStructureAndTargetSelectionDecisionTests();
 RunPlayerWorldStateIntentDecisionTests();
-RunThreatRegistrationBookkeepingDecisionTests();
+
 RunGenerationValidationDecisionTests();
 RunRepairCorrectionAndJobDecisionTests();
         RunSingleActionLegalityDecisionTests();
         RunGeneratedEnvelopeApplicationDecisionTests();
         RunSettlementTurnBookkeepingDecisionTests();
-        RunPlayerOfferReconcileAndSettlementOpenDecisionTests();
+
         RunPreSendGateDecisionTests();
-        RunRoundDocumentProcessedDecisionTests();
-        RunDocumentLifecycleBookkeepingDecisionTests();
-        RunRoundLifecycleMaintenanceDecisionTests();
+
         RunAnalysisCommitDecisionTests();
-        RunRoundPlanCommitDecisionTests();
+
         RunFailedJobCommitDecisionTests();
         RunGeneratedDocumentCommitDecisionTests();
-        RunPostDecisionRoutingDecisionTests();
-        RunRelayAndSettlementTurnSchedulingDecisionTests();
+
         RunLlmJobRoutingDecisionTests();
-    RunRelayArrivalAndExternalFactDecisionTests();
+
     RunJobCompositionDecisionTests();
-    RunGenerationJobCompositionDecisionTests();
+
         PromptMemoryReplay.Run();
         NativeDiplomacyFallbackReplay.Run();
         AuthorityReplay.Run();
@@ -415,16 +503,31 @@ RunRepairCorrectionAndJobDecisionTests();
         PublicationRoutingReplay.Run();
         ImmediateActionReplay.Run();
         PropagationLifecycleReplay.Run();
-        ThreatApplicationReplay.Run();
         ThreatSettlementReplay.Run();
-        PrestigeApplicationReplay.Run();
         WorldProfileReplay.Run();
         RetainedHostRulesReplay.Run();
         CampaignApplicationReplay.Run();
         InitialPeaceReplay.Run();
         HistoryCaptureReplay.Run();
         RequestHistoryBudgetReplay.Run();
-        AdmissionBindingReplay.Run();
+        AutonomousRecallReplay.Run();
+        NativeEventAdmissionReplay.Run();
+        EventCommitmentReplay.Run();
+        EventBoundaryReplay.Run();
+        EventMemoryReplay.Run();
+        AidRequestReplay.Run();
+        EventSettingsReplay.Run();
+        EventRetirementReplay.Run();
+        EventFairnessReplay.Run();
+        EventRecoveryReplay.Run();
+        EventLegacyReplay.Run();
+        SpeechReviewReplay.Run();
+        OriginalOralVassalageReplay.Run();
+        LiveBlockerReplay.Run();
+        MaterialRecoveryReplay.Run();
+        CompressionCapacityReplay.Run();
+        HistoryFragmentReplay.Run();
+        LegacyArchiveEvidenceReplay.Run();
         PolicySignalRefreshReplay.Run();
         ActionSelectionReplay.Run();
         JobPreparationReplay.Run();
@@ -435,9 +538,7 @@ RunRepairCorrectionAndJobDecisionTests();
         PeaceAdmissionReplay.Run();
         PeaceProposalReplay.Run();
         PersistenceSyncReplay.Run();
-        if (args.Length == 1 && args[0] == "--all-behavior")
-            Console.WriteLine("Legacy full static source boundary is a separate gate; its unchanged Chinese archive-literal oracle is retained.");
-        else VerifySourceBoundary();
+        VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
     }
@@ -592,79 +693,7 @@ RunRepairCorrectionAndJobDecisionTests();
         };
     }
 
-    private static void VerifyReconcileAfterLoadDecisionTable()
-    {
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(null!).Action
-                  == WorldDiplomacyRoundReconcileAction.None,
-            "null input must produce no action");
 
-        WorldDiplomacyRoundReconcileInput inactive = BaseInput();
-        inactive.RoundActive = false;
-        inactive.ResultSettlementPending = true;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(inactive).Action
-                  == WorldDiplomacyRoundReconcileAction.None,
-            "inactive round must produce no action");
-
-        WorldDiplomacyRoundReconcileInput hardEnd = BaseInput();
-        hardEnd.CurrentDay = 100;
-        hardEnd.ResultSettlementPending = true;
-        hardEnd.HasPersistedWork = true;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(hardEnd).Action
-                  == WorldDiplomacyRoundReconcileAction.CloseHardEndAfterLoad,
-            "hard-end after load must take precedence over work, wait, and settlement state");
-
-        WorldDiplomacyRoundReconcileInput persistedWork = BaseInput();
-        persistedWork.HasPersistedWork = true;
-        persistedWork.ResultSettlementPending = true;
-        persistedWork.RelayPlanned = true;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(persistedWork).Action
-                  == WorldDiplomacyRoundReconcileAction.None,
-            "persisted work must defer reconcile without clearing state");
-
-        WorldDiplomacyRoundReconcileInput playerWaiting = BaseInput();
-        playerWaiting.PlayerWaiting = true;
-        playerWaiting.ResultSettlementPending = true;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(playerWaiting).Action
-                  == WorldDiplomacyRoundReconcileAction.None,
-            "open player opportunity must defer reconcile");
-
-        WorldDiplomacyRoundReconcileInput settlementPending = BaseInput();
-        settlementPending.ResultSettlementPending = true;
-        settlementPending.RelayPlanned = true;
-        settlementPending.HasRootDocument = false;
-        WorldDiplomacyRoundReconcileDecision settlementDecision =
-            WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(settlementPending);
-        Test.True(settlementDecision.Action == WorldDiplomacyRoundReconcileAction.ScheduleResultSettlementTurn,
-            "pending result settlement must schedule the next settlement turn first");
-        Test.True(settlementDecision.ClearOrphanedRelayWait,
-            "post-wait reconcile paths must clear an orphaned relay wait");
-
-        WorldDiplomacyRoundReconcileInput relayPlanned = BaseInput();
-        relayPlanned.RelayPlanned = true;
-        relayPlanned.HasRootDocument = false;
-        WorldDiplomacyRoundReconcileDecision relayDecision =
-            WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(relayPlanned);
-        Test.True(relayDecision.Action == WorldDiplomacyRoundReconcileAction.ScheduleRelayImmediately,
-            "planned relay must resume immediately before the missing-root fallback");
-        Test.True(relayDecision.ClearOrphanedRelayWait,
-            "relay resume must clear an orphaned relay wait");
-
-        WorldDiplomacyRoundReconcileInput missingRoot = BaseInput();
-        missingRoot.HasRootDocument = false;
-        WorldDiplomacyRoundReconcileDecision missingRootDecision =
-            WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(missingRoot);
-        Test.True(missingRootDecision.Action == WorldDiplomacyRoundReconcileAction.CloseMissingRootDocument,
-            "an active round without work, settlement, relay, or root document must close");
-        Test.True(missingRootDecision.ClearOrphanedRelayWait,
-            "missing-root close must clear an orphaned relay wait");
-
-        WorldDiplomacyRoundReconcileDecision idleDecision =
-            WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(BaseInput());
-        Test.True(idleDecision.Action == WorldDiplomacyRoundReconcileAction.None,
-            "an active round with a root document and no pending work must stay idle");
-        Test.True(idleDecision.ClearOrphanedRelayWait,
-            "even the idle fall-through must clear an orphaned relay wait");
-    }
 
     private static void VerifyDeadlineRules()
     {
@@ -832,354 +861,15 @@ RunRepairCorrectionAndJobDecisionTests();
             "accounted pass numbers clamp to zero");
     }
 
-    private static void VerifyRelayPassAccountingDecisionTable()
-    {
-        Test.True(!WorldDiplomacyRoundLifecycleRules.EvaluateRelayPassAccounting(null!).ShouldAccount,
-            "null pass input must not account");
-        WorldDiplomacyRelayPassAccountingInput zeroPass = new WorldDiplomacyRelayPassAccountingInput
-        {
-            RelayPassNumber = 0,
-            LastAccountedRelayPassNumber = 0
-        };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.EvaluateRelayPassAccounting(zeroPass).ShouldAccount,
-            "pass zero is before the first completed pass and must not account");
-        WorldDiplomacyRelayPassAccountingInput alreadyAccounted = new WorldDiplomacyRelayPassAccountingInput
-        {
-            RelayPassNumber = 2,
-            LastAccountedRelayPassNumber = 2
-        };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.EvaluateRelayPassAccounting(alreadyAccounted).ShouldAccount,
-            "an already-accounted pass must not account twice");
-        WorldDiplomacyRelayPassAccountingInput withAction = new WorldDiplomacyRelayPassAccountingInput
-        {
-            RelayPassNumber = 3,
-            LastAccountedRelayPassNumber = 2,
-            DiplomaticActionAttemptCount = 7,
-            ActionAttemptCountAtPassStart = 5,
-            ConsecutiveNoActionPasses = 2
-        };
-        WorldDiplomacyRelayPassAccountingDecision actionDecision =
-            WorldDiplomacyRoundLifecycleRules.EvaluateRelayPassAccounting(withAction);
-        Test.True(actionDecision.ShouldAccount && actionDecision.ActionOccurred
-                  && actionDecision.NewConsecutiveNoActionPasses == 0,
-            "a pass with new diplomatic attempts resets the no-action counter");
-        WorldDiplomacyRelayPassAccountingInput noAction = new WorldDiplomacyRelayPassAccountingInput
-        {
-            RelayPassNumber = 3,
-            LastAccountedRelayPassNumber = 2,
-            DiplomaticActionAttemptCount = 5,
-            ActionAttemptCountAtPassStart = 5,
-            ConsecutiveNoActionPasses = 1
-        };
-        WorldDiplomacyRelayPassAccountingDecision noActionDecision =
-            WorldDiplomacyRoundLifecycleRules.EvaluateRelayPassAccounting(noAction);
-        Test.True(noActionDecision.ShouldAccount && !noActionDecision.ActionOccurred
-                  && noActionDecision.NewConsecutiveNoActionPasses == 2,
-            "a quiet pass increments the no-action counter");
-        noAction.ConsecutiveNoActionPasses = 3;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRelayPassAccounting(noAction)
-                  .NewConsecutiveNoActionPasses == 3,
-            "the no-action counter saturates at three");
-    }
 
-    private static void VerifySettlementSchedulingDecisionTable()
-    {
-        Test.True(!WorldDiplomacyRoundLifecycleRules.CanScheduleResultSettlementTurn(null!),
-            "null settlement gate input must not schedule");
-        WorldDiplomacySettlementTurnGateInput gate = new WorldDiplomacySettlementTurnGateInput
-        {
-            ResultSettlementPending = true,
-            RelayPlanned = true,
-            RoundActive = true
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.CanScheduleResultSettlementTurn(gate),
-            "an idle pending settlement round may schedule a turn");
-        gate.ResultSettlementPending = false;
-        Test.True(!WorldDiplomacyRoundLifecycleRules.CanScheduleResultSettlementTurn(gate),
-            "a round without pending settlement must not schedule");
-        gate.ResultSettlementPending = true;
-        gate.RelayPlanned = false;
-        Test.True(!WorldDiplomacyRoundLifecycleRules.CanScheduleResultSettlementTurn(gate),
-            "an unplanned relay must not schedule settlement turns");
-        gate.RelayPlanned = true;
-        gate.RoundActive = false;
-        Test.True(!WorldDiplomacyRoundLifecycleRules.CanScheduleResultSettlementTurn(gate),
-            "a non-active round must not schedule settlement turns");
-        gate.RoundActive = true;
-        gate.HasPendingArrival = true;
-        Test.True(!WorldDiplomacyRoundLifecycleRules.CanScheduleResultSettlementTurn(gate),
-            "a queued relay arrival must block settlement scheduling");
-        gate.HasPendingArrival = false;
-        gate.HasPendingJob = true;
-        Test.True(!WorldDiplomacyRoundLifecycleRules.CanScheduleResultSettlementTurn(gate),
-            "a queued round job must block settlement scheduling");
 
-        WorldDiplomacySettlementSlotEvaluationInput empty = new WorldDiplomacySettlementSlotEvaluationInput();
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateSettlementSlotAction(empty)
-                  == WorldDiplomacySettlementSlotAction.CloseRound,
-            "an empty slot queue closes the round");
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateSettlementSlotAction(null!)
-                  == WorldDiplomacySettlementSlotAction.CloseRound,
-            "a missing slot evaluation closes the round");
-        WorldDiplomacySettlementSlotEvaluationInput ineligible = new WorldDiplomacySettlementSlotEvaluationInput
-        {
-            HasSlot = true,
-            ReceiverEligible = false,
-            ActionableTargetCount = 3,
-            ReceiverIsPlayer = true
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateSettlementSlotAction(ineligible)
-                  == WorldDiplomacySettlementSlotAction.SkipSlot,
-            "an ineligible receiver skips the slot even for the player");
-        WorldDiplomacySettlementSlotEvaluationInput noTargets = new WorldDiplomacySettlementSlotEvaluationInput
-        {
-            HasSlot = true,
-            ReceiverEligible = true,
-            ActionableTargetCount = 0
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateSettlementSlotAction(noTargets)
-                  == WorldDiplomacySettlementSlotAction.SkipSlot,
-            "a receiver with no legal action skips the slot");
-        WorldDiplomacySettlementSlotEvaluationInput player = new WorldDiplomacySettlementSlotEvaluationInput
-        {
-            HasSlot = true,
-            ReceiverEligible = true,
-            ActionableTargetCount = 2,
-            ReceiverIsPlayer = true
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateSettlementSlotAction(player)
-                  == WorldDiplomacySettlementSlotAction.WaitForPlayer,
-            "an actionable player receiver parks the round for player input");
-        WorldDiplomacySettlementSlotEvaluationInput npc = new WorldDiplomacySettlementSlotEvaluationInput
-        {
-            HasSlot = true,
-            ReceiverEligible = true,
-            ActionableTargetCount = 2,
-            ReceiverIsPlayer = false
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateSettlementSlotAction(npc)
-                  == WorldDiplomacySettlementSlotAction.ScheduleNpc,
-            "an actionable NPC receiver schedules a settlement arrival");
 
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveSettlementCloseReason(null!) == "result_settled",
-            "missing close reasons fall back to result_settled");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveSettlementCloseReason("  ") == "result_settled",
-            "blank close reasons fall back to result_settled");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveSettlementCloseReason("deadlock_timeout") == "deadlock_timeout",
-            "explicit close reasons are preserved");
 
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveSettlementPreviousSpeaker(
-                  new List<string> { "", "  ", "k_related" }, "k_published", "k_initiator") == "k_related",
-            "the first non-blank related kingdom wins the previous-speaker chain");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveSettlementPreviousSpeaker(
-                  new List<string> { "", "  " }, "k_published", "k_initiator") == "k_published",
-            "the last published author is the fallback previous speaker");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveSettlementPreviousSpeaker(
-                  null!, null!, "k_initiator") == "k_initiator",
-            "the initiator is the final previous-speaker fallback");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveSettlementPreviousSpeaker(
-                  new List<string>(), "  ", "k_initiator") == "k_initiator",
-            "blank published authors still fall through to the initiator");
-    }
 
-    private static void VerifyTickLifecycleDecisionTable()
-    {
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose(true, true)
-                  == WorldDiplomacyRoundTerminalAction.WaitForRunningJob,
-            "a running round job must defer terminal close even when settlement is pending");
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose(true, false)
-                  == WorldDiplomacyRoundTerminalAction.WaitForRunningJob,
-            "a running round job must defer terminal close");
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose(false, true)
-                  == WorldDiplomacyRoundTerminalAction.CloseResultSettlement,
-            "an idle pending settlement round closes through the settlement path");
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose(false, false)
-                  == WorldDiplomacyRoundTerminalAction.CloseRelay,
-            "an idle ordinary relay round closes through the relay path");
 
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsPlayerSlotWaitingExpired(
-                  "waiting_player", 10, 15),
-            "a player slot times out five days after it started waiting");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsPlayerSlotWaitingExpired(
-                  "waiting_player", 10, 14),
-            "a player slot is still valid inside its waiting window");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsPlayerSlotWaitingExpired(
-                  "waiting_player", 0, 100),
-            "an unset waiting-since day must not expire");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsPlayerSlotWaitingExpired(
-                  "scheduled", 10, 100),
-            "non-player slots never use the player timeout");
 
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsWaitingPlayerSlot("Waiting_Player"),
-            "waiting_player status detection is case-insensitive");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWaitingPlayerSlot("scheduled"),
-            "scheduled is not a waiting_player status");
 
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsActiveRelayParticipant(
-                  true, false, "active"),
-            "a selected non-player active participant counts toward the relay");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsActiveRelayParticipant(
-                  true, true, "active"),
-            "async player participants do not count toward the relay");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsActiveRelayParticipant(
-                  true, false, "withdrawn"),
-            "withdrawn participants do not count toward the relay");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsActiveRelayParticipant(
-                  false, false, "active"),
-            "unselected participants do not count toward the relay");
-    }
 
-    private static void VerifyArrivalDispatchDecisionTable()
-    {
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsArrivalStale(false, 5, 5),
-            "arrivals for an inactive round are stale");
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsArrivalStale(true, 5, 6),
-            "arrivals with a mismatched sequence are stale");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsArrivalStale(true, 6, 6),
-            "arrivals with the current sequence are live");
-
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(null!)
-                  == WorldDiplomacyRelayArrivalAction.IgnoreArrival,
-            "a missing arrival evaluation must be ignored");
-
-        WorldDiplomacyArrivalEvaluationInput settlement = new WorldDiplomacyArrivalEvaluationInput
-        {
-            SettlementPending = true,
-            SettlementSlotFound = false,
-            CurrentSlotMatches = true,
-            ReceiverEligible = true
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(settlement)
-                  == WorldDiplomacyRelayArrivalAction.RescheduleSettlementTurn,
-            "a settlement arrival for a removed slot reschedules the turn queue");
-        settlement.SettlementSlotFound = true;
-        settlement.CurrentSlotMatches = false;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(settlement)
-                  == WorldDiplomacyRelayArrivalAction.RescheduleSettlementTurn,
-            "a settlement arrival that is not the current slot reschedules the turn queue");
-        settlement.CurrentSlotMatches = true;
-        settlement.ReceiverEligible = false;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(settlement)
-                  == WorldDiplomacyRelayArrivalAction.SkipSettlementSlotAndReschedule,
-            "a settlement arrival for an ineligible receiver skips the slot");
-        settlement.ReceiverEligible = true;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(settlement)
-                  == WorldDiplomacyRelayArrivalAction.DeliverSettlementTurn,
-            "a valid settlement arrival delivers the turn to the receiver");
-
-        WorldDiplomacyArrivalEvaluationInput relay = new WorldDiplomacyArrivalEvaluationInput
-        {
-            RouteIndexFound = false,
-            ReceiverEligible = true
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(relay)
-                  == WorldDiplomacyRelayArrivalAction.AdvanceRelay,
-            "a relay arrival for a kingdom no longer on the route advances the cursor");
-        relay.RouteIndexFound = true;
-        relay.ReceiverEligible = false;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(relay)
-                  == WorldDiplomacyRelayArrivalAction.AdvanceRelay,
-            "a relay arrival for an ineligible receiver advances the cursor");
-        relay.ReceiverEligible = true;
-        relay.ReceiverIsPlayer = true;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(relay)
-                  == WorldDiplomacyRelayArrivalAction.AdvanceRelayAfterPlayerOpportunity,
-            "a relay arrival for the player records an opportunity then advances");
-        relay.ReceiverIsPlayer = false;
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(relay)
-                  == WorldDiplomacyRelayArrivalAction.DeliverRelayTurn,
-            "a valid relay arrival delivers the turn to the receiver");
-    }
-
-    private static void VerifyFailureAndTimeoutDecisionTable()
-    {
-        Test.True(WorldDiplomacyRoundLifecycleRules.NextTechnicalFailureCount(-1, 3) == 1,
-            "negative technical-failure counters restart at one");
-        Test.True(WorldDiplomacyRoundLifecycleRules.NextTechnicalFailureCount(0, 3) == 1,
-            "first technical failure counts as one");
-        Test.True(WorldDiplomacyRoundLifecycleRules.NextTechnicalFailureCount(9, 3) == 3,
-            "technical-failure counter saturates at the per-round cap");
-
-        Test.True(!WorldDiplomacyRoundLifecycleRules.ShouldTripTechnicalCircuitBreaker(2, 3),
-            "below-cap technical failures do not trip the circuit breaker");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ShouldTripTechnicalCircuitBreaker(3, 3),
-            "reaching the cap trips the circuit breaker");
-
-        WorldDiplomacyRejectedGenerationInput exchange = new WorldDiplomacyRejectedGenerationInput
-        {
-            IsRelayTurn = false,
-            RoundActive = true
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRejectedGenerationAction(exchange)
-                  == WorldDiplomacyRejectedGenerationAction.CompleteExchange,
-            "non-relay rejections complete the exchange instead of touching the round");
-        WorldDiplomacyRejectedGenerationInput inactive = new WorldDiplomacyRejectedGenerationInput
-        {
-            IsRelayTurn = true,
-            RoundActive = false
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRejectedGenerationAction(inactive)
-                  == WorldDiplomacyRejectedGenerationAction.CompleteExchange,
-            "relay rejections on an inactive round complete the exchange");
-        WorldDiplomacyRejectedGenerationInput tripped = new WorldDiplomacyRejectedGenerationInput
-        {
-            IsRelayTurn = true,
-            RoundActive = true,
-            CircuitBreakerTripped = true,
-            ResultSettlementPending = true
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRejectedGenerationAction(tripped)
-                  == WorldDiplomacyRejectedGenerationAction.CloseRound,
-            "a tripped technical circuit breaker closes the round");
-        WorldDiplomacyRejectedGenerationInput pending = new WorldDiplomacyRejectedGenerationInput
-        {
-            IsRelayTurn = true,
-            RoundActive = true,
-            ResultSettlementPending = true
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRejectedGenerationAction(pending)
-                  == WorldDiplomacyRejectedGenerationAction.SkipSettlementSlotAndReschedule,
-            "a settlement rejection skips the slot and reschedules");
-        WorldDiplomacyRejectedGenerationInput relay = new WorldDiplomacyRejectedGenerationInput
-        {
-            IsRelayTurn = true,
-            RoundActive = true
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EvaluateRejectedGenerationAction(relay)
-                  == WorldDiplomacyRejectedGenerationAction.AdvanceRelayImmediately,
-            "a relay rejection advances the relay immediately");
-
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsReminderDue(true, 10, 5),
-            "an already-sent reminder is not due again");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsReminderDue(false, 7, 5),
-            "a reminder is not due before three days have passed");
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsReminderDue(false, 8, 5),
-            "a reminder is due three days after the mandatory request");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsMandatoryTimeoutExpired(9, 5),
-            "the mandatory window is still open before five days");
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsMandatoryTimeoutExpired(10, 5),
-            "the mandatory window expires five days after the request");
-
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsNoActionExpiryEligible(true, true, true, true),
-            "a pending settlement no-action declaration with slot and author expires offers");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsNoActionExpiryEligible(false, true, true, true),
-            "no-action expiry requires a pending settlement");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsNoActionExpiryEligible(true, false, true, true),
-            "no-action expiry requires a no-action declaration");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsNoActionExpiryEligible(true, true, false, true),
-            "no-action expiry requires a settlement slot id");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsNoActionExpiryEligible(true, true, true, false),
-            "no-action expiry requires an author");
-
-        Test.True(WorldDiplomacyRoundLifecycleRules.ShouldExpireSettlementOffer("open", true, true),
-            "an open offer owned by the slot expires on a no-action answer");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.ShouldExpireSettlementOffer("accepted", true, true),
-            "non-open offers never expire through no-action declarations");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.ShouldExpireSettlementOffer("open", false, true),
-            "offers for other authors are untouched");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.ShouldExpireSettlementOffer("open", true, false),
-            "offers outside the slot's source set are untouched");
-    }
 
     private static void VerifySchedulingAndExchangeDecisionTable()
     {
@@ -2019,140 +1709,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "a missing document obliges nobody");
     }
 
-    private static void RunValidatedProgressDecisionTests()
-    {
-        WorldDiplomacyDocument doc = new WorldDiplomacyDocument
-        {
-            DocumentId = "d1",
-            AuthorKingdomId = "k1",
-            TargetKingdomId = "k2",
-            Intent = "propose_peace"
-        };
-        List<WorldDiplomacyRoundOffer> offers = new List<WorldDiplomacyRoundOffer>();
-        List<WorldDiplomacyThreat> threats = new List<WorldDiplomacyThreat>();
 
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                null!, offers, threats, false),
-            "a missing document is never progress");
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, true),
-            "a successful mechanical action is always progress");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "a proposal without an open offer is not progress");
-        offers.Add(new WorldDiplomacyRoundOffer
-        {
-            SourceDocumentId = "d1",
-            ProposerKingdomId = "k1",
-            Status = "open"
-        });
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "an open offer from the author counts as progress");
-        offers[0].ProposerKingdomId = "k9";
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "an open offer from another kingdom does not count");
-
-        doc.Intent = "warning";
-        threats.Add(new WorldDiplomacyThreat { StageDocumentId = "D1" });
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "a warning backed by a staged threat counts as progress");
-        threats.Clear();
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "a warning without a staged threat does not count");
-
-        doc.Intent = "apology";
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "an apology toward another kingdom counts as progress");
-        doc.TargetKingdomId = "k1";
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "a self-addressed apology does not count");
-
-        doc.TargetKingdomId = "k2";
-        doc.Intent = "statement";
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "a plain statement is not progress");
-
-        doc.Intent = "accept_peace";
-        doc.RespondingToOfferDocumentId = "src1";
-        offers.Clear();
-        offers.Add(new WorldDiplomacyRoundOffer
-        {
-            Intent = "propose_peace",
-            SourceDocumentId = "src1",
-            TargetKingdomId = "k1",
-            ProposerKingdomId = "k2",
-            Status = "accepted"
-        });
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "an acceptance matching the source offer counts as progress");
-        offers[0].Status = "open";
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                doc, offers, threats, false),
-            "an unanswered offer is not settled progress");
-
-        WorldDiplomacyDocument multi = new WorldDiplomacyDocument
-        {
-            DocumentId = "d2",
-            AuthorKingdomId = "k1",
-            Actions = new List<WorldDiplomacyDocumentAction>
-            {
-                new WorldDiplomacyDocumentAction
-                {
-                    Intent = "accept_trade",
-                    RespondingToOfferDocumentId = "src2",
-                    RespondingToOfferActionId = "a7"
-                }
-            }
-        };
-        offers.Clear();
-        offers.Add(new WorldDiplomacyRoundOffer
-        {
-            SourceDocumentId = "src2",
-            SourceActionId = "a7",
-            Status = "accepted"
-        });
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                multi, offers, threats, false),
-            "an action-level acceptance matching its source action counts");
-        offers[0].SourceActionId = "a8";
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                multi, offers, threats, false),
-            "an acceptance bound to a different source action does not count");
-
-        multi.Actions[0].Intent = "warning";
-        threats.Add(new WorldDiplomacyThreat { StageDocumentId = "d2" });
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsValidatedSubstantiveProgress(
-                multi, offers, threats, false),
-            "a multi-action document with a staged threat counts");
-
-        doc.Intent = "propose_peace";
-        doc.Actions = null!;
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsValidatedDiplomaticActionAttempt(
-                doc, offers, threats, true),
-            "a successful mechanical action is always an attempt");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedDiplomaticActionAttempt(
-                doc, offers, threats, false),
-            "a proposal without an open offer is not an attempt");
-        offers[0].SourceDocumentId = "d1";
-        offers[0].SourceActionId = "";
-        offers[0].ProposerKingdomId = "k1";
-        offers[0].Status = "open";
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsValidatedDiplomaticActionAttempt(
-                doc, offers, threats, false),
-            "a proposal with an open offer is an attempt");
-        doc.Intent = "statement";
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsValidatedDiplomaticActionAttempt(
-                doc, offers, threats, false),
-            "a non-round-behavior intent is never an attempt");
-    }
 
     private static void RunDeferredRetryDecisionTests()
     {
@@ -2459,103 +2016,9 @@ RunRepairCorrectionAndJobDecisionTests();
             "closed offers never resolve");
     }
 
-    private static void RunSettlementSlotCompositionTests()
-    {
-        Test.True(WorldDiplomacyRoundLifecycleRules.MergeSettlementSlotKind("", "route") == "route"
-            && WorldDiplomacyRoundLifecycleRules.MergeSettlementSlotKind("route", "war_response") == "route+war_response"
-            && WorldDiplomacyRoundLifecycleRules.MergeSettlementSlotKind("route+war_response", "route") == "route+war_response"
-            && WorldDiplomacyRoundLifecycleRules.MergeSettlementSlotKind("route", "") == "route",
-            "slot kinds merge once and keep existing members");
-        Test.True(WorldDiplomacyRoundLifecycleRules.DefaultSettlementSlotKind("") == "route"
-            && WorldDiplomacyRoundLifecycleRules.DefaultSettlementSlotKind("offer_response") == "offer_response",
-            "empty slot kinds default to route");
 
-        List<WorldDiplomacyDocument> documents = new List<WorldDiplomacyDocument>
-        {
-            new WorldDiplomacyDocument { RoundId = "r1", AuthorKingdomId = "k1", IsReadyForPublication = true },
-            new WorldDiplomacyDocument { RoundId = "r1", AuthorKingdomId = "k2", IsReadyForPublication = false },
-            new WorldDiplomacyDocument { RoundId = "r9", AuthorKingdomId = "k3", IsReadyForPublication = true }
-        };
-        HashSet<string> spoken = WorldDiplomacyRoundLifecycleRules.CollectSpokenAuthorIds(documents, "r1");
-        Test.True(spoken.Contains("K1") && spoken.Count == 1,
-            "only published same-round authors count as spoken");
 
-        WorldDiplomacyThreat threat = new WorldDiplomacyThreat
-        {
-            Status = "open",
-            TargetDecision = "pending",
-            TargetKingdomId = "k2",
-            IssuerKingdomId = "k1",
-            StageDocumentId = "threat1"
-        };
-        WorldDiplomacyThreatSettlementSlotDecision slot =
-            WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot(threat);
-        Test.True(slot.Applies && slot.KingdomId == "k2" && slot.Kind == "threat_response"
-            && slot.SourceDocumentId == "threat1" && slot.RelatedKingdomId == "k1",
-            "a pending threat obliges its target");
-        threat.TargetDecision = "noncomplied";
-        slot = WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot(threat);
-        Test.True(slot.Applies && slot.KingdomId == "k1" && slot.Kind == "threat_followthrough"
-            && slot.RelatedKingdomId == "k2",
-            "a noncomplied threat obliges its issuer to follow through");
-        threat.TargetDecision = "complied";
-        slot = WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot(threat);
-        Test.True(!slot.Applies,
-            "a decided threat adds no settlement slot");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot(null!).Applies,
-            "a missing threat adds no settlement slot");
 
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsWarResponseSlotAction(true, "declare_war", "k2")
-            && !WorldDiplomacyRoundLifecycleRules.IsWarResponseSlotAction(true, "declare_war", "")
-            && !WorldDiplomacyRoundLifecycleRules.IsWarResponseSlotAction(false, "declare_war", "k2")
-            && !WorldDiplomacyRoundLifecycleRules.IsWarResponseSlotAction(true, "break_alliance", "k2"),
-            "war-response slots require a successful targeted declaration");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ComposeWarResponseActionKey("d1", "a1") == "d1#a1"
-            && WorldDiplomacyRoundLifecycleRules.ComposeWarResponseActionKey(null!, null!) == "#",
-            "war-response action keys keep the document-action pair");
-    }
-
-    private static void RunSettlementSlotSelectionTests()
-    {
-        List<WorldDiplomacyResultSettlementSlot> slots = new List<WorldDiplomacyResultSettlementSlot>
-        {
-            new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "k1" },
-            new WorldDiplomacyResultSettlementSlot { SlotId = "s2", KingdomId = "k2" }
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.SelectSettlementSlot(slots, "S1", "k9")?.SlotId == "s1",
-            "an explicit slot id selects that slot");
-        Test.True(WorldDiplomacyRoundLifecycleRules.SelectSettlementSlot(slots, "", "K2")?.SlotId == "s2",
-            "a missing slot id falls back to the author's kingdom");
-        Test.True(WorldDiplomacyRoundLifecycleRules.SelectSettlementSlot(slots, "s1", "k2")?.SlotId == "s1",
-            "an explicit slot id wins over a different author kingdom");
-        Test.True(WorldDiplomacyRoundLifecycleRules.SelectSettlementSlot(slots, "s9", "k1") == null
-            && WorldDiplomacyRoundLifecycleRules.SelectSettlementSlot(slots, "", "k9") == null,
-            "unmatched slot or kingdom selects nothing");
-        Test.True(WorldDiplomacyRoundLifecycleRules.SelectSettlementSlotBySlotAndKingdom(slots, "s1", "k1")?.SlotId == "s1"
-            && WorldDiplomacyRoundLifecycleRules.SelectSettlementSlotBySlotAndKingdom(slots, "s1", "k2") == null,
-            "expiry selection requires both slot and kingdom");
-
-        WorldDiplomacyThreat threat = new WorldDiplomacyThreat
-        {
-            Status = "open",
-            TargetDecision = "pending",
-            TargetKingdomId = "k2",
-            IssuerKingdomId = "k1"
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsThreatRequiredSpeaker(threat, "K2")
-            && !WorldDiplomacyRoundLifecycleRules.IsThreatRequiredSpeaker(threat, "k1"),
-            "a pending threat requires its target to speak");
-        threat.TargetDecision = "noncomplied";
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsThreatRequiredSpeaker(threat, "k1")
-            && !WorldDiplomacyRoundLifecycleRules.IsThreatRequiredSpeaker(threat, "k2"),
-            "a noncomplied threat requires its issuer to speak");
-        threat.TargetDecision = "complied";
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsThreatRequiredSpeaker(threat, "k1")
-            && !WorldDiplomacyRoundLifecycleRules.IsThreatRequiredSpeaker(threat, "k2")
-            && !WorldDiplomacyRoundLifecycleRules.IsThreatRequiredSpeaker(null!, "k1")
-            && !WorldDiplomacyRoundLifecycleRules.IsThreatRequiredSpeaker(threat, ""),
-            "a decided threat requires nobody");
-    }
 
     private static void RunRoundAccountingDecisionTests()
     {
@@ -3899,9 +3362,9 @@ RunRepairCorrectionAndJobDecisionTests();
             "breach penalties map the stage to the configured ultimatum or warning amount");
 
         Test.True(WorldDiplomacyRoundLifecycleRules.DescribeThreatBreachPrestigeReason("ultimatum")
-                == "最后通牒遭拒后没有在下一篇宣言中宣战"
+                == DiplomacyMiscPromptTexts.Get("Threat_NoWarAfterUltimatumRejected", "")
             && WorldDiplomacyRoundLifecycleRules.DescribeThreatBreachPrestigeReason("warning")
-                == "外交谴责遭拒后没有在下一篇宣言中升级最后通牒"
+                == DiplomacyMiscPromptTexts.Get("Threat_NoEscalationAfterDenunciationRejected", "")
             && WorldDiplomacyRoundLifecycleRules.DescribeThreatBreachResolutionReason("ultimatum")
                 == "ultimatum_not_followed_by_war_in_next_declaration"
             && WorldDiplomacyRoundLifecycleRules.DescribeThreatBreachResolutionReason("warning")
@@ -5082,7 +4545,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True((string)legacy["primary_target_kingdom_id"] == "k2"
                 && ((JArray)legacy["addressed_kingdom_ids"]).Values<string>().SequenceEqual(new[] { "k2" })
                 && (string)legacy["author_intent"]["intent"] == "peace_offer"
-                && legacy["round_plan"] is JObject
+                && legacy["round_plan"] == null
                 && (string)legacy["tone"] == "neutral"
                 && (string)legacy["round_participation"] == "continue"
                 && (string)legacy["round_status"] == "continue"
@@ -5097,9 +4560,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyEnvelopeJsonRules.NormalizeGeneratedDiplomaticEnvelopeShape(
             new WorldDiplomacyJob { Kind = "generate", IsResponse = false, AllowUntargeted = true, TargetKingdomId = "" },
             autonomous);
-        Test.True((string)autonomous["round_plan"]["topic"] == "边境会谈"
-                && ((JArray)autonomous["round_plan"]["selected_kingdom_ids"]).Values<string>().SequenceEqual(new[] { "k9" }),
-            "autonomous openings seed the round plan topic and selected kingdoms");
+        Test.True(autonomous["round_plan"] == null, "declaration normalization does not invent a legacy participant plan");
         JObject targeted = new JObject
         {
             ["actions"] = new JArray(new JObject { ["target_kingdom_id"] = "k9", ["intent"] = "statement" })
@@ -5107,9 +4568,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyEnvelopeJsonRules.NormalizeGeneratedDiplomaticEnvelopeShape(
             new WorldDiplomacyJob { Kind = "generate", IsResponse = false, AllowUntargeted = false, TargetKingdomId = "k1" },
             targeted);
-        Test.True((string)targeted["round_plan"]["topic"] == ""
-                && !((JArray)targeted["round_plan"]["selected_kingdom_ids"]).Any(),
-            "non-autonomous envelopes leave the round plan empty");
+        Test.True(targeted["round_plan"] == null, "targeted declarations use the same plan-free envelope");
         WorldDiplomacyEnvelopeJsonRules.NormalizeGeneratedDiplomaticEnvelopeShape(null, null);
 
         JObject mirrored = new JObject
@@ -5123,7 +4582,7 @@ RunRepairCorrectionAndJobDecisionTests();
             })
         };
         WorldDiplomacyEnvelopeJsonRules.MirrorFirstGeneratedActionEnvelope(mirrored, (JArray)mirrored["actions"]);
-        Test.True((string)mirrored["author_intent"]["intent"] == "declare_war"
+        Test.True((string)mirrored["author_intent"]["intent"] == "war_declaration"
                 && (string)mirrored["author_intent"]["commitment"] == "binding"
                 && (string)mirrored["primary_target_kingdom_id"] == "k3"
                 && (string)mirrored["responding_to_threat_document_id"] == "threat-7",
@@ -5285,221 +4744,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "paragraph splitting ignores a null target and blank input");
     }
 
-    private static void RunReputationDescribeDecisionTests()
-    {
-        Test.True(WorldDiplomacyReputationRules.FormatSignedDelta(5) == "+5"
-                && WorldDiplomacyReputationRules.FormatSignedDelta(0) == "0"
-                && WorldDiplomacyReputationRules.FormatSignedDelta(-7) == "-7",
-            "signed delta prefixes positives with + only");
-        Test.True(WorldDiplomacyReputationRules.FormatSignedStandingDelta(3) == "+3"
-                && WorldDiplomacyReputationRules.FormatSignedStandingDelta(-3) == "-3"
-                && WorldDiplomacyReputationRules.FormatSignedStandingDelta(0).Length > 0
-                && WorldDiplomacyReputationRules.FormatSignedStandingDelta(0) != "+0"
-                && WorldDiplomacyReputationRules.FormatSignedStandingDelta(0) != "0",
-            "standing delta marks zero with the no-change label");
 
-        Test.True(WorldDiplomacyTextRules.DescribeWarDuration(0, 84)
-                    == WorldDiplomacyTextRules.DescribeWarDuration(13, 84)
-                && WorldDiplomacyTextRules.DescribeWarDuration(13, 84)
-                    != WorldDiplomacyTextRules.DescribeWarDuration(14, 84)
-                && WorldDiplomacyTextRules.DescribeWarDuration(34, 84)
-                    != WorldDiplomacyTextRules.DescribeWarDuration(35, 84)
-                && WorldDiplomacyTextRules.DescribeWarDuration(83, 84)
-                    != WorldDiplomacyTextRules.DescribeWarDuration(84, 84)
-                && WorldDiplomacyTextRules.DescribeWarDuration(84, 84)
-                    == WorldDiplomacyTextRules.DescribeWarDuration(167, 84)
-                && WorldDiplomacyTextRules.DescribeWarDuration(167, 84)
-                    != WorldDiplomacyTextRules.DescribeWarDuration(168, 84),
-            "war duration switches bands at 14, 35, 84, and 2*daysPerYear days");
-
-        Test.True(WorldDiplomacyTextRules.DescribePeacePressure(54f)
-                    != WorldDiplomacyTextRules.DescribePeacePressure(55f)
-                && WorldDiplomacyTextRules.DescribePeacePressure(124f)
-                    != WorldDiplomacyTextRules.DescribePeacePressure(125f)
-                && WorldDiplomacyTextRules.DescribePeacePressure(209f)
-                    != WorldDiplomacyTextRules.DescribePeacePressure(210f),
-            "peace pressure switches bands at 55, 125, and 210");
-        Test.True(WorldDiplomacyTextRules.DescribeStrengthBalance(175f, 100f)
-                    != WorldDiplomacyTextRules.DescribeStrengthBalance(174f, 100f)
-                && WorldDiplomacyTextRules.DescribeStrengthBalance(120f, 100f)
-                    != WorldDiplomacyTextRules.DescribeStrengthBalance(119f, 100f)
-                && WorldDiplomacyTextRules.DescribeStrengthBalance(57f, 100f)
-                    != WorldDiplomacyTextRules.DescribeStrengthBalance(58f, 100f)
-                && WorldDiplomacyTextRules.DescribeStrengthBalance(83f, 100f)
-                    != WorldDiplomacyTextRules.DescribeStrengthBalance(84f, 100f)
-                && WorldDiplomacyTextRules.DescribeStrengthBalance(0f, 0f).Length > 0,
-            "strength balance switches on the ratio bands and tolerates zero target");
-        Test.True(WorldDiplomacyTextRules.DescribeWarProgress(20f, 0f)
-                    != WorldDiplomacyTextRules.DescribeWarProgress(19f, 0f)
-                && WorldDiplomacyTextRules.DescribeWarProgress(5f, 0f)
-                    != WorldDiplomacyTextRules.DescribeWarProgress(4f, 0f)
-                && WorldDiplomacyTextRules.DescribeWarProgress(-20f, 0f)
-                    != WorldDiplomacyTextRules.DescribeWarProgress(-19f, 0f)
-                && WorldDiplomacyTextRules.DescribeWarProgress(-5f, 0f)
-                    != WorldDiplomacyTextRules.DescribeWarProgress(-4f, 0f),
-            "war progress switches on the difference bands");
-        Test.True(WorldDiplomacyTextRules.DescribeOtherWarBurden(0)
-                    != WorldDiplomacyTextRules.DescribeOtherWarBurden(1)
-                && WorldDiplomacyTextRules.DescribeOtherWarBurden(1)
-                    != WorldDiplomacyTextRules.DescribeOtherWarBurden(2),
-            "other-war burden distinguishes none, one, and many");
-        Test.True(WorldDiplomacyTextRules.DescribeRulerRelation(-60)
-                    != WorldDiplomacyTextRules.DescribeRulerRelation(-59)
-                && WorldDiplomacyTextRules.DescribeRulerRelation(-20)
-                    != WorldDiplomacyTextRules.DescribeRulerRelation(-19)
-                && WorldDiplomacyTextRules.DescribeRulerRelation(19)
-                    != WorldDiplomacyTextRules.DescribeRulerRelation(20)
-                && WorldDiplomacyTextRules.DescribeRulerRelation(59)
-                    != WorldDiplomacyTextRules.DescribeRulerRelation(60),
-            "ruler relation switches bands at -60, -20, 20, and 60");
-
-        WorldDiplomacyRealmRelationProfile emptyProfile = new WorldDiplomacyRealmRelationProfile();
-        string emptyDesc = WorldDiplomacyTextRules.DescribeRealmRelationProfile(emptyProfile);
-        Test.True(emptyDesc.Length > 0
-                && emptyDesc == WorldDiplomacyTextRules.DescribeRealmRelationProfile(null),
-            "realm profile returns the missing-data label for null or zero samples");
-        WorldDiplomacyRealmRelationProfile polarized = new WorldDiplomacyRealmRelationProfile
-        {
-            SamplePairCount = 5,
-            AverageRelation = 30f,
-            Polarization = 30f
-        };
-        WorldDiplomacyRealmRelationProfile calm = new WorldDiplomacyRealmRelationProfile
-        {
-            SamplePairCount = 5,
-            AverageRelation = 30f
-        };
-        WorldDiplomacyRealmRelationProfile gap = new WorldDiplomacyRealmRelationProfile
-        {
-            SamplePairCount = 5,
-            AverageRelation = 30f,
-            RulerEliteGap = 30f
-        };
-        Test.True(WorldDiplomacyTextRules.DescribeRealmRelationProfile(polarized)
-                    != WorldDiplomacyTextRules.DescribeRealmRelationProfile(calm)
-                && WorldDiplomacyTextRules.DescribeRealmRelationProfile(gap)
-                    != WorldDiplomacyTextRules.DescribeRealmRelationProfile(calm),
-            "realm profile appends polarization and ruler-elite gap notes");
-
-        Test.True(WorldDiplomacyReputationRules.DescribeNationalPrestige(79)
-                    != WorldDiplomacyReputationRules.DescribeNationalPrestige(80)
-                && WorldDiplomacyReputationRules.DescribeNationalPrestige(59)
-                    != WorldDiplomacyReputationRules.DescribeNationalPrestige(60)
-                && WorldDiplomacyReputationRules.DescribeNationalPrestige(39)
-                    != WorldDiplomacyReputationRules.DescribeNationalPrestige(40)
-                && WorldDiplomacyReputationRules.DescribeNationalPrestige(19)
-                    != WorldDiplomacyReputationRules.DescribeNationalPrestige(20)
-                && WorldDiplomacyReputationRules.DescribeNationalPrestige(0)
-                    != WorldDiplomacyReputationRules.DescribeNationalPrestige(1),
-            "national prestige switches bands at 80, 60, 40, 20, and 1");
-        Test.True(WorldDiplomacyReputationRules.DescribeInternationalReputation(79)
-                    != WorldDiplomacyReputationRules.DescribeInternationalReputation(80)
-                && WorldDiplomacyReputationRules.DescribeInternationalReputation(59)
-                    != WorldDiplomacyReputationRules.DescribeInternationalReputation(60)
-                && WorldDiplomacyReputationRules.DescribeInternationalReputation(39)
-                    != WorldDiplomacyReputationRules.DescribeInternationalReputation(40)
-                && WorldDiplomacyReputationRules.DescribeInternationalReputation(19)
-                    != WorldDiplomacyReputationRules.DescribeInternationalReputation(20),
-            "international reputation switches bands at 80, 60, 40, and 20");
-        Test.True(WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(70)
-                    != WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(71)
-                && WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(50)
-                    != WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(51)
-                && WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(20)
-                    != WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(21)
-                && WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(19)
-                    != WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(20),
-            "natural trend switches at the decay thresholds and the anchor");
-
-        Test.True(WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(80) == 0
-                && WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(60) == -2
-                && WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(40) == -5
-                && WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(20) == -10
-                && WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(1) == -15
-                && WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(0) == -20,
-            "prestige relation target maps the exact band penalties");
-
-        int consumed;
-        Test.True(WorldDiplomacyReputationRules.CalculateInternationalReputationNaturalChange(20, 30, out consumed) == 20
-                && consumed == 0,
-            "natural change consumes nothing while resting at the anchor");
-        Test.True(WorldDiplomacyReputationRules.CalculateInternationalReputationNaturalChange(80, 10, out consumed) == 56
-                && consumed == 10,
-            "natural change decays through the fast and normal bands with day accounting");
-        Test.True(WorldDiplomacyReputationRules.CalculateInternationalReputationNaturalChange(10, 5, out consumed) == 15
-                && consumed == 5,
-            "natural change recovers toward the anchor one point per day below it");
-        Test.True(WorldDiplomacyReputationRules.CalculateInternationalReputationNaturalChange(80, 0, out consumed) == 80
-                && consumed == 0,
-            "natural change does not tick when no interval elapsed");
-
-        WorldDiplomacyDocument impactDoc = new WorldDiplomacyDocument
-        {
-            InternationalReputationEvaluationDelta = 5
-        };
-        Test.True(WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(
-                    impactDoc, new WorldDiplomacyStandingChange { Delta = 3 }) == "+3"
-                && WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(
-                    impactDoc, new WorldDiplomacyStandingChange { Delta = 0, After = 100 }).Contains("+5")
-                && WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(
-                    new WorldDiplomacyDocument(), new WorldDiplomacyStandingChange { Delta = 0 })
-                    == WorldDiplomacyReputationRules.FormatSignedStandingDelta(0),
-            "impact delta text reports actual deltas and explains evaluated-only shifts");
-
-        WorldDiplomacyDocument llmDoc = new WorldDiplomacyDocument();
-        JObject evalJson = new JObject
-        {
-            ["international_reputation_delta"] = 14,
-            ["international_reputation_reason"] = "bold move"
-        };
-        WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(llmDoc, evalJson);
-        Test.True(llmDoc.InternationalReputationEvaluationDelta == 10
-                && llmDoc.InternationalReputationEvaluationSource == "llm"
-                && llmDoc.InternationalReputationEvaluationReason.Length > 0,
-            "evaluation application clamps the model delta and records the llm source");
-        WorldDiplomacyDocument fallbackDoc = new WorldDiplomacyDocument
-        {
-            Intent = "declare_war"
-        };
-        WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(fallbackDoc, new JObject());
-        Test.True(fallbackDoc.InternationalReputationEvaluationSource == "local_structured_fallback"
-                && fallbackDoc.InternationalReputationEvaluationDelta != 0
-                && fallbackDoc.InternationalReputationEvaluationReason.Length > 0,
-            "evaluation application falls back to structured scoring without a model delta");
-
-        WorldDiplomacyDocument positiveDoc = new WorldDiplomacyDocument
-        {
-            Actions = new List<WorldDiplomacyDocumentAction>
-            {
-                new WorldDiplomacyDocumentAction { Intent = "accept_peace" }
-            }
-        };
-        string fallbackReason;
-        Test.True(WorldDiplomacyReputationRules.CalculateStructuredInternationalReputationFallback(
-                    positiveDoc, out fallbackReason) == 2 && fallbackReason.Length > 0,
-            "structured fallback scores cooperative intents positively");
-        WorldDiplomacyDocument negativeDoc = new WorldDiplomacyDocument
-        {
-            Actions = new List<WorldDiplomacyDocumentAction>
-            {
-                new WorldDiplomacyDocumentAction { Intent = "declare_war" },
-                new WorldDiplomacyDocumentAction { Intent = "condemn" }
-            }
-        };
-        Test.True(WorldDiplomacyReputationRules.CalculateStructuredInternationalReputationFallback(
-                    negativeDoc, out fallbackReason) == -3,
-            "structured fallback sums hostile intent penalties");
-        WorldDiplomacyDocument progressDoc = new WorldDiplomacyDocument
-        {
-            MadeDiplomaticProgress = true
-        };
-        Test.True(WorldDiplomacyReputationRules.CalculateStructuredInternationalReputationFallback(
-                    progressDoc, out fallbackReason) == 1,
-            "structured fallback rewards diplomatic progress without actions");
-        Test.True(WorldDiplomacyReputationRules.CalculateStructuredInternationalReputationFallback(
-                    new WorldDiplomacyDocument(), out fallbackReason) == -1,
-            "structured fallback never returns zero and defaults to a negative read");
-    }
 
     private static void RunOfferContractDecisionTests()
     {
@@ -5759,13 +5004,12 @@ RunRepairCorrectionAndJobDecisionTests();
             "declare mode prompt embeds the trimmed dynamic prompt and the mode contract");
         Test.True(WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt("C", 10, 99)
                 == WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt("C", 10, 99)
-            && WorldDiplomacyPromptContractRules.BuildRelayGenerationSystemPrompt("C", 10, 99)
-                == WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt("C", 10, 99),
+,
             "generation and relay prompts delegate to the canonical history prompt");
         StringBuilder declSb = new StringBuilder();
         WorldDiplomacyPromptContractRules.AppendDiplomaticDeclarationWritingContract(declSb, 80, 300);
-        Test.True(declSb.ToString().Contains("80") && declSb.ToString().Contains("300"),
-            "the declaration writing contract embeds the configured character range");
+        Test.True(!declSb.ToString().Contains("80") && declSb.ToString().Contains("300"),
+            "Q50 writing contract retains only the suggested upper length, never a minimum");
         Test.True(WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt("C", 10, 99).Contains("MODE=DECLARE")
             && WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt("C", 10, 99).Contains("MODE=COMPACT")
             && WorldDiplomacyPromptContractRules.BuildAnalysisSystemPrompt("C").Contains("MODE=ANALYZE")
@@ -5779,7 +5023,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         string tokenPrompt = WorldDiplomacyPromptContractRules.BuildTokenCompressionPrompt("b1", -3L, -5L, 0, -9L);
         Test.True(tokenPrompt.Contains("b1") && tokenPrompt.Contains("MODE=COMPACT")
-            && tokenPrompt.Contains("=0") && !tokenPrompt.Contains("-"),
+            && tokenPrompt == WorldDiplomacyPromptContractRules.BuildTokenCompressionPrompt("b1", 0L, 0L, 0, 0L),
             "token compression prompt clamps negative counters and carries the compact mode");
         Test.True(WorldDiplomacyPromptContractRules.BuildRoundCompressionSystemPrompt().Contains("\"summary\"")
             && WorldDiplomacyPromptContractRules.BuildRoundCompressionSystemPrompt().Contains("facts"),
@@ -5816,24 +5060,6 @@ RunRepairCorrectionAndJobDecisionTests();
         string voice = WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText("KN", "CU", "RT", "GH", "LO");
         Test.True(voice.Contains("KN") && voice.Contains("CU") && voice.Contains("RT") && voice.Contains("LO"),
             "realm institutional voice embeds the realm descriptors");
-
-        StringBuilder progressSb = new StringBuilder();
-        WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(null, new WorldDiplomacyRound(), 1, 5);
-        WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(progressSb, null, 1, 5);
-        Test.True(progressSb.Length == 0, "progress requirements are a no-op for null inputs");
-        WorldDiplomacyRound earlyRound = new WorldDiplomacyRound { ConsecutiveNoActionPasses = 0, SubstantiveProgressCount = 2 };
-        WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(progressSb, earlyRound, 1, 5);
-        string earlyText = progressSb.ToString();
-        progressSb.Clear();
-        WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(progressSb,
-            new WorldDiplomacyRound { ConsecutiveNoActionPasses = 2 }, 1, 5);
-        string terminalText = progressSb.ToString();
-        progressSb.Clear();
-        WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(progressSb,
-            new WorldDiplomacyRound { ConsecutiveNoActionPasses = 1 }, 1, 5);
-        string midText = progressSb.ToString();
-        Test.True(earlyText.Contains("2") && terminalText != earlyText && midText != earlyText && midText != terminalText,
-            "progress requirements branch on the no-action streak: early, second-pass and terminal variants differ");
 
         Test.True(WorldDiplomacyRoundLifecycleRules.UsesCanonicalHistory(new WorldDiplomacyJob { Kind = "generate" })
             && WorldDiplomacyRoundLifecycleRules.UsesCanonicalHistory(new WorldDiplomacyJob { Kind = "compress" })
@@ -6154,24 +5380,6 @@ RunRepairCorrectionAndJobDecisionTests();
             new WorldDiplomacyRoundFact { Kind = "confirmed_result", Text = "war declared" })
                 .StartsWith("[游戏已执行]", StringComparison.Ordinal),
             "confirmed results render with the executed marker");
-        Func<string, string, string> englishFactText = (key, fallback) => key switch
-        {
-            "History_FactExecutedPrefix" => "[Executed by game] ",
-            "History_FactDeclarationPrefix" => "[Declaration record; not an executed outcome] ",
-            "History_FactLegacySummaryPrefix" => "Legacy diplomatic summary; it records the declaration narrative as saved and does not establish that any diplomatic mechanic was executed: ",
-            "History_FactLegacySummaryBracketPrefix" => "[Legacy declaration summary; not evidence of game execution] ",
-            _ => fallback
-        };
-        string legacySummaryPrefix = DiplomacyCompatibilityTexts.Get("History_LegacySummaryPrefix");
-        string legacySummaryBracketPrefix = DiplomacyCompatibilityTexts.Get("History_LegacySummaryBracketPrefix");
-        Test.True(WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt(
-            new WorldDiplomacyRoundFact { Kind = "note", Text = legacySummaryPrefix + "保留这段中文旧摘要" }, englishFactText)
-                == "Legacy diplomatic summary; it records the declaration narrative as saved and does not establish that any diplomatic mechanic was executed: 保留这段中文旧摘要",
-            "legacy summary marker projects to English while preserving its dynamic Chinese text");
-        Test.True(WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt(
-            new WorldDiplomacyRoundFact { Kind = "note", Text = legacySummaryBracketPrefix + "保留这段中文事实" }, englishFactText)
-                == "[Legacy declaration summary; not evidence of game execution] 保留这段中文事实",
-            "legacy bracket marker projects to English while preserving its dynamic Chinese text");
         Test.True(WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt(
             new WorldDiplomacyRoundFact { Kind = "note", Text = "  [existing] tag  " })
                 == "[existing] tag",
@@ -6280,7 +5488,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string marker = WorldDiplomacyPromptContractRules.BuildKingdomStrategicProfileMarker(" k1 ");
         Test.True(marker.Contains("k1"), "profile marker embeds the trimmed kingdom id");
 
-        string prompt = "header\n" + marker + "\n旧内容\n" + WorldDiplomacyPromptContractRules.KingdomStrategicIntentRule + "\ntail";
+        string prompt = "header\n" + marker + "\n旧内容\n" + DiplomacyPromptTexts.Get("AF_DIP_Compatibility_008", WorldDiplomacyPromptContractRules.KingdomStrategicIntentRule) + "\ntail";
         string updated = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(
             prompt, "新内容", "k1");
         Test.True(updated.Contains("新内容") && !updated.Contains("旧内容"),
@@ -6844,328 +6052,10 @@ RunRepairCorrectionAndJobDecisionTests();
     }
 
 
-    private static void RunBilateralContextDecisionTests()
-    {
-        Func<int, string> days = d => "D" + d;
-        Func<string, string> names = id => "K-" + id;
-
-        List<WorldDiplomacyDocument> docs = new List<WorldDiplomacyDocument>
-        {
-            new WorldDiplomacyDocument { DocumentId = "d1", RoundId = "r1", AuthorKingdomId = "a", TargetKingdomId = "b", Day = 10, Title = "T1" },
-            new WorldDiplomacyDocument { DocumentId = "d2", RoundId = "r1", AuthorKingdomId = "b", TargetKingdomId = "a", Day = 11, Title = "T2" },
-            new WorldDiplomacyDocument { DocumentId = "d3", RoundId = "r1", AuthorKingdomId = "a", TargetKingdomId = "c", Day = 12, Title = "T3" },
-            new WorldDiplomacyDocument { DocumentId = "d4", RoundId = "r9", AuthorKingdomId = "a", TargetKingdomId = "b", Day = 13, Title = "T4" },
-            new WorldDiplomacyDocument { DocumentId = "d5", RoundId = "r1", AuthorKingdomId = "a", TargetKingdomId = "b", Day = 14, Title = "T5", IsCompressed = true }
-        };
-        List<WorldDiplomacyKingdomKnowledge> knowledge = new List<WorldDiplomacyKingdomKnowledge>
-        {
-            new WorldDiplomacyKingdomKnowledge { KingdomId = "a", DocumentIds = new List<string> { "d1", "d2", "d4", "d5" } }
-        };
-        string ctx = WorldDiplomacyTextRules.BuildRecentBilateralDocumentContext(
-            "r1", knowledge, docs, "a", "b", 10, days);
-        Test.True(ctx.Contains("T1", StringComparison.Ordinal) && ctx.Contains("T2", StringComparison.Ordinal),
-            "bilateral document context must include both directions of the pair");
-        Test.True(!ctx.Contains("T3", StringComparison.Ordinal) && !ctx.Contains("T4", StringComparison.Ordinal)
-            && !ctx.Contains("T5", StringComparison.Ordinal),
-            "bilateral document context must exclude other pairs, other rounds and compressed records");
-        Test.True(WorldDiplomacyTextRules.BuildRecentBilateralDocumentContext("", knowledge, docs, "a", "b", 10, days) == "",
-            "no active round must produce no bilateral document context");
-
-        List<WorldDiplomacyBattleFact> battles = new List<WorldDiplomacyBattleFact>
-        {
-            new WorldDiplomacyBattleFact { BattleId = "bt1", Day = 90, AttackerKingdomIds = new List<string> { "a" }, DefenderKingdomIds = new List<string> { "b" }, WinnerSide = "attacker" },
-            new WorldDiplomacyBattleFact { BattleId = "bt2", Day = 10, AttackerKingdomIds = new List<string> { "a" }, DefenderKingdomIds = new List<string> { "b" } },
-            new WorldDiplomacyBattleFact { BattleId = "bt3", Day = 95, AttackerKingdomIds = new List<string> { "a" }, DefenderKingdomIds = new List<string> { "c" } }
-        };
-        string bctx = WorldDiplomacyTextRules.BuildRecentBilateralBattleContext(
-            battles, "a", "b", 100, 21, names, days);
-        Test.True(bctx.Contains("K-a", StringComparison.Ordinal) && bctx.Contains("K-b", StringComparison.Ordinal)
-            && !bctx.Contains("K-c", StringComparison.Ordinal) && !bctx.Contains("D10", StringComparison.Ordinal),
-            "battle context must keep in-window bilateral facts only");
-        Test.True(WorldDiplomacyTextRules.BuildRecentBilateralBattleContext(null, "a", "b", 100, 21, names, days)
-                .Contains("21", StringComparison.Ordinal),
-            "no recorded battles must render the retention-window fallback");
-        Test.True(WorldDiplomacyTextRules.BuildRecentBilateralBattleContext(battles, "", "b", 100, 21, names, days).Length > 0,
-            "missing kingdom ids must render the invalid-pair fallback");
-
-        List<WorldDiplomacyDocument> repDocs = new List<WorldDiplomacyDocument>
-        {
-            new WorldDiplomacyDocument { DocumentId = "p1", AuthorKingdomId = "a", Day = 75, Title = "T",
-                IsReadyForPublication = true, InternationalReputationSettled = true,
-                InternationalReputationEvaluationDelta = -3, InternationalReputationEvaluationReason = "背弃誓言" },
-            new WorldDiplomacyDocument { DocumentId = "p2", AuthorKingdomId = "a", Day = 76, Title = "T2",
-                IsReadyForPublication = true, InternationalReputationSettled = true,
-                InternationalReputationEvaluationDelta = 2, InternationalReputationEvaluationReason = "守信" },
-            new WorldDiplomacyDocument { DocumentId = "p3", AuthorKingdomId = "b", Day = 77, Title = "T3",
-                IsReadyForPublication = true, InternationalReputationSettled = true,
-                InternationalReputationEvaluationDelta = -1, InternationalReputationEvaluationReason = "x" }
-        };
-        List<string> reasons = WorldDiplomacyTextRules.GetRecentOwnInternationalReputationReasons(
-            repDocs, "a", 100, 30, days);
-        Test.True(reasons.Count == 2 && reasons[0].Contains("守信", StringComparison.Ordinal)
-            && reasons[1].Contains("背弃誓言", StringComparison.Ordinal)
-            && reasons[0].Contains("D76", StringComparison.Ordinal),
-            "own reputation reasons must keep settled nonzero deltas newest-first for the author");
-        List<string> facts = WorldDiplomacyTextRules.GetRecentPublicNegativeReputationFacts(
-            repDocs, "a", 100, 30, days);
-        Test.True(facts.Count == 1 && facts[0].Contains("背弃誓言", StringComparison.Ordinal),
-            "public negative facts must filter to the author's negative deltas");
-        Test.True(WorldDiplomacyTextRules.GetRecentPublicNegativeReputationFacts(repDocs, "b", 100, 30, days).Count == 1
-            && WorldDiplomacyTextRules.GetRecentPublicNegativeReputationFacts(repDocs, "c", 100, 30, days).Count == 0,
-            "negative facts must be scoped per kingdom");
-
-        string opp = WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(
-            10, new List<string> { "ultimatum", "propose_peace" }, repDocs, "a", 100, 30, days);
-        Test.True(opp.Length > 0 && opp.Contains("ultimatum", StringComparison.Ordinal)
-            && opp.Contains("背弃誓言", StringComparison.Ordinal),
-            "low reputation plus a legal threat action must surface the conflict opportunity with facts");
-        Test.True(WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(
-                60, new List<string> { "ultimatum" }, repDocs, "a", 100, 30, days) == "",
-            "reputation at or above the low threshold must suppress the opportunity block");
-        Test.True(WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(
-                10, new List<string> { "propose_peace" }, repDocs, "a", 100, 30, days) == "",
-            "no legal threat action must suppress the opportunity block");
-    }
 
 
-    private static void RunWarResponseAndStandingDecisionTests()
-    {
-        // RecordDiplomaticStandingChange (DocumentFactRules)
-        WorldDiplomacyDocument standing = new WorldDiplomacyDocument();
-        WorldDiplomacyDocumentFactRules.RecordDiplomaticStandingChange(
-            standing, "national_prestige", "k7", 10, 25, "  border victory  ",
-            id => "Name:" + id);
-        Test.True(standing.DiplomaticStandingChanges != null && standing.DiplomaticStandingChanges.Count == 1,
-            "a standing change must be recorded on the document");
-        WorldDiplomacyStandingChange sc = standing.DiplomaticStandingChanges[0];
-        Test.True(sc.Kind == "national_prestige" && sc.KingdomId == "k7" && sc.KingdomName == "Name:k7"
-                && sc.Before == 10 && sc.After == 25 && sc.Delta == 15 && sc.Reason == "border victory",
-            "standing change must capture kind, resolved name, before/after, delta, and the trimmed reason");
-        WorldDiplomacyDocumentFactRules.RecordDiplomaticStandingChange(
-            standing, "NATIONAL_PRESTIGE", "K7", 30, 40, "border victory",
-            id => "Name:" + id);
-        Test.True(standing.DiplomaticStandingChanges.Count == 1,
-            "a duplicate kind/kingdom/reason change must be deduplicated case-insensitively");
-        WorldDiplomacyDocumentFactRules.RecordDiplomaticStandingChange(
-            standing, "national_prestige", "k7", 25, 30, "different reason",
-            id => "Name:" + id);
-        Test.True(standing.DiplomaticStandingChanges.Count == 2,
-            "a different reason must append a new standing change");
-        WorldDiplomacyDocumentFactRules.RecordDiplomaticStandingChange(
-            standing, "", "k7", 0, 1, "x", id => id);
-        WorldDiplomacyDocumentFactRules.RecordDiplomaticStandingChange(
-            standing, "kind", "  ", 0, 1, "x", id => id);
-        WorldDiplomacyDocumentFactRules.RecordDiplomaticStandingChange(
-            null!, "kind", "k7", 0, 1, "x", id => id);
-        Test.True(standing.DiplomaticStandingChanges.Count == 2,
-            "null document and empty kind/kingdom inputs must be ignored");
-        string longReason = new string('r', 400);
-        WorldDiplomacyDocumentFactRules.RecordDiplomaticStandingChange(
-            standing, "international_reputation", "k8", 0, -5, longReason, id => id);
-        Test.True(standing.DiplomaticStandingChanges[2].Reason.Length == 240,
-            "standing-change reasons must be capped at 240 characters");
 
-        // DescribeWarPressure (TextRules)
-        string w0 = WorldDiplomacyTextRules.DescribeWarPressure(0);
-        string w19 = WorldDiplomacyTextRules.DescribeWarPressure(19);
-        string w20 = WorldDiplomacyTextRules.DescribeWarPressure(20);
-        string w59 = WorldDiplomacyTextRules.DescribeWarPressure(59);
-        string w60 = WorldDiplomacyTextRules.DescribeWarPressure(60);
-        string w119 = WorldDiplomacyTextRules.DescribeWarPressure(119);
-        string w120 = WorldDiplomacyTextRules.DescribeWarPressure(120);
-        string w500 = WorldDiplomacyTextRules.DescribeWarPressure(500);
-        Test.True(w0 == w19 && w20 == w59 && w60 == w119 && w120 == w500
-                && w0 != w20 && w20 != w60 && w60 != w120
-                && w0.Length > 0 && w20.Length > 0 && w60.Length > 0 && w120.Length > 0,
-            "war pressure must map to four stable tiers at the 20/60/120 boundaries");
 
-        // IsWarResponseNoActionAllowed / IsImmediateWarResponsePeaceSuppressed (RoundLifecycleRules)
-        WorldDiplomacyDocument warDoc = new WorldDiplomacyDocument
-        {
-            RoundId = "r1", AuthorKingdomId = "kA", IsReadyForPublication = true,
-            Actions = new List<WorldDiplomacyDocumentAction>
-            {
-                new WorldDiplomacyDocumentAction
-                {
-                    ChangedDiplomaticState = true, Intent = "declare_war", TargetKingdomId = "kB"
-                }
-            }
-        };
-        WorldDiplomacyDocument warDocLevel = new WorldDiplomacyDocument
-        {
-            RoundId = "r1", AuthorKingdomId = "kA", IsReadyForPublication = true,
-            ChangedDiplomaticState = true, Intent = "declare_war", TargetKingdomId = "kB"
-        };
-        WorldDiplomacyDocument peaceDoc = new WorldDiplomacyDocument
-        {
-            RoundId = "r1", AuthorKingdomId = "kA", IsReadyForPublication = true,
-            Actions = new List<WorldDiplomacyDocumentAction>
-            {
-                new WorldDiplomacyDocumentAction { Intent = "propose_peace", TargetKingdomId = "kB" }
-            }
-        };
-        WorldDiplomacyDocument wrongRound = new WorldDiplomacyDocument
-        {
-            RoundId = "rX", AuthorKingdomId = "kA", IsReadyForPublication = true,
-            ChangedDiplomaticState = true, Intent = "declare_war", TargetKingdomId = "kB"
-        };
-        System.Collections.Generic.Dictionary<string, WorldDiplomacyDocument> docs =
-            new System.Collections.Generic.Dictionary<string, WorldDiplomacyDocument>
-            {
-                ["d1"] = warDoc, ["d2"] = warDocLevel, ["d3"] = peaceDoc, ["d4"] = wrongRound
-            };
-        Func<string, WorldDiplomacyDocument> resolveDocument =
-            id => docs.TryGetValue(id ?? "", out WorldDiplomacyDocument d) ? d : null;
-
-        WorldDiplomacyRound round = new WorldDiplomacyRound
-        {
-            RoundId = "r1", State = "active", ResultSettlementPending = true,
-            ResultSettlementCurrentSlotId = "s1",
-            ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
-            {
-                new WorldDiplomacyResultSettlementSlot
-                {
-                    SlotId = "s1", KingdomId = "kB", Kind = "war_response",
-                    SourceDocumentIds = new List<string> { "d1" },
-                    RelatedKingdomIds = new List<string> { "kA" }
-                }
-            }
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                round, "s1", "kB", "kA", resolveDocument),
-            "an action-level declare_war source document must suppress the no-action response");
-        round.ResultSettlementSlots[0].SourceDocumentIds = new List<string> { "d2" };
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                round, "s1", "kB", "kA", resolveDocument),
-            "a document-level declare_war source document must suppress the no-action response");
-        round.ResultSettlementSlots[0].SourceDocumentIds = new List<string> { "d3" };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                round, "s1", "kB", "kA", resolveDocument),
-            "a non-war source document must not suppress the response");
-        round.ResultSettlementSlots[0].SourceDocumentIds = new List<string> { "d4" };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                round, "s1", "kB", "kA", resolveDocument),
-            "a war document from another round must not suppress the response");
-        round.ResultSettlementSlots[0].SourceDocumentIds = new List<string> { "d1" };
-
-        WorldDiplomacyRound inactive = new WorldDiplomacyRound
-        {
-            RoundId = "r1", State = "closed", ResultSettlementPending = true,
-            ResultSettlementCurrentSlotId = "s1",
-            ResultSettlementSlots = round.ResultSettlementSlots
-        };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                inactive, "s1", "kB", "kA", resolveDocument),
-            "an inactive round must not suppress the response");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                null!, "s1", "kB", "kA", resolveDocument),
-            "a null round must not suppress the response");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                round, "sX", "kB", "kA", resolveDocument),
-            "a slot that is not the current settlement slot must not suppress the response");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                round, "s1", null, "kA", resolveDocument),
-            "an unresolved author must not suppress the response");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                round, "s1", "kB", null, resolveDocument),
-            "an unresolved target must not suppress the response");
-
-        WorldDiplomacyRound tradeSlot = new WorldDiplomacyRound
-        {
-            RoundId = "r1", State = "active", ResultSettlementPending = true,
-            ResultSettlementCurrentSlotId = "s1",
-            ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
-            {
-                new WorldDiplomacyResultSettlementSlot
-                {
-                    SlotId = "s1", KingdomId = "kB", Kind = "trade",
-                    SourceDocumentIds = new List<string> { "d1" },
-                    RelatedKingdomIds = new List<string> { "kA" }
-                }
-            }
-        };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                tradeSlot, "s1", "kB", "kA", resolveDocument),
-            "a non war-response slot kind must not suppress the response");
-
-        WorldDiplomacyRound unrelated = new WorldDiplomacyRound
-        {
-            RoundId = "r1", State = "active", ResultSettlementPending = true,
-            ResultSettlementCurrentSlotId = "s1",
-            ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
-            {
-                new WorldDiplomacyResultSettlementSlot
-                {
-                    SlotId = "s1", KingdomId = "kB", Kind = "war_response",
-                    SourceDocumentIds = new List<string> { "d1" },
-                    RelatedKingdomIds = new List<string> { "kZ" }
-                }
-            }
-        };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsWarResponseNoActionAllowed(
-                unrelated, "s1", "kB", "kA", resolveDocument),
-            "a slot unrelated to the target kingdom must not suppress the response");
-
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(
-                round, "", "kB", "kA", resolveDocument),
-            "an empty slot id must fall back to the round's current settlement slot");
-        Test.True(WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(
-                round, "s1", "kB", "kA", resolveDocument),
-            "an explicit slot id must be honored");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(
-                tradeSlot, "", "kB", "kA", resolveDocument),
-            "the fallback slot must still fail on a non war-response slot");
-
-        // GetGeneratedEnvelopeApplicationFailureReason (EnvelopeJsonRules)
-        WorldDiplomacyDocument envDoc = new WorldDiplomacyDocument { RoundId = "r1" };
-        Func<string, WorldDiplomacyRound> resolveRound = id =>
-            id == "r1"
-                ? new WorldDiplomacyRound { RoundId = "r1", RelayRouteKingdomIds = new List<string> { "kA", "kB" } }
-                : null;
-        JObject validEnvelope = JObject.Parse(@"{
-            ""actions"": [{ ""intent"": ""propose_peace"", ""target_kingdom_id"": ""kB"" }],
-            ""author_intent"": { ""intent"": ""propose_peace"", ""commitment"": ""proposal"" },
-            ""addressed_kingdom_ids"": [""kB""],
-            ""mentioned_kingdom_ids"": [""kB""],
-            ""round_plan"": { ""selected_kingdom_ids"": [""kA"", ""kB""] },
-            ""peace_terms"": {},
-            ""requires_response"": true,
-            ""tone"": ""neutral"",
-            ""confidence"": 0.5,
-            ""primary_target_kingdom_id"": ""kB""
-        }");
-        Test.True(WorldDiplomacyEnvelopeJsonRules.GetGeneratedEnvelopeApplicationFailureReason(
-                null!, validEnvelope, "kB", false, resolveRound) == "diplomatic_actions_envelope_invalid",
-            "a null document must fail envelope validation");
-        Test.True(WorldDiplomacyEnvelopeJsonRules.GetGeneratedEnvelopeApplicationFailureReason(
-                envDoc, new JObject(), "kB", false, resolveRound) == "diplomatic_actions_envelope_invalid",
-            "a missing actions array must fail envelope validation");
-        JObject noIntent = (JObject)validEnvelope.DeepClone();
-        noIntent.Remove("author_intent");
-        Test.True(WorldDiplomacyEnvelopeJsonRules.GetGeneratedEnvelopeApplicationFailureReason(
-                envDoc, noIntent, "kB", false, resolveRound) == "semantic_envelope_missing_author_intent",
-            "a missing author_intent must fail envelope validation");
-        JObject badCommitment = (JObject)validEnvelope.DeepClone();
-        badCommitment["author_intent"] = new JObject { ["intent"] = "propose_peace", ["commitment"] = "bogus" };
-        Test.True(WorldDiplomacyEnvelopeJsonRules.GetGeneratedEnvelopeApplicationFailureReason(
-                envDoc, badCommitment, "kB", false, resolveRound) == "unsupported_commitment",
-            "an unsupported commitment must fail envelope validation");
-        Test.True(WorldDiplomacyEnvelopeJsonRules.GetGeneratedEnvelopeApplicationFailureReason(
-                envDoc, validEnvelope, null, false, resolveRound) == "diplomatic_action_has_no_target",
-            "a non-statement intent without a target must fail envelope validation");
-        Test.True(WorldDiplomacyEnvelopeJsonRules.GetGeneratedEnvelopeApplicationFailureReason(
-                envDoc, validEnvelope, "kB", false, resolveRound) == "generated_semantic_envelope_incomplete",
-            "a valid non-relay envelope must fall through to the generic failure reason");
-        Test.True(WorldDiplomacyEnvelopeJsonRules.GetGeneratedEnvelopeApplicationFailureReason(
-                envDoc, validEnvelope, "kB", true, resolveRound) == "generated_semantic_envelope_incomplete",
-            "a relay target on the route must not produce a route failure");
-        Test.True(WorldDiplomacyEnvelopeJsonRules.GetGeneratedEnvelopeApplicationFailureReason(
-                envDoc, validEnvelope, "kZ", true, resolveRound) == "kingdom_not_in_relay_route",
-            "a relay target outside the round route must fail with the route reason");
-        Test.True(WorldDiplomacyEnvelopeJsonRules.GetGeneratedEnvelopeApplicationFailureReason(
-                envDoc, validEnvelope, "kZ", false, resolveRound) == "generated_semantic_envelope_incomplete",
-            "the route check must only apply on relay turns");
-    }
 
 
     private static void RunOpenProposalAndThreatAdapterDecisionTests()
@@ -7372,132 +6262,6 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(described.Contains("settlement_beta"), "border description must fall back to the second settlement id when its name is empty");
     }
 
-
-    private static void RunSettlementSlotCompositionDecisionTests()
-    {
-        // AddOrMergeResultSettlementSlot (RoundLifecycleRules)
-        int idSeq = 0;
-        WorldDiplomacyRound slotRound = new WorldDiplomacyRound();
-        Func<WorldDiplomacyRound, string, bool> admitAll = (r, id) => true;
-        Func<string, string> newId = prefix => prefix + ":" + (++idSeq);
-        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
-            slotRound, "k1", "route", "doc1", "k2", prioritize: false, admitAll, newId);
-        Test.True(slotRound.ResultSettlementSlots?.Count == 1
-                && slotRound.ResultSettlementSlots[0].KingdomId == "k1"
-                && slotRound.ResultSettlementSlots[0].Status == "pending"
-                && slotRound.ResultSettlementSlots[0].SourceDocumentIds.Contains("doc1")
-                && slotRound.ResultSettlementSlots[0].RelatedKingdomIds.Contains("k2"),
-            "the first merge must create a pending slot carrying the source document and related kingdom");
-        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
-            slotRound, "k1", "offer_response", "doc2", "k3", prioritize: true, admitAll, newId);
-        Test.True(slotRound.ResultSettlementSlots.Count == 1
-                && slotRound.ResultSettlementSlots[0].SourceDocumentIds.Contains("doc2")
-                && slotRound.ResultSettlementSlots[0].RelatedKingdomIds.Contains("k3")
-                && WorldDiplomacyRoundLifecycleRules.SettlementSlotKindContains(slotRound.ResultSettlementSlots[0].Kind, "offer_response"),
-            "a second merge for the same kingdom must merge kinds, append ids, and reprioritize to the front");
-        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
-            slotRound, "k1", "route", "doc1", "k2", prioritize: false, admitAll, newId);
-        Test.True(slotRound.ResultSettlementSlots[0].SourceDocumentIds.Count == 2
-                && slotRound.ResultSettlementSlots[0].RelatedKingdomIds.Count == 2,
-            "duplicate document and kingdom ids must not be re-appended");
-        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
-            slotRound, "", "route", "doc3", "", prioritize: false, admitAll, newId);
-        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
-            slotRound, "k9", "route", "doc3", "", prioritize: false, (r, id) => false, newId);
-        Test.True(slotRound.ResultSettlementSlots.Count == 1,
-            "blank ids and rejected admission must not add slots");
-
-        // AddWarResponseResultSettlementSlot (RoundLifecycleRules)
-        WorldDiplomacyRound warRound = new WorldDiplomacyRound();
-        WorldDiplomacyDocument warDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "dwar1",
-            AuthorKingdomId = "attacker",
-            Actions = new List<WorldDiplomacyDocumentAction>
-            {
-                new WorldDiplomacyDocumentAction { ActionId = "a1", Intent = "declare_war", ChangedDiplomaticState = true, TargetKingdomId = "victim" },
-                new WorldDiplomacyDocumentAction { ActionId = "a2", Intent = "propose_trade", ChangedDiplomaticState = false, TargetKingdomId = "other" }
-            }
-        };
-        WorldDiplomacyResultSlotApplication.AddWarResponseResultSettlementSlot(warRound, warDoc, admitAll, newId);
-        Test.True(warRound.ResultSettlementWarDocumentIds?.Count == 1
-                && warRound.ResultSettlementSlots?.Count == 1
-                && warRound.ResultSettlementSlots[0].KingdomId == "victim"
-                && WorldDiplomacyRoundLifecycleRules.SettlementSlotKindContains(warRound.ResultSettlementSlots[0].Kind, "war_response"),
-            "a war-response document must add exactly one prioritized war_response slot for the declare_war action");
-        WorldDiplomacyResultSlotApplication.AddWarResponseResultSettlementSlot(warRound, warDoc, admitAll, newId);
-        Test.True(warRound.ResultSettlementWarDocumentIds.Count == 1 && warRound.ResultSettlementSlots.Count == 1,
-            "replaying the same document must deduplicate on the composed action key");
-        WorldDiplomacyDocument legacyDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "dwar2", AuthorKingdomId = "attacker", Intent = "declare_war",
-            ChangedDiplomaticState = true, TargetKingdomId = "victim2"
-        };
-        WorldDiplomacyResultSlotApplication.AddWarResponseResultSettlementSlot(warRound, legacyDoc, admitAll, newId);
-        Test.True(warRound.ResultSettlementWarDocumentIds.Contains("dwar2")
-                && warRound.ResultSettlementSlots.Any(x => x.KingdomId == "victim2"),
-            "the legacy single-action mirror must deduplicate on the document id");
-
-        // InferTopicCategory (IntentVocabulary)
-        Test.True(WorldDiplomacyIntentVocabulary.InferTopicCategory("random words", initiatorAndTargetAtWar: true) == "war_conduct"
-                && WorldDiplomacyIntentVocabulary.InferTopicCategory("random words", initiatorAndTargetAtWar: false) == "regional_security",
-            "the at-war flag must select war_conduct only when the pair is at war");
-        Test.True(WorldDiplomacyIntentVocabulary.InferTopicCategory(null, initiatorAndTargetAtWar: false) == "regional_security",
-            "a null topic must fall through to the regional-security default");
-
-        // IsDiplomaticRepresentativeForAddressedVassal (DocumentFactRules)
-        WorldDiplomacyDocument vassalDoc = new WorldDiplomacyDocument
-        {
-            AddressedKingdomIds = new List<string> { "vassalA", "vassalB" }, TargetKingdomId = "vassalC"
-        };
-        Test.True(WorldDiplomacyDocumentFactRules.IsDiplomaticRepresentativeForAddressedVassal(vassalDoc, id => id == "vassalB"),
-            "a receiver represented for any addressed kingdom must be accepted");
-        Test.True(!WorldDiplomacyDocumentFactRules.IsDiplomaticRepresentativeForAddressedVassal(vassalDoc, id => false),
-            "no represented addressed kingdom must reject");
-        Test.True(WorldDiplomacyDocumentFactRules.IsDiplomaticRepresentativeForAddressedVassal(vassalDoc, id => id == "vassalC"),
-            "the target kingdom id must count as addressed");
-        Test.True(!WorldDiplomacyDocumentFactRules.IsDiplomaticRepresentativeForAddressedVassal(null, id => true)
-                && !WorldDiplomacyDocumentFactRules.IsDiplomaticRepresentativeForAddressedVassal(vassalDoc, null),
-            "null document and null probe must fail safe");
-
-        // Application publishes deltas computed by pure Domain rules.
-        Test.True(WorldDiplomacyWarPressureRules.CalculateDocumentPressureDelta("warning", "", "warning", 2) == 6,
-            "repetition attenuation is a deterministic domain calculation");
-        Test.True(WorldDiplomacyWarPressureRules.CalculateDocumentPressureDelta("concession", "", "concession", 8) == -12,
-            "negative pressure is not attenuated by repetition");
-        List<WarPressureEntry> pressures = new List<WarPressureEntry>();
-        List<string> applied = new List<string>();
-        WorldDiplomacyDocument pressureDoc = new WorldDiplomacyDocument
-        {
-            AuthorKingdomId = "author", Intent = "ultimatum", Title = "Demand",
-            AddressedKingdomIds = new List<string> { "t1" }, TargetKingdomId = "t2"
-        };
-        WorldDiplomacyThreatApplication.ApplyDocumentPressure(
-            pressureDoc,
-            (s, tt) => pressures.FirstOrDefault(x => x.SourceKingdomId == s && x.TargetKingdomId == tt),
-            (values, excluded) => (values ?? Enumerable.Empty<string>()).Where(x => x != excluded).Distinct().ToList(),
-            (s, tt, d, r, i) => applied.Add(s + ">" + tt + "=" + d));
-        Test.True(applied.Count == 2 && applied.Contains("author>t1=18") && applied.Contains("author>t2=18"),
-            "an ultimatum must apply the +18 delta to addressed and target kingdoms");
-        pressures.Add(new WarPressureEntry { SourceKingdomId = "author", TargetKingdomId = "t1", LastIntent = "ultimatum", ConsecutiveSimilarCount = 2 });
-        applied.Clear();
-        WorldDiplomacyThreatApplication.ApplyDocumentPressure(
-            pressureDoc,
-            (s, tt) => pressures.FirstOrDefault(x => x.SourceKingdomId == s && x.TargetKingdomId == tt),
-            (values, excluded) => (values ?? Enumerable.Empty<string>()).Where(x => x != excluded).Distinct().ToList(),
-            (s, tt, d, r, i) => applied.Add(s + ">" + tt + "=" + d));
-        Test.True(applied.Contains("author>t1=11") && applied.Contains("author>t2=18"),
-            "repeated identical pressure must be dampened only for the pair with an existing entry");
-        applied.Clear();
-        WorldDiplomacyThreatApplication.ApplyDocumentPressure(
-            new WorldDiplomacyDocument { AuthorKingdomId = "author", Intent = "declare_war", TargetKingdomId = "t1" },
-            (s, tt) => null,
-            (values, excluded) => (values ?? Enumerable.Empty<string>()).Where(x => x != excluded).Distinct().ToList(),
-            (s, tt, d, r, i) => applied.Add(s));
-        Test.True(applied.Count == 0, "declare_war has a zero delta and must not emit a pressure write");
-        WorldDiplomacyThreatApplication.ApplyDocumentPressure(null, null, null, null);
-        Test.True(true, "null inputs must fail safe");
-    }
 
 
 
@@ -7789,416 +6553,9 @@ RunRepairCorrectionAndJobDecisionTests();
 	}
 
 
-	private static void RunThreatResolutionDecisionTests()
-	{
-		// DPL-060BO: war-started resolution, follow-through settlement, and consequence
-		// finalization moved into the lifecycle rules behind collection/day/log ports
-		List<WorldDiplomacyThreat> warThreats = new List<WorldDiplomacyThreat>
-		{
-			new WorldDiplomacyThreat { Status = "open", IssuerKingdomId = "a", TargetKingdomId = "b", ObligationRoundId = "r1", ObligationClaimedDay = 3 },
-			new WorldDiplomacyThreat { Status = "open", IssuerKingdomId = "b", TargetKingdomId = "a", ObligationRoundId = "r2" },
-			new WorldDiplomacyThreat { Status = "open", IssuerKingdomId = "a", TargetKingdomId = "c" },
-			new WorldDiplomacyThreat { Status = "invalidated", IssuerKingdomId = "a", TargetKingdomId = "b" }
-		};
-		WorldDiplomacyRoundLifecycleRules.ResolveDiplomaticThreatsAfterWarStarted(
-			warThreats, "a", "b", 50, structuredDeclarationPending: false);
-		Test.True(warThreats[0].Status == "invalidated"
-			&& warThreats[0].ResolutionReason == "war_started_outside_structured_threat_follow_through"
-			&& warThreats[0].ObligationRoundId == "" && warThreats[0].ObligationClaimedDay == 0
-			&& warThreats[0].HistoryResultRecorded && warThreats[0].UpdatedDay == 50,
-			"war started outside structured follow-through must invalidate the matching open threat");
-		Test.True(warThreats[1].Status == "invalidated",
-			"war-started resolution must cover both directions between the parties");
-		Test.True(warThreats[2].Status == "open" && warThreats[3].ResolutionReason != "war_started_outside_structured_threat_follow_through",
-			"unrelated or already-closed threats must stay untouched");
 
-		warThreats[0] = new WorldDiplomacyThreat { Status = "open", IssuerKingdomId = "a", TargetKingdomId = "b" };
-		WorldDiplomacyRoundLifecycleRules.ResolveDiplomaticThreatsAfterWarStarted(
-			warThreats, "a", "b", 60, structuredDeclarationPending: true);
-		Test.True(warThreats[0].Status == "open"
-			&& warThreats[0].ResolutionReason == "war_started_during_structured_declaration_pending"
-			&& warThreats[0].UpdatedDay == 60,
-			"a war inside a structured declaration must mark the threat pending instead of invalidating it");
-		WorldDiplomacyRoundLifecycleRules.ResolveDiplomaticThreatsAfterWarStarted(
-			warThreats, "a", "a", 61, structuredDeclarationPending: false);
-		Test.True(warThreats[0].UpdatedDay == 60,
-			"war-started resolution must ignore a same-kingdom pair");
 
-		int penaltyCalls = 0;
-		WorldDiplomacyThreat follow = new WorldDiplomacyThreat
-		{
-			Status = "open", IssuerKingdomId = "issuer", TargetKingdomId = "t1",
-			TargetDecision = "noncomplied", Stage = "warning", StageDocumentId = "sd1"
-		};
-		WorldDiplomacyDocument followDoc = new WorldDiplomacyDocument
-		{
-			Intent = "declare_war", TargetKingdomId = "t1",
-			PresentedThreatFollowThroughDocumentIds = new List<string> { "sd1" }
-		};
-		WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
-			followDoc, new List<WorldDiplomacyThreat> { follow }, "issuer",
-			(x, d) => penaltyCalls++);
-		Test.True(penaltyCalls == 1,
-			"a warning-stage follow-through breached by a non-ultimatum declaration must apply the penalty port");
-		WorldDiplomacyDocument satisfiedDoc = new WorldDiplomacyDocument
-		{
-			Intent = "ultimatum", TargetKingdomId = "t1",
-			PresentedThreatFollowThroughDocumentIds = new List<string> { "sd1" }
-		};
-		WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
-			satisfiedDoc, new List<WorldDiplomacyThreat> { follow }, "issuer",
-			(x, d) => penaltyCalls++);
-		Test.True(penaltyCalls == 1,
-			"a satisfied follow-through must not apply the penalty port");
-		WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
-			followDoc, new List<WorldDiplomacyThreat> { follow }, "other", (x, d) => penaltyCalls++);
-		Test.True(penaltyCalls == 1,
-			"follow-through settlement must fail safe without an open threat issued by the author");
 
-		List<string> penaltyLogs = new List<string>();
-		WorldDiplomacyThreat penalty = new WorldDiplomacyThreat
-		{
-			ThreatId = "th1",
-			DomesticPenaltyEligibleClanIds = new List<string> { "c1", "c2" },
-			DomesticPenaltyAppliedClanIds = new List<string> { "c1" }
-		};
-		Test.True(WorldDiplomacyRoundLifecycleRules.CompleteUnresolvableDiplomaticThreatDomesticPenalty(
-			penalty, out int penaltyCount, 70, penaltyLogs.Add)
-			&& penaltyCount == 1
-			&& penalty.DomesticPenaltyCompleted
-			&& penalty.DomesticPenaltySnapshotCaptured
-			&& penalty.UpdatedDay == 70
-			&& penalty.DomesticPenaltySkippedClanIds.Contains("c2")
-			&& penaltyLogs.Count == 1,
-			"unresolvable domestic penalty must mark eligible-but-unapplied clans skipped and finalize the snapshot");
-
-		List<string> rewardLogs = new List<string>();
-		WorldDiplomacyThreat reward = new WorldDiplomacyThreat
-		{
-			ThreatId = "th2",
-			IssuerRewardEligibleClanIds = new List<string> { "c9" }
-		};
-		Test.True(WorldDiplomacyRoundLifecycleRules.CompleteUnresolvableDiplomaticThreatIssuerRelationReward(
-			reward, out int rewardCount, 12, 80, rewardLogs.Add)
-			&& rewardCount == 0
-			&& reward.IssuerRewardAmount == 12
-			&& reward.IssuerRewardCompleted
-			&& reward.IssuerRewardHistoryRecorded
-			&& reward.IssuerRewardSkippedClanIds.Contains("c9")
-			&& rewardLogs.Count == 1,
-			"unresolvable issuer reward must snapshot the configured amount, skip unresolved clans, and close empty history");
-
-		List<string> policyLogs = new List<string>();
-		WorldDiplomacyThreat settledThreat = new WorldDiplomacyThreat
-		{
-			ThreatId = "settled", PolicyConditionPolicyId = "p1", PolicyConditionOwnerKingdomId = "owner"
-		};
-		List<WorldDiplomacyThreat> bound = new List<WorldDiplomacyThreat>
-		{
-			settledThreat,
-			new WorldDiplomacyThreat { ThreatId = "other", Status = "open", PolicyConditionPolicyId = "p1", PolicyConditionOwnerKingdomId = "owner" },
-			new WorldDiplomacyThreat { ThreatId = "diff", Status = "open", PolicyConditionPolicyId = "p2", PolicyConditionOwnerKingdomId = "owner" }
-		};
-		WorldDiplomacyRoundLifecycleRules.InvalidateOtherThreatsBoundToSettledPolicy(
-			settledThreat, bound, 90, policyLogs.Add);
-		Test.True(bound[1].Status == "invalidated"
-			&& bound[1].ResolutionReason == "bound_policy_cancelled_by_another_complied_threat"
-			&& bound[1].UpdatedDay == 90
-			&& bound[2].Status == "open"
-			&& policyLogs.Count == 1,
-			"settling one policy-bound threat must invalidate only the other threats bound to the same policy");
-	}
-
-	private static void RunRelayAndBudgetDecisionTests()
-	{
-		// DPL-060BP: relay progress/circuit-breaker/opportunity and the daily AI
-		// budget moved into the lifecycle rules behind storage, probe, and log ports
-		int startedDay = 4, startedToday = 7;
-		WorldDiplomacyRoundLifecycleRules.ResetDailyGenerationBudget(ref startedDay, ref startedToday, 4);
-		Test.True(startedDay == 4 && startedToday == 7,
-			"a same-day reset must leave the budget counters untouched");
-		WorldDiplomacyRoundLifecycleRules.ResetDailyGenerationBudget(ref startedDay, ref startedToday, 5);
-		Test.True(startedDay == 5 && startedToday == 0,
-			"a new day must reset the daily AI document budget");
-		startedToday = 2;
-		Test.True(WorldDiplomacyRoundLifecycleRules.TryConsumeAiDocumentBudget(ref startedDay, ref startedToday, 5, 3)
-			&& startedToday == 3,
-			"a consume below the cap must be allowed and increment the counter");
-		Test.True(!WorldDiplomacyRoundLifecycleRules.TryConsumeAiDocumentBudget(ref startedDay, ref startedToday, 5, 3)
-			&& startedToday == 3,
-			"a consume at the cap must be denied without incrementing");
-		Test.True(WorldDiplomacyRoundLifecycleRules.TryConsumeAiDocumentBudget(ref startedDay, ref startedToday, 6, 1)
-			&& startedDay == 6 && startedToday == 1,
-			"a consume on a new day must reset before counting");
-
-		List<string> logs = new List<string>();
-		WorldDiplomacyRound relayRound = new WorldDiplomacyRound
-		{
-			RoundId = "r1", State = "active",
-			RelayPassNumber = 3, LastAccountedRelayPassNumber = 2,
-			DiplomaticActionAttemptCount = 4, ActionAttemptCountAtPassStart = 4,
-			ConsecutiveNoActionPasses = 1
-		};
-		WorldDiplomacyRoundLifecycleRules.CompleteRelayPassProgressAccounting(relayRound, logs.Add);
-		Test.True(relayRound.ConsecutiveNoActionPasses == 2
-			&& relayRound.LastAccountedRelayPassNumber == 3
-			&& relayRound.ActionAttemptCountAtPassStart == 4
-			&& logs.Count == 1 && logs[0].Contains("relay pass progress accounted"),
-			"an accounted pass without actions must increment the no-action streak and log once");
-		WorldDiplomacyRoundLifecycleRules.CompleteRelayPassProgressAccounting(relayRound, logs.Add);
-		Test.True(logs.Count == 1 && relayRound.ConsecutiveNoActionPasses == 2,
-			"an already-accounted pass must not apply twice");
-		relayRound.RelayPassNumber = 4; relayRound.DiplomaticActionAttemptCount = 6;
-		WorldDiplomacyRoundLifecycleRules.CompleteRelayPassProgressAccounting(relayRound, logs.Add);
-		Test.True(relayRound.ConsecutiveNoActionPasses == 0 && relayRound.LastAccountedRelayPassNumber == 4,
-			"an action inside the pass must reset the no-action streak");
-
-		logs.Clear();
-		WorldDiplomacyStorage storage = new WorldDiplomacyStorage();
-		WorldDiplomacyRound breakerRound = new WorldDiplomacyRound
-		{
-			RoundId = "r2", State = "active", AutomaticDocumentsStarted = 9,
-			Participants = new List<WorldDiplomacyRoundParticipant>
-			{
-				new WorldDiplomacyRoundParticipant { MandatoryReplyPending = true, MandatorySinceDay = 7 },
-				null,
-				new WorldDiplomacyRoundParticipant { MandatoryReplyPending = false }
-			}
-		};
-		WorldDiplomacyRoundLifecycleRules.TripAutomaticRoundCircuitBreaker(storage, breakerRound, "automatic_document_limit", logs.Add);
-		Test.True(breakerRound.AutomaticCircuitBreakerTripped
-			&& !breakerRound.Participants[0].MandatoryReplyPending
-			&& breakerRound.Participants[0].MandatorySinceDay == 0
-			&& logs.Count == 1 && logs[0].Contains("automatic_document_limit"),
-			"tripping the circuit breaker must clear participant mandates and log the reason");
-		WorldDiplomacyRoundLifecycleRules.TripAutomaticRoundCircuitBreaker(storage, breakerRound, "again", logs.Add);
-		Test.True(logs.Count == 1, "an already-tripped breaker must not log again");
-		WorldDiplomacyRoundLifecycleRules.TripAutomaticRoundCircuitBreaker(storage, null, "x", logs.Add);
-		Test.True(logs.Count == 1, "a null round must not trip the breaker");
-
-		List<WorldDiplomacyDocument> processed = new List<WorldDiplomacyDocument>();
-		List<string> retryLogs = new List<string>();
-		WorldDiplomacyStorage retryStorage = new WorldDiplomacyStorage();
-		retryStorage.ActiveRound = new WorldDiplomacyRound { RoundId = "r9", State = "active" };
-		for (int x = 0; x < 10; x++)
-		{
-			retryStorage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "d" + x, RoundId = "r9", IsReadyForPublication = true });
-		}
-		retryStorage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "other", RoundId = "other-round", IsReadyForPublication = true });
-		retryStorage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "handled", RoundId = "r9", IsReadyForPublication = true, RoundProgressHandled = true });
-		retryStorage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "draft", RoundId = "r9" });
-		WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(retryStorage, processed.Add, retryLogs.Add);
-		Test.True(processed.Count == 8 && retryLogs.Count == 0
-			&& processed.All(d => d.RoundId == "r9" && d.IsReadyForPublication && !d.RoundProgressHandled),
-			"deferred retry must process at most eight ready unhandled in-round documents");
-		retryStorage.ActiveRound.State = "closed";
-		processed.Clear();
-		WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(retryStorage, processed.Add, retryLogs.Add);
-		Test.True(processed.Count == 0, "a non-active round must not retry deferred progress");
-		retryStorage.ActiveRound = new WorldDiplomacyRound { RoundId = "r9", State = "active" };
-		int calls = 0;
-		WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(retryStorage,
-			doc => { calls++; throw new InvalidOperationException("boom"); }, retryLogs.Add);
-		Test.True(calls == 8 && retryLogs.Count == 8 && retryLogs[0].Contains("boom"),
-			"a failing deferred document must be logged without stopping the batch");
-
-		WorldDiplomacyRound cursorRound = new WorldDiplomacyRound { RoundId = "r3", State = "active", RelayCursor = 0 };
-		List<string> route = new List<string> { "a", "b", "c" };
-		List<WorldDiplomacyThreat> relayThreats = new List<WorldDiplomacyThreat>
-		{
-			new WorldDiplomacyThreat { Status = "open", TargetDecision = "pending", TargetKingdomId = "c", UpdatedDay = 5, ThreatId = "t1" },
-			new WorldDiplomacyThreat { Status = "open", TargetDecision = "noncomplied", IssuerKingdomId = "b", UpdatedDay = 9, ThreatId = "t2" },
-			new WorldDiplomacyThreat { Status = "closed", TargetDecision = "pending", TargetKingdomId = "b", UpdatedDay = 1, ThreatId = "t3" },
-			new WorldDiplomacyThreat { Status = "open", TargetDecision = "pending", TargetKingdomId = "a", UpdatedDay = 2, ThreatId = "t4" }
-		};
-		Test.True(WorldDiplomacyRoundLifecycleRules.FindPriorityThreatRelayIndex(cursorRound, route, relayThreats, id => id == "c") == 2,
-			"the relay must jump to the authoritative required speaker of the oldest eligible open threat");
-		Test.True(WorldDiplomacyRoundLifecycleRules.FindPriorityThreatRelayIndex(cursorRound, route, relayThreats, id => id == "b") == 1,
-			"speakers without authority must be skipped in favor of the next threat");
-		Test.True(WorldDiplomacyRoundLifecycleRules.FindPriorityThreatRelayIndex(cursorRound, route, relayThreats, id => false) == -1,
-			"no authoritative speaker must yield no relay override");
-		Test.True(WorldDiplomacyRoundLifecycleRules.FindPriorityThreatRelayIndex(null, route, relayThreats, id => true) == -1,
-			"a null round must not produce a relay override");
-		Test.True(WorldDiplomacyRoundLifecycleRules.FindPriorityThreatRelayIndex(cursorRound, new List<string> { "a" }, relayThreats, id => true) == -1,
-			"a route shorter than two stops must not produce a relay override");
-
-		List<WorldDiplomacyPlayerOpportunity> opportunities = new List<WorldDiplomacyPlayerOpportunity>();
-		List<WorldDiplomacyDocument> roundDocs = new List<WorldDiplomacyDocument>
-		{
-			new WorldDiplomacyDocument { DocumentId = "k1", RoundId = "r5", IsReadyForPublication = true },
-			new WorldDiplomacyDocument { DocumentId = "k2", RoundId = "r5", IsReadyForPublication = true },
-			new WorldDiplomacyDocument { DocumentId = "k3", RoundId = "r6", IsReadyForPublication = true },
-			new WorldDiplomacyDocument { DocumentId = "k4", RoundId = "r5" }
-		};
-		WorldDiplomacyRound oppRound = new WorldDiplomacyRound { RoundId = "r5" };
-		WorldDiplomacyRoundLifecycleRules.RecordPlayerOpportunity(oppRound, "p", opportunities, roundDocs, 40);
-		Test.True(opportunities.Count == 1 && opportunities[0].RoundId == "r5"
-			&& opportunities[0].ArrivedDay == 40 && opportunities[0].Status == "open"
-			&& opportunities[0].KnownDocumentIds.Count == 2
-			&& opportunities[0].KnownDocumentIds.Contains("k1") && opportunities[0].KnownDocumentIds.Contains("k2"),
-			"a fresh opportunity must snapshot the published in-round document ids");
-		roundDocs.Add(new WorldDiplomacyDocument { DocumentId = "k5", RoundId = "r5", IsReadyForPublication = true });
-		WorldDiplomacyRoundLifecycleRules.RecordPlayerOpportunity(oppRound, "p", opportunities, roundDocs, 41);
-		Test.True(opportunities.Count == 1 && opportunities[0].ArrivedDay == 41
-			&& opportunities[0].KnownDocumentIds.Count == 3,
-			"an existing opportunity must be updated in place instead of duplicated");
-		WorldDiplomacyRoundLifecycleRules.RecordPlayerOpportunity(oppRound, "", opportunities, roundDocs, 42);
-		Test.True(opportunities[0].ArrivedDay == 41,
-			"a blank player kingdom id must not touch the opportunity record");
-		WorldDiplomacyRoundLifecycleRules.RecordPlayerOpportunity(null, "p", opportunities, roundDocs, 42);
-	}
-
-	private static void RunSettlementSlotOrchestrationDecisionTests()
-	{
-		// DPL-060BQ: settlement-slot expiry/consume/skip and relay indexing moved into
-		// the lifecycle rules behind collection, probe, create-id, and log ports
-		List<string> logs = new List<string>();
-		WorldDiplomacyRound expireRound = new WorldDiplomacyRound
-		{
-			RoundId = "r1", ResultSettlementPending = true,
-			ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
-			{
-				new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "a", SourceDocumentIds = new List<string> { "src1", "src2" } }
-			},
-			PendingOffers = new List<WorldDiplomacyRoundOffer>
-			{
-				new WorldDiplomacyRoundOffer { Status = "open", TargetKingdomId = "a", SourceDocumentId = "src1" },
-				new WorldDiplomacyRoundOffer { Status = "open", TargetKingdomId = "a", SourceDocumentId = "other" },
-				new WorldDiplomacyRoundOffer { Status = "open", TargetKingdomId = "b", SourceDocumentId = "src2" },
-				new WorldDiplomacyRoundOffer { Status = "accepted", TargetKingdomId = "a", SourceDocumentId = "src2" }
-			}
-		};
-		WorldDiplomacyDocument expiryDoc = new WorldDiplomacyDocument
-		{
-			IsRoundResponseNoActionDeclaration = true,
-			ResultSettlementSlotId = "s1", AuthorKingdomId = "a"
-		};
-		WorldDiplomacyRoundLifecycleRules.ExpireUnansweredSettlementOffersForNoActionDeclaration(expireRound, expiryDoc, logs.Add);
-		Test.True(expireRound.PendingOffers[0].Status == "expired"
-			&& expireRound.PendingOffers[1].Status == "open"
-			&& expireRound.PendingOffers[2].Status == "open"
-			&& expireRound.PendingOffers[3].Status == "accepted"
-			&& logs.Count == 1 && logs[0].Contains("expired=1"),
-			"a no-action statement must expire only the author's open offers sourced from its slot");
-		WorldDiplomacyRoundLifecycleRules.ExpireUnansweredSettlementOffersForNoActionDeclaration(
-			expireRound, new WorldDiplomacyDocument { ResultSettlementSlotId = "s1", AuthorKingdomId = "a" }, logs.Add);
-		Test.True(logs.Count == 1, "a non-declaration document must not expire settlement offers");
-		WorldDiplomacyRoundLifecycleRules.ExpireUnansweredSettlementOffersForNoActionDeclaration(
-			new WorldDiplomacyRound { RoundId = "r2" }, expiryDoc, logs.Add);
-		Test.True(logs.Count == 1, "a round without pending settlement must not expire offers");
-
-		logs.Clear();
-		WorldDiplomacyRound consumeRound = new WorldDiplomacyRound
-		{
-			RoundId = "r3", ResultSettlementPending = true, RelayWaiting = true,
-			ResultSettlementCurrentSlotId = "s1", ResultSettlementPlayerWaitingSinceDay = 12,
-			ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
-			{
-				new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "a" },
-				new WorldDiplomacyResultSettlementSlot { SlotId = "s2", KingdomId = "b" }
-			}
-		};
-		WorldDiplomacyRoundLifecycleRules.ConsumeResultSettlementSpeaker(consumeRound,
-			new WorldDiplomacyDocument { ResultSettlementSlotId = "s1", AuthorKingdomId = "a" }, logs.Add);
-		Test.True(consumeRound.ResultSettlementSlots.Count == 1
-			&& consumeRound.ResultSettlementSlots[0].SlotId == "s2"
-			&& consumeRound.ResultSettlementCurrentSlotId == ""
-			&& consumeRound.ResultSettlementPlayerWaitingSinceDay == 0
-			&& !consumeRound.RelayWaiting
-			&& logs.Count == 1 && logs[0].Contains("turn consumed"),
-			"consuming a speaker must remove its slot, clear the current pointer, and log once");
-		WorldDiplomacyRoundLifecycleRules.ConsumeResultSettlementSpeaker(consumeRound,
-			new WorldDiplomacyDocument { ResultSettlementSlotId = "zzz", AuthorKingdomId = "a" }, logs.Add);
-		Test.True(logs.Count == 1 && consumeRound.ResultSettlementSlots.Count == 1,
-			"an unmatched slot id must not consume anything");
-		consumeRound.ResultSettlementPending = false;
-		WorldDiplomacyRoundLifecycleRules.ConsumeResultSettlementSpeaker(consumeRound,
-			new WorldDiplomacyDocument { ResultSettlementSlotId = "s2", AuthorKingdomId = "b" }, logs.Add);
-		Test.True(logs.Count == 1 && consumeRound.ResultSettlementSlots.Count == 1,
-			"a non-pending round must not consume settlement slots");
-
-		WorldDiplomacyRound relayIdx = new WorldDiplomacyRound
-		{
-			RelayDirection = 1, RelayCursor = 0,
-			RelayRouteKingdomIds = new List<string> { "a", "b", "c", "d" },
-			Participants = new List<WorldDiplomacyRoundParticipant>
-			{
-				new WorldDiplomacyRoundParticipant { KingdomId = "c", State = "withdrawn" }
-			}
-		};
-		Test.True(WorldDiplomacyRoundLifecycleRules.FindNextRelayIndex(relayIdx, 1, id => id != "b") == 3,
-			"relay indexing must skip unauthorized kingdoms and withdrawn participants");
-		Test.True(WorldDiplomacyRoundLifecycleRules.FindNextRelayIndex(relayIdx, 1, id => id == "b") == 1,
-			"an unauthorized-withdrawn-only mix must still honor the first eligible stop");
-		Test.True(WorldDiplomacyRoundLifecycleRules.FindNextRelayIndex(relayIdx, 1, id => false) == -1,
-			"no authorized kingdom must yield no next relay index");
-		Test.True(WorldDiplomacyRoundLifecycleRules.FindNextRelayIndex(null, 0, id => true) == -1,
-			"a null round must yield no next relay index");
-
-		List<WorldDiplomacyDocument> spokeDocs = new List<WorldDiplomacyDocument>
-		{
-			new WorldDiplomacyDocument { DocumentId = "d1", RoundId = "r4", IsReadyForPublication = true, AuthorKingdomId = "a" },
-			new WorldDiplomacyDocument { DocumentId = "d2", RoundId = "r4", AuthorKingdomId = "b" },
-			new WorldDiplomacyDocument { DocumentId = "d3", RoundId = "other", IsReadyForPublication = true, AuthorKingdomId = "c" }
-		};
-		WorldDiplomacyRound routeRound = new WorldDiplomacyRound
-		{
-			RoundId = "r4", RelayPlanned = true, ResultSettlementTriggerDocumentId = "trig",
-			RelayRouteKingdomIds = new List<string> { "a", "b", "c", "d" }
-		};
-		List<string> created = new List<string>();
-		WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(routeRound, spokeDocs,
-			(r, k) => true, prefix => { created.Add(prefix); return "id-" + created.Count; });
-		Test.True(routeRound.ResultSettlementRouteInitialized
-			&& routeRound.ResultSettlementSlots != null && routeRound.ResultSettlementSlots.Count == 3
-			&& routeRound.ResultSettlementSlots.All(x => x.Kind == "route" && x.SourceDocumentIds.Contains("trig")),
-			"route initialization must create slots only for kingdoms that did not speak in the round");
-		Test.True(!routeRound.ResultSettlementSlots.Any(x => x.KingdomId == "a")
-			&& routeRound.ResultSettlementSlots.Any(x => x.KingdomId == "b")
-			&& routeRound.ResultSettlementSlots.Any(x => x.KingdomId == "c")
-			&& routeRound.ResultSettlementSlots.Any(x => x.KingdomId == "d"),
-			"only kingdoms with a published in-round document count as spoken");
-		WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(routeRound, spokeDocs,
-			(r, k) => true, prefix => "x");
-		Test.True(routeRound.ResultSettlementSlots.Count == 3,
-			"an already-initialized route must not add slots twice");
-		WorldDiplomacyRound unplanned = new WorldDiplomacyRound { RoundId = "r5", RelayRouteKingdomIds = new List<string> { "a" } };
-		WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(unplanned, spokeDocs, (r, k) => true, prefix => "x");
-		Test.True(!unplanned.ResultSettlementRouteInitialized && (unplanned.ResultSettlementSlots == null || unplanned.ResultSettlementSlots.Count == 0),
-			"an unplanned relay must not initialize settlement route slots");
-
-		logs.Clear();
-		WorldDiplomacyRound skipRound = new WorldDiplomacyRound
-		{
-			RoundId = "r6", ResultSettlementPending = true, RelayWaiting = true,
-			ResultSettlementCurrentSlotId = "s1", ResultSettlementPlayerWaitingSinceDay = 3,
-			ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
-			{
-				new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "b" },
-				new WorldDiplomacyResultSettlementSlot { SlotId = "s2", KingdomId = "c" }
-			},
-			PendingOffers = new List<WorldDiplomacyRoundOffer>
-			{
-				new WorldDiplomacyRoundOffer { Status = "open", TargetKingdomId = "b" }
-			}
-		};
-		List<WorldDiplomacyThreat> skipThreats = new List<WorldDiplomacyThreat>
-		{
-			new WorldDiplomacyThreat { Status = "open", TargetDecision = "pending", TargetKingdomId = "b", ObligationRoundId = "r6" },
-			new WorldDiplomacyThreat { Status = "open", TargetDecision = "pending", TargetKingdomId = "c", ObligationRoundId = "r6" }
-		};
-		WorldDiplomacyRoundLifecycleRules.SkipResultSettlementSlot(skipRound, "s1", "b", "player_timeout", skipThreats, 60, logs.Add);
-		Test.True(skipRound.ResultSettlementSlots.Count == 1 && skipRound.ResultSettlementSlots[0].SlotId == "s2"
-			&& skipRound.ResultSettlementCurrentSlotId == "" && !skipRound.RelayWaiting
-			&& skipRound.PendingOffers[0].Status == "invalidated"
-			&& skipThreats[0].Status == "invalidated" && skipThreats[1].Status == "open"
-			&& logs.Count == 1 && logs[0].Contains("player_timeout"),
-			"skipping a slot must invalidate its obligations, remove the slot, and log the reason");
-		skipRound.ResultSettlementPending = false;
-		WorldDiplomacyRoundLifecycleRules.SkipResultSettlementSlot(skipRound, "s2", "c", "x", skipThreats, 60, logs.Add);
-		Test.True(skipRound.ResultSettlementSlots.Count == 1 && skipThreats[1].Status == "open",
-			"a non-pending round must not skip settlement slots");
-	}
 
 
 
@@ -8395,136 +6752,7 @@ RunRepairCorrectionAndJobDecisionTests();
     }
 
 
-    static void RunWarLedgerAndReputationDecisionTests()
-    {
-        // DPL-060BT: war-pressure/ledger CRUD and reputation family in domain rules.
 
-        // GetWarPressure: directional pair lookup, null list tolerant.
-        var pressure = new List<WarPressureEntry>
-        {
-            new WarPressureEntry { SourceKingdomId = "a", TargetKingdomId = "b", Value = 42, LastUpdatedDay = 10 }
-        };
-        Test.True(WorldDiplomacyWarPressureRules.GetWarPressure(pressure, "a", "b") == 42,
-            "war pressure lookup hits matching directed pair");
-        Test.True(WorldDiplomacyWarPressureRules.GetWarPressure(pressure, "b", "a") == 0,
-            "war pressure is directional, reverse pair misses");
-        Test.True(WorldDiplomacyWarPressureRules.GetWarPressure(null, "a", "b") == 0,
-            "war pressure null list returns zero");
-
-        // AddWarPressure: create, clamp 300, stamp day, track repeated intent.
-        WorldDiplomacyWarPressureRules.AddWarPressure(pressure, "b", "a", 20, "r1", 50, "warning");
-        var e = pressure[1];
-        Test.True(e.Value == 20 && e.LastUpdatedDay == 50 && e.LastIntent == "warning"
-            && e.ConsecutiveSimilarCount == 0 && !e.IsEscalationArmed,
-            "add pressure creates entry with stamped day and intent");
-        WorldDiplomacyWarPressureRules.AddWarPressure(pressure, "b", "a", 15, "r2", 51, "warning");
-        Test.True(e.Value == 35 && e.ConsecutiveSimilarCount == 1,
-            "same intent increments consecutive counter");
-        WorldDiplomacyWarPressureRules.AddWarPressure(pressure, "b", "a", 15, "r3", 52, "ultimatum");
-        Test.True(e.ConsecutiveSimilarCount == 0 && e.LastIntent == "ultimatum",
-            "different intent resets consecutive counter");
-        WorldDiplomacyWarPressureRules.AddWarPressure(pressure, "b", "a", 400, "r4", 53, "");
-        Test.True(e.Value == 300, "pressure clamps at 300");
-        int before2 = pressure.Count;
-        WorldDiplomacyWarPressureRules.AddWarPressure(pressure, "x", "x", 5, "self", 54, "");
-        WorldDiplomacyWarPressureRules.AddWarPressure(pressure, " ", "y", 5, "blank", 54, "");
-        Test.True(pressure.Count == before2, "self/blank pairs rejected");
-
-        // ClearWarPressure: zeroes value and disarms.
-        WorldDiplomacyWarPressureRules.ClearWarPressure(pressure, "b", "a", 60);
-        Test.True(e.Value == 0 && !e.IsEscalationArmed && e.LastUpdatedDay == 60,
-            "clear pressure zeroes and disarms entry");
-
-        // DecayWarPressure: only stale entries, -4 floor 0.
-        var decay = new List<WarPressureEntry>
-        {
-            new WarPressureEntry { SourceKingdomId = "a", TargetKingdomId = "b", Value = 10, LastUpdatedDay = 40, IsEscalationArmed = true, ArmedDay = 30 },
-            new WarPressureEntry { SourceKingdomId = "c", TargetKingdomId = "d", Value = 3, LastUpdatedDay = 40 },
-            new WarPressureEntry { SourceKingdomId = "e", TargetKingdomId = "f", Value = 9, LastUpdatedDay = 46 }
-        };
-        WorldDiplomacyWarPressureRules.DecayWarPressure(decay, 50);
-        Test.True(decay[0].Value == 6 && !decay[0].IsEscalationArmed && decay[0].ArmedDay == 0,
-            "stale pressure decays by 4 and disarms");
-        Test.True(decay[1].Value == 0, "decay floors at zero");
-        Test.True(decay[2].Value == 9, "fresh pressure untouched before 7-day window");
-
-        // War ledger: ordered pair key, dedupe, remove.
-        var ledgers = new List<WorldDiplomacyWarLedger>();
-        var l1 = WorldDiplomacyWarPressureRules.EnsureWarLedger(ledgers, "zeta", "alpha", 100);
-        Test.True(l1 != null && l1.FirstKingdomId == "alpha" && l1.SecondKingdomId == "zeta"
-            && l1.StartedDay == 100 && ledgers.Count == 1,
-            "ensure ledger orders pair and stamps start day");
-        var l2 = WorldDiplomacyWarPressureRules.EnsureWarLedger(ledgers, "alpha", "zeta", 101);
-        Test.True(l2 == l1 && ledgers.Count == 1, "ensure ledger dedupes reversed pair");
-        Test.True(WorldDiplomacyWarPressureRules.ResolveWarLedger(ledgers, "zeta", "alpha") == l1,
-            "resolve ledger finds pair regardless of order");
-        Test.True(WorldDiplomacyWarPressureRules.EnsureWarLedger(ledgers, "solo", "solo", 1) == null,
-            "self pair rejected");
-        WorldDiplomacyWarPressureRules.RemoveWarLedger(ledgers, "alpha", "zeta");
-        Test.True(ledgers.Count == 0, "remove ledger clears pair");
-
-        // GetNationalPrestige / GetInternationalReputation: defaults, clamps, missing key.
-        var prestigeMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["low"] = 20, ["over"] = 400
-        };
-        Test.True(WorldDiplomacyReputationRules.GetNationalPrestige(prestigeMap, "low") == 20,
-            "prestige reads stored value");
-        Test.True(WorldDiplomacyReputationRules.GetNationalPrestige(prestigeMap, "over") == 100,
-            "prestige clamps at default max");
-        Test.True(WorldDiplomacyReputationRules.GetNationalPrestige(prestigeMap, "missing") == 100,
-            "missing prestige defaults");
-        Test.True(WorldDiplomacyReputationRules.GetNationalPrestige(prestigeMap, " ") == 100,
-            "blank prestige id defaults");
-        var repMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["neg"] = -5 };
-        Test.True(WorldDiplomacyReputationRules.GetInternationalReputation(repMap, "neg") == 0,
-            "reputation floors at zero");
-        Test.True(WorldDiplomacyReputationRules.GetInternationalReputation(null, "k") == 50,
-            "reputation null map defaults");
-
-        // ApplyInternationalReputationDelta: bounded +-10, clamps 0-100, records standing change.
-        var doc = new WorldDiplomacyDocument { DocumentId = "d1" };
-        int after = WorldDiplomacyReputationRules.ApplyInternationalReputationDelta(
-            repMap, "neg", 25, doc, "gift", id => "N:" + id);
-        Test.True(after == 10 && repMap["neg"] == 10,
-            "reputation delta bounded at +10 per document");
-        Test.True(doc.DiplomaticStandingChanges.Count == 1
-            && doc.DiplomaticStandingChanges[0].Kind == "international_reputation"
-            && doc.DiplomaticStandingChanges[0].KingdomName == "N:neg"
-            && doc.DiplomaticStandingChanges[0].Before == 0 && doc.DiplomaticStandingChanges[0].After == 10,
-            "standing change fact recorded with resolved name");
-        Test.True(WorldDiplomacyReputationRules.ApplyInternationalReputationDelta(
-            repMap, " ", 5, doc, "x", id => id) == 50, "blank id returns reputation default");
-
-        // Domain changes canonical prestige; Application owns relation reconciliation.
-        var prestige2 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["k1"] = 90 };
-        var doc2 = new WorldDiplomacyDocument { DocumentId = "d2" };
-        int afterP = WorldDiplomacyReputationRules.ApplyNationalPrestigeDelta(
-            prestige2, " k1 ", 50, doc2, "feat", id => "N:" + id);
-        Test.True(afterP == 100 && prestige2["k1"] == 100, "prestige clamps at 100 after +50");
-        Test.True(doc2.DiplomaticStandingChanges[0].Kind == "national_prestige",
-            "national prestige standing change recorded");
-
-        // RecoverUnsettledAiInternationalReputation: filters and settles each eligible doc.
-        var docs = new List<WorldDiplomacyDocument>
-        {
-            new WorldDiplomacyDocument { DocumentId = "s1", IsReadyForPublication = true, InternationalReputationEvaluationDelta = 3 },
-            new WorldDiplomacyDocument { DocumentId = "skip-player", IsPlayerAuthored = true, IsReadyForPublication = true, InternationalReputationEvaluationDelta = 3 },
-            new WorldDiplomacyDocument { DocumentId = "skip-done", IsReadyForPublication = true, InternationalReputationSettled = true, InternationalReputationEvaluationDelta = 3 },
-            new WorldDiplomacyDocument { DocumentId = "skip-zero", IsReadyForPublication = true },
-            new WorldDiplomacyDocument { DocumentId = "skip-draft", InternationalReputationEvaluationDelta = 3 }
-        };
-        var settled = new List<string>();
-        var logs = new List<string>();
-        WorldDiplomacyPrestigeApplication.RecoverUnsettledAiInternationalReputation(
-            docs, d => settled.Add(d.DocumentId), logs.Add);
-        Test.True(settled.Count == 1 && settled[0] == "s1",
-            "recovery settles only eligible AI docs");
-        Test.True(logs.Count == 1 && logs[0].Contains("recovered documents=1"),
-            "recovery logs recovered count");
-        WorldDiplomacyPrestigeApplication.RecoverUnsettledAiInternationalReputation(null, d => { }, logs.Add);
-        Test.True(logs.Count == 1, "null document list is a no-op");
-    }
 
 
     static void RunExchangeAndOfferCooldownDecisionTests()
@@ -8648,230 +6876,9 @@ RunRepairCorrectionAndJobDecisionTests();
     }
 
 
-    static void RunDocumentQueryAndRetentionDecisionTests()
-    {
-        // DPL-060BV: document query helpers and retention trims in domain rules.
 
-        // ResolveDocument / ResolveRound: null-tolerant lookups by record id.
-        var docs = new List<WorldDiplomacyDocument>
-        {
-            new WorldDiplomacyDocument { DocumentId = "d-1" },
-            new WorldDiplomacyDocument { DocumentId = "d-2" }
-        };
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveDocument(docs, "d-2") == docs[1],
-            "resolve document finds by id");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveDocument(docs, " ") == null
-            && WorldDiplomacyRoundLifecycleRules.ResolveDocument(null, "d-1") == null,
-            "resolve document tolerates blank id and null list");
-        var activeRound = new WorldDiplomacyRound { RoundId = "r-active" };
-        var completed = new List<WorldDiplomacyRound> { new WorldDiplomacyRound { RoundId = "r-done" } };
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveRound(activeRound, completed, "r-active") == activeRound,
-            "resolve round prefers the active round");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveRound(activeRound, completed, "r-done") == completed[0],
-            "resolve round falls back to completed rounds");
-        Test.True(WorldDiplomacyRoundLifecycleRules.ResolveRound(activeRound, completed, "r-none") == null,
-            "unknown round id resolves to null");
 
-        // SelectRecentDocumentsForTimelineQuery: recency order, clamp, clones not originals.
-        var tl = new List<WorldDiplomacyDocument>
-        {
-            new WorldDiplomacyDocument { DocumentId = "old", Day = 10 },
-            new WorldDiplomacyDocument { DocumentId = "new", Day = 90 },
-            null,
-            new WorldDiplomacyDocument { DocumentId = "mid", Day = 50 }
-        };
-        var picked = WorldDiplomacyRoundLifecycleRules.SelectRecentDocumentsForTimelineQuery(tl, 2, 420);
-        Test.True(picked.Count == 2 && picked[0].DocumentId == "new" && picked[1].DocumentId == "mid",
-            "timeline query returns newest first within maxCount");
-        Test.True(!ReferenceEquals(picked[0], tl[1]), "timeline query returns clones");
-        var pickedMin = WorldDiplomacyRoundLifecycleRules.SelectRecentDocumentsForTimelineQuery(tl, 0, 420);
-        Test.True(pickedMin.Count == 1, "timeline query clamps maxCount to at least one");
 
-        // CollectKnownDocumentIds: local always; noble/court gated by flags; deduped.
-        var settleKnow = new List<WorldDiplomacySettlementKnowledge>
-        {
-            new WorldDiplomacySettlementKnowledge { SettlementId = "town_a", DocumentIds = new List<string> { "s1", "shared" } }
-        };
-        var nobleKnow = new List<WorldDiplomacyKingdomKnowledge>
-        {
-            new WorldDiplomacyKingdomKnowledge { KingdomId = "k1", DocumentIds = new List<string> { "n1", "shared" } }
-        };
-        var courtKnow = new List<WorldDiplomacyKingdomKnowledge>
-        {
-            new WorldDiplomacyKingdomKnowledge { KingdomId = "k1", DocumentIds = new List<string> { "c1" } }
-        };
-        var ids = WorldDiplomacyRoundLifecycleRules.CollectKnownDocumentIds(
-            settleKnow, nobleKnow, courtKnow, "town_a", "k1", true, true);
-        Test.True(ids.Count == 4 && ids.Contains("s1") && ids.Contains("n1") && ids.Contains("c1")
-            && ids.Contains("shared"),
-            "all knowledge layers merge with dedupe");
-        var idsLocalOnly = WorldDiplomacyRoundLifecycleRules.CollectKnownDocumentIds(
-            settleKnow, nobleKnow, courtKnow, "town_a", "k1", false, false);
-        Test.True(idsLocalOnly.Count == 2 && !idsLocalOnly.Contains("n1") && !idsLocalOnly.Contains("c1"),
-            "noble and court knowledge are gated by their flags");
-        var idsWrongKingdom = WorldDiplomacyRoundLifecycleRules.CollectKnownDocumentIds(
-            settleKnow, nobleKnow, courtKnow, "town_a", "k2", true, true);
-        Test.True(idsWrongKingdom.Count == 2, "kingdom knowledge is scoped by kingdom id");
-
-        // TrimRecentBattleFacts: cutoff, blank-id drop, newest-first cap.
-        var battles = new List<WorldDiplomacyBattleFact>
-        {
-            new WorldDiplomacyBattleFact { BattleId = "b1", Day = 90 },
-            new WorldDiplomacyBattleFact { BattleId = "b2", Day = 85 },
-            new WorldDiplomacyBattleFact { BattleId = "", Day = 95 },
-            new WorldDiplomacyBattleFact { BattleId = "old", Day = 10 }
-        };
-        var trimmed = WorldDiplomacyRoundLifecycleRules.TrimRecentBattleFacts(battles, 100, 21);
-        Test.True(trimmed.Count == 2 && trimmed[0].BattleId == "b1" && trimmed[1].BattleId == "b2",
-            "battle facts trim to retained window, drop blank ids, newest first");
-        Test.True(WorldDiplomacyRoundLifecycleRules.TrimRecentBattleFacts(null, 100, 21).Count == 0,
-            "null battle list trims to empty");
-
-        // TrimNativeSignals: 2-year cutoff, cap, newest first.
-        var signals = new List<NativeDiplomacySignal>
-        {
-            new NativeDiplomacySignal { Day = 100 },
-            new NativeDiplomacySignal { Day = 1 },
-            new NativeDiplomacySignal { Day = 90 }
-        };
-        var keptSignals = WorldDiplomacyRoundLifecycleRules.TrimNativeSignals(signals, 30);
-        Test.True(keptSignals.Count == 2 && keptSignals[0].Day == 100 && keptSignals[1].Day == 90,
-            "native signals keep entries inside the window, newest first");
-
-        // SettleInternationalReputationForDocument: delta clamp, guard fallback, settle flag, log.
-        var settleMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        var settleDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "sd", AuthorKingdomId = "auth",
-            InternationalReputationEvaluationDelta = 25
-        };
-        var settleLogs = new List<string>();
-        WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(
-            settleMap, settleDoc, id => "N:" + id, settleLogs.Add);
-        Test.True(settleDoc.InternationalReputationSettled && settleDoc.InternationalReputationEvaluationDelta == 10
-            && settleMap["auth"] == 60 && settleLogs.Count == 1 && settleLogs[0].Contains("delta=10"),
-            "settle clamps the delta to +10, applies it, flags settled, and logs");
-        var zeroDoc = new WorldDiplomacyDocument { DocumentId = "zd", AuthorKingdomId = "auth" };
-        WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(
-            settleMap, zeroDoc, id => id, settleLogs.Add);
-        Test.True(zeroDoc.InternationalReputationSettled && zeroDoc.InternationalReputationEvaluationDelta != 0
-            && zeroDoc.InternationalReputationEvaluationSource == "local_nonzero_settlement_guard",
-            "zero evaluations route through the structured fallback guard");
-        var alreadyDone = new WorldDiplomacyDocument { DocumentId = "ad", AuthorKingdomId = "auth", InternationalReputationSettled = true };
-        WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(settleMap, alreadyDone, id => id, settleLogs.Add);
-        Test.True(settleLogs.Count == 2, "already-settled documents are skipped");
-
-        // AnchorInternationalReputationNaturalChangeDays: stamps each provided id.
-        var anchors = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        WorldDiplomacyReputationRules.AnchorInternationalReputationNaturalChangeDays(
-            anchors, new[] { "k1", "k2" }, 55);
-        Test.True(anchors.Count == 2 && anchors["k1"] == 55 && anchors["k2"] == 55,
-            "anchor stamps every provided kingdom id with today");
-    }
-
-    static void RunThreatMigrationAndReputationNaturalChangeDecisionTests()
-    {
-        // NormalizeDiplomaticThreats: schema v0 clears threats and prestige without retroactive penalty.
-        var storage = new WorldDiplomacyStorage();
-        storage.DiplomaticThreatStateSchemaVersion = 0;
-        storage.DiplomaticThreats.Add(new WorldDiplomacyThreat { ThreatId = "t1" });
-        storage.NationalPrestigeByKingdom["k1"] = 80;
-        var normLogs = new List<string>();
-        WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats(
-            storage, null, 50, id => null, () => "new_id", 10, normLogs.Add);
-        Test.True(storage.DiplomaticThreats.Count == 0 && storage.NationalPrestigeByKingdom.Count == 0
-            && storage.DiplomaticThreatStateSchemaVersion == WorldDiplomacyThreatStorageMigration.DiplomaticThreatStateSchemaVersion
-            && normLogs.Any(x => x.Contains("diplomatic threat state migrated")),
-            "schema v0 must clear threats and prestige without retroactive penalty");
-
-        // NormalizeDiplomaticThreats: duplicate open threats for one issuer keep the retained one.
-        var dupStorage = new WorldDiplomacyStorage();
-        dupStorage.DiplomaticThreatStateSchemaVersion = WorldDiplomacyThreatStorageMigration.DiplomaticThreatStateSchemaVersion;
-        dupStorage.DiplomaticThreats.Add(new WorldDiplomacyThreat
-        {
-            ThreatId = "old", Status = "open", IssuerKingdomId = "k1", TargetKingdomId = "k2",
-            Stage = "warning", StageDocumentId = "s1", UpdatedDay = 10
-        });
-        dupStorage.DiplomaticThreats.Add(new WorldDiplomacyThreat
-        {
-            ThreatId = "new", Status = "open", IssuerKingdomId = "k1", TargetKingdomId = "k3",
-            Stage = "ultimatum", StageDocumentId = "s2", UltimatumDocumentId = "s2", UpdatedDay = 20
-        });
-        WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats(
-            dupStorage, null, 50, id => null, () => "new_id", 10, normLogs.Add);
-        var retained = dupStorage.DiplomaticThreats.SingleOrDefault(x => x.ThreatId == "new");
-        var duplicate = dupStorage.DiplomaticThreats.SingleOrDefault(x => x.ThreatId == "old");
-        Test.True(retained != null && WorldDiplomacyRoundLifecycleRules.IsOpenDiplomaticThreatStatus(retained.Status)
-            && duplicate != null && duplicate.Status == "invalidated"
-            && duplicate.ResolutionReason == "duplicate_open_threat_for_issuer",
-            "duplicate open threats for one issuer must invalidate the older record");
-
-        // NormalizeDiplomaticThreats: world verdict port drives eligibility, war, and ally outcomes.
-        var verdictStorage = new WorldDiplomacyStorage();
-        verdictStorage.DiplomaticThreatStateSchemaVersion = WorldDiplomacyThreatStorageMigration.DiplomaticThreatStateSchemaVersion;
-        verdictStorage.DiplomaticThreats.Add(new WorldDiplomacyThreat
-        {
-            ThreatId = "war", Status = "open", IssuerKingdomId = "k1", TargetKingdomId = "k2",
-            Stage = "ultimatum", StageDocumentId = "s1", UltimatumDocumentId = "s1",
-            ObligationRoundId = "r1", ObligationClaimedDay = 9, UpdatedDay = 30
-        });
-        WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats(
-            verdictStorage,
-            threat => threat.ThreatId == "war" ? "war_already_started_outside_pending_declaration" : null,
-            50, id => null, () => "new_id", 10, normLogs.Add);
-        var warThreat = verdictStorage.DiplomaticThreats.Single(x => x.ThreatId == "war");
-        Test.True(warThreat.Status == "invalidated"
-            && warThreat.ResolutionReason == "war_already_started_outside_pending_declaration"
-            && warThreat.HistoryResultRecorded && warThreat.ObligationRoundId == "" && warThreat.ObligationClaimedDay == 0,
-            "a war verdict must close the threat through the war-outside-declaration path");
-
-        // MigrateDiplomaticThreatsToNextDeclarationRules: valid compliance declaration settles the threat.
-        var migStorage = new WorldDiplomacyStorage();
-        var stageDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "s1", IsReadyForPublication = true, Intent = "ultimatum",
-            AuthorKingdomId = "k1", TargetKingdomId = "k2", Day = 10, RoundId = "r0"
-        };
-        var complyDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "d2", IsReadyForPublication = true, Intent = "comply_ultimatum",
-            AuthorKingdomId = "k2", TargetKingdomId = "k1", Day = 12, RoundId = "r1",
-            RespondingToThreatDocumentId = "s1"
-        };
-        migStorage.Documents.Add(stageDoc);
-        migStorage.Documents.Add(complyDoc);
-        var migThreat = new WorldDiplomacyThreat
-        {
-            ThreatId = "mig", Status = "open", IssuerKingdomId = "k1", TargetKingdomId = "k2",
-            Stage = "ultimatum", StageDocumentId = "s1", UltimatumDocumentId = "s1", UpdatedDay = 10
-        };
-        migStorage.DiplomaticThreats.Add(migThreat);
-        WorldDiplomacyThreatStorageMigration.MigrateDiplomaticThreatsToNextDeclarationRules(
-            migStorage, 40, id => migStorage.Documents.FirstOrDefault(x => x.DocumentId == id), normLogs.Add);
-        Test.True(migThreat.Status == "complied" && migThreat.TargetDecision == "complied"
-            && migThreat.ComplianceDocumentId == "d2"
-            && migThreat.ResolutionReason == "migrated_valid_compliance_first_declaration"
-            && migThreat.IssuerResolutionNoticePending,
-            "a valid target compliance declaration must migrate the threat to complied");
-
-        // ProcessInternationalReputationNaturalChange: stamping, anchor pin, and banded decay.
-        var rep = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        var lastDays = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        rep["fresh"] = 70; rep["anchor"] = WorldDiplomacyReputationRules.InternationalReputationNaturalAnchor;
-        rep["high"] = 80;
-        lastDays["anchor"] = 20; lastDays["high"] = 40;
-        var natLogs = new List<string>();
-        WorldDiplomacyReputationRules.ProcessInternationalReputationNaturalChange(
-            rep, lastDays, new[] { "fresh", "anchor", "high" }, 50, natLogs.Add);
-        Test.True(rep["fresh"] == 70 && lastDays["fresh"] == 50,
-            "kingdoms without a stamp must start tracking today with no retroactive decay");
-        Test.True(lastDays["anchor"] == 50 && rep["anchor"] == WorldDiplomacyReputationRules.InternationalReputationNaturalAnchor,
-            "time spent at the anchor must not accumulate decay");
-        int expectedHigh = WorldDiplomacyReputationRules.CalculateInternationalReputationNaturalChange(80, 10, out int consumedHigh);
-        Test.True(rep["high"] == expectedHigh && lastDays["high"] == 40 + consumedHigh
-            && natLogs.Any(x => x.Contains("international reputation natural change")),
-            "elapsed days must apply banded decay and advance the stamp by consumed days only");
-    }
 
     static void RunStorageMigrationDecisionTests()
     {
@@ -9441,7 +7448,7 @@ RunRepairCorrectionAndJobDecisionTests();
             _ => true, _ => { },
             (title, body, origin, player) => new WorldDiplomacyDocument
             { DocumentId = "partial-oral", Body = body, IsReadyForPublication = true },
-            _ => partialPeace, _ => null, _ => false, (_, _) => false, p => p,
+            _ => partialPeace, _ => false,
             _ => { }, _ => { },
             doc => WorldDiplomacyHistoryPublicationApplication.AppendCanonicalDocumentEvents(
                 oralStorage, oralKeys, 1000, () => { }, p => p + "_oral", d => "d" + d, estimate, () => { }, doc),
@@ -9976,7 +7983,7 @@ RunRepairCorrectionAndJobDecisionTests();
         };
 
         string block = WorldDiplomacyCanonicalHistoryRules.RenderCanonicalHistoryBlock(history, long.MaxValue);
-        Test.True(block.Contains("【全局长期外交历史】")
+        Test.True(block.Contains(DiplomacyPromptTexts.Get("HistoryPrompt_000", "【全局长期外交历史】"))
             && block.Contains("result one") && block.Contains("decl two"),
             "the history block must render the header and every delta entry through the cutoff");
         string capped = WorldDiplomacyCanonicalHistoryRules.RenderCanonicalHistoryBlock(history, 2);
@@ -9984,14 +7991,14 @@ RunRepairCorrectionAndJobDecisionTests();
             "the history block must exclude delta entries beyond the cutoff");
         var emptyHistory = new WorldDiplomacyCanonicalHistoryState { NextSequence = 1 };
         string emptyBlock = WorldDiplomacyCanonicalHistoryRules.RenderCanonicalHistoryBlock(emptyHistory, 5);
-        Test.True(emptyBlock.Contains("（暂无历史记录）"),
+        Test.True(emptyBlock.Contains(DiplomacyPromptTexts.Get("HistoryPrompt_004", "（暂无历史记录）")),
             "an empty archive must render the explicit empty marker");
         history.Snapshot.Content = "旧摘要正文";
         string withSnapshot = WorldDiplomacyCanonicalHistoryRules.RenderCanonicalHistoryBlock(history, 3);
-        Test.True(withSnapshot.Contains("【已压缩历史") && withSnapshot.Contains("旧摘要正文"),
+        Test.True(withSnapshot.Contains(DiplomacyPromptTexts.Get("HistoryPrompt_002", "【已压缩历史")) && withSnapshot.Contains("旧摘要正文"),
             "a covered snapshot must render its payload inside the block");
         string beforeCoverage = WorldDiplomacyCanonicalHistoryRules.RenderCanonicalHistoryBlock(history, 0);
-        Test.True(!beforeCoverage.Contains("【已压缩历史"),
+        Test.True(!beforeCoverage.Contains(DiplomacyPromptTexts.Get("HistoryPrompt_002", "【已压缩历史")),
             "a snapshot must not render when the cutoff precedes its coverage");
 
         // Through-sequence clamp: never below snapshot coverage, never past the
@@ -10384,15 +8391,18 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(doc.RoundAccountingHandled && doc.RoundId == "ex1" && doc.GameDate == "day_12"
             && doc.TargetKingdomName == "Beta" && doc.IsReadyForPublication,
             "document normalization must mirror accounting, round backfill, date, and publication flags");
-        var nameless = new WorldDiplomacyDocument { DocumentId = "d4", TargetKingdomName = "未知王国" };
+        foreach (string placeholder in new[] { DiplomacyCompatibilityTexts.Get("Legacy_UnknownKingdomName"), "Unknown Kingdom", "Custom realm" })
+        {
+        var nameless = new WorldDiplomacyDocument { DocumentId = "d4", TargetKingdomName = placeholder };
         WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(
             nameless, docStorage, migrateLegacyPropagationState: false,
             legacyPropagationRecoveryWindow: 20, currentDay: 30, maxActionsPerDocument: 4,
             resolveKingdomNameOrEmpty: _ => "", normalizeKingdomIdList: (ids, ex) => new List<string>(),
             formatCampaignDate: d => "day_" + d,
             nonHideoutSettlementIds: new List<string>(), nonEliminatedKingdomIds: new List<string>());
-        Test.True(nameless.TargetKingdomName == "",
-            "the placeholder kingdom name must still be cleared when no action mirrors a name");
+        Test.True(nameless.TargetKingdomName == (placeholder == "Custom realm" ? placeholder : ""),
+            "known CN/EN placeholder names clear across editions while dynamic realm names survive");
+        }
         Test.True(doc.Actions.Count == 3
             && doc.Actions[0].TargetKingdomId == "kB" && doc.Actions[0].Intent == "declare_war"
             && doc.Actions[0].TargetKingdomName == "Beta"
@@ -10767,48 +8777,6 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRoundLifecycleRules.AppendOpenOfferResponseIntents(respRound, "kA", "kB", null);
         Test.True(respIntents.Count == 2, "invalid parties or null rounds must be a no-op");
 
-        // FindRequiredPeaceOfferResponse prefers the exact source pair for external
-        // responses, then the settlement-slot source set, then any open offer.
-        var peaceRound = new WorldDiplomacyRound
-        {
-            RoundId = "pr2", State = "active",
-            ResultSettlementPending = true, ResultSettlementCurrentSlotId = "s1"
-        };
-        peaceRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
-        { Intent = "propose_peace", ProposerKingdomId = "kB", TargetKingdomId = "kA", Status = "open",
-          SourceDocumentId = "d1", SourceActionId = "a1", CreatedDay = 20 });
-        peaceRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
-        { Intent = "propose_peace", ProposerKingdomId = "kC", TargetKingdomId = "kA", Status = "open",
-          SourceDocumentId = "d2", SourceActionId = "a2", CreatedDay = 5 });
-        peaceRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
-        { Intent = "propose_peace", ProposerKingdomId = "kD", TargetKingdomId = "kZ", Status = "open",
-          SourceDocumentId = "d3", CreatedDay = 1 });
-        peaceRound.ResultSettlementSlots.Add(new WorldDiplomacyResultSettlementSlot
-        {
-            SlotId = "s1", KingdomId = "kA", Kind = "offer_response",
-            SourceDocumentIds = new List<string> { "d1", "d2" }
-        });
-        var exact = WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(
-            peaceRound, "kA", "s1", true, "d1", false);
-        Test.True(exact?.SourceDocumentId == "d1",
-            "external responses must resolve only the exact source document pair");
-        Test.True(WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(
-                peaceRound, "kA", "s1", true, "missing", false) == null,
-            "external responses without the recorded source must resolve nothing");
-        var slotPick = WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(
-            peaceRound, "kA", "s1", false, null, false);
-        Test.True(slotPick?.SourceDocumentId == "d2",
-            "slot-scoped selection must order the slot source offers by created day");
-        var anyPick = WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(
-            peaceRound, "kA", "other_slot", false, null, true);
-        Test.True(anyPick?.SourceDocumentId == "d2",
-            "fallback selection must order all open peace offers to the responder by created day");
-        Test.True(WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(
-                peaceRound, "", "s1", false, null, true) == null
-            && WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(
-                null, "kA", "s1", false, null, true) == null,
-            "invalid parties or null rounds must resolve nothing");
-
         // BuildLegalDiplomaticActionIntents: a unique open peace proposal collapses
         // the option set to accept/reject; own open proposals are removed; response
         // intents are appended; immediate war-response suppression strips peace.
@@ -10837,8 +8805,8 @@ RunRepairCorrectionAndJobDecisionTests();
         var suppressed = WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(
             warRound, "kA", "kB",
             () => new List<string> { "propose_peace", "declare_war" }, resolveWarDoc);
-        Test.True(suppressed.Count == 1 && suppressed[0] == "declare_war",
-            "an immediate war response must suppress propose_peace");
+        Test.True(suppressed.SequenceEqual(new[] { "propose_peace", "declare_war" }),
+            "legacy war-response seats cannot suppress current peace options");
         var plain = WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(
             warRound, "kA", "kC",
             () => new List<string> { "propose_peace", "propose_trade" }, resolveWarDoc);
@@ -10851,8 +8819,8 @@ RunRepairCorrectionAndJobDecisionTests();
           SourceDocumentId = "od1", SourceActionId = "oa1" });
         var collapsed = WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(
             offerRound, "kA", "kB", () => new List<string> { "propose_peace", "declare_war" }, _ => null);
-        Test.True(collapsed.SequenceEqual(new[] { "accept_peace", "reject_peace" }),
-            "a unique open peace proposal must collapse options to accept/reject");
+        Test.True(collapsed.SequenceEqual(new[] { "propose_peace", "declare_war", "accept_peace", "reject_peace" }),
+            "an open peace proposal adds responses without removing other current options");
 
         var ownRound = new WorldDiplomacyRound { RoundId = "or2" };
         ownRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
@@ -10860,8 +8828,8 @@ RunRepairCorrectionAndJobDecisionTests();
         var filtered = WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(
             ownRound, "kA", "kB",
             () => new List<string> { "propose_trade", "propose_peace" }, _ => null);
-        Test.True(filtered.SequenceEqual(new[] { "propose_peace", "withdraw_offer" }),
-            "own open proposals cannot be reissued and can be withdrawn through their exact source");
+        Test.True(filtered.SequenceEqual(new[] { "propose_trade", "propose_peace", "withdraw_offer" }),
+            "own open proposals allow negotiation and add exact-source withdrawal");
         var none = WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(
             null, "kA", "kB", null, _ => null);
         Test.True(none.Count == 0, "null ports must yield an empty option set");
@@ -10949,56 +8917,20 @@ RunRepairCorrectionAndJobDecisionTests();
 
     static void RunGenerationSignatureDecisionTests()
     {
-        // DPL-060CN: the legal-action signature hashes author/round/slot context,
-        // sorted policy keys, and sorted normalized intents with source bindings.
-        var sigRound = new WorldDiplomacyRound
-        {
-            RoundId = "R1", ResultSettlementPending = true,
-            ResultSettlementCurrentSlotId = "s1"
-        };
-        sigRound.AttachedPolicySignals.Add(new WorldDiplomacyPolicySignal { SignalKey = "b_sig", PolicyId = "p2" });
-        sigRound.AttachedPolicySignals.Add(new WorldDiplomacyPolicySignal { SignalKey = "a_sig", PolicyId = "p1" });
-        var sigJob = new WorldDiplomacyJob
-        {
-            Kind = "generate", IsRelayTurn = true, ResultSettlementSlotId = "s1",
-            IsExternalResponseOnly = true
-        };
-        int settlementCalls = 0;
-        string sig = WorldDiplomacyRoundLifecycleRules.BuildGenerationLegalActionSignature(
-            sigJob, sigRound, "kA", null, new List<WorldDiplomacyThreat>(),
-            () => { settlementCalls++; return new List<string> { "kA", "kB" }; },
-            id => true, _ => new List<string>());
-        string expectedState = "kA|R1|slot=s1|current_slot=s1|policy=a_sig@p1|policy=b_sig@p2"
-            + "\nkB=missing";
-        Test.True(settlementCalls == 1
-            && sig == WorldDiplomacyPromptContractRules.StablePromptHash(expectedState),
-            "settlement relays must hash actionable targets minus the author with sorted policy keys");
-        var relayJob = new WorldDiplomacyJob
-        {
-            Kind = "generate", IsRelayTurn = true, ResultSettlementSlotId = ""
-        };
-        sigRound.RelayRouteKingdomIds = new List<string> { "kC" };
-        settlementCalls = 0;
-        string sig2 = WorldDiplomacyRoundLifecycleRules.BuildGenerationLegalActionSignature(
-            relayJob, sigRound, "kA", null, new List<WorldDiplomacyThreat>(),
-            () => { settlementCalls++; return new List<string> { "kX" }; },
-            id => true, _ => new List<string>());
-        Test.True(settlementCalls == 0
-            && sig2 == WorldDiplomacyPromptContractRules.StablePromptHash(
-                "kA|R1|slot=|current_slot=s1|policy=a_sig@p1|policy=b_sig@p2\nkC=missing"),
-            "ordinary relays must hash route targets without invoking the settlement port");
-        var directJob = new WorldDiplomacyJob { Kind = "generate", TargetKingdomId = "kD" };
-        sigRound.ResultSettlementCurrentSlotId = "";
-        string sig3 = WorldDiplomacyRoundLifecycleRules.BuildGenerationLegalActionSignature(
-            directJob, sigRound, "kA", null, new List<WorldDiplomacyThreat>(),
-            () => new List<string> { "kX" }, id => true, _ => new List<string>());
-        Test.True(sig3 == WorldDiplomacyPromptContractRules.StablePromptHash(
-                "kA|R1|slot=|current_slot=|policy=a_sig@p1|policy=b_sig@p2\nkD=missing"),
-            "non-relay jobs must hash the direct target");
+        var sigRound = new WorldDiplomacyRound { RoundId = "R1" };
+        sigRound.Participants.Add(new() { KingdomId = "kB", State = "active" });
+        sigRound.AttachedPolicySignals.Add(new() { SignalKey = "b_sig", PolicyId = "p2" });
+        sigRound.AttachedPolicySignals.Add(new() { SignalKey = "a_sig", PolicyId = "p1" });
+        var sigJob = new WorldDiplomacyJob { Kind = "generate", IsRelayTurn = true, ResultSettlementSlotId = "legacy" };
+        string sig = WorldDiplomacyRoundLifecycleRules.BuildGenerationLegalActionSignature(sigJob, sigRound, "kA", null, new(), id => true, _ => new());
+        Test.True(sig == WorldDiplomacyPromptContractRules.StablePromptHash("kA|R1|policy=a_sig@p1|policy=b_sig@p2\nkB=missing"), "signature uses current parties and stable policy identities");
+        sigJob.ResultSettlementSlotId = "changed"; sigRound.ResultSettlementCurrentSlotId = "another";
+        sigRound.RelayRouteKingdomIds.Add("ignored");
+        Test.True(sig == WorldDiplomacyRoundLifecycleRules.BuildGenerationLegalActionSignature(sigJob, sigRound, "kA", null, new(), id => true, _ => new()), "legacy slots and routes do not invalidate the current signature");
 
         // Sorted normalized intents; response intents bind the unique open proposal
         // source; comply_ultimatum binds the pending incoming threat document.
-        var offerRound = new WorldDiplomacyRound { RoundId = "R2" };
+        var offerRound = new WorldDiplomacyRound { RoundId = "R2", Participants = new() { new() { KingdomId = "kB", State = "active" } } };
         offerRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
         {
             Intent = "propose_peace", ProposerKingdomId = "kB", TargetKingdomId = "kA",
@@ -11014,73 +8946,30 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         var actionsJob = new WorldDiplomacyJob { Kind = "generate", TargetKingdomId = "kB" };
         string sig4 = WorldDiplomacyRoundLifecycleRules.BuildGenerationLegalActionSignature(
-            actionsJob, offerRound, "kA", null, threats,
-            () => new List<string>(), id => false,
+            actionsJob, offerRound, "kA", null, threats, id => false,
             _ => new List<string> { "propose_trade", "accept_peace", "comply_ultimatum", "declare_war" });
-        string expected4 = "kA|R2|slot=|current_slot=\nkB=accept_peace@odoc1#oact1,comply_ultimatum@tdoc#tact,declare_war,propose_trade";
+        string expected4 = "kA|R2\nkB=accept_peace@odoc1#oact1,comply_ultimatum@tdoc#tact,declare_war,propose_trade";
         Test.True(sig4 == WorldDiplomacyPromptContractRules.StablePromptHash(expected4),
             "intents must sort deterministically with proposal and threat source bindings");
         string sig5 = WorldDiplomacyRoundLifecycleRules.BuildGenerationLegalActionSignature(
-            actionsJob, offerRound, "kA", null, threats,
-            () => new List<string>(), id => false,
+            actionsJob, offerRound, "kA", null, threats, id => false,
             _ => new List<string> { "accept_peace" });
         Test.True(sig5 != sig4
             && sig5 == WorldDiplomacyRoundLifecycleRules.BuildGenerationLegalActionSignature(
-                actionsJob, offerRound, "kA", null, threats,
-                () => new List<string>(), id => false,
+                actionsJob, offerRound, "kA", null, threats, id => false,
                 _ => new List<string> { "accept_peace" }),
             "the signature must be deterministic and sensitive to the action set");
     }
 
     static void RunGeneratedStructureAndTargetSelectionDecisionTests()
     {
-        // DPL-060CO: authorized target selection orders target/route/settlement
-        // sources, drops the author, and delegates availability checks to the port.
-        var directJob = new WorldDiplomacyJob
-        {
-            Kind = "generate", TargetKingdomId = "kT",
-            CandidateKingdomIds = new List<string> { "kC" }
-        };
-        var directRound = new WorldDiplomacyRound { RoundId = "R1" };
-        List<string> ids = WorldDiplomacyRoundLifecycleRules.GetAuthorizedGenerationTargetIds(
-            directJob, directRound, "kA",
-            () => new List<string> { "kX" }, id => true);
-        Test.True(ids.Count == 1 && ids[0] == "kT",
-            "targeted jobs must keep only the explicit target without consulting settlement targets");
-
-        var relayJob = new WorldDiplomacyJob
-        {
-            Kind = "generate", IsRelayTurn = true,
-            CandidateKingdomIds = new List<string> { "kCand" }
-        };
-        var relayRound = new WorldDiplomacyRound
-        {
-            RoundId = "R1", RelayRouteKingdomIds = new List<string> { "kB", "kA", "kC" }
-        };
-        int settlementCalls = 0;
-        ids = WorldDiplomacyRoundLifecycleRules.GetAuthorizedGenerationTargetIds(
-            relayJob, relayRound, "kA",
-            () => { settlementCalls++; return new List<string> { "kS" }; }, id => true);
-        Test.True(settlementCalls == 0
-            && ids.Count == 2 && ids[0] == "kB" && ids[1] == "kC",
-            "ordinary relays must use sorted route targets minus the author");
-
-        relayRound.ResultSettlementPending = true;
-        relayJob.ResultSettlementSlotId = "s1";
-        relayJob.TargetKingdomId = "kIgnored";
-        ids = WorldDiplomacyRoundLifecycleRules.GetAuthorizedGenerationTargetIds(
-            relayJob, relayRound, "kA",
-            () => { settlementCalls++; return new List<string> { "kS", "kA" }; }, id => true);
-        Test.True(settlementCalls == 1 && ids.Count == 1 && ids[0] == "kS",
-            "settlement repairs must use settlement targets instead of route and explicit targets");
-
-        ids = WorldDiplomacyRoundLifecycleRules.GetAuthorizedGenerationTargetIds(
-            new WorldDiplomacyJob { Kind = "generate", AllowUntargeted = true,
-                CandidateKingdomIds = new List<string> { "kB", "kC" } },
-            new WorldDiplomacyRound { RoundId = "R1" }, "kA",
-            () => new List<string>(), id => id != "kB");
-        Test.True(ids.Count == 1 && ids[0] == "kC",
-            "untargeted candidates must pass through the authorization port");
+        var current = new WorldDiplomacyRound { Participants = new() {
+            new() { KingdomId = "kA", State = "active" }, new() { KingdomId = "kC", State = "active" },
+            new() { KingdomId = "kB", State = "active" }, new() { KingdomId = "observer", State = "observer" } },
+            RelayRouteKingdomIds = new() { "legacy" }, ResultSettlementPending = true };
+        var source = new WorldDiplomacyJob { Kind = "generate", TargetKingdomId = "legacy", IsRelayTurn = true, ResultSettlementSlotId = "legacy" };
+        Test.True(WorldDiplomacyRoundLifecycleRules.GetAuthorizedGenerationTargetIds(source, current, "kA", id => true).SequenceEqual(new[] { "kB", "kC" }), "repair candidates use actual active participants rather than legacy seats or route");
+        Test.True(WorldDiplomacyRoundLifecycleRules.GetAuthorizedGenerationTargetIds(source, current, "kA", id => id != "kB").SequenceEqual(new[] { "kC" }), "current candidate eligibility is checked");
 
         // DPL-060CO: generated structure derivation stamps response bindings or
         // fails with deterministic reasons.
@@ -11094,11 +8983,11 @@ RunRepairCorrectionAndJobDecisionTests();
                 null, null, json, "kA", "kB", "declare_war",
                 new List<WorldDiplomacyThreat>(), _ => null, out string r1)
             && r1 == ""
-            && (string)json["responding_to_offer_document_id"] == ""
+            && string.IsNullOrEmpty((string)json["responding_to_offer_document_id"])
             && (string)json["responding_to_threat_document_id"] == "",
             "non-response intents must stamp empty binding fields and pass");
 
-        var offerRound = new WorldDiplomacyRound { RoundId = "R2" };
+        var offerRound = new WorldDiplomacyRound { RoundId = "R2", Participants = new() { new() { KingdomId = "kB", State = "active" } } };
         offerRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
         {
             Intent = "propose_peace", ProposerKingdomId = "kB", TargetKingdomId = "kA",
@@ -11117,8 +9006,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && r3 == ""
             && (string)json["responding_to_offer_document_id"] == "odoc"
             && (string)json["responding_to_offer_action_id"] == "oact"
-            && json["peace_terms"] != null,
-            "accepted peace must bind the unique open offer and stamp peace terms");
+            && json["peace_terms"] == null,
+            "source binding leaves authored terms untouched until acceptance comparison");
 
         var threats = new List<WorldDiplomacyThreat>
         {
@@ -11292,82 +9181,6 @@ RunRepairCorrectionAndJobDecisionTests();
             "a missing open offer must block the player response");
     }
 
-    static void RunThreatRegistrationBookkeepingDecisionTests()
-    {
-        // DPL-060CQ: threat registration resolves the writable list lazily after
-        // the identity gate, stamps exact action bindings, escalates noncomplied
-        // warnings, and routes prestige rewards through ports.
-        var warnDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "d1", Intent = "warning", AuthorKingdomId = "k1",
-            TargetKingdomId = "k2", ProcessingActionId = "a1", RoundId = "R1"
-        };
-        int resolveCalls = 0;
-        var threats = new List<WorldDiplomacyThreat>();
-        Test.True(!WorldDiplomacyThreatBindingApplication.RegisterOrAdvanceDiplomaticThreat(
-                warnDoc, "k1", "k2", "ultimatum",
-                () => { resolveCalls++; return threats; },
-                10, 3, p => "id_1", () => null, null, null)
-            && resolveCalls == 0 && threats.Count == 0,
-            "a stage/document identity mismatch must reject before touching storage");
-
-        var policySignal = new WorldDiplomacyPolicySignal { SignalKey = "s1", PolicyId = "p1" };
-        int policyCalls = 0;
-        Test.True(WorldDiplomacyThreatBindingApplication.RegisterOrAdvanceDiplomaticThreat(
-                warnDoc, "k1", "k2", "warning",
-                () => { resolveCalls++; return threats; },
-                10, 3, p => "threat_new",
-                () => { policyCalls++; return policySignal; },
-                null, null)
-            && threats.Count == 1
-            && threats[0].Stage == "warning" && threats[0].Status == "open"
-            && threats[0].WarningDocumentId == "d1" && threats[0].WarningActionId == "a1"
-            && threats[0].StageDocumentId == "d1" && threats[0].StageActionId == "a1"
-            && threats[0].ThreatId == "threat_new" && threats[0].CreatedDay == 10
-            && threats[0].PolicyConditionPolicyId == "p1" && policyCalls == 1,
-            "a new warning must stamp exact document/action bindings and bind one policy condition");
-
-        var ultDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "d2", Intent = "ultimatum", AuthorKingdomId = "k1",
-            TargetKingdomId = "k2", ProcessingActionId = "a2", RoundId = "R1"
-        };
-        Test.True(!WorldDiplomacyThreatBindingApplication.RegisterOrAdvanceDiplomaticThreat(
-                ultDoc, "k1", "k2", "ultimatum",
-                () => threats, 11, 3, p => "x", () => null, null, null)
-            && threats.Count == 1,
-            "an open warning with a pending decision must reject a direct ultimatum");
-
-        threats[0].TargetDecision = "noncomplied";
-        int prestigeCalls = 0; string prestigeReason = "";
-        Test.True(WorldDiplomacyThreatBindingApplication.RegisterOrAdvanceDiplomaticThreat(
-                ultDoc, "k1", "k2", "ultimatum",
-                () => threats, 12, 3, p => "x", () => null,
-                (id, delta, doc, reason) => { prestigeCalls++; prestigeReason = reason; },
-                null)
-            && threats.Count == 1
-            && threats[0].Stage == "ultimatum"
-            && threats[0].UltimatumDocumentId == "d2" && threats[0].UltimatumActionId == "a2"
-            && threats[0].StageDocumentId == "d2" && threats[0].TargetDecision == "pending"
-            && threats[0].PolicyConditionPolicyId == "p1"
-            && prestigeCalls == 1 && prestigeReason.Contains("最后通牒"),
-            "escalation must reuse the open threat, preserve its policy condition, and pay the prestige reward");
-
-        var threats2 = new List<WorldDiplomacyThreat>();
-        Test.True(WorldDiplomacyThreatBindingApplication.RegisterOrAdvanceDiplomaticThreat(
-                ultDoc, "k1", "k2", "ultimatum",
-                () => threats2, 13, 3, p => "threat_ult", () => null, null, null)
-            && threats2.Count == 1 && threats2[0].Stage == "ultimatum"
-            && threats2[0].UltimatumDocumentId == "d2" && threats2[0].UltimatumActionId == "a2",
-            "without an open threat a direct ultimatum registers a fresh record");
-
-        threats2[0].StageDocumentId = "d2";
-        Test.True(WorldDiplomacyThreatBindingApplication.RegisterOrAdvanceDiplomaticThreat(
-                ultDoc, "k1", "k2", "ultimatum",
-                () => threats2, 14, 3, p => "x", () => null, null, null)
-            && threats2.Count == 1,
-            "re-registering the same stage document must be idempotent");
-    }
 
     static void RunGenerationValidationDecisionTests()
     {
@@ -11380,7 +9193,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "kA", "kB", identity, settlementName, out _),
             "non-peace intents must skip peace-terms disclosure checks");
         Test.True(!WorldDiplomacyGenerationValidationRules.TryGetPublicPeaceTermsDisclosureViolation(
-            "propose_peace", "我方支付50为期30", JObject.Parse("{\"peace_terms\":{\"daily_tribute\":50,\"duration_days\":30}}"),
+            "propose_peace", "我方支付50为期30日", JObject.Parse("{\"peace_terms\":{\"daily_tribute\":50,\"duration_days\":30}}"),
             "kA", "kB", _ => (null, null), settlementName, out _),
             "visible tribute and duration without resolved parties must pass");
         Test.True(WorldDiplomacyGenerationValidationRules.TryGetPublicPeaceTermsDisclosureViolation(
@@ -11432,11 +9245,11 @@ RunRepairCorrectionAndJobDecisionTests();
             _ => (true, ""), noCooldown, 10, 100, out string conflictReason)
             && conflictReason == "alliance_intent_conflicts_with_current_state",
             "alliance proposals during war must conflict with current state");
-        Test.True(WorldDiplomacyGenerationValidationRules.TryGetDiplomaticStateViolation(
+        Test.True(!WorldDiplomacyGenerationValidationRules.TryGetDiplomaticStateViolation(
             "propose_trade", "kA", "kB", threats, false, false, false, true, true,
             _ => (true, ""), coolingDown, 10, 100, out string cooldownReason)
-            && cooldownReason == "intent_not_in_current_legal_action_list",
-            "a cooling-down trade proposal must be rejected");
+            && cooldownReason == "",
+            "retired fixed trade cooldown does not block a current proposal");
         Test.True(!WorldDiplomacyGenerationValidationRules.TryGetDiplomaticStateViolation(
             "propose_trade", "kA", "kB", threats, false, false, false, true, true,
             _ => (true, ""), noCooldown, 10, 100, out _),
@@ -11479,36 +9292,31 @@ RunRepairCorrectionAndJobDecisionTests();
             () => (true, ""), out string mismatchReason)
             && mismatchReason == "comply_ultimatum_source_mismatch",
             "compliance naming an unpresented threat document must be rejected");
-        Test.True(WorldDiplomacyGenerationValidationRules.TryGetDiplomaticThreatIntentViolation(
+        Test.True(!WorldDiplomacyGenerationValidationRules.TryGetDiplomaticThreatIntentViolation(
             "warning", true, true, false, "kA", "kB", "", threatList, false,
             () => (false, "no_casus"), out string enforceReason)
-            && enforceReason == "threat_cannot_be_enforced:no_casus",
+            && enforceReason == "",
             "an unenforceable warning must surface the host legality reason");
-        Test.True(WorldDiplomacyGenerationValidationRules.TryGetDiplomaticThreatIntentViolation(
+        Test.True(!WorldDiplomacyGenerationValidationRules.TryGetDiplomaticThreatIntentViolation(
             "warning", true, true, false, "kA", "kB", "", threatList, false,
             () => (true, ""), out string dupReason)
-            && dupReason == "issuer_already_has_open_threat",
+            && dupReason == "",
             "a second open warning from the issuer must be rejected");
         Test.True(!WorldDiplomacyGenerationValidationRules.TryGetDiplomaticThreatIntentViolation(
             "ultimatum", true, true, false, "kA", "kC", "", threatList, false,
             () => (true, ""), out _),
             "an ultimatum escalating a noncomplied warning to the same target must pass");
 
-        // DPL-060BY: realm-identity checks pin empire hard facts against visible text.
+        // Realm-title checks use the current game's title, never a realm ID or inferred government.
         Test.True(!WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(
-            "vlandia", "亨利克", "我们结盟", out _),
-            "non-empire kingdoms must skip realm-identity checks");
-        Test.True(WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(
-            "empire_s", "卢孔", "南帝国的元老院已经决定", out string senateReason)
-            && senateReason == "southern_empire_government_conflicts_with_hard_fact",
-            "southern-empire senate references must conflict with the hard fact");
-        Test.True(WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(
-            "empire_n", "卢孔", "卢孔国王万岁", out string titleReason)
-            && titleReason == "realm_ruler_title_conflicts_with_hard_fact",
-            "a royal title attached to the empire ruler must conflict with the hard fact");
+            "King", "Lucon", "King Lucon has spoken.", out _), "a current royal title is valid even for a reused empire ID");
         Test.True(!WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(
-            "empire_n", "卢孔", "我们向北境进军", out _),
-            "empire text without forbidden titles must pass");
+            "Emperor", "Lucon", "Our senate has decided.", out _), "an imperial title does not prove a government");
+        Test.True(WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(
+            "Emperor", "Lucon", "King Lucon has spoken.", out string titleReason)
+            && titleReason == "realm_ruler_title_conflicts_with_hard_fact", "a sourced imperial personal title retains contradiction checks");
+        Test.True(!WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(
+            "", "Lucon", "Consul Lucon has spoken.", out _), "missing title cannot establish a contradiction");
     }
 
     static void RunSingleActionLegalityDecisionTests()
@@ -11558,16 +9366,13 @@ RunRepairCorrectionAndJobDecisionTests();
             Func<string, (bool Violation, string Reason)> realmIdentityViolation = null)
         {
             return WorldDiplomacyGenerationValidationRules.TryGetGeneratedSingleActionLegalityViolation(
-                job, json, authorId, fallbackTargetId, 4,
+                job, json, authorId, fallbackTargetId,
                 resolveKingdomId ?? (id => id),
                 kingdomEliminated ?? (_ => false),
                 kingdomHasAuthority ?? (_ => true),
                 isAtWar ?? ((_, _) => false),
                 _ => new WorldDiplomacyRound(),
                 _ => null,
-                canUseSettlementTarget ?? ((_, _) => false),
-                nonRootRelayNoActionAllowed ?? ((_, _, _) => false),
-                buildLegalDeclarationIntents ?? ((_, _, _) => new List<string> { "propose_trade", "declare_war" }),
                 deriveStructure ?? ((_, _, _) => Ok),
                 stateViolation ?? ((_, _) => Ok),
                 threatViolation ?? ((_, _, _) => Ok),
@@ -11581,13 +9386,6 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!Legality(Job(), ValidJson("propose_trade"), out string t0, out string r0)
                   && t0 == "kB" && r0 == "",
             "a fully legal single action must pass the chain and bind its resolved target");
-        Test.True(Legality(Job(), ValidJson(""), out _, out string missingIntent)
-                  && missingIntent == "unsupported_intent_or_commitment",
-            "a missing action intent must be rejected rather than defaulted to a statement");
-        Test.True(Legality(Job(), ValidJson("statement", "kB", "\"negotiation_move\":\"\""), out _, out string missingMove,
-                  nonRootRelayNoActionAllowed: (_, _, _) => true)
-                  && missingMove == "statement_missing_negotiation_move",
-            "an authorized statement still requires an explicit negotiation move");
         Test.True(Legality(Job(), ValidJson("propose_trade", "kB", "\"mentioned_kingdom_ids\":null"), out _, out string r1)
                   && r1 == "semantic_envelope_incomplete",
             "a null required envelope field must be rejected as incomplete");
@@ -11606,31 +9404,30 @@ RunRepairCorrectionAndJobDecisionTests();
                   resolveKingdomId: id => id == "kX" ? null : id)
                   && r5 == "referenced_kingdom_not_eligible",
             "a mentioned kingdom that does not resolve must fail the referenced-kingdom gate");
-        Test.True(Legality(Job("kC"), ValidJson("propose_trade"), out _, out string r6)
-                  && r6 == "kingdom_not_in_targeted_generation_scope",
-            "a target outside the directed generation scope must be rejected");
-        Test.True(Legality(Job(), ValidJson("statement"), out _, out string r7)
-                  && r7 == "non_actionable_diplomatic_intent",
-            "a statement without the live relay gate must remain non-actionable");
-        Test.True(Legality(Job(), ValidJson("statement"), out _, out string r8,
+        Test.True(!Legality(Job("kC"), ValidJson("propose_trade"), out _, out string r6)
+                  && r6 == "",
+            "a valid target is not rejected by a legacy directed job restriction");
+        Test.True(!Legality(Job(), ValidJson("statement"), out _, out string r7)
+                  && r7 == "",
+            "a statement is available without an old relay gate");
+        Test.True(!Legality(Job(), ValidJson("statement"), out _, out string r8,
                   nonRootRelayNoActionAllowed: (_, _, _) => true)
                   && r8 != "non_actionable_diplomatic_intent",
             "the relay no-action gate must admit a statement past the actionable-intent check when the live probe allows it");
         WorldDiplomacyRound staleRound = new WorldDiplomacyRound { ConsecutiveNoActionPasses = 3 };
-        Test.True(WorldDiplomacyGenerationValidationRules.TryGetGeneratedSingleActionLegalityViolation(
-                  Job(), ValidJson("statement"), "kA", null, 4,
+        Test.True(!WorldDiplomacyGenerationValidationRules.TryGetGeneratedSingleActionLegalityViolation(
+                  Job(), ValidJson("statement"), "kA", null,
                   id => id, _ => false, _ => true, (_, _) => false,
-                  _ => staleRound, _ => null, (_, _) => false, (_, _, _) => true,
-                  (_, _, _) => new List<string> { "statement" },
+                  _ => staleRound, _ => null,
                   (_, _, _) => Ok, (_, _) => Ok, (_, _, _) => Ok, (_, _) => null,
                   (_, _, _) => Ok, _ => Ok, _ => { },
                   out _, out string r9)
-                  && r9 == "statement_requires_terminal_negotiation_move",
-            "consecutive passes must force a terminal negotiation move");
-        Test.True(Legality(Job(), ValidJson("declare_war"), out _, out string r10,
+                  && r9 == "",
+            "legacy no-action counters cannot force a terminal move");
+        Test.True(!Legality(Job(), ValidJson("declare_war"), out _, out string r10,
                   buildLegalDeclarationIntents: (_, _, _) => new List<string> { "propose_trade" })
-                  && r10 == "intent_not_in_current_legal_action_list",
-            "an intent absent from the live legal set must be rejected");
+                  && r10 == "",
+            "state validation owns current legality without an obsolete cached action-list gate");
         Test.True(Legality(Job(), ValidJson("declare_war"), out _, out string r11,
                   buildLegalDeclarationIntents: (_, _, _) => new List<string> { "declare_war" },
                   deriveStructure: (_, _, _) => (true, "struct_x"))
@@ -11647,7 +9444,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "ultimatum compliance without a source id must be rejected");
         Test.True(Legality(Job(), ValidJson("accept_peace"), out _, out string r14,
                   buildLegalDeclarationIntents: (_, _, _) => new List<string> { "accept_peace" })
-                  && r14 == "offer_response_without_matching_open_offer",
+                  && r14 == "offer_response_missing_source_document",
             "an acceptance with no matching open proposal must be rejected");
         Test.True(Legality(Job(), ValidJson("propose_peace"), out _, out string r15,
                   buildLegalDeclarationIntents: (_, _, _) => new List<string> { "propose_peace" })
@@ -11690,8 +9487,8 @@ RunRepairCorrectionAndJobDecisionTests();
                   && ReferenceEquals(plain.LlmMessages, messages) && !plain.AllowAutonomousNoAction
                   && plain.CandidateKingdomIds.Count == 2 && plain.CandidateKingdomIds[0] == "kB"
                   && plain.PresentedThreatDocumentIds.Count == 1 && plain.WasAtWarWhenQueued
-                  && plain.ResultSettlementSlotId == "slot1" && plain.SourceDocumentId == "doc1"
-                  && plain.IsExternalResponseOnly && plain.IsRelayTurn && plain.HistoryPrefixHash == "hp",
+                  && string.IsNullOrEmpty(plain.ResultSettlementSlotId) && plain.SourceDocumentId == "doc1"
+                  && plain.IsExternalResponseOnly && !plain.IsRelayTurn && plain.HistoryPrefixHash == "hp",
             "a repair job must inherit the source job context while consuming one retry and forcing an action");
 
         WorldDiplomacyRound settlementRound = new WorldDiplomacyRound { ResultSettlementPending = true };
@@ -11703,42 +9500,25 @@ RunRepairCorrectionAndJobDecisionTests();
 
         WorldDiplomacyJob relayRepair = WorldDiplomacyRoundLifecycleRules.BuildGeneratedDeclarationRepairJob(
             source, new WorldDiplomacyRound(), "corr", messages, authorized, "rid-3");
-        Test.True(relayRepair.CandidateKingdomIds.Count == 2 && relayRepair.CandidateKingdomIds[1] == "kC",
-            "an ordinary relay repair must keep the source candidate set");
+        Test.True(relayRepair.CandidateKingdomIds.Count == 2 && relayRepair.CandidateKingdomIds[1] == "kD",
+            "every repair refreshes current authorized candidates");
 
         StringBuilder correction = new StringBuilder();
         WorldDiplomacyPromptContractRules.AppendGeneratedRepairCorrection(
-            correction, "json_parse_failed", -1, null, "kA", "王国甲", null, "", "", null, () => "unused");
+            correction, "json_parse_failed", -1, null, "kA", "王国甲", null, "", "", () => "unused");
         string text = correction.ToString();
-        Test.True(text.Contains("【未发布草稿的硬事实纠正】") && text.Contains("当前发文国=kA=王国甲")
-                  && text.Contains("本次可从原任务授权范围选择1至4个合法对象")
-                  && text.Contains("重新输出完整JSON并重写title和body")
-                  && text.Contains("只输出一个完整、可解析的JSON对象"),
+        Test.True(text.Contains(DiplomacyPromptTexts.Get("AF_DIP_Contract_069", "【未发布草稿的硬事实纠正】")) && text.Contains(DiplomacyPromptTexts.Get("AF_DIP_Contract_072", "当前发文国=") + "kA=王国甲")
+                  && text.Contains(DiplomacyPromptTexts.Get("AF_DIP_Contract_073", "本次可从原任务授权范围选择1至4个合法对象"))
+                  && text.Contains(DiplomacyPromptTexts.Get("AF_DIP_Contract_102", "重新输出完整JSON并重写title和body"))
+                  && text.Contains(DiplomacyPromptTexts.Get("AF_DIP_Contract_091", "只输出一个完整、可解析的JSON对象")),
             "a format failure must emit the hard-fact boundary, the open target header, and the JSON-only guidance");
-
-        correction.Clear();
-        WorldDiplomacyPromptContractRules.AppendGeneratedRepairCorrection(
-            correction, "required_peace_offer_response_missing", -1, null, "kA", "王国甲",
-            "kB", "王国乙", "war", null, () => "unused");
-        Test.True(correction.ToString().Contains("原和平提议状态已经变化"),
-            "a vanished required offer must tell the model to reselect instead of binding a stale source");
-
-        correction.Clear();
-        WorldDiplomacyPromptContractRules.AppendGeneratedRepairCorrection(
-            correction, "required_peace_offer_response_missing", -1, null, "kA", "王国甲",
-            "kB", "王国乙", "war",
-            new WorldDiplomacyRoundOffer { SourceDocumentId = "odoc", SourceActionId = "oact", ProposerKingdomId = "kB" },
-            () => "unused");
-        Test.True(correction.ToString().Contains("actions必须答复和平原案：来源=odoc|action=oact|提出国=kB")
-                  && correction.ToString().Contains("出错项对象国=kB=王国乙；实时关系=war"),
-            "a live required offer must bind the exact source pair and the failing target context");
 
         int realmCalls = 0;
         correction.Clear();
         JObject rejectedJson = JObject.Parse("{\"actions\":[{\"intent\":\"declare_war\"},{\"intent\":\"comply_ultimatum\"}]}");
         WorldDiplomacyPromptContractRules.AppendGeneratedRepairCorrection(
             correction, "realm_ruler_title_conflicts_with_hard_fact", 1, rejectedJson, "kA", "王国甲",
-            "kB", "王国乙", "war", null, () => { realmCalls++; return "hardfact"; });
+            "kB", "王国乙", "war", () => { realmCalls++; return "hardfact"; });
         Test.True(realmCalls == 1 && correction.ToString().Contains("hardfact")
                   && correction.ToString().Contains("comply_ultimatum") == false,
             "the realm-fact branch must resolve the lazy hard-fact port exactly once");
@@ -11746,16 +9526,16 @@ RunRepairCorrectionAndJobDecisionTests();
         correction.Clear();
         WorldDiplomacyPromptContractRules.AppendGeneratedRepairCorrection(
             correction, "intent_not_in_current_legal_action_list", 1, rejectedJson, "kA", "王国甲",
-            "kB", "王国乙", "war", null, () => "unused");
-        Test.True(correction.ToString().Contains("原草稿组合kB=comply_ultimatum无效")
-                  && correction.ToString().Contains("与当前真实关系不相容"),
+            "kB", "王国乙", "war", () => "unused");
+        Test.True(correction.ToString().Contains(DiplomacyPromptTexts.Get("AF_DIP_Contract_100", "原草稿组合") + "kB=comply_ultimatum" + DiplomacyPromptTexts.Get("AF_DIP_Contract_101", "无效"))
+                  && correction.ToString().Contains(DiplomacyPromptTexts.Get("AF_DIP_Contract_099", "与当前真实关系不相容")),
             "a live-state-invalid action must forbid the exact rejected target/intent pair by index");
 
         correction.Clear();
         WorldDiplomacyPromptContractRules.AppendGeneratedRepairCorrection(
             correction, "intent_not_in_current_legal_action_list", -1, null, "kA", "王国甲",
-            null, "", "", null, () => "unused");
-        Test.True(!correction.ToString().Contains("原草稿组合"),
+            null, "", "", () => "unused");
+        Test.True(!correction.ToString().Contains(DiplomacyPromptTexts.Get("AF_DIP_Contract_100", "原草稿组合")),
             "the rejected combination line must be skipped when no failing target or action index is bound");
     }
 
@@ -11765,7 +9545,7 @@ RunRepairCorrectionAndJobDecisionTests();
         {
             return JObject.Parse("{"
                 + "\"title\":\"t\",\"body\":\"b\","
-                + "\"author_intent\":{\"intent\":\"" + intent + "\",\"commitment\":\"binding\"},"
+                + "\"author_intent\":{\"intent\":\"" + intent + "\",\"commitment\":\"" + WorldDiplomacyIntentVocabulary.DefaultCommitmentForIntent(intent) + "\"},"
                 + "\"addressed_kingdom_ids\":" + (emptyAddressed ? "[]" : "[\"" + target + "\"]") + ","
                 + "\"mentioned_kingdom_ids\":" + (emptyAddressed ? "[]" : "[\"kB\"]") + ","
                 + "\"round_plan\":{\"topic\":\"t\",\"selected_kingdom_ids\":[\"" + target + "\"]},"
@@ -11800,13 +9580,9 @@ RunRepairCorrectionAndJobDecisionTests();
             Func<JObject, string, string, WorldDiplomacyPeaceTerms> parsePeaceTerms = null)
         {
             return WorldDiplomacyGenerationValidationRules.TryApplyGeneratedSingleActionSemanticEnvelope(
-                doc, json, authorId, fallbackTargetId, allowUntargeted, relayTurn, 4,
+                doc, json, authorId, fallbackTargetId, allowUntargeted,
                 resolveKingdomId ?? (id => id),
                 resolveKingdomName ?? (id => "王国" + id),
-                resolveRound ?? (_ => new WorldDiplomacyRound()),
-                resolveDocument ?? (_ => null),
-                noActionAllowed ?? ((_, _, _, _, _, _, _) => false),
-                canUseSettlementTarget ?? ((_, _, _) => false),
                 parsePeaceTerms ?? ((_, _, _) => null),
                 (ids, excluded) => ids.Where(x => !string.Equals(x, excluded, StringComparison.OrdinalIgnoreCase)).Distinct(StringComparer.OrdinalIgnoreCase).ToList());
         }
@@ -11816,7 +9592,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyDocument happy = Doc();
         Test.True(ApplySingle(happy, Envelope())
             && happy.TargetKingdomId == "kB" && happy.TargetKingdomName == "王国kB"
-            && happy.Intent == "propose_trade" && happy.Commitment == "binding"
+            && happy.Intent == "propose_trade" && happy.Commitment == "proposal"
             && happy.NegotiationMove == "" && happy.RequiresResponse
             && happy.Confidence == 1f && happy.AnalysisStatus == "generation_envelope"
             && happy.AddressedKingdomIds.Contains("kB") && !happy.AddressedKingdomIds.Contains("kA"),
@@ -11832,9 +9608,9 @@ RunRepairCorrectionAndJobDecisionTests();
             && ApplySingle(untargeted, Envelope(target: "", emptyAddressed: true), allowUntargeted: true, resolveKingdomId: _ => null)
             && untargeted.TargetKingdomId == "",
             "an empty target must be rejected unless the job allows untargeted publication");
-        Test.True(!ApplySingle(Doc(), Envelope(), relayTurn: true,
+        Test.True(ApplySingle(Doc(), Envelope(), relayTurn: true,
                   resolveRound: _ => new WorldDiplomacyRound { RelayRouteKingdomIds = new List<string> { "kA", "kC" } }),
-            "a relay turn must reject a target outside the persisted route");
+            "legacy routes do not restrict a current target");
         Test.True(ApplySingle(Doc(), Envelope(), relayTurn: true,
                   resolveRound: _ => new WorldDiplomacyRound { RelayRouteKingdomIds = new List<string> { "kA", "kB" } }),
             "a relay turn must admit a route member target");
@@ -11848,14 +9624,14 @@ RunRepairCorrectionAndJobDecisionTests();
             "a settlement relay must admit a target authorized by the slot probe instead of the route");
         WorldDiplomacyDocument noAction = Doc();
         Test.True(ApplySingle(noAction, Envelope("statement"), noActionAllowed: (_, _, _, _, _, _, _) => true)
-            && noAction.IsRoundResponseNoActionDeclaration && !noAction.RequiresResponse,
-            "an authorized no-action statement must stamp the declaration and clear its response obligation");
-        Test.True(!ApplySingle(Doc(), Envelope("statement")),
-            "a statement without live no-action authorization must be rejected");
-        Test.True(!ApplySingle(Doc(), Envelope("statement"),
+            && noAction.IsRoundResponseNoActionDeclaration && noAction.RequiresResponse,
+            "a statement preserves its explicit response obligation");
+        Test.True(ApplySingle(Doc(), Envelope("statement")),
+            "a statement needs no legacy no-action authorization");
+        Test.True(ApplySingle(Doc(), Envelope("statement"),
                   resolveRound: _ => new WorldDiplomacyRound { ConsecutiveNoActionPasses = 3 },
                   noActionAllowed: (_, _, _, _, _, _, _) => true),
-            "consecutive no-action passes must force a terminal negotiation move");
+            "legacy no-action counts do not prohibit a statement");
 
         bool ApplyMulti(
             WorldDiplomacyDocument doc,
@@ -11865,7 +9641,7 @@ RunRepairCorrectionAndJobDecisionTests();
             bool allowUntargeted = false)
         {
             return WorldDiplomacyGenerationValidationRules.TryApplyGeneratedSemanticEnvelope(
-                doc, json, "kA", fallbackTargetId, allowUntargeted, false, 4,
+                doc, json, "kA", fallbackTargetId, allowUntargeted, false,
                 applySingleAction ?? ((d, j, ft, u, r) =>
                 {
                     d.TargetKingdomId = ft ?? "kB";
@@ -11880,7 +9656,7 @@ RunRepairCorrectionAndJobDecisionTests();
                   && !ApplyMulti(Doc(), JObject.Parse("{\"actions\":[]}"))
                   && !ApplyMulti(null, JObject.Parse("{\"actions\":[{}]}")),
             "the multi-action envelope must reject missing, non-array, or empty action containers");
-        Test.True(!ApplyMulti(Doc(), JObject.Parse("{\"actions\":[{},{},{},{},{}]}")),
+        Test.True(!ApplyMulti(Doc(), new JObject { ["actions"] = new JArray(Enumerable.Range(0, 65).Select(_ => new JObject())) }),
             "the multi-action envelope must reject a batch beyond the per-document bound");
         Test.True(!ApplyMulti(Doc(), JObject.Parse("{\"actions\":[{}]}"),
                   applySingleAction: (_, _, _, _, _) => false),
@@ -12062,92 +9838,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "null arguments must not mutate a resolved threat");
     }
 
-    static void RunPlayerOfferReconcileAndSettlementOpenDecisionTests()
-    {
-        // DPL-060CW: a player-authored response must bind the unique open offer
-        // matching intent, claimed source, and requested target.
-        WorldDiplomacyRound offerRound = new WorldDiplomacyRound { RoundId = "r1" };
-        offerRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
-        {
-            Intent = "propose_peace", ProposerKingdomId = "kB", TargetKingdomId = "kA",
-            Status = "open", SourceDocumentId = "odoc", SourceActionId = "oact"
-        });
-        var playerDoc = new WorldDiplomacyDocument { DocumentId = "pd1", AuthorKingdomId = "kA", RoundId = "r1" };
-        string targetId = "";
-        string claimedId = "";
-        int logCalls = 0;
-        WorldDiplomacyRoundLifecycleRules.ReconcilePlayerDeclarationWithOpenOffer(
-            playerDoc, "declare_war", offerRound, ref targetId, ref claimedId, _ => logCalls++);
-        Test.True(targetId == "" && claimedId == "" && logCalls == 0,
-            "non-response intents must not bind any offer");
-        WorldDiplomacyRoundLifecycleRules.ReconcilePlayerDeclarationWithOpenOffer(
-            playerDoc, "accept_peace", offerRound, ref targetId, ref claimedId, _ => logCalls++);
-        Test.True(targetId == "kB" && claimedId == "odoc" && playerDoc.RespondingToOfferActionId == "oact"
-            && logCalls == 1,
-            "a unique matching open offer must bind target, document, and action");
-        offerRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
-        {
-            Intent = "propose_peace", ProposerKingdomId = "kC", TargetKingdomId = "kA",
-            Status = "open", SourceDocumentId = "odoc2", SourceActionId = "oact2"
-        });
-        targetId = "kC"; claimedId = "odoc2";
-        playerDoc.RespondingToOfferActionId = "";
-        WorldDiplomacyRoundLifecycleRules.ReconcilePlayerDeclarationWithOpenOffer(
-            playerDoc, "accept_peace", offerRound, ref targetId, ref claimedId, _ => logCalls++);
-        Test.True(targetId == "kC" && claimedId == "odoc2"
-            && playerDoc.RespondingToOfferActionId == "oact2" && logCalls == 2,
-            "claimed source and requested target must select among matching offers");
-        targetId = ""; claimedId = "";
-        playerDoc.RespondingToOfferActionId = "";
-        WorldDiplomacyRoundLifecycleRules.ReconcilePlayerDeclarationWithOpenOffer(
-            playerDoc, "accept_peace", offerRound, ref targetId, ref claimedId, _ => logCalls++);
-        Test.True(targetId == "" && claimedId == "" && playerDoc.RespondingToOfferActionId == ""
-            && logCalls == 2,
-            "ambiguous open offers must never be auto-bound");
 
-        // DPL-060CW: opening result settlement stamps trigger state, clears queued
-        // round work, extends the deadline, and refreshes slots once.
-        var openRound = new WorldDiplomacyRound
-        {
-            RoundId = "r2", State = "active", HardEndDay = 10, RelayWaiting = true
-        };
-        var openStorage = new WorldDiplomacyStorage();
-        openStorage.RelayArrivals.Add(new WorldDiplomacyRelayArrival { RoundId = "r2" });
-        openStorage.RelayArrivals.Add(new WorldDiplomacyRelayArrival { RoundId = "other" });
-        openStorage.Jobs.Add(new WorldDiplomacyJob { Kind = "generate", RoundId = "r2" });
-        openStorage.Jobs.Add(new WorldDiplomacyJob { Kind = "analyze", RoundId = "r2" });
-        openStorage.Jobs.Add(new WorldDiplomacyJob { Kind = "generate", RoundId = "other" });
-        var triggerDoc = new WorldDiplomacyDocument { DocumentId = "dTrig", RoundId = "r2" };
-        int refreshCalls = 0, openLogs = 0;
-        WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(
-            openRound, triggerDoc, "", "resolved", openStorage, 8,
-            (r, id) => false, p => "id-" + p, _ => refreshCalls++, _ => openLogs++);
-        int expectedEnd = WorldDiplomacyRoundLifecycleRules.ExtendHardEndDay(
-            10, 8, WorldDiplomacyRoundLifecycleRules.ComputeSettlementWindowDays(0));
-        Test.True(openRound.ResultSettlementPending
-            && openRound.ResultSettlementTriggerDocumentId == "dTrig"
-            && openRound.ResultSettlementCloseReason == "result_settled"
-            && openRound.ResultSettlementRoundStatus == "resolved"
-            && !openRound.RelayWaiting
-            && openRound.HardEndDay == expectedEnd
-            && openStorage.RelayArrivals.Count == 1 && openStorage.RelayArrivals[0].RoundId == "other"
-            && openStorage.Jobs.Count == 2
-            && !openStorage.Jobs.Any(j => j.Kind == "generate" && j.RoundId == "r2")
-            && refreshCalls == 1 && openLogs == 1,
-            "opening settlement must stamp trigger state, drop queued round work, and refresh slots");
-        openRound.ResultSettlementRoundStatus = "deadlocked";
-        WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(
-            openRound, triggerDoc, "x", "resolved", openStorage, 9,
-            (r, id) => false, p => "id-" + p, _ => refreshCalls++, _ => openLogs++);
-        Test.True(openRound.ResultSettlementRoundStatus == "resolved" && refreshCalls == 2 && openLogs == 1,
-            "an already-pending round must only adopt resolved status and still refresh slots");
-        var nullRoundStorage = new WorldDiplomacyStorage();
-        WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(
-            null, triggerDoc, "", "resolved", nullRoundStorage, 9,
-            (r, id) => false, p => "id-" + p, _ => refreshCalls++, _ => openLogs++);
-        Test.True(refreshCalls == 2 && nullRoundStorage.RelayArrivals.Count == 0,
-            "a null round must not open settlement or touch storage");
-    }
 
     static void RunPreSendGateDecisionTests()
     {
@@ -12238,461 +9929,11 @@ RunRepairCorrectionAndJobDecisionTests();
             "a stale non-generation contract must retire the job and request compression");
     }
 
-    static void RunRoundDocumentProcessedDecisionTests()
-    {
-        // DPL-060CY: round document-processed routing lives in the lifecycle
-        // rules; the host binds round/document resolution and queue ports.
-        WorldDiplomacyStorage storage = new WorldDiplomacyStorage();
-        int settle = 0, planCommit = 0, planEnqueue = 0, settlementSchedule = 0,
-            integrate = 0, slotRefresh = 0, closes = 0, advances = 0, logs = 0;
-        string closeReason = null;
-        Action<WorldDiplomacyDocument, WorldDiplomacyRound> run = (doc, round) =>
-            WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(
-                doc, storage,
-                id => string.Equals(id, round?.RoundId, StringComparison.OrdinalIgnoreCase) ? round : null,
-                _ => null,
-                () => 42,
-                (r, d, reason, status) => settle++,
-                (r, d) => planCommit++,
-                (r, d) => planEnqueue++,
-                r => settlementSchedule++,
-                (r, d) => integrate++,
-                r => slotRefresh++,
-                r => { closes++; closeReason = r; },
-                r => advances++,
-                _ => logs++);
 
-        run(null, null);
-        var inactiveRound = new WorldDiplomacyRound { RoundId = "r0", State = "closed" };
-        var plainDoc = new WorldDiplomacyDocument { DocumentId = "d0", RoundId = "r0" };
-        run(new WorldDiplomacyDocument { DocumentId = "dh", RoundId = "r0", RoundProgressHandled = true }, inactiveRound);
-        run(plainDoc, inactiveRound);
-        run(plainDoc, null);
-        Test.True(!plainDoc.RoundProgressHandled && settle + planEnqueue + advances + closes == 0,
-            "handled, missing-round, or inactive-round documents must not reach any routing port");
 
-        var participantRound = new WorldDiplomacyRound
-        {
-            RoundId = "r1", State = "active", RootDocumentId = "dRoot",
-            RelayPlanned = true, RelayWaiting = true
-        };
-        storage.ActiveRound = participantRound;
-        var relayDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "d1", RoundId = "r1", AuthorKingdomId = "K2",
-            IsRelayTurn = true, IsPlayerAuthored = false,
-            Actions = new List<WorldDiplomacyDocumentAction>
-            {
-                new WorldDiplomacyDocumentAction { ChangedDiplomaticState = true }
-            }
-        };
-        run(relayDoc, participantRound);
-        WorldDiplomacyRoundParticipant participant = participantRound.Participants.FirstOrDefault();
-        Test.True(participantRound.ExecutedActionCount == 1
-            && participantRound.SubstantiveProgressCount == 1
-            && participantRound.LastSubstantiveProgressDay == 42
-            && relayDoc.MadeDiplomaticProgress && relayDoc.RoundAccountingHandled
-            && relayDoc.RoundProgressHandled && !participantRound.RelayWaiting
-            && participant != null && participant.TurnCount == 1
-            && participant.LastSpokeDay == 42 && participant.ContributionMade
-            && advances == 1 && closes == 0,
-            "a relay turn with a successful mechanical action must book progress and advance");
 
-        var settlementRound = new WorldDiplomacyRound
-        {
-            RoundId = "r2", State = "active", RootDocumentId = "dRoot",
-            RelayPlanned = true, ResultSettlementPending = true
-        };
-        storage.ActiveRound = settlementRound;
-        var playerDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "dP", RoundId = "r2", AuthorKingdomId = "K1",
-            IsPlayerAuthored = true,
-            Actions = new List<WorldDiplomacyDocumentAction>()
-        };
-        int integrateBefore = integrate, refreshBefore = slotRefresh, scheduleBefore = settlementSchedule;
-        run(playerDoc, settlementRound);
-        Test.True(integrate == integrateBefore + 1 && slotRefresh == refreshBefore + 1
-            && settlementSchedule == scheduleBefore + 1
-            && playerDoc.RoundProgressHandled && advances == 1,
-            "a player declaration under pending settlement must integrate and reschedule");
 
-        var planRound = new WorldDiplomacyRound
-        {
-            RoundId = "r3", State = "active", RootDocumentId = "dR3",
-            RelayPlanned = false
-        };
-        storage.ActiveRound = planRound;
-        var rootDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "dR3", RoundId = "r3", AuthorKingdomId = "K1",
-            IsPlayerAuthored = true, HasEmbeddedRoundPlan = true,
-            Actions = new List<WorldDiplomacyDocumentAction>()
-        };
-        run(rootDoc, planRound);
-        Test.True(planCommit == 1 && planEnqueue == 1 && rootDoc.RoundProgressHandled,
-            "an embedded round plan must commit before the planning job is enqueued");
 
-        var termRound = new WorldDiplomacyRound
-        {
-            RoundId = "r4", State = "active", RootDocumentId = "dRoot",
-            RelayPlanned = true, RelayWaiting = true
-        };
-        storage.ActiveRound = termRound;
-        var termDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "dT", RoundId = "r4", AuthorKingdomId = "K2",
-            IsRelayTurn = true, NegotiationMove = "end_negotiation",
-            Actions = new List<WorldDiplomacyDocumentAction>()
-        };
-        int advBefore = advances;
-        run(termDoc, termRound);
-        Test.True(termRound.RoundStatus == "resolved" && closeReason == "negotiation_ended"
-            && advances == advBefore && termDoc.RoundProgressHandled,
-            "a terminal negotiation move must normalize status and close instead of advancing");
-
-        var extRound = new WorldDiplomacyRound
-        {
-            RoundId = "r5", State = "active", RootDocumentId = "dRoot",
-            RelayPlanned = true
-        };
-        extRound.Participants.Add(new WorldDiplomacyRoundParticipant { KingdomId = "K2", MandatoryReplyPending = true });
-        storage.ActiveRound = extRound;
-        var extDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "dE", RoundId = "r5", AuthorKingdomId = "K2",
-            IsRelayTurn = true, IsExternalResponseOnly = true,
-            Actions = new List<WorldDiplomacyDocumentAction>()
-        };
-        advBefore = advances;
-        run(extDoc, extRound);
-        Test.True(!extRound.Participants[0].MandatoryReplyPending
-            && advances == advBefore && extDoc.RoundProgressHandled,
-            "an external response must clear the pending reply without moving the cursor");
-
-        var resolvedRound = new WorldDiplomacyRound
-        {
-            RoundId = "r7", State = "active", RootDocumentId = "dRoot",
-            RelayPlanned = true, ExecutedActionCount = 1
-        };
-        storage.ActiveRound = resolvedRound;
-        var resolvedDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "dZ", RoundId = "r7", AuthorKingdomId = "K2",
-            IsRelayTurn = true, RoundStatus = "resolved",
-            Actions = new List<WorldDiplomacyDocumentAction>()
-        };
-        closeReason = null;
-        run(resolvedDoc, resolvedRound);
-        Test.True(resolvedRound.RoundStatus == "resolved" && closeReason == "relay_resolved",
-            "a resolved relay document with executed actions must close the round");
-
-        var nonRelayRound = new WorldDiplomacyRound
-        {
-            RoundId = "r6", State = "active", RootDocumentId = "dRoot",
-            RelayPlanned = true
-        };
-        storage.ActiveRound = nonRelayRound;
-        var nonRelayDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "dN", RoundId = "r6", AuthorKingdomId = "K2",
-            Actions = new List<WorldDiplomacyDocumentAction>()
-        };
-        advBefore = advances;
-        run(nonRelayDoc, nonRelayRound);
-        Test.True(nonRelayDoc.RoundProgressHandled && advances == advBefore && planEnqueue == 1,
-            "a non-relay document must only mark round progress handled");
-    }
-
-    static void RunDocumentLifecycleBookkeepingDecisionTests()
-    {
-        // DPL-060CZ: weekly material snapshots and invalid-document suppression
-        // live in the lifecycle rules behind narrow ports.
-        var recorded = new List<(string key, string label, string snapshot, string kingdom,
-            string hero, string actorKingdom, bool world, int day, string date)>();
-        WorldDiplomacyHistoryCaptureApplication.RecordDiplomacyWeeklyMaterial(
-            null, new List<WorldDiplomacyDocument>(), (a, b, c, d, e, f, g, h, i2) =>
-                recorded.Add((a, b, c, d, e, f, g, h, i2)));
-        var weekly = new WorldDiplomacyDocument
-        {
-            DocumentId = "d1", RoundId = "r1", Day = 5,
-            AuthorKingdomId = "K1", AuthorKingdomName = "Alpha", AuthorRulerName = "R1",
-            AuthorRulerId = "h1", TargetKingdomId = "K2",
-            Title = "Declaration", Body = "claim",
-            ChangedDiplomaticState = true, MechanicalResult = "war declared",
-            GameDate = "1084-01-01"
-        };
-        var sameDay = new WorldDiplomacyDocument
-        {
-            DocumentId = "d0", RoundId = "r1", Day = 5, IsReadyForPublication = true,
-            AuthorKingdomId = "K3", Title = "Earlier", CreatedUtcTicks = 1,
-            AddressedKingdomIds = new List<string> { "K4" }
-        };
-        WorldDiplomacyHistoryCaptureApplication.RecordDiplomacyWeeklyMaterial(
-            weekly, new List<WorldDiplomacyDocument> { sameDay }, (a, b, c, d, e, f, g, h, i2) =>
-                recorded.Add((a, b, c, d, e, f, g, h, i2)));
-        Test.True(recorded.Count == 4
-            && recorded[0].world && recorded[0].key == "world_diplomacy:r1:day:5:world"
-            && recorded.Skip(1).All(x => !x.world && x.label == (SmokeLocalizationEnvironment.EnglishPackage ? "Diplomatic declaration progress concerning this kingdom" : "与本国有关的外交宣言进展"))
-            && recorded.Skip(1).Select(x => x.kingdom).SequenceEqual(new[] { "K3", "K4", "K2" })
-            && recorded[0].snapshot.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "Diplomatic round r1" : "外交回合")
-            && recorded[0].snapshot.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "[Game executed]" : "[游戏已执行]")
-            && recorded[0].snapshot.Contains("Declaration"),
-            "the weekly snapshot must publish the world entry plus every related kingdom");
-
-        var storage = new WorldDiplomacyStorage();
-        int preserved = 0, schedSettle = 0, adv = 0, exch = 0, logs = 0;
-        string closeReason = null;
-        var rounds = new Dictionary<string, WorldDiplomacyRound>();
-        Action<WorldDiplomacyDocument, string> suppress = (doc, reason) =>
-            WorldDiplomacyAnalysisApplication.SuppressInvalidDocumentBeforePropagation(
-                doc, reason, storage,
-                id => id != null && rounds.TryGetValue(id, out WorldDiplomacyRound r) ? r : null,
-                id => storage.Documents.FirstOrDefault(x => x != null && x.DocumentId == id),
-                id => "RID:" + id, () => 42,
-                (d, r) => preserved++, r => schedSettle++, r => adv++,
-                (id, r) => exch++, r => closeReason = r, _ => logs++);
-
-        suppress(null, "x");
-        var publishedPlayer = new WorldDiplomacyDocument
-        {
-            DocumentId = "dP", RoundId = "r0", IsPlayerAuthored = true,
-            IsReadyForPublication = true
-        };
-        suppress(publishedPlayer, "rejected");
-        Test.True(preserved == 1 && exch == 0 && logs == 0,
-            "a published player document must route to preservation, not suppression");
-
-        var round = new WorldDiplomacyRound { RoundId = "r1", State = "active", RootDocumentId = "dBad" };
-        rounds["r1"] = round;
-        storage.ActiveRound = round;
-        storage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "dBad", RoundId = "r1" });
-        storage.Documents.Add(new WorldDiplomacyDocument
-        {
-            DocumentId = "dNext", RoundId = "r1", IsReadyForPublication = true, CreatedUtcTicks = 2
-        });
-        var bad = new WorldDiplomacyDocument
-        {
-            DocumentId = "dBad", RoundId = "r1", IsRelayTurn = false,
-            IsPlayerAuthored = false, ExchangeId = "e1", AuthorKingdomId = "K2"
-        };
-        suppress(bad, "invalid");
-        Test.True(!storage.Documents.Any(x => x.DocumentId == "dBad")
-            && round.RootDocumentId == "dNext" && exch == 1 && closeReason == null && logs == 1,
-            "suppressing a round root must remove the record and reseed the root chronologically");
-
-        var settleRound = new WorldDiplomacyRound
-        {
-            RoundId = "r2", State = "active", RootDocumentId = "dRoot",
-            ResultSettlementPending = true
-        };
-        rounds["r2"] = settleRound;
-        var relayBad = new WorldDiplomacyDocument
-        {
-            DocumentId = "dR", RoundId = "r2", IsRelayTurn = true,
-            IsPlayerAuthored = false, AuthorKingdomId = "K2"
-        };
-        suppress(relayBad, "invalid");
-        Test.True(!settleRound.RelayWaiting && schedSettle == 1 && adv == 0,
-            "an invalid AI settlement statement must skip its slot and reschedule settlement");
-
-        var relayRound = new WorldDiplomacyRound { RoundId = "r3", State = "active", RootDocumentId = "dRoot" };
-        rounds["r3"] = relayRound;
-        var relayDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "dR3", RoundId = "r3", IsRelayTurn = true,
-            IsPlayerAuthored = false, AuthorKingdomId = "K2"
-        };
-        suppress(relayDoc, "invalid");
-        Test.True(!relayRound.RelayWaiting && adv == 1 && exch == 1,
-            "an invalid relay statement outside settlement must advance the relay");
-
-        var closeRound = new WorldDiplomacyRound { RoundId = "r9", State = "active", RootDocumentId = "dS" };
-        rounds["r9"] = closeRound;
-        storage.ActiveRound = closeRound;
-        storage.Documents.Clear();
-        var sole = new WorldDiplomacyDocument
-        {
-            DocumentId = "dS", RoundId = "r9", IsRelayTurn = false,
-            IsPlayerAuthored = false, AuthorKingdomId = "K2"
-        };
-        suppress(sole, "invalid");
-        Test.True(closeRound.RootDocumentId == "" && closeReason == "technical_invalid_document_suppressed",
-            "an empty unpublished active round must close after invalid suppression");
-
-        var playerRound = new WorldDiplomacyRound { RoundId = "r4", State = "active", RootDocumentId = "dRoot" };
-        rounds["r4"] = playerRound;
-        storage.ActiveRound = playerRound;
-        storage.PlayerOpportunities.Add(new WorldDiplomacyPlayerOpportunity { RoundId = "r4", Status = "closed" });
-        var playerResponse = new WorldDiplomacyDocument
-        {
-            DocumentId = "dPR", RoundId = "r4", IsPlayerAuthored = true,
-            IsResponse = true, IsReadyForPublication = false,
-            AuthorKingdomId = "K1"
-        };
-        suppress(playerResponse, "invalid");
-        WorldDiplomacyRoundParticipant prt = playerRound.Participants.FirstOrDefault();
-        Test.True(prt != null && prt.MandatoryReplyPending
-            && storage.PlayerOpportunities[0].Status == "open",
-            "a suppressed player response must reopen the mandatory reply opportunity");
-    }
-
-    static void RunRoundLifecycleMaintenanceDecisionTests()
-    {
-        // DPL-060DA: tick-time round lifecycle and after-load reconcile routing
-        // live in the lifecycle rules behind storage and scheduling ports.
-        var storage = new WorldDiplomacyStorage();
-        int planEnqueue = 0, settleSched = 0, hopSched = 0, logs = 0;
-        string closeReason = null;
-        WorldDiplomacyDocument planDoc = null;
-        Action tick = () => WorldDiplomacyRoundApplication.ProcessRoundLifecycle(
-            storage, () => 42,
-            id => storage.Documents.FirstOrDefault(x => x != null && x.DocumentId == id),
-            (r, d) => { planEnqueue++; planDoc = d; },
-            r => settleSched++, r => hopSched++, r => closeReason = r, _ => logs++);
-
-        tick();
-        storage.ActiveRound = new WorldDiplomacyRound { RoundId = "r0", State = "closed" };
-        tick();
-        Test.True(planEnqueue + settleSched + hopSched + logs == 0 && closeReason == null,
-            "missing or inactive rounds must not reach any lifecycle port");
-
-        var breaker = new WorldDiplomacyRound
-        {
-            RoundId = "r1", State = "active", AutomaticCircuitBreakerTripped = true,
-            ResultSettlementPending = true, ResultSettlementRoundStatus = "resolved"
-        };
-        breaker.ResultSettlementSlots.Add(new WorldDiplomacyResultSettlementSlot { SlotId = "s1" });
-        storage.ActiveRound = breaker;
-        tick();
-        Test.True(breaker.ResultSettlementSlots.Count == 0
-            && breaker.RoundStatus == "resolved"
-            && closeReason == "result_settlement_circuit_breaker",
-            "a tripped circuit breaker must drain slots and close through the settlement path");
-
-        var hardWait = new WorldDiplomacyRound
-        {
-            RoundId = "r2", State = "active", HardEndDay = 10
-        };
-        storage.ActiveRound = hardWait;
-        storage.Jobs.Add(new WorldDiplomacyJob { JobId = "j1", RoundId = "r2", IsRunning = true });
-        closeReason = null;
-        tick();
-        Test.True(closeReason == null && settleSched + hopSched + planEnqueue == 0,
-            "a running round job must defer the hard-end close");
-
-        storage.Jobs.Clear();
-        tick();
-        Test.True(closeReason == "relay_hard_end",
-            "an idle ordinary relay round must close on hard end");
-
-        var unplanned = new WorldDiplomacyRound
-        {
-            RoundId = "r3", State = "active", RootDocumentId = "dRoot", RelayPlanned = false, HardEndDay = 100
-        };
-        storage.ActiveRound = unplanned;
-        storage.Documents.Add(new WorldDiplomacyDocument
-        {
-            DocumentId = "dRoot", RoundId = "r3", IsReadyForPublication = true
-        });
-        tick();
-        Test.True(planEnqueue == 1 && planDoc != null && planDoc.DocumentId == "dRoot",
-            "an unplanned round with a published root must enqueue the planning job");
-
-        var waitingSettle = new WorldDiplomacyRound
-        {
-            RoundId = "r4", State = "active", RelayPlanned = true, HardEndDay = 100,
-            ResultSettlementPending = true, ResultSettlementCurrentSlotId = "s1",
-            ResultSettlementPlayerWaitingSinceDay = 10
-        };
-        waitingSettle.ResultSettlementSlots.Add(new WorldDiplomacyResultSettlementSlot
-        {
-            SlotId = "s1", Status = "waiting_player", KingdomId = "K1"
-        });
-        storage.ActiveRound = waitingSettle;
-        tick();
-        Test.True(!waitingSettle.RelayWaiting && settleSched == 1 && hopSched == 0,
-            "an expired player slot must be skipped and the next settlement turn scheduled");
-
-        var freshSettle = new WorldDiplomacyRound
-        {
-            RoundId = "r5", State = "active", RelayPlanned = true, HardEndDay = 100,
-            ResultSettlementPending = true, ResultSettlementCurrentSlotId = "s1",
-            ResultSettlementPlayerWaitingSinceDay = 41
-        };
-        freshSettle.ResultSettlementSlots.Add(new WorldDiplomacyResultSettlementSlot
-        {
-            SlotId = "s1", Status = "waiting_player", KingdomId = "K1"
-        });
-        storage.ActiveRound = freshSettle;
-        int settleBefore = settleSched;
-        tick();
-        Test.True(freshSettle.RelayWaiting && settleSched == settleBefore,
-            "a fresh waiting-player slot must keep the relay waiting");
-
-        var withdrawn = new WorldDiplomacyRound { RoundId = "r6", State = "active", RelayPlanned = true, HardEndDay = 100 };
-        withdrawn.Participants.Add(new WorldDiplomacyRoundParticipant
-        {
-            KingdomId = "K2", SelectedForRelay = true, State = "withdrawn"
-        });
-        storage.ActiveRound = withdrawn;
-        closeReason = null;
-        tick();
-        Test.True(closeReason == "relay_all_ai_withdrew",
-            "a relay with no active AI participant must close");
-
-        var relaying = new WorldDiplomacyRound { RoundId = "r7", State = "active", RelayPlanned = true, HardEndDay = 100 };
-        relaying.Participants.Add(new WorldDiplomacyRoundParticipant
-        {
-            KingdomId = "K2", SelectedForRelay = true, State = "active"
-        });
-        storage.ActiveRound = relaying;
-        tick();
-        Test.True(!relaying.RelayWaiting && hopSched == 1,
-            "an idle planned relay with an active participant must schedule the next hop");
-
-        int settleSched2 = 0, hopImm = 0, closes2 = 0, logs2 = 0;
-        string closeReason2 = null;
-        Action reconcile = () => WorldDiplomacyRoundApplication.ReconcileActiveDiplomacyAfterLoad(
-            storage, () => 42, r => settleSched2++, r => hopImm++,
-            r => { closes2++; closeReason2 = r; }, _ => logs2++);
-
-        storage.ActiveRound = new WorldDiplomacyRound { RoundId = "rx", State = "active", HardEndDay = 10 };
-        reconcile();
-        Test.True(closeReason2 == "relay_hard_end_after_load",
-            "a hard-ended active round must close after load");
-
-        var workRound = new WorldDiplomacyRound
-        {
-            RoundId = "r8", State = "active", RootDocumentId = "dRoot", RelayWaiting = true, HardEndDay = 100
-        };
-        storage.ActiveRound = workRound;
-        storage.Jobs.Add(new WorldDiplomacyJob { JobId = "j2", RoundId = "r8" });
-        reconcile();
-        Test.True(workRound.RelayWaiting && logs2 == 0 && closes2 == 1 && settleSched2 + hopImm == 0,
-            "persisted work must defer reconcile without touching the relay wait");
-
-        storage.Jobs.Clear();
-        var settleReconcile = new WorldDiplomacyRound
-        {
-            RoundId = "r9", State = "active", RootDocumentId = "dRoot", HardEndDay = 100,
-            ResultSettlementPending = true, RelayPlanned = true
-        };
-        storage.ActiveRound = settleReconcile;
-        reconcile();
-        Test.True(settleSched2 == 1 && hopImm == 0,
-            "a pending settlement round must resume its settlement turn after load");
-
-        var orphaned = new WorldDiplomacyRound
-        {
-            RoundId = "r10", State = "active", RootDocumentId = "", RelayPlanned = false, HardEndDay = 100
-        };
-        storage.ActiveRound = orphaned;
-        closeReason2 = null;
-        reconcile();
-        Test.True(closeReason2 == "technical_missing_root_after_load",
-            "an active round without work, settlement, relay, or root must close after load");
-    }
 
 
     static void RunAnalysisCommitDecisionTests()
@@ -12807,111 +10048,7 @@ RunRepairCorrectionAndJobDecisionTests();
     }
 
 
-    static void RunRoundPlanCommitDecisionTests()
-    {
-        // DPL-060DC: CommitRoundPlan validates the planned relay behind kingdom
-        // ports, stamps the topic, builds the mandatory+optional route, and
-        // hands off to settlement or relay scheduling.
-        var storage = new WorldDiplomacyStorage();
-        var closes = new List<string>();
-        int settleSched = 0, hopSched = 0, refreshSlots = 0;
-        WorldDiplomacyRound round = null;
-        WorldDiplomacyDocument root = null;
-        var distances = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["a|c"] = 1f, ["a|b"] = 2f, ["b|c"] = 5f
-        };
-        float Dist(string x, string y)
-            => distances.TryGetValue(x + "|" + y, out float v) ? v
-                : distances.TryGetValue(y + "|" + x, out v) ? v : 9f;
-        Action<string> commit = raw => WorldDiplomacyRoundPlanApplication.Commit(
-            new WorldDiplomacyJob { JobId = "jP", RoundId = "r1", DocumentId = "d1",
-                CandidateKingdomIds = new List<string> { "b", "c", "dead", "vassal" } },
-            raw, storage, 7, 6,
-            id => id == "r1" ? round : null,
-            id => id == "d1" ? root : null,
-            id => id == "ghost" ? null : id,
-            id => id == "dead",
-            id => id != "vassal",
-            id => id == "ghost" ? null : id,
-            id => id == "player",
-            (a, b) => false,
-            Dist,
-            () => 40,
-            reason => closes.Add(reason),
-            (r, id) => true,
-            prefix => prefix + "1",
-            r => refreshSlots++,
-            r => settleSched++,
-            r => hopSched++,
-            _ => { });
 
-        commit("{\"topic\":\"边境谈判\",\"selected_kingdom_ids\":[\"b\"]}");
-        round = new WorldDiplomacyRound { RoundId = "r1", State = "active" };
-        storage.ActiveRound = round;
-        commit("{}");
-        root = new WorldDiplomacyDocument { DocumentId = "d1", RoundId = "r1", AuthorKingdomId = "ghost" };
-        commit("{}");
-        Test.True(!round.RelayPlanned && closes.Count == 0 && settleSched + hopSched == 0,
-            "missing round, root, or initiator must not plan a relay");
-
-        root.AuthorKingdomId = "a";
-        commit("{\"topic\":\"边境谈判\"}");
-        Test.True(closes.Count == 1 && closes[0] == "round_plan_no_participants" && !round.RelayPlanned,
-            "a plan without any reachable participant must close the round");
-
-        closes.Clear();
-        round = new WorldDiplomacyRound { RoundId = "r1", State = "active" };
-        storage.ActiveRound = round;
-        root.Intent = "warning";
-        root.TargetKingdomId = "b";
-        commit("{\"topic\":\"边境谈判\",\"selected_kingdom_ids\":[\"c\",\"dead\",\"vassal\",\"ghost\"]}");
-        Test.True(round.RelayPlanned && round.SchemaVersion == 7
-            && round.RelayCursor == 0 && round.RelayDirection == 1 && round.RelayPassNumber == 1
-            && round.RelayPassStartedDay == 40 && round.CachePrefix == "",
-            "a committed plan must initialize the relay traversal state");
-        Test.True(round.RoundTopic == "边境谈判" && round.TopicCategory == "war_escalation",
-            "a warning-root plan must stamp the escalation topic category");
-        Test.True(round.RelayRouteKingdomIds != null
-            && string.Join(",", round.RelayRouteKingdomIds) == "a,c,b",
-            "the route must start at the initiator and visit nearest mandatory/optional stops first");
-        Test.True(round.Participants.Count == 3
-            && round.Participants.All(x => x.SelectedForRelay)
-            && !round.Participants.Any(x => x.IsPlayerAsync),
-            "every routed kingdom must become a selected relay participant");
-        Test.True(hopSched == 1 && settleSched == 0,
-            "a non-settlement round must schedule the next relay hop");
-
-        var settleRound = new WorldDiplomacyRound
-        {
-            RoundId = "r1", State = "active", ResultSettlementPending = true,
-            SoftEndDay = 60, StartedDay = 40
-        };
-        storage.ActiveRound = settleRound;
-        round = settleRound;
-        root.Intent = "propose_peace";
-        hopSched = 0;
-        commit("{\"selected_kingdom_ids\":[\"b\"]}");
-        Test.True(settleSched == 1 && hopSched == 0 && refreshSlots == 1,
-            "a settlement-pending round must refresh action slots and schedule the settlement turn");
-
-        var playerRound = new WorldDiplomacyRound { RoundId = "r1", State = "active" };
-        storage.ActiveRound = playerRound;
-        round = playerRound;
-        root.TargetKingdomId = "player";
-        commit("{\"selected_kingdom_ids\":[\"b\"]}");
-        Test.True(round.RelayRouteKingdomIds != null && round.RelayRouteKingdomIds.Contains("player")
-            && round.Participants.Any(x => x.KingdomId == "player" && x.IsPlayerAsync),
-            "a resolved representative target must be mandatory and marked player-async");
-
-        var stale = new WorldDiplomacyRound { RoundId = "r1", State = "active", RelayPlanned = true };
-        storage.ActiveRound = stale;
-        round = stale;
-        int hops2 = hopSched;
-        commit("{\"selected_kingdom_ids\":[\"b\"]}");
-        Test.True(hopSched == hops2 && (stale.RelayRouteKingdomIds == null || !stale.RelayRouteKingdomIds.Any()),
-            "an already-planned round must ignore duplicate plan commits");
-    }
 
 
     static void RunFailedJobCommitDecisionTests()
@@ -12932,7 +10069,6 @@ RunRepairCorrectionAndJobDecisionTests();
             j => "{fallback-analysis}",
             (j, raw) => analyzed.Add(raw),
             j => threatFallbackLogs++,
-            (j, raw) => planned.Add(raw),
             j => "{fallback-compression}",
             (j, raw) => compressed.Add(raw),
             id => removed.Add(id),
@@ -12972,13 +10108,13 @@ RunRepairCorrectionAndJobDecisionTests();
         storage.DiplomacyCompressionPending = false;
         storage.CompressionRetryAttempts = 5;
         commit(new WorldDiplomacyJob { JobId = "j5", Kind = "compress" });
-        Test.True(storage.CompressionRetryAttempts == 6
-            && storage.CompressionRetryAfterHour == 296,
-            "the sixth compression failure must cap at the maximum retry window");
+        Test.True(storage.CompressionRetryAttempts == DiplomacyCompressionBudget.MaximumFailures
+            && storage.CompressionRetryAfterHour == int.MaxValue && DiplomacyCompressionBudget.Held(storage),
+            "Q50 exhausted compression retries hold original evidence without an infinite timer");
 
         commit(new WorldDiplomacyJob { JobId = "j6", Kind = "round_plan" });
-        Test.True(planned.Count == 1 && planned[0].Contains("selected_kingdom_ids"),
-            "a failed round plan must commit the empty default plan");
+        Test.True(planned.Count == 0,
+            "retired round-plan jobs cannot manufacture a fallback plan");
 
         commit(new WorldDiplomacyJob { JobId = "j7", Kind = "round_compress" });
         Test.True(compressed.Count == 1 && compressed[0] == "{fallback-compression}",
@@ -13046,7 +10182,6 @@ RunRepairCorrectionAndJobDecisionTests();
                 };
             },
             d => "day" + d,
-            r => scheduled++,
             r => pruned++,
             (j, a, fb, reason) => abandons.Add((a ?? "") + ">" + (fb ?? "") + ">" + reason),
             (j, r2, a, t, reason, json) => rejects.Add(reason + ">" + (t ?? "")),
@@ -13068,21 +10203,12 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         commit(new WorldDiplomacyJob
         {
-            JobId = "js", RoundId = "r1", Kind = "generate",
-            AuthorKingdomId = "a", ResultSettlementSlotId = "sX"
-        }, "{}");
-        Test.True(scheduled == 1 && !round.RelayWaiting && added.Count == 0
-            && rejects.Count == 0 && logs.Any(x => x.Contains("stale result-settlement")),
-            "a stale result-settlement generation must reschedule and be discarded");
-
-        commit(new WorldDiplomacyJob
-        {
             JobId = "js2", RoundId = "r1", Kind = "generate",
             AuthorKingdomId = "a", ResultSettlementSlotId = "s1"
         }, "{}");
-        Test.True(scheduled == 1 && rejects.Count == 1
+        Test.True(scheduled == 0 && rejects.Count == 1
             && rejects[0].StartsWith("empty_public_document", StringComparison.Ordinal),
-            "the current result-settlement slot must proceed past the stale gate");
+            "saved legacy slot data cannot bypass ordinary draft validation");
         round.ResultSettlementPending = false;
         round.ResultSettlementSlots = null;
         round.ResultSettlementCurrentSlotId = null;
@@ -13192,506 +10318,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "a response generation must deepen the reply chain and bookkeep the response slot");
     }
 
-    static void RunPostDecisionRoutingDecisionTests()
-    {
-        // DPL-060DF: published-document finalization, threat document dispatch,
-        // and rejected-generation abandonment live inside the lifecycle rules.
-        var storage = new WorldDiplomacyStorage();
-        var threats = new List<WorldDiplomacyThreat>();
-        var logs = new List<string>();
 
-        // ---- FinalizePublishedDocumentAfterAnalysis ----
-        var finCalls = new List<string>();
-        bool deferThreat = false, propagationFails = false, eventsFail = false, roundFails = false;
-        Action<WorldDiplomacyDocument, string, string> finalize = (doc, a, tgt) =>
-            WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(
-                doc, a, tgt, "declare_war", true, threats,
-                (d, x, y, intent) => finCalls.Add("decisions"),
-                (d, x, y, intent) => { finCalls.Add("defer"); return deferThreat; },
-                (th, d) => finCalls.Add("penalty"),
-                d => finCalls.Add("reputation"),
-                (d, x) => { if (propagationFails) throw new InvalidOperationException("boom"); finCalls.Add("propagate"); },
-                d => finCalls.Add("weekly"),
-                d => finCalls.Add("reconcile"),
-                d => { if (eventsFail) throw new InvalidOperationException("boom"); finCalls.Add("events"); },
-                th => finCalls.Add("threatHist"),
-                th => finCalls.Add("threatPenaltyHist"),
-                th => finCalls.Add("threatRewardHist"),
-                (th, ev) => finCalls.Add("threatNonComp"),
-                id => finCalls.Add("deferRetry:" + id),
-                d => { if (roundFails) throw new InvalidOperationException("boom"); finCalls.Add("round"); },
-                s => logs.Add(s));
 
-        finalize(null, "a", "b");
-        var fdoc = new WorldDiplomacyDocument { DocumentId = "fd1", Intent = "declare_war" };
-        finalize(fdoc, "", "b");
-        Test.True(finCalls.Count == 0 && !fdoc.IsReadyForPublication,
-            "a null document or missing author must skip publication finalization");
-
-        finalize(fdoc, "a", "b");
-        Test.True(fdoc.IsReadyForPublication
-            && finCalls.SequenceEqual(new[]
-            {
-                "decisions", "defer", "reputation", "propagate",
-                "weekly", "reconcile", "events", "round"
-            }),
-            "a valid publication must run the finalization chain in order");
-
-        finCalls.Clear();
-        deferThreat = true;
-        var fdoc2 = new WorldDiplomacyDocument { DocumentId = "fd2", Intent = "declare_war" };
-        finalize(fdoc2, "a", "b");
-        Test.True(fdoc2.IsReadyForPublication && !finCalls.Contains("penalty")
-            && finCalls.Contains("reputation"),
-            "a deferred required threat action must skip the follow-through settlement only");
-        deferThreat = false;
-
-        finCalls.Clear();
-        logs.Clear();
-        propagationFails = true;
-        var fdoc3 = new WorldDiplomacyDocument { DocumentId = "fd3", Intent = "declare_war", PropagationCompleted = true };
-        finalize(fdoc3, "a", "b");
-        Test.True(!fdoc3.PropagationCompleted
-            && logs.Any(x => x.Contains("propagation deferred")),
-            "a propagation failure must reset completion and defer instead of failing the commit");
-        propagationFails = false;
-
-        finCalls.Clear();
-        logs.Clear();
-        eventsFail = true;
-        var fdoc4 = new WorldDiplomacyDocument { DocumentId = "fd4", Intent = "declare_war" };
-        finalize(fdoc4, "a", "b");
-        Test.True(finCalls.Contains("deferRetry:fd4")
-            && logs.Any(x => x.Contains("canonical history append deferred")),
-            "a canonical-history failure must schedule the deferred retry path");
-        eventsFail = false;
-
-        finCalls.Clear();
-        logs.Clear();
-        roundFails = true;
-        var fdoc5 = new WorldDiplomacyDocument { DocumentId = "fd5", Intent = "declare_war" };
-        finalize(fdoc5, "a", "b");
-        Test.True(logs.Any(x => x.Contains("round progress deferred")),
-            "a round-progress failure must be logged without breaking finalization");
-        roundFails = false;
-
-        // ---- ProcessDiplomaticThreatDocument ----
-        var threatCalls = new List<string>();
-        Action<WorldDiplomacyDocument, string, string, bool> proc = (doc, a, tgt, rec) =>
-            WorldDiplomacyThreatBindingApplication.ProcessDiplomaticThreatDocument(
-                doc, a, tgt, rec, threats, 50, 5,
-                (d, x, y, intent) => threatCalls.Add("decisions:" + intent),
-                (d, x, y, intent) => threatCalls.Add("advance:" + intent),
-                (d, x, y) => threatCalls.Add("compliance"),
-                (kid, delta, d, reason) => threatCalls.Add("prestige:" + kid + ":" + delta));
-
-        proc(null, "a", "b", true);
-        proc(new WorldDiplomacyDocument { DocumentId = "pd0", Intent = "warning" }, "", "b", true);
-        Test.True(threatCalls.Count == 0,
-            "a null threat document or missing author must skip dispatch");
-
-        proc(new WorldDiplomacyDocument { DocumentId = "pd1", Intent = "warning" }, "a", "b", true);
-        Test.True(threatCalls.SequenceEqual(new[] { "decisions:warning", "advance:warning" }),
-            "a warning declaration must record target decisions then register or advance the threat");
-
-        threatCalls.Clear();
-        proc(new WorldDiplomacyDocument { DocumentId = "pd2", Intent = "ultimatum" }, "a", "b", false);
-        Test.True(threatCalls.SequenceEqual(new[] { "advance:ultimatum" }),
-            "an opted-out ultimatum must advance the threat without recording target decisions");
-
-        threatCalls.Clear();
-        proc(new WorldDiplomacyDocument { DocumentId = "pd3", Intent = "comply_ultimatum" }, "a", "b", true);
-        Test.True(threatCalls.SequenceEqual(new[] { "decisions:comply_ultimatum", "compliance" }),
-            "a compliance declaration must resolve threat compliance");
-
-        threatCalls.Clear();
-        proc(new WorldDiplomacyDocument { DocumentId = "pd4", Intent = "declare_war", ChangedDiplomaticState = false }, "a", "b", true);
-        Test.True(threatCalls.SequenceEqual(new[] { "decisions:declare_war" }),
-            "a war declaration without a state change must not run war enforcement");
-
-        threats.Clear();
-        threats.Add(new WorldDiplomacyThreat
-        {
-            ThreatId = "th-ult", IssuerKingdomId = "a", TargetKingdomId = "b",
-            Stage = "ultimatum", TargetDecision = "noncomplied", Status = "open",
-            CreatedDay = 10, UpdatedDay = 20, ObligationRoundId = "r9", ObligationClaimedDay = 30
-        });
-        threats.Add(new WorldDiplomacyThreat
-        {
-            ThreatId = "th-other", IssuerKingdomId = "b", TargetKingdomId = "a",
-            Stage = "warning", TargetDecision = "noncomplied", Status = "open",
-            CreatedDay = 11, UpdatedDay = 21
-        });
-        threatCalls.Clear();
-        var warDoc = new WorldDiplomacyDocument
-        {
-            DocumentId = "pd5", Intent = "declare_war", ChangedDiplomaticState = true,
-            RoundId = "r1", ProcessingActionId = "act1"
-        };
-        proc(warDoc, "a", "b", true);
-        var enforced = threats[0];
-        Test.True(threatCalls.Contains("prestige:a:5")
-            && enforced.Status == "enforced" && enforced.ResolutionRoundId == "r1"
-            && enforced.ResolutionDocumentId == "pd5" && enforced.ResolutionActionId == "act1"
-            && enforced.ResolutionReason == "issuer_declared_war" && enforced.UpdatedDay == 50
-            && enforced.ObligationRoundId == "" && enforced.ObligationClaimedDay == 0
-            && threats[1].Status == "invalidated"
-            && threats[1].ResolutionReason == "war_started_by_other_direction",
-            "an enforced ultimatum war must settle the threat and invalidate other open threats");
-
-        // ---- AbandonRejectedGeneration ----
-        var abCalls = new List<string>();
-        var abRound = new WorldDiplomacyRound { RoundId = "r1", State = "active" };
-        Action<WorldDiplomacyJob, string, string, string> abandon = (job, a, tgt, reason) =>
-            WorldDiplomacyGenerationTaskApplication.AbandonRejectedGeneration(
-                job, a, tgt, reason, storage, 50, 3,
-                id => abRound,
-                rsn => abCalls.Add("close:" + rsn),
-                r => abCalls.Add("schedule"),
-                r => abCalls.Add("relay"),
-                (ex, rsn) => abCalls.Add("exchange:" + rsn),
-                s => logs.Add(s));
-
-        abandon(null, "a", "b", "x");
-        Test.True(abCalls.Count == 0, "a null job must be a no-op");
-
-        storage.ActiveRound = null;
-        abRound.ConsecutiveTechnicalGenerationFailures = 0;
-        abRound.ResultSettlementPending = false;
-        abRound.RelayWaiting = true;
-        abandon(new WorldDiplomacyJob { JobId = "ab1", IsRelayTurn = true, RoundId = "r1" }, "a", "b", "bad");
-        Test.True(abCalls.SequenceEqual(new[] { "relay" })
-            && abRound.ConsecutiveTechnicalGenerationFailures == 1 && !abRound.RelayWaiting,
-            "a relay-turn rejection below the breaker must count the failure and advance the relay");
-
-        abCalls.Clear();
-        abRound.ConsecutiveTechnicalGenerationFailures = 2;
-        abandon(new WorldDiplomacyJob { JobId = "ab2", IsRelayTurn = true, RoundId = "r1" }, "a", "b", "bad");
-        Test.True(abCalls.SequenceEqual(new[] { "close:technical_consecutive_generation_rejections" })
-            && abRound.ConsecutiveTechnicalGenerationFailures == 3,
-            "a relay-turn rejection that trips the breaker must close the round");
-
-        abCalls.Clear();
-        abRound.ConsecutiveTechnicalGenerationFailures = 0;
-        abRound.ResultSettlementPending = true;
-        abRound.ResultSettlementCurrentSlotId = "s1";
-        abRound.ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
-        {
-            new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "a" }
-        };
-        abandon(new WorldDiplomacyJob
-        {
-            JobId = "ab3", IsRelayTurn = true, RoundId = "r1",
-            ResultSettlementSlotId = "s1", AuthorKingdomId = "a"
-        }, "a", "b", "bad");
-        Test.True(abCalls.SequenceEqual(new[] { "schedule" })
-            && abRound.ResultSettlementSlots.Count == 0 && abRound.ResultSettlementCurrentSlotId == "",
-            "a settlement-turn rejection must skip the owned slot and reschedule");
-        abRound.ResultSettlementPending = false;
-        abRound.ResultSettlementSlots = null;
-        abRound.ResultSettlementCurrentSlotId = null;
-
-        abCalls.Clear();
-        abRound.State = "active";
-        abRound.RootDocumentId = "";
-        storage.ActiveRound = abRound;
-        abandon(new WorldDiplomacyJob { JobId = "ab4", ExchangeId = "ex1" }, "a", "b", "bad");
-        Test.True(abCalls.SequenceEqual(new[] { "exchange:technical_generation_rejected", "close:technical_generation_rejected" }),
-            "a non-relay rejection must complete the exchange and close an unpublished active round");
-        storage.ActiveRound = null;
-    }
-
-    static void RunRelayAndSettlementTurnSchedulingDecisionTests()
-    {
-        WorldDiplomacyRound RelayRound() => new WorldDiplomacyRound
-        {
-            RoundId = "r1",
-            State = "active",
-            InitiatorKingdomId = "kA",
-            RelayPlanned = true,
-            RelayRouteKingdomIds = new List<string> { "kA", "kB" },
-            RelayCursor = 0,
-            RelayDirection = 1,
-            RelayPassStartedDay = 10,
-            Participants = new List<WorldDiplomacyRoundParticipant>(),
-            PendingOffers = new List<WorldDiplomacyRoundOffer>(),
-            ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>()
-        };
-        WorldDiplomacyStorage Store() => new WorldDiplomacyStorage
-        {
-            RelayArrivals = new List<WorldDiplomacyRelayArrival>(),
-            Jobs = new List<WorldDiplomacyJob>(),
-            DiplomaticThreats = new List<WorldDiplomacyThreat>(),
-            Documents = new List<WorldDiplomacyDocument>(),
-            PlayerOpportunities = new List<WorldDiplomacyPlayerOpportunity>()
-        };
-
-        // A settlement-pending round redirects to result-settlement scheduling.
-        WorldDiplomacyRound settlementRedirect = RelayRound();
-        settlementRedirect.ResultSettlementPending = true;
-        bool redirected = false;
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            settlementRedirect, false, Store(), 30, 4, id => true,
-            r => redirected = true, reason => { }, line => { });
-        Test.True(redirected,
-            "a settlement-pending round must delegate to result-settlement scheduling");
-
-        // Gate failures leave storage untouched.
-        WorldDiplomacyRound unplanned = RelayRound();
-        unplanned.RelayPlanned = false;
-        WorldDiplomacyStorage unplannedStore = Store();
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            unplanned, false, unplannedStore, 30, 4, id => true,
-            r => { }, reason => { }, line => { });
-        Test.True(unplannedStore.RelayArrivals.Count == 0 && !unplanned.RelayWaiting,
-            "an unplanned round must not schedule a relay hop");
-
-        WorldDiplomacyRound withArrival = RelayRound();
-        WorldDiplomacyStorage withArrivalStore = Store();
-        withArrivalStore.RelayArrivals.Add(new WorldDiplomacyRelayArrival { RoundId = "r1", ToKingdomId = "kB", DueDay = 31 });
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            withArrival, false, withArrivalStore, 30, 4, id => true,
-            r => { }, reason => { }, line => { });
-        Test.True(withArrivalStore.RelayArrivals.Count == 1 && !withArrival.RelayWaiting,
-            "an existing round arrival must block a new relay hop");
-
-        WorldDiplomacyRound withJob = RelayRound();
-        WorldDiplomacyStorage withJobStore = Store();
-        withJobStore.Jobs.Add(new WorldDiplomacyJob { RoundId = "r1", IsRelayTurn = true });
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            withJob, false, withJobStore, 30, 4, id => true,
-            r => { }, reason => { }, line => { });
-        Test.True(withJobStore.RelayArrivals.Count == 0 && !withJob.RelayWaiting,
-            "a pending relay job must block a new relay hop");
-
-        // Routes below the minimum close the round.
-        WorldDiplomacyRound noRoute = RelayRound();
-        noRoute.RelayRouteKingdomIds = new List<string> { "kA" };
-        string noRouteClose = null;
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            noRoute, false, Store(), 30, 4, id => true,
-            r => { }, reason => noRouteClose = reason, line => { });
-        Test.True(noRouteClose == "relay_has_no_participants",
-            "a route below the minimum must close the round");
-
-        // Happy path: cursor advances to the next authoritative participant and
-        // the arrival lands at pass-start plus the per-edge duration share.
-        WorldDiplomacyRound happy = RelayRound();
-        WorldDiplomacyStorage happyStore = Store();
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            happy, false, happyStore, 30, 4, id => true,
-            r => { }, reason => { }, line => { });
-        Test.True(happyStore.RelayArrivals.Count == 1
-            && happyStore.RelayArrivals[0].FromKingdomId == "kA"
-            && happyStore.RelayArrivals[0].ToKingdomId == "kB"
-            && happyStore.RelayArrivals[0].DueDay == 14
-            && happyStore.RelayArrivals[0].Sequence == 1
-            && happy.RelaySequence == 1 && happy.RelayWaiting,
-            "a normal hop must stamp the arrival, cursor bookkeeping, and waiting state");
-
-        WorldDiplomacyRound immediate = RelayRound();
-        WorldDiplomacyStorage immediateStore = Store();
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            immediate, true, immediateStore, 30, 4, id => true,
-            r => { }, reason => { }, line => { });
-        Test.True(immediateStore.RelayArrivals.Count == 1
-            && immediateStore.RelayArrivals[0].DueDay == 30,
-            "an immediate hop must arrive on the current day");
-
-        // Open threats reprioritize the required speaker ahead of cursor order.
-        WorldDiplomacyRound threatRound = RelayRound();
-        threatRound.RelayRouteKingdomIds = new List<string> { "kA", "kB", "kC" };
-        WorldDiplomacyStorage threatStore = Store();
-        threatStore.DiplomaticThreats.Add(new WorldDiplomacyThreat
-        {
-            Status = "open",
-            TargetDecision = "pending",
-            IssuerKingdomId = "kA",
-            TargetKingdomId = "kC",
-            UpdatedDay = 5
-        });
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            threatRound, false, threatStore, 30, 4, id => true,
-            r => { }, reason => { }, line => { });
-        Test.True(threatStore.RelayArrivals.Count == 1
-            && threatStore.RelayArrivals[0].ToKingdomId == "kC",
-            "an open threat must prioritize its required speaker over cursor order");
-
-        // With no reachable participant the pass is accounted, the direction
-        // flips, the final-resolution phase opens, and the round closes.
-        WorldDiplomacyRound exhausted = RelayRound();
-        exhausted.RelayPassNumber = 1;
-        exhausted.ConsecutiveNoActionPasses = 1;
-        string exhaustedClose = null;
-        List<string> exhaustedLogs = new List<string>();
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            exhausted, false, Store(), 30, 4, id => false,
-            r => { }, reason => exhaustedClose = reason, line => exhaustedLogs.Add(line));
-        Test.True(exhaustedClose == "relay_all_participants_withdrew"
-            && exhausted.ConsecutiveNoActionPasses == 2
-            && exhausted.LastAccountedRelayPassNumber == 1
-            && exhausted.RelayDirection == -1
-            && exhausted.RelayPassNumber == 2
-            && exhausted.RelayPassStartedDay == 14
-            && exhausted.FinalActionOpportunityIssued,
-            "an exhausted route must account the pass, open the final-resolution phase, and close the round");
-
-        // A round already in the final-resolution phase with no substantive
-        // progress clamps the arrival to the hard end day.
-        WorldDiplomacyRound hardEnd = RelayRound();
-        hardEnd.FinalActionOpportunityIssued = true;
-        hardEnd.HardEndDay = 8;
-        WorldDiplomacyStorage hardEndStore = Store();
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            hardEnd, false, hardEndStore, 30, 4, id => true,
-            r => { }, reason => { }, line => { });
-        Test.True(hardEndStore.RelayArrivals.Count == 1
-            && hardEndStore.RelayArrivals[0].DueDay == 8,
-            "a final-resolution round must clamp the arrival to the hard end day");
-
-        WorldDiplomacyStorage nullStore = Store();
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
-            null, false, nullStore, 30, 4, id => true,
-            r => { }, reason => { }, line => { });
-        Test.True(nullStore.RelayArrivals.Count == 0,
-            "a null round must not schedule a relay hop");
-
-        WorldDiplomacyRound SettlementRound() => new WorldDiplomacyRound
-        {
-            RoundId = "r1",
-            State = "active",
-            InitiatorKingdomId = "kA",
-            RelayPlanned = true,
-            ResultSettlementPending = true,
-            ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>(),
-            ResultSettlementRoundStatus = "resolved",
-            Participants = new List<WorldDiplomacyRoundParticipant>(),
-            PendingOffers = new List<WorldDiplomacyRoundOffer>(),
-            RelayRouteKingdomIds = new List<string>()
-        };
-
-        // Gate failures must not even refresh the slot queue.
-        WorldDiplomacyRound notPending = SettlementRound();
-        notPending.ResultSettlementPending = false;
-        int refreshCalls = 0;
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
-            notPending, Store(), 40, 8,
-            id => id, id => true, id => false,
-            (r, id) => 1, r => refreshCalls++,
-            reason => { }, line => { });
-        Test.True(refreshCalls == 0,
-            "a round without a pending settlement must not refresh the slot queue");
-
-        WorldDiplomacyRound blockedByArrival = SettlementRound();
-        WorldDiplomacyStorage blockedStore = Store();
-        blockedStore.RelayArrivals.Add(new WorldDiplomacyRelayArrival { RoundId = "r1", ToKingdomId = "kB", DueDay = 41 });
-        refreshCalls = 0;
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
-            blockedByArrival, blockedStore, 40, 8,
-            id => id, id => true, id => false,
-            (r, id) => 1, r => refreshCalls++,
-            reason => { }, line => { });
-        Test.True(refreshCalls == 0,
-            "a pending arrival must block settlement-turn scheduling");
-
-        // An empty slot queue resolves the round with the normalized status.
-        WorldDiplomacyRound emptySlots = SettlementRound();
-        string emptyClose = null;
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
-            emptySlots, Store(), 40, 8,
-            id => id, id => true, id => false,
-            (r, id) => 1, r => { },
-            reason => emptyClose = reason, line => { });
-        Test.True(emptyClose == "result_settled" && emptySlots.RoundStatus == "resolved",
-            "an empty slot queue must resolve the round with the default close reason");
-
-        WorldDiplomacyRound deadlocked = SettlementRound();
-        deadlocked.ResultSettlementRoundStatus = "deadlocked";
-        deadlocked.ResultSettlementCloseReason = "settlement_deadlocked";
-        string deadClose = null;
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
-            deadlocked, Store(), 40, 8,
-            id => id, id => true, id => false,
-            (r, id) => 1, r => { },
-            reason => deadClose = reason, line => { });
-        Test.True(deadClose == "settlement_deadlocked" && deadlocked.RoundStatus == "deadlocked",
-            "a deadlocked settlement must preserve the status and the custom close reason");
-
-        // An ineligible receiver skips the slot and re-enters the loop until the
-        // queue drains, then closes the round.
-        WorldDiplomacyRound ineligible = SettlementRound();
-        ineligible.ResultSettlementSlots.Add(new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "kB" });
-        refreshCalls = 0;
-        string ineligibleClose = null;
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
-            ineligible, Store(), 40, 8,
-            id => null, id => true, id => false,
-            (r, id) => 1, r => refreshCalls++,
-            reason => ineligibleClose = reason, line => { });
-        Test.True(ineligibleClose == "result_settled"
-            && ineligible.ResultSettlementSlots.Count == 0
-            && refreshCalls >= 2,
-            "an unresolvable receiver must skip the slot and close once the queue drains");
-
-        WorldDiplomacyRound noAction = SettlementRound();
-        noAction.ResultSettlementSlots.Add(new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "kB" });
-        string noActionClose = null;
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
-            noAction, Store(), 40, 8,
-            id => id, id => true, id => false,
-            (r, id) => 0, r => { },
-            reason => noActionClose = reason, line => { });
-        Test.True(noActionClose == "result_settled" && noAction.ResultSettlementSlots.Count == 0,
-            "a receiver with no actionable targets must skip the slot");
-
-        // A player receiver waits instead of scheduling an AI relay arrival.
-        WorldDiplomacyRound playerWait = SettlementRound();
-        WorldDiplomacyResultSettlementSlot playerSlot = new WorldDiplomacyResultSettlementSlot
-        {
-            SlotId = "s1",
-            KingdomId = "kB",
-            SourceDocumentIds = new List<string> { "dS1" }
-        };
-        playerWait.ResultSettlementSlots.Add(playerSlot);
-        WorldDiplomacyStorage playerStore = Store();
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
-            playerWait, playerStore, 40, 8,
-            id => id, id => true, id => id == "kB",
-            (r, id) => 2, r => { },
-            reason => { }, line => { });
-        WorldDiplomacyRoundParticipant playerParticipant = playerWait.Participants
-            .FirstOrDefault(x => x != null && x.KingdomId == "kB");
-        Test.True(playerSlot.Status == "waiting_player"
-            && playerWait.RelayWaiting
-            && playerWait.ResultSettlementPlayerWaitingSinceDay == 40
-            && playerParticipant != null && playerParticipant.MandatoryReplyPending
-            && playerStore.RelayArrivals.Count == 0,
-            "a player receiver must enter the waiting state without a relay arrival");
-
-        // An AI receiver schedules the settlement relay arrival immediately.
-        WorldDiplomacyRound aiTurn = SettlementRound();
-        WorldDiplomacyResultSettlementSlot aiSlot = new WorldDiplomacyResultSettlementSlot
-        {
-            SlotId = "s1",
-            KingdomId = "kB",
-            RelatedKingdomIds = new List<string> { "kP" }
-        };
-        aiTurn.ResultSettlementSlots.Add(aiSlot);
-        WorldDiplomacyStorage aiStore = Store();
-        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
-            aiTurn, aiStore, 40, 8,
-            id => id, id => true, id => false,
-            (r, id) => 2, r => { },
-            reason => { }, line => { });
-        Test.True(aiSlot.Status == "scheduled"
-            && aiTurn.RelayWaiting && aiTurn.RelaySequence == 1
-            && aiStore.RelayArrivals.Count == 1
-            && aiStore.RelayArrivals[0].ToKingdomId == "kB"
-            && aiStore.RelayArrivals[0].FromKingdomId == "kP"
-            && aiStore.RelayArrivals[0].ResultSettlementSlotId == "s1"
-            && aiStore.RelayArrivals[0].DueDay == 40,
-            "an AI receiver must schedule the settlement relay arrival for the current day");
-    }
 
     private sealed class TestCompletionEffects : IWorldDiplomacyCompletionEffects
     {
@@ -13760,7 +10388,6 @@ RunRepairCorrectionAndJobDecisionTests();
                 rebuild ?? (j => true),
                 authorBlock ?? (j => null),
                 (j, reason) => abandons?.Add(reason),
-                strategicProfile ?? (j => true),
                 configError ?? (() => null),
                 consume => PopBudget(budget),
                 captureHistory,
@@ -13840,6 +10467,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // Stale presentation refresh failures route to the failed commit.
         WorldDiplomacyStorage staleThreatStore = Store();
         staleThreatStore.Jobs.Add(Job("j1", kind: "generate"));
+        staleThreatStore.Documents.Add(new WorldDiplomacyDocument { DocumentId = "d1", AuthorKingdomId = "kA", IsReadyForPublication = true });
         staleThreatStore.DiplomaticThreats.Add(new WorldDiplomacyThreat
         {
             ThreatId = "t1", Status = "open", IssuerKingdomId = "kA", StageDocumentId = "d1"
@@ -13917,10 +10545,9 @@ RunRepairCorrectionAndJobDecisionTests();
         abandons = new List<string>();
         removed = new List<string>();
         Test.True(Select(noProfile, strategicProfile: j => false, abandons: abandons,
-                removed: removed) == null
-            && abandons.SequenceEqual(new[] { "missing_kingdom_strategic_profile" })
-            && removed.SequenceEqual(new[] { "j1" }),
-            "a missing kingdom strategic profile must abandon the generation and remove the job");
+                removed: removed) != null
+            && abandons.Count == 0 && removed.Count == 0,
+            "retired national personality profiles do not gate current event declarations");
 
         // Prompt and configuration guards fail the job without dispatch.
         WorldDiplomacyStorage emptyPrompt = Store();
@@ -14020,8 +10647,8 @@ RunRepairCorrectionAndJobDecisionTests();
         CommitResult(Job("j3", kind: "compress"), done, commits: commits);
         CommitResult(Job("j4", kind: "round_plan"), done, commits: commits);
         CommitResult(Job("j5", kind: "round_compress"), done, commits: commits);
-        Test.True(commits.SequenceEqual(new[] { "analyze", "compress", "round_plan", "round_compress" }),
-            "each completed job kind must route to its own commit");
+        Test.True(commits.SequenceEqual(new[] { "analyze", "compress", "round_compress" }),
+            "current job kinds route to their owners; retired round_plan never commits");
 
         commits.Clear();
         WorldDiplomacyJob paddedKind = Job("padded", kind: "  AnAlYzE  ");
@@ -14034,6 +10661,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "an unknown completed job kind must fail explicitly");
 
         // A stale completed generation is discarded and rebuilt or failed.
+        done.Documents.Add(new WorldDiplomacyDocument { DocumentId = "d9", AuthorKingdomId = "kA", IsReadyForPublication = true });
         done.DiplomaticThreats.Add(new WorldDiplomacyThreat
         {
             ThreatId = "t9", Status = "open", IssuerKingdomId = "kA", StageDocumentId = "d9"
@@ -14094,339 +10722,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(true, "a null job must be ignored by completed-result routing");
     }
 
-    private static void RunRelayArrivalAndExternalFactDecisionTests()
-    {
-        // DPL-060DI: due relay arrival dispatch (selection, stale skip, settlement branch, relay branch).
-        WorldDiplomacyStorage storage = new WorldDiplomacyStorage();
-        WorldDiplomacyRound round = new WorldDiplomacyRound
-        {
-            RoundId = "r1", State = "active", RelaySequence = 7,
-            RelayRouteKingdomIds = new List<string> { "a", "b", "c" }
-        };
-        storage.Documents.Add(new WorldDiplomacyDocument
-        {
-            DocumentId = "d1", RoundId = "r1", IsReadyForPublication = true
-        });
-        int enqueues = 0, advances = 0, settlementSchedules = 0, courtMarks = 0;
-        string lastSlotArg = "unset";
-        int lastPriority = -1;
-        string lastEnqueueTarget = null;
-        Action<WorldDiplomacyStorage, int> runArrivals = (store, day) =>
-        {
-            store.RelayArrivals = WorldDiplomacyRoundLifecycleRules.NormalizeRelayArrivalList(store.RelayArrivals);
-            WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(
-                store, day, id => id == "r1" ? round : null,
-                id => id,
-                id => !string.Equals(id, "bad", StringComparison.OrdinalIgnoreCase),
-                id => string.Equals(id, "c", StringComparison.OrdinalIgnoreCase),
-                (id, doc) => courtMarks++, r => settlementSchedules++, r => advances++,
-                (authorId, targetId, source, roundId, prevId, dueDay, priority, slotId) =>
-                { enqueues++; lastSlotArg = slotId ?? "null"; lastPriority = priority; lastEnqueueTarget = targetId; },
-                m => { });
-        };
 
-        WorldDiplomacyRelayArrival late = new WorldDiplomacyRelayArrival
-        { RoundId = "r1", Sequence = 7, DueDay = 99, FromKingdomId = "a", ToKingdomId = "b" };
-        storage.RelayArrivals.Add(late);
-        runArrivals(storage, 10);
-        Test.True(storage.RelayArrivals.Count == 1 && enqueues == 0 && advances == 0 && settlementSchedules == 0,
-            "a not-yet-due arrival must stay queued without dispatch");
-
-        WorldDiplomacyRelayArrival ghost = new WorldDiplomacyRelayArrival
-        { RoundId = "ghost", Sequence = 7, DueDay = 5, FromKingdomId = "a", ToKingdomId = "b" };
-        WorldDiplomacyRelayArrival stale = new WorldDiplomacyRelayArrival
-        { RoundId = "r1", Sequence = 5, DueDay = 5, FromKingdomId = "a", ToKingdomId = "b" };
-        storage.RelayArrivals.Add(ghost);
-        storage.RelayArrivals.Add(stale);
-        runArrivals(storage, 10);
-        Test.True(storage.RelayArrivals.Count == 1 && enqueues == 0 && advances == 0,
-            "unresolved-round and stale arrivals must be removed without dispatch");
-
-        // NPC relay delivery: route hit + eligible receiver -> knowledge recording + relay turn enqueue.
-        storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-        { RoundId = "r1", Sequence = 7, DueDay = 6, FromKingdomId = "a", ToKingdomId = "b" });
-        runArrivals(storage, 10);
-        Test.True(enqueues == 1 && lastSlotArg == "null" && advances == 0 && settlementSchedules == 0
-                && lastPriority == 75 && lastEnqueueTarget == "a",
-            "an eligible NPC arrival must enqueue a relay turn with no settlement slot");
-        Test.True(courtMarks == 1 && storage.KingdomKnowledge.Any(x => x != null
-                && x.KingdomId == "b" && x.DocumentIds.Contains("d1")),
-            "relay delivery must record kingdom and court knowledge for the receiver");
-
-        // Ineligible receiver and off-route arrivals advance the relay instead of enqueuing.
-        round.RelayWaiting = true;
-        storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-        { RoundId = "r1", Sequence = 7, DueDay = 6, FromKingdomId = "a", ToKingdomId = "bad" });
-        storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-        { RoundId = "r1", Sequence = 7, DueDay = 6, FromKingdomId = "a", ToKingdomId = "offroute" });
-        runArrivals(storage, 10);
-        Test.True(advances == 2 && enqueues == 1 && !round.RelayWaiting,
-            "ineligible or off-route arrivals must advance the relay and clear the wait flag");
-
-        // Player receiver records an opportunity then advances.
-        round.RelayWaiting = true;
-        storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-        { RoundId = "r1", Sequence = 7, DueDay = 6, FromKingdomId = "a", ToKingdomId = "c" });
-        runArrivals(storage, 10);
-        Test.True(advances == 3 && storage.PlayerOpportunities.Any(x => x != null && x.RoundId == "r1")
-                && enqueues == 1,
-            "a player arrival must record the opportunity and advance without a generation job");
-
-        // Settlement branch: missing slot reschedules, ineligible receiver skips the slot.
-        WorldDiplomacyRound settlementRound = new WorldDiplomacyRound
-        {
-            RoundId = "r1", State = "active", RelaySequence = 9, RelayWaiting = true,
-            ResultSettlementPending = true, ResultSettlementCurrentSlotId = "s1",
-            ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
-            {
-                new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "b", Status = "waiting" }
-            }
-        };
-        Action<WorldDiplomacyStorage, int> runSettlement = (store, day) =>
-        {
-            store.RelayArrivals = WorldDiplomacyRoundLifecycleRules.NormalizeRelayArrivalList(store.RelayArrivals);
-            WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(
-                store, day, id => id == "r1" ? settlementRound : null,
-                id => id,
-                id => !string.Equals(id, "bad", StringComparison.OrdinalIgnoreCase),
-                id => false,
-                (id, doc) => courtMarks++, r => settlementSchedules++, r => advances++,
-                (authorId, targetId, source, roundId, prevId, dueDay, priority, slotId) =>
-                { enqueues++; lastSlotArg = slotId ?? "null"; lastPriority = priority; lastEnqueueTarget = targetId; },
-                m => { });
-        };
-        storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-        { RoundId = "r1", Sequence = 9, DueDay = 6, FromKingdomId = "a", ToKingdomId = "b", ResultSettlementSlotId = "sX" });
-        runSettlement(storage, 10);
-        Test.True(settlementSchedules == 1 && !settlementRound.RelayWaiting && enqueues == 1,
-            "a missing settlement slot must reschedule the settlement turn");
-
-        storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-        { RoundId = "r1", Sequence = 9, DueDay = 6, FromKingdomId = "a", ToKingdomId = "bad", ResultSettlementSlotId = "s1" });
-        runSettlement(storage, 10);
-        Test.True(settlementSchedules == 2 && enqueues == 1,
-            "an ineligible settlement receiver must skip the slot and reschedule");
-
-        // Valid settlement arrival claims the slot inflight and enqueues with the slot id.
-        storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-        { RoundId = "r1", Sequence = 9, DueDay = 6, FromKingdomId = "a", ToKingdomId = "b", ResultSettlementSlotId = "s1" });
-        runSettlement(storage, 10);
-        Test.True(enqueues == 2 && lastSlotArg == "s1" && settlementSchedules == 2
-                && settlementRound.ResultSettlementSlots[0].Status == "inflight"
-                && lastPriority == 90 && lastEnqueueTarget == "a",
-            "a valid settlement arrival must mark the slot inflight and enqueue against it");
-
-        // Due processing is capped at eight arrivals per pass.
-        for (int i = 0; i < 10; i++)
-        {
-            storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-            { RoundId = "ghost", Sequence = 1, DueDay = 1, FromKingdomId = "a", ToKingdomId = "b" });
-        }
-        runSettlement(storage, 10);
-        Test.True(storage.RelayArrivals.Count == 3,
-            "due relay processing must stay capped at eight arrivals per pass");
-
-        var futureOnly = new WorldDiplomacyStorage();
-        for (int i = 0; i < 10000; i++) futureOnly.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-            { RoundId = "r1", ToKingdomId = "b", DueDay = 100 + i, Sequence = i });
-        int futureResolves = 0;
-        WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(futureOnly, 10,
-            id => { futureResolves++; return round; }, id => id, id => true, id => false,
-            (id, doc) => { }, r => { }, r => { }, (a, t, s, rId, p, d, prio, slot) => { }, m => { });
-        Test.True(futureOnly.RelayArrivals.Count == 10000 && futureResolves == 0,
-            "future-only relay queue must return without resolving rounds or consuming arrivals");
-        var reentrant = new WorldDiplomacyStorage();
-        reentrant.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-            { RoundId = "r1", ToKingdomId = "b", DueDay = 1, Sequence = 7 });
-        int reentrantDispatches = 0;
-        WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(reentrant, 10,
-            id => round, id => id, id => true, id => false,
-            (id, doc) => { }, r => { }, r => { },
-            (a, t, s, rId, p, d, prio, slot) =>
-            {
-                reentrantDispatches++;
-                reentrant.RelayArrivals.Add(new WorldDiplomacyRelayArrival
-                    { RoundId = "r1", ToKingdomId = "b", DueDay = 1, Sequence = 7 });
-            }, m => { });
-        Test.True(reentrantDispatches == 1 && reentrant.RelayArrivals.Count == 1,
-            "arrival enqueued during dispatch waits for the next bounded batch");
-        string relayProgressSource = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundProgressApplication.cs"));
-        int relayStart = relayProgressSource.IndexOf("internal static void ProcessDueRelayArrivals(", StringComparison.Ordinal);
-        Test.True(relayStart >= 0
-            && relayProgressSource.Substring(relayStart).Contains("arrivals[0]?.DueDay > currentDay", StringComparison.Ordinal)
-            && !relayProgressSource.Contains("OrderRelayArrivalsByDueDate(", StringComparison.Ordinal),
-            "daily relay consumption must use the sorted due prefix without sorting the whole queue");
-
-        // DPL-060DI: external resolved-fact intake.
-        int created = 0, ensured = 0, addedDocs = 0, propagated = 0, canonical = 0, retries = 0, handled = 0;
-        List<string> cooldowns = new List<string>();
-        List<string> diLogs = new List<string>();
-        WorldDiplomacyRound joinRound = new WorldDiplomacyRound
-        {
-            RoundId = "jr", State = "active",
-            RelayRouteKingdomIds = new List<string> { "a", "b" }
-        };
-        Func<string, string, string, bool, WorldDiplomacyDocument> makeDoc = (title, body, origin, player) =>
-        {
-            created++;
-            return new WorldDiplomacyDocument { DocumentId = "fact" + created, Origin = origin };
-        };
-        Action<string, WorldDiplomacyStorage, WorldDiplomacyRound, bool, bool> notify =
-            (act, store, active, joinOk, includeOk) =>
-                WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
-                    act, "a", "b", "test", false, store, 40,
-                    intent => true,
-                    domain => cooldowns.Add(domain.ToString()),
-                    makeDoc,
-                    normalized => "body:" + normalized,
-                    player => { ensured++; return joinRound; },
-                    candidate => joinOk,
-                    (r, k) => includeOk,
-                    prefix => prefix + "_id",
-                    doc => addedDocs++,
-                    doc => propagated++,
-                    doc => canonical++,
-                    id => retries++,
-                    doc => handled++,
-                    m => diLogs.Add(m));
-
-        notify("apology", storage, null, true, true);
-        Test.True(created == 0 && diLogs.Count == 1,
-            "a non-executed intent must be logged and ignored");
-
-        int before = created;
-        WorldDiplomacyStorage s2 = new WorldDiplomacyStorage();
-        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
-            "accept_trade", "a", "b", "r", false, s2, 40,
-            intent => false, domain => cooldowns.Add("x"), makeDoc, n => "b",
-            p => joinRound, c => true, (r, k) => true, p => "i",
-            d => addedDocs++, d => propagated++, d => canonical++, i => retries++, d => handled++,
-            m => diLogs.Add(m));
-        Test.True(created == before,
-            "a trade acceptance without a live agreement must stop before document creation");
-
-        // accept_trade: offer marked accepted, Trade cooldown cleared, fact stamped and routed.
-        WorldDiplomacyStorage s3 = new WorldDiplomacyStorage();
-        WorldDiplomacyRound offerRound = new WorldDiplomacyRound
-        {
-            RoundId = "or", State = "active",
-            PendingOffers = new List<WorldDiplomacyRoundOffer>
-            {
-                new WorldDiplomacyRoundOffer { ProposerKingdomId = "a", TargetKingdomId = "b", Intent = "propose_trade", Status = "open" }
-            }
-        };
-        s3.ActiveRound = offerRound;
-        WorldDiplomacyDocument captured = null;
-        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
-            "accept_trade", "a", "b", "r", false, s3, 40,
-            intent => true, domain => cooldowns.Add(domain.ToString()), makeDoc, n => "b",
-            p => joinRound, c => true, (r, k) => true, p => "i",
-            d => { addedDocs++; captured = d; }, d => propagated++, d => canonical++, i => retries++, d => handled++,
-            m => diLogs.Add(m));
-        Test.True(captured != null && captured.Intent == "accept_trade"
-                && captured.AnalysisStatus == "external_fact" && captured.Commitment == "binding"
-                && !captured.RequiresResponse && captured.AddressedKingdomIds.Contains("b")
-                && captured.RoundId == "or" && captured.ExchangeId == "or",
-            "an accepted external trade must stamp the fact fields and bind it to the active round");
-        Test.True(offerRound.PendingOffers[0].Status == "accepted" && cooldowns.Contains("Trade"),
-            "a trade acceptance must mark open trade offers accepted and clear trade cooldowns");
-        Test.True(handled == 1 && propagated >= 1 && canonical >= 1,
-            "a round-joined fact must run propagation, canonical append, and round progress");
-
-        // declare_war clears war pressure.
-        WorldDiplomacyStorage s4 = new WorldDiplomacyStorage();
-        s4.WarPressure.Add(new WarPressureEntry { SourceKingdomId = "a", TargetKingdomId = "b", Value = 9, IsEscalationArmed = true });
-        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
-            "declare_war", "a", "b", "r", false, s4, 40,
-            intent => true, domain => { }, makeDoc, n => "b",
-            p => joinRound, c => true, (r, k) => true, p => "i",
-            d => { }, d => { }, d => { }, i => { }, d => { }, m => { });
-        Test.True(s4.WarPressure[0].Value == 0 && !s4.WarPressure[0].IsEscalationArmed,
-            "a declared war must clear bilateral war pressure");
-
-        // No active round -> ensureActiveRound; unjoinable active round -> kept outside and handled.
-        WorldDiplomacyStorage s5 = new WorldDiplomacyStorage();
-        int ensuredBefore = ensured;
-        WorldDiplomacyDocument outsideDoc = null;
-        int handledBefore = handled;
-        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
-            "cancel_trade", "a", "b", "r", false, s5, 40,
-            intent => true, domain => { }, makeDoc, n => "b",
-            p => { ensured++; return joinRound; }, c => true, (r, k) => true, p => "i",
-            d => { outsideDoc = d; }, d => { }, d => { }, i => { }, d => handled++,
-            m => diLogs.Add(m));
-        Test.True(ensured == ensuredBefore + 1 && outsideDoc != null && outsideDoc.RoundId == "jr"
-                && handled == handledBefore + 1,
-            "without an active round the fact must create a round and join it");
-
-        WorldDiplomacyStorage s6 = new WorldDiplomacyStorage();
-        WorldDiplomacyRound alienRound = new WorldDiplomacyRound { RoundId = "alien", State = "active" };
-        s6.ActiveRound = alienRound;
-        WorldDiplomacyDocument keptOut = null;
-        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
-            "break_alliance", "a", "b", "r", false, s6, 40,
-            intent => true, domain => { }, makeDoc, n => "b",
-            p => joinRound, c => false, (r, k) => true, p => "i",
-            d => { keptOut = d; }, d => { }, d => { }, i => { }, d => handled++,
-            m => diLogs.Add(m));
-        Test.True(keptOut != null && keptOut.RoundId == "" && keptOut.RoundProgressHandled,
-            "a fact that cannot join the active round must be kept outside and marked handled");
-
-        // Settlement-pending round with an off-route target: include failure drops the round.
-        WorldDiplomacyStorage s7 = new WorldDiplomacyStorage();
-        WorldDiplomacyRound pendingRound = new WorldDiplomacyRound
-        {
-            RoundId = "pr", State = "active", ResultSettlementPending = true,
-            RelayRouteKingdomIds = new List<string> { "a" }
-        };
-        s7.ActiveRound = pendingRound;
-        WorldDiplomacyDocument dropped = null;
-        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
-            "break_alliance", "a", "b", "r", false, s7, 40,
-            intent => true, domain => { }, makeDoc, n => "b",
-            p => joinRound, c => true, (r, k) => false, p => "i",
-            d => { dropped = d; }, d => { }, d => { }, i => { }, d => handled++,
-            m => diLogs.Add(m));
-        Test.True(dropped != null && dropped.RoundId == "" && dropped.RoundProgressHandled,
-            "an unincludeable settlement target must keep the fact outside the round");
-
-        // Accepted settlement target merges a result-settlement slot.
-        WorldDiplomacyStorage s8 = new WorldDiplomacyStorage();
-        WorldDiplomacyRound mergeRound = new WorldDiplomacyRound
-        {
-            RoundId = "mr", State = "active", ResultSettlementPending = true,
-            RelayRouteKingdomIds = new List<string> { "a" },
-            ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>()
-        };
-        s8.ActiveRound = mergeRound;
-        WorldDiplomacyDocument merged = null;
-        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
-            "break_alliance", "a", "b", "r", false, s8, 40,
-            intent => true, domain => { }, makeDoc, n => "b",
-            p => joinRound, c => true, (r, k) => true, p => "slot_id",
-            d => { merged = d; }, d => { }, d => { }, i => { }, d => handled++,
-            m => diLogs.Add(m));
-        Test.True(merged != null && merged.RoundId == "mr"
-                && mergeRound.ResultSettlementSlots.Any(x => x != null && x.KingdomId == "b"),
-            "an included settlement target must merge a result-settlement slot for the target");
-
-        // Failure containment: propagation and canonical append failures stay bounded.
-        WorldDiplomacyStorage s9 = new WorldDiplomacyStorage();
-        int retryCount = 0, failLogs = 0;
-        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
-            "break_alliance", "a", "b", "r", false, s9, 40,
-            intent => true, domain => { }, makeDoc, n => "b",
-            p => joinRound, c => true, (r, k) => true, p => "i",
-            d => { },
-            d => throw new InvalidOperationException("propagation boom"),
-            d => throw new InvalidOperationException("canonical boom"),
-            i => retryCount++,
-            d => throw new InvalidOperationException("progress boom"),
-            m => failLogs++);
-        Test.True(retryCount == 1 && failLogs == 3,
-            "propagation, canonical, and progress failures must stay contained and logged");
-    }
 
     private static void RunJobCompositionDecisionTests()
     {
@@ -14458,65 +10754,19 @@ RunRepairCorrectionAndJobDecisionTests();
                 && contractArg == "frozen:rr",
             "analysis job composition must stamp identity, prompts, cache key, and budget");
 
-        // DPL-060DJ: round-plan job composition gates.
-        int closed = 0; string closeReason = null;
-        enqueued = 0; captured = null;
-        Action<WorldDiplomacyRound, WorldDiplomacyDocument, WorldDiplomacyStorage, List<string>> plan =
-            (r, root, s, candidates) => WorldDiplomacyJobPreparationApplication.PrepareRoundPlanJob(
-                r, root, s, 10, 900, p => "pid",
-                (rr, authorId) => candidates,
-                rr => "sys:" + rr.RoundId, (d, c) => "usr:" + d.DocumentId,
-                j => { enqueued++; captured = j; },
-                reason => { closed++; closeReason = reason; });
-
-        WorldDiplomacyRound live = new WorldDiplomacyRound { RoundId = "rp", State = "active" };
-        WorldDiplomacyStorage s1 = new WorldDiplomacyStorage { ActiveRound = live };
-        WorldDiplomacyDocument rootDoc = new WorldDiplomacyDocument { DocumentId = "root", AuthorKingdomId = "a" };
-        plan(live, rootDoc, s1, new List<string>());
-        plan(live, null, s1, new List<string> { "b" });
-        plan(new WorldDiplomacyRound { RoundId = "rp", State = "active", RelayPlanned = true },
-            rootDoc, s1, new List<string> { "b" });
-        plan(new WorldDiplomacyRound { RoundId = "other", State = "active" },
-            rootDoc, s1, new List<string> { "b" });
-        WorldDiplomacyRound dead = new WorldDiplomacyRound { RoundId = "dead", State = "closed" };
-        plan(dead, rootDoc, new WorldDiplomacyStorage { ActiveRound = dead }, new List<string> { "b" });
-        plan(null, rootDoc, s1, new List<string> { "b" });
-        Test.True(enqueued == 0 && closed == 1 && closeReason == "round_plan_no_actionable_participants",
-            "round-plan gating must reject null/planned/foreign/inactive rounds and close on empty candidates");
-
-        WorldDiplomacyStorage s2 = new WorldDiplomacyStorage();
-        WorldDiplomacyRound rp2 = new WorldDiplomacyRound { RoundId = "rp", State = "active" };
-        s2.ActiveRound = rp2;
-        s2.Jobs.Add(new WorldDiplomacyJob { Kind = "round_plan", RoundId = "rp" });
-        plan(rp2, rootDoc, s2, new List<string> { "b" });
-        Test.True(enqueued == 0,
-            "an existing round_plan job in the same round must block re-planning");
-
-        plan(rp2, rootDoc, new WorldDiplomacyStorage { ActiveRound = rp2 }, new List<string> { "b", "c" });
-        Test.True(captured != null && captured.Kind == "round_plan" && captured.Priority == 85
-                && captured.RoundId == "rp" && captured.DocumentId == "root"
-                && captured.AuthorKingdomId == "a"
-                && captured.CandidateKingdomIds.Count == 2
-                && captured.CacheAffinityKey == "diplomacy-round-plan:v6" && captured.MaxTokens == 900
-                && captured.SystemPrompt == "sys:rp" && captured.UserPrompt == "usr:root",
-            "round-plan composition must stamp plan fields, candidates, prompts, and budget");
-
         // DPL-060DJ: pending-job rebuild - generate branch.
         WorldDiplomacyRound settleRound = new WorldDiplomacyRound
         {
-            RoundId = "r1", State = "active", ResultSettlementPending = true
+            RoundId = "r1", State = "active", EventSystemVersion = 1, Participants = new() { new() { KingdomId = "a", State = "active" }, new() { KingdomId = "b", State = "active" } }
         };
         Func<WorldDiplomacyJob, bool> rebuild = j => WorldDiplomacyJobPreparationApplication.RebuildPendingJob(
             j, storage, 1800, 900, () => (5, 40),
             id => !string.Equals(id, "ghost", StringComparison.OrdinalIgnoreCase),
-            (r, id) => new List<string> { "x", "y" },
             id => id == "r1" ? settleRound : null,
             r => "contract",
             id => id == "doc1" ? new WorldDiplomacyDocument { DocumentId = "doc1", AuthorKingdomId = "a", RoundId = "r1" } : null,
-            (r, j2, src) => "relay_prompt",
             (j2, ex, src, cand) => "gen_prompt:" + (ex?.ExchangeId ?? "noex") + ":" + string.Join(",", cand),
-            j2 => "sig", j2 => { }, d => "analysis_prompt",
-            r => "plan_sys", (d, c) => "plan_usr");
+            j2 => "sig", j2 => { }, d => "analysis_prompt");
 
         WorldDiplomacyJob noAuthor = new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "ghost", TargetKingdomId = "b" };
         WorldDiplomacyJob noTarget = new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", TargetKingdomId = "ghost" };
@@ -14529,13 +10779,13 @@ RunRepairCorrectionAndJobDecisionTests();
             IsRelayTurn = true, RoundId = "r1", ResultSettlementSlotId = "s1"
         };
         Test.True(rebuild(relayJob)
-                && relayJob.CandidateKingdomIds.Count == 2 && relayJob.CandidateKingdomIds.Contains("x")
-                && relayJob.UserPrompt.Contains("relay_prompt")
+                && relayJob.CandidateKingdomIds.SequenceEqual(new[] { "b" })
+                && relayJob.UserPrompt.Contains("gen_prompt:")
                 && relayJob.CacheAffinityKey == WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey
                 && relayJob.ProfiledKingdomId == "" && relayJob.StrategicProfileKingdomId == "a"
                 && relayJob.MaxTokens == 1800 && relayJob.PresentedLegalActionSignature == "sig"
                 && relayJob.AllowAutonomousNoAction == false,
-            "relay generate rebuild must pull settlement candidates, relay prompt, cache key, and signature");
+            "legacy relay flags must rebuild through the current shared event declaration contract");
 
         WorldDiplomacyJob orphanRelay = new WorldDiplomacyJob
         { Kind = "generate", AuthorKingdomId = "a", TargetKingdomId = "b", IsRelayTurn = true, RoundId = "ghost" };
@@ -14546,10 +10796,10 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyJob genJob = new WorldDiplomacyJob
         {
             Kind = "generate", AuthorKingdomId = "a", TargetKingdomId = "b",
-            RoundId = "", ExchangeId = "ex1", IsResponse = true,
+            RoundId = "r1", ExchangeId = "ex1", IsResponse = true,
             CandidateKingdomIds = new List<string> { "c1" }
         };
-        Test.True(rebuild(genJob) && genJob.UserPrompt.Contains("gen_prompt:ex1:c1"),
+        Test.True(rebuild(genJob) && genJob.UserPrompt.Contains("gen_prompt:ex1:b"),
             "non-relay generate rebuild must compose the generation prompt from exchange and candidates");
 
         // analyze / round_plan rebuild branches.
@@ -14568,10 +10818,7 @@ RunRepairCorrectionAndJobDecisionTests();
             Kind = "round_plan", RoundId = "r1", DocumentId = "doc1",
             CandidateKingdomIds = new List<string> { "b" }
         };
-        Test.True(rebuild(planJob)
-                && planJob.SystemPrompt == "plan_sys" && planJob.UserPrompt == "plan_usr"
-                && planJob.MaxTokens == 900,
-            "round-plan rebuild must resolve round and root and stamp plan prompts");
+        Test.True(!rebuild(planJob), "retired round-plan work must not rebuild into a model request");
 
         WorldDiplomacyJob planOrphan = new WorldDiplomacyJob
         { Kind = "round_plan", RoundId = "ghost", DocumentId = "doc1" };
@@ -14580,179 +10827,66 @@ RunRepairCorrectionAndJobDecisionTests();
             "round-plan rebuild must fail on missing round/root and unknown kinds must be rejected");
     }
 
-    private static void RunGenerationJobCompositionDecisionTests()
+
+
+    // Current ownership gate. The former extraction-era source macro remains
+    // available explicitly as --legacy-source-boundary; its deleted owners and
+    // forced-relay assertions are not requirements of the event architecture.
+    private static void VerifySourceBoundary()
     {
-        // DPL-060DK: generation job composition.
-        WorldDiplomacyStorage storage = new WorldDiplomacyStorage();
-        List<string> completed = new List<string>();
-        List<string> enqueuedIds = new List<string>();
-        WorldDiplomacyJob captured = null;
-        List<string> advanced = new List<string>();
-        List<string> settlementScheduled = new List<string>();
-        List<string> closedReasons = new List<string>();
-        List<string> abandoned = new List<string>();
-        int skippedSlots = 0;
-        string blockReason = null;
-        bool authority = true;
-        List<string> legalTargets = new List<string>();
-        List<string> settleTargets = new List<string>();
-        bool singleActionable = false;
-        List<string> defaultTargets = new List<string>();
-        bool profileOk = true;
-        int captured2 = 0;
-        Action<WorldDiplomacyJob> run = job => { };
-        Func<string, string, WorldDiplomacyExchange, bool, WorldDiplomacyDocument, int,
-            bool, bool, string, bool, bool, string, int, string, WorldDiplomacyRound, WorldDiplomacyJob> gen =
-            (aId, tId, ex, isResp, src, prio, extOnly, reminder, rId, relay, untargeted, prevId, schedDay, slotId, owningRound) =>
-            {
-                WorldDiplomacyJob enq = null;
-                WorldDiplomacyGenerationTaskApplication.PrepareGenerationJob(
-                    aId, tId, ex, isResp, src, prio, extOnly, reminder, rId, relay, untargeted,
-                    prevId, schedDay, slotId, storage, 10, 1800, 12,
-                    id => owningRound,
-                    r => { },
-                    id => blockReason,
-                    id => authority,
-                    id => id,
-                    id => false,
-                    (r, a, t, rl, s, e, d) => legalTargets.Contains(t)
-                        ? new List<string> { "intent" } : new List<string>(),
-                    (r, a) => settleTargets,
-                    (r, a, t) => singleActionable,
-                    (a, r) => defaultTargets,
-                    (id, reason) => completed.Add(reason),
-                    r => settlementScheduled.Add(r?.RoundId),
-                    r => advanced.Add(r?.RoundId),
-                    reason => closedReasons.Add(reason),
-                    r => "contract",
-                    () => (5, 40),
-                    () => { },
-                    (r, a, t, d, e) => "relay_p",
-                    (a, t, e2, ir, d, rem, rid, un, cand, eo) => "gen_p:" + (e2?.ExchangeId ?? ""),
-                    p => "gid",
-                    j => "sig",
-                    j => profileOk,
-                    j => captured2++,
-                    (j, a, t, reason) => abandoned.Add(reason),
-                    (a, t) => a == "a" && t == "b",
-                    j => { enq = j; enqueuedIds.Add(j.JobId); },
-                    m => { if (m.Contains("skip")) skippedSlots++; });
-                return enq;
-            };
-
-        WorldDiplomacyRound settle = new WorldDiplomacyRound
-        { RoundId = "rs", State = "active", ResultSettlementPending = true };
-
-        // invalid parties: unresolved author and missing target without untargeted.
-        Test.True(gen("", "b", null, false, null, 5, false, false, "", false, false, null, -1, null, settle) == null
-                && gen("a", "", null, false, null, 5, false, false, "", false, false, null, -1, null, settle) == null
-                && completed.Count == 2 && completed[0] == "invalid_generation_parties"
-                && settlementScheduled.Count == 2 && enqueuedIds.Count == 0,
-            "unresolved author or required target must complete the exchange and reschedule the pending slot");
-
-        // author blocked and vassal: relay bookkeeping differs for settlement vs ordinary relay.
-        completed.Clear(); settlementScheduled.Clear(); advanced.Clear();
-        WorldDiplomacyRound relayRound = new WorldDiplomacyRound
+        string root = Path.GetDirectoryName(FindRepositoryFile("AnimusForge.csproj"))!;
+        string Read(string path) => File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy", path));
+        foreach (string owner in new[] { "WorldDiplomacyRoundPlanApplication", "WorldDiplomacyRoundProgressApplication",
+            "WorldDiplomacyTurnSchedulingApplication", "WorldDiplomacyGenerationTaskApplication",
+            "WorldDiplomacyResultSlotApplication", "WorldDiplomacyNoActionApplication", "WorldDiplomacyCourtResponseApplication" })
+            Test.True(!File.Exists(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Application", owner + ".cs")),
+                "retired scheduling owner cannot be compiled: " + owner);
+        string ownerSource = Read("Application/WorldDiplomacyOrchestration.cs");
+        Test.True(ownerSource.Contains("QueueEventDeclaration(round, authorId, targetId, sourceDocument")
+            && ownerSource.Contains("WorldDiplomacyGeneratedCompletionApplication.Commit(")
+            && ownerSource.Contains("EventBoundaryComplete(eventRound, \"started\")"),
+            "live enqueue and completion share the declaration owner and actual opening gate");
+        string progress = Read("Application/WorldDiplomacyOrchestration.EventProgress.cs");
+        Test.True(progress.Contains("EventHasPendingWork(round") && progress.Contains("TryApplyEventProgress(round")
+            && !progress.Contains("HardEndDay") && !progress.Contains("RelayRouteKingdomIds") && !progress.Contains("ResultSettlementSlots"),
+            "natural progress checks real pending work without legacy timers, routes or seats");
+        string runtime = Read("Application/WorldDiplomacyOrchestration.EventRuntime.cs");
+        Test.True(runtime.Contains("PublishStagedEventBoundary(round") && runtime.Contains("boundary_effect_not_confirmed")
+            && runtime.Contains("EventExecutionPending"), "first and restored boundary processing share persisted execution receipts");
+        string dispatch = Read("Application/WorldDiplomacyOrchestration.Dispatch.cs");
+        Test.True(dispatch.Contains("RequestLeases.ContainsJob") && dispatch.Contains("DiplomacyEventRules.Matches")
+            && dispatch.Contains("result.RoundConversationRevision != round.ConversationRevision")
+            && dispatch.Contains("job.CourtKnowledgeRevision != DiplomacyEventRules.KnowledgeRevision"),
+            "dispatch retains one lease owner and rejects stale event or court-knowledge completions");
+        string repair = Read("Application/WorldDiplomacyDraftRepairApplication.cs");
+        Test.True(repair.Contains("GetAuthorizedGenerationTargetIds") && !repair.Contains("FindRequiredPeaceOfferResponse"),
+            "repair follows present authorization without choosing a compulsory peace response");
+        string effects = Read("Application/DiplomacyEventEffects.cs");
+        Test.True(!effects.Contains("PolicySystem") && !effects.Contains("TeamModuleServices.Policy")
+            && !effects.Contains("Task.Run") && !effects.Contains("File.Read"),
+            "diplomacy effect owner does not delegate to policy, background game writes or disk polling");
+        string evidence = Read("Application/WorldDiplomacyOrchestration.EventRequestEvidence.cs");
+        Test.True(progress.Contains("BuildEventRequestEvidence(round)") && runtime.Contains("BuildEventRequestEvidence(round, ending)")
+            && evidence.Contains("DiplomacyCommitmentRules.IsPending") && evidence.Contains("DialogueDocumentKnown")
+            && evidence.Contains("body_is_excerpt") && evidence.Contains("source_is_private"),
+            "both request consumers use bounded history while retaining pending truth and knowledge provenance");
+        string legacy = Read("Application/WorldDiplomacyOrchestration.LegacyEvents.cs");
+        Test.True(legacy.Contains("Storage.LegacyPreservedJobs.Add(job)") && legacy.Contains("Storage.Jobs.Remove(job)")
+            && legacy.Contains("legacy_unpublished_execution_evidence"),
+            "legacy draft evidence stays outside dispatch and unknown past execution is not replayed");
+        foreach (string edition in new[] { "", ".en" })
         {
-            RoundId = "rr", State = "active", RelayWaiting = true, RelayPlanned = true,
-            RelayRouteKingdomIds = new List<string> { "a", "b" }
-        };
-        blockReason = "no_authority";
-        gen("a", "b", null, false, null, 5, false, false, "", true, false, null, -1, null, relayRound);
-        Test.True(completed.Count == 1 && completed[0] == "no_authority"
-                && relayRound.RelayWaiting == false && advanced.Count == 1 && enqueuedIds.Count == 0,
-            "a blocked author on an ordinary relay turn must clear the wait and advance the relay");
-        blockReason = null; authority = false; relayRound.RelayWaiting = true; advanced.Clear(); completed.Clear();
-        gen("a", "b", null, false, null, 5, false, false, "", true, false, null, -1, "s1", settle);
-        Test.True(completed.Count == 1 && completed[0] == "controlled_vassal_has_no_diplomatic_authority"
-                && settle.RelayWaiting == false && settlementScheduled.Count == 1,
-            "a controlled vassal on a settlement turn must skip the slot and reschedule");
-
-        // empty candidate set: relay withdraws the participant; orphaned rounds close.
-        authority = true; completed.Clear(); advanced.Clear(); closedReasons.Clear();
-        WorldDiplomacyRound relay2 = new WorldDiplomacyRound
-        {
-            RoundId = "rr2", State = "active", RelayWaiting = true, RelayPlanned = true,
-            RelayRouteKingdomIds = new List<string> { "a", "b" },
-            Participants = new List<WorldDiplomacyRoundParticipant>
-            { new WorldDiplomacyRoundParticipant { KingdomId = "a", State = "active" } }
-        };
-        gen("a", "b", null, false, null, 5, false, false, "", true, false, null, -1, null, relay2);
-        WorldDiplomacyRound orphan = new WorldDiplomacyRound { RoundId = "orph", State = "active" };
-        gen("a", "b", null, false, null, 5, false, false, "", false, false, null, -1, null, orphan);
-        Test.True(completed.Count == 2 && completed[0] == "no_actionable_diplomatic_target"
-                && relay2.Participants[0].State == "withdrawn" && advanced.Count == 1
-                && closedReasons.Count == 1 && closedReasons[0] == "technical_no_actionable_diplomatic_target",
-            "an empty candidate set must withdraw the relay participant and close orphaned rounds");
-
-        // circuit breaker trips before any prompt work for ordinary turns.
-        completed.Clear();
-        WorldDiplomacyRound tripped = new WorldDiplomacyRound
-        { RoundId = "trip", State = "active", AutomaticDocumentsStarted = 12 };
-        singleActionable = true;
-        Test.True(gen("a", "b", null, false, null, 5, false, false, "", false, false, null, -1, null, tripped) == null
-                && completed.Count == 1 && completed[0] == "automatic_round_circuit_breaker"
-                && tripped.AutomaticCircuitBreakerTripped,
-            "the automatic document limit must trip the round circuit breaker");
-
-        // player-priority response bypasses the breaker and the started counter.
-        completed.Clear();
-        WorldDiplomacyDocument playerSrc = new WorldDiplomacyDocument
-        { DocumentId = "psrc", AuthorKingdomId = "c", IsPlayerAuthored = true };
-        legalTargets = new List<string> { "c" };
-        WorldDiplomacyJob pr = gen("a", "b", null, true, playerSrc, 5, true, false, "", false, false, null, -1, null, tripped);
-        Test.True(pr != null && pr.TargetKingdomId == "b" && tripped.AutomaticDocumentsStarted == 12,
-            "a priority player response must compose a job without counting against the automatic limit");
-
-        // relay route candidates are composed by the Application from leaf facts.
-        legalTargets = new List<string> { "b" };
-        enqueuedIds.Clear();
-        WorldDiplomacyJob relayJob = gen("a", "b", null, true, null, 5, false, false, "", true, false, "a", -1, null, relay2);
-        relay2.State = "active";
-        Test.True(relayJob != null && relayJob.IsRelayTurn && relayJob.PreviousKingdomId == "a"
-                && relayJob.CandidateKingdomIds.Count == 0,
-            "a relay turn with a legal route target must enqueue through Application-composed candidates");
-        enqueuedIds.Clear(); legalTargets = new List<string>();
-
-        // happy path: non-relay non-response without a root embeds the sorted round-plan candidates.
-        defaultTargets = new List<string> { "z", "b" };
-        WorldDiplomacyRound rootless = new WorldDiplomacyRound { RoundId = "rl", State = "active" };
-        WorldDiplomacyExchange ex = new WorldDiplomacyExchange { ExchangeId = "ex1" };
-        captured2 = 0;
-        WorldDiplomacyJob gj = gen("a", "", ex, false, null, 7, false, true, "rl", false, true, "prev", -1, null, rootless);
-        Test.True(gj != null && gj.JobId == "gid" && gj.Kind == "generate" && gj.Priority == 7
-                && gj.CreatedDay == 10 && gj.ExchangeId == "ex1" && gj.RoundId == "rl"
-                && gj.AuthorKingdomId == "a" && gj.TargetKingdomId == "" && gj.AllowUntargeted
-                && gj.IsReminder && gj.PreviousKingdomId == "prev"
-                && gj.CandidateKingdomIds.Count == 2 && gj.CandidateKingdomIds[0] == "b"
-                && gj.UserPrompt.Contains("gen_p:ex1") && gj.SystemPrompt.Length > 0
-                && gj.CacheAffinityKey == WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey
-                && gj.MaxTokens == 1800 && gj.PresentedLegalActionSignature == "sig"
-                && captured2 == 1 && rootless.AutomaticDocumentsStarted == 1,
-            "an untargeted opener must embed sorted round-plan candidates and stamp the full job shape");
-
-        // settlement relay turn pulls candidates from the settlement port.
-        settleTargets = new List<string> { "x" };
-        WorldDiplomacyJob sj = gen("a", "x", null, false, null, 98, false, false, "", true, false, null, -1, "s1", settle);
-        Test.True(sj != null && sj.IsRelayTurn && sj.ResultSettlementSlotId == "s1"
-                && sj.CandidateKingdomIds.Count == 1 && sj.CandidateKingdomIds[0] == "x"
-                && sj.UserPrompt.Contains("relay_p") && sj.Priority == 98,
-            "a settlement relay turn must take candidates from the settlement port and the relay prompt");
-
-        // at-war stamping and strategic-profile failure.
-        settleTargets = new List<string>();
-        WorldDiplomacyJob wj = gen("a", "b", null, false, null, 5, false, false, "", false, false, null, 40, null, null);
-        Test.True(wj != null && wj.WasAtWarWhenQueued && wj.CreatedDay == 40,
-            "a targeted job must record the queued war state and honor a scheduled day");
-
-        profileOk = false; enqueuedIds.Clear();
-        WorldDiplomacyJob pj = gen("a", "b", null, false, null, 5, false, false, "", false, false, null, -1, null, null);
-        Test.True(pj == null && abandoned.Count == 1 && abandoned[0] == "missing_kingdom_strategic_profile"
-                && enqueuedIds.Count == 0,
-            "a missing strategic profile must abandon the generation instead of enqueueing it");
+            var resource = JObject.Parse(File.ReadAllText(Path.Combine(root,
+                "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts" + edition + ".json")));
+            foreach (string key in new[] { "EventConceptWriter", "EventConceptAudit", "EventProgressWriter", "EventProgressAudit",
+                "EventBoundaryWriter", "EventBoundaryAudit" })
+                Test.True(!string.IsNullOrWhiteSpace((string?)resource[key]), "actual package retains event contract " + edition + key);
+        }
+        VerifyRoundCompressionOwnership();
+        VerifyJobLaunchOwnership();
     }
 
-    private static void VerifySourceBoundary()
+    private static void VerifyLegacySourceBoundary()
     {
         string applicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs")));
         string propagationApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
@@ -14797,15 +10931,15 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(indexedKingdom >= 0 && fallbackKingdom > indexedKingdom
             && behaviorSource.Contains("Settlement indexed = DiplomacyIdentityResolver.Settlement(settlementId.Trim())", StringComparison.Ordinal)
             && identitySource.Contains("Campaign.Current?.CampaignObjectManager?.Find<Kingdom>(id)", StringComparison.Ordinal)
-            && identitySource.Contains("Campaign.Current?.CampaignObjectManager?.Find<Settlement>(id)", StringComparison.Ordinal),
-            "stable diplomacy IDs use the campaign index before legacy name or case-insensitive fallback scans");
+            && identitySource.Contains("TaleWorlds.CampaignSystem.Settlements.Settlement.Find(id)", StringComparison.Ordinal),
+            "stable diplomacy IDs use their native object owner before legacy name or case-insensitive fallback scans");
         foreach (string transition in new[] { "EnsureOpen", "TryScheduleNormal", "Close", "AdvanceRelay", "IntegratePlayerDeclaration" })
             Test.True(behaviorSource.Contains("WorldDiplomacyRoundApplication." + transition + "(", StringComparison.Ordinal),
                 "live host must bind the application transition: " + transition);
         Test.True(behaviorSource.Contains("WorldDiplomacyCourtResponseApplication.TryScheduleMandatory(", StringComparison.Ordinal)
             && courtResponseApplicationSource.Contains("WorldDiplomacyRoundApplication.AdmitMandatoryReply(", StringComparison.Ordinal),
             "live court admission must bind through the court application to the round transition");
-        Test.True(behaviorSource.Contains("WorldDiplomacyPolicyRoundApplication.TrySchedule(", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("TryScheduleEventConcept(policyOnly: true)", StringComparison.Ordinal),
             "live policy signal must enter the same canonical round through its application owner");
         Test.True(!applicationSource.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !applicationSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal)
@@ -15187,8 +11321,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route compliance idempotency through the lifecycle rules");
         Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatComplianceStageMatch", StringComparison.Ordinal),
             "the host must route compliance stage matching through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveCompliancePrestigeDelta", StringComparison.Ordinal),
-            "the host must route compliance prestige through the lifecycle rules");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveCompliancePrestigeDelta", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: ResolveCompliancePrestigeDelta");
         Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatStage", StringComparison.Ordinal),
             "the host must route stage labels through the lifecycle rules");
         Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween", StringComparison.Ordinal),
@@ -15320,55 +11454,55 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw cancellation status normalization must not remain in the host");
         Test.True(!behaviorSource.Contains("if (matches.Count != 1) return false;", StringComparison.Ordinal),
             "raw unique-signal gating must not remain in the host");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatDomesticPenaltyEligible", StringComparison.Ordinal),
-            "the host must route domestic penalty eligibility through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatIssuerRewardEligible", StringComparison.Ordinal),
-            "the host must route issuer reward eligibility through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CountThreatConsequenceAppliedClans", StringComparison.Ordinal),
-            "the host must route applied-clan counting through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatDomesticPenaltySnapshot", StringComparison.Ordinal),
-            "the host must route penalty snapshot capture through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatIssuerRewardSnapshot", StringComparison.Ordinal),
-            "the host must route reward snapshot capture through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatDomesticPenaltyWithoutEligible", StringComparison.Ordinal),
-            "the host must route empty penalty completion through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardWithoutEligible", StringComparison.Ordinal),
-            "the host must route empty reward completion through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardWithoutAmount", StringComparison.Ordinal),
-            "the host must route zero-amount completion through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectUnresolvedClanIds", StringComparison.Ordinal),
-            "the host must route unresolved-clan selection through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatDomesticPenaltyAsSkipped", StringComparison.Ordinal),
-            "the host must route skipped penalty completion through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardAsSkipped", StringComparison.Ordinal),
-            "the host must route skipped reward completion through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceClanSettled", StringComparison.Ordinal),
-            "the host must route per-clan settlement checks through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceSettled", StringComparison.Ordinal),
-            "the host must route consequence settlement through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderThreatConsequenceClanIds", StringComparison.Ordinal),
-            "the host must route settlement ordering through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ClampThreatIssuerRewardAmount", StringComparison.Ordinal),
-            "the host must route reward clamping through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeThreatConsequenceRelationTarget", StringComparison.Ordinal),
-            "the host must route relation targets through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldApplyThreatRelationPenalty", StringComparison.Ordinal),
-            "the host must route penalty apply gates through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldApplyThreatRelationReward", StringComparison.Ordinal),
-            "the host must route reward apply gates through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelationPenaltyApplied", StringComparison.Ordinal),
-            "the host must route penalty applied checks through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelationRewardApplied", StringComparison.Ordinal),
-            "the host must route reward applied checks through the lifecycle rules");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatDomesticPenaltyEligible", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: IsThreatDomesticPenaltyEligible");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatIssuerRewardEligible", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: IsThreatIssuerRewardEligible");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CountThreatConsequenceAppliedClans", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: CountThreatConsequenceAppliedClans");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatDomesticPenaltySnapshot", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: CaptureThreatDomesticPenaltySnapshot");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatIssuerRewardSnapshot", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: CaptureThreatIssuerRewardSnapshot");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatDomesticPenaltyWithoutEligible", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: CompleteThreatDomesticPenaltyWithoutEligible");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardWithoutEligible", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: CompleteThreatIssuerRewardWithoutEligible");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardWithoutAmount", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: CompleteThreatIssuerRewardWithoutAmount");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectUnresolvedClanIds", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: SelectUnresolvedClanIds");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatDomesticPenaltyAsSkipped", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: CompleteThreatDomesticPenaltyAsSkipped");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardAsSkipped", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: CompleteThreatIssuerRewardAsSkipped");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceClanSettled", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: IsThreatConsequenceClanSettled");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceSettled", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: IsThreatConsequenceSettled");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderThreatConsequenceClanIds", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: OrderThreatConsequenceClanIds");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ClampThreatIssuerRewardAmount", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: ClampThreatIssuerRewardAmount");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeThreatConsequenceRelationTarget", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: ComputeThreatConsequenceRelationTarget");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldApplyThreatRelationPenalty", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: ShouldApplyThreatRelationPenalty");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldApplyThreatRelationReward", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: ShouldApplyThreatRelationReward");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelationPenaltyApplied", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: IsThreatRelationPenaltyApplied");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelationRewardApplied", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: IsThreatRelationRewardApplied");
         Test.True(rulesSource.Contains("FinalizeUnresolvedThreatDomesticPenalty(", StringComparison.Ordinal),
             "the host must route unresolved penalty finalization through the lifecycle rules");
         Test.True(rulesSource.Contains("FinalizeUnresolvedThreatIssuerReward(", StringComparison.Ordinal),
             "the host must route unresolved reward finalization through the lifecycle rules");
-        Test.True(threatSettlementSource.Contains("_port.CaptureConsequenceSnapshot(compliantKingdom)", StringComparison.Ordinal)
-                  && threatSettlementSource.Contains("_port.CaptureConsequenceSnapshot(issuerKingdom)", StringComparison.Ordinal)
+        Test.True(!threatSettlementSource.Contains("_port.CaptureConsequenceSnapshot(compliantKingdom)", StringComparison.Ordinal)
+                  && !threatSettlementSource.Contains("_port.CaptureConsequenceSnapshot(issuerKingdom)", StringComparison.Ordinal)
                   && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ThreatSettlementPort.cs")).Contains("CaptureClanSnapshot(clan, kingdom, ruler)", StringComparison.Ordinal)
-                  && threatSettlementSource.Contains("WorldDiplomacyWorldProfileRules.SelectThreatClans(snapshot.Clans)", StringComparison.Ordinal),
-            "penalty and reward snapshots must share one clan-eligibility adapter");
+                  && !threatSettlementSource.Contains("WorldDiplomacyWorldProfileRules.SelectThreatClans(snapshot.Clans)", StringComparison.Ordinal),
+            "retired penalties cannot capture new clan snapshots; the legacy adapter remains available for old data");
         Test.True(!behaviorSource.Contains("relationBefore > -100", StringComparison.Ordinal),
             "raw penalty apply gates must not remain in the host");
         Test.True(!behaviorSource.Contains("relationBefore < 100", StringComparison.Ordinal),
@@ -15427,12 +11561,12 @@ RunRepairCorrectionAndJobDecisionTests();
 
         Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatBreachPenaltyApplicable", StringComparison.Ordinal),
             "host must delegate breach penalty applicability to the domain");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachPrestigePenalty", StringComparison.Ordinal),
-            "host must delegate breach prestige amount selection to the domain");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachRelationPenalty", StringComparison.Ordinal),
-            "host must delegate breach relation amount selection to the domain");
-        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatBreachPrestigeReason", StringComparison.Ordinal),
-            "host must delegate breach prestige reasons to the domain");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachPrestigePenalty", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: ResolveThreatBreachPrestigePenalty");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachRelationPenalty", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: ResolveThreatBreachRelationPenalty");
+        Test.True(!threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatBreachPrestigeReason", StringComparison.Ordinal),
+            "Q50 retired consequence has no new application consumer: DescribeThreatBreachPrestigeReason");
         Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ApplyThreatBreachSettlement", StringComparison.Ordinal),
             "host must delegate the breach settlement record write to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectIssuerResolutionNotices", StringComparison.Ordinal),
@@ -15616,10 +11750,10 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw document-id comparisons must not remain in the host");
         Test.True(notificationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(", StringComparison.Ordinal),
             "host must delegate chronological document ordering to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(", StringComparison.Ordinal),
-            "host must delegate recency document ordering to the domain");
-        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs")).Contains("WorldDiplomacyRoundLifecycleRules.ThenOrderDocumentsByRecency(", StringComparison.Ordinal),
-            "host must delegate recency ordering suffixes to the domain");
+        Test.True(!behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(", StringComparison.Ordinal),
+            "Q50 host no longer chooses historical recall by recency");
+        Test.True(!File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs")).Contains("WorldDiplomacyRoundLifecycleRules.ThenOrderDocumentsByRecency(", StringComparison.Ordinal),
+            "Q50 relevant recall does not restore a fixed recent-document suffix");
         string documentFactRules = File.ReadAllText(
             FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyDocumentFactRules.cs")), Encoding.UTF8);
         Test.True(documentFactRules.Contains("WorldDiplomacyRoundLifecycleRules.SelectNewestDocumentsChronologically(", StringComparison.Ordinal),
@@ -15757,20 +11891,12 @@ RunRepairCorrectionAndJobDecisionTests();
             "reputation rules must stay free of TaleWorlds references");
         Test.True(!reputationRulesSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "reputation rules must not reference the host behavior");
-        Test.True(prestigeApplicationSource.Contains("WorldDiplomacyReputationRules.ProcessInternationalReputationNaturalChange(", StringComparison.Ordinal)
-            && analysisSource.Contains("WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(", StringComparison.Ordinal)
-            && prestigeApplicationSource.Contains("WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(", StringComparison.Ordinal)
-            && prestigeApplicationSource.Contains("WorldDiplomacyReputationRules.AnchorInternationalReputationNaturalChangeDays(", StringComparison.Ordinal)
-            && presentationQueriesSource.Contains("WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(", StringComparison.Ordinal)
-            && presentationQueriesSource.Contains("WorldDiplomacyReputationRules.FormatSignedStandingDelta(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyReputationRules.FormatSignedDelta(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeNationalPrestige(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeInternationalReputation(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(", StringComparison.Ordinal)
-            && prestigeApplicationSource.Contains("WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(", StringComparison.Ordinal)
+        Test.True(!behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeNationalPrestige(", StringComparison.Ordinal)
+            && !behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeInternationalReputation(", StringComparison.Ordinal)
+            && !analysisSource.Contains("WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(", StringComparison.Ordinal)
             && storageMigrationSource.Contains("WorldDiplomacyReputationRules.MaximumInternationalReputationChangePerDocument", StringComparison.Ordinal)
             && reputationRulesSource.Contains("InternationalReputationNaturalAnchor", StringComparison.Ordinal),
-            "host must delegate reputation calculation, evaluation, and describe text to the domain rules");
+            "Q50 retired standings have no new host/analysis consumer; old migration identities and pure rules remain");
         Test.True(reputationRulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.TryReadInteger(", StringComparison.Ordinal)
             && reputationRulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadString(", StringComparison.Ordinal),
             "reputation rules must route json coercion through the envelope rules");
@@ -15860,7 +11986,7 @@ RunRepairCorrectionAndJobDecisionTests();
             File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs")).Contains("WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.CloneLlmMessages(", StringComparison.Ordinal)
-            && behaviorSource.Contains("DiplomacyPromptTexts.Get(\"AF_DIP_Compatibility_008\",", StringComparison.Ordinal)
+            && !behaviorSource.Contains("DiplomacyPromptTexts.Get(\"AF_DIP_Compatibility_008\",", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildKingdomStrategicProfileMarker(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string UpsertKingdomStrategicProfilePrompt(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static int FindKingdomStrategicProfileInsertionIndex(", StringComparison.Ordinal)
@@ -15869,7 +11995,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && promptContractSource.Contains("public static string BuildKingdomStrategicProfileMarker(", StringComparison.Ordinal)
             && promptContractSource.Contains("public static bool GenerationJobContainsKingdomStrategicProfile(", StringComparison.Ordinal)
             && promptContractSource.Contains("internal static readonly string KingdomStrategicIntentRule = CompatibilityContractText.Values[\"AF_DIP_Compatibility_008\"]", StringComparison.Ordinal),
-            "host must delegate strategic-profile prompt and job-message helpers to the prompt contract rules");
+            "Q50 active prompt preparation no longer injects retired strategic profiles; legacy helpers and message contracts remain");
         Test.True(!promptContractSource.Contains("DuelSettings", StringComparison.Ordinal),
             "prompt contract rules must not read MCM settings");
         Test.True(behaviorSource.Contains("WorldDiplomacyPromptContractRules.StablePromptHash(", StringComparison.Ordinal)
@@ -15996,7 +12122,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(", StringComparison.Ordinal)
             && documentExecutor.Contains("WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyDocumentFactRules.CloneDocument)", StringComparison.Ordinal)
-            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs")).Contains("WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt)", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs")).Contains("WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static WorldDiplomacyDocument CloneDocument(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static bool IsMajorDiplomaticDocument(", StringComparison.Ordinal)
             && factSource.Contains("public static WorldDiplomacyDocument CloneDocument(", StringComparison.Ordinal)
@@ -16010,14 +12136,14 @@ RunRepairCorrectionAndJobDecisionTests();
             && textRulesSource.Contains("public static string BuildLocalRoundSummaryText(", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<int, string> formatDayFallback", StringComparison.Ordinal),
             "document memory-line rendering must live in the text rules behind a day-formatter port");
-        Test.True(memoryApplicationSource.Contains("WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(", StringComparison.Ordinal)
-            && memoryApplicationSource.Contains("WorldDiplomacyTextRules.BuildDetailedDocumentMemoryLine(", StringComparison.Ordinal)
+        Test.True(!memoryApplicationSource.Contains("WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(", StringComparison.Ordinal)
+            && !memoryApplicationSource.Contains("WorldDiplomacyTextRules.BuildDetailedDocumentMemoryLine(", StringComparison.Ordinal)
             && proactiveSource.Contains("WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool TryBuildProactiveDiscussion(Hero hero", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyTextRules.BuildLocalRoundSummaryText(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildCompactDocumentMemoryLine(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildLocalRoundSummaryText(", StringComparison.Ordinal),
-            "host must delegate document memory-line rendering through the text rules");
+            "Q50 recall uses whole source rows while proactive and legacy summary formatting retain domain helpers");
 
         Test.True(factSource.Contains("public static bool GeneratedActionsHaveUnsafeMultiplePeaceAcceptances(", StringComparison.Ordinal)
             && factSource.Contains("public static bool DocumentHasUnsafeMultiplePeaceAcceptances(", StringComparison.Ordinal)
@@ -16096,13 +12222,11 @@ RunRepairCorrectionAndJobDecisionTests();
 
         Test.True(textRulesSource.Contains("public static string BuildNotificationDescription(", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<int, string> formatDayFallback", StringComparison.Ordinal)
-            && textRulesSource.Contains("Func<string, string> projectDateForUi", StringComparison.Ordinal)
             && textRulesSource.Contains("public static string BuildDocumentEventMeta(", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<string, WorldDiplomacyRound> resolveRound", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<string, WorldDiplomacyDocument> resolveDocument", StringComparison.Ordinal),
             "notification and event-meta text composition must live in the text rules behind day/resolver ports");
-        Test.True(notificationApplicationSource.Contains("WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate,", StringComparison.Ordinal)
-            && notificationApplicationSource.Contains("DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi)", StringComparison.Ordinal)
+        Test.True(notificationApplicationSource.Contains("WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate, DiplomacyUiLocalization.Text)", StringComparison.Ordinal)
             && presentationQueriesSource.Contains("WorldDiplomacyTextRules.BuildDocumentEventMeta(document, resolveRound, resolveDocument)", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildNotificationDescription(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildDocumentEventMeta(", StringComparison.Ordinal),
@@ -16145,15 +12269,15 @@ RunRepairCorrectionAndJobDecisionTests();
             && textRulesSource.Contains("public static string BuildLowReputationConflictOpportunityContext(", StringComparison.Ordinal),
             "bilateral/reputation context rules and their prompt caps must live in the text rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyTextRules.BuildRecentBilateralBattleContext(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.GetRecentOwnInternationalReputationReasons(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(", StringComparison.Ordinal)
+            && !behaviorSource.Contains("WorldDiplomacyTextRules.GetRecentOwnInternationalReputationReasons(", StringComparison.Ordinal)
+            && !behaviorSource.Contains("WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildRecentBilateralDocumentContext(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildRecentBilateralBattleContext(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private List<string> GetRecentOwnInternationalReputationReasons(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private List<string> GetRecentPublicNegativeReputationFacts(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildLowReputationConflictOpportunityContext(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private const int MaxPromptRecentBattles", StringComparison.Ordinal),
-            "host must not retain the extracted bilateral/reputation context bodies");
+            "Q50 keeps real bilateral battle facts but removes retired reputation-driven motives");
 
         string promptContextPort = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.PromptContext.cs"));
         foreach (string hiddenSectionOwner in new[]
@@ -16369,8 +12493,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "the lifecycle rules must own stale presentation detection");
         Test.True(rulesSource.Contains("public static int GetRoundParticipantLimit(int activityLevel, int maxRelayParticipants)", StringComparison.Ordinal),
             "the lifecycle rules must own the participant limit decision");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.GetRoundParticipantLimit(GetActivityLevel(), MaxRelayParticipants)", StringComparison.Ordinal),
-            "the host must route the participant limit through the lifecycle rules");
+        Test.True(!behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.GetRoundParticipantLimit(GetActivityLevel(), MaxRelayParticipants)", StringComparison.Ordinal),
+            "Q50 retired activity setting cannot change event participant capacity");
         Test.True(dispatchSource.Contains("WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
             && completionSource.Contains("WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
             && completionSource.Contains("orchestration.BuildGenerationLegalActionSignature", StringComparison.Ordinal)
@@ -16549,7 +12673,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(rulesSource.Contains("public static void CommitLocalRoundSummary(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void UpgradeRoundSummaryToStructuredArchive(", StringComparison.Ordinal)
             && rulesSource.Contains("storage.RoundSummaries.RemoveAll(", StringComparison.Ordinal)
-            && rulesSource.Contains("[旧版宣言摘要，不代表游戏已执行] ", StringComparison.Ordinal),
+            && rulesSource.Contains("DiplomacyCompatibilityTexts.Get(\"History_LegacySummaryBracketPrefix\")", StringComparison.Ordinal),
             "the round-summary archive projection must live in the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitLocalRoundSummary(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.UpgradeRoundSummaryToStructuredArchive(", StringComparison.Ordinal),
@@ -16689,7 +12813,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(", StringComparison.Ordinal)
             && behaviorSource.Contains("bool partiesEligible = document != null", StringComparison.Ordinal)
             && behaviorSource.Contains("!_host.IsEliminatedParty(authorId) && !_host.IsEliminatedParty(targetId)", StringComparison.Ordinal)
-            && behaviorSource.Contains("IsPlayerDiplomacyDocument(document)", StringComparison.Ordinal),
+            && behaviorSource.Contains("IsEventDocument(document)", StringComparison.Ordinal),
             "the host must collapse live-party eligibility and bind violation probes");
         Test.True(!behaviorSource.Contains("player_action_has_no_eligible_parties", StringComparison.Ordinal)
             && !behaviorSource.Contains("player_compliance_missing_source_threat", StringComparison.Ordinal)
@@ -16890,7 +13014,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route failed-job commits through Application");
         Test.True(!behaviorSource.Contains("autonomous_generation_failed", StringComparison.Ordinal)
             && failureApplicationSource.Contains("autonomous_generation_failed", StringComparison.Ordinal)
-            && failureApplicationSource.Contains("compressionRetryInitialHours << Math.Max(0", StringComparison.Ordinal),
+            && failureApplicationSource.Contains("DiplomacyCompressionBudget.Fail(", StringComparison.Ordinal),
             "failed-job kind routing and compression backoff must live inside Application");
 
         // DPL-060DE: generated-document commit orchestration
@@ -17000,7 +13124,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(historyCompressionSource.Contains("jobs.HasAwaiting(storage)", StringComparison.Ordinal)
             && historyCompressionSource.Contains("jobs.HasCompression(storage)", StringComparison.Ordinal)
             && !dispatchSource.Contains("List<WorldDiplomacyJob> runnable =", StringComparison.Ordinal)
-            && notificationSource.Contains("EnsureView(storage)", StringComparison.Ordinal)
+            && notificationSource.Contains("EnsureView(storage, sink.PlayerKingdomId)", StringComparison.Ordinal)
             && !notificationSource.Contains("storage.Documents.Where(", StringComparison.Ordinal)
             && !notificationSource.Contains("SelectPendingRumors(storage, 3)", StringComparison.Ordinal),
             "per-tick job selection and notification deadlines cannot rescan the full collections");

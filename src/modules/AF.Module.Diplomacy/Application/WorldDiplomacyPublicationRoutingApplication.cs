@@ -12,8 +12,7 @@ internal static class WorldDiplomacyPublicationRoutingApplication
         WorldDiplomacyDocument document, string authorId)
     {
         if (document == null || document.PropagationCompleted || authorId == null) return;
-        bool playerDiplomacy = WorldDiplomacyPlayerApplication.InvolvesPlayer(document, port.ResolveRound(document.RoundId), port.IsPlayerAffiliated);
-        if (!playerDiplomacy && !port.CanAiAuthor(authorId, out string reason))
+        if (!document.IsPlayerAuthored && !port.CanAiAuthor(authorId, out string reason))
         {
             orchestration.SuppressInvalidDocumentBeforePropagation(document, reason);
             return;
@@ -52,15 +51,13 @@ internal static class WorldDiplomacyPublicationRoutingApplication
         {
             string receiverId = port.ResolveKingdomId(kingdomId);
             if (receiverId == null || string.Equals(receiverId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
-                || (!WorldDiplomacyPlayerApplication.InvolvesPlayer(document, port.ResolveRound(document.RoundId), port.IsPlayerAffiliated)
-                    && !port.HasAuthority(receiverId))) continue;
+                || !port.HasAuthority(receiverId)) continue;
             bool directlyAddressed = (document.AddressedKingdomIds ?? new List<string>()).Contains(receiverId, StringComparer.OrdinalIgnoreCase)
                 || string.Equals(document.TargetKingdomId, receiverId, StringComparison.OrdinalIgnoreCase)
                 || port.RepresentsAddressedVassal(receiverId, document);
             bool isPrimaryTarget = string.Equals(document.TargetKingdomId, receiverId, StringComparison.OrdinalIgnoreCase);
             if (!directlyAddressed || (!isPrimaryTarget && !WorldDiplomacyStructureRules.DocumentRequiresResponseFrom(document, receiverId))) continue;
-            WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, receiverId, "active", mandatoryReply: true);
-            orchestration.TryScheduleMandatoryCourtResponse(round, participant, receiverId, document);
+            orchestration.ProcessCourtArrival(receiverId, document);
         }
     }
 }

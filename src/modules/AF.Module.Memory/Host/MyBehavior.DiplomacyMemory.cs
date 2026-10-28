@@ -11,13 +11,13 @@ public partial class MyBehavior
 {
     /// <summary>Request-time, ruler-scoped retrieval. Reuses local ONNX recall;
     /// never starts a second LLM/preprocess request or adds work to the frame tick.</summary>
-    public static string BuildDiplomacyPersonalMemoryForExternal(Hero ruler, string topic, string counterpart)
+    public static string BuildDiplomacyPersonalMemoryForExternal(Hero ruler, string topic, string counterpart, string selectedDiplomaticHistory = "")
     {
         MyBehavior owner = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
         if (owner == null || ruler == null || ruler.IsDead) return "";
         try
         {
-            return owner.BuildDiplomacyPersonalMemory(ruler, topic, counterpart);
+            return owner.BuildDiplomacyPersonalMemory(ruler, topic, counterpart, selectedDiplomaticHistory);
         }
         catch (Exception ex)
         {
@@ -26,7 +26,7 @@ public partial class MyBehavior
         }
     }
 
-    private string BuildDiplomacyPersonalMemory(Hero ruler, string topic, string counterpart)
+    private string BuildDiplomacyPersonalMemory(Hero ruler, string topic, string counterpart, string selectedDiplomaticHistory)
     {
         const int maximumChars = 12000;
         StringBuilder material = new StringBuilder(4096);
@@ -34,29 +34,36 @@ public partial class MyBehavior
         material.AppendLine(MemoryTextResources.Prompt("MEM_Prompt_056") + ruler.StringId + MemoryTextResources.Prompt("MEM_Prompt_057"));
         material.AppendLine(MemoryTextResources.Prompt("MEM_Prompt_058"));
 
-        AppendDiplomacyMemorySection(material, BuildMemoryOverviewContext(ruler), 2600, maximumChars);
+        string query = (topic ?? "") + " " + (counterpart ?? "");
 
-        // Recent promises must retain a budget even when compressed memories are long.
+        // Current promises come from the diplomacy owner. Personal history is
+        // retrieved by the current subject; recency alone is not relevance.
         List<ConversationMessage> recent = BuildUncompressedMemoryRoleMessages(ruler,
             includeCurrentActiveSceneSession: true);
-        AppendDiplomacyMemorySection(material, DiplomacyMemoryMaterial.BuildRecentHistory(recent), 4800, maximumChars);
+        var duplicates = new RequestRecallBudget(new[] { RequestRecallBudget.WrapDiplomacy(selectedDiplomaticHistory) });
+        recent = recent.Where(x => !duplicates.IsDuplicateDiplomaticCopy(x)).ToList();
+        AppendDiplomacyMemorySection(material, DiplomacyMemoryMaterial.BuildRelevantHistory(recent, query), 4800, maximumChars);
         string memoryId = GetMemoryHeroId(ruler);
         List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(ruler);
-        int recallCount = Math.Max(2, Math.Min(6, GetMemoryFinalInjectCountFromSettings()));
-        if (blocks != null && blocks.Count > 0
+        int recallCount = Math.Max(0, Math.Min(6, GetMemoryFinalInjectCountFromSettings()));
+        if (recallCount > 0 && !string.IsNullOrWhiteSpace(query) && blocks != null && blocks.Count > 0
             && TryBuildMemoryRecallCandidates(ruler, blocks, topic, counterpart,
                 LoadDailyMemoryDraftsById(memoryId), recallCount, out List<MemoryRecallCandidate> candidates, out _, SaveRuntimeGuard.CaptureGeneration()))
         {
             foreach (MemoryRecallCandidate candidate in candidates)
             {
                 CompressedMemoryBlock block = candidate?.Block;
-                if (block == null) continue;
+                if (block == null || !DiplomacyMemoryMaterial.Relevant(query, block.RichTitle, block.Summary, value =>
+                {
+                    var engine = OnnxEmbeddingEngine.Instance;
+                    return engine != null && engine.IsAvailable && engine.TryGetEmbedding(value, out var vector) ? vector : null;
+                })) continue;
                 AppendDiplomacyMemorySection(material,
-                    MemoryTextResources.Prompt("MEM_Prompt_059") + block.GameDate + " " + block.RichTitle + MemoryTextResources.Prompt("AF_MEM_Prompt_SectionEnd") + block.Summary,
-                    1800, maximumChars);
+                    MemoryTextResources.Prompt("MEM_Prompt_059") + block.GameDate + " [source=" + block.Id + "] " + block.RichTitle + MemoryTextResources.Prompt("AF_MEM_Prompt_SectionEnd") + block.Summary.Replace("\r", "").Replace("\n", "\\n"),
+                    maximumChars, maximumChars);
                 if (block.AfefLines != null)
                     foreach (string fact in block.AfefLines.Take(8))
-                        AppendDiplomacyMemorySection(material, fact, 600, maximumChars);
+                        AppendDiplomacyMemorySection(material, fact, maximumChars, maximumChars);
             }
         }
 
