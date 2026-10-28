@@ -545,7 +545,7 @@ WORLD_BULLETIN_EXPECTED = {
 # Native map-bar terminal entry brushes (layers resolved by ItemId in AfWarStatsMapNavigationEntry.cs).
 TERMINAL_MAPBAR_EXPECTED = {
     "GUI/Brushes/AFTerminalMapBarBrushes.xml": {"owner": "AF.Module.WarStats", "source": "content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml", "sha256": "3655AD1396F4D69D88257493E97BB48424511517B0FD97C35490B7C69B144AFC"},
-    "GUI/SpriteParts/af_terminal/af_terminal_icon.png": {"owner": "AF.Module.WarStats", "source": "content/modules/AF.Module.WarStats/GUI/SpriteParts/af_terminal/af_terminal_icon.png", "sha256": "5C4CA3FDE9808F4EAD2D3F0A34AA2BA2A6B003826F1B9F7F879897F59878F23E"},
+    "GUI/SpriteParts/af_terminal/af_terminal_icon.png": {"owner": "AF.Module.WarStats", "source": "content/modules/AF.Module.WarStats/GUI/SpriteParts/af_terminal/af_terminal_icon.png", "sha256": "740360C51DC882DCBA5958F5F4A0DFEDFCD4C1FF824A629B6E03FE09E386F802"},
 }
 # Courier stationery presets (MCM 信纸样式): new sprite layers loaded on demand by AnimusForgeCourierUiSprites.cs.
 COURIER_THEME_EXPECTED = {
