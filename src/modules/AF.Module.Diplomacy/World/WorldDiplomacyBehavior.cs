@@ -918,7 +918,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private static void Patch_DiplomacyProposalActionItem_Constructed_Postfix(KingdomDiplomacyProposalActionItemVM __instance)
 	{
-		if (__instance == null || !IsWorldDiplomacyEnabled() || !IsPlayerKingdom(Clan.PlayerClan?.Kingdom))
+		if (__instance == null || !IsWorldDiplomacyEnabled() || !IsPlayerAffiliatedKingdom(Clan.PlayerClan?.Kingdom))
 		{
 			return;
 		}
@@ -936,7 +936,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private static void Patch_DiplomacyPage_Refreshed_Postfix(KingdomDiplomacyVM __instance)
 	{
-		if (__instance?.Actions == null || !IsWorldDiplomacyEnabled() || !IsPlayerKingdom(Clan.PlayerClan?.Kingdom))
+		if (__instance?.Actions == null || !IsWorldDiplomacyEnabled() || !IsPlayerAffiliatedKingdom(Clan.PlayerClan?.Kingdom))
 		{
 			return;
 		}
@@ -952,7 +952,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private static bool Patch_DiplomacyProposalActionItem_Execute_Prefix()
 	{
-		if (!IsWorldDiplomacyEnabled() || !IsPlayerKingdom(Clan.PlayerClan?.Kingdom))
+		if (!IsWorldDiplomacyEnabled() || !IsPlayerAffiliatedKingdom(Clan.PlayerClan?.Kingdom))
 		{
 			return true;
 		}

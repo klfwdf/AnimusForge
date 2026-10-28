@@ -38,6 +38,10 @@ class Program {
  static void Run(string[] args){
   var af=Assembly.LoadFrom(args[0]);var type=af.GetType("AnimusForge.KingdomDiplomacyDeclarationEntry",true);
   var h=new Harmony("af.declaration.entry.probe");
+  if(args.Contains("--proposals-only")){
+   var proposalVm=Assembly.Load("TaleWorlds.CampaignSystem.ViewModelCollection").GetType("TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement.Diplomacy.KingdomDiplomacyVM",true);
+   ProposalTakeover(af,h,proposalVm,args[1]);return;
+  }
   M(type,"EnsurePatched").Invoke(null,new object[]{h});
   h.Patch(M(type,"AiEnabled"),prefix:new HarmonyMethod(M(typeof(Program),"Ai")));
   h.Patch(M(type,"PlayerIsRuler"),prefix:new HarmonyMethod(M(typeof(Program),"Ruler")));
@@ -129,5 +133,49 @@ class Program {
    Check(opens==opened&&!button.IsEnabled,"stale enabled button blocked on leadership loss");
   }
   foreach(bool opened in new[]{false,true,false}){compose=opened;Check((bool)M(type,"KingdomInputAllowed").Invoke(null,null)==!opened,"kingdom hotkeys blocked only while editor open");}
+  ProposalTakeover(af,h,vmType,args[1]);
+ }
+ static bool SuppressMessage(){return false;}
+ static void ProposalTakeover(Assembly af,Harmony h,Type vmType,string root){
+  var owner=af.GetType("AnimusForge.WorldDiplomacyBehavior",true);
+  h.Patch(M(owner,"IsWorldDiplomacyEnabled"),prefix:new HarmonyMethod(M(typeof(Program),"Ai")));
+  h.Patch(M(owner,"IsPlayerKingdom"),prefix:new HarmonyMethod(M(typeof(Program),"Ruler")));
+  h.Patch(typeof(TaleWorlds.Library.InformationManager).GetMethod("DisplayMessage",new[]{typeof(TaleWorlds.Library.InformationMessage)}),
+   prefix:new HarmonyMethod(M(typeof(Program),"SuppressMessage")));
+  var campaignAssembly=Assembly.Load("TaleWorlds.CampaignSystem");
+  var campaignType=campaignAssembly.GetType("TaleWorlds.CampaignSystem.Campaign",true);
+  var campaign=Bare(campaignType);campaignType.GetProperty("Current",All).SetValue(null,campaign);
+  var clan=Bare(campaignAssembly.GetType("TaleWorlds.CampaignSystem.Clan",true));
+  var kingdom=Bare(campaignAssembly.GetType("TaleWorlds.CampaignSystem.Kingdom",true));
+  Set(campaign,"PlayerDefaultFaction",clan);
+  var actionType=vmType.Assembly.GetType("TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement.Diplomacy.KingdomDiplomacyProposalActionItemVM",true);
+  h.Patch(M(actionType,"RefreshValues"),postfix:new HarmonyMethod(M(owner,"Patch_DiplomacyProposalActionItem_Constructed_Postfix")));
+  h.Patch(M(actionType,"ExecuteAction"),prefix:new HarmonyMethod(M(owner,"Patch_DiplomacyProposalActionItem_Execute_Prefix")));
+  foreach(var ctor in actionType.GetConstructors())h.Patch(ctor,postfix:new HarmonyMethod(M(owner,"Patch_DiplomacyProposalActionItem_Constructed_Postfix")));
+  foreach(string lang in new[]{"en","cn"}){
+   string label=lang=="en"?"English":"简体中文";
+   string path=Path.Combine(root,"content/modules/AF.Module.Diplomacy/ModuleData/Languages",lang=="en"?"afdip_ui_strings.xml":"CNs/afdip_ui_strings-zh-CN.xml");
+   var doc=new XmlDocument();doc.LoadXml("<LanguageData id=\""+label+"\" name=\""+label+"\" supported_iso=\""+(lang=="en"?"en":"zh-CN")+"\" under_development=\"false\" text_processor=\"TaleWorlds.Localization.TextProcessor.LanguageProcessors.EnglishTextProcessor\"><LanguageFile xml_path=\""+Path.GetFileName(path)+"\" /></LanguageData>");
+   typeof(TextObject).Assembly.GetType("TaleWorlds.Localization.LanguageData").GetMethod("LoadFromXml",All).Invoke(null,new object[]{doc,Path.GetDirectoryName(path)});
+   Check(MBTextManager.ChangeLanguage(label),"proposal language");
+   string expected=new TextObject("{=AF_DIP_UI_WorldDiplomacy_ManagedByAi}This action is managed by AI diplomacy.").ToString();
+   foreach(string role in new[]{"ruler","vassal","independent"})foreach(bool enabled in new[]{false,true}){
+    ai=enabled;ruler=role=="ruler";Field(clan,"_kingdom",role=="independent"?null:kingdom);
+    bool managed=enabled&&role!="independent";int called=0;
+    var vm=Bare(vmType);var list=Activator.CreateInstance(vmType.GetProperty("Actions").PropertyType);Set(vm,"Actions",list);
+    foreach(string name in new[]{"Alliance","War","Trade","Peace"}){
+     var action=Activator.CreateInstance(actionType,new object[]{new TextObject(name),new TextObject("native"),150,true,new TextObject("native hint"),new Action(()=>called++)});
+     M(list.GetType(),"Add").Invoke(list,new[]{action});
+     Check((bool)actionType.GetProperty("IsEnabled").GetValue(action)==!managed,"constructor takeover "+role+":"+name);
+     Set(action,"IsEnabled",true);M(actionType,"RefreshValues").Invoke(action,null);
+     Check((bool)actionType.GetProperty("IsEnabled").GetValue(action)==!managed,"refresh takeover "+role+":"+name);
+     int before=called;M(actionType,"ExecuteAction").Invoke(action,null);
+     Check(called==before+(managed?0:1),"actual native callback blocked only under takeover "+role+":"+name);
+    }
+    M(owner,"Patch_DiplomacyPage_Refreshed_Postfix").Invoke(null,new[]{vm});
+    var items=((System.Collections.IEnumerable)list).Cast<object>().ToArray();
+    Check(items.Select(x=>(string)actionType.GetProperty("Explanation").GetValue(x)).SequenceEqual(managed?new[]{"","",expected,""}:new[]{"native","native","native","native"}),"single centered localized explanation "+role);
+   }
+  }
  }
 }

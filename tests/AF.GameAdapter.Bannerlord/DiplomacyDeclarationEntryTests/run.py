@@ -18,6 +18,7 @@ parser.add_argument("--refs", type=Path, action="append", required=True,
                     help="Dependency directories in resolution order; keep native DLL versions consistent.")
 parser.add_argument("--framework", type=Path, required=True)
 parser.add_argument("--run-root", type=Path)
+parser.add_argument("--proposals-only", action="store_true", help="Exercise native proposal takeover without unrelated map-screen/widget injection.")
 args = parser.parse_args()
 candidate = args.candidate.resolve(strict=True)
 refs = [p.resolve(strict=True) for p in args.refs]
@@ -52,7 +53,8 @@ ET.ElementTree(project).write(out / "Probe.csproj", encoding="utf-8")
 commands = [
     ([str(dotnet), "build", str(out / "Probe.csproj"), "--nologo", "-v:q",
       "-p:RestoreConfigFile=" + str(out / "NuGet.Config")], "build.log"),
-    ([str(out / "bin/Debug/net472/Probe.exe"), str(candidate), str(ROOT), *map(str, refs)], "run.log")
+    ([str(out / "bin/Debug/net472/Probe.exe"), str(candidate), str(ROOT), *map(str, refs)]
+     + (["--proposals-only"] if args.proposals_only else []), "run.log")
 ]
 for command, name in commands:
     result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8",
@@ -62,5 +64,6 @@ for command, name in commands:
         print(result.stdout + result.stderr)
         raise SystemExit(result.returncode)
 (out / "receipt.json").write_text(json.dumps(dict(api=args.api, candidate=str(candidate), sha256=digest,
-    scope="Actual DLL and managed widget tree; campaign eligibility, render/font assets, tooltip display and editor opening boundaries are fixtures. No game/provider/deploy."), indent=2))
+    scope="Actual DLL/native proposal VM" if args.proposals_only else "Actual DLL and managed widget tree",
+    limitations="Synthetic campaign/eligibility, render/font assets, tooltip display and editor opening boundaries are fixtures. No game/provider/deploy."), indent=2))
 print((out / "run.log").read_text(encoding="utf-8"))
