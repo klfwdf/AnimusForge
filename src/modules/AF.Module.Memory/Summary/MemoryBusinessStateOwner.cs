@@ -362,11 +362,35 @@ internal sealed partial class MemoryBusinessStateOwner
 		Match open = Regex.Match(text, "\\[" + escaped + "\\]\\s*", options);
 		if (!open.Success)
 		{
-			return false;
+			return TryExtractLabeledLineBlock(text, escaped, out value);
 		}
 		int start = open.Index + open.Length;
 		Match next = Regex.Match(text.Substring(start), "\\r?\\n\\s*\\[[A-Z_]+\\]\\s*", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 		int end = next.Success ? start + next.Index : text.Length;
+		value = text.Substring(start, Math.Max(0, end - start)).Trim();
+		return !string.IsNullOrWhiteSpace(value);
+	}
+
+	private const string SummaryLabelNames = "TITLE|RICH_TITLE|SUMMARY|SUMMARY_CONTENT|CONTENT|PUBLICITY|PLAYER_PUBLICITY|PLAYER_HISTORY|PLAYER_HISTORY_MATERIAL|REASON|PUBLICITY_REASON";
+	private static readonly Regex NextSummaryLabelRegex = new Regex("\\r?\\n[ \\t>#*_\\-]*(?:" + SummaryLabelNames + ")[ \\t*_]*[:\\uFF1A]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+	/// <summary>
+	/// Fallback for models that answer "TITLE: ..." / "SUMMARY: ..." lines instead of the
+	/// bracket tags. Labels must be uppercase known names at the start of a line, so ordinary
+	/// colons inside the summary body never end a field.
+	/// </summary>
+	private static bool TryExtractLabeledLineBlock(string text, string escapedTag, out string value)
+	{
+		value = "";
+		RegexOptions options = RegexOptions.Multiline | RegexOptions.CultureInvariant;
+		Match open = Regex.Match(text, "^[ \\t>#*_\\-]*" + escapedTag + "[ \\t*_]*[:\\uFF1A][ \\t*_]*", options);
+		if (!open.Success)
+		{
+			return false;
+		}
+		int start = open.Index + open.Length;
+		Match next = NextSummaryLabelRegex.Match(text, start);
+		int end = next.Success ? next.Index : text.Length;
 		value = text.Substring(start, Math.Max(0, end - start)).Trim();
 		return !string.IsNullOrWhiteSpace(value);
 	}

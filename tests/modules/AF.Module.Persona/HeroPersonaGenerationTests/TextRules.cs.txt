@@ -28,6 +28,15 @@ static void TextRuleCases()
     string expected=AnimusForge.Refactor.Runtime.NpcPersonaProfilePolicy.MergeLegacy((string)wire["profile"]["personality"],(string)wire["profile"]["background"]);
     Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson(raw,out AnimusForge.NpcPersonaGeneratedData replay)&&replay.Description==expected&&replay.Traits.Count>0&&replay.Motivations.Count>0&&replay.SpeechStyle==(string)wire["speech_style"],"actual log response: "+System.IO.Path.GetFileName(file));
    }
+  // Claude replies: "persona" alias of profile, extra "name", speech_style as an object, leading "json" language line.
+  Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("json\n{\"name\":\"加里俄斯\",\"persona\":\"他是军营里走出来的统治者。\",\"traits\":[{\"id\":\"ambitious\",\"strength\":3}],\"motivations\":[\"统一帝国\"],\"values\":[\"赏赐必须到手\"],\"fears\":[\"失去军心\"],\"speech_style\":{\"tone\":\"豪爽、亲近\",\"habits\":[\"常提士兵\"],\"sample_lines\":[\"别拦着。\"]}}",out AnimusForge.NpcPersonaGeneratedData claude)
+   &&claude.Description=="他是军营里走出来的统治者。"&&claude.Traits.Count==1&&claude.Traits[0].Id=="ambitious"&&claude.Motivations[0]=="统一帝国"&&claude.SpeechStyle=="豪爽、亲近", "persona alias, extra name and object speech_style");
+  Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"profile\":\"canonical\",\"persona\":\"ignored alias\",\"speech_style\":\"plain\"}",out claude)&&claude.Description=="canonical"&&claude.SpeechStyle=="plain", "profile wins over persona alias and string speech_style is unchanged");
+  Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"profile\":\"x\",\"speech_style\":{\"tone\":\"calm\",\"style\":\"short sentences\"}}",out claude)&&claude.SpeechStyle=="calm short sentences", "object speech_style joins tone and style");
+  Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"profile\":\"x\",\"speech_style\":{\"habits\":[\"a\"]}}",out claude)&&claude.SpeechStyle=="", "object speech_style without named strings is dropped, not serialized");
+  Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"profile\":\"x\",\"speech_style\":[\"a\",\"b\"]}",out claude)&&claude.SpeechStyle=="", "array speech_style is dropped");
+  Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"persona\":{\"text\":\"object body\"},\"name\":\"n\"}",out p,out b), "persona alias still requires a string body");
+  Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"persona\":\"  \",\"traits\":[{\"id\":\"bold\",\"strength\":1}]}",out p,out b), "blank persona alias is not success");
   foreach(var invalid in new[]{"{\"profile\":42}","{\"profile\":{\"x\":\"wrong\"}}","{\"traits\":[{\"profile\":\"nested-only\"}]}"})
    Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson(invalid,out p,out b),"unknown body shape rejects: "+invalid);
   var edited=new AnimusForge.MyBehavior.NpcPersonaProfile {Motivations=new(){"a\u001fb"}};
