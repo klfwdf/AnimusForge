@@ -1,3 +1,14 @@
+<a id="vassal-diplomacy-buttons-20261029"></a>
+## 封臣原版外交按钮接管 — 2026-10-29
+
+产品 59b902c3d7bef48fb3fc3f38d23b0f8552d47379；[状态和验证边界](../animusforge-refactoring-and-repository-reorganization-plan.md#vassal-diplomacy-buttons-20261029)。未新增公开API或持久化状态。
+
+| 源码与一基行号 | 符号 | 覆盖与边界 |
+| --- | --- | --- |
+| src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:919–960 | Patch_DiplomacyProposalActionItem_Constructed_Postfix / Patch_DiplomacyPage_Refreshed_Postfix / Patch_DiplomacyProposalActionItem_Execute_Prefix | 三处接管门改用既有IsPlayerAffiliatedKingdom；保留IsPlayerKingdom在后台权限中的语义，不调整议和准入或君主专用声明。 |
+| tests/AF.GameAdapter.Bannerlord/DiplomacyDeclarationEntryTests/Program.cs:41–44、138–179 | proposals-only选择 / ProposalTakeover | 实际候选DLL和原生VM，合成Campaign，真实所属国读取；构造/刷新/点击Harmony回调和双语页面说明。独立测试原生提议不依赖未修改的地图屏幕注入，默认完整测试保留。 |
+| tests/AF.GameAdapter.Bannerlord/DiplomacyDeclarationEntryTests/run.py:21、55–68 | 专项选择及证据 | 传递proposals-only并记录覆盖范围；不启动游戏或部署。 |
+
 <a id="town-memory-concise-20261016"></a>
 ### 近期城镇记忆简洁输出（产品757e50f3，标题纠正ce4b7688）
 
