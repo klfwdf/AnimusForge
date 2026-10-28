@@ -21,7 +21,9 @@ internal static class AfWarStatsMapNavigationEntry
 
     private const string HarmonyId = "AnimusForge.terminal.mapbar.navigation";
 
-    private const string InsertBeforeItemId = "kingdom";
+    private const string KingdomItemId = "kingdom";
+
+    private const string MiddleKingdomItemId = "af_terminal_kingdom";
 
     private static bool _patched;
 
@@ -97,7 +99,7 @@ internal static class AfWarStatsMapNavigationEntry
         }
         MBBindingList<MapNavigationItemVM> items = navigation.NavigationItems;
         int existingIndex = -1;
-        int insertIndex = items.Count;
+        bool shouldShow = AnimusForge.AnimusForgeTerminalSettings.IsMapIconEnabled;
         for (int i = 0; i < items.Count; i++)
         {
             string id = items[i]?.ItemId;
@@ -105,20 +107,21 @@ internal static class AfWarStatsMapNavigationEntry
             {
                 existingIndex = i;
             }
-            else if (id == InsertBeforeItemId && insertIndex == items.Count)
+            else if (id == KingdomItemId || id == MiddleKingdomItemId)
             {
-                insertIndex = i;
+                // ItemId selects presentation only; NavigationElement retains kingdom behavior.
+                // Property notification refreshes the native background and icon when toggled.
+                items[i].ItemId = shouldShow ? MiddleKingdomItemId : KingdomItemId;
             }
         }
-        bool shouldShow = AnimusForge.AnimusForgeTerminalSettings.IsMapIconEnabled;
         if (shouldShow && existingIndex < 0)
         {
-            // Kingdom's background sprite is the bar's curved end cap, so the entry goes right before it.
+            // The terminal owns the curved end cap while visible and is the final navigation item.
             MapNavigationHandler handler = null;
             _currentHandler?.TryGetTarget(out handler);
             // Must run before the item VM binds so the icon widget copies the custom sprite.
             AfTerminalMapBarIconSprite.EnsureApplied();
-            items.Insert(insertIndex, new MapNavigationItemVM(new TerminalNavigationElement(handler)));
+            items.Add(new MapNavigationItemVM(new TerminalNavigationElement(handler)));
         }
         else if (!shouldShow && existingIndex >= 0)
         {
