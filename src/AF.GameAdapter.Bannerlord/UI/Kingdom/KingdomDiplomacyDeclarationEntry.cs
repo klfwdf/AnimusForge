@@ -84,10 +84,11 @@ internal static class KingdomDiplomacyDeclarationEntry
         {
             Id = EntryId,
             WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
-            SuggestedWidth = 135,
-            SuggestedHeight = 40,
+            // Native proposal buttons are 227 x 30; keep the same slim height and a little more width.
+            SuggestedWidth = 250,
+            SuggestedHeight = 30,
             HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Top,
-            MarginRight = comparison.MarginRight, MarginBottom = 4,
+            MarginRight = comparison.MarginRight, MarginTop = 18, MarginBottom = 4,
             IsVisible = true, IsEnabled = true, DoNotAcceptEvents = false
         };
         var button = new ButtonWidget(root.Context)
@@ -153,7 +154,7 @@ internal static class KingdomDiplomacyDeclarationEntry
             _button.IsEnabled = reason.Length == 0;
             _button.Brush = _button.IsEnabled ? _green : _grey;
             _text.Text = Text("AF_UI_DiplomacyEntry_Title", "Write declaration");
-            _text.Brush.FontSize = _text.Text.Length > 10 ? 14 : 16;
+            _text.Brush.FontSize = _text.Text.Length > 10 ? 20 : 22;
             _text.AlphaFactor = _button.IsEnabled ? 1f : 0.5f;
             return reason;
         }

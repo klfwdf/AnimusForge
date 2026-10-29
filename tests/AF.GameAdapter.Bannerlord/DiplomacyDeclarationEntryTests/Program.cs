@@ -98,7 +98,7 @@ class Program {
    if(lang=="en")M(typeof(HintWidget),"OnConnectedToRoot").Invoke(hint,null);
    M(type,"Inject").Invoke(null,new[]{root,vm});
    Check(column.Children.Count(x=>x.Id=="AnimusForgeDiplomacyDeclarationEntry")==1,"no duplicate injection");
-   Check(wrapper.SuggestedWidth==135 && wrapper.SuggestedHeight==40 && wrapper.MarginBottom==4,"dedicated button row with gap");
+   Check(wrapper.SuggestedWidth==250 && wrapper.SuggestedHeight==30 && wrapper.MarginTop==18 && wrapper.MarginBottom==4,"slim button row lowered above statistics");
    Check(wrapper.HorizontalAlignment==HorizontalAlignment.Center && wrapper.MarginRight==comparison.MarginRight,"center aligned with statistics");
    Check(column.Children.ElementAt(2)==wrapper && column.Children.ElementAt(3)==warLogPanel && column.Children.ElementAt(4)==comparison,"row precedes either selected content mode");
    Check(!header.Children.Contains(wrapper) && warStrategy.MarginTop==125,"war strategy and portrait layout unchanged");
@@ -118,6 +118,7 @@ class Program {
     Check(button.IsEnabled==(a&&r),"enabled only for ruler with AI on");
     Check(button.ReadOnlyBrush.Name==(a&&r?"Popup.Done.Button":"Popup.Cancel.Button"),"green or grey brush");
     Check(text.Text==(lang=="en"?"Write declaration":"撰写外交宣言"),"localized button");
+    Check(text.ReadOnlyBrush.FontSize==(lang=="en"?20:22),"readable localized label in slim button");
     M(typeof(Widget),"OnHoverBegin").Invoke(wrapper,null);
     Check(hints==before+1,"disabled or enabled parent hover reaches native hint");
     string expected=!a?(lang=="en"?"AI diplomacy is not enabled.":"未开启 AI 外交。"):!r?(lang=="en"?"Only the ruler can write a diplomatic declaration.":"仅统治者可撰写外交宣言。"):(lang=="en"?"Write a diplomatic declaration.":"撰写外交宣言。");
