@@ -1,3 +1,8 @@
+<a id="event-map-overlays-20261030"></a>
+## 地图菜单与百科允许事件通知 — 2026-10-30
+
+产品49087e5e4，检查点77d17852e。城镇/城堡/村庄等待、百科及地图管理面板不再因菜单、暂停或焦点被排除；对话、三维场景和独立页面仍暂缓。事件Esc保留父界面，百科热键在事件期间暂停；新对话接管时不再抢回旧菜单焦点。261项事件、586项展示与146项输入回归及双API/Bootstrap/seam通过。**OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#event-map-overlays-20261030)和[代码范围](docs/architecture/af-framework-code-scope.md#event-map-overlays-20261030)；现有部署仍为此前版本。
+
 <a id="deploy-all-local-20261029"></a>
 ## 全部本地产品改动已部署 — 2026-10-29
 

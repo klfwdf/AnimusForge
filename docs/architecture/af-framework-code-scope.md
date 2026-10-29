@@ -1,3 +1,17 @@
+<a id="event-map-overlays-20261030"></a>
+## 地图覆盖层事件通知边界 — 2026-10-30
+
+源码修订49087e5e4，基线f99a73748，检查点77d17852e。[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#event-map-overlays-20261030)。以下为仓库相对路径与一基行号；本段取代旧通知资格说明，不改变外交执行职责。
+
+| 路径与行号 | 符号 / 责任 | 覆盖与未覆盖 |
+|---|---|---|
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:55–69 | TryShowCore | 允许所属地图面板焦点，拒绝无法接管的全局焦点；未动通知owner |
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:96–113 | IsNotificationContextAvailable | MapState/MapScreen与对话/Mission边界；无菜单/百科/暂停整体屏蔽，保留原模态交互保护 |
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:134–164 | OnApplicationTick | 同一资格重验、延迟Esc及未读撤回；无每帧层枚举 |
+| src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs:64–68 | Dispose焦点恢复 | 恢复父层但不夺取新对话/面板焦点；原资源与输入恢复保持 |
+| src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:248–254 | EncyclopediaDataOnTickPrefix | 事件期间暂停百科原生快捷键；原历史编辑/信使保护保持，现有注册入口未变 |
+| tests/DiplomacyEventPopupLifecycle/Program.cs:49–187; run.py:25–36 | 地图面板回放 / prefix源码截取 | 生产popup/VM/lease与实际prefix函数体，原生边界fixture；未实机/未部署 |
+
 <a id="deploy-all-local-20261029"></a>
 ## 当前工作区完整部署范围 — 2026-10-29
 
