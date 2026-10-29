@@ -81,6 +81,7 @@ public static class InteriorLocalizationChecks
         }
         var after = (XmlDocument)patchType.GetMethod("GetPrefabExtension").Invoke(patch, null);
         Check(object.ReferenceEquals(layout, after), "same prefab survives language changes; no layout regeneration");
+        InteriorHeaderLayoutChecks.Run(layout, Check);
         Console.WriteLine("PASS " + checks + " actual-DLL checks; early-built prefab, 5 real scopes, CN/EN/CN, no native UI or HTTP.");
     }
 }

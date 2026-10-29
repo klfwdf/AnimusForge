@@ -95,8 +95,20 @@ public partial class MyBehavior
   UpdatePersonaProfile = UpdateDevPersonaEditorProfile,
   TraitIds = NpcPersonaTextRules.AllowedTraitIdsForPrompt,
   GeneratePersona = hero => GenerateNpcPersonaAsync(hero, ignoreRetryCooldown: true, overwriteExisting: true),
+  GeneratePersonaWithPrompt = (hero, prompt) => GenerateNpcPersonaAsync(hero, ignoreRetryCooldown: true, overwriteExisting: true, requestRequirements: prompt),
   CompleteOnMainThread = RunMemorySummaryCompletionAsync
  });
+ internal static void OpenHeroPersonaPromptedRerollForExternal(Hero hero)
+ {
+  var owner = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+  if (owner == null || hero == null)
+  {
+   InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Persona_RerollUnavailable", "This Hero cannot regenerate persona right now.")));
+   return;
+  }
+  owner.PersonaEditor.OpenHeroPersonaPromptedReroll(hero, null);
+ }
+
  private PersonaEditorController PersonaEditor
  {
   get

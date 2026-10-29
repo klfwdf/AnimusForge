@@ -197,7 +197,7 @@ public sealed partial class KingdomFactionPanelVM
 	// wording yet, its real text is the honest thing to show rather than an invented summary.
 	private static string Brief(CivilWarActionQuote q)
 	{
-		if (q.CooldownUntilDay > 0) return L("AF_DIP_UI_CivilWar_Cooldown", "Cooldown until day {DAY}", "DAY", q.CooldownUntilDay);
+		if (q.CooldownUntilDay > 0) return L("AF_DIP_UI_CivilWar_Cooldown", "Cooldown until {DAY}", "DAY", CivilWarUiText.Date(q.CooldownUntilDay));
 		string first = (q.Reason ?? "").Split(ClauseBreaks, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim() ?? "";
 		int budget = IsMostlyCjk(first) ? 14 : 28;
 		return first.Length == 0 || first.Length > budget ? L("AF_DIP_UI_CivilWar_Unavailable", "Unavailable · click to view") : first;
@@ -262,7 +262,7 @@ public sealed partial class KingdomFactionPanelVM
 	{
 		var options = DemandOptions(act);
 		Select(act == Act.ChangeDemand ? L("AF_DIP_UI_CivilWar_ChangeDemandTitle", "Change faction demand") : L("AF_DIP_UI_CivilWar_FoundTitle", "Found faction"),
-			act == Act.ChangeDemand ? L("AF_DIP_UI_CivilWar_ChangeDemandDescription", "The faction identity remains; other members immediately reassess participation. This does not start a rebellion automatically.") : L("AF_DIP_UI_CivilWar_FoundDescription", "No grievance or relation threshold is required, but post-war cooldown still applies; founding costs −10 relation with the ruler, while refounding carries the old faction's relation loss."),
+			act == Act.ChangeDemand ? L("AF_DIP_UI_CivilWar_ChangeDemandDescription", "The faction identity remains; other members immediately reassess participation. This does not start a rebellion automatically.") : L("AF_DIP_UI_CivilWar_FoundDescription", "No grievance or relation threshold or cooldown is required to found a player faction; founding costs −10 relation with the ruler, while refounding carries the old faction's relation loss."),
 			options.Select(x => new InquiryElement(x, x.Text, null, true, L("AF_DIP_UI_CivilWar_LedByClan", "Led by this clan"))).ToList(), selected =>
 			{
 				var option = selected as CivilWarFoundingOption; if (option == null) return;

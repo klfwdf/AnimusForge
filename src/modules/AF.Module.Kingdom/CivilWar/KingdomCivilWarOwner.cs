@@ -91,7 +91,7 @@ internal sealed partial class KingdomCivilWarOwner
 		KingdomCivilWarKingdomState state = GetOrCreate(kingdom, CivilWarWorld.CurrentWeek());
 		state.CooldownUntilWeek = Math.Max(state.CooldownUntilWeek, CivilWarWorld.CurrentWeek() + tuning.CooldownWeeks);
 		state.CooldownUntilDay = Math.Max(state.CooldownUntilDay, CivilWarWorld.CurrentDay() + tuning.CooldownWeeks * 7);
-		AddHistory(state, CivilWarWorld.CurrentWeek(), CivilWarUiText.T("AF_KINGDOM_CW_Core_RebellionCooldown", "The kingdom has just been through a rebellion; no new faction will form for {WEEKS} weeks.", ("WEEKS", tuning.CooldownWeeks.ToString())));
+		AddHistory(state, CivilWarWorld.CurrentWeek(), CivilWarUiText.T("AF_KINGDOM_CW_Core_RebellionCooldown", "The kingdom has just been through a rebellion; NPC faction formation is on cooldown until {WEEKS}. The player may still found a faction.", ("WEEKS", CivilWarUiText.Date(state.CooldownUntilDay))));
 		Revision++;
 	}
 
@@ -273,7 +273,7 @@ internal sealed partial class KingdomCivilWarOwner
 		// Display text for an inquiry: use the localized projections. FactionName/FormatDemand keep
 		// serving the stored history, AFEF and weekly material.
 		return CivilWarUiText.T("AF_KINGDOM_CW_Core_UltimatumDelivered", "{FACTION} has delivered an ultimatum: {DEMAND}", ("FACTION", FactionDisplayName(faction, demand)), ("DEMAND", CivilWarUiText.DemandDisplayText(demand, ResolveDemandTargetDisplay(demand, faction, null))))
-			+ CivilWarUiText.T("AF_KINGDOM_CW_Core_UltimatumStatus", "\n\nRefused {COUNT} times. Without an answer it will be decided automatically on day {DAY}. A refusal may lead to civil war.", ("COUNT", faction.Refusals.ToString()), ("DAY", faction.AnswerDeadlineDay.ToString()));
+			+ CivilWarUiText.T("AF_KINGDOM_CW_Core_UltimatumStatus", "\n\nRefused {COUNT} times. Without an answer it will be decided automatically on {DAY}. A refusal may lead to civil war.", ("COUNT", faction.Refusals.ToString()), ("DAY", CivilWarUiText.Date(faction.AnswerDeadlineDay)));
 	}
 
 	// One campaign event per day. Only stored kingdoms/clans/sources are visited, never the world clan list.
@@ -474,7 +474,7 @@ internal sealed partial class KingdomCivilWarOwner
 			other.UltimatumDay = Math.Max(other.UltimatumDay, day + tuning.CooldownWeeks * 7);
 			held++;
 		}
-		if (held > 0) AddHistory(state, week, CivilWarUiText.T("AF_KINGDOM_CW_Core_OthersCoolingDown", "{FACTION} has risen; the other factions enter a cooldown (no ultimatums before day {DAY})", ("FACTION", risingName), ("DAY", state.CooldownUntilDay.ToString())));
+		if (held > 0) AddHistory(state, week, CivilWarUiText.T("AF_KINGDOM_CW_Core_OthersCoolingDown", "{FACTION} has risen; the other factions enter a cooldown (no ultimatums before {DAY})", ("FACTION", risingName), ("DAY", CivilWarUiText.Date(state.CooldownUntilDay))));
 	}
 
 	// Only pre-war factions get the softer king; a faction already in arms is settled by the war.
@@ -1036,7 +1036,7 @@ internal sealed partial class KingdomCivilWarOwner
 			// keeps its own text, so the flag is false there.
 			panel.NoFactionFormed = !cooling;
 			panel.StageText = cooling
-				? CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageCooldown", "Settling after civil war  ·  no faction can form before day {DAY}", ("DAY", state.CooldownUntilDay.ToString()))
+				? CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageCooldown", "Settling after civil war  ·  NPC factions cannot form before {DAY}; player founding is available", ("DAY", CivilWarUiText.Date(state.CooldownUntilDay)))
 				: CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageNoneFormed", "No factions have formed yet");
 		}
 		else if (factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar)) panel.StageText = CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageOpenWar", "{COUNT} factions are in civil war", ("COUNT", factions.Count(x => x.Stage == KingdomCivilWarStage.OpenWar).ToString()));
@@ -1093,7 +1093,7 @@ internal sealed partial class KingdomCivilWarOwner
 		panel.Conditions.Add(Condition(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionGrievanceThreshold", "Grievance threshold {THRESHOLD}", ("THRESHOLD", panel.Threshold.ToString())), panel.TopGrievance >= panel.Threshold ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionReached", "Reached") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionNotReached", "Not reached"), panel.TopGrievance >= panel.Threshold));
 		float weariness = Weariness(kingdom);
 		panel.Conditions.Add(Condition(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionOrWeariness", "or war weariness {VALUE}", ("VALUE", CivilWarWearinessRules.FormationThreshold.ToString("0"))), weariness.ToString("0") + " " + (CivilWarWearinessRules.MeetsFormation(weariness) ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionReached", "Reached") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionNotReached", "Not reached")), CivilWarWearinessRules.MeetsFormation(weariness)));
-		panel.Conditions.Add(Condition(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionPostWarCooldown", "Post-war cooldown"), day < cooldownDay ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_UntilDay", "until day {DAY}", ("DAY", cooldownDay.ToString())) : CivilWarUiText.T("AF_KINGDOM_CW_Panel_None", "None"), day >= cooldownDay));
+		panel.Conditions.Add(Condition(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionPostWarCooldown", "Post-war cooldown"), day < cooldownDay ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_UntilDay", "until {DAY}", ("DAY", CivilWarUiText.Date(cooldownDay))) : CivilWarUiText.T("AF_KINGDOM_CW_Panel_None", "None"), day >= cooldownDay));
 		if (CivilWarWorld.IsPlayerRuled(kingdom)) panel.Conditions.Add(Condition(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ConditionPlayerKingdomFactions", "Player-kingdom factions"), DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed() ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_Enabled", "Enabled") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_SettingDisabled", "Disabled in settings"), DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed()));
 		AddRecentChronicle(panel, state?.History);
 		PlayerPanelFigures(kingdom, state, panel, day);
@@ -1109,8 +1109,8 @@ internal sealed partial class KingdomCivilWarOwner
 		{
 			KingdomCivilWarHistoryEntry entry = history[i];
 			if (string.IsNullOrWhiteSpace(entry?.Text) || !seen.Add(entry.Week.ToString() + "\n" + entry.Text)) continue;
-			panel.Chronicle.Add(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ChronicleWeek", "Week {WEEK}  ·  {TEXT}",
-				("WEEK", entry.Week.ToString()), ("TEXT", CivilWarWorld.Limit(entry.Text, 46))));
+			panel.Chronicle.Add(CivilWarUiText.T("AF_KINGDOM_CW_Panel_ChronicleWeek", "Week of {WEEK}  ·  {TEXT}",
+				("WEEK", CivilWarUiText.Date(entry.Week * 7)), ("TEXT", CivilWarWorld.Limit(entry.Text, 46))));
 		}
 	}
 
@@ -1150,7 +1150,7 @@ internal sealed partial class KingdomCivilWarOwner
 		int exitUntil = 0;
 		if (player != null) _storage.ClanExitUntilDay.TryGetValue(player.StringId ?? "", out exitUntil);
 		bool locked = state?.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar) == true;
-		string exit = CivilWarUiText.T("AF_KINGDOM_CW_Panel_ExitCost", "Leader −{LEADER}, members −{MEMBER}; cannot join or found a faction for {DAYS} days.", ("LEADER", CivilWarPoliticalRules.ExitLeaderRelationLoss.ToString()), ("MEMBER", CivilWarPoliticalRules.ExitMemberRelationLoss.ToString()), ("DAYS", CivilWarPoliticalRules.ExitDays.ToString()));
+		string exit = CivilWarUiText.T("AF_KINGDOM_CW_Panel_ExitCost", "Leader −{LEADER}, members −{MEMBER}; cannot join a faction for {DAYS} days. The player may still found a faction.", ("LEADER", CivilWarPoliticalRules.ExitLeaderRelationLoss.ToString()), ("MEMBER", CivilWarPoliticalRules.ExitMemberRelationLoss.ToString()), ("DAYS", CivilWarPoliticalRules.ExitDays.ToString()));
 		switch (panel.Role)
 		{
 			case CivilWarPanelRole.King:
@@ -1165,11 +1165,11 @@ internal sealed partial class KingdomCivilWarOwner
 				panel.ActionHint = CivilWarUiText.T("AF_KINGDOM_CW_Panel_MemberHint", "Rebellion is the leader's decision; after a refused proposal you cannot raise it again for {DAYS} days. Leaving: {EXIT}", ("DAYS", CivilWarPoliticalRules.ActionDays.ToString()), ("EXIT", exit));
 				break;
 			case CivilWarPanelRole.Leader:
-				panel.ActionHint = CivilWarUiText.T("AF_KINGDOM_CW_Panel_LeaderHint", "This faction never rebels automatically; a manual rebellion needs this clan to hold {THRESHOLD}% of the kingdom's military power (currently {CURRENT}%). It can be dissolved or refounded, still subject to the post-war cooldown.", ("THRESHOLD", DuelSettings.BuildCivilWarTuning().PlayerDetonationStrengthPercent.ToString()), ("CURRENT", PlayerStrengthPercent(kingdom, player).ToString("0.0")));
+				panel.ActionHint = CivilWarUiText.T("AF_KINGDOM_CW_Panel_LeaderHint", "This faction never rebels automatically; a manual rebellion needs this clan to hold {THRESHOLD}% of the kingdom's military power (currently {CURRENT}%) and respects post-war cooldown. Dissolving or refounding is not subject to cooldown.", ("THRESHOLD", DuelSettings.BuildCivilWarTuning().PlayerDetonationStrengthPercent.ToString()), ("CURRENT", PlayerStrengthPercent(kingdom, player).ToString("0.0")));
 				break;
 			default:
 				panel.ActionHint = day < exitUntil
-					? CivilWarUiText.T("AF_KINGDOM_CW_Panel_MiddleCooldown", "Exit cooldown runs until day {DAY}; until then you cannot join or found a faction.", ("DAY", exitUntil.ToString()))
+					? CivilWarUiText.T("AF_KINGDOM_CW_Panel_MiddleCooldown", "Exit cooldown runs until {DAY}; you cannot join a faction until then, but may found your own.", ("DAY", CivilWarUiText.Date(exitUntil)))
 					: CivilWarUiText.T("AF_KINGDOM_CW_Panel_MiddleSwitchHint", "To switch factions after joining, leave first: {EXIT}", ("EXIT", exit));
 				break;
 		}
@@ -1258,7 +1258,7 @@ internal sealed partial class KingdomCivilWarOwner
 			if (row.IsPlayer && !isLeader && record != null && record.SideSinceDay >= 0)
 			{
 				int ago = CivilWarWorld.CurrentDay() - record.SideSinceDay;
-				row.Stance += ago <= 0 ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_JoinedToday", " · joined today") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_JoinedDaysAgo", " · joined {DAYS} days ago", ("DAYS", ago.ToString()));
+				row.Stance += ago <= 0 ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_JoinedToday", " · joined today") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_JoinedDaysAgo", " · joined on {DAYS}", ("DAYS", CivilWarUiText.Date(record.SideSinceDay)));
 			}
 			panel.Members.Add(row);
 		}
@@ -1326,8 +1326,8 @@ internal sealed partial class KingdomCivilWarOwner
 		bool ultimatum = f.Stage == KingdomCivilWarStage.Ultimatum;
 		bool pending = f.PendingResponse != null;
 		bool delivered = ultimatum || (war && f.Refusals > 0);
-		p.Steps.Add(Step(CivilWarUiText.T("AF_KINGDOM_CW_Panel_StepFounded", "Founded"), CivilWarUiText.T("AF_KINGDOM_CW_Panel_WeekOf", "Week {WEEK}", ("WEEK", f.CreatedWeek.ToString())), 1));
-		if (delivered) p.Steps.Add(Step(CivilWarUiText.T("AF_KINGDOM_CW_Panel_DeliverUltimatum", "Deliver ultimatum"), f.UltimatumDay >= 0 ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_DayOf", "Day {DAY}", ("DAY", f.UltimatumDay.ToString())) : CivilWarUiText.T("AF_KINGDOM_CW_Panel_Delivered", "Delivered"), 1));
+		p.Steps.Add(Step(CivilWarUiText.T("AF_KINGDOM_CW_Panel_StepFounded", "Founded"), CivilWarUiText.T("AF_KINGDOM_CW_Panel_WeekOf", "Week of {WEEK}", ("WEEK", CivilWarUiText.Date(f.CreatedWeek * 7))), 1));
+		if (delivered) p.Steps.Add(Step(CivilWarUiText.T("AF_KINGDOM_CW_Panel_DeliverUltimatum", "Deliver ultimatum"), f.UltimatumDay >= 0 ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_DayOf", "{DAY}", ("DAY", CivilWarUiText.Date(f.UltimatumDay))) : CivilWarUiText.T("AF_KINGDOM_CW_Panel_Delivered", "Delivered"), 1));
 		else if (war || pending) p.Steps.Add(Step(CivilWarUiText.T("AF_KINGDOM_CW_Panel_DeliverUltimatum", "Deliver ultimatum"), war ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_NoUltimatum", "No ultimatum") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_CrownRespondedFirst", "The crown responded first"), 0));
 		else
 		{
