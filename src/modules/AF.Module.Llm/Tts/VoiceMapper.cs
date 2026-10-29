@@ -87,7 +87,8 @@ internal static class VoiceMapper
 		{
 			return null;
 		}
-		if (DuelSettings.GetSettings()?.TtsUseGptSoVits == true)
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings?.TtsUseGptSoVits == true || settings?.UsesOpenAiTts == true)
 			return MyBehavior.GetNpcVoiceIdForExternal(hero);
 		bool isFemale = hero.IsFemale;
 		float age = hero.Age;
@@ -97,15 +98,22 @@ internal static class VoiceMapper
 
 	public static string ResolveVoiceIdForNonHero(bool isFemale, float age, int agentIndex)
 	{
-		if (DuelSettings.GetSettings()?.TtsUseGptSoVits == true)
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings?.TtsUseGptSoVits == true)
 			return GptSoVitsVoiceRuntime.ResolveTransient(isFemale, agentIndex);
+		// OpenAI voices come only from the server list; Volcengine pools are never sent there.
+		if (settings?.UsesOpenAiTts == true)
+			return OpenAiTtsVoiceCatalog.ResolveTransient(settings.TtsOpenAiApiUrl, settings.TtsOpenAiVoice, isFemale, agentIndex);
 		return ResolveVoiceId(null, isFemale, age, agentIndex);
 	}
 
 	public static string ResolveVoiceIdForNonHeroKey(string nonHeroKey, bool isFemale, float age, int agentIndex)
 	{
-		if (DuelSettings.GetSettings()?.TtsUseGptSoVits == true)
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings?.TtsUseGptSoVits == true)
 			return GptSoVitsVoiceRuntime.ResolveTransient(isFemale, agentIndex);
+		if (settings?.UsesOpenAiTts == true)
+			return OpenAiTtsVoiceCatalog.ResolveTransient(settings.TtsOpenAiApiUrl, settings.TtsOpenAiVoice, isFemale, agentIndex);
 		string key = (nonHeroKey ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(key))
 		{
@@ -117,6 +125,7 @@ internal static class VoiceMapper
 	public static void ClearSceneCache()
 	{
 		GptSoVitsVoiceRuntime.ClearSceneVoices();
+		OpenAiTtsVoiceCatalog.ClearSceneVoices();
 		lock (_cacheLock)
 		{
 			_sceneCache.Clear();

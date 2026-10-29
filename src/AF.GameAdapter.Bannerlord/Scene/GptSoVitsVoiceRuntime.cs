@@ -100,9 +100,10 @@ internal static class GptSoVitsVoiceRuntime
         if (settings?.IsSelectedTtsEnabled != true
             || (settings.TtsUseGptSoVits && (!isPrimarySpeaker || IsBattleBlocked))) return null;
         var language = GptSoVitsLanguage.Parse(settings.TtsGptSoVitsOutputLanguage);
-        // Automatic cloud speech must not wait for local tone metadata. Local primary-only
+        // Volcengine auto speech does not wait for tone metadata. OpenAI-compatible speech waits
+        // (bounded) for the postprocess MOOD to choose a listed voice variant. Local primary-only
         // policy stays local; cloud group participants may request their own translation.
-        return settings.TtsUseGptSoVits || language.IsForced ? language : null;
+        return settings.TtsUseGptSoVits || language.IsForced || settings.UsesOpenAiTts ? language : null;
     }
 
     internal static GptSoVitsSynthesisRequest CaptureRequest(string text, string voiceId, float speed, DuelSettings settings, int mood = 0)

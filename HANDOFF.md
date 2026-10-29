@@ -1,3 +1,63 @@
+# 已推送：SETS 冲突卡顿修复 + TTS 主音量/会话结束取消（2026-10-30）
+
+按用户“推送”授权，在远端 f33af1e90 之上用独立 index 生成单个提交 134365229fe86c3253abd9cd687c37c460ff1a22，普通快进推送，ls-remote 确认。13 个文件（+124/−28），保留原换行符；排除 HANDOFF 与主台账。发布树本身双API+Bootstrap Release构建通过，pre-push 源码交付检查通过，凭据/内网地址扫描无命中。本地 HEAD c821a7c1a 与工作区不变。回滚：在 origin/main 上 revert 134365229。证据 artifacts/push-sets-perf-tts-volume-20261030/。
+
+---
+
+# 当前安装：CN SETS 冲突卡顿修复 + TTS 主音量/会话结束取消（2026-10-30，未提交）
+
+按用户“部署”授权，用原 `build_single_module.ps1 -Configuration Release -Deploy` 覆盖游戏 Modules/AnimusForge；源码为 HEAD c821a7c1a 加未提交工作区（含下面两条未部署记录的改动）。双API+Bootstrap构建、Coup 接缝门禁、注册冒烟通过，更新9个托管文件；4825个Stage文件除保留的玩家 CustomPrompts 外与安装一致，1.3/1.4 两个 DLL 均含新代码。未实机。旧项目Stage与收据见 artifacts/deploy-cn-sets-perf-tts-volume-20261030/。
+
+---
+
+# 未部署：SETS 带随从冲突每秒一卡 —— 守军找目标改为共享名单（2026-10-29，未提交）
+
+用户反馈带随从进村冲突后每 1 秒卡一下。SETS 冲突每秒批处理 `RefreshEnemyNativeCombatOrders` 对每个守军调用 `FindNearestPlayerSideTarget` 全场扫描（60 守军×约 100 人/秒）。改为每秒先建一次我方候选名单（同样的 IsHuman/IsActive/IsPlayerSideAgent 过滤、保持 Mission.Agents 顺序），本次批处理内所有守军共用，结束后在 finally 复原；其他调用点照旧全场扫描。`MaintainConflictTeams` 敌对关系未变时不再每秒重发 `SetIsEnemyOf`。新增 PerfProbe 计时：`Mission.SetsEntry.OnMissionTick.total`、`ConflictSecond.*`、`ConflictCivilianPanic`（仅 MCM 性能监控 + 详细日志开启时生效）。验证：新旧找目标逻辑在 400 个随机场景 18311 次选取结果完全一致，阵营判断次数 1288057→212978；CoupWallSentry 24、CoupSpawnSafety 13、执行隔离接线 33 通过；CoupHallDeployment 测试夹具缺 TextObject 编不过，HEAD 上同样失败。未编译、未部署、未实机。
+
+---
+
+# 未部署：TTS 主音量接管大地图会面并可放大，会话结束取消未播语音（2026-10-29，未提交）
+
+实机日志显示大地图会面走 tableau（`OnConversationPlay` 播 wav），wav 以固定增益1写出，MCM 主语音音量对它无效；会话关闭后流式分段仍继续排队播放。改动：主语音音量范围 0–2（MCM 与终端），≤1 用 waveOut 衰减，>1 放大 PCM（削顶），tableau wav 也按主音量写出（流式与非流式）；`TtsEngine.CancelRequests(ids, keepCurrent)` 只取消指定请求；`NativeConversationSpeechAdapter` 记录本次原生会话接受的请求，真实 `ConversationEnded`（`ShoutBehavior.OnNativeConversationEnded`）时大地图会面全部取消、场景 NPC 保留正在播的一句只丢队列。TTS 生命周期104通过（新增3例）、变异8/8、NativeSceneExitLifecycle 21通过。test_wiring 1例、NativeWaitAudioBoundary（缺历史提交 1235727e4）、TerminalCategoryContract（209条断言）在 HEAD 上同样失败，非本次引入。未编译、未部署、未实机。
+
+---
+
+# 已推送：音色列表 /v1/models 兜底（2026-10-29）
+
+按用户“推送”授权，在远端 6c7a88620 之上用独立 index 生成单个提交 f33af1e90f9048d9ef6ccbbe5a3666ab6bc59ddd，普通快进推送，ls-remote 确认。5个文件（+86/−22），保留原换行符；排除 HANDOFF 与主台账。发布树本身双API+Bootstrap Release构建通过，pre-push 检查通过。本地 HEAD/工作区不变。回滚：在 origin/main 上 revert f33af1e90。证据 artifacts/push-openai-voices-models-20261029/。
+
+---
+
+# 当前安装：CN 音色列表改从 /v1/models 读取（2026-10-29，未提交/未推送）
+
+用户的服务（asia.shenlanqaq.com）`/v1/audio/voices` 返回404，但带Key的 `/v1/models` 返回55个模型，含11个 male-/female- 基名×_happy/_angry/_sad 及 zh_default。拉取改为 voices 失败后读 models，只保留 male-*/female-*/zh_default，复用内置中文名，仍以 voices 端点为缓存键。TTS生命周期101通过（含本地HTTP 404→/models 实测）、变异8/8；MCM中英提示同步。按“部署CN”授权用原脚本 Release -Deploy 覆盖，更新9个托管文件；4825个Stage文件除保留的玩家 CustomPrompts 外与安装一致，双DLL含新代码。未实机。证据 artifacts/deploy-cn-openai-voices-models-20261029/。两条本地化合约测试失败在推送前远端 e1aba41bc 上同样存在，非本次引入。
+
+---
+
+# 已推送：OpenAI 兼容 TTS 按人物音色与情绪变体（2026-10-29）
+
+按用户“推送”授权，以独立 index 在远端 e1aba41bc 之上生成单个提交 6c7a88620a971f92421a9edd2b14dc4607b90111，普通快进推送到 origin/main，ls-remote 确认一致。含20个源码/资源/测试文件（+602/−27），保留原换行符；排除 HANDOFF 与主台账。发布树本身双API+Bootstrap Release构建通过，pre-push 源码交付检查通过，凭据/内网地址扫描无命中。本地 main HEAD c821a7c1a 与工作区未改动（这些改动在本地仍显示未提交，属预期）。回滚：在 origin/main 上 revert 6c7a88620。证据 artifacts/push-openai-voices-20261029/。
+
+---
+
+# 当前安装：CN OpenAI 音色内置名单兜底（2026-10-29，未提交）
+
+实机日志显示 shenlanqaq 服务 `/v1/audio/voices` 返回404，导致不分配音色、女声用兜底 male-gentle、百科选择框不打开。新增内置 AF 12 音色名单（11基名×happy/angry/sad + zh_default），仅当 MCM 兜底音色属于该名单时启用；服务器有列表时仍优先。TTS 生命周期测试100通过。首次部署因启动器占用旧1.4 DLL临时文件失败，已把该临时文件移到 artifacts/deploy-cn-openai-voices-builtin-20261029/replaced-temp 后重跑成功；4825个Stage文件除保留的玩家 CustomPrompts 外全部与安装一致。未实机验证。
+
+---
+
+# 当前安装：CN OpenAI 兼容 TTS 按人物音色与情绪变体（2026-10-29，未提交）
+
+按用户“部署CN”授权，用原 `build_single_module.ps1 -Configuration Release -Deploy` 覆盖游戏 Modules/AnimusForge（AF v1.7.0，Bootstrap+1.3/1.4）；源码为HEAD c821a7c1a 加未提交工作区改动（新增 `OpenAiTtsVoiceCatalog.cs`、`MyBehavior.OpenAiVoice.cs` 等）。功能：从 `/v1/audio/voices` 拉取并缓存到 `Cache/OpenAiTtsVoices.json`，英雄首次发声抽取同性别音色存档（`OpenAiVoiceId`），百科可改；后处理 MOOD 的 JOY/DELIGHTED→`_happy`、ANNOYED→`_angry`（仅列表有变体时），OpenAI 通道等待后处理≤8秒。双API构建、Coup/注册门禁通过，部署13个托管文件；8个关键安装文件与Stage hash一致、两DLL含新代码、CN文案与源码逐字节一致。测试：TTS生命周期99、变异8/8、GPT-SoVITS 561、人物生成598通过。未实机、未连真实语音服务、未提交/打包/push。旧项目Stage保留于 artifacts/deploy-cn-openai-voices-20261029/previous-project-stage；收据同目录 receipt.json。
+
+---
+
+# 当前源码已推送：百科、人物、派系与内政修复（2026-10-29）
+
+远端main普通快进至8d3619f882399e5deb57d87dbde3a3899747ce9c，43个产品/资源/测试文件与本地c821a7c1a一致；本地39个检查点/交接历史、主工作区与原dirty文档保留。排除本地台账/范围图/旧公告和所有玩家日志产物；无force、未重新构建/部署/打包。复用既有双API/Bootstrap与内政每API230、人物598证据，原实机/旧档与投票根因边界保持。外交token只调查未修改。[唯一台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-af170-fixes-20261029)；收据artifacts/push-af170-fixes-20261029/receipt.json。
+
+---
+
 # 当前安装：CN 内政标题/居中/人物重生音色修复（2026-10-29）
 
 按用户“部署CN”授权，已把产品 `3e8fc53ef` 用原部署脚本覆盖至游戏Modules/AnimusForge（AF1.7.0，普通Bootstrap+1.3/1.4）。已核对43个审查文件和候选DLL与此前最终测试相同，复用双版本构建、界面各230/人物生成598检查；本次完整CN Stage门禁通过，10关键安装文件及两API候选hash一致。未实机/真实语音/模型、未打包/push；玩家数据沿原脚本保护，无部署Recovery/自动回滚。本条替代下方“这三项尚未部署”的安装状态。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-interior-fixes-20261029)；`artifacts/deploy-cn-interior-fixes-20261029/receipt.json`。

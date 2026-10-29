@@ -3439,6 +3439,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		public override void OnMissionTick(float dt)
 		{
+			using PerfProbe.ScopeToken perfScope = PerfProbe.Scope("Mission.SetsEntry.OnMissionTick.total");
 			base.OnMissionTick(dt);
 			if (!_spawnedAllies)
 			{
@@ -3484,7 +3485,7 @@ if (_spawnedAllies
 			if ((_armedCoup || (_defenderConflictEnabled && _sceneKind == SetsSettlementSceneKind.Town)) && _conflictActive && !_victoryReached && base.Mission != null && base.Mission.CurrentTime >= _nextConflictCivilianPanicTime)
 			{
 				_nextConflictCivilianPanicTime = base.Mission.CurrentTime + 1f;
-				MaintainConflictCivilianPanic();
+				using (PerfProbe.Scope("Mission.SetsEntry.ConflictCivilianPanic")) MaintainConflictCivilianPanic();
 			}
 			// The coup owner ends its own mission; a host force-end would read as retreat.
 			if (_defenderConflictEnabled && _victoryReached && !_armedCoup)
@@ -3496,9 +3497,10 @@ if (_spawnedAllies
 				return;
 			}
 			_nextEnemyCheckTime = base.Mission.CurrentTime + 1f;
-			MaintainConflictTeams();
-			PruneNonObjectiveVictoryTracking("tick");
-			RefreshEnemyNativeCombatOrders();
+			using PerfProbe.ScopeToken secondScope = PerfProbe.Scope("Mission.SetsEntry.ConflictSecond.total");
+			using (PerfProbe.Scope("Mission.SetsEntry.ConflictSecond.MaintainConflictTeams")) MaintainConflictTeams();
+			using (PerfProbe.Scope("Mission.SetsEntry.ConflictSecond.PruneNonObjectiveVictoryTracking")) PruneNonObjectiveVictoryTracking("tick");
+			using (PerfProbe.Scope("Mission.SetsEntry.ConflictSecond.RefreshEnemyNativeCombatOrders")) RefreshEnemyNativeCombatOrders();
 			int liveEnemyCount = CountLiveTrackedEnemies();
 			ObserveDefenderReserveProgress(liveEnemyCount);
 			NudgeStalledDefenderReserve(liveEnemyCount);
@@ -4162,10 +4164,11 @@ if (_spawnedAlliedCount > 0)
 		{
 			try
 			{
+				// Runs every second; re-sending an unchanged native relation is skipped.
 				if (_playerTeam != null && _enemyTeam != null)
 				{
-					_playerTeam.SetIsEnemyOf(_enemyTeam, true);
-					_enemyTeam.SetIsEnemyOf(_playerTeam, true);
+					if (!_playerTeam.IsEnemyOf(_enemyTeam)) _playerTeam.SetIsEnemyOf(_enemyTeam, true);
+					if (!_enemyTeam.IsEnemyOf(_playerTeam)) _enemyTeam.SetIsEnemyOf(_playerTeam, true);
 				}
 				foreach (Agent agent in _pendingScatteredPlayerHeroAgentsByIndex.Values.ToList())
 				{
@@ -5240,8 +5243,12 @@ if (_spawnedAlliedCount > 0)
 
 		private void RefreshEnemyNativeCombatOrders()
 		{
+			Agent[] previousCandidates = _playerSideTargetCandidates;
 			try
 			{
+				// Once per second for every defender: one scene pass shared by all of them instead of
+				// defenders x scene agents side checks in a single frame.
+				_playerSideTargetCandidates = CapturePlayerSideTargetCandidates();
 				foreach (Agent agent in _enemyAgentsByIndex.Values.ToList())
 				{
 					if (IsLiveTrackedEnemy(agent))
@@ -5255,6 +5262,31 @@ if (_spawnedAlliedCount > 0)
 			{
 				SettlementEntryTroopSelectionLog.Log("RefreshEnemyNativeCombatOrders failed. error=" + ex.Message);
 			}
+			finally
+			{
+				_playerSideTargetCandidates = previousCandidates;
+			}
+		}
+
+		// Valid only inside RefreshEnemyNativeCombatOrders; Mission.Agents order is kept so ties resolve as before.
+		private Agent[] _playerSideTargetCandidates;
+
+		private Agent[] CapturePlayerSideTargetCandidates()
+		{
+			var agents = base.Mission?.Agents;
+			if (agents == null)
+			{
+				return null;
+			}
+			List<Agent> candidates = new List<Agent>();
+			foreach (Agent candidate in agents)
+			{
+				if (candidate != null && candidate.IsHuman && candidate.IsActive() && IsPlayerSideAgent(candidate))
+				{
+					candidates.Add(candidate);
+				}
+			}
+			return candidates.ToArray();
 		}
 
 		private void AssignEnemyAgentCombatTarget(Agent agent, int seed)
@@ -5510,7 +5542,8 @@ if (_spawnedAlliedCount > 0)
 				{
 					return Agent.Main ?? base.Mission?.MainAgent;
 				}
-				foreach (Agent candidate in base.Mission.Agents)
+				IEnumerable<Agent> candidates = (IEnumerable<Agent>)_playerSideTargetCandidates ?? base.Mission.Agents;
+				foreach (Agent candidate in candidates)
 				{
 					if (candidate == null || !candidate.IsHuman || !candidate.IsActive() || !IsPlayerSideAgent(candidate))
 					{

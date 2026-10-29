@@ -47,6 +47,7 @@ namespace AnimusForge {
   public void Fail(PlaybackRequest request) => OnRequestPlaybackFailed?.Invoke(request,"fixture");
   public void Cancel(PlaybackRequest request) => OnRequestPlaybackCancelled?.Invoke(request);
   public void PausePlayback() { Trace?.Invoke("pause"); } public void ResumePlayback() { Trace?.Invoke("resume"); } public void StopPlayback() { }
+  public int CancelRequests(System.Collections.Generic.HashSet<long> ids, bool keepCurrent) => 0;
   public bool InterruptCurrentPlaybackForAgent(int index,string reason) => false;
   private long _requestSequence=100; public bool SpeakAccepted=true, InvokeAccept=true, ThrowAfterAccept; public Action AcceptSideEffect; public PlaybackRequest LastRequest; public Action<string> Trace;
   public bool SpeakAsync(string text,int speaker=-1,float volume=-1f,int agentIndex=-1,string voiceId="",Action<PlaybackRequest> accepted=null) {

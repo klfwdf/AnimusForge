@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
@@ -90,6 +91,41 @@ internal sealed class NativeConversationSpeechAdapter
 		{
 			disabledReason = "exception:" + ex.GetType().Name;
 			return false;
+		}
+	}
+
+	// Requests accepted for the current native conversation; at most a few per conversation, cleared on its end.
+	private readonly object _conversationRequestLock = new object();
+	private readonly HashSet<long> _mapConversationRequests = new HashSet<long>();
+	private readonly HashSet<long> _sceneConversationRequests = new HashSet<long>();
+
+	private void TrackConversationRequest(TtsEngine.PlaybackRequest request, bool mapConversation)
+	{
+		HashSet<long> target = mapConversation ? _mapConversationRequests : _sceneConversationRequests;
+		lock (_conversationRequestLock) target.Add(request.RequestId);
+	}
+
+	// Real ConversationEnded only. Map meetings stop at once (the tableau is gone); scene NPCs
+	// finish the reply already playing and drop the queued ones.
+	internal void CancelPlaybackForConversationEnd()
+	{
+		HashSet<long> map, scene;
+		lock (_conversationRequestLock)
+		{
+			if (_mapConversationRequests.Count == 0 && _sceneConversationRequests.Count == 0) return;
+			map = new HashSet<long>(_mapConversationRequests); scene = new HashSet<long>(_sceneConversationRequests);
+			_mapConversationRequests.Clear(); _sceneConversationRequests.Clear();
+		}
+		try
+		{
+			TtsEngine tts = TtsEngine.Instance;
+			if (tts == null) return;
+			int cancelled = tts.CancelRequests(map, keepCurrent: false) + tts.CancelRequests(scene, keepCurrent: true);
+			if (cancelled != 0) Logger.Log("NativeConversation", "[TTS] conversation ended; cancelled unplayed speech=" + cancelled);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversation", "[TTS] cancel on conversation end failed: " + ex.GetType().Name);
 		}
 	}
 
@@ -213,6 +249,7 @@ internal sealed class NativeConversationSpeechAdapter
 				lipSyncSafe = false;
 			}
 			int effectiveAgentIndex = lipSyncSafe ? targetAgentIndex : -1;
+			bool mapConversation = Mission.Current == null;
 			bool accepted = false;
 			long acceptedWaitToken = 0L;
 			try
@@ -222,6 +259,7 @@ internal sealed class NativeConversationSpeechAdapter
 				accepted = TtsEngine.Instance.SpeakAsync(ttsText, -1, -1f, effectiveAgentIndex, voiceId, request =>
 				{
 					_ports.Audio().TrackTtsPlaybackRequest(request);
+					TrackConversationRequest(request, mapConversation);
 					float estimatedDuration = Math.Max(0.75f, _ports.TypingDuration(typewriterText));
 					acceptedWaitToken = _ports.Wait.RegisterNativeConversationTtsPlaybackWait(request, estimatedDuration, typewriterText.Length);
 					if (acceptedWaitToken == 0L) { return; }

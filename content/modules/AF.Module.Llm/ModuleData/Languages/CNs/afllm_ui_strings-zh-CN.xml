@@ -79,6 +79,18 @@
     <string id="AF_GPT_UI_VoiceSaved" text="声音已固定：" />
     <string id="AF_GPT_UI_VoiceNotSaved" text="声音未保存：" />
     <string id="AF_GPT_UI_VoicePickerFailed" text="无法打开声音选择：" />
+    <string id="AF_GPT_UI_OpenAiVoiceListLoading" text="正在从语音服务拉取音色列表，请稍后再打开。" />
+    <string id="AF_GPT_UI_OpenAiVoiceListUnavailable" text="无法拉取音色列表：请填写语音 API Key，并使用以 /audio/speech 结尾的地址。" />
+    <string id="AF_GPT_UI_OpenAiVoiceUnassigned" text="尚未指定；首次发声时从服务音色列表中抽取同性别音色并固定" />
+    <string id="AF_GPT_UI_OpenAiVoiceNotListed" text="不在当前服务列表中：" />
+    <string id="AF_GPT_UI_OpenAiRefreshList" text="从服务重新拉取音色列表" />
+    <string id="AF_GPT_UI_OpenAiFemaleTag" text="[女声] " />
+    <string id="AF_GPT_UI_OpenAiMaleTag" text="[男声] " />
+    <string id="AF_GPT_UI_OpenAiUnlabeledTag" text="[未标性别] " />
+    <string id="AF_GPT_UI_OpenAiMoodTag" text=" · 带情绪变体" />
+    <string id="AF_GPT_UI_OpenAiVoiceSelectionHint" text="&#10;随机只从与该人物同性别的 male-/female- 音色中抽取。带情绪变体的音色会按回复情绪切换到 _happy/_angry。随当前战役保存。" />
+    <string id="AF_GPT_UI_OpenAiRefreshStarted" text="正在刷新音色列表，请稍后重新打开选择。" />
+    <string id="AF_GPT_UI_OpenAiNoGenderVoice" text="服务列表中没有匹配的音色，请手动选择。" />
     <string id="AF_GPT_UI_VictoryReady" text="战果已处理；可进入 GCCZ 继续处置，或直接离开。" />
     <string id="AF_TTS_UI_Title" text="AnimusForge 语音功能-TTS 本地部署/API" />
     <string id="AF_TTS_UI_General" text="1. 语音选择与播放" />
