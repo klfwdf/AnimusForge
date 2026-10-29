@@ -1,3 +1,10 @@
+<a id="diplomacy-civil-war-analysis-20261029"></a>
+## 当前外交内战场景分析源码范围 — 2026-10-29
+
+只读分析基于 `5ade3a7fd497065d50da720ee03ad0d334ff680b`；[状态/验证/未验项](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-civil-war-analysis-20261029)。精确一基范围、符号与hash在 `artifacts/diplomacy-civil-war-analysis-20261029/code-map.json`：内战建国adapter及OnRebelKingdomCreated，Diplomacy PlayerApplication/PromptComposer/PromptContext，AuthorityRules，Orchestration CountryAdmission/PlayerOpening/Scheduling/Dispatch/PlayerEvents，EventHost/PropagationReceiver。已覆盖真实入口与消费者阅读及部分fixture回放，未覆盖玩家存档、模型和实机内战外交联动。无产品源码改动，详细证据只保留主台账和本机analysis.md。
+
+---
+
 <a id="encyclopedia-persona-factions-20261029"></a>
 ## 百科/人物与派系受影响源码 — 2026-10-29
 

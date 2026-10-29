@@ -1,3 +1,20 @@
+<a id="diplomacy-civil-war-analysis-20261029"></a>
+## 重做后外交：玩家叛乱新国向原国宣言 — 2026-10-29
+
+**ANALYZED / PARTIAL_REPLAY_VERIFIED / ROOT_CAUSE_NOT_CONFIRMED / NO_PRODUCT_CHANGE**。工作区F:/AnimusForge-main、main、基于 `5ade3a7fd497065d50da720ee03ad0d334ff680b`。用户要求先分析当前外交，明确原截图场景为玩家领派系从本国叛出后向原国发宣言，替代上轮泛化的“内战涉及多国”的理解。
+
+当前真实链：内战创建真实新王国、玩家当前王国为发件国→先公开原文、target为空→分析正文的目标/动作/回应请求→新建或附着共享事件→国家准入/背景/开场审核→宫廷送达知识→原国回应义务/调度→生成、审核、公开、送达玩家。普通内战不被完整附庸规则映射为宗主国，无统一“禁止原国回信”规则。
+
+已确认首次分析输入缺口：候选仅列国家ID/名，未直接附内战原国↔叛军国/派系诉求的结构化事实；玩家指代“原国、旧王廷”等需要模型解释。有效却选错的目标ID不能由身份合法性门禁纠正。当前事件世界快照有国名、君主、敌国、城镇/地理关系，亦无专门内战对应字段；历史素材可能补背景，不等于首次确定识别。未复现该玩家文书，不能把缺口断言为截图根因或自动锁定原国。
+
+长期无回应需分开看：pending_analysis/PlayerReplyRoutingPending；EventPhase/EventPartyReview/started；世界书未准备、空或无匹配背景会技术等待；实际宫廷知识；原国资格及义务Status/FailureReason；队列/预算/暂停原因。送达设置默认7天、范围3–14是单程最大传播参数，不是回信时限。第三国也可按国家准入参加事件，不足以证明主对象发错。
+
+证据 `artifacts/diplomacy-civil-war-analysis-20261029/`：analysis.md详细链路和下一步最小日志集合；code-map.json绑定14个一基源码片段/符号/hash；replay.log/replay-cn.log为当前真实owner/application、引擎/网络fixture各552检查通过；country-admission.log 5826、worldbook-repair.log 268、declaration-stalls.log 81通过。player-response-recovery.log未通过：旧测试手工任务未匹配当前事件epoch/owner且未完成开场，CanDispatch先返回，预期的义务终止/通知未发生。仅artifacts副本诊断matches=False，直接调用生产ValidatePlayerResponseObligations能转unavailable并通知1次；继续fixture仍有恢复后无job断言失败，保留不通过，不改原测试/生产或放宽断言。非全外交套件通过。
+
+未验真实玩家存档、实际从A叛出形成B的整合复现、实际LLM目标识别、内战结算与外交和约实机联动、旧截图构建、全量套件；只读分析不重建DLL。未模型付费调用、部署、打包/push。产品无改动，无产品回滚需要；本记录只加文档，已有HANDOFF/台账dirty原样保留。[源码范围](architecture/af-framework-code-scope.md#diplomacy-civil-war-analysis-20261029)。
+
+---
+
 <a id="encyclopedia-persona-factions-20261029"></a>
 ## 百科横排、外貌归属、提示词重生及派系日期/创建 — 2026-10-29
 
