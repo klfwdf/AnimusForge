@@ -1,3 +1,12 @@
+<a id="diplomacy-entry-slim-20261029"></a>
+## 确认预览后的宣言按钮尺寸与部署 — 2026-10-29
+
+- 授权：用户“好，就以这般实施”，确认 exec-77399a6f-9acf-45c5-aa73-f1d0afcb16ec.png 的薄款下移预览；沿用本会话明确部署授权。E:工作树main，检查点0f416a8b108a420a28003917ae5898f4082847f5，产品a176510db05132ffd646c654be7b4162cd6eb503。原生提议按钮实测定义227×30，最终宣言250×30，MarginTop18/MarginBottom4，CN字体22/EN20，仍为统计/日志前的独立居中行与绿色/灰色原生brush。权限、悬停、提交和四个稳定双语key不变，无新增Tick工作。
+- 构建边界：工作区含其他外交/政策未提交代码，未回滚或混入安装。git archive基线检查点加本次两个目标文件构成独立源码快照，源码hash见source-receipt.json；在快照内运行原build_single_module.ps1，双API1.3/1.4、Bootstrap及seam/注册smoke通过。原入口专项包含已有提议接管回归，每API267项通过；字体/渲染与战役资格仍为fixture，未进行实机像素/鼠标验收。
+- 部署：退出进程检查通过；上次遗留的确切.af2-replaced-43c8de5b61b44251893e359f417f926a.tmp匹配已记录旧Bootstrap哈希后清理。原deploy_module.ps1在快照内生成新Stage并安装到现有Modules/AnimusForge，报告更新4441文件，未改脚本、未建Recovery或自动回滚。继承脚本PlayerExports按时间合并行为，快照部署导致1272导出JSON从原LF变为CRLF；首次保护校验准确报出。逐文件确认去CR后的候选与部署前SHA256完全一致，再经当前hash重验和同目录原子替换恢复原始字节，未猜测或改写正文。未承诺导出文件时间戳保持。
+- 最终校验：410受管文件与保留Stage一致，两API DLL与各267项专项候选hash一致；4450个CustomPrompts/Configs/PlayerExports/TerminalSettings原文件字节hash均与部署前一致；无部署临时文件残留。状态 **DEPLOYED / FILE_VERIFIED / LIVE_NOT_RUN**，替代 diplomacy-entry-position-20261028 的部分部署状态及旧尺寸。没有启动游戏、调用模型、打发行ZIP或推送。
+- 证据：artifacts/diplomacy-entry-slim-20261029/ 中 approved-preview.png、source-receipt.json、build.log、test13/test14日志与receipt、receipt.json、deploy.log、protected-before.json、export-inspection.json、deployment-receipt.json、verify_deployment.py；保留candidate/及stage/交付物。临时源码快照、测试输出和缓存已清理，构建日志保留原路径，receipt记录保留产物路径。代码范围见[对应表](architecture/af-framework-code-scope.md#diplomacy-entry-slim-20261029)。源码回退仅focused inverse产品提交，不动其他作者工作区。
+
 <a id="player-ultimatum-reply-repair-20261029"></a>
 ## 玩家通牒回复与收尾一致性修复 — 2026-10-29
 

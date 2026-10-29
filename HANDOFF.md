@@ -1,3 +1,8 @@
+<a id="diplomacy-entry-slim-20261029"></a>
+## 外交宣言薄款按钮已部署 — 2026-10-29
+
+用户确认最后一版预览；产品a176510db，检查点0f416a8b1。宣言按钮250×30，比原生提议227×30略宽；上间距18、下间距4，靠近总兵力，中英文22/20字体，权限与悬停行为保持。隔离已提交源码加本次两文件构建，排除工作区其他未完成修改；双API/Bootstrap/seam及每API267项通过。**DEPLOYED / FILE_VERIFIED / LIVE_NOT_RUN**：原脚本安装及410受管文件核对成功，4450玩家文件内容与部署前一致。已解决前次部署中断，替代 diplomacy-entry-position-20261028 的待安装状态。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-entry-slim-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-entry-slim-20261029)。
+
 <a id="player-ultimatum-reply-repair-20261029"></a>
 ## 玩家回复最后通牒后卡收尾已本地修复 — 2026-10-29
 

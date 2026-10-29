@@ -1,3 +1,14 @@
+<a id="diplomacy-entry-slim-20261029"></a>
+## 宣言按钮最终薄款比例 — 2026-10-29
+
+产品a176510db05132ffd646c654be7b4162cd6eb503；替代上一位置条目的135×40尺寸和16/14字号，布局锚点及业务边界不变。[主台账负责状态与部署证据](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-entry-slim-20261029)。
+
+| 源码与一基行号 | 符号 | 职责与验证边界 |
+| --- | --- | --- |
+| src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomDiplomacyDeclarationEntry.cs:84–97 | Inject wrapper | 250×30薄款、统计区居中、上18下4间距；仅加载时布局。 |
+| src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomDiplomacyDeclarationEntry.cs:152–161 | Entry.Refresh | CN22/EN20文字，沿用已有权限及灰绿brush；不增加规则或设置。 |
+| tests/AF.GameAdapter.Bannerlord/DiplomacyDeclarationEntryTests/Program.cs:90–137 | Run | 行尺寸/间距与双语字号断言、既有交互回归；合并已有提议接管专项每API267项。渲染/字体/战役为fixture，不等同实机验收。 |
+
 <a id="player-ultimatum-reply-repair-20261029"></a>
 ## 玩家通牒回复与沉默/收尾衔接 — 2026-10-29
 
