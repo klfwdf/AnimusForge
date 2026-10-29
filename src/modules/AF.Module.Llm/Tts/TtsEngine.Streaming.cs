@@ -63,7 +63,8 @@ internal sealed partial class TtsEngine
                     string stem = Path.Combine(GetTempAudioDir(), "tts_stream_" + job.Request.RequestId + "_" + Guid.NewGuid().ToString("N"));
                     wav = stem + ".wav"; xml = stem + ".xml";
                     // Scene native audio remains the existing muted lip carrier when winmm is selected.
-                    float gain = scene && config.SceneWinmm ? 0f : scene ? DuelSettings.GetSettings()?.TtsLipSyncSoundEventVolume ?? 0f : 1f;
+                    // The map tableau plays this file as-is, so it carries the main volume.
+                    float gain = scene && config.SceneWinmm ? 0f : scene ? Math.Max(0f, Math.Min(1f, DuelSettings.GetSettings()?.TtsLipSyncSoundEventVolume ?? 0f)) : config.Volume;
                     SavePcmAsWav(ScalePcm16Mono(segment.Pcm, gain), segment.Rate, wav);
                     GenerateRhubarbXml(xml, duration);
                 }
@@ -96,8 +97,9 @@ internal sealed partial class TtsEngine
                 }
                 else
                 {
-                    output ??= new NativeSegmentOutput(this, job, segment.Rate, config.Volume);
-                    output.Write(segment.Pcm, scene);
+                    // waveOut can only attenuate; volume above 1 is applied to the PCM instead.
+                    output ??= new NativeSegmentOutput(this, job, segment.Rate, Math.Min(1f, config.Volume));
+                    output.Write(ScalePcm16Mono(segment.Pcm, Math.Max(1f, config.Volume)), scene);
                 }
             }
             TtsSynthesisResult result = producer.GetAwaiter().GetResult();

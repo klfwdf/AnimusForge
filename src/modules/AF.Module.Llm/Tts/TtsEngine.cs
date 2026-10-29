@@ -536,6 +536,21 @@ internal sealed partial class TtsEngine : IDisposable
 		ResetCurrentWaveOut();
 	}
 
+	// Cancels only the given requests; with keepCurrent the one now playing finishes and only queued ones are dropped.
+	internal int CancelRequests(HashSet<long> requestIds, bool keepCurrent)
+	{
+		if (requestIds == null || requestIds.Count == 0) return 0;
+		var jobs = new List<TtsJob>();
+		lock (_requestLock)
+		{
+			foreach (var job in _pendingJobs.Values)
+				if (!job.Cancelled && !job.ReleaseRequested && requestIds.Contains(job.Request.RequestId) && !(keepCurrent && ReferenceEquals(job, _currentJob))) jobs.Add(job);
+		}
+		foreach (var job in jobs) CancelJob(job);
+		if (jobs.Count != 0) ResetCurrentWaveOut();
+		return jobs.Count;
+	}
+
 	private void ResetCurrentWaveOut()
 	{
 		lock (_playbackLock)
@@ -778,14 +793,9 @@ internal sealed partial class TtsEngine : IDisposable
 		bool flag = snapshot.SceneWinmm;
 		DuelSettings currentSettings = DuelSettings.GetSettings();
 		bool flag2 = snapshot.Enabled && currentSettings?.IsSelectedTtsEnabled == true && currentSettings.TtsProviderDropdown.SelectedIndex == snapshot.ProviderMode;
-		if (num2 < 0f)
-		{
-			num2 = 0f;
-		}
-		if (num2 > 1f)
-		{
-			num2 = 1f;
-		}
+		// waveOut can only attenuate; volume above 1 is applied to the PCM instead.
+		float mainPcmGain = Math.Max(1f, num2);
+		num2 = Math.Min(1f, num2);
 		if (!openAi && !string.IsNullOrWhiteSpace(job.VoiceIdOverride))
 		{
 			text5 = job.VoiceIdOverride;
@@ -952,7 +962,8 @@ internal sealed partial class TtsEngine : IDisposable
 							string tempFileStem = $"tts_{(job.AgentIndex >= 0 ? job.AgentIndex.ToString() : "map")}_{Stopwatch.GetTimestamp()}";
 							string text8 = Path.Combine(tempAudioDir, tempFileStem + ".wav");
 							string text9 = Path.Combine(tempAudioDir, tempFileStem + ".xml");
-							float num4 = 1f;
+							// The map conversation tableau plays this file as-is, so it carries the main volume.
+							float num4 = num2 * mainPcmGain;
 							if (flag3)
 							{
 								if (flag4)
@@ -975,9 +986,9 @@ internal sealed partial class TtsEngine : IDisposable
 							{
 								num4 = 0f;
 							}
-							if (num4 > 1f)
+							if (num4 > MaxMainVolume)
 							{
-								num4 = 1f;
+								num4 = MaxMainVolume;
 							}
 							byte[] pcmData2 = ScalePcm16Mono(pcmData, num4);
 							SavePcmAsWav(pcmData2, sampleRate, text8);
@@ -1020,7 +1031,7 @@ internal sealed partial class TtsEngine : IDisposable
 					{
 						if (flag4)
 						{
-							PlayPcmData(job, pcmData, sampleRate, num2, true);
+							PlayPcmData(job, ScalePcm16Mono(pcmData, mainPcmGain), sampleRate, num2, true);
 							return;
 						}
 						int num5 = Math.Max(100, (int)(num3 * 1000f) + 100);
@@ -1073,7 +1084,7 @@ internal sealed partial class TtsEngine : IDisposable
 					}
 					else
 					{
-						PlayPcmData(job, pcmData, sampleRate, num2, false);
+						PlayPcmData(job, ScalePcm16Mono(pcmData, mainPcmGain), sampleRate, num2, false);
 					}
 				}
 				finally

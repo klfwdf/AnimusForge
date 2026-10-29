@@ -2649,9 +2649,12 @@ private static void CaptureNativeIllustrationHistoryBoundary()
 		_shoutTradeNativeAgent = null;
 		SceneConversationHistoryOwner.CaptureNativeIllustrationHistoryBoundary();
 		CloseNativeConversationInput(clearSessionHistory: false);
+		CancelNativeConversationTtsForConversationEnd();
 		ExecutePendingNativeSceneMechanismActionsAfterConversationExit("native_conversation_ended");
 		// EndConversation still owns its agent list and handler until this event returns.
 	}
+
+	private void CancelNativeConversationTtsForConversationEnd() => _j17NativeConversationSpeechAdapter.CancelPlaybackForConversationEnd();
 
 	private void OnMissionStarted(IMission mission)
 	{

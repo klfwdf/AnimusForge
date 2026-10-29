@@ -2902,7 +2902,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_SampleRate" text="火山专用采样率" />
   <string id="AF_MCM_Tts_SampleRate_Hint" text="建议 8000 / 16000 / 24000；V3 也支持 22050。V3 不接受任意整数采样率。" />
   <string id="AF_MCM_Tts_MainVolume" text="主语音音量（winmm）" />
-  <string id="AF_MCM_Tts_MainVolume_Hint" text="仅用于普通对话/测试语音（agentIndex&lt;0）的主播放链路。场景喊话请调整口型链路音量。" />
+  <string id="AF_MCM_Tts_MainVolume_Hint" text="控制对话语音、大地图会面语音、测试语音以及走 winmm 的场景语音音量。1.00 为原始音量，超过 1.00 会放大音频（过大可能破音）。场景喊话走口型链路时请调整口型链路音量。" />
   <string id="AF_MCM_Tts_SceneWinmm" text="场景发声走 winmm（防回声）" />
   <string id="AF_MCM_Tts_SceneWinmm_Hint" text="开启：场景 NPC 由 winmm 发声，口型链路仅驱动嘴型并静音。关闭：场景 NPC 改由口型链路发声，可调整口型链路音量。" />
   <string id="AF_MCM_Tts_Speed" text="火山专用语速" />

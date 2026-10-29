@@ -35,6 +35,7 @@ internal class ShoutBehavior {
  private static List<NpcDataPacket> CloneNpcDataSnapshot(List<NpcDataPacket> n)=>n;
  private static void ShowNativeSceneMechanismPendingExitPrompt(int count) { }
  private static void CloseNativeConversationInput(bool clearSessionHistory) {CurrentInstance.CloseCount++;}
+ private void CancelNativeConversationTtsForConversationEnd() {}
  private bool TryExecuteNativeSceneMechanismActionTagsDirectly(NpcDataPacket n,List<SceneSummonPromptTarget> s,List<SceneGuidePromptTarget> g,string t) {Executed++;return Handle;}
  private void EnqueueSpeechLineWithOptions(NpcDataPacket n,string tags,List<NpcDataPacket> context,bool commitHistory,bool suppressStare,bool allowPlayerDirectedActions,int requiredConversationEpoch,List<SceneSummonPromptTarget> s,List<SceneGuidePromptTarget> g,object scope=null) {Fallbacks++;}
  private void TryDrainNativeConversationQueuedActions(string reason) {while(_mainThreadActions.TryDequeue(out var action))action();}

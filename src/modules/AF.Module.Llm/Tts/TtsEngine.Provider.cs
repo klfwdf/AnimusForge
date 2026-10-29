@@ -12,6 +12,8 @@ internal sealed partial class TtsEngine
     { Timeout = Timeout.InfiniteTimeSpan };
 
     // Private owner state captured before enqueue, never serialized or logged.
+    internal const float MaxMainVolume = 2f;
+
     private sealed class ProviderSnapshot
     {
         internal readonly bool OpenAi, Enabled, SceneWinmm, Streaming;
@@ -36,7 +38,9 @@ internal sealed partial class TtsEngine
             Encoding = OpenAi ? "wav" : settings?.TtsVolcDedicatedAudioFormat ?? "wav";
             Extra = settings?.TtsVolcDedicatedAdditionsJson ?? "{}";
             SampleRate = settings?.TtsVolcDedicatedSampleRate ?? 24000;
-            Volume = settings?.TtsVolcDedicatedVolume ?? 1f;
+            // 0..1 attenuates; 1..2 amplifies the PCM (clipped), used by winmm and the map tableau.
+            float volume = settings?.TtsVolcDedicatedVolume ?? 1f;
+            Volume = float.IsNaN(volume) || float.IsInfinity(volume) ? 1f : Math.Max(0f, Math.Min(MaxMainVolume, volume));
             SceneWinmm = settings?.TtsSceneUseWinmmAudible ?? true;
             Model = settings?.TtsOpenAiModel;
             TimeoutSeconds = settings?.TtsOpenAiTimeoutSeconds ?? 60;

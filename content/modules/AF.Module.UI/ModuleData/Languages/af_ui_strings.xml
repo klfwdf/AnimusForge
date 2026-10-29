@@ -2870,7 +2870,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Tts_SampleRate" text="Volcengine dedicated sample rate" />
   <string id="AF_MCM_Tts_SampleRate_Hint" text="Recommended values: 8000 / 16000 / 24000 Hz. V3 also supports 22050 Hz; arbitrary integer sample rates are not accepted by V3." />
   <string id="AF_MCM_Tts_MainVolume" text="Main voice volume (winmm)" />
-  <string id="AF_MCM_Tts_MainVolume_Hint" text="Used only by the main playback path for normal conversation/test speech (agentIndex&lt;0). Adjust Lip-sync channel volume for scene shouts." />
+  <string id="AF_MCM_Tts_MainVolume_Hint" text="Volume of conversation speech, map meeting speech, test speech and scene speech played through winmm. 1.00 is the original level; above 1.00 amplifies the audio (very loud speech may clip). For scene shouts through the lip-sync channel, adjust Lip-sync channel volume." />
   <string id="AF_MCM_Tts_SceneWinmm" text="Use winmm for scene speech (echo prevention)" />
   <string id="AF_MCM_Tts_SceneWinmm_Hint" text="On: scene NPCs speak through winmm while the lip-sync channel only drives mouth movement and stays muted. Off: scene NPCs speak through the lip-sync channel; adjust Lip-sync channel volume." />
   <string id="AF_MCM_Tts_Speed" text="Volcengine dedicated speech speed" />
