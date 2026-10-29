@@ -3315,7 +3315,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Tts_OpenAiModel" text="Speech model" />
   <string id="AF_MCM_Tts_OpenAiModel_Hint" text="Model accepted by this speech endpoint. Default: gpt-sovits-v4." />
   <string id="AF_MCM_Tts_OpenAiVoice" text="Speech voice" />
-  <string id="AF_MCM_Tts_OpenAiVoice_Hint" text="Default: zh_default. Fallback voice. When the service lists voices at /audio/voices, each hero gets a same-gender voice saved on first speech, changeable from the encyclopedia; listed _happy/_angry variants follow the reply mood. Volcengine mappings are never sent here." />
+  <string id="AF_MCM_Tts_OpenAiVoice_Hint" text="Default: zh_default. Fallback voice. When the service lists voices (/audio/voices, or male-/female- ids in /models), each hero gets a same-gender voice saved on first speech, changeable from the encyclopedia; listed _happy/_angry variants follow the reply mood. Volcengine mappings are never sent here." />
   <string id="AF_MCM_Tts_OpenAiSpeed" text="OpenAI-compatible speech speed" />
   <string id="AF_MCM_Tts_OpenAiSpeed_Hint" text="Requested speed ratio, 0.25–4.0; default 1.0. Actual support depends on the upstream model." />
   <string id="AF_MCM_Tts_OpenAiTimeout" text="OpenAI-compatible speech timeout (seconds)" />

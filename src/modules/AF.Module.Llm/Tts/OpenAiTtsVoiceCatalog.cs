@@ -162,40 +162,63 @@ internal sealed class OpenAiTtsVoiceCatalog
         lock (Sync) { Volatile.Write(ref _current, catalog); _cacheLoaded = true; SceneVoices.Clear(); }
     }
 
+    // Tries ".../audio/voices" first; services such as new-api expose voices only as model ids,
+    // so a failed voices request falls back to ".../models" filtered to voice-like ids. The
+    // catalog is always keyed by the voices endpoint so it matches the configured speech URL.
     private static async Task FetchAsync(string endpoint, string apiKey)
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-            using var response = await Http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode) { Logger.Log("TtsVoices", "Voice list request failed: HTTP " + (int)response.StatusCode); return; }
-            if (response.Content.Headers.ContentLength > MaxResponseBytes) { Logger.Log("TtsVoices", "Voice list rejected: response too large"); return; }
-            string body;
-            using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-            using (var buffer = new MemoryStream())
+            bool fromModels = false;
+            string body = await GetBodyAsync(endpoint, apiKey).ConfigureAwait(false);
+            if (body == null)
             {
-                byte[] chunk = new byte[8192];
-                int read;
-                while ((read = await stream.ReadAsync(chunk, 0, chunk.Length).ConfigureAwait(false)) > 0)
-                {
-                    if (buffer.Length + read > MaxResponseBytes) { Logger.Log("TtsVoices", "Voice list rejected: response too large"); return; }
-                    buffer.Write(chunk, 0, read);
-                }
-                body = Encoding.UTF8.GetString(buffer.ToArray());
+                fromModels = true;
+                body = await GetBodyAsync(endpoint.Substring(0, endpoint.Length - "/audio/voices".Length) + "/models", apiKey).ConfigureAwait(false);
+                if (body == null) return;
             }
-            var catalog = Parse(endpoint, body);
+            var catalog = Parse(endpoint, body, fromModels);
             if (catalog == null || catalog.Voices.Count == 0) { Logger.Log("TtsVoices", "Voice list rejected: no usable voices"); return; }
             Publish(catalog);
             WriteCache(catalog);
-            Logger.Log("TtsVoices", "Voice list loaded: voices=" + catalog.Voices.Count);
+            Logger.Log("TtsVoices", "Voice list loaded: voices=" + catalog.Voices.Count + ", source=" + (fromModels ? "models" : "voices"));
         }
         catch (Exception ex) { Logger.Log("TtsVoices", "Voice list request failed: " + ex.GetType().Name); }
     }
 
+    private static async Task<string> GetBodyAsync(string url, string apiKey)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        using var response = await Http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+        string kind = url.EndsWith("/models", StringComparison.OrdinalIgnoreCase) ? "models" : "voices";
+        if (!response.IsSuccessStatusCode) { Logger.Log("TtsVoices", "Voice list request failed (" + kind + "): HTTP " + (int)response.StatusCode); return null; }
+        if (response.Content.Headers.ContentLength > MaxResponseBytes) { Logger.Log("TtsVoices", "Voice list rejected: response too large"); return null; }
+        using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+        using var buffer = new MemoryStream();
+        byte[] chunk = new byte[8192];
+        int read;
+        while ((read = await stream.ReadAsync(chunk, 0, chunk.Length).ConfigureAwait(false)) > 0)
+        {
+            if (buffer.Length + read > MaxResponseBytes) { Logger.Log("TtsVoices", "Voice list rejected: response too large"); return null; }
+            buffer.Write(chunk, 0, read);
+        }
+        return Encoding.UTF8.GetString(buffer.ToArray());
+    }
+
+    // A /models list also carries chat/image models; keep only male-*/female-* voices (and their
+    // tone variants) plus zh_default.
+    private static bool IsVoiceModelId(string id)
+    {
+        id = id?.Trim();
+        if (string.IsNullOrEmpty(id)) return false;
+        ToneSuffix(id, out string baseId);
+        return InferGender(baseId) != 0 || string.Equals(baseId, "zh_default", StringComparison.Ordinal);
+    }
+
     // Accepts {"voices":[...]}, {"data":[...]}, a bare array, or an id->name object; items are
     // strings or objects carrying id/voice_id/voice/name plus optional label and gender.
-    internal static OpenAiTtsVoiceCatalog Parse(string endpoint, string json)
+    internal static OpenAiTtsVoiceCatalog Parse(string endpoint, string json, bool fromModels = false)
     {
         JToken root;
         try { root = JToken.Parse(json ?? ""); }
@@ -223,6 +246,16 @@ internal sealed class OpenAiTtsVoiceCatalog
                 if (property.Value.Type == JTokenType.String) raw.Add(Tuple.Create(property.Name, (string)property.Value, 0));
                 else if (property.Value is JObject entry)
                     raw.Add(Tuple.Create(property.Name, Str(entry["display_name"]) ?? Str(entry["label"]) ?? Str(entry["name"]) ?? "", ParseGender(Str(entry["gender"]))));
+            }
+        }
+        if (fromModels)
+        {
+            raw.RemoveAll(item => !IsVoiceModelId(item.Item1));
+            // /models carries no display names; reuse the built-in AF labels for known ids.
+            for (int i = 0; i < raw.Count; i++)
+            {
+                var known = BuiltIn.Value.Get(raw[i].Item1?.Trim());
+                if (known != null && known.Name.Length != 0) raw[i] = Tuple.Create(raw[i].Item1, known.Name, raw[i].Item3);
             }
         }
         return Build(endpoint, raw);

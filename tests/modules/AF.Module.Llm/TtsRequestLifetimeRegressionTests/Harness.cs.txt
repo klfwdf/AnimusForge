@@ -344,6 +344,17 @@ static class Program {
    for(int i=0;i<20;i++){Assert(catalog.PickRandom(true)=="female-sparkle","female pool");Assert(catalog.PickRandom(false)=="male-deep","male pool");}
    Assert(OpenAiTtsVoiceCatalog.Parse("e","[\"a\",{\"voice_id\":\"b\",\"gender\":\"female\"}]").Get("b").Gender==2,"bare array / voice_id / gender field");
    Assert(OpenAiTtsVoiceCatalog.Parse("e","not json")==null,"bad json");
+   // new-api style /v1/models: voices are model ids mixed with chat/image models, no labels.
+   string models="{\"object\":\"list\",\"data\":["+string.Join(",",new[]{"Qwen3.5-35B-A3B","gemma-4","gpt-sovits-v4","tts-1","tts-1-hd","qwen-image-2.1","zh_default","male-deep","male-deep_angry","male-deep_happy","male-deep_sad","female-sparkle","female-sparkle_angry","female-sparkle_happy","female-sparkle_sad","female-clear"}.Select(x=>"{\"id\":\""+x+"\",\"object\":\"model\",\"owned_by\":\"openai\",\"supported_endpoint_types\":[\"openai\"]}"))+"]}";
+   var fromModels=OpenAiTtsVoiceCatalog.Parse(OpenAiTtsVoiceCatalog.VoicesEndpoint(url),models,fromModels:true);
+   Assert(fromModels.Voices.Count==4,"models list kept non-voice models or variants: "+string.Join(",",fromModels.Voices.Select(v=>v.Id)));
+   Assert(fromModels.Get("tts-1")==null&&fromModels.Get("gemma-4")==null&&fromModels.Get("gpt-sovits-v4")==null,"chat/tts model listed as voice");
+   Assert(fromModels.Get("female-sparkle").Gender==2&&fromModels.Get("female-sparkle").HasAngry&&fromModels.Get("female-sparkle").HasHappy,"female-sparkle variants from models");
+   Assert(fromModels.Get("female-sparkle").Label=="花火·俏皮戏精 (female-sparkle)","built-in label not reused for models list");
+   Assert(fromModels.Get("female-clear").Gender==2&&!fromModels.Get("female-clear").HasAngry,"female-clear without listed variants");
+   Assert(fromModels.Get("zh_default").Gender==0,"zh_default entered a random pool");
+   Assert(fromModels.Endpoint==OpenAiTtsVoiceCatalog.VoicesEndpoint(url),"models catalog not keyed by voices endpoint");
+   Assert(OpenAiTtsVoiceCatalog.Parse("e",models).Get("tts-1")!=null,"voices-endpoint parsing must not filter");
    OpenAiTtsVoiceCatalog.Publish(catalog);
    try{
     Assert(OpenAiTtsVoiceCatalog.ApplyTone(url,"zh_default","male-deep",LocalTtsTone.Angry)=="male-deep_angry","angry variant");
@@ -360,6 +371,26 @@ static class Program {
     }
    }
    finally{OpenAiTtsVoiceCatalog.Publish(OpenAiTtsVoiceCatalog.Parse("cleared","[]"));}
+  });
+  Check("OpenAI voice fetch falls back from /audio/voices 404 to /v1/models over real HTTP",()=>{
+   var probe=new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback,0);probe.Start();int port=((System.Net.IPEndPoint)probe.LocalEndpoint).Port;probe.Stop();
+   string prefix="http://127.0.0.1:"+port+"/";var listener=new System.Net.HttpListener();listener.Prefixes.Add(prefix);listener.Start();
+   var paths=new ConcurrentQueue<string>();var auths=new ConcurrentQueue<string>();
+   var server=Task.Run(()=>{try{while(listener.IsListening){var ctx=listener.GetContext();paths.Enqueue(ctx.Request.Url.AbsolutePath);auths.Enqueue(ctx.Request.Headers["Authorization"]);
+     byte[] body=System.Text.Encoding.UTF8.GetBytes(ctx.Request.Url.AbsolutePath.EndsWith("/models")?"{\"data\":[{\"id\":\"tts-1\"},{\"id\":\"male-gentle\"},{\"id\":\"male-gentle_angry\"},{\"id\":\"female-firm\"},{\"id\":\"female-firm_happy\"},{\"id\":\"zh_default\"}]}":"{\"error\":\"not found\"}");
+     ctx.Response.StatusCode=ctx.Request.Url.AbsolutePath.EndsWith("/models")?200:404;ctx.Response.OutputStream.Write(body,0,body.Length);ctx.Response.Close();}}catch{}});
+   try{
+    OpenAiTtsVoiceCatalog.Publish(OpenAiTtsVoiceCatalog.Parse("cleared","[]"));
+    string url=prefix+"v1/audio/speech";
+    Assert(OpenAiTtsVoiceCatalog.EnsureFetched(url,"fixture-key",force:true),"fetch not started");
+    Eventually(()=>OpenAiTtsVoiceCatalog.For(url,"alloy")!=null,"models fallback never published a list");
+    var c=OpenAiTtsVoiceCatalog.For(url,"alloy");
+    Assert(!c.IsBuiltIn&&c.Voices.Count==3&&c.Get("tts-1")==null,"wrong list from models: "+string.Join(",",c.Voices.Select(v=>v.Id)));
+    Assert(c.Get("female-firm").Gender==2&&c.Get("female-firm").HasHappy&&c.Get("male-gentle").HasAngry,"variants from models");
+    Assert(paths.ToArray().SequenceEqual(new[]{"/v1/audio/voices","/v1/models"}),"request order: "+string.Join(",",paths));
+    Assert(auths.All(a=>a=="Bearer fixture-key"),"auth header missing on list requests");
+   }
+   finally{listener.Stop();listener.Close();OpenAiTtsVoiceCatalog.Publish(OpenAiTtsVoiceCatalog.Parse("cleared","[]"));}
   });
   Check("OpenAI built-in AF voice list when the server has no /audio/voices",()=>{
    const string url="https://no-list.invalid/v1/audio/speech";
