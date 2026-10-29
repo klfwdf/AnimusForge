@@ -93,6 +93,8 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Contains("--runtime-maintenance"))
+        { try { RuntimeMaintenanceReplay.Run(); Console.WriteLine("PASS runtime maintenance assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--token-log"))
         { try { TokenLogProjectionReplay.Run(args[Array.IndexOf(args, "--token-log") + 1]); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--token-optimization"))

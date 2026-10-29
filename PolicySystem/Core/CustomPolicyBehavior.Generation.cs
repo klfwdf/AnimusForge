@@ -5634,7 +5634,7 @@ public sealed partial class CustomPolicyBehavior
 
 	internal static bool TryCapturePolicyHistoryEntriesForNpcExternal(
 		out List<NpcPolicyHistoryEntry> entries,
-		out string error)
+		out string error, int minimumDay = 0)
 	{
 		entries = new List<NpcPolicyHistoryEntry>();
 		error = string.Empty;
@@ -5646,7 +5646,7 @@ public sealed partial class CustomPolicyBehavior
 				error = PolicyCompatibilityTexts.Get("GenerationRaw_TryCapturePolicyHistoryEntriesForNpcExternal_058");
 				return false;
 			}
-			entries = behavior.CapturePlayerPolicyHistoryEntriesForNpc();
+			entries = behavior.CapturePlayerPolicyHistoryEntriesForNpc(minimumDay);
 			return true;
 		}
 		catch (Exception ex)
@@ -5698,14 +5698,14 @@ public sealed partial class CustomPolicyBehavior
 			runtimeGeneration);
 	}
 
-	private List<NpcPolicyHistoryEntry> CapturePlayerPolicyHistoryEntriesForNpc()
+	private List<NpcPolicyHistoryEntry> CapturePlayerPolicyHistoryEntriesForNpc(int minimumDay = 0)
 	{
-		Dictionary<string, PolicyRecordSaveData> kingdomHistory = LoadPolicyRecordHistory()
+		Dictionary<string, PolicyRecordSaveData> kingdomHistory = LoadPolicyRecordHistory(minimumDay)
 			.Where(record => record != null && !string.IsNullOrWhiteSpace(record.RecordId))
 			.GroupBy(record => record.RecordId.Trim(), StringComparer.OrdinalIgnoreCase)
 			.ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
 		List<NpcPolicyHistoryEntry> result = new List<NpcPolicyHistoryEntry>();
-		foreach (DynamicPolicySaveData policy in LoadDynamicPolicies())
+		foreach (DynamicPolicySaveData policy in LoadDynamicPolicies(minimumDay > 0 ? new HashSet<string>(kingdomHistory.Keys, StringComparer.OrdinalIgnoreCase) : null))
 		{
 			if (policy == null || !TryMapPlayerPolicyHistoryStatus(policy.Status, out string policyStatus))
 			{
@@ -5760,7 +5760,7 @@ public sealed partial class CustomPolicyBehavior
 			}
 		}
 
-		foreach (LocalPolicyRecordSaveData policy in LoadLocalPolicyRecords())
+		foreach (LocalPolicyRecordSaveData policy in LoadLocalPolicyRecords(minimumDay))
 		{
 			if (policy == null || !TryMapLocalPolicyHistoryStatus(policy.Status, out string policyStatus))
 			{

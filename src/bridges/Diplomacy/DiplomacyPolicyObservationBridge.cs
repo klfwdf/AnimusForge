@@ -5,6 +5,7 @@ namespace AnimusForge;
 // Policy owns its bounded cache/ledger; diplomacy owns consumption and acknowledgement cadence.
 internal sealed class DiplomacyPolicyObservationBridge : IDiplomacyPolicyObservationPort
 {
+    public IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> QueryRecentMaterials(int minimumDay, IReadOnlyCollection<string> kingdoms) => WorldDiplomacyPolicyContext.QueryRecentMaterials(minimumDay, kingdoms);
     public string BuildSnapshot(string kingdomId) => WorldDiplomacyPolicyContext.BuildSnapshot(kingdomId);
     public IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> GetForeignPolicySignals() => WorldDiplomacyPolicyContext.GetForeignPolicySignals().AsReadOnly();
     public bool IsForeignPolicySignalActive(string policyId, string ownerKingdomId, string affectedKingdomId) =>

@@ -47,6 +47,7 @@ internal static class CampaignApplicationReplay
         public override void ProcessPropagationArrivals() { _f.Events.Add("ProcessPropagationArrivals"); }
         public override void TryScheduleTokenCompression() { _f.Events.Add("TryScheduleTokenCompression"); }
         public override void NormalizeStorage(bool allowWorldValidation) { _f.Events.Add("NormalizeStorage"); }
+        public override void MaintainDailyStorage() { _f.Events.Add("MaintainDailyStorage"); }
         public override void RetryDeferredRoundProgress() { _f.Events.Add("RetryDeferredRoundProgress"); }
         public override void EnsureActiveWarLedgers() { _f.Events.Add("EnsureActiveWarLedgers"); }
         public override void TrimRecentBattleFacts() { _f.Events.Add("TrimRecentBattleFacts"); }
@@ -58,7 +59,7 @@ internal static class CampaignApplicationReplay
         var orch = new Orch(flags);
         var source = new Source(flags) { IsEnabled = true, CurrentDay = 7 };
         WorldDiplomacyCampaignApplication.CampaignTick(ref source, orch);
-        Test.True(string.Join(",", flags.Events) == "TryApplyInitialNewGamePeace,RemoveQueuedNativeDiplomacyDecisions,RefreshRoundIntervalScheduleIfNeeded,RefreshPolicyDiplomacySignals,ProcessRoundLifecycle,TrySchedulePolicyTriggeredRound,TryScheduleNormalRound"
+        Test.True(string.Join(",", flags.Events) == "TryApplyInitialNewGamePeace,RemoveQueuedNativeDiplomacyDecisions,RefreshRoundIntervalScheduleIfNeeded,ProcessRoundLifecycle,TryScheduleNormalRound"
             && source.NativeQueueSanitized && source.LastSchedulerDay == 7, "campaign entry preserves sanitation and once-per-day scheduling order");
         flags.Events.Clear();
         WorldDiplomacyCampaignApplication.CampaignTick(ref source, orch);
@@ -68,11 +69,11 @@ internal static class CampaignApplicationReplay
         Test.True(string.Join(",", flags.Events) == "TryApplyInitialNewGamePeace,HandleDisabledState", "disabled campaign applies preservation state once");
         flags.Events.Clear();
         WorldDiplomacyCampaignApplication.DailyTick(ref source, orch);
-        const string maintenance = "NormalizeStorage,RetryDeferredCanonicalHistoryEntries,RetryDiplomaticThreatComplianceConsequences,RetryDiplomaticThreatHistoryResults,RefreshRoundIntervalScheduleIfNeeded,ClearDailyCaches,ResetDailyGenerationBudget,RecalculatePendingPropagationIfNeeded,EnsureActiveWarLedgers,TrimRecentBattleFacts";
+        const string maintenance = "MaintainDailyStorage,RetryDeferredCanonicalHistoryEntries,RetryDiplomaticThreatComplianceConsequences,RetryDiplomaticThreatHistoryResults,RefreshRoundIntervalScheduleIfNeeded,ClearDailyCaches,ResetDailyGenerationBudget,RecalculatePendingPropagationIfNeeded,EnsureActiveWarLedgers,TrimRecentBattleFacts";
         Test.True(string.Join(",", flags.Events) == maintenance, "disabled daily maintenance preserves recovery without retired reputation ticks");
         source.IsEnabled = true; flags.Events.Clear(); source.CurrentDay = 8;
         WorldDiplomacyCampaignApplication.DailyTick(ref source, orch);
-        Test.True(string.Join(",", flags.Events) == maintenance + ",RemoveQueuedNativeDiplomacyDecisions,DecayWarPressure,RefreshPolicyDiplomacySignals,RetryDeferredDocumentPropagation,ProcessPropagationArrivals,RetryDeferredRoundProgress,ProcessRoundLifecycle,TryScheduleTokenCompression,TrySchedulePolicyTriggeredRound,TryScheduleNormalRound"
+        Test.True(string.Join(",", flags.Events) == maintenance + ",RemoveQueuedNativeDiplomacyDecisions,DecayWarPressure,RetryDeferredDocumentPropagation,ProcessPropagationArrivals,RetryDeferredRoundProgress,ProcessRoundLifecycle,TryScheduleTokenCompression,TryScheduleNormalRound"
             && !source.DisabledStateApplied && source.NativeQueueSanitized && source.LastSchedulerDay == 8, "enabled daily tick preserves complete recovery/publication/scheduling order");
     }
 }

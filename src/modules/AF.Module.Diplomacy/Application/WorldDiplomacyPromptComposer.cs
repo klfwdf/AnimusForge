@@ -327,13 +327,6 @@ internal static class WorldDiplomacyPromptComposer
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_171", "[Authoritative people and family relationships]"));
 		sb.AppendLine(world.AuthorRulerFamilyContext(authorId));
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_172", "Only the direct family relationships listed in this section are facts. Use them only when this diplomacy actually concerns dynasties, marriage alliances, hostages or royal security."));
-		string policySnapshot = world.BuildPolicySnapshot(authorId);
-		if (!string.IsNullOrWhiteSpace(policySnapshot))
-		{
-			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_173", "[Issuing kingdom's policy snapshot]"));
-			sb.AppendLine(policySnapshot);
-			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_174", "Policies inform current goals, interests and pressures; they do not prove diplomatic or military outcomes that have not been explicitly supplied."));
-		}
 	}
 	private static void AppendDiplomaticTargetDecisionContext(
 		StringBuilder sb,
@@ -352,7 +345,6 @@ internal static class WorldDiplomacyPromptComposer
 		string bilateralFamily = world.BilateralRulerFamilyContext(authorId, targetId);
 		string recentBattles = world.RecentBilateralBattleContext(authorId, targetId);
 		string nativeReasons = world.RecentNativeSignalContext(authorId, targetId);
-		string targetPolicy = world.BuildPolicySnapshot(targetId);
 		int relation = world.RulerRelation(authorId, targetId);
 		int culturalFiefs = world.CulturalClaimCount(authorId, targetId);
 
@@ -365,10 +357,6 @@ internal static class WorldDiplomacyPromptComposer
 			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_184", "; geography=") + (border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border, world.LocalizePrompt) : world.LocalizePrompt("AF_DIP_Prompt_Composer_185", "No shared border"))
 			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_186", "; overall military strength=") + WorldDiplomacyTextRules.DescribeStrengthBalance(situation.AuthorStrength, situation.TargetStrength, world.LocalizePrompt) + "。");
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_187", "Number of the issuing kingdom's culturally affiliated towns and castles held by the target=") + culturalFiefs.ToString(CultureInfo.InvariantCulture));
-		if (!string.IsNullOrWhiteSpace(targetPolicy))
-		{
-			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_190", "Target kingdom's policies=") + WorldDiplomacyTextRules.Limit(targetPolicy, 700));
-		}
 		if (!string.IsNullOrWhiteSpace(nativeReasons))
 		{
 			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_191", "Recent native diplomatic motivation material]"));
@@ -435,7 +423,6 @@ internal static class WorldDiplomacyPromptComposer
 	private static string BuildCompactDiplomaticRelationshipLine(IWorldDiplomacyPromptWorld world, string authorId, string candidateId)
 	{
 		if (string.IsNullOrWhiteSpace(authorId) || string.IsNullOrWhiteSpace(candidateId)) return "";
-		string policy = WorldDiplomacyTextRules.CompactPromptFact(world.BuildPolicySnapshot(candidateId), 180);
 		StringBuilder sb = new StringBuilder();
 		WorldDiplomacyRealmRelationProfile relationProfile = world.RelationProfile(authorId, candidateId);
 		WorldDiplomacyBorderRelation border = world.BorderRelation(authorId, candidateId);
@@ -446,7 +433,6 @@ internal static class WorldDiplomacyPromptComposer
 			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_183", "; rulers' personal relations=")).Append(WorldDiplomacyTextRules.DescribeRulerRelation(world.RulerRelation(authorId, candidateId), world.LocalizePrompt))
 			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_184", "; geography=")).Append(border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border, world.LocalizePrompt) : world.LocalizePrompt("AF_DIP_Prompt_Composer_185", "No shared border"))
 			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_186", "; overall military strength=")).Append(WorldDiplomacyTextRules.DescribeStrengthBalance(strengthSituation.AuthorStrength, strengthSituation.TargetStrength, world.LocalizePrompt));
-		if (!string.IsNullOrWhiteSpace(policy)) sb.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_208", "; policy leanings=")).Append(policy);
 		return sb.ToString();
 	}
 	private static string BuildWarDecisionContext(

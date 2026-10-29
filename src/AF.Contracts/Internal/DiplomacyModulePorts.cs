@@ -46,6 +46,7 @@ internal interface IWorldDiplomacyModulePort
 
 internal interface IDiplomacyPolicyObservationPort
 {
+    IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> QueryRecentMaterials(int minimumDay, IReadOnlyCollection<string> kingdoms);
     string BuildSnapshot(string kingdomId);
     IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> GetForeignPolicySignals();
     bool IsForeignPolicySignalActive(string policyId, string ownerKingdomId, string affectedKingdomId);

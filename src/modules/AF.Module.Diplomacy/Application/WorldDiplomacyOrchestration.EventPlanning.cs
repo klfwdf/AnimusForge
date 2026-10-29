@@ -8,6 +8,11 @@ using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
 
+internal interface IDiplomacyPolicyMaterialHost
+{
+    IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> QueryPolicyMaterials(int minimumDay, IReadOnlyCollection<string> kingdoms);
+}
+
 internal interface IDiplomacyEventMaterialHost
 {
     // Main-thread, request-boundary snapshot. Never queried by a background writer.
@@ -257,8 +262,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!_host.WorldDiplomacyEnabled() || EventHost == null || Storage.Jobs.Count >= _host.MaxPendingJobs()
             || !WorldDiplomacyLiveRoundRules.CanStartOrdinary(Storage, day, 1)
             || day < Storage.NextNormalRoundDay) return;
-        var signals = Storage.PendingPolicySignals?.Where(x => x != null).Take(8).ToList() ?? new();
-        if (policyOnly && signals.Count == 0) return;
+        if (policyOnly) return; // Retired policy-priority lane; ordinary material selection owns policy reads.
         var candidates = _host.AllKingdomIds().Where(x => !string.IsNullOrEmpty(x)
             && !_host.IsPlayerParty(x) && _host.HasIndependentAuthority(x)
             && !_host.IsEliminatedParty(x)).Distinct(StringComparer.Ordinal).ToList();
@@ -271,7 +275,6 @@ internal sealed partial class WorldDiplomacyOrchestration
         InitializeEventOwner(round, false);
         if (Storage.ActiveRound == null) Storage.ActiveRound = round; else Storage.ConcurrentRounds.Add(round);
         InvalidateDialogueIndex();
-        round.AttachedPolicySignals.AddRange(signals);
         Storage.LastOrdinaryRoundStartedDay = day;
         ScheduleNextNormalRoundAfter(day);
         EnqueueEventConcept(round, candidates);
@@ -351,7 +354,30 @@ internal sealed partial class WorldDiplomacyOrchestration
                 && !string.IsNullOrWhiteSpace((string)trigger["known_public_facts"]))
                 captured.Add(new JObject { ["key"] = "agenda:" + round.RoundId, ["known_by"] = (string)trigger["known_by"],
                     ["source_kind"] = "recorded_agenda_facts", ["text"] = (string)trigger["known_public_facts"] });
-            foreach (var policy in round.AttachedPolicySignals.Take(8))
+            // Query only after eligibility and exploratory capture, once per frozen material set.
+            if (_host is IDiplomacyPolicyMaterialHost policyHost)
+            {
+                int minimumDay = Math.Max(0, _host.CurrentDay() - Math.Max(14, 2 * _host.NewEventIntervalDays()));
+                IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> policies;
+                try { policies = policyHost.QueryPolicyMaterials(minimumDay, capture.Countries)
+                    ?? throw new InvalidOperationException("policy_material_snapshot_missing"); }
+                catch (Exception ex)
+                {
+                    _host.Log("diplomacy.policy_material_unavailable: " + ex.Message);
+                    SuspendDiplomacyJob(job, "event_policy_material_unavailable");
+                    return;
+                }
+                round.AttachedPolicySignals = policies.Where(x => !WorldDiplomacyPolicyRoundApplication.WasUsed(Storage, x)
+                    && !capture.ExcludedKeys.Contains("policy:" + x.SignalKey)).Take(3)
+                    .Select(x => new WorldDiplomacyPolicySignal { SignalKey = x.SignalKey, PolicyId = x.PolicyId,
+                        PolicyKind = x.PolicyKind, PolicyName = x.PolicyName, PolicySummary = x.PolicySummary,
+                        IssuerKingdomId = x.IssuerKingdomId, IssuerKingdomName = x.IssuerKingdomName,
+                        TargetKingdomId = x.TargetKingdomId, TargetKingdomName = x.TargetKingdomName,
+                        DirectEffect = x.DirectEffect, PublishedDay = x.PublishedDay }).ToList();
+                Storage.ProcessedPolicySignalKeys = WorldDiplomacyRoundLifecycleRules.NormalizeProcessedSignalKeys(
+                    Storage.ProcessedPolicySignalKeys, _host.MaxProcessedPolicySignalKeys());
+            }
+            foreach (var policy in round.AttachedPolicySignals.Take(3))
                 captured.Add(new JObject { ["key"] = "policy:" + policy.SignalKey, ["known_by"] = "public",
                     ["source_kind"] = "published_policy", ["text"] = JsonConvert.SerializeObject(policy) });
             AddPlayerOpeningSource(round, captured);
@@ -470,7 +496,6 @@ internal sealed partial class WorldDiplomacyOrchestration
             admission_seed = job.CountryAdmissionSeed,
             frozen_participants = admission.Admitted,
             admission_relations = admission.Input.Pairs.Where(x => admission.Admitted.Contains(x.Country)),
-            policies = round.AttachedPolicySignals,
             prior_events = selectedHistory.Select(x => new { x.RoundId, x.RoundTopic, x.EventBackground, x.EventMaterialKeys, x.EventOutcome, x.EventOutcomeReason }),
             omitted_prior_event_count = prior.Count - selectedHistory.Count,
             required_participants = admission.Admitted,
@@ -593,7 +618,6 @@ internal sealed partial class WorldDiplomacyOrchestration
             round.EventTheme = (string)adoptedCandidate["theme"] ?? "";
         round.EventLoreEvidence = SelectWorldBookEvidence(JArray.Parse(job.EventMaterialSnapshot)).ToString(Formatting.None);
         RemoveJob(job.JobId);
-        foreach (var signal in round.AttachedPolicySignals) CompletePolicySignal(signal, "event_material_adopted");
         EnsureEventBoundary(round, "started");
         return true;
     }

@@ -275,6 +275,7 @@ internal interface IWorldDiplomacyOrchestration
     void CompletePolicySignal(WorldDiplomacyPolicySignal signal, string reason);
     void TryApplyInitialNewGamePeace();
     void NormalizeStorage(bool allowWorldValidation);
+    void MaintainDailyStorage();
     void SyncData(bool isSaving, bool isLoading,
         Func<WorldDiplomacyStorage> loadStorage, Func<string> loadError,
         Action<WorldDiplomacyStorage> saveStorage, Action<string> log, Action resetTransientRuntime);
@@ -548,23 +549,12 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void SyncPublishedPolicyArtifacts(int maxBatches)
     {
-        EnsureCanonicalHistoryInitialized();
-        WorldDiplomacyHistoryPublicationApplication.SyncPublishedPolicyArtifacts(
-            Storage, _runtime.CanonicalHistorySourceKeys, _host.HistoryCompressionTriggerTokens(),
-            EnsureCanonicalHistoryInitialized, _host.NewId, _host.FormatCampaignDate, _host.EstimateTokens,
-            InvalidateCanonicalHistoryRenderCache, _host.CurrentDay, _host.Log,
-            maxBatches, _host.PolicyHistorySyncBatchSize(),
-            _host.PublishedPolicyHistoryLedgerId,
-            _host.PublishedPolicyHistoryRevision,
-            _host.PublishedPolicyHistorySequence,
-            _host.PublishedPolicyHistoryArtifacts,
-            _host.TryAcknowledgePublishedPolicyHistoryThrough);
+        // Retained internal compatibility entry. Policy evidence is captured per event.
     }
 
     public void RebuildPublishedPolicySignaturesThrough(long throughSequence)
     {
-        WorldDiplomacyHistoryPublicationApplication.RebuildPublishedPolicySignaturesThrough(
-            Storage?.CanonicalHistory, throughSequence, _host.PublishedPolicyHistoryArtifacts);
+        // Existing saved signatures remain evidence; no current-policy replay on compression.
     }
 
     public bool AppendPublishedPolicyArtifact(PublishedPolicyArtifactLedgerEntry policy)
@@ -1615,6 +1605,28 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             _host.StorageNormalizationSource(), _host.CanonicalHistoryMigrationSource(), this);
         if (!ReferenceEquals(storage, Storage)) _stateStore.Replace(storage);
         NormalizeConcurrentWork();
+    }
+
+    public void MaintainDailyStorage()
+    {
+        if (!_persistenceHealthy) return;
+        var source = _host.StorageNormalizationSource();
+        // Live obligations retain their world checks. Archive repair belongs to load.
+        WorldDiplomacyThreatStorageMigration.MaintainOpenThreats(Storage,
+            source.HasCampaignWorld ? source.ValidateThreatWorldEligibility : null, source.CurrentDay);
+        foreach (var round in GetLiveRounds().Where(IsLiveRound)) PruneInvalidOffers(round);
+        // Failed migrations remain retryable without cleaning every old document again.
+        try { WorldDiplomacyStorageMigration.MigrateAutonomousDecisionArchitectureIfNeeded(Storage,
+            source.DecisionArchitectureVersion, source.RelaySchemaVersion, source.CurrentDay,
+            source.HasCampaignWorld, source.ResolveDocument, source.ResolveEligibleKingdomId,
+            source.IsAtWarByKingdomIds, CloseActiveRound, source.Log); }
+        catch (Exception ex) { source.Log("diplomacy.daily_architecture_migration_deferred: " + ex.Message); }
+        try { WorldDiplomacyCanonicalHistoryMigrationApplication.MigrateIfNeeded(Storage, _host.CanonicalHistoryMigrationSource(), this); }
+        catch (Exception ex) { source.Log("diplomacy.daily_history_migration_deferred: " + ex.Message); }
+        try { WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(Storage,
+            source.DiplomacyPromptContractVersion, source.HasCampaignWorld, TryRebuildPendingJob,
+            CompleteExchange, source.ClearLlmCacheAffinityKey, source.Log); }
+        catch (Exception ex) { source.Log("diplomacy.daily_contract_migration_deferred: " + ex.Message); }
     }
 
     // Single persistence entry: the application owner sequences save/load,

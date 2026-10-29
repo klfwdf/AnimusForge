@@ -1288,11 +1288,12 @@ public sealed partial class CustomPolicyBehavior
 		return string.IsNullOrWhiteSpace(runtimeStatus) ? string.Empty : PolicyUiTexts.Get("AFPOL_UI_RuntimeStatusSeparator", "; ") + PolicyUiTexts.Get("AFPOL_UI_RuntimeStatusInlineLabel", "Runtime status: ") + runtimeStatus;
 	}
 
-	private List<PolicyRecordSaveData> LoadPolicyRecordHistory()
+	private List<PolicyRecordSaveData> LoadPolicyRecordHistory(int minimumDay = 0)
 	{
 		List<PolicyRecordSaveData> records = new List<PolicyRecordSaveData>();
 		foreach (KeyValuePair<string, string> item in _policyRecordHistory)
 		{
+            if (!PolicyMaterialRecordFilter.Since(item.Value, "SubmittedDay", minimumDay)) continue;
 			try
 			{
 				PolicyRecordSaveData record = JsonConvert.DeserializeObject<PolicyRecordSaveData>(item.Value ?? "");
@@ -2589,11 +2590,12 @@ public sealed partial class CustomPolicyBehavior
 		return record;
 	}
 
-	private List<LocalPolicyRecordSaveData> LoadLocalPolicyRecords()
+	private List<LocalPolicyRecordSaveData> LoadLocalPolicyRecords(int minimumDay = 0)
 	{
 		List<LocalPolicyRecordSaveData> records = new List<LocalPolicyRecordSaveData>();
 		foreach (KeyValuePair<string, string> item in _localPolicyRecords)
 		{
+            if (!PolicyMaterialRecordFilter.Since(item.Value, "SubmittedDay", minimumDay)) continue;
 			try
 			{
 				JObject rawRecord = JObject.Parse(item.Value ?? "");

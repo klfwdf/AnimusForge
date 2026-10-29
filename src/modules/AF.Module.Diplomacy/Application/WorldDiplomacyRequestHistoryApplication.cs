@@ -64,7 +64,7 @@ internal static class WorldDiplomacyRequestHistoryApplication
         {
             var snapshot = new WorldDiplomacyMemorySnapshot(storage, job.AuthorKingdomId, known, job.PersonalMemoryRulerId);
             string recalled = WorldDiplomacyMemoryApplication.Build(snapshot, query, day => day.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                Math.Min(7000, ContextCharacterLimit - text.Length), embed, selected);
+                Math.Min(7000, ContextCharacterLimit - text.Length), embed, selected, deferInitialIndex: embed != null);
             foreach (string row in recalled.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)) Add(row);
         }
         return text.ToString();

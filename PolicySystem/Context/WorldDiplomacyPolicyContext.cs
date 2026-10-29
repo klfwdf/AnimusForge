@@ -30,6 +30,26 @@ internal static class WorldDiplomacyPolicyContext
 	private static long _publishedHistoryRevision;
 	private static string _publishedHistoryLedgerId = string.Empty;
 	private static List<PublishedPolicyArtifactLedgerEntry> _publishedPolicyArtifacts = new List<PublishedPolicyArtifactLedgerEntry>();
+
+    public static IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> QueryRecentMaterials(int minimumDay, IReadOnlyCollection<string> kingdoms)
+    {
+        if (!NpcRulerPolicyBehavior.TryCaptureUnifiedPolicyHistorySnapshotForExternal(out var entries, out var error, minimumDay))
+            throw new InvalidOperationException("policy_material_capture_failed: " + error);
+        var countries = new HashSet<string>(kingdoms ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+        return entries.Where(x => !x.IsHistoryDeleted && x.PublishedDay >= minimumDay
+                && (countries.Contains(x.OwnerKingdomId) || countries.Contains(x.IssuerKingdomId)
+                    || x.TargetKingdomIds.Any(countries.Contains)))
+            .OrderByDescending(x => x.PublishedDay).ThenBy(x => x.SourceKind, StringComparer.Ordinal)
+            .ThenBy(x => x.EntryId, StringComparer.Ordinal).Select(entry =>
+            {
+                string text = BuildPublishedPolicyArtifactText(entry);
+                ulong hash = 1469598103934665603UL;
+                AppendHash(ref hash, entry.PolicyName); AppendHash(ref hash, text); AppendHash(ref hash, entry.DiplomacyRevisionKey);
+                return new WorldDiplomacyPolicySignalSnapshot(entry.SourceKind + ":" + entry.EntryId + ":" + hash.ToString("X16", CultureInfo.InvariantCulture),
+                    entry.EntryId, entry.ScopeKind, entry.PolicyName, text, entry.IssuerKingdomId, entry.IssuerKingdomName,
+                    entry.OwnerKingdomId, entry.OwnerKingdomName, entry.DiplomacyImpactSummary ?? entry.ImpactSummary, entry.PublishedDay);
+            }).ToList();
+    }
 
 	public static string BuildSnapshot(string kingdomId)
 	{
@@ -113,10 +133,8 @@ internal static class WorldDiplomacyPolicyContext
 
 		lock (CacheLock)
 		{
-			RefreshSourceIfNeeded();
-			NpcRulerPolicyRecord record = _activeRecords.FirstOrDefault(candidate => candidate != null
-				&& string.Equals((candidate.PolicyId ?? string.Empty).Trim(), normalizedPolicyId, StringComparison.OrdinalIgnoreCase)
-				&& string.Equals((candidate.KingdomId ?? string.Empty).Trim(), normalizedOwnerId, StringComparison.OrdinalIgnoreCase));
+			NpcRulerPolicyBehavior.TryGetPolicyRecordForPresentation(normalizedPolicyId, out var record);
+            if (record != null && !string.Equals(record.KingdomId, normalizedOwnerId, StringComparison.OrdinalIgnoreCase)) return false;
 			return record != null
 				&& (string.IsNullOrWhiteSpace(record.AgendaStatus)
 					|| string.Equals(record.AgendaStatus.Trim(), "active", StringComparison.OrdinalIgnoreCase)

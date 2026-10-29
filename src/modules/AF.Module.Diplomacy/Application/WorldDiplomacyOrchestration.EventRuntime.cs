@@ -630,11 +630,13 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!neutralEnding && !changed && notice.ConfirmedDocumentIds.Count == 0) { reason = "boundary_has_no_actual_effect"; return false; }
         bool progress = notice.Stage.StartsWith("progress:", StringComparison.Ordinal);
         notice.State = progress ? "applied" : "public";
-        WorldDiplomacyMemoryApplication.Invalidate(Storage);
+        WorldDiplomacyMemoryApplication.InvalidateBoundary(Storage, notice);
         if (!progress) _pendingEventNotices.Enqueue(notice.Id);
         if (notice.Stage == "started")
         {
             round.EventBeginningId = notice.Id; round.RoundTopic = notice.Title;
+            foreach (var signal in round.AttachedPolicySignals.Where(x => round.EventMaterialKeys.Contains("policy:" + x.SignalKey)))
+                CompletePolicySignal(signal, "event_material_published");
             _host.Log("diplomacy.event_generation_completed event=" + round.RoundId
                 + " origin=" + round.EventOpeningOrigin + " startedDay=" + round.StartedDay
                 + " publishedDay=" + _host.CurrentDay() + " elapsedGameDays=" + Math.Max(0, _host.CurrentDay() - round.StartedDay)
