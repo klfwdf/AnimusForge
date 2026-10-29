@@ -1,3 +1,10 @@
+<a id="diplomacy-acceptance-repair-20261030"></a>
+## 停战/贸易接受与旧拒稿恢复 — 2026-10-30
+
+产品 `8e7f48b46`，检查点 `4fe263734`。按用户“那就一起修吧”授权，修复无附加停战条款的空表示比较、贸易接受省略条款与显式改动的区分、CN/EN付款方向代称识别，并对可证明未执行的旧接受拒稿按原来源排队恢复一次。恢复不在读档时执行外交或发布文书；不扩张最后通牒/玩家沉默规则。**OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。
+
+中文全量15466项、本次CN/EN专项各77项、口头外交CN/EN各644项、双API/Bootstrap/seam/注册与存档分块通过。英文全量仍在事件素材快照断言失败，修改前源码及资源独立回放复现同点；不宣称英文全量通过。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-acceptance-repair-20261030)及[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-acceptance-repair-20261030)。保留原有其他工作和部署状态；这次未覆盖游戏。
+
 <a id="event-map-overlays-20261030"></a>
 ## 地图菜单与百科允许事件通知 — 2026-10-30
 

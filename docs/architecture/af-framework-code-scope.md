@@ -1,3 +1,17 @@
+<a id="diplomacy-acceptance-repair-20261030"></a>
+## 外交接受与旧拒稿恢复代码范围 — 2026-10-30
+
+源码修订8e7f48b46，检查点4fe263734。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-acceptance-repair-20261030)。仓库相对路径、一基行号；仅维护本次链路，非全仓框架验收。
+
+| 路径与行号 | 符号 / 责任 | 已覆盖与边界 |
+|---|---|---|
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyOfferContractRules.cs:85–158 | ArePeaceTermsEquivalent / ParseTreatyTerms / TryResolveTradeAcceptanceTerms | 空停战语义统一；贸易省略继承、显式改动拒绝；不放宽真实条款 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Treaties.cs:58–59；Application/WorldDiplomacyAnalysisApplication.cs:339–341；Application/WorldDiplomacyOfferApplication.cs:12–14 | 生成、玩家分析、执行共用规则 | 共享条款解析/接受判定，其他正式条约保持旧语义 |
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGenerationValidationRules.cs:532–535 | TryGetGeneratedSingleActionLegalityViolation | 贸易接受提前验证，复用有限修稿；最终执行仍重查 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs:435–496；Persistence/WorldDiplomacyDocumentRecords.cs:33–34 | RecoverRejectedAcceptanceDrafts / AcceptanceRepairVersion | 两种明确旧拒稿，来源/状态/回执保护、一次性排队；读档不执行外交；不处理不确定副作用 |
+| content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json:207–215 | 主客体、付款、方向识别模式 | CN/EN共用资源的真实reader；同义称谓通过，方向/数额/期限错误仍拒绝 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/AcceptanceTermsRepairReplay.cs:1–186；Program.cs:96–97,385 | 修复专项及完整runner接线 | 77项，实际owner生成准入/口头执行/序列化读档回放；不等于实际存档或在线语义验收 |
+
 <a id="event-map-overlays-20261030"></a>
 ## 地图覆盖层事件通知边界 — 2026-10-30
 

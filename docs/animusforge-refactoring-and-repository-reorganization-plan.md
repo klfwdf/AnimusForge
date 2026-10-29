@@ -1,3 +1,14 @@
+<a id="diplomacy-acceptance-repair-20261030"></a>
+## 停战/贸易接受、方向识别与旧拒稿恢复 — 2026-10-30
+
+- **授权/状态**：用户“那就一起修吧”覆盖此前确认的技术缺陷及贸易同类防护。工作根由Git确认，main，起点ed6c01521，检查点4fe263734，产品8e7f48b46。本段仅替代受影响外交链路的旧未修结论；此前UI工作及部署记录仍各自有效。OFFLINE_VERIFIED；实际游戏、实际用户存档、在线模型NOT_RUN；未部署、打包、推送。原有HANDOFF/主台账/代码范围图/外交设计资料及Microsoft、NuGet目录均保留。
+- **事件依据**：运行日志事件diplomacy_round:255a5fa8f46b4c58ad43af706d78b9b5，南帝国文书diplomacy_document:7f2203fca7d74949a111ac1c431649e7来自口头约定dialogue_arrangement:d4311d5adaa64b7781b3192ec067727e。阿塞莱初稿被accept_peace_changes_offer_terms拒绝，修复稿被action_not_executable:player_accept_peace_changes_offer_terms拒绝，留下技术暂停。无附加条件在口头来源为全空对象、解析结果为null，两者曾错误判为不同；并非阿塞莱自行决定九天不回应。
+- **结果**：空停战对象与null仅在无任何数额、期限、贡金/割地身份时等价；非空条款仍严格比对。贸易解析由生成、玩家分析及最终执行共享：缺省/null/空对象继承精确原提案，显式0/改天数/无效数值不当作省略；生成校验先检查接受一致性，进入既有有限修稿流程，避免等到存入文书才失败。其他正式条约保留原有解析语义。共享兼容资源扩展“我方/贵方”等及英文主客体/付款表达，反向付款、错误数额和期限仍拒绝。
+- **恢复边界**：只在加载/替换状态时处理两种确切旧拒稿暂停；单次扫描拒稿并按事件分组，无新增Tick IO/扫描。要求同一事件唯一候选、非玩家稿、无发布/执行/历史回执/待执行/不确定执行痕迹、原提案仍开放且对方已知、没有占用中的任务或终局记录。普通回复重新生成并走原审查；口头约定必须版本、统治者、原提案等仍有效且未主动延期/被替换，再排队按原约定写宣言。读档本身不执行外交、不发布、不默认为接受；逐文书acceptanceRepairVersion持久化限一次，保留拒稿证据。无法证明安全的旧事件保持原状态。未改变最后通牒、玩家沉默、默认外交入口或存档键。
+- **验证**：最终中文全量15466项断言；CN/EN本次专项各77项，涵盖空停战双方表示、贸易84天省略/改动、真实生成准入、双语方向、拒稿读档安全/幂等、当面新停战/接受旧停战及旧口头拒稿恢复后单次执行；既有口头外交CN/EN各644项通过。双API1.3/1.4、Bootstrap、双coup seam、managed registration成功；原离线NuGet漏洞查询警告保留，零编译错误。PersistenceChunkReplayTests及chunk-contract-only通过（12000字节、22字符串键、47字典键、已知直接长JSON风险0）；只加原文书JSON的标量版本字段，不改分块键。
+- **验证限制/原有失败**：第一次全量未注册真实UI语言而失败，设置AF_SMOKE_UI_MODULE及English后中文全量通过。英文全量停在EventStructureReplay.MaterialAdmission:256的冻结素材断言；独立临时runner使用4fe263734修改前源码、Program及旧兼容资源，完整EN回放复现同一失败，属既有问题，未在本任务扩修。英文专项和口头回归通过不能替代英文全量、真实LLM、实机或实际旧坏档验收。
+- **证据/交付**：`artifacts/diplomacy-acceptance-repair-20261030/validation.json`记录命令、源码/DLL哈希、结果边界；同目录保留最终双构建、CN全量、CN/EN口头、EN全量及修改前对照、分块日志。一次性runner/投影/中间文件在证据归档后删除，正式构建输出保留。[核实代码范围](architecture/af-framework-code-scope.md#diplomacy-acceptance-repair-20261030)。回退仅可针对本产品提交做聚焦逆向提交，不回滚其他已有改动。
+
 <a id="event-map-overlays-20261030"></a>
 ## 地图覆盖界面的事件通知 — 2026-10-30
 
