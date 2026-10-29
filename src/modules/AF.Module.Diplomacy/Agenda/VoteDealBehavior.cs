@@ -798,6 +798,13 @@ namespace AnimusForge
 			return GetDecisionDisplayTitleForAgenda(decision);
 		}
 
+		internal static string GetDecisionKingdomIdForDiagnostics(KingdomDecision decision)
+		{
+			// Kingdom falls back to ProposerClan.Kingdom; ?. cannot guard a throwing getter.
+			try { return decision?.Kingdom?.StringId ?? "<null>"; }
+			catch { return "<unavailable>"; }
+		}
+
 		internal static string GetPolicyDirectionForAgenda(KingdomDecision decision)
 		{
 			KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
@@ -4490,7 +4497,7 @@ namespace AnimusForge
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("VoteDeal", $"[AgendaDetail] LoadDetail error: stage={stage} type={_decision.GetType().FullName} kingdom={_decision.Kingdom?.StringId ?? "<null>"} proposer={_decision.ProposerClan?.StringId ?? "<null>"} title={VoteDealBehavior.GetDecisionDisplayTitleForAgenda(_decision)} exception={ex}");
+				Logger.Log("VoteDeal", $"[AgendaDetail] LoadDetail error: stage={stage} type={_decision.GetType().FullName} kingdom={VoteDealBehavior.GetDecisionKingdomIdForDiagnostics(_decision)} proposer={_decision.ProposerClan?.StringId ?? "<null>"} title={VoteDealBehavior.GetDecisionDisplayTitleForAgenda(_decision)} exception={ex}");
 			}
 		}
 
@@ -4942,7 +4949,7 @@ namespace AnimusForge
 				}
 				catch (Exception ex)
 				{
-					Logger.Log("VoteDeal", $"[AgendaMeeting] StartVoteMeeting error: stage={stage} type={decision?.GetType().FullName ?? "<null>"} kingdom={decision?.Kingdom?.StringId ?? "<null>"} proposer={decision?.ProposerClan?.StringId ?? "<null>"} title={VoteDealBehavior.GetDecisionDisplayTitleForAgenda(decision)} exception={ex}");
+					Logger.Log("VoteDeal", $"[AgendaMeeting] StartVoteMeeting error: stage={stage} type={decision?.GetType().FullName ?? "<null>"} kingdom={VoteDealBehavior.GetDecisionKingdomIdForDiagnostics(decision)} proposer={decision?.ProposerClan?.StringId ?? "<null>"} title={VoteDealBehavior.GetDecisionDisplayTitleForAgenda(decision)} exception={ex}");
 					InformationManager.DisplayMessage(new InformationMessage(
 						DiplomacyUiLocalization.Text(
 							"AF_DIP_UI_Vote_MeetingOpenFailed",
