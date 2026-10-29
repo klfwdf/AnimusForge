@@ -40,7 +40,7 @@ namespace AnimusForge {
   internal string BuildPersonaLoreSource(Hero h,LoreRule rule,long version){Probe.Read();if(ThrowRender)throw new Exception("mapping failed");return Version==version&&rule!=null&&!string.IsNullOrWhiteSpace(rule.Content)?"【世界书资料】\n"+rule.Content:"";}
   internal static void Reset(){Instance=null;Enabled=true;Version=1;ThrowQuery=ThrowRender=Started=false;Content="worldbook-body";Query=null;Gate=new(true);}
  }
- internal sealed class PersonaEditorPort {internal Func<Hero,Task<string>> GeneratePersona;internal Func<long,Func<bool>,Task<bool>> CompleteOnMainThread;}
+ internal sealed class PersonaEditorPort {internal Func<Hero,Task<string>> GeneratePersona;internal Func<Hero,string,Task<string>> GeneratePersonaWithPrompt;internal Func<long,Func<bool>,Task<bool>> CompleteOnMainThread;}
  internal static class AnimusForgeModulePaths {internal static string GetModuleDataFilePath(string file)=>System.IO.Path.Combine(@"@@PROMPT_DIR@@",file);}
  internal static class PersonaUiTexts {internal static string Text(string id,string fallback)=>fallback;}
  internal static class PromptComposerTexts {internal static string ApplyOutputLanguage(string text)=>text;}
@@ -76,14 +76,15 @@ namespace AnimusForge {
   private static void InvokePersonaRerollClosed(Action action){Probe.Read();action?.Invoke();}
   private static string Localize(string key,string fallback,params (string Name,string Value)[] variables){Probe.Read();foreach(var v in variables)fallback=fallback.Replace("{"+v.Name+"}",v.Value);return fallback;}
   internal void EditExtras(){profile.Motivations.Add("edited motivation");}
-  private PersonaEditorPort _port=>new(){GeneratePersona=h=>GenerateNpcPersonaAsync(h,true,true),CompleteOnMainThread=RunMemorySummaryCompletionAsync};
+  private PersonaEditorPort _port=>new(){GeneratePersona=h=>GenerateNpcPersonaAsync(h,true,true),GeneratePersonaWithPrompt=(h,p)=>GenerateNpcPersonaAsync(h,true,true,p),CompleteOnMainThread=RunMemorySummaryCompletionAsync};
   internal async Task<string> External(Hero h){await EnsureNpcPersonaGeneratedForExternalAsync(h);return "";}
   internal async Task<string> RerollUi(Hero h){await RunHeroPersonaRerollAsync(h,null);return "";}
   @@REROLL_UI@@
-  internal Task<string> Generate(Hero h,bool reroll=false,bool ignore=false)=>GenerateNpcPersonaAsync(h,ignore,reroll);
+  internal Task<string> Generate(Hero h,bool reroll=false,bool ignore=false,string prompt=null)=>GenerateNpcPersonaAsync(h,ignore,reroll,prompt);
   internal void Release(string text="P|B",bool success=true,bool fail=false){if(fail)response.TrySetException(new Exception("transport failed"));else response.TrySetResult(new ApiCallResult{Content=text,Success=success,ErrorMessage="transport failed"});}
-  internal void Seed(string p,string b,string voice="voice"){profile=new(){Personality=p,Background=b,VoiceId=voice};}
+  internal void Seed(string p,string b,string voice="voice",string localVoice="local-voice"){profile=new(){Personality=p,Background=b,VoiceId=voice};profile.GptSoVitsVoiceId=localVoice;}
   internal string[] Values()=>new[]{profile.Personality,profile.Background,profile.VoiceId};
+  internal string LocalVoice()=>profile.GptSoVitsVoiceId;
   internal void ResetGenerationState(){@@RESET@@;dispatcher.Reset();}
   internal bool Active(string id){@@ACTIVE@@}
   internal bool Cooling(string id){@@COOLING@@}
@@ -103,7 +104,7 @@ internal static class Program {
   bool ui=kind.StartsWith("ui_");bool reroll=kind.StartsWith("reroll")||ui;o.Seed(reroll?"oldP":kind=="partial_p"?"keptP":"",reroll?"oldB":kind=="partial_b"?"keptB":"");
   if(kind=="complete")o.Seed("oldP","oldB");
   if(kind=="ui_reset_before")o.UseAllowance();
-  var t=ui?o.RerollUi(hero):kind.StartsWith("external")?Task.Run(()=>o.External(hero)):Task.Run(()=>o.Generate(kind=="null"?null:hero,reroll));if(kind=="ui_reset_before")o.ResetGenerationState();
+  var t=ui?o.RerollUi(hero):kind.StartsWith("external")?Task.Run(()=>o.External(hero)):Task.Run(()=>o.Generate(kind=="null"?null:hero,reroll,prompt:kind=="reroll_prompt"?"request-only {NPC} direction":null));if(kind=="ui_reset_before")o.ResetGenerationState();
   Pump(o,()=>o.Calls>0||t.IsCompleted);
   if(o.Calls>0){
    if(kind=="owner")AnimusForge.MyBehavior.Instance=new();
@@ -113,7 +114,7 @@ internal static class Program {
    if(kind=="reroll_edit" || kind=="ui_edit")o.Seed("editedP","editedB");
    if(kind=="extras_edit"||kind=="reroll_extras_edit")o.EditExtras();
    if(kind=="normal_edit")o.Seed("editedP","");
-   if(kind=="reroll_voice")o.Seed("oldP","oldB","newVoice");
+   if(kind=="reroll_voice")o.Seed("oldP","oldB","newVoice","local-new");
    o.Release(kind=="new_protocol"?"{\"profile\":\"P\\n\\nB\",\"traits\":[{\"id\":\"bold\",\"strength\":2}]}":(kind=="parse" || kind=="external_failure" || kind=="ui_failure")?"bad":kind=="one_field"?"P|":"P|B",kind!="http",kind=="throw");
   }
   if(kind=="ui_reset_accept"){
@@ -124,13 +125,15 @@ internal static class Program {
   Check(Probe.OffThread==0,kind+" all game/config/profile reads and writes on main");
   bool noSave=kind is "owner" or "generation" or "target" or "reset" or "reroll_reset" or "reroll_edit" or "parse" or "http" or "throw" or "complete" or "null" or "external_failure" or "ui_failure" or "ui_edit" or "ui_reset" or "ui_reset_before" or "ui_reset_accept" or "normal_edit" or "partial_p" or "partial_b" or "extras_edit" or "reroll_extras_edit";
   Check(o.Saves==(noSave?0:1),kind+" save count");
-  if(!noSave){Check(v[0]==(kind=="one_field"?"P":"P\n\nB"),kind+" unified description");Check(v[1]=="",kind+" no duplicate background");Check(v[2]==(kind=="reroll_voice"?"newVoice":"voice"),kind+" voice preserved");}
+  if(!noSave){Check(v[0]==(kind=="one_field"?"P":"P\n\nB"),kind+" unified description");Check(v[1]=="",kind+" no duplicate background");Check(v[2]==(kind=="reroll_voice"?"newVoice":"voice"),kind+" voice preserved");Check(o.LocalVoice()==(kind=="reroll_voice"?"local-new":"local-voice"),kind+" GPT-SoVITS voice preserved, including edits while generating");}
   if(kind is "partial_p" or "partial_b" or "complete")Check(o.Calls==0,kind+" existing body skips generation");
   if(ui)Check(AnimusForge.InformationManager.Refreshed==(noSave?0:1),kind+" truthful UI success");
   if(kind=="reroll_reset")Check(!string.IsNullOrWhiteSpace(failure),"reset must not report reroll success");
   if(kind=="reroll_edit")Check(v[0]=="editedP\n\neditedB"&&v[1]==""&&!string.IsNullOrWhiteSpace(failure),"reroll protects intervening edit");
   if(kind is "parse" or "http" or "throw")Check(!string.IsNullOrWhiteSpace(failure)&&o.Cooling("hero"),kind+" failure + cooldown");
-  if(o.Calls>0)Check(o.SentSystem.EndsWith("custom-requirements")&&o.SentUser.Contains("facts:hero"),kind+" original prompt inputs");
+  if(o.Calls>0)Check(o.SentSystem.Contains("custom-requirements")&&o.SentUser.Contains("facts:hero"),kind+" original prompt inputs");
+  if(kind=="reroll_prompt")Check(o.SentSystem.Contains("request-only {NPC} direction"),"request-local prompt reaches actual generation system alongside global requirements");
+  else if(o.Calls>0)Check(!o.SentSystem.Contains("request-only {NPC} direction"),kind+" ordinary request has no prompted regeneration text");
  }
  @@PROMOTED_TESTS@@
  static void Reservations(){
@@ -138,5 +141,5 @@ internal static class Program {
  }
  @@TEXT_RULE_CASES@@
  @@LORE_TESTS@@
- static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","new_protocol","extras_edit","reroll_extras_edit","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure","ui_reset_before","ui_reset_accept"})Case(c);Reservations();@@RUN_PROMOTED@@@@RUN_TEXT_RULES@@@@RUN_LORE@@Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
+ static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","new_protocol","extras_edit","reroll_extras_edit","partial_p","partial_b","one_field","reroll","reroll_prompt","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure","ui_reset_before","ui_reset_accept"})Case(c);Reservations();@@RUN_PROMOTED@@@@RUN_TEXT_RULES@@@@RUN_LORE@@Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
 }

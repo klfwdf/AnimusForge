@@ -64,7 +64,7 @@ internal sealed partial class KingdomCivilWarOwner
 		KingdomCivilWarClanState targetRecord = null;
 		state?.Clans.TryGetValue(target.StringId ?? "", out targetRecord);
 		if (targetRecord != null && targetRecord.Side != KingdomCivilWarSide.Middle) return KingdomCivilWarTexts.Raw("KW_Raw_141");
-		if (_storage.ClanExitUntilDay.TryGetValue(target.StringId ?? "", out int exitUntil) && CivilWarWorld.CurrentDay() < exitUntil) return KingdomCivilWarTexts.Raw("KW_Raw_142") + exitUntil + KingdomCivilWarTexts.Raw("KW_Raw_143");
+		if (_storage.ClanExitUntilDay.TryGetValue(target.StringId ?? "", out int exitUntil) && CivilWarWorld.CurrentDay() < exitUntil) return KingdomCivilWarTexts.Prompt("KW_RecruitCooldown").Replace("{DATE}", KingdomCivilWarTexts.Date(exitUntil));
 		if (CivilWarWorld.IsPlayerRuled(kingdom) && recruiter.Clan == kingdom.RulingClan) return "";
 		KingdomCivilWarClanState source = null;
 		if (state == null || !state.Clans.TryGetValue(recruiter.Clan.StringId ?? "", out source) || source.Side == KingdomCivilWarSide.Middle) return KingdomCivilWarTexts.Raw("KW_Raw_144");
@@ -97,7 +97,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (clan.Leader != target) text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_060"));
 		else if (faction != null && faction.LeaderClanId == clan.StringId) text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_061"));
 		if (_storage.ClanExitUntilDay.TryGetValue(clan.StringId ?? "", out int until) && CivilWarWorld.CurrentDay() < until)
-			text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_062")).Append(until).Append(KingdomCivilWarTexts.Prompt("KW_Prompt_063"));
+			text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_062")).Append(KingdomCivilWarTexts.Date(until)).Append(KingdomCivilWarTexts.Prompt("KW_Prompt_063"));
 		return text.ToString();
 	}
 }

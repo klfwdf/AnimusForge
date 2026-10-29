@@ -72,8 +72,8 @@ public partial class MyBehavior
         return NpcPersonaGenerationApplication.CaptureNpcPersonaGeneration(hero, ignoreRetryCooldown, overwriteExisting);
     }
 
-    private Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
+    private Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting, string requestRequirements = null)
     {
-        return NpcPersonaGenerationApplication.GenerateNpcPersonaAsync(hero, ignoreRetryCooldown, overwriteExisting);
+        return NpcPersonaGenerationApplication.GenerateNpcPersonaAsync(hero, ignoreRetryCooldown, overwriteExisting, requestRequirements);
     }
 }

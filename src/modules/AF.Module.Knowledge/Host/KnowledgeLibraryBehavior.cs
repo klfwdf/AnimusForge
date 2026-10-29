@@ -753,8 +753,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine(KnowledgePromptTexts.Get("PlayerAppearanceHeader", "[Player appearance (always available)]"));
-		stringBuilder.AppendLine(KnowledgePromptTexts.Format("PlayerAppearanceObservation", "{NPC} can directly observe these appearance features when interacting with the player face to face;", ("NPC", text2)));
+		stringBuilder.AppendLine(KnowledgePromptTexts.Format("PlayerAppearanceObservation", "The description below belongs only to the player, the person {NPC} is interacting with. It does not describe {NPC}'s appearance, personality, or background. First-person wording in the quoted description refers to the player. Use it only as information about the player; face-to-face interaction allows observation of visible traits.", ("NPC", text2)));
 		stringBuilder.AppendLine(text);
+		stringBuilder.AppendLine(KnowledgePromptTexts.Get("PlayerAppearanceEnd", "[End of player appearance]"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 

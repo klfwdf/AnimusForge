@@ -798,6 +798,13 @@ namespace AnimusForge
 			return GetDecisionDisplayTitleForAgenda(decision);
 		}
 
+		internal static string GetDecisionKingdomIdForDiagnostics(KingdomDecision decision)
+		{
+			// Kingdom falls back to ProposerClan.Kingdom; ?. cannot guard a throwing getter.
+			try { return decision?.Kingdom?.StringId ?? "<null>"; }
+			catch { return "<unavailable>"; }
+		}
+
 		internal static string GetPolicyDirectionForAgenda(KingdomDecision decision)
 		{
 			KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
@@ -2852,7 +2859,8 @@ namespace AnimusForge
 						"Agenda “{TITLE}” is due, make the final decision.",
 						("TITLE", GetSafeDecisionTitle(decision))),
 					Color.FromUint(0xFFD166)));
-				Logger.Log("VoteDeal", $"[AgendaRequiredVote] Opened required vote: decision={GetSafeDecisionTitle(decision)}");
+				// Pushing KingdomState requests the UI; StartVoteMeeting can still fail.
+				Logger.Log("VoteDeal", $"[AgendaRequiredVote] Requested required vote UI: decision={GetSafeDecisionTitle(decision)}");
 			}
 			catch (Exception ex)
 			{
@@ -3740,6 +3748,9 @@ namespace AnimusForge
 
 		public class KingdomAgendaVM : ViewModel
 		{
+			[DataSourceProperty] public string InteriorAgendaSectionText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaSection", "Kingdom agendas");
+			[DataSourceProperty] public string InteriorAgendaEmptyText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaEmpty", "No agenda in progress");
+
 			public sealed class Snapshot
 			{
 				public KingdomDecision Decision;
@@ -4190,6 +4201,7 @@ namespace AnimusForge
 			RefreshTimingState();
 		}
 
+		[DataSourceProperty] public string InteriorAgendaNoDetailText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaNoDetail", "No voting details for this agenda yet");
 		[DataSourceProperty] public string CatalogTitleText => Clip(TitleText, 12);
 		[DataSourceProperty] public string MeetingButtonText { get; private set; } = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_MeetingButton", "Open vote meeting");
 
@@ -4303,6 +4315,7 @@ namespace AnimusForge
 			if (_options != null) return;
 			if (_decision == null) return;
 
+			string stage = "initial_candidates";
 			try
 			{
 				var initialCandidates = _decision.DetermineInitialCandidates();
@@ -4315,18 +4328,22 @@ namespace AnimusForge
 				}
 				if (candidateList.Count == 0) return;
 
+				stage = "narrow_candidates";
 				var narrowed = _decision.NarrowDownCandidates(candidateList, 3);
 				if (narrowed == null || narrowed.Count == 0) return;
 
 				var options = new MBBindingList<AgendaOptionVM>();
 
+				stage = "initial_sponsors";
 				_decision.DetermineSponsors(narrowed);
 
+				stage = "supporters";
 				var supporters = _decision.DetermineSupporters()?.ToList() ?? new List<Supporter>();
 				// Only AI clans vote here (the player states his stance in the vote meeting), as in vanilla KingdomElection.
 				int voters = supporters.Count(s => s != null && !s.IsPlayer);
 				bool solo = VoteDealBehavior.IsSingleClanRulerAgenda(_decision);
 
+				stage = "initial_support";
 				var likelihoodProp = typeof(DecisionOutcome).GetProperty("Likelihood");
 				var initialSupportProp = typeof(DecisionOutcome).GetProperty("InitialSupport");
 				float totalInitial = 0f;
@@ -4361,6 +4378,7 @@ namespace AnimusForge
 				// Vanilla order (KingdomElection.StartElection): support without relation effects fills each
 				// outcome's SupporterList, sponsors are assigned from it (AssignDefaultSponsor needs it), then
 				// support is recomputed with relation effects. The lists are restored afterwards.
+				stage = "support_without_relations";
 				var savedLists = new Dictionary<DecisionOutcome, List<Supporter>>();
 				foreach (var outcome in narrowed)
 				{
@@ -4386,6 +4404,7 @@ namespace AnimusForge
 
 				totalWeight = 0;
 
+				stage = "final_sponsors";
 				_decision.DetermineSponsors(narrowed);
 
 				foreach (var outcome in narrowed)
@@ -4395,6 +4414,7 @@ namespace AnimusForge
 					if (savedLists.TryGetValue(outcome, out var saved)) outcome.SupporterList.AddRange(saved);
 				}
 
+				stage = "support_with_relations";
 				foreach (var supporter in supporters)
 				{
 					if (supporter.IsPlayer) continue;
@@ -4413,6 +4433,7 @@ namespace AnimusForge
 					catch { }
 				}
 
+				stage = "option_view_models";
 				foreach (var outcome in narrowed)
 				{
 					if (outcome == null) continue;
@@ -4475,11 +4496,12 @@ namespace AnimusForge
 				HasDetail = _options.Count > 0;
 				OnPropertyChanged("Options");
 				OnPropertyChanged("HasDetail");
+				stage = "timing_state";
 				RefreshTimingState();
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("VoteDeal", $"[AgendaDetail] LoadDetail error: {ex.Message}");
+				Logger.Log("VoteDeal", $"[AgendaDetail] LoadDetail error: stage={stage} type={_decision.GetType().FullName} kingdom={VoteDealBehavior.GetDecisionKingdomIdForDiagnostics(_decision)} proposer={_decision.ProposerClan?.StringId ?? "<null>"} title={VoteDealBehavior.GetDecisionDisplayTitleForAgenda(_decision)} exception={ex}");
 			}
 		}
 
@@ -4553,6 +4575,8 @@ namespace AnimusForge
 		}
 	public class AgendaOptionVM : ViewModel
 	{
+		[DataSourceProperty] public string InteriorLeadingText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Leading", "Leading");
+
 		private string _name;
 		private string _description;
 		private string _sponsorName;
@@ -4773,6 +4797,8 @@ namespace AnimusForge
 		[ViewModelMixin("RefreshValues", true)]
 		internal sealed class KingdomAgendaVMMixin : BaseViewModelMixin<KingdomManagementVM>
 		{
+			[DataSourceProperty] public string InteriorTitleText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Title", "Interior affairs");
+			[DataSourceProperty] public string InteriorSelectHintText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_SelectHint", "Select an entry on the left to view details");
 
 			[DataSourceProperty]
 			public string AgendaTabText { get; set; }
@@ -4888,11 +4914,13 @@ namespace AnimusForge
 
 			private void StartVoteMeeting(KingdomDecision decision)
 			{
+				string stage = "eligibility";
 				try
 				{
 					if (decision == null) return;
 					if (decision.Kingdom != Clan.PlayerClan?.Kingdom) return;
 					if (!decision.IsPlayerParticipant && !VoteDealBehavior.RequiresPlayerRulerResolution(decision)) return;
+					stage = "cancellation_check";
 					if (decision.ShouldBeCancelled())
 					{
 						InformationManager.DisplayMessage(new InformationMessage(
@@ -4904,26 +4932,32 @@ namespace AnimusForge
 						return;
 					}
 
+					stage = "trigger_time";
 					if (decision.TriggerTime.IsFuture)
 					{
 						Traverse.Create(decision).Property("TriggerTime").SetValue(CampaignTime.Now);
 					}
 
+					stage = "refresh_native_vote";
 					KingdomAgendaTabState.RequestReturnAfterRefresh(ViewModel);
 					ViewModel.Decision.RefreshWith(decision);
+					stage = "activate_native_vote";
 					ViewModel.Decision.IsActive = true;
 					ViewModel.OnPropertyChanged("Decision");
+					stage = "clear_agenda_selection";
 					Agenda?.ClearSelection();
+					stage = "opened_notification";
 					InformationManager.DisplayMessage(new InformationMessage(
 						DiplomacyUiLocalization.Format(
 							"AF_DIP_UI_Vote_MeetingOpened",
 							"Vote meeting opened: {TITLE}",
 							("TITLE", decision.GetGeneralTitle())),
 						Color.FromUint(0xFFD166)));
+					Logger.Log("VoteDeal", $"[AgendaMeeting] Opened vote meeting: type={decision.GetType().FullName} kingdom={decision.Kingdom?.StringId ?? "<null>"} title={VoteDealBehavior.GetDecisionDisplayTitleForAgenda(decision)}");
 				}
 				catch (Exception ex)
 				{
-					Logger.Log("VoteDeal", $"[AgendaMeeting] StartVoteMeeting error: {ex.Message}");
+					Logger.Log("VoteDeal", $"[AgendaMeeting] StartVoteMeeting error: stage={stage} type={decision?.GetType().FullName ?? "<null>"} kingdom={VoteDealBehavior.GetDecisionKingdomIdForDiagnostics(decision)} proposer={decision?.ProposerClan?.StringId ?? "<null>"} title={VoteDealBehavior.GetDecisionDisplayTitleForAgenda(decision)} exception={ex}");
 					InformationManager.DisplayMessage(new InformationMessage(
 						DiplomacyUiLocalization.Text(
 							"AF_DIP_UI_Vote_MeetingOpenFailed",

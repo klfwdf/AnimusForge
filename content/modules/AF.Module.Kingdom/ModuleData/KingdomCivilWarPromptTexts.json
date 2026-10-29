@@ -61,8 +61,8 @@
   "KW_Prompt_059": "关系越好越不愿倒向反对派，但并非绝对不会；被充分说服或利益足够时仍可能同意。",
   "KW_Prompt_060": "你不是族长，不能代表家族加入或退出派系。",
   "KW_Prompt_061": "你是该派系的领袖，不会被他人招募；若你自己决定退出，领导权将移交继任者。",
-  "KW_Prompt_062": "你的家族刚退出派系，冷却至第 ",
-  "KW_Prompt_063": " 天，期间不能再加入派系。",
+  "KW_Prompt_062": "你的家族刚退出派系，冷却至 ",
+  "KW_Prompt_063": "，期间不能再加入派系。",
   "KW_Prompt_064": "当前周次：第 ",
   "KW_Prompt_065": " 周",
   "KW_Prompt_066": "主导家族：",
@@ -84,5 +84,11 @@
   "KW_Prompt_082": "叛乱背景：上周",
   "KW_Prompt_083": "周报提到，",
   "KW_Prompt_084": "。这场叛乱正是在这样的局势中爆发，主导家族带着现有封地脱离旧王国，准备自立为新的政治实体。",
-  "KW_Prompt_085": "（族长："
+  "KW_Prompt_085": "（族长：",
+  "KW_CalendarDate": "{YEAR}年{SEASON}{DAY}日",
+  "KW_CalendarSeason_0": "春季",
+  "KW_CalendarSeason_1": "夏季",
+  "KW_CalendarSeason_2": "秋季",
+  "KW_CalendarSeason_3": "冬季",
+  "KW_RecruitCooldown": "该家族刚退出派系，冷却至 {DATE}，暂不能被招募。"
 }
