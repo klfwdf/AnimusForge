@@ -1,3 +1,20 @@
+<a id="interior-review-20261029"></a>
+## 内政标题/居中修复及上文本轮改动审查 — 2026-10-29
+
+**OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。main/F:/AnimusForge-main，产品 `3e8fc53efd1e76d24362d6e7c17443e6b6f1605c`，意图检查点23568c43b。用户反馈内政目录上方没字、未表态家族标题不居中，随后要求审查上文全部改动。本轮审查基线f5b4ba53f之前至该产品（57caba7f7/a1e9cf147诊断、43290bc9b百科/人物/派系及本次修复，共43源码/资源/测试文件），不扩为全项目性能/安全审计，不修改其他截图机制。
+
+发现并修复三项：P2既有资源对应6个DataSourceProperty丢失（4个实际VM/mixin scope，导致内政标题/议程标题/空状态/提示/领先等空白）；P2 FactionHeader右Block按HasBlock隐藏而左230占位不隐藏，标题偏右115UI单位，现在同步显隐；P1新提示词重生复用旧overwrite保存链时只留VoiceId、丢GptSoVitsVoiceId，已从提交时最新profile复制后者，保持生成时玩家新选择。普通重生同受益，不新增存档字段/全局设置/语言文本，复用既有21项CN/EN资源及真实loader。
+
+性能/边界：新增6个getter仅显示时读本地化；布局显隐沿既有HasBlock；声音复制只在现有主线程生成提交时O(1)，不增加Tick扫描/IO/反射、网络调用或新队列。投票支持/资格/候选人、外交行为不改，不能声称原空引用/发错国家/无回信/大地图卡顿已修复。
+
+验证：artifacts/interior-missing-headings-20261029/before-1.3.log为修复前真实DLL缺InteriorTitleText失败；final-1.3.log、final-1.4.log为最终DLL各230检查（实际XML和5作用域、21配对标签、CN/EN/CN、原生Widget/StackLayout测6种宽度及有无Block，UI上下文fixture，无渲染）。voice-before初次测试扩展破坏旧fixture字符串接线，记录但非38个产品问题；修正fixture保持原normalize/Values oracle后voice-before-corrected.log为4个确定选定音色丢失失败，voice-after.log真实生成器/dispatcher/profile owner598项0失败（网络/引擎fixture）。build-final.log为原统一双API（1.3.15.110062/1.4.6.115628）/Bootstrap/coup seam/registration成功。只做原构建，不部署。
+
+完整审查结论、各功能调用链及证据复用在review.md；reviewed-files.json绑定43文件hash，receipt.json绑定候选DLLhash，code-map.json记录一基源码范围。未变源码复用此前编辑122、外貌CN/EN17各、横排每API61、派系405、历法每API7与35资源对检查；未把历史全量Knowledge LocalizationCloseout公告模板失败或外交旧response-recovery失败改成通过。
+
+未验实机字体/渲染/点击/语言切换、真实GPT-SoVITS播放、玩家sav、实际模型及其他现场。新三项未部署；已将上一轮CN receipt的10个关键安装hash复核一致，防止混称已安装。未打包/push/外部写入。回滚对3e8fc53ef做聚焦inverse，禁止hard reset/整文件覆盖他人；原HANDOFF206行和主台账290行dirty保持。[源码图](architecture/af-framework-code-scope.md#interior-review-20261029)。
+
+---
+
 <a id="deploy-cn-persona-factions-20261029"></a>
 ## 本轮改动 CN 部署 — 2026-10-29
 

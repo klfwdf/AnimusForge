@@ -1,3 +1,9 @@
+# 内政显示修复及本轮全部改动审查（2026-10-29，本地未部署）
+
+产品 `3e8fc53ef`：恢复“内政事务/王国议程”等6个缺失VM文字属性；修正无倒计时块时左占位导致的详情标题偏右；审查另外补齐人物重生保留GPT-SoVITS选定声音（包括生成期间换音）。当前实际DLL每API230标签/语言/原生布局检查通过，人物生成598通过；双API/Bootstrap/seam/registration通过。复核本会话43个源码/资源/测试文件，其余未发现确定新增缺陷，原投票/外交/性能现场与旧测试失败仍未确认。**这三项新修复尚未部署**，游戏仍为下条CN安装，已核对未被本次构建改变。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#interior-review-20261029)、[源码范围](docs/architecture/af-framework-code-scope.md#interior-review-20261029)；详细审查 `artifacts/interior-missing-headings-20261029/review.md`。未实机/模型/播放/打包/push。
+
+---
+
 # 当前安装：AF1.7.0 CN / 本轮百科人物与派系改动已部署（2026-10-29）
 
 已按用户“先部署CN”授权用原统一脚本构建并覆盖游戏 `Modules/AnimusForge`，包含普通Bootstrap和1.3/1.4两实现。源码 `476eb6c8f`、部署检查点 `c13da1914`；本轮百科三列两行、提示词重生、外貌主体边界、派系历法及玩家创建免冷却已进入安装，投票诊断也随当前源码部署。外交上一轮只有分析，无新修复。双API/Bootstrap/seam/registration和CN Stage门禁通过，10个关键目标文件与Stage hash一致；未启动游戏/模型/打包/push。原脚本保护玩家文件、保留未知安装文件，无Recovery/自动回滚。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-persona-factions-20261029)；证据 `artifacts/deploy-cn-persona-factions-20261029/receipt.json`。

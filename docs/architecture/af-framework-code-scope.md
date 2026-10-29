@@ -1,3 +1,10 @@
+<a id="interior-review-20261029"></a>
+## 内政显示与本轮复核 — 2026-10-29
+
+产品 `3e8fc53efd1e76d24362d6e7c17443e6b6f1605c`；[唯一台账与验收边界](../animusforge-refactoring-and-repository-reorganization-plan.md#interior-review-20261029)。VoteDealBehavior.cs恢复KingdomAgendaVM/ItemVM/AgendaOptionVM/KingdomAgendaVMMixin的6个固定文字getter；KingdomInteriorPanel.FactionHeader左占位绑定HasBlock；NpcPersonaGenerationApplicationAdapter.GenerateNpcPersonaAsync在提交处保留最新GptSoVitsVoiceId。无投票/外交行为、存档键/字段或公开API变更。精确一基符号/hash/覆盖见 `artifacts/interior-missing-headings-20261029/code-map.json`；全审查43文件hash与明细分别为reviewed-files.json和review.md，测试与未验项留在主台账，不重复整表。未部署/实机。
+
+---
+
 <a id="diplomacy-civil-war-analysis-20261029"></a>
 ## 当前外交内战场景分析源码范围 — 2026-10-29
 
