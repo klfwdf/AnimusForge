@@ -3347,7 +3347,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_OpenAiModel" text="语音模型" />
   <string id="AF_MCM_Tts_OpenAiModel_Hint" text="该语音端点接受的模型名称，默认 gpt-sovits-v4。" />
   <string id="AF_MCM_Tts_OpenAiVoice" text="语音音色" />
-  <string id="AF_MCM_Tts_OpenAiVoice_Hint" text="默认 zh_default。此服务所有 NPC 共用这里配置的音色；已有 NPC/火山音色映射保留，但不会发送给此服务。" />
+  <string id="AF_MCM_Tts_OpenAiVoice_Hint" text="默认 zh_default，作为兜底音色。服务在 /audio/voices 提供音色列表时，每个英雄首次发声会抽取同性别音色并固定，可在百科中修改；列表中有 _happy/_angry 变体的音色会按回复情绪切换。火山音色映射不会发送给此服务。" />
   <string id="AF_MCM_Tts_OpenAiSpeed" text="OpenAI 兼容语速" />
   <string id="AF_MCM_Tts_OpenAiSpeed_Hint" text="请求语速倍率，范围 0.25～4.0，默认 1.0。实际支持情况取决于上游模型。" />
   <string id="AF_MCM_Tts_OpenAiTimeout" text="OpenAI 兼容语音超时（秒）" />

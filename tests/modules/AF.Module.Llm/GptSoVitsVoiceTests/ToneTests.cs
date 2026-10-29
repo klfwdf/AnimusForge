@@ -70,7 +70,7 @@ namespace AnimusForge
     // Runtime game/settings boundaries only; real catalog, capture, parser and gateway above.
     internal sealed class DuelSettings
     {
-        internal bool UsesManagedGptSoVits, EnableTtsSpeech = true, TtsUseGptSoVits = true;
+        internal bool UsesManagedGptSoVits, EnableTtsSpeech = true, TtsUseGptSoVits = true, UsesOpenAiTts;
         internal bool IsSelectedTtsEnabled => EnableTtsSpeech;
         internal string TtsGptSoVitsOutputLanguage = "";
         internal static DuelSettings Current;

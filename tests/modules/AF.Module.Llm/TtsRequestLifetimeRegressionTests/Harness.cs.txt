@@ -326,10 +326,69 @@ static class Program {
     Assert(process.Wait(3000)&&sent==1,"translation never consumed");
    });
   }
-  Check("shared speech language: auto cloud does not wait for mood",()=>{
-   DuelSettings.Read=()=>new(){UsesOpenAiTts=true};using var e=Manual();var pending=new TaskCompletionSource<LocalTtsSpeech>();TtsEngine.PlaybackRequest req=null;int sent=0;
-   OpenAiCompatibleTtsGateway.Send=(r,k,c)=>{Assert(r.Text=="unchanged","auto changed text");sent++;return new(){Success=false,ErrorCode="fixture_end"};};
+  Check("shared speech language: auto Volcengine does not wait for mood",()=>{
+   DuelSettings.Read=()=>new(){UsesOpenAiTts=false,TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/tts/unidirectional"};using var e=Manual();var pending=new TaskCompletionSource<LocalTtsSpeech>();TtsEngine.PlaybackRequest req=null;int sent=0;
+   LegacyVolcTtsGateway.Send=(r,c)=>{Assert(r.Text=="unchanged","auto changed text");sent++;return new(){Success=false,ErrorCode="fixture_end"};};
    Assert(e.SpeakAsync("unchanged",-1,1,-1,null,r=>req=r,LocalTtsSpeech.Neutral,pending.Task),"queue");Call(e,"ProcessJob",Job(e,req));Assert(sent==1&&!pending.Task.IsCompleted,"auto waits for local mood");
+  });
+  Check("OpenAI voice list parsing, per-hero voice and mood variant",()=>{
+   const string url="https://openai-fixture.invalid/v1/audio/speech";
+   Assert(OpenAiTtsVoiceCatalog.VoicesEndpoint(url)=="https://openai-fixture.invalid/v1/audio/voices","voices endpoint");
+   Assert(OpenAiTtsVoiceCatalog.VoicesEndpoint("https://x.invalid/v1/chat")==null,"non-speech URL produced a list endpoint");
+   var catalog=OpenAiTtsVoiceCatalog.Parse(OpenAiTtsVoiceCatalog.VoicesEndpoint(url),"{\"voices\":[{\"id\":\"male-deep\",\"name\":\"杰帕德·低沉英雄\"},\"male-deep_angry\",\"male-deep_happy\",\"male-deep_sad\",{\"id\":\"female-sparkle\",\"name\":\"花火·俏皮戏精\"},\"female-sparkle_happy\",{\"id\":\"zh_default\",\"name\":\"默认中文女声\"},\"bad id\",{\"id\":\"orphan_angry\"}]}");
+   Assert(catalog.Voices.Count==4,"variants or bad ids listed as base voices: "+catalog.Voices.Count);
+   var deep=catalog.Get("male-deep");Assert(deep.Gender==1&&deep.HasAngry&&deep.HasHappy&&deep.HasSad&&deep.Label=="杰帕德·低沉英雄 (male-deep)","male-deep parse");
+   Assert(catalog.Get("female-sparkle").Gender==2&&!catalog.Get("female-sparkle").HasAngry,"female-sparkle parse");
+   Assert(catalog.Get("zh_default").Gender==0,"name text must not put the fallback voice into random pools");
+   Assert(catalog.Get("orphan_angry")!=null,"suffix without a base must stay a normal voice");
+   for(int i=0;i<20;i++){Assert(catalog.PickRandom(true)=="female-sparkle","female pool");Assert(catalog.PickRandom(false)=="male-deep","male pool");}
+   Assert(OpenAiTtsVoiceCatalog.Parse("e","[\"a\",{\"voice_id\":\"b\",\"gender\":\"female\"}]").Get("b").Gender==2,"bare array / voice_id / gender field");
+   Assert(OpenAiTtsVoiceCatalog.Parse("e","not json")==null,"bad json");
+   OpenAiTtsVoiceCatalog.Publish(catalog);
+   try{
+    Assert(OpenAiTtsVoiceCatalog.ApplyTone(url,"zh_default","male-deep",LocalTtsTone.Angry)=="male-deep_angry","angry variant");
+    Assert(OpenAiTtsVoiceCatalog.ApplyTone(url,"zh_default","female-sparkle",LocalTtsTone.Angry)=="female-sparkle","unlisted variant must fall back to base");
+    Assert(OpenAiTtsVoiceCatalog.ApplyTone(url,"zh_default","male-deep",LocalTtsTone.Sad)=="male-deep","sad is not auto-applied");
+    Assert(OpenAiTtsVoiceCatalog.ApplyTone("https://other.invalid/v1/audio/speech","alloy","male-deep",LocalTtsTone.Angry)=="male-deep","another server's list applied");
+    DuelSettings.Read=()=>new(){UsesOpenAiTts=true};
+    foreach(var c in new[]{("male-deep",LocalTtsTone.Angry,"male-deep_angry"),("female-sparkle",LocalTtsTone.Happy,"female-sparkle_happy"),("BV001_streaming",LocalTtsTone.Angry,"zh_default"),("male-deep",LocalTtsTone.Neutral,"male-deep")}){
+     using var e=Manual();var pending=new TaskCompletionSource<LocalTtsSpeech>();TtsEngine.PlaybackRequest req=null;string voice=null;
+     OpenAiCompatibleTtsGateway.Send=(r,k,ct)=>{voice=r.Voice;return new(){Success=false,ErrorCode="fixture_end"};};
+     Assert(e.SpeakAsync("hello",-1,1,-1,c.Item1,r=>req=r,LocalTtsSpeech.Neutral,pending.Task),"queue");
+     pending.SetResult(new LocalTtsSpeech(c.Item2));Call(e,"ProcessJob",Job(e,req));
+     Assert(voice==c.Item3,"voice "+c.Item1+"/"+c.Item2+" sent as "+voice);
+    }
+   }
+   finally{OpenAiTtsVoiceCatalog.Publish(OpenAiTtsVoiceCatalog.Parse("cleared","[]"));}
+  });
+  Check("OpenAI built-in AF voice list when the server has no /audio/voices",()=>{
+   const string url="https://no-list.invalid/v1/audio/speech";
+   OpenAiTtsVoiceCatalog.Publish(OpenAiTtsVoiceCatalog.Parse("cleared","[]"));
+   var builtIn=OpenAiTtsVoiceCatalog.For(url,"male-gentle");
+   Assert(builtIn!=null&&builtIn.IsBuiltIn&&builtIn.Voices.Count==12,"built-in list unavailable for AF fallback voice");
+   Assert(OpenAiTtsVoiceCatalog.For(url,"alloy")==null,"AF names offered to another provider");
+   for(int i=0;i<30;i++){Assert(builtIn.PickRandom(true).StartsWith("female-"),"female got non-female voice");Assert(builtIn.PickRandom(false).StartsWith("male-"),"male got non-male voice");}
+   Assert(builtIn.Get("zh_default").Gender==0,"zh_default entered a random pool");
+   Assert(OpenAiTtsVoiceCatalog.ApplyTone(url,"male-gentle","female-sparkle",LocalTtsTone.Angry)=="female-sparkle_angry","built-in angry variant");
+   Assert(OpenAiTtsVoiceCatalog.ApplyTone(url,"male-gentle","female-sparkle",LocalTtsTone.Happy)=="female-sparkle_happy","built-in happy variant");
+   Assert(OpenAiTtsVoiceCatalog.ResolveTransient(url,"male-gentle",true,5).StartsWith("female-"),"non-hero female transient");
+   Assert(OpenAiTtsVoiceCatalog.ResolveTransient(url,"male-gentle",true,5)==OpenAiTtsVoiceCatalog.ResolveTransient(url,"male-gentle",true,5),"scene transient not stable");
+   DuelSettings.Read=()=>new(){UsesOpenAiTts=true,TtsOpenAiApiUrl=url,TtsOpenAiVoice="male-gentle"};
+   using var e=Manual();var pending=new TaskCompletionSource<LocalTtsSpeech>();TtsEngine.PlaybackRequest req=null;string voice=null;
+   OpenAiCompatibleTtsGateway.Send=(r,k,ct)=>{voice=r.Voice;return new(){Success=false,ErrorCode="fixture_end"};};
+   Assert(e.SpeakAsync("hello",-1,1,-1,"female-gentle",r=>req=r,LocalTtsSpeech.Neutral,pending.Task),"queue");
+   pending.SetResult(new LocalTtsSpeech(LocalTtsTone.Angry));Call(e,"ProcessJob",Job(e,req));
+   Assert(voice=="female-gentle_angry","hero voice not sent with built-in list: "+voice);
+  });
+  Check("OpenAI auto speech waits for postprocess mood before sending",()=>{
+   DuelSettings.Read=()=>new(){UsesOpenAiTts=true};using var e=Manual();var pending=new TaskCompletionSource<LocalTtsSpeech>();TtsEngine.PlaybackRequest req=null;int sent=0;
+   OpenAiCompatibleTtsGateway.Send=(r,k,c)=>{Assert(r.Text=="unchanged","auto changed text");Interlocked.Increment(ref sent);return new(){Success=false,ErrorCode="fixture_end"};};
+   OpenAiCompatibleTtsGateway.StreamSend=(r,k,p,c)=>{Interlocked.Increment(ref sent);return new(){Success=false,ErrorCode="fixture_end"};};
+   Assert(e.SpeakAsync("unchanged",-1,1,-1,null,r=>req=r,LocalTtsSpeech.Neutral,pending.Task),"queue");
+   var process=Task.Run(()=>Call(e,"ProcessJob",Job(e,req)));
+   Assert(!process.Wait(80)&&sent==0,"OpenAI sent before mood");
+   pending.SetResult(new LocalTtsSpeech(LocalTtsTone.Angry));
+   Assert(process.Wait(3000)&&sent==1,"mood never consumed");
   });
   Check("shared speech language: cancelling pending cloud translation prevents send",()=>{
    DuelSettings.Read=()=>new(){UsesOpenAiTts=true,TtsGptSoVitsOutputLanguage="英语"};using var e=Active();var pending=new TaskCompletionSource<LocalTtsSpeech>();int sent=0;

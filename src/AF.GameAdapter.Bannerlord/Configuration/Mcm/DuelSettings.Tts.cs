@@ -45,7 +45,7 @@ public partial class DuelSettings
     [SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
     public string TtsOpenAiModel { get; set; } = "gpt-sovits-v4";
 
-    [SettingPropertyText("{=AF_MCM_Tts_OpenAiVoice}Speech voice", -1, true, "", Order = 23, RequireRestart = false, HintText = "{=AF_MCM_Tts_OpenAiVoice_Hint}Default: zh_default. This service uses one configured voice for all NPCs. Existing NPC/Volcengine voice mappings are retained but not sent to this service.")]
+    [SettingPropertyText("{=AF_MCM_Tts_OpenAiVoice}Speech voice", -1, true, "", Order = 23, RequireRestart = false, HintText = "{=AF_MCM_Tts_OpenAiVoice_Hint}Default: zh_default. Fallback voice. When the service lists voices at /audio/voices, each hero gets a same-gender voice saved on first speech, changeable from the encyclopedia; listed _happy/_angry variants follow the reply mood. Volcengine mappings are never sent here.")]
     [SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
     public string TtsOpenAiVoice { get; set; } = "zh_default";
 
@@ -61,6 +61,8 @@ public partial class DuelSettings
     {
         TtsEngine engine = TtsEngine.Instance;
         engine.Initialize();
+        // Testing the service also refreshes the cached voice list used for encyclopedia selection.
+        OpenAiTtsVoiceCatalog.EnsureFetched(TtsOpenAiApiUrl, TtsOpenAiApiKey, force: true);
         if (!EnableTtsSpeech)
         {
             InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_EnableSpeech", "Enable TTS speech"), Color.FromUint(4294901760u)));

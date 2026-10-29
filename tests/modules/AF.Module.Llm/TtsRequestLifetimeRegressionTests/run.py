@@ -63,7 +63,7 @@ def main():
  links=[refdir/'Facades/netstandard.dll',ROOT/'_deps_auto/Newtonsoft.Json.dll',ROOT/'.tmp/build_check/1.3/TaleWorlds.Localization.dll',ROOT/'.tmp/build_check/1.3/TaleWorlds.Library.dll']
  refs='<Reference Include="System.Net.Http" />'+''.join('<Reference Include="'+x.stem+'"><HintPath>'+escape(str(x))+'</HintPath></Reference>' for x in links)
  sources=[ROOT/x for x in ['src/AF.Persistence/AnimusForgeDataPaths.cs','src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs','src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs','src/modules/AF.Module.Llm/Tts/LlmUiTexts.cs','src/AF.GameAdapter.Bannerlord/UI/Errors/TtsTestFeedback.cs','src/AF.GameAdapter.Bannerlord/UI/Errors/TtsErrorUiText.cs','src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettingsUiLocalization.cs']]
- sources += [ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.Provider.cs',ROOT/'src/AF.Contracts/Internal/OpenAiTtsContracts.cs',ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.Streaming.cs',ROOT/'src/modules/AF.Module.Llm/Tts/TtsPcmStream.cs']
+ sources += [ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.Provider.cs',ROOT/'src/modules/AF.Module.Llm/Tts/OpenAiTtsVoiceCatalog.cs',ROOT/'src/AF.Contracts/Internal/OpenAiTtsContracts.cs',ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.Streaming.cs',ROOT/'src/modules/AF.Module.Llm/Tts/TtsPcmStream.cs']
  sources += [ROOT/('src/modules/AF.Module.Llm/Tts/'+name+'.cs') for name in ['TtsSpeechSegment','TtsSpeechPolicy','LocalTtsToneTag','GptSoVitsLanguage','LocalTtsSpeech']]
  includes=''.join('<Compile Include="'+escape(str(x))+'" />' for x in sources)
  frozen_inputs.update({x:hashlib.sha256(x.read_bytes()).hexdigest() for x in sources+links+[settings_path]})

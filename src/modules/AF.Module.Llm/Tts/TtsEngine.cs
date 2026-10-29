@@ -102,6 +102,8 @@ internal sealed partial class TtsEngine : IDisposable
         public Task<LocalTtsSpeech> PendingLocalSpeech;
         public LocalTtsSpeech LocalSpeech;
         public bool KeepOriginalSubtitle;
+        // Postprocess MOOD tone; the OpenAI-compatible provider maps it to a listed voice variant.
+        public LocalTtsTone Tone;
 	}
 
 	private static readonly object _instanceLock = new object();
@@ -716,7 +718,8 @@ internal sealed partial class TtsEngine : IDisposable
         var language = job.LocalRequest?.Language ?? job.Settings.SpeechLanguage;
         if (!language.IsSupported)
         { NotifyPlaybackFailed(job, "tts_local_language_invalid"); return; }
-        if (!job.BypassEnabledCheck && (job.LocalRequest != null || language.IsForced))
+        // OpenAI-compatible speech also waits (bounded) for the postprocess MOOD to pick a tone variant.
+        if (!job.BypassEnabledCheck && (job.LocalRequest != null || language.IsForced || job.Settings.OpenAi))
         {
             var speech = job.PendingLocalSpeech == null ? job.LocalSpeech ?? LocalTtsSpeech.Neutral
                 : LocalTtsSpeech.AwaitAsync(job.PendingLocalSpeech, job.Request.CancellationToken,
@@ -735,6 +738,7 @@ internal sealed partial class TtsEngine : IDisposable
             }
             if (job.LocalRequest != null)
                 job.LocalRequest = job.LocalRequest.WithTone(speech.Tone).WithText(job.Segments[0]);
+            job.Tone = speech.Tone;
         }
         if (job.Segments == null) { ProcessSentence(job, job.Text, job.LocalRequest); return; }
         for (int i = 0; i < job.Segments.Length; i++)
@@ -785,6 +789,16 @@ internal sealed partial class TtsEngine : IDisposable
 		if (!openAi && !string.IsNullOrWhiteSpace(job.VoiceIdOverride))
 		{
 			text5 = job.VoiceIdOverride;
+		}
+		if (openAi)
+		{
+			// Only a voice listed by this service is forwarded (saved hero voice or scene transient);
+			// Volcengine or stale ids fall back to the configured voice.
+			if (OpenAiTtsVoiceCatalog.For(text, snapshot.Voice)?.Get(job.VoiceIdOverride) != null)
+			{
+				text5 = job.VoiceIdOverride;
+			}
+			text5 = OpenAiTtsVoiceCatalog.ApplyTone(text, snapshot.Voice, text5, job.Tone);
 		}
 		if (!flag2 && !job.BypassEnabledCheck)
 		{
@@ -848,7 +862,7 @@ internal sealed partial class TtsEngine : IDisposable
 			NotifyPlaybackFailed(job, "Scene speech target became unavailable before synthesis.");
 			return;
 		}
-		if (snapshot.Streaming && openAi) { ProcessStreamingJob(job, sentenceText); return; }
+		if (snapshot.Streaming && openAi) { ProcessStreamingJob(job, sentenceText, text5); return; }
 		byte[] array;
 		string synthesisError = "";
 		if (localRequest != null)
@@ -863,7 +877,7 @@ internal sealed partial class TtsEngine : IDisposable
 			}
 			array = result.AudioBytes;
 		}
-		else if (openAi) array = CallOpenAiApi(snapshot, sentenceText, speed, job.Request.CancellationToken, out synthesisError);
+		else if (openAi) array = CallOpenAiApi(snapshot, text5, sentenceText, speed, job.Request.CancellationToken, out synthesisError);
 		else array = CallVolcApi(text, text2, text3, text4, text5, sentenceText, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken, out synthesisError);
 		if (!IsJobCurrent(job)) { return; }
 		if (array == null || array.Length == 0)

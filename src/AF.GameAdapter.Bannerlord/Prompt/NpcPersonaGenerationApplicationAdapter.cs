@@ -179,7 +179,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
 						failure = AdapterRecordTexts.T("AF_UI_PersonaGeneration_ChangedDuringGeneration", "The persona changed during generation; the latest persona was not overwritten. Review the changes before regenerating.");
 						return true;
 					}
-					NpcPersonaProfile profile = overwriteExisting ? new NpcPersonaProfile { VoiceId = (current.VoiceId ?? "").Trim(), GptSoVitsVoiceId = (current.GptSoVitsVoiceId ?? "").Trim(), Personality = current.Personality, Background = current.Background } : current;
+					NpcPersonaProfile profile = overwriteExisting ? new NpcPersonaProfile { VoiceId = (current.VoiceId ?? "").Trim(), GptSoVitsVoiceId = (current.GptSoVitsVoiceId ?? "").Trim(), OpenAiVoiceId = (current.OpenAiVoiceId ?? "").Trim(), Personality = current.Personality, Background = current.Background } : current;
                     profile.Description = nextDescription;
 					ApplyGeneratedExtras(profile, current, generated, overwriteExisting);
 					profile.SchemaVersion = Math.Max(profile.SchemaVersion, 3);

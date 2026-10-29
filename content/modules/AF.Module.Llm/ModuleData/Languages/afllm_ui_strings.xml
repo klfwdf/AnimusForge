@@ -79,6 +79,18 @@
     <string id="AF_GPT_UI_VoiceSaved" text="Voice saved: " />
     <string id="AF_GPT_UI_VoiceNotSaved" text="Voice was not saved: " />
     <string id="AF_GPT_UI_VoicePickerFailed" text="Cannot open voice selection: " />
+    <string id="AF_GPT_UI_OpenAiVoiceListLoading" text="Loading the voice list from the speech service; try again shortly." />
+    <string id="AF_GPT_UI_OpenAiVoiceListUnavailable" text="Cannot fetch the voice list: enter the speech API key and use a URL ending in /audio/speech." />
+    <string id="AF_GPT_UI_OpenAiVoiceUnassigned" text="Unassigned; a same-gender voice from the service list is picked and saved on first speech" />
+    <string id="AF_GPT_UI_OpenAiVoiceNotListed" text="Not in the current service list: " />
+    <string id="AF_GPT_UI_OpenAiRefreshList" text="Refresh the voice list from the service" />
+    <string id="AF_GPT_UI_OpenAiFemaleTag" text="[Female] " />
+    <string id="AF_GPT_UI_OpenAiMaleTag" text="[Male] " />
+    <string id="AF_GPT_UI_OpenAiUnlabeledTag" text="[Unlabeled] " />
+    <string id="AF_GPT_UI_OpenAiMoodTag" text=" · tone variants" />
+    <string id="AF_GPT_UI_OpenAiVoiceSelectionHint" text="&#10;Random picks use only male-/female- voices of this hero's gender. Voices with tone variants switch to _happy/_angry from the reply mood. Saved with this campaign." />
+    <string id="AF_GPT_UI_OpenAiRefreshStarted" text="Refreshing the voice list; reopen this selection shortly." />
+    <string id="AF_GPT_UI_OpenAiNoGenderVoice" text="the service list has no matching voice; choose one manually." />
     <string id="AF_GPT_UI_VictoryReady" text="Battle rewards have been handled. Enter GCCZ to continue, or leave." />
     <string id="AF_TTS_UI_General" text="1. Provider and playback" />
     <string id="AF_TTS_UI_Local" text="2. Local GPT-SoVITS" />

@@ -43,9 +43,9 @@ internal sealed partial class TtsEngine
         }
     }
 
-    private byte[] CallOpenAiApi(ProviderSnapshot settings, string text, float speed, CancellationToken cancel, out string error)
+    private byte[] CallOpenAiApi(ProviderSnapshot settings, string voice, string text, float speed, CancellationToken cancel, out string error)
     {
-        var request = new OpenAiTtsSynthesisRequest(settings.Url, settings.Model, settings.Voice, text, speed, settings.TimeoutSeconds);
+        var request = new OpenAiTtsSynthesisRequest(settings.Url, settings.Model, voice, text, speed, settings.TimeoutSeconds);
         var result = new OpenAiCompatibleTtsGateway(_openAiHttpClient).SynthesizeAsync(request, settings.Credential, cancel).GetAwaiter().GetResult();
         error = result.ErrorCode;
         if (!result.Success) Logger.Log("TtsEngine", "OpenAI-compatible synthesis failed: " + error);

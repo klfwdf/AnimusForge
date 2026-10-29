@@ -2193,7 +2193,9 @@ public static class EncyclopediaHeroPersonaPatch
 		button.ClickEventHandlers.Add(delegate
 		{
 			Hero hero = ResolveHero(GetDataSource(root));
-			if (hero != null && hero != Hero.MainHero) MyBehavior.OpenHeroGptSoVitsVoiceForExternal(hero);
+			if (hero == null || hero == Hero.MainHero) return;
+			if (DuelSettings.GetSettings()?.UsesOpenAiTts == true) MyBehavior.OpenHeroOpenAiVoiceForExternal(hero);
+			else MyBehavior.OpenHeroGptSoVitsVoiceForExternal(hero);
 		});
 		var text = new TextWidget(parent.Context)
 		{
