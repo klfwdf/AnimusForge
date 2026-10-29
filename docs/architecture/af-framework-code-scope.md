@@ -1,3 +1,8 @@
+<a id="deploy-all-local-20261029"></a>
+## 当前工作区完整部署范围 — 2026-10-29
+
+部署源码 revision `1e6ccf7cacc8c43051e07a773128261440d87609`；本次未修改产品实现或部署脚本，完整工作区重建与安装证据由[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#deploy-all-local-20261029)维护。通牒回复、运行优化、token 优化与按钮职责仍分别由本文件既有 `player-ultimatum-reply-repair-20261029`、`diplomacy-runtime-optimization-code-20261029`、`diplomacy-token-optimization-20261029`、`diplomacy-entry-slim-20261029` 条目的符号、一基行号和原产品 revision 定义，不重复扩张代码验收范围。双 API/Bootstrap/seam/registration 与 410 个受管文件核对通过；文件部署验收不等同游戏内事件收尾、外交性能或 UI 实机验收。
+
 <a id="diplomacy-entry-slim-20261029"></a>
 ## 宣言按钮最终薄款比例 — 2026-10-29
 

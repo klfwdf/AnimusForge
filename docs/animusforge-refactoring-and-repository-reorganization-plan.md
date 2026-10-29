@@ -1,3 +1,12 @@
+<a id="deploy-all-local-20261029"></a>
+## 全部本地产品改动部署验收 — 2026-10-29
+
+- 授权：用户明确要求“部署所有本地改动”。源码为当前工作区 `main@1e6ccf7cacc8c43051e07a773128261440d87609`；构建前后产品文件无未提交差异，保留共享文档、方案和本地工具目录的既有修改。包含 `421aad45e` 通牒回复修复、`e81e0859c` 外交运行优化、`4a0f405bd` token 优化、`a176510db` 最终薄款按钮及该工作区其余已提交产品内容，未另选隔离产品快照。
+- 原流程 `scripts/build/build_single_module.ps1 -Configuration Debug -Stage` 完整重建 1.3、1.4 和 Bootstrap；参考程序集分别为 `_deps_auto` 的 1.3.15 与 `artifacts/diplomacy-runtime-20261019/refs14` 的 1.4.8。双实现 coup seam、registration smoke 与统一 Stage 均成功。随后使用原 `scripts/build/deploy_module.ps1`，未修改构建/部署脚本。
+- 安装目标：`E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。执行前未发现游戏/启动器进程；原脚本成功更新 **35** 个文件。安装后 **410** 个受管文件 SHA256 均与预检候选一致；预先记录的 **4,450** 个玩家配置、提示词、导出文件和终端配置内容均未改变；无 `.af2-*.tmp` 遗留。未知安装文件按原部署规则保留，没有部署 Recovery/自动回滚。
+- 本地证据：`artifacts/deploy-all-local-20261029/` 下 `source-revision.txt`、`build-stage.log`、`deploy.log`、`preflight.json`、`protected-before.json`、`deployment-receipt.json` 与 `verify_deployment.py`。原有项目 Stage 保存在同目录 `previous-stage/`，未删除旧输出；新完整 Stage 位于 `bin/Debug/single_module_stage/AnimusForge`。
+- 状态 **DEPLOYED / FILE_VERIFIED / LIVE_NOT_RUN / NOT_PUSHED**。本条明确替代 [通牒修复](#player-ultimatum-reply-repair-20261029)、[运行优化](#diplomacy-runtime-optimization-20261029)、[token 优化](#diplomacy-token-optimization-20261029) 的未部署状态，并取代[薄款按钮隔离部署](#diplomacy-entry-slim-20261029)作为当前安装内容。各原条目的离线覆盖范围、既有失败和实机未验限制继续有效；本次未启动游戏、读取/修复存档、发起模型请求、发行打包或推送。源码职责仍见[已核对代码图](architecture/af-framework-code-scope.md#deploy-all-local-20261029)。
+
 <a id="diplomacy-entry-slim-20261029"></a>
 ## 确认预览后的宣言按钮尺寸与部署 — 2026-10-29
 

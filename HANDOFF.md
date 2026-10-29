@@ -1,3 +1,8 @@
+<a id="deploy-all-local-20261029"></a>
+## 全部本地产品改动已部署 — 2026-10-29
+
+用户明确要求“部署所有本地改动”。从当前工作区 `main@1e6ccf7ca` 完整重建并通过原脚本安装，包含通牒回复修复、外交运行/token 优化及最终薄款按钮。**DEPLOYED / FILE_VERIFIED / LIVE_NOT_RUN / NOT_PUSHED**：双 API/Bootstrap/seam/registration 与 Stage 成功；更新 35 个文件，410 个受管文件校验通过，4,450 个玩家文件内容保持一致。本条替代相关产品条目的未部署状态，实机与既有专项测试限制仍保留。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-all-local-20261029)及[代码范围](docs/architecture/af-framework-code-scope.md#deploy-all-local-20261029)。
+
 <a id="diplomacy-entry-slim-20261029"></a>
 ## 外交宣言薄款按钮已部署 — 2026-10-29
 
