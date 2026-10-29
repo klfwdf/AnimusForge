@@ -69,11 +69,13 @@ internal static class WorldDiplomacyPropagationApplication
             round.RootDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
                 round.RootDocumentId, document.DocumentId);
             round.LastActivityDay = currentDay();
-            WorldDiplomacyRoundParticipant authorParticipant = WorldDiplomacyStructureRules.EnsureRoundParticipant(
-                round, authorId, "active", mandatoryReply: false);
-            authorParticipant.SelectedForRelay = true;
+            // Publication transports a declaration; event membership is decided by
+            // the event owner from the published answer, never by transport alone.
+            WorldDiplomacyRoundParticipant authorParticipant = round.EventSystemVersion > 0
+                ? round.Participants.FirstOrDefault(x => x.KingdomId == authorId)
+                    ?? WorldDiplomacyStructureRules.EnsureRoundParticipant(round, authorId, "observer", false)
+                : WorldDiplomacyStructureRules.EnsureRoundParticipant(round, authorId, "active", false);
             authorParticipant.IsPlayerAsync = isPlayerKingdom();
-            WorldDiplomacyStructureRules.AddParticipantToRelayRouteIfNeeded(round, authorId, participantLimit());
             authorParticipant.LastSpokeDay = currentDay();
             if (document.IsResponse)
             {

@@ -30,7 +30,7 @@ public static class DiplomacyRoundWorkRules
     {
         if (round == null || document == null || !document.IsReadyForPublication || document.IsPlayerAuthored) return;
         foreach (var receipt in round.PlayerResponses ?? Enumerable.Empty<WorldDiplomacyPlayerResponse>())
-            if (receipt.Status == "pending" && receipt.KingdomId == document.AuthorKingdomId
+            if (receipt.Status == "pending" && string.IsNullOrEmpty(receipt.AnswerDocumentId) && receipt.KingdomId == document.AuthorKingdomId
                 && (document.AnsweredPlayerDocumentIds ?? new List<string>()).Contains(receipt.SourceDocumentId, StringComparer.OrdinalIgnoreCase))
             { receipt.AnswerDocumentId = document.DocumentId; receipt.Status = "answered"; }
     }
@@ -59,9 +59,18 @@ public static class DiplomacyRoundWorkRules
         tail.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_006", "\n[Latest public context for this shared negotiation]"));
         tail.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_007", "Event=") + round.RoundId + WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_008", "; this is the same diplomatic negotiation, and subsequent kingdoms must continue from the latest discussion. The declarations below are public statements only; actual effect depends on existing mechanical results."));
         if (!string.IsNullOrWhiteSpace(round.ExternalOpeningContext)) tail.AppendLine(round.ExternalOpeningContext);
-        foreach (var document in material.Where(x => x.RoundId == round.RoundId).OrderByDescending(x => x.CreatedUtcTicks).Take(12).Reverse())
+        int historyBudget = 24000;
+        var history = new List<WorldDiplomacyDocument>();
+        foreach (var document in material.Where(x => x.RoundId == round.RoundId && !sources.Contains(x.DocumentId))
+            .OrderByDescending(x => x.CreatedUtcTicks).Take(12))
+        {
+            int cost = (document.Body ?? "").Length + (document.Title ?? "").Length + document.DocumentId.Length + 100;
+            if (cost > historyBudget) continue;
+            history.Add(document); historyBudget -= cost;
+        }
+        foreach (var document in history.AsEnumerable().Reverse())
             tail.AppendLine(document.DocumentId + " | " + document.AuthorKingdomName + " | " + document.Title + "\n"
-                + ((document.Body ?? "").Length > 2500 ? document.Body.Substring(0, 2500) : document.Body));
+                + document.Body);
         if (sources.Count > 0)
         {
             tail.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_009", "[Player declarations that require substantive responses this time]"));

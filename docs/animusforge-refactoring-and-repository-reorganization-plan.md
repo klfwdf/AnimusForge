@@ -1,3 +1,12 @@
+<a id="vassal-diplomacy-buttons-20261029"></a>
+## 封臣原版外交按钮接管对齐 — 2026-10-29
+
+状态 **OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。用户批准封臣原版外交按钮与国王一致。产品 59b902c3d7bef48fb3fc3f38d23b0f8552d47379，起点28567b873，检查点43a0ee216。仅将按钮构造/刷新、页面说明及点击拦截的判断由“玩家统治国家”改为“玩家所属国家”；复用原接管行为及CN/EN提示，不改君主专用宣言权限、后台外交/议和准入、存档或MCM设置。既有开关关闭时保留原版行为，无国身份不拦截。仅原有UI构造/刷新/点击运行，O(1)资格读取及页面少量按钮遍历，不新增Tick扫描或IO。
+
+修复前DLL在新增原生VM检查的 constructor takeover vassal:Alliance 断言失败。原build_single_module.ps1 Debug build-only双API（1.3 v1.3.15.110062、1.4 v1.4.6.115628）、Bootstrap、双coup seam及managed registration通过。1.4实际DLL/原生VM与既有声明入口Widget合集259项；1.3受影响原生提议专项158项通过，均涵盖君主/封臣/无国×AI开关×CN/EN×结盟/宣战/贸易/议和，真实构造与RefreshValues Harmony回调、原生ExecuteAction回调拦截及单条居中说明。1.4另覆盖君主专用声明权限，新增专项复用真实所属国判断和合成Campaign，AI/君主身份及提示显示边界为fixture。
+
+1.3首次引用不全缺TwoDimension，补本地参考后整页旧检查仍遇SandBox.View.MapScreen.OnFadeInAndOut类型不匹配；未改产品或放宽断言，保留默认整页测试并新增proposals-only选项单独验本次实际原生VM路径。不能声称1.3整页注册/渲染专项通过。测试选择参数不改变产品；1.4既有合集通过证据复用，最终仅增加专项选择参数及换行整理后1.3专项通过。保留原编译及NU1900离线审计警告。证据 artifacts/vassal-diplomacy-buttons-20261029/receipt.json、baseline.log、build.log、test14.log、proposals13.log。无部署、实机、模型调用、打包、存档写入或push；已部署版本仍不包含本次修复。聚焦逆向提交可回退，既有dirty资料保持。[代码范围](architecture/af-framework-code-scope.md#vassal-diplomacy-buttons-20261029)。
+
 ## 长文本编辑器边界修复（2026-10-26，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
 - 用户确认玩家发行版为1.6.5，并授权限定修复后推送main。基线ba3a47e1a，意图检查点6fb34521e，产品提交17a1950c6；原工作区和其他作者内容保持，仅从远端主线增加本任务提交，不带入旧本地历史，不修改版本号。

@@ -106,6 +106,8 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
         Calls.Add("RoundParticipantLimit");
         return default;
     }
+    public int EventIntervalDays = 3;
+    public virtual int NewEventIntervalDays() => EventIntervalDays;
     public virtual int OrdinaryRoundLimit()
     {
         Calls.Add("OrdinaryRoundLimit");
@@ -547,11 +549,7 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
         Calls.Add("ActionSelection");
         return null;
     }
-    public virtual IWorldDiplomacyNoActionPort NoActionPort(string authorId, string targetId)
-    {
-        Calls.Add("NoActionPort");
-        return null;
-    }
+
     public virtual IWorldDiplomacyPeaceAdmissionPort PeaceAdmission()
     {
         Calls.Add("PeaceAdmission");
@@ -592,21 +590,13 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
         Calls.Add("InitialPeace");
         return null;
     }
-    public virtual IWorldDiplomacyPrestigePort Prestige()
-    {
-        Calls.Add("Prestige");
-        return null;
-    }
+
     public virtual IWorldDiplomacyThreatSettlementPort ThreatSettlement()
     {
         Calls.Add("ThreatSettlement");
         return null;
     }
-    public virtual IWorldDiplomacyThreatBindingPort ThreatBinding()
-    {
-        Calls.Add("ThreatBinding");
-        return null;
-    }
+
     public virtual IWorldDiplomacyAnalysisPort AnalysisPort()
     {
         Calls.Add("AnalysisPort");
@@ -691,6 +681,7 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
         Calls.Add("RealmRulerDisplayName");
         return "";
     }
+    public virtual string RealmRulerTitle(string kingdomId) => "";
     public virtual int GetRoundParticipantLimit()
     {
         Calls.Add("GetRoundParticipantLimit");

@@ -67,7 +67,7 @@ internal static class RuntimeLanguageChecks
         Check((string)Call(archive,"ProjectTitleForDisplay","weekly_report:world:0:","edited title") == "edited title", "edited opening title remains literal");
         string heading = (string)Call(archive,"ProjectBulletinHeadingsForDisplay","【大事件】\nText\n【其他消息】\nItem");
         Check(heading == rows["AF_UI_Weekly_MajorHeading"] + "\nText\n" + rows["AF_UI_Weekly_MinorHeading"] + "\nItem", "legacy bulletin headings follow UI");
-        string date = (string)Call(product.GetType("AnimusForge.DiplomacyDateProjection",true),"ForUi","1084年秋季2天");
+        string date = (string)Call(product.GetType("AnimusForge.CampaignDateProjection",true),"ForUi","1084年秋季2天");
         Check(language != "English" || (!date.Contains("年") && date.Contains("1084") && date.Contains("2")), "known diplomacy date follows English UI");
         // UI language changes must not select a different Prompt package.
         Type profileType = product.GetType("AnimusForge.MyBehavior+NpcPersonaProfile", true);

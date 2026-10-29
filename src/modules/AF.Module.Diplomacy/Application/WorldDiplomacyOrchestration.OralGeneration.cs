@@ -77,7 +77,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (!invalid) return true;
             if (string.IsNullOrEmpty(block)) block = "agreement_no_longer_executable";
         }
-        CancelUnpublishedCommitmentWork(item.ArrangementId, item.Version, block);
+        InvalidateImpossibleCommitment(item.ArrangementId, item.Version, block);
         return false;
     }
 
@@ -142,11 +142,10 @@ internal sealed partial class WorldDiplomacyOrchestration
             sb.AppendLine(world.RecentNativeSignalContext(item.ActorKingdomId, item.TargetKingdomId));
             sb.AppendLine(world.RecentBilateralBattleContext(item.ActorKingdomId, item.TargetKingdomId));
         }
-        sb.AppendLine(DialogueHost?.PersonalMemory(item.RulerId, ResolveRound(item.RoundId)?.RoundTopic,
-            _host.PartyNameOrEmpty(item.TargetKingdomId)));
+        // Shared relevant personal/diplomatic recall is assembled once at the privacy boundary.
         job.UserPrompt = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(sb.ToString(), DiplomacyPromptTexts.Get);
         job.CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey;
-        job.MaxTokens = WorldDiplomacyPromptContractRules.GetDeclarationOutputTokenBudget(range.maximum, _host.GenerationMaxTokens()); job.LlmMessages?.Clear(); job.SemanticRepairAttempts = 0;
+        job.MaxTokens = _host.GenerationMaxTokens(); job.LlmMessages?.Clear(); job.SemanticRepairAttempts = 0;
         job.RoundConversationRevision = ResolveRound(item.RoundId).ConversationRevision;
         job.PresentedLegalActionSignature = BuildOralDeclarationSignature(job);
         if (string.IsNullOrEmpty(job.SuspendedReason)) job.OralDraftingContractVersion = CurrentOralDraftingContractVersion;
@@ -201,13 +200,35 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             item.Status = "deferred"; item.Reason = Limit(reason, 180);
             item.GenerationFailureAttempts++;
-            item.GenerationRetryAfterDay = item.GenerationFailureAttempts < 3 ? _host.CurrentDay() + 1 : int.MaxValue;
+            item.GenerationRetryAfterDay = DiplomacyCommitmentRules.RetryDay(_host.CurrentDay(), item.GenerationFailureAttempts);
             RecordDialogueArrangementFact(item, "technical_delay:" + item.GenerationRetryAfterDay,
                 DiplomacyCompatibilityTexts.Get("OralGeneration_DelayedFact"));
             _host.Log("oral declaration deferred id=" + item.ArrangementId + " reason=" + item.Reason);
-            if (item.GenerationFailureAttempts >= 3) { SuspendDiplomacyJob(job, reason); return; }
         }
         RemoveJob(job.JobId);
+    }
+
+    // A committed action does not depend indefinitely on successful creative
+    // writing. After three failed drafts, publish only the accepted public facts.
+    // This path uses the identical authority, clause and execution validators.
+    private string BuildCommittedDeclaration(WorldDiplomacyDialogueArrangement item)
+    {
+        string action = DiplomacyPromptTexts.Get("CommittedDeclaration_Action_" + item.Action, item.Action.ToString());
+        string move = item.IsWithdrawal ? "Withdraw" : HasCurrentPlayerConsent(item) ? "AcceptProposal" : item.Move.ToString();
+        string statement = DiplomacyPromptTexts.Format("CommittedDeclaration_" + move,
+            "Our proposal concerns {ACTION}.", "ACTION", action);
+        if (item.Move == DialogueDiplomaticMove.NewMatter && !IsProposalIntent(DialogueIntent(item.Action)))
+            statement = DiplomacyPromptTexts.Format("CommittedDeclaration_Unilateral", "Our decision is {ACTION}.", "ACTION", action);
+        string body = DiplomacyPromptTexts.Format("CommittedDeclaration_Body", "{ACTOR} addresses {TARGET}. {DECISION} {TERMS}",
+            "ACTOR", _host.PartyNameOrEmpty(item.ActorKingdomId), "TARGET", _host.PartyNameOrEmpty(item.TargetKingdomId),
+            "DECISION", statement, "TERMS", DescribeDialogueTerms(item.Terms.ToTerms()));
+        if (item.Action == DialogueDiplomaticAction.Alliance && item.Move != DialogueDiplomaticMove.RejectProposal)
+            body += " " + DiplomacyPromptTexts.Get("CommittedDeclaration_AllianceTerms",
+                "This alliance establishes non-aggression and cooperation. Joining a particular war requires separate agreement; aid expressly promised will be fulfilled.");
+        return new JObject {
+            ["title"] = DiplomacyPromptTexts.Format("CommittedDeclaration_Title", "Declaration of {ACTOR}", "ACTOR", _host.PartyNameOrEmpty(item.ActorKingdomId)),
+            ["body"] = body, ["actions"] = new JArray()
+        }.ToString(Formatting.None);
     }
 
     private void CommitOralDeclaration(WorldDiplomacyJob job, string raw)
@@ -257,15 +278,14 @@ internal sealed partial class WorldDiplomacyOrchestration
         document.RequiresResponse = IsProposalIntent(intent); document.AnalysisStatus = "success";
         document.RespondingToOfferDocumentId = item.SourceDocumentId; document.RespondingToOfferActionId = item.SourceActionId;
         document.SourceDocumentId = item.SourceDocumentId;
-        document.InternationalReputationEvaluationDelta = ReadInteger(json, "international_reputation_delta");
-        document.InternationalReputationEvaluationReason = ReadString(json, "international_reputation_reason");
-        document.InternationalReputationEvaluationSource = "ai_generation";
         var round = ResolveRound(item.RoundId); round.RootDocumentId = string.IsNullOrEmpty(round.RootDocumentId) ? document.DocumentId : round.RootDocumentId;
         try
         {
             _oralAgreementExecutionDocumentId = document.DocumentId;
             ProcessAnalyzedDocument(document, intent, document.Commitment, document.RequiresResponse, ReadString(json, "tone"), 1f);
-            item.Status = document.IsReadyForPublication ? (document.ChangedDiplomaticState ? "executed" : "published") : "cancelled";
+            if (document.EventExecutionPending) return;
+            item.Status = item.TreatyExecutionState == "uncertain" ? "execution_uncertain"
+                : document.IsReadyForPublication ? (document.ChangedDiplomaticState ? "executed" : "published") : "cancelled";
             item.Reason = document.MechanicalResult ?? document.AnalysisStatus;
             if (item.IsWithdrawal && document.IsReadyForPublication)
             {
@@ -283,7 +303,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             // Once execution was entered, unknown/partial outcomes must never be
             // replayed as a fresh agreement merely to retry publication or memory.
-            item.Status = document.IsReadyForPublication ? "published" : "execution_uncertain";
+            item.Status = item.TreatyExecutionState is "started" or "uncertain" ? "execution_uncertain"
+                : document.IsReadyForPublication ? "published" : "execution_uncertain";
             item.Reason = Limit(ex.Message, 180); _host.Log("oral declaration execution boundary " + item.Reason);
         }
         finally { _oralAgreementExecutionDocumentId = ""; RemoveJob(job.JobId); }
@@ -299,6 +320,65 @@ internal sealed partial class WorldDiplomacyOrchestration
             && DialogueRulerIsCurrent(item.ActorKingdomId, item.RulerId)
             && document.AuthorKingdomId == item.ActorKingdomId && document.TargetKingdomId == item.TargetKingdomId
             && document.Intent == OralIntent(item) && document.TreatyTerms?.ToTerms().Equals(item.Terms.ToTerms()) == true;
+    }
+
+    private WorldDiplomacyDialogueArrangement BoundOralTreaty(WorldDiplomacyDocument document)
+    {
+        if (string.IsNullOrEmpty(document?.DialogueArrangementId)) return null;
+        var item = Storage.DialogueArrangements?.FirstOrDefault(x => x.ArrangementId == document.DialogueArrangementId);
+        return item != null && item.Action is DialogueDiplomaticAction.Alliance or DialogueDiplomaticAction.Trade
+            && item.Move == DialogueDiplomaticMove.NewMatter && !item.IsWithdrawal
+            && !string.IsNullOrEmpty(item.ConfirmedPlayerRulerId) && string.IsNullOrEmpty(item.SupersededByArrangementId)
+            && item.Version == document.DialogueArrangementVersion && item.DocumentId == document.DocumentId
+            && item.RoundId == document.RoundId && item.RulerId == document.AuthorRulerId
+            && item.ActorKingdomId == document.AuthorKingdomId && item.TargetKingdomId == document.TargetKingdomId
+            && document.Intent == ProposalIntentToResponseIntent(DialogueIntent(item.Action), true)
+            && document.TreatyTerms?.ToTerms().Equals(item.Terms.ToTerms()) == true ? item : null;
+    }
+
+    // Existing daily commitment maintenance only. Recover the exact legacy
+    // premature-publication shape, never a failure, unknown result or new offer.
+    private void RecoverSkippedOralTreaty(WorldDiplomacyDialogueArrangement item)
+    {
+        if (item.TreatyExecutionState == "started")
+        {
+            item.TreatyExecutionState = "uncertain"; item.Status = "execution_uncertain";
+            _host.Log("oral treaty interrupted attempt retained id=" + item.ArrangementId);
+            return;
+        }
+        if (!string.IsNullOrEmpty(item.TreatyExecutionState) || item.ExplicitlyDeferred
+            || item.Status is not ("accepted" or "deferred" or "published")) return;
+        var document = ResolveDocument(item.DocumentId);
+        if (document?.IsReadyForPublication != true || !ReferenceEquals(BoundOralTreaty(document), item)
+            || document.IsPlayerAuthored || document.AnalysisStatus != "success" || document.Commitment != "acceptance"
+            || document.RequiresResponse || document.ChangedDiplomaticState || document.Actions?.Count > 0
+            || !string.IsNullOrEmpty(document.MechanicalResult) || !string.IsNullOrEmpty(item.Reason)
+            || !string.IsNullOrEmpty(document.SourceDocumentId) || !string.IsNullOrEmpty(document.RespondingToOfferDocumentId)
+            || !string.IsNullOrEmpty(item.SourceDocumentId) || !string.IsNullOrEmpty(item.SourceActionId)
+            || !HasCurrentPlayerConsent(item) || !DialogueRulerIsCurrent(item.ActorKingdomId, item.RulerId)
+            || !HasCurrentDiplomaticRulerMemorySnapshot(item.ActorKingdomId, item.RulerId)
+            || !IsLiveRound(ResolveRound(item.RoundId))) return;
+        bool alliance = item.Action == DialogueDiplomaticAction.Alliance;
+        if (!(alliance ? _host.AllianceKnown() : _host.TradeKnown())) return;
+        // An already live treaty satisfies the promise without restarting it or
+        // claiming that this recovery created it. In particular, trade keeps its expiry.
+        if (alliance ? _host.PartiesAllied(item.ActorKingdomId, item.TargetKingdomId)
+            : _host.TradeAgreementExists(item.ActorKingdomId, item.TargetKingdomId))
+        {
+            item.TreatyExecutionState = "satisfied"; item.Status = "executed";
+            document.EventExecutionPending = false;
+            item.Reason = DiplomacyMiscPromptTexts.Get(alliance ? "Offer_AllianceAlreadyAllied" : "Offer_TradeAlreadyTrading",
+                alliance ? "Alliance not executed: factions are already allied" : "Trade agreement not executed: factions already have a trade agreement");
+            _host.Log("oral treaty recovery found existing effect id=" + item.ArrangementId);
+            return;
+        }
+        if (_host.IsEliminatedParty(item.ActorKingdomId) || _host.IsEliminatedParty(item.TargetKingdomId)
+            || !_host.HasIndependentAuthority(item.ActorKingdomId) || !_host.HasIndependentAuthority(item.TargetKingdomId)
+            || TryGetDiplomaticStateViolation(document.Intent, item.ActorKingdomId, item.TargetKingdomId, out _)
+            || !ValidateFormalTreatyTerms(document.Intent, item.Terms.ToTerms(), item.ActorKingdomId, item.TargetKingdomId, out _)) return;
+        item.TreatyExecutionState = "pending"; item.Status = "accepted";
+        document.EventExecutionPending = true;
+        _host.Log("oral treaty skipped execution recovered id=" + item.ArrangementId + " document=" + document.DocumentId);
     }
 
     private WorldDiplomacyOfferOutcome ExecuteConfirmedOralPlayerAgreement(WorldDiplomacyDocument document)

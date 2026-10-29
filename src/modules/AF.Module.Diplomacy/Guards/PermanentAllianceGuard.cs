@@ -7,7 +7,6 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Election;
-using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -79,7 +78,6 @@ internal static class PermanentAllianceGuard
 		bool dailyTickPatched = TryPatch(harmony, typeof(Patch_AllianceCampaignBehavior_DailyTickClan));
 		bool startAlliancePatched = TryPatch(harmony, typeof(Patch_AllianceCampaignBehavior_StartAlliance));
 		bool voteOutcomePatched = TryPatch(harmony, typeof(Patch_DeclareWarDecision_ApplyChosenOutcome));
-		bool allianceDisplayPatched = TryPatchAllianceDisplay(harmony);
 		if (!endAlliancePatched)
 		{
 			Logger.Log("PermanentAlliance",
@@ -87,50 +85,12 @@ internal static class PermanentAllianceGuard
 		}
 		if (endAlliancePatched && dailyTickPatched && startAlliancePatched && voteOutcomePatched)
 		{
-			Logger.Log("PermanentAlliance", "Permanent alliance guard patches applied successfully. Display=" + allianceDisplayPatched);
+			Logger.Log("PermanentAlliance", "All permanent alliance guard patches applied successfully.");
 			return;
 		}
 		Logger.Log("PermanentAlliance", "Permanent alliance patch registration incomplete: EndAlliance="
 			+ endAlliancePatched + " DailyTickClan=" + dailyTickPatched
 			+ " StartAlliance=" + startAlliancePatched + " DeclareWarVoteOutcome=" + voteOutcomePatched);
-	}
-
-	private static bool TryPatchAllianceDisplay(Harmony harmony)
-	{
-		try
-		{
-			Type vmType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement.Diplomacy.KingdomTruceItemVM");
-			MethodInfo updateMethod = AccessTools.Method(vmType, "UpdateDiplomacyProperties");
-			if (updateMethod == null)
-			{
-				Logger.Log("PermanentAlliance", "Alliance duration display patch target was not found.");
-				return false;
-			}
-			harmony.Patch(updateMethod, postfix: new HarmonyMethod(typeof(PermanentAllianceGuard), nameof(AllianceDisplayPostfix)));
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("PermanentAlliance", "Alliance duration display patch failed: " + ex.Message);
-			return false;
-		}
-	}
-
-	private static void AllianceDisplayPostfix(object __instance)
-	{
-		try
-		{
-			if (__instance == null) return;
-			PropertyInfo hasAlliance = AccessTools.Property(__instance.GetType(), "HasAlliance");
-			if (hasAlliance?.GetValue(__instance, null) is not bool active || !active) return;
-			PropertyInfo endTime = AccessTools.Property(__instance.GetType(), "AllianceEndTimeStr");
-			if (endTime?.CanWrite != true) return;
-			endTime.SetValue(__instance, new TextObject("{=AF_DIP_UI_AllianceInfinite}Indefinite").ToString(), null);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("PermanentAlliance", "Alliance duration display projection failed: " + ex.Message);
-		}
 	}
 
 	private static bool TryPatch(Harmony harmony, Type patchType)

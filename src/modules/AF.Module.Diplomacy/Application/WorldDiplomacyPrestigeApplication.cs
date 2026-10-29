@@ -7,6 +7,12 @@ using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
 
+internal interface IWorldDiplomacyThreatMechanicsHost
+{
+    IWorldDiplomacyPrestigePort Prestige();
+    IWorldDiplomacyThreatBindingPort ThreatBinding();
+}
+
 internal sealed class WorldDiplomacyPrestigeCourt
 {
     internal string KingdomId { get; }
@@ -42,58 +48,9 @@ internal static class WorldDiplomacyPrestigeApplication
         storage.NationalPrestigeByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         int updated = WorldDiplomacyReputationRules.ApplyNationalPrestigeDelta(storage.NationalPrestigeByKingdom,
             normalizedId, delta, document, reason, port.KingdomName);
-        Reconcile(storage, port, normalizedId);
+        try { Reconcile(storage, port, normalizedId); }
+        catch (Exception ex) { port.Log("prestige relation reconciliation deferred: " + ex.GetType().Name); }
         return updated;
-    }
-
-    internal static void SettleDocument(ref WorldDiplomacyStorage storage, IWorldDiplomacyPrestigePort port,
-        WorldDiplomacyDocument document)
-    {
-        storage ??= new WorldDiplomacyStorage();
-        storage.InternationalReputationByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(
-            storage.InternationalReputationByKingdom, document, port.KingdomName, port.Log);
-    }
-
-    internal static void RecoverDocuments(ref WorldDiplomacyStorage storage, IWorldDiplomacyPrestigePort port)
-    {
-        WorldDiplomacyStorage canonical = storage;
-        RecoverUnsettledAiInternationalReputation(storage?.Documents,
-            document => SettleDocument(ref canonical, port, document), port.Log);
-        storage = canonical;
-    }
-
-    public static void RecoverUnsettledAiInternationalReputation(List<WorldDiplomacyDocument> documents, Action<WorldDiplomacyDocument> settleReputation, Action<string> log)
-{
-		if (documents == null || settleReputation == null) return;
-		int recovered = 0;
-		foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(documents
-				.Where(x => x != null && !x.IsPlayerAuthored && x.IsReadyForPublication
-					&& !x.InternationalReputationSettled
-					&& (x.InternationalReputationEvaluationDelta != 0
-						|| !string.IsNullOrWhiteSpace(x.InternationalReputationEvaluationReason)))))
-		{
-			settleReputation(document);
-			recovered++;
-		}
-		if (recovered > 0)
-		{
-			log?.Invoke("international-reputation.recovered documents="
-				+ recovered.ToString(CultureInfo.InvariantCulture));
-		}
-	}
-
-    internal static void NaturalChange(WorldDiplomacyStorage storage, IWorldDiplomacyPrestigePort port, bool anchorOnly)
-    {
-        if (storage == null || !port.CampaignAvailable) return;
-        if (!anchorOnly) storage.InternationalReputationByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        storage.InternationalReputationNaturalChangeLastDayByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        if (anchorOnly)
-            WorldDiplomacyReputationRules.AnchorInternationalReputationNaturalChangeDays(
-                storage.InternationalReputationNaturalChangeLastDayByKingdom, port.KingdomIds(true), port.CurrentDay());
-        else
-            WorldDiplomacyReputationRules.ProcessInternationalReputationNaturalChange(storage.InternationalReputationByKingdom,
-                storage.InternationalReputationNaturalChangeLastDayByKingdom, port.KingdomIds(true), port.CurrentDay(), port.Log);
     }
 
     internal static void ReconcileAll(WorldDiplomacyStorage storage, IWorldDiplomacyPrestigePort port)

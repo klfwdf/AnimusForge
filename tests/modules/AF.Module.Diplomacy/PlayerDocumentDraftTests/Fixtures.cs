@@ -1,6 +1,16 @@
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 
+namespace AnimusForge.Refactor.Domain
+{
+    // This fixture exercises prepared HTTP calls; persisted fingerprinting is
+    // covered by the separate diplomacy lifecycle replay and must not run here.
+    internal static class WorldDiplomacyPromptContractRules
+    {
+        internal static string StablePromptHash(string value) => throw new NotSupportedException("Fingerprinting is outside the prepared-transport fixture.");
+    }
+}
+
 namespace TaleWorlds.Library
 {
     [AttributeUsage(AttributeTargets.Property)] public sealed class DataSourceProperty : Attribute { }
@@ -25,8 +35,10 @@ namespace AnimusForge
         internal string WorldDiplomacyPrompt = "简明冷峻";
         internal int MainApiMaxTokens = 12000, EventAndRebellionApiMaxTokens = 4000;
         internal float MainTemperature = 0.7f, EventTemperature = 0.4f;
-        internal bool MainApiThinkingEnabled = true, EventAndRebellionApiThinkingEnabled;
-        internal string MainEffort = "medium", EventEffort = "high";
+        internal bool MainApiThinkingEnabled = true, EventAndRebellionApiThinkingEnabled = true;
+        internal string MainEffort = "high", EventEffort = "high";
+        internal string GetMainApiReasoningEffort() => MainEffort;
+        internal string GetEventAndRebellionApiReasoningEffort() => EventEffort;
         internal int MinChars = 40, MaxChars = 200;
         internal static int Reads;
         internal static bool StrictThread = true;
@@ -43,13 +55,11 @@ namespace AnimusForge
         internal string GetEffectiveMainModelName() => ModelName;
         internal float GetEventAndRebellionApiTemperature() => EventTemperature;
         internal float GetMainApiTemperature() => MainTemperature;
-        internal string GetMainApiReasoningEffort() => MainEffort;
-        internal string GetEventAndRebellionApiReasoningEffort() => EventEffort;
         internal static string GetEffectiveApiUrl(string value) => LlmApiCompat.GetEffectiveChatApiUrl(value);
         internal static int ClampApiMaxTokens(int value, int fallback) => Math.Max(512, Math.Min(64000, value > 0 ? value : fallback));
         internal static float ClampApiTemperature(float value) => Math.Max(0, Math.Min(2, value));
         internal static void ApplyThinkingControls(JObject body, string url, string model, bool thinkingEnabled, string effort, out string mode)
-        { body["reasoning_effort"] = thinkingEnabled ? effort : "none"; mode = "fixture_" + (thinkingEnabled ? effort : "disabled"); }
+        { body["reasoning_effort"] = thinkingEnabled ? effort : "none"; mode = thinkingEnabled ? "fixture_enabled" : "fixture_disabled"; }
         internal static void RemoveThinkingControls(JObject body) => body.Remove("reasoning_effort");
     }
 

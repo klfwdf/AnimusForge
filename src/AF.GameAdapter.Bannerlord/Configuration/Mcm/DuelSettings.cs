@@ -91,6 +91,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 
 
+	private static readonly string PreviousDefaultWorldDiplomacyContractCoreV25Cn = LegacySettingsPrompts.Get(nameof(PreviousDefaultWorldDiplomacyContractCoreV25Cn));
+	private static readonly string PreviousDefaultWorldDiplomacyContractCoreV25En = LegacySettingsPrompts.Get(nameof(PreviousDefaultWorldDiplomacyContractCoreV25En));
+
 	private static readonly string PreviousDefaultWorldDiplomacyPrompt = LegacySettingsPrompts.Get(nameof(PreviousDefaultWorldDiplomacyPrompt));
 
 	private static readonly string PreviousDefaultWorldDiplomacyPromptV1 = LegacySettingsPrompts.Get(nameof(PreviousDefaultWorldDiplomacyPromptV1));
@@ -2008,40 +2011,49 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[Obsolete("Use NpcRulerPolicyIntervalDays / GetNpcRulerPolicyIntervalDaysForExternal instead.")]
 	public int NpcRulerPolicyIntervalHours { get; set; } = DefaultNpcRulerPolicyIntervalHours;
 
-	[SettingPropertyBool("{=AF_MCM_Diplomacy_Enable}Enable AI diplomacy", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Enable_Hint}When enabled, kingdoms publish declarations, negotiate, and take diplomatic actions. Diplomacy and clerk drafting reuse the event/rebellion API and fall back to the main API when incomplete. When disabled, native kingdom diplomacy decisions resume.")]
+	[SettingPropertyBool("{=AF_MCM_Diplomacy_Enable}Enable AI diplomacy", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Enable_Hint}Disabling pauses ongoing diplomacy and restores native decisions. Existing effects keep their original expiry. Enabling resumes after checking current facts. After fixing a failed API or model configuration, disable and re-enable to retry held requests with a fresh limited budget. Already executed actions are preserved; uncertain execution results require evidence review.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Base_Group}17. AI diplomacy (testing)/1. Basics", GroupOrder = 170)]
 	public bool EnableWorldDiplomacy { get; set; } = true;
 
-	[SettingPropertyBool("{=AF_MCM_Diplomacy_NewGamePeace}Peace at the start of a new game", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_NewGamePeace_Hint}Applies only to newly created saves and ends kingdom wars present at campaign start. Disabled by default; changing it does not reset wars in the current save.")]
+	[SettingPropertyBool("{=AF_MCM_Diplomacy_NewGamePeace}Peace at the start of a new game", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_NewGamePeace_Hint}Enabled by default. Ends initial kingdom wars only in a newly created campaign. Existing saved settings and wars in loaded saves are preserved.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Base_Group}17. AI diplomacy (testing)/1. Basics", GroupOrder = 170)]
-	public bool WorldDiplomacyStartNewGameAtPeace { get; set; } = false;
+	public bool WorldDiplomacyStartNewGameAtPeace { get; set; } = true;
 
 	[SettingPropertyBool("{=AF_MCM_Diplomacy_MapNotice}Show declaration delivery notices", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_MapNotice_Hint}Delivered diplomatic declarations show a lower-left text notice instead of a right-side notification. Hiding notices does not affect negotiation, propagation, bulletin material, or kingdom announcements.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Base_Group}17. AI diplomacy (testing)/1. Basics", GroupOrder = 170)]
 	public bool EnableWorldDiplomacyMapNotifications { get; set; } = true;
 
-	[Obsolete("Legacy configuration compatibility only; ordinary event capacity and one opening per day replace the interval.")]
+	[SettingPropertyInteger("{=AF_TERMINAL_UI_WorldDiplomacyRoundIntervalDays_Title}New event interval (days)", 1, 30, "0", Order = 3, RequireRestart = false, HintText = "{=AF_TERMINAL_UI_WorldDiplomacyRoundIntervalDays_Hint}Game days between autonomous event openings; default 3. Does not delay player matters or accepted promises.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Base_Group}17. AI diplomacy (testing)/1. Basics", GroupOrder = 170)]
 	public int WorldDiplomacyRoundIntervalDays { get; set; } = 3;
+
+    [SettingPropertyInteger("{=AF_TERMINAL_UI_WorldDiplomacyPlayerContactIntervalDays_Title}NPC contact interval about the player (days)", 1, 30, "0", Order = 3, RequireRestart = false, HintText = "{=AF_TERMINAL_UI_WorldDiplomacyPlayerContactIntervalDays_Hint}Minimum game days between new NPC diplomatic contacts or invitations to the player. Default 5. Published contacts count once; mentions, replies, retries and player initiatives do not count. Existing obligations are never delayed.")]
+    [SettingPropertyGroup("{=AF_MCM_Diplomacy_Base_Group}17. AI diplomacy (testing)/1. Basics", GroupOrder = 170)]
+    public int WorldDiplomacyPlayerContactIntervalDays { get; set; } = 5;
+
+	[SettingPropertyInteger("{=AF_TERMINAL_UI_WorldDiplomacyWarTendency_Title}War tendency", 0, 100, "0", Order = 4, RequireRestart = false, HintText = "{=AF_TERMINAL_UI_WorldDiplomacyWarTendency_Hint}Ending route base weights (threat/agreement/stalemate): below 50 = 50/40/10; exactly 50 = 60/30/10; above 50 = 70/20/10. Three tiers, not continuous probabilities; bounded world-state adjustments and legality apply. Native peace scoring remains. Never overrides human decisions or accepted promises.")]
+	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Base_Group}17. AI diplomacy (testing)/1. Basics", GroupOrder = 170)]
+	public int WorldDiplomacyWarTendency { get; set; } = 50;
 
 	[SettingPropertyInteger("{=AF_MCM_Diplomacy_MaxRounds}Maximum concurrent ordinary diplomacy events", 1, WorldDiplomacyMaxConcurrentOrdinaryRoundsMax, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_MaxRounds_Hint}Shared by ordinary automatic diplomacy and policy triggers; default 3. When full, policy work remains pending while existing talks finish. Lowering the limit does not cancel existing events. At most one opens per day; player diplomacy and verbal-promise events do not use this slot.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Pacing_Group}17. AI diplomacy (testing)/2. Event pacing", GroupOrder = 170)]
 	public int WorldDiplomacyMaxConcurrentOrdinaryRounds { get; set; } = DefaultWorldDiplomacyMaxConcurrentOrdinaryRounds;
 
-	[SettingPropertyDropdown("{=AF_MCM_Diplomacy_Activity}Countries per diplomacy event", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Activity_Hint}Low allows up to 2 countries, medium up to 3, and high up to 5, including the initiator. Only countries with real diplomatic business are selected. Default: medium; this is per-event participation, not the concurrent-event count.")]
+	[SettingPropertyDropdown("{=AF_MCM_Diplomacy_Activity}Event participant count", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Activity_Hint}Low: 70% for 2 countries; standard: 70% for 3; high: 70% for 4. The other two sizes each have a 15% chance. Direct parties are always retained; remaining places use weighted selection without a score threshold. Limited by available independent countries. Applies to new selections; existing events keep their countries. Default: standard.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Pacing_Group}17. AI diplomacy (testing)/2. Event pacing", GroupOrder = 170)]
 	public Dropdown<string> WorldDiplomacyActivityDropdown
 	{
 		get => _worldDiplomacyActivityDropdown;
 		set => _worldDiplomacyActivityDropdown = BuildFixedDisplayDropdown(value, 1,
-			"{=AF_MCM_Option_DiplomacySmall}Small", "{=AF_MCM_Option_DiplomacyMedium}Medium", "{=AF_MCM_Option_DiplomacyLarge}Large");
+			"{=AF_MCM_Option_DiplomacySmall}Low", "{=AF_MCM_Option_DiplomacyMedium}Standard", "{=AF_MCM_Option_DiplomacyLarge}High");
 	}
 	private Dropdown<string> _worldDiplomacyActivityDropdown = BuildFixedDisplayDropdown(null, 1,
-		"{=AF_MCM_Option_DiplomacySmall}Small", "{=AF_MCM_Option_DiplomacyMedium}Medium", "{=AF_MCM_Option_DiplomacyLarge}Large");
+		"{=AF_MCM_Option_DiplomacySmall}Low", "{=AF_MCM_Option_DiplomacyMedium}Standard", "{=AF_MCM_Option_DiplomacyLarge}High");
 
 	[Obsolete("Legacy configuration compatibility only; court and civilian delivery settings control propagation.")]
 	public int WorldDiplomacyPropagationSpeedPercent { get; set; } = 100;
 
-	[SettingPropertyInteger("{=AF_MCM_Diplomacy_CourtDays}Farthest court delivery (days)", 3, 14, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_CourtDays_Hint}Assigns court delivery time by distance. Controls the farthest court and the relay pace for a new event round; countries do not all wait this many days. Default: 7; lower values produce denser replies.")]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_CourtDays}Declaration propagation (farthest court days)", 3, 14, "0", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_CourtDays_Hint}Distance determines delivery. Farthest court: 3–14 days, default 7; civilian spread takes three times as long. Opening and ending announcements are public immediately.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Propagation_Group}17. AI diplomacy (testing)/3. Propagation", GroupOrder = 170)]
 	public int WorldDiplomacyCourtMaxDeliveryDays { get; set; } = 7;
 
@@ -2064,7 +2076,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMinCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMinCharacters;
 
-	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMax}Suggested declaration length upper bound", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMax_Hint}Suggested length for AI declarations, replies, and scribe drafting. The CN content pack counts characters including punctuation; the EN content pack counts words. This is not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects generation capacity, subject to the API output limit. The editor capacity remains 6000 characters.")]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMax}Suggested declaration length upper bound", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMax_Hint}Suggested upper length for declarations and scribe drafts, including punctuation. Default 300; range 1–1000. No minimum length or text cutoff; complete terms take priority. Does not limit player editing.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMaxCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMaxCharacters;
 
@@ -2100,7 +2112,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		set => _worldDiplomacyPrompt = NormalizeWorldDiplomacyPromptText(value);
 	}
 
-	[SettingPropertyButton("{=AF_MCM_Diplomacy_Edit}Diplomatic judgment and writing preferences", -1, true, "", Content = "{=AF_MCM_Diplomacy_Edit_Content}Open editor", Order = 17, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Edit_Hint}Adjust diplomatic interests, action priorities, and writing style. Custom writing preferences take precedence over default phrasing. The scribe uses only writing instructions consistent with player intent, preserving all terms when drafting or rewriting without adding substantive clauses. Blank adds no custom preferences; facts, authority, legal action requirements, and output rules remain in force.")]
+	[SettingPropertyButton("{=AF_MCM_Diplomacy_Edit}Diplomatic judgment and writing preferences", -1, true, "", Content = "{=AF_MCM_Diplomacy_Edit_Content}Open editor", Order = 17, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Edit_Hint}Edit interests, action priorities and style. Restore defaults inside the editor, then save. Blank adds no preference; facts, authority, accepted terms and output rules remain binding.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public Action EditWorldDiplomacyPrompt { get; set; }
 
@@ -3207,7 +3219,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_Diplomacy_Title", "Edit diplomatic judgment and writing preferences"), Ui("AF_MCM_Editor_Diplomacy_Description", "Adjust diplomatic interests, action priorities, and writing style. Custom writing preferences take precedence over default phrasing. The scribe drafts or rewrites according to player intent and preserves all terms."), Ui("AF_MCM_Editor_Diplomacy_Hint", "Blank adds no custom preferences. Writing preferences cannot change facts, representative authority, legal action requirements, or output rules."), WorldDiplomacyPrompt ?? "", delegate(string input)
 			{
 				SaveWorldDiplomacyPromptFromEditor(input);
-			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
+			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"), () => DefaultWorldDiplomacyPreference);
 		}
 		catch (Exception ex)
 		{
@@ -3923,6 +3935,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		preference = "";
 		if (string.IsNullOrWhiteSpace(text)) return false;
 		bool knownContract = (text.StartsWith(DefaultWorldDiplomacyContractCore, StringComparison.Ordinal) || text.StartsWith(SourceDefaultWorldDiplomacyContractCore, StringComparison.Ordinal))
+			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV25Cn, StringComparison.Ordinal)
+			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV25En, StringComparison.Ordinal)
 			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV24, StringComparison.Ordinal)
 			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV23, StringComparison.Ordinal)
 			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV22, StringComparison.Ordinal)
@@ -3931,6 +3945,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV19, StringComparison.Ordinal)
 			|| IsExactPreviousDefaultWorldDiplomacyPromptV2(text);
 		if (!knownContract) return false;
+        if (text == PreviousDefaultWorldDiplomacyContractCoreV25Cn || text == PreviousDefaultWorldDiplomacyContractCoreV25En) return true;
 		string marker = "\n" + WorldDiplomacyPreferenceSectionMarker + "\n";
 		int markerIndex = text.IndexOf(marker, StringComparison.Ordinal);
 		if (markerIndex < 0) return false;

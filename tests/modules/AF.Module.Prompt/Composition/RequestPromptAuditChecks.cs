@@ -83,13 +83,28 @@ internal static class RequestPromptAuditChecks
         Set(context,"CompactWorldContext","CurrentWorldFacts: [AFEF NPC行为补充] [AFEF内战事实] Recorded uprising; no inferred outcome.");
         string markedPolicyDraft=Draft();
         string output = Path.Combine(root,"request-prompt-audit"); Directory.CreateDirectory(output);
+        // These exact compatibility markers are consumed by the new diplomacy
+        // contract validator. They retain their persisted/protocol identities;
+        // all surrounding fixed prose still has to follow the package language.
+        JObject compatibility;
+        using (var stream = product.GetManifestResourceStream("AnimusForge.Diplomacy.PromptCompatibility.json"))
+        using (var reader = new StreamReader(stream)) compatibility = JObject.Parse(reader.ReadToEnd());
+        string[] stableDiplomacyMarkers = Enumerable.Range(0,5)
+            .Select(i => (string)compatibility["AF_DIP_Compatibility_" + i.ToString("000")]).ToArray();
         foreach (string endpoint in new[]{"https://audit.invalid/v1/chat/completions","https://audit.invalid/anthropic/v1/messages"})
         {
             foreach (var pair in new[]{("policy",new JArray(new JObject{["role"]="system",["content"]=markedPolicyDraft})),("diplomacy",diplomacyMessages)})
             {
                 var input = new JObject{["messages"]=pair.Item2}; string saved=input.ToString();
                 string wire=(string)Invoke((Type)compat,"PrepareChatRequestJson",endpoint,input);
-                Check(!english || !Han(wire),"actual "+pair.Item1+" assembled fixed request and AFEF prefixes contain no Han on both providers");
+                string auditedWire = wire;
+                if (pair.Item1 == "diplomacy")
+                    foreach (string marker in stableDiplomacyMarkers)
+                    {
+                        Check(!string.IsNullOrEmpty(marker) && wire.Contains(marker), "new diplomacy retains exact contract marker identity");
+                        auditedWire = auditedWire.Replace(marker, "");
+                    }
+                Check(!english || !Han(auditedWire),"actual "+pair.Item1+" fixed prose and AFEF prefixes follow package; exact protocol markers retained");
                 Check(input.ToString()==saved,"actual "+pair.Item1+" wire projection preserves request snapshot");
                 Check(!wire.Contains("AF_OUTPUT_LANGUAGE") && !wire.Contains("must reply in English"),"actual "+pair.Item1+" wire adds no reply-language lock");
                 if(pair.Item1=="policy") Check(wire.Contains("[AFEF NPC_ACTION]") && wire.Contains("[Civil war fact]") && wire.Contains("no inferred outcome"),"actual policy assembly preserves actor and fact semantics after fixed marker projection");

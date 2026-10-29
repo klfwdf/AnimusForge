@@ -12,7 +12,6 @@ internal interface IWorldDiplomacyDocumentExecutionPort
     WorldDiplomacyAuthoritySnapshot CaptureAuthority(string id);
     WorldDiplomacyRound ResolveRound(string id);
     WorldDiplomacyDocument ResolveDocument(string id);
-    WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer);
     bool IsAtWar(string author, string target);
     bool IsPlayerKingdom(string id);
     bool IsPlayerAffiliated(string id);

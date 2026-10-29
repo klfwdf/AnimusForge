@@ -14,6 +14,23 @@ internal interface IWorldDiplomacyAnalysisPort
 }
 internal static class WorldDiplomacyAnalysisApplication
 {
+    internal static bool TryReadResponseRequests(JObject json, string body, Func<string, string> resolve,
+        out List<DiplomacyResponseRequest> requests)
+    {
+        requests = new();
+        if (json["response_requests"] == null) return true; // Legacy scalar analysis remains readable.
+        if (json["response_requests"] is not JArray rows || rows.Count > 16) return false;
+        foreach (var row in rows.OfType<JObject>())
+        {
+            if (row["kingdom"]?.Type != JTokenType.String || row["kind"]?.Type != JTokenType.String
+                || row["quote"]?.Type != JTokenType.String) return false;
+            string country = resolve((string)row["kingdom"]), kind = (string)row["kind"], quote = (string)row["quote"];
+            if (string.IsNullOrEmpty(country) || kind is not "invitation" and not "case_question" and not "side_question"
+                || string.IsNullOrWhiteSpace(quote) || (body ?? "").IndexOf(quote, StringComparison.Ordinal) < 0) return false;
+            requests.Add(new DiplomacyResponseRequest { KingdomId = country, Kind = kind, Quote = quote });
+        }
+        return requests.Count == rows.Count;
+    }
     internal static void Commit(IWorldDiplomacyAnalysisPort port, IWorldDiplomacyOrchestration orchestration,
         WorldDiplomacyJob job, string raw)
     {
@@ -36,10 +53,8 @@ internal static class WorldDiplomacyAnalysisApplication
         SuppressInvalidDocumentBeforePropagation(document, reason, port.Storage, execution.ResolveRound, execution.ResolveDocument,
             execution.ResolveKingdomId, () => execution.CurrentDay,
             (doc, why) => PreservePublishedPlayerDocumentAfterRejectedMechanic(execution, orchestration, doc, why),
-            orchestration.ScheduleNextResultSettlementTurn, round => orchestration.AdvanceRelay(round),
-            orchestration.CompleteExchange, reason => {
-                if (orchestration is WorldDiplomacyOrchestration owner) owner.CloseRound(reason, orchestration.ResolveRound(document.RoundId));
-                else orchestration.CloseActiveRound(reason);
+            (round, why) => {
+                if (orchestration is WorldDiplomacyOrchestration owner) owner.HoldEventForInvalidDraft(round, why);
             }, execution.Log);
     }
 
@@ -67,6 +82,15 @@ internal static class WorldDiplomacyAnalysisApplication
             if (document.IsPlayerAuthored && (document.PlayerAnalysisCommitted || document.ChangedDiplomaticState
                 || document.AnalysisStatus is "success" or "published_action_rejected")) return;
             JObject json = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw);
+            if (document.IsPlayerAuthored && job.MaterialCountryContractVersion >= 1)
+            {
+                if (json?["response_requests"] is not JArray
+                    || !TryReadResponseRequests(json, document.Body, resolveKingdomCanonicalId, out var classifiedRequests)
+                    || (string)json["event_participation"] is not "participate" and not "decline" and not "answer_only")
+                { MarkPlayerAnalysisFailed(document, log); return; }
+                document.ResponseRequests = classifiedRequests; document.ResponseRequestsClassified = true;
+                document.PlayerEventParticipation = (string)json["event_participation"];
+            }
             if (document.IsPlayerAuthored) document.AnsweredNpcDocumentIds = WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "answered_npc_document_ids");
             if (document.IsPlayerAuthored && WorldDiplomacyEnvelopeJsonRules.ReadString(json, "failure_reason") == "output_truncated")
             {
@@ -76,6 +100,10 @@ internal static class WorldDiplomacyAnalysisApplication
             }
             if (document.IsPlayerAuthored && json?["actions"] != null)
             {
+                if (!TryReadResponseRequests(json, document.Body, resolveKingdomCanonicalId, out var requests))
+                { MarkPlayerAnalysisFailed(document, log); return; }
+                document.ResponseRequests = requests;
+                document.ResponseRequestsClassified = json["response_requests"] is JArray;
                 CommitPlayerActions();
                 return;
             }
@@ -92,6 +120,11 @@ internal static class WorldDiplomacyAnalysisApplication
                     if (entry is not JObject action || action["actions"] != null)
                     { MarkPlayerAnalysisFailed(document, log); return; }
                     var single = (JObject)action.DeepClone();
+                    if (job.MaterialCountryContractVersion >= 1)
+                    {
+                        single["response_requests"] = json["response_requests"]?.DeepClone();
+                        single["event_participation"] = json["event_participation"]?.DeepClone();
+                    }
                     foreach (string field in new[] { "status", "title_summary", "tone", "confidence" })
                         if (single[field] == null && json[field] != null) single[field] = json[field].DeepClone();
                     string requestedTarget = WorldDiplomacyEnvelopeJsonRules.ReadString(single,
@@ -141,12 +174,12 @@ internal static class WorldDiplomacyAnalysisApplication
                 document.PresentedThreatDocumentIds = primary.PresentedThreatDocumentIds;
                 document.PresentedThreatFollowThroughDocumentIds = primary.PresentedThreatFollowThroughDocumentIds;
                 document.AddressedKingdomIds = normalizeKingdomIdList(parsed.Select(x => x.TargetKingdomId)
-                    .Concat(WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "addressed_kingdom_ids")), document.AuthorKingdomId);
+                    .Concat(WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "addressed_kingdom_ids"))
+                    .Concat(document.ResponseRequests.Select(x => x.KingdomId)), document.AuthorKingdomId);
                 document.MentionedKingdomIds = normalizeKingdomIdList(WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "mentioned_kingdom_ids"), document.AuthorKingdomId);
                 document.DiscussionRoundId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "related_round_id");
                 document.DiscussionSourceDocumentId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "related_public_document_id");
                 document.RequiresResponse = parsed.Any(x => x.RequiresResponse);
-                WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(document, json);
                 document.PlayerAnalysisCommitted = true;
                 processAnalyzedDocument(document, document.Intent, document.Commitment, document.RequiresResponse, document.Tone, document.Confidence);
             }
@@ -341,7 +374,6 @@ internal static class WorldDiplomacyAnalysisApplication
             document.Tone = tone;
             document.Confidence = confidence;
             document.RequiresResponse = WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation(document, intent, requiresResponse, maxAutomaticReplyDepth);
-            WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(document, json);
             if (document.IsPlayerAuthored) document.PlayerAnalysisCommitted = true;
             if (unavailablePlayerOfferSource)
             {
@@ -401,10 +433,7 @@ internal static class WorldDiplomacyAnalysisApplication
         Func<string, string> resolveKingdomId,
         Func<int> currentDay,
         Action<WorldDiplomacyDocument, string> preservePublishedPlayerDocument,
-        Action<WorldDiplomacyRound> scheduleResultSettlementTurn,
-        Action<WorldDiplomacyRound> advanceRelay,
-        Action<string, string> completeExchange,
-        Action<string> closeActiveRound,
+        Action<WorldDiplomacyRound, string> holdEvent,
         Action<string> log)
     {
         if (document == null) return;
@@ -419,55 +448,29 @@ internal static class WorldDiplomacyAnalysisApplication
         WorldDiplomacyRound round = resolveRound(document.RoundId);
         bool wasRoundRoot = round != null
             && WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(round.RootDocumentId, document.DocumentId);
-        storage.Documents.RemoveAll(x => x != null && WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.DocumentId, document.DocumentId));
+        // Keep the rejected draft and any accepted arrangement binding as evidence.
+        // A validation failure does not erase a promise or declare a political result.
+        document.AnalysisStatus = "rejected_draft";
+        document.IsReadyForPublication = false;
+        document.EventExecutionPending = false;
         if (wasRoundRoot) round.RootDocumentId = "";
         if (round != null && resolveDocument(round.RootDocumentId) == null)
         {
             round.RootDocumentId = WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(storage.Documents
-                    .Where(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId)))
+                    .Where(x => x != null && x.IsReadyForPublication && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId)))
                 .Select(x => x.DocumentId)
                 .FirstOrDefault() ?? "";
         }
         round?.LlmProfiledKingdomIds?.RemoveAll(x => string.Equals(x, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase));
         if (document.IsPlayerAuthored && document.IsResponse && round != null)
         {
-            WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, document.AuthorKingdomId, "active", mandatoryReply: true);
+            WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsurePlayerDocumentParticipant(round, document, mandatoryReply: true);
             participant.MandatoryReplyPending = true;
             WorldDiplomacyPlayerOpportunity opportunity = (storage.PlayerOpportunities ?? new List<WorldDiplomacyPlayerOpportunity>())
                 .FirstOrDefault(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId));
             if (opportunity != null) opportunity.Status = "open";
         }
-        if (document.IsRelayTurn && round != null && WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State))
-        {
-            if (round.ResultSettlementPending)
-            {
-                if (document.IsPlayerAuthored)
-                {
-                    round.RelayWaiting = true;
-                    WorldDiplomacyRoundLifecycleRules.RecordPlayerOpportunity(round, resolveKingdomId(document.AuthorKingdomId), storage?.PlayerOpportunities, storage?.Documents, currentDay());
-                }
-                else
-                {
-                    round.RelayWaiting = false;
-                    WorldDiplomacyRoundLifecycleRules.SkipResultSettlementSlot(round, document.ResultSettlementSlotId, document.AuthorKingdomId, "invalid_document", storage?.DiplomaticThreats, currentDay(), log);
-                    scheduleResultSettlementTurn(round);
-                }
-            }
-            else
-            {
-                round.RelayWaiting = false;
-                advanceRelay(round);
-            }
-            return;
-        }
-        completeExchange(document.ExchangeId, "technical_invalid_document_suppressed");
-        if (WorldDiplomacyRoundLifecycleRules.ShouldCloseRoundAfterInvalidSuppression(
-            WorldDiplomacyLiveRoundRules.Contains(storage, round) ? round : null, round, storage.Documents, storage.Jobs, document.DocumentId))
-        {
-            closeActiveRound(document.IsPlayerAuthored
-                ? "player_declaration_rejected"
-                : "technical_invalid_document_suppressed");
-        }
+        if (round != null) holdEvent?.Invoke(round, "invalid_draft:" + reason);
     }
 
     internal static void PreservePublishedPlayerDocumentAfterRejectedMechanic(IWorldDiplomacyDocumentExecutionPort port,
@@ -547,32 +550,27 @@ internal static class WorldDiplomacyAnalysisApplication
 	// the stored text itself is never rewritten.
 	internal static bool TryProjectMechanicalResultForDisplay(string mechanicalResult, out string display)
 	{
-        if (string.Equals(mechanicalResult, PlayerAnalysisTruncatedResult, StringComparison.Ordinal) || DiplomacyReplyTextRules.MatchesExact("Analysis_TruncatedResult", mechanicalResult))
+		if (string.Equals(mechanicalResult, PlayerAnalysisTruncatedResult, StringComparison.Ordinal))
 		{
 			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailedTruncated", "The declaration has been published; the model output was cut off by the length limit, so no diplomatic action has been executed yet. Raise the output limit of the corresponding API and then choose Re-analyze.");
 			return true;
 		}
-        if (string.Equals(mechanicalResult, PlayerAnalysisAcceptAndAmendResult, StringComparison.Ordinal) || DiplomacyReplyTextRules.MatchesExact("Analysis_AcceptAndAmendResult", mechanicalResult))
+		if (string.Equals(mechanicalResult, PlayerAnalysisAcceptAndAmendResult, StringComparison.Ordinal))
 		{
 			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailedAcceptAndAmend", "The declaration has been published; the analysis returned both acceptance of the original proposal and amended terms, so no diplomatic action was executed. You can re-analyze the original text; the amended terms should be submitted as a new proposal.");
 			return true;
 		}
-        if (string.Equals(mechanicalResult, PlayerAnalysisTreatyRolesResult, StringComparison.Ordinal) || DiplomacyReplyTextRules.MatchesExact("Analysis_TreatyRolesResult", mechanicalResult))
+		if (string.Equals(mechanicalResult, PlayerAnalysisTreatyRolesResult, StringComparison.Ordinal))
 		{
 			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailedTreatyRoles", "The declaration has been published; the analysis could not tell the two parties' roles in the treaty apart, so the proposal was not executed. You can re-analyze the original text.");
 			return true;
 		}
-        if (string.Equals(mechanicalResult, PlayerAnalysisFailedResult, StringComparison.Ordinal) || DiplomacyReplyTextRules.MatchesExact("Analysis_FailedResult", mechanicalResult))
+		if (string.Equals(mechanicalResult, PlayerAnalysisFailedResult, StringComparison.Ordinal))
 		{
 			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailed", "The declaration has been published; the analysis failed and no diplomatic action was executed. You can choose Re-analyze to process the original text again.");
 			return true;
 		}
-        if (DiplomacyReplyTextRules.MatchesExact("Presentation_ReparsingPending", mechanicalResult))
-        {
-            display = DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_ReparsingPending", "Declaration published; reparsing original text, diplomatic action not yet executed.");
-            return true;
-        }
-        display = null;
+		display = null;
 		return false;
 	}
 

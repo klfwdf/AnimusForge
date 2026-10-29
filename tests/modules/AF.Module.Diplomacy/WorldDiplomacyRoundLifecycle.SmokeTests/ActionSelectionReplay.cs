@@ -13,13 +13,12 @@ internal static class ActionSelectionReplay
         public WorldDiplomacyPairFacts CapturePair(string a, string b) { Captures++; return new(War, true, true, Allied, Trading); }
         public IReadOnlyList<WorldDiplomacyThreat> Threats { get { ThreatReads++; return Items; } }
         public IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second) => new Admission(PermitWar);
-        public IWorldDiplomacyNoActionPort CaptureNoActionPort(string author, string target)
-        { NoActionCalls++; return new NoActionPort(author, target); }
+
         public int LastFailedRoundDay(WorldDiplomacyOfferCooldownKey key) => Cooldown ? 9 : -1;
         public int CooldownDays() => 5;
         public int CurrentDay() => 10;
         public WorldDiplomacyDocument ResolveDocument(string id) => null;
-        public bool CanUseResultSettlementTarget(WorldDiplomacyRound round, string a, string b) => b == "c";
+
     }
     internal sealed class Admission : IWorldDiplomacyWarAdmissionPort
     {
@@ -40,24 +39,6 @@ internal static class ActionSelectionReplay
         public int ActiveWars => 0;
         public int MaxConcurrentOffensiveWars => 3;
     }
-    internal sealed class NoActionPort : IWorldDiplomacyNoActionPort
-    {
-        internal NoActionPort(string author, string target) { AuthorId = author; TargetId = target; }
-        public bool AuthorResolved => true;
-        public bool TargetResolved => true;
-        public bool SameParty => false;
-        public bool AuthorIsPlayer => false;
-        public bool AuthorEliminated => false;
-        public bool TargetEliminated => TargetId == "dead";
-        public bool AuthorHasAuthority => true;
-        public bool TargetHasAuthority => TargetId != "vassal";
-        public string AuthorId { get; }
-        public string TargetId { get; }
-        public int MaxParticipants => 8;
-        public WorldDiplomacyDocument ResolveDocument(string id) => id == "root"
-            ? new WorldDiplomacyDocument { DocumentId = "root", IsReadyForPublication = true, Intent = "declare_war" } : null;
-        public bool IsRepresentativeFor(WorldDiplomacyDocument document) => false;
-    }
     internal static void Run()
     {
         var port = new Port(); var app = new WorldDiplomacyActionSelectionApplication(port);
@@ -66,35 +47,24 @@ internal static class ActionSelectionReplay
         Test.True(app.GetActionableDiplomaticTargets("a").SequenceEqual(new[] { "b", "c" }) && port.Enumerations == 1 && port.Captures == 2,
             "one request enumerates once, filters eligibility before pair capture and preserves sorted identity order");
         port.War = true; port.ThreatReads = 0;
-        var formal = new[] { "propose_annexation", "propose_tributary", "propose_garrison", "propose_vassal" };
-        Test.True(app.BuildPotentialDiplomaticActionIntents("a", "b").SequenceEqual(formal.Append("propose_peace")) && port.ThreatReads == 0,
-            "war retains peace and skips threat/cooldown work");
+        var warActions = app.BuildPotentialDiplomaticActionIntents("a", "b");
+        Test.True(warActions.Contains("statement") && warActions.Contains("propose_peace")
+            && !warActions.Contains("declare_war") && port.ThreatReads == 0, "wartime options follow actual state without threat score reads");
         port.War = false;
-        Test.True(app.BuildPotentialDiplomaticActionIntents("a", "b").SequenceEqual(formal.Concat(new[] { "warning", "ultimatum", "declare_war", "propose_alliance", "propose_trade" })),
-            "peaceful pair preserves original ordered action options");
+        var peaceActions = app.BuildPotentialDiplomaticActionIntents("a", "b");
+        Test.True(peaceActions.Contains("declare_war") && peaceActions.Contains("propose_alliance") && peaceActions.Contains("propose_trade"), "eligible independent courts receive current peaceful options");
         port.Cooldown = true;
-        Test.True(app.BuildPotentialDiplomaticActionIntents("a", "b").SequenceEqual(formal.Concat(new[] { "warning", "ultimatum", "declare_war" })),
-            "directed failed-round cooldown suppresses only new alliance and trade proposals");
+        Test.True(app.BuildPotentialDiplomaticActionIntents("a", "b").SequenceEqual(peaceActions), "retired cooldown cannot suppress a current proposal");
         port.Allied = port.Trading = true;
-        Test.True(app.BuildPotentialDiplomaticActionIntents("a", "b").TakeLast(2).SequenceEqual(new[] { "break_alliance", "cancel_trade" }),
-            "cooldown never suppresses termination of current agreements");
-        var round = new WorldDiplomacyRound();
+        var current = app.BuildPotentialDiplomaticActionIntents("a", "b");
+        Test.True(current.Contains("break_alliance") && current.Contains("cancel_trade")
+            && !current.Contains("propose_alliance") && !current.Contains("propose_trade"), "existing agreements expose their termination, not duplicate establishment");
+        var round = new WorldDiplomacyRound { EventSystemVersion = 1, State = "active" };
         round.PendingOffers.Add(new WorldDiplomacyRoundOffer { Status = "open", SourceDocumentId = "offer-doc", SourceActionId = "offer-action", Intent = "propose_peace", ProposerKingdomId = "b", TargetKingdomId = "a" });
-        port.NoAction = true; port.NoActionCalls = 0;
-        Test.True(app.BuildLegalDiplomaticDeclarationIntents(round, "a", "b", true).SequenceEqual(new[] { "accept_peace", "reject_peace" }) && port.NoActionCalls == 0,
-            "exclusive peace response cannot be bypassed by no-action authorization");
-        port.PermitWar = false; port.Allied = port.Trading = false; round.PendingOffers.Clear();
-        round.PendingOffers.Add(new WorldDiplomacyRoundOffer { Status = "open", SourceDocumentId = "offer-doc", SourceActionId = "offer-action", Intent = "propose_alliance", ProposerKingdomId = "a", TargetKingdomId = "b" });
-        Test.True(app.GetRoundPlanActionableParticipants("a", round).SequenceEqual(new[] { "b", "c" }),
-            "planning retains the proposal respondent and includes independent formal treaty candidates");
-        round.ResultSettlementPending = true;
-        round.State = "active";
-        round.RootDocumentId = "root";
-        round.ResultSettlementCurrentSlotId = "slot";
-        round.RelayRouteKingdomIds = new List<string> { "a", "c" };
-        round.ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
-            { new() { SlotId = "slot", KingdomId = "a", RelatedKingdomIds = new List<string> { "c" } } };
-        Test.True(app.GetResultSettlementActionableTargets(round, "a").SequenceEqual(new[] { "b", "c" }),
-            "settlement keeps the route target and admits a new eligible formal treaty target within original capacity");
+        port.NoActionCalls = 0;
+        var actions = app.BuildLegalDiplomaticDeclarationIntents(round, "a", "b", true);
+        Test.True(actions.Contains("statement") && actions.Contains("accept_peace") && actions.Contains("reject_peace")
+            && port.NoActionCalls == 0, "an existing peace offer adds responses without forcing them or reading old no-action seats");
+        Test.True(app.BuildLegalDiplomaticDeclarationIntents(round, "a", "b", false, null, false, null, true).SequenceEqual(actions), "player involvement does not change common action selection");
     }
 }

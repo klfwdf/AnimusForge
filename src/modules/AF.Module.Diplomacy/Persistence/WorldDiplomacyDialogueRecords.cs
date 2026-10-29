@@ -10,6 +10,8 @@ public sealed class WorldDiplomacyDialogueArrangement
     [JsonProperty("generationFailureAttempts")] public int GenerationFailureAttempts { get; set; }
     // Empty in legacy saves: old public proposals never gain inferred player consent.
     public string ConfirmedPlayerRulerId { get; set; } = "";
+    // Separate from publication. A started/uncertain attempt must never be replayed.
+    [JsonProperty("treatyExecutionState")] public string TreatyExecutionState { get; set; } = "";
     public int GenerationRetryAfterDay { get; set; } = -1;
     public bool IsWithdrawal { get; set; }
     public string Fingerprint { get; set; } = "";

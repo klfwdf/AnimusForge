@@ -17,21 +17,16 @@ public sealed partial class WorldDiplomacyBehavior
         public WorldDiplomacyStorage Storage => _owner._storage;
         public int CurrentDay => WorldDiplomacyBehavior.CurrentDay();
         public bool CanAiAuthor(string authorId, out string reason) => WorldDiplomacyBehavior.CanAiAuthorDiplomaticDocument(WorldDiplomacyBehavior.ResolveKingdom(authorId), out reason);
-        public bool IsPlayerDiplomacy(WorldDiplomacyDocument document) => _owner.Orchestration.IsPlayerDiplomacyDocument(document);
+
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
         public WorldDiplomacyImmediateActionReceipt DeclareWar(string authorId, string targetId, WorldDiplomacyDocument document)
         {
             Kingdom author = WorldDiplomacyBehavior.ResolveKingdom(authorId); Kingdom target = WorldDiplomacyBehavior.ResolveKingdom(targetId);
-            bool enforcing = WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(_owner._storage?.DiplomaticThreats, authorId, targetId);
-            bool playerDiplomacy = document?.IsPlayerAuthored == true || IsPlayerDiplomacy(document);
             if (author == null || target == null || author == target || author.IsEliminated || target.IsEliminated)
                 return new(false, DiplomacyMiscPromptTexts.Get("Immediate_DeclareWarInvalidTarget", "War declaration not executed: invalid kingdom target"));
-            if (!playerDiplomacy && !_owner.CanDeclareWar(author, target, out string reason, enforcing)) return new(false, DiplomacyMiscPromptTexts.Get("Immediate_DeclareWarNotExecutedPrefix", "War declaration not executed: ") + reason);
+            if (!_owner.CanDeclareWar(author, target, out string reason)) return new(false, DiplomacyMiscPromptTexts.Get("Immediate_DeclareWarNotExecutedPrefix", "War declaration not executed: ") + reason);
             return Measure(() => RunDiplomaticAction("world_diplomacy_declare_war", () => {
-                    // The same explicit pair scope also permits the native alliance-end event.
-                    if (playerDiplomacy) PermanentAllianceGuard.RunAuthorizedBreak("world_diplomacy_declare_war", author, target,
-                        () => DeclareWarAction.ApplyByKingdomDecision(author, target));
-                    else DeclareWarAction.ApplyByKingdomDecision(author, target);
+                    DeclareWarAction.ApplyByKingdomDecision(author, target);
                 }),
                 () => FactionManager.IsAtWarAgainstFaction(author, target), DiplomacyMiscPromptTexts.Get("Immediate_DeclareWarAction", "declare war"), DiplomacyMiscPromptTexts.Get("Immediate_DeclaredWarSuccess", "war declared"));
         }

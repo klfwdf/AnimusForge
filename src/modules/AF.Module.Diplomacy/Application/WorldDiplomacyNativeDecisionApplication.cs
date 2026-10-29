@@ -19,7 +19,10 @@ internal static class WorldDiplomacyNativeDecisionApplication
         var snapshot = port.Capture(token);
         if (!WorldDiplomacyEventRules.TryNativeSignal(snapshot, out string source, out string target)) return false;
         string reason = port.Reason(token, WorldDiplomacyEventRules.IsIncomingPlayerOffer(snapshot), snapshot.Action);
-        return orchestration.RecordNativeSignal(source, target, snapshot.Action, reason);
+        orchestration.RecordNativeSignal(source, target, snapshot.Action, reason);
+        // Deduplicating an already recorded signal must never reopen the native
+        // political action that the first signal already transferred to AF.
+        return true;
     }
     internal static void Sanitize(IWorldDiplomacyNativeDecisionPort port, IWorldDiplomacyOrchestration orchestration)
     {

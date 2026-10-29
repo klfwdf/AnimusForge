@@ -1216,8 +1216,8 @@
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Hint" text="单独编辑即时快报写作要求，下次请求生效；清空后保留内置格式和事实约束。" />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Group" text="周报／快报//快报" />
   <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Title" text="外交判断与文风偏好" />
-  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="调整外交利益判断、行动倾向和文风。自定义文风优先于默认写法；书记官只采用符合玩家原意的写作要求，起草或重写时完整保留条件，不自行增加实质条款。留空不添加自定义偏好；事实、权限、合法动作要求和系统输出规则仍有效。" />
-  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="编辑利益判断、行动优先级和文风；在编辑器内恢复默认后保存。留空不追加偏好，事实、权限、已接受条款和输出规则仍然有效。" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Group" text="AI外交" />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Title" text="启用队内 Hero 主动聊天" />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Hint" text="允许玩家主队中的同伴、家人和其他 Hero 通过地图通知主动请求交谈。" />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Group" text="7. NPC主动接触/队内同伴主动聊天" />
@@ -1267,8 +1267,8 @@
   <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Hint" text="开启后，从地图通知打开周报并停留满 10 秒，会按三栏字数累计经验；每研读 20 篇后一次性给玩家魅力、统御和管理经验。" />
   <string id="AF_TERMINAL_UI_EnableWeeklyReportReadingXpReward_Group" text="周报／快报" />
   <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Title" text="启用AI外交" />
-  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Hint" text="开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。外交与书记官代笔复用事件与王国叛乱API，配置不完整时回退主API。关闭后恢复原版王国外交决议。" />
-  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Group" text="17. AI外交（测试中）/1. 基础" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Hint" text="关闭后暂停外交并恢复原版决策，已有效果按原定时间到期；重新开启时先核对当前事实。修复 API 或模型配置后，可关闭再开启，让挂起请求获得新一轮有限重试。已执行行动保持，执行结果不明的事项仍需核查证据。" />
+  <string id="AF_TERMINAL_UI_EnableWorldDiplomacy_Group" text="AI外交" />
   <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Title" text="外交宣言送达提示" />
   <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Hint" text="已送达的外交宣言在左下角显示文字提示，不再弹出右侧通知。关闭不影响交涉、传播、快报素材或王国公告。" />
   <string id="AF_TERMINAL_UI_EnableWorldDiplomacyMapNotifications_Group" text="17. AI外交（测试中）/1. 基础" />
@@ -1548,18 +1548,18 @@
   <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Title" text="每分钟最多生成周报数" />
   <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Hint" text="限制开发态周报生成的请求速率。默认 5；最高 20。用于应对部分 API 渠道的 RPM 或并发限制。" />
   <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Group" text="周报／快报//周报" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Title" text="单场外交参与国规模" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Hint" text="少量最多2国、适中最多3国、较多最多5国，均包含发起国。只选择有实际外交事项的国家，不强行凑满。默认适中；这是单场人数，不是同时进行的事件数量。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Title" text="事件准入国家数" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Hint" text="少：二国概率70%；标准：三国概率70%；高：四国概率70%；其余两种规模各15%。直接当事国全部保留，其余名额按权重抽取，不设分数门槛；实际人数受可用独立国家数量限制。仅影响新选国，已有事件不重新抽取。默认：标准。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Group" text="17. AI外交（测试中）/2. 事件节奏" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Title" text="宣言传遍大陆（天）" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Hint" text="按距离安排地方贵族和平民获知外交宣言的时间。默认21天；不控制自动开场频率，也不代替王庭送达时间。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyContinentSpreadDays_Group" text="17. AI外交（测试中）/3. 传播" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Title" text="宣言送达最远王庭（天）" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="按距离分配王庭送达时间，本值控制最远王庭的传递时长，也用于新事件一轮接力的传递节奏。不是每个国家都固定等待这么多天。默认7天；数值较低时回复更密集。" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="17. AI外交（测试中）/3. 传播" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="建议篇幅上限" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅。CN内容包按字符计（含标点），EN内容包按单词计；不是正文裁切线。默认上限300，可调1—1000，低于下限时按下限处理。生成容量随本项调整，并受API最大输出量限制；编辑器容量仍为6000字符。" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Title" text="宣言传播（最远王庭天数）" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="宣言按距离送达。最远王庭3–14天，默认7天；民间传播耗时为王庭的三倍。开始和结束公告立即公开。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="AI外交" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="宣言建议篇幅上限" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="宣言和书记官草稿的建议篇幅上限，含标点；默认300，范围1–1000。不设篇幅下限、不截断正文，完整条款优先；不限制玩家编辑。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="AI外交" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="建议篇幅下限" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅。CN内容包按字符计（含标点），EN内容包按单词计；不随游戏界面语言改变。简单回答可更短，复杂条款可更长，完整条件优先。默认下限100，可调1—1000；不限制玩家手写编辑。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
@@ -1582,8 +1582,8 @@
   <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Hint" text="决定新事件通常何时收尾：紧凑约15天、标准约21天、从容约28天。可因达成结果提前结束，也可短暂延长完成收尾。默认标准，只影响新事件。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyRoundLengthDropdown_Group" text="17. AI外交（测试中）/2. 事件节奏" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Title" text="新游戏开局全大陆和平" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Hint" text="仅对新创建的存档生效，结束开局已有的王国战争。默认关闭；切换此项不会重置当前存档的战争。" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Group" text="17. AI外交（测试中）/1. 基础" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Hint" text="默认开启，仅在新建战役时结束初始国家战争；保留已保存的设置，不清除旧档战争。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyStartNewGameAtPeace_Group" text="AI外交" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Title" text="威慑退让国内关系奖励" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Hint" text="对象国明确服从谴责或最后通牒后，发出国正式、非雇佣兵封臣家族的族长与当前国王增加此关系。每次威慑只结算一次。默认10；设为0关闭奖励。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyThreatComplianceIssuerRelationReward_Group" text="17. AI外交（测试中）/5. 战争与提案保护" />
@@ -2042,11 +2042,11 @@
   <string id="AF_TERMINAL_UI_CategoryAiCore" text="AI 核心" />
   <string id="AF_TERMINAL_UI_CategoryDuelTroops" text="决斗与部队" />
   <string id="AF_TERMINAL_UI_CategoryCharacters" text="角色与同伴" />
-  <string id="AF_TERMINAL_UI_Root_KingdomNotices" text="王国公告" />
-  <string id="AF_TERMINAL_UI_Root_KingdomNotices_Hint" text="打开撰写公告和地方政策的二级面板。" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNotices" text="撰写政策" />
+  <string id="AF_TERMINAL_UI_Root_KingdomNotices_Hint" text="选择撰写自定义政策或地方政策。" />
   <string id="AF_TERMINAL_UI_Root_ComposeNotice" text="撰写王国公告" />
   <string id="AF_TERMINAL_UI_Root_ComposeNotice_Hint" text="继续进入自定义政策或外交宣言。" />
-  <string id="AF_TERMINAL_UI_Root_CustomPolicy" text="撰写自定义政策" />
+  <string id="AF_TERMINAL_UI_Root_CustomPolicy" text="自定义政策" />
   <string id="AF_TERMINAL_UI_Root_CustomPolicy_Hint" text="打开自定义政策撰写面板。" />
   <string id="AF_TERMINAL_UI_Root_DiplomaticDocument" text="撰写外交宣言" />
   <string id="AF_TERMINAL_UI_Root_DiplomaticDocument_Hint" text="发布王国外交宣言。" />
@@ -2712,25 +2712,25 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Policy_RulerCustomTokens" text="自定义最大输出Tokens" />
   <string id="AF_MCM_Policy_RulerCustomTokens_Hint" text="仅在关闭“跟随所选API Token”后使用。只影响 NPC 统治者政策，允许 1000—100000；不修改其他 API 的全局上限。" />
   <string id="AF_MCM_Diplomacy_Enable" text="启用AI外交" />
-  <string id="AF_MCM_Diplomacy_Enable_Hint" text="开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。外交与书记官代笔复用事件与王国叛乱API，配置不完整时回退主API。关闭后恢复原版王国外交决议。" />
+  <string id="AF_MCM_Diplomacy_Enable_Hint" text="关闭后暂停外交并恢复原版决策，已有效果按原定时间到期；重新开启时先核对当前事实。修复 API 或模型配置后，可关闭再开启，让挂起请求获得新一轮有限重试。已执行行动保持，执行结果不明的事项仍需核查证据。" />
   <string id="AF_MCM_Diplomacy_NewGamePeace" text="新游戏开局全大陆和平" />
-  <string id="AF_MCM_Diplomacy_NewGamePeace_Hint" text="仅对新创建的存档生效，结束开局已有的王国战争。默认关闭；切换此项不会重置当前存档的战争。" />
+  <string id="AF_MCM_Diplomacy_NewGamePeace_Hint" text="默认开启，仅在新建战役时结束初始国家战争；保留已保存的设置，不清除旧档战争。" />
   <string id="AF_MCM_Diplomacy_MapNotice" text="外交宣言送达提示" />
   <string id="AF_MCM_Diplomacy_MapNotice_Hint" text="已送达的外交宣言在左下角显示文字提示，不再弹出右侧通知。关闭只隐藏送达提示，不影响交涉、传播、快报素材或王国公告。默认开启。" />
   <string id="AF_MCM_Diplomacy_MaxRounds" text="同时进行的普通外交事件上限" />
   <string id="AF_MCM_Diplomacy_MaxRounds_Hint" text="普通自动外交与政策触发共用此上限，默认3场。满额时保留政策待办，已有交涉照常回复和收尾；降低上限不会取消已有事件。每天最多补开1场；玩家主动外交和口头承诺事件不占此名额。" />
-  <string id="AF_MCM_Diplomacy_Activity" text="单场外交参与国规模" />
-  <string id="AF_MCM_Diplomacy_Activity_Hint" text="少量最多2国、适中最多3国、较多最多5国，均包含发起国。只选择有实际外交事项的国家，不强行凑满。默认适中；这是单场人数，不是同时进行的事件数量。" />
-  <string id="AF_MCM_Diplomacy_CourtDays" text="宣言送达最远王庭（天）" />
-  <string id="AF_MCM_Diplomacy_CourtDays_Hint" text="按距离分配王庭送达时间，本值控制最远王庭的传递时长，也用于新事件一轮接力的传递节奏。不是每个国家都固定等待这么多天。默认7天；数值较低时回复更密集。" />
+  <string id="AF_MCM_Diplomacy_Activity" text="事件准入国家数" />
+  <string id="AF_MCM_Diplomacy_Activity_Hint" text="少：二国概率70%；标准：三国概率70%；高：四国概率70%；其余两种规模各15%。直接当事国全部保留，其余名额按权重抽取，不设分数门槛；实际人数受可用独立国家数量限制。仅影响新选国，已有事件不重新抽取。默认：标准。" />
+  <string id="AF_MCM_Diplomacy_CourtDays" text="宣言传播（最远王庭天数）" />
+  <string id="AF_MCM_Diplomacy_CourtDays_Hint" text="宣言按距离送达。最远王庭3–14天，默认7天；民间传播耗时为王庭的三倍。开始和结束公告立即公开。" />
   <string id="AF_MCM_Diplomacy_ContinentDays" text="宣言传遍大陆（天）" />
   <string id="AF_MCM_Diplomacy_ContinentDays_Hint" text="按距离安排地方贵族和平民获知外交宣言的时间。默认21天；不控制自动开场频率，也不代替王庭送达时间。" />
   <string id="AF_MCM_Diplomacy_RoundLength" text="单场外交目标时长" />
   <string id="AF_MCM_Diplomacy_RoundLength_Hint" text="决定新事件通常何时收尾：紧凑约15天、标准约21天、从容约28天。可因达成结果提前结束，也可短暂延长完成收尾。默认标准，只影响新事件。" />
   <string id="AF_MCM_Diplomacy_DeclarationMin" text="建议篇幅下限" />
   <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅。CN内容包按字符计（含标点），EN内容包按单词计；不随游戏界面语言改变。简单回答可更短，复杂条款可更长，完整条件优先。默认下限100，可调1—1000；不限制玩家手写编辑。" />
-  <string id="AF_MCM_Diplomacy_DeclarationMax" text="建议篇幅上限" />
-  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅。CN内容包按字符计（含标点），EN内容包按单词计；不是正文裁切线。默认上限300，可调1—1000，低于下限时按下限处理。生成容量随本项调整，并受API最大输出量限制；编辑器容量仍为6000字符。" />
+  <string id="AF_MCM_Diplomacy_DeclarationMax" text="宣言建议篇幅上限" />
+  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="宣言和书记官草稿的建议篇幅上限，含标点；默认300，范围1–1000。不设篇幅下限、不截断正文，完整条款优先；不限制玩家编辑。" />
   <string id="AF_MCM_Diplomacy_WarCooldown" text="再次主动开战间隔（天）" />
   <string id="AF_MCM_Diplomacy_WarCooldown_Hint" text="一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认42天；不限制其他外交宣言的发布频率。" />
   <string id="AF_MCM_Diplomacy_PeaceProtection" text="和平保护期（天）" />
@@ -2744,7 +2744,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Diplomacy_CompressTarget" text="外交档案压缩后目标（千估算Tokens）" />
   <string id="AF_MCM_Diplomacy_CompressTarget_Hint" text="每批压缩后，长期快照和受保护事实的合计目标。默认48，即约48k Tokens，上限60k；宣言只取相关材料，不整份携带快照。实际摘要还受所选API最大输出Tokens限制。" />
   <string id="AF_MCM_Diplomacy_Edit" text="外交判断与文风偏好" />
-  <string id="AF_MCM_Diplomacy_Edit_Hint" text="调整外交利益判断、行动倾向和文风。自定义文风优先于默认写法；书记官只采用符合玩家原意的写作要求，起草或重写时完整保留条件，不自行增加实质条款。留空不添加自定义偏好；事实、权限、合法动作要求和系统输出规则仍有效。" />
+  <string id="AF_MCM_Diplomacy_Edit_Hint" text="编辑利益判断、行动优先级和文风；在编辑器内恢复默认后保存。留空不追加偏好，事实、权限、已接受条款和输出规则仍然有效。" />
   <string id="AF_MCM_Diplomacy_Edit_Content" text="打开编辑器" />
   <string id="AF_MCM_Diplomacy_Restore" text="恢复默认外交判断与文风偏好" />
   <string id="AF_MCM_Diplomacy_Restore_Hint" text="确认后恢复默认外交判断与文风偏好，覆盖当前自定义偏好。只恢复偏好文本，不重置事件上限、传播、篇幅或保护期设置。" />
@@ -2947,9 +2947,9 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Option_ModelEmpty" text="(空)" />
   <string id="AF_MCM_Option_DeviceCpu" text="CPU（默认）" />
   <string id="AF_MCM_Option_DeviceGpu" text="GPU（CUDA / NVIDIA）" />
-  <string id="AF_MCM_Option_DiplomacySmall" text="少量" />
-  <string id="AF_MCM_Option_DiplomacyMedium" text="适中" />
-  <string id="AF_MCM_Option_DiplomacyLarge" text="较多" />
+  <string id="AF_MCM_Option_DiplomacySmall" text="少" />
+  <string id="AF_MCM_Option_DiplomacyMedium" text="标准" />
+  <string id="AF_MCM_Option_DiplomacyLarge" text="高" />
   <string id="AF_MCM_Option_DiplomacyCompact" text="紧凑（约15天）" />
   <string id="AF_MCM_Option_DiplomacyStandard" text="标准（约21天）" />
   <string id="AF_MCM_Option_DiplomacyRelaxed" text="从容（约28天）" />
@@ -3395,5 +3395,20 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_DatabaseImport_KingdomSkipped" text="已跳过王国策略/性格：" />
   <string id="AF_UI_DatabaseImport_Completed" text="数据库导入完成。" />
   <string id="AF_UI_DatabaseImport_CompletedWithSkips" text="数据库导入完成，有 {COUNT} 部分被跳过。详情见 Mod_Logic.txt。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyWarTendency_Group" text="AI外交" />
+  <string id="AF_UI_DiplomacyEntry_Title" text="撰写外交宣言" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundIntervalDays_Group" text="AI外交" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyWarTendency_Hint" text="收束路线基础权重（威胁/协议/僵持）：低于50为50/40/10，等于50为60/30/10，高于50为70/20/10。三档切换，不是连续概率；另按局势有界修正并排除非法路线。保留原版和平评分作用，不覆盖玩家决定或已接受承诺。" />
+      <string id="AF_TERMINAL_UI_WorldDiplomacyPlayerContactIntervalDays_Hint" text="NPC新开案或主动邀请玩家之间的最少游戏天数，默认5天。正式发布的同次接触只计一次；提及、接受拒绝、后续回复、重试及玩家主动行为不计，不延误已有答复与承诺。" />
+    <string id="AF_DIP_UI_MaterialDraftFailed" text="外交草案未能完成，事件尚未发布；未使用的机会已释放。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundIntervalDays_Hint" text="自主外交新事件的开案间隔，包含政策触发事件；默认3游戏日，范围1–30。不会延迟玩家主动事项或已经接受的口头承诺。" />
+  <string id="AF_UI_DiplomacyEntry_Hint" text="撰写外交宣言。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyRoundIntervalDays_Title" text="新事件间隔（天）" />
+    <string id="AF_DIP_UI_EventEndingDelayed" text="《{EVENT}》的结束公告暂时无法发布，已保留交涉记录；该事件尚未结束。" />
+  <string id="AF_UI_DiplomacyEntry_RulerOnly" text="仅统治者可撰写外交宣言。" />
+    <string id="AF_TERMINAL_UI_WorldDiplomacyPlayerContactIntervalDays_Title" text="关于玩家的NPC外交接触间隔（天）" />
+  <string id="AF_UI_DiplomacyEntry_AiDisabled" text="未开启 AI 外交。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyWarTendency_Title" text="战争倾向" />
+    <string id="AF_DIP_UI_EventProcessingDelayed" text="《{EVENT}》的外交处理在有限纠正后仍无法完成。草稿和交涉记录已保留；这是技术暂停，不代表该国保持沉默。" />
 </strings>
 </base>

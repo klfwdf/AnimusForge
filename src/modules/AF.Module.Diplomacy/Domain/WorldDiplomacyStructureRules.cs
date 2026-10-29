@@ -55,6 +55,15 @@ namespace AnimusForge.Refactor.Domain
         return participant;
     }
 
+    public static WorldDiplomacyRoundParticipant EnsurePlayerDocumentParticipant(WorldDiplomacyRound round, WorldDiplomacyDocument document, bool mandatoryReply = false)
+    {
+        if (round == null || document == null) return null;
+        var existing = round.Participants?.FirstOrDefault(x => x.KingdomId == document.AuthorKingdomId);
+        string state = document.PlayerEventParticipation == "decline" ? "withdrawn"
+            : document.PlayerEventParticipation == "answer_only" ? existing?.State ?? "observer" : "active";
+        return EnsureRoundParticipant(round, document.AuthorKingdomId, state, mandatoryReply);
+    }
+
     public static bool AddParticipantToRelayRouteIfNeeded(WorldDiplomacyRound round, string kingdomId, int participantLimit)
     {
         if (round == null) return false;

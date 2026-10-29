@@ -5,6 +5,17 @@ namespace AnimusForge.DiplomacyDialogue;
 
 public static class DialogueRoutingRules
 {
+    // The original player-suzerain oral mechanism owns these new agreements.
+    // Existing document replies and every other national direction remain formal.
+    internal static bool UsesLegacyOralVassalage(DialogueTagPayload payload, string actor, string playerRulerKingdom) =>
+        payload != null && payload.Move == DialogueDiplomaticMove.NewMatter
+        && (payload.Action == DialogueDiplomaticAction.Tributary || payload.Action == DialogueDiplomaticAction.Garrison
+            || payload.Action == DialogueDiplomaticAction.Vassal)
+        && !string.IsNullOrWhiteSpace(playerRulerKingdom) && !string.IsNullOrWhiteSpace(actor)
+        && !Same(actor, playerRulerKingdom)
+        && Same(payload.TargetKingdomId, playerRulerKingdom)
+        && Same(payload.Terms.ReceivingKingdomId, playerRulerKingdom) && Same(payload.Terms.JoiningKingdomId, actor);
+
     public static DialogueRouteDecision Resolve(DialogueCommitmentRequest request, DialogueAuthoritySnapshot authority,
         DialogueProposalBatch batch, bool isDuplicate = false)
     {

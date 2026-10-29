@@ -21,23 +21,6 @@ internal static class LifecycleRepairReplay
 
     private static void DeadlinesAndRetirement()
     {
-        foreach (bool running in new[] { false, true })
-        foreach (bool settlement in new[] { false, true })
-        foreach (bool breaker in new[] { false, true })
-        {
-            var state = new WorldDiplomacyStorage();
-            var round = new WorldDiplomacyRound { RoundId = "r", State = "active", HardEndDay = 10,
-                ResultSettlementPending = settlement, AutomaticCircuitBreakerTripped = breaker };
-            state.ActiveRound = round;
-            state.Jobs.Add(new() { JobId = "own", RoundId = "r", Kind = "generate", IsRunning = running });
-            state.Jobs.Add(new() { JobId = "other", RoundId = "other", Kind = "generate" });
-            int closed = 0;
-            WorldDiplomacyRoundApplication.ProcessRoundLifecycle(state, () => 50, _ => null, (_, _) => { }, _ => { }, _ => { },
-                why => { closed++; WorldDiplomacyRoundApplication.Close(state, why, () => 50, _ => { }, _ => { }, (_, _) => { }, () => { }, _ => { }, round); }, _ => { }, round);
-            Test.True(closed == (running ? 0 : 1), "only an actual running request delays terminal closure");
-            Test.True(state.Jobs.Any(x => x.JobId == "other") && state.Jobs.Any(x => x.JobId == "own") == running,
-                "closure retires scoped jobs without consuming unrelated capacity");
-        }
         var (h, o) = ConcurrentOralMigrationReplay.Fixture();
         var state2 = new WorldDiplomacyStorage { RoundSchedulingSchemaVersion = 1 };
         state2.CompletedRounds.Add(new() { RoundId = "closed", State = "closed" });
@@ -55,6 +38,8 @@ internal static class LifecycleRepairReplay
         o.CurrentStorage.Jobs.Add(inflight);
         Test.True(o.RequestLeases.TryClaim(inflight, 1, 512, 1000, false, out var lease), "claim real lease before close");
         o.CloseRound("manual_close", active);
+        Test.True(o.CurrentStorage.Jobs.Contains(inflight) && active.State == "active", "Q50 arbitrary closure cannot retire a live negotiation");
+        o.CloseRound("player_negotiation_finished", active);
         Test.True(o.RequestLeases.Count == 1 && !o.CurrentStorage.Jobs.Contains(inflight), "record retirement retains actual inflight lease");
         Test.True(o.RequestLeases.TryRelease(lease.JobId, 1, lease.Attempt) && o.RequestLeases.Count == 0, "late completion releases matching lease without replay");
     }
@@ -75,6 +60,8 @@ internal static class LifecycleRepairReplay
         o.CurrentStorage.PropagationArrivals.Add(new() { DocumentId = player.DocumentId, RoundId = old.RoundId, KingdomId = "a", Scope = "court", DueDay = 15 });
         Test.True(ReferenceEquals(o.EnsurePlayerDocumentRound(player), old), "open usable event preserves original insertion");
         o.CloseRound("relay_hard_end", old);
+        Test.True(old.State == "active" && player.RoundId == old.RoundId, "Q50 old hard duration cannot split an ongoing player matter");
+        o.CloseRound("player_negotiation_finished", old);
         var independent = o.ResolveRound(player.RoundId);
         Test.True(independent != null && independent.State == "active" && independent.IsPlayerInsertion && independent.RootDocumentId == player.DocumentId,
             "closure moves pending player analysis into its own live event");
@@ -92,14 +79,14 @@ internal static class LifecycleRepairReplay
         WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(o.CurrentStorage.NobleKnowledge, "a", player.DocumentId, 15);
         var owed = new WorldDiplomacyJob { Kind = "generate", JobId = "owed", RoundId = independent.RoundId,
             AuthorKingdomId = "a", SourceDocumentId = player.DocumentId, IsExternalResponseOnly = true };
-        DiplomacyPlayerEventRules.Bind(independent, owed);
+        DiplomacyEventRules.Bind(independent, owed);
         Test.True(o.CanDispatchDiplomacyJob(owed), "delivered independent reply with current event ownership is dispatchable");
 
         var blocked = o.EnsureActiveRound("b", "p", false);
         blocked.ResultSettlementPending = true; blocked.RelayRouteKingdomIds.Add("b");
-        // This fixture's MaxRelayParticipants is zero: adding a new target is denied.
+        // Old settlement capacity cannot split an existing matter.
         player.RoundId = blocked.RoundId; player.ExchangeId = blocked.RoundId;
-        Test.True(o.EnsurePlayerDocumentRound(player).RoundId != blocked.RoundId, "unusable settlement insertion becomes independent");
+        Test.True(o.EnsurePlayerDocumentRound(player).RoundId == blocked.RoundId, "old settlement flags do not split a valid event");
 
         var legacy = new WorldDiplomacyStorage { RoundSchedulingSchemaVersion = 1 };
         legacy.CompletedRounds.Add(new() { RoundId = "legacy", State = "closed" });

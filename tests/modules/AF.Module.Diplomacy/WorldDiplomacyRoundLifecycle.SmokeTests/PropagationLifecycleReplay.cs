@@ -56,11 +56,12 @@ internal static class PropagationLifecycleReplay
                 && document.IsReadyForPublication && document.HasReachedPlayerCourt,
             "publication binds the canonical round and origin before formal author knowledge");
         Test.True(round.RootDocumentId == "d" && round.LastActivityDay == 12
-                && round.Participants.Count == 1 && round.Participants[0].SelectedForRelay
+                && round.Participants.Count == 1 && round.Participants[0].State == "active"
+                && !round.Participants[0].SelectedForRelay && round.RelayRouteKingdomIds.Count == 0
                 && round.Participants[0].LastSpokeDay == 12
                 && !round.Participants[0].MandatoryReplyPending
                 && round.Participants[0].LastTriggeredDocumentId == "source",
-            "publication preserves author relay participant and response-obligation settlement");
+            "publication records active author and response receipt without reviving a relay route");
         Test.True(storage.SettlementKnowledge.Single().DocumentIds.Single() == "d"
                 && storage.KingdomKnowledge.Single().DocumentIds.Single() == "d"
                 && storage.NobleKnowledge.Single().DocumentIds.Single() == "d",
@@ -143,9 +144,9 @@ internal static class PropagationLifecycleReplay
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         Test.True(host.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
                 && !host.Contains("PublishImmediatePublicKnowledge(", StringComparison.Ordinal)
-                && host.Contains("WorldDiplomacyPropagationApplication.ReceivePlayerRelay(", StringComparison.Ordinal)
+                && host.Contains("WorldDiplomacyPropagationApplication.ReceiveCourt(", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyPropagationApplication.RecoverPlayerCourtReceipts(", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyPropagationApplication.RetryDeferred(", StringComparison.Ordinal),
-            "active publication, relay, recovery and retry paths all enter the application owner");
+            "active publication, court delivery, recovery and retry paths all enter the application owner");
     }
 }

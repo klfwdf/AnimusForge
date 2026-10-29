@@ -14,42 +14,24 @@ internal static class Dpl080PromptReplay
         Test.True((string)fallback["primary_target_kingdom_id"] == "b" && (double)fallback["confidence"] == 0, "080 fallback target and uncertainty");
         var world = new PromptWorldFixture();
         var orch = new PromptOrch(world);
-        world.EnglishPrompts = true;
-        string englishPlan = WorldDiplomacyPromptComposer.BuildRoundPlanPrompt(world, orch, world.Document, new() { "b" });
-        Test.True(englishPlan.Contains("[Opening declaration]") && englishPlan.Contains("\"selected_kingdom_ids\":[\"ID\"]"), "localized English plan retains JSON schema");
-        Test.True(englishPlan.Contains("must participate") && englishPlan.Contains("use only candidate IDs"), "English plan retains mandatory targets and candidate limit");
-        world.EnglishPrompts = false;
         var round = world.Round;
         var doc = world.Document;
-        string opening = WorldDiplomacyPromptComposer.BuildAutonomousOpeningPrompt(world, orch, "a", "r", new() { "a", "missing", "dead", "vassal", "b" });
-        Test.True(opening.Contains("- b=") && !opening.Contains("- a=") && !opening.Contains("- dead=") && !opening.Contains("- vassal="), "080 opening excludes self/missing/eliminated/dependent kingdoms");
-        Test.True(opening.Contains("上限（包括发起国）=3") && opening.Contains("战争判断="), "080 opening participant cap and war facts");
-        Test.True(opening.IndexOf("发文国：a") < opening.IndexOf("- b="), "080 author prefix before world candidates");
-        Test.True(WorldDiplomacyPromptComposer.BuildAutonomousOpeningPrompt(world, orch, null, "r", null) == "", "080 null author");
-        foreach (int activity in new[] { 0, 1, 2 })
+        foreach (bool english in new[] { false, true })
         {
-            world.Activity = activity;
-            string p = WorldDiplomacyPromptComposer.BuildGenerationPrompt(world, orch, "a", "b", null, true, doc, true, "r", true, new() { "b" }, true);
-            Test.True(p.Contains("来源公文ID：source") && p.Contains("不得附加、修改条款或另提和平方案"), "080 exact incoming peace source");
-            Test.True(p.Contains("原案：来源=source|action=action-b") && p.Contains("【对象决策硬事实】b】"), "080 source action and target hard-fact section");
-            Test.True(p.Contains("对象国迟迟没有回应") && p.Contains("- c="), "080 reminder and other-kingdom relationship snapshot");
-            Test.True(p.Contains(activity == 0 ? "活跃程度为低" : activity == 2 ? "活跃程度为高" : "活跃程度为标准"), "080 activity modes");
+            world.EnglishPrompts = english;
+            string prompt = WorldDiplomacyPromptComposer.BuildGenerationPrompt(world, orch, "a", "b", null,
+                true, doc, true, "r", true, new() { "a", "b", "missing", "vassal", "dead" }, true);
+            Test.True(prompt.Contains("source") && prompt.Contains("original terms") && prompt.Contains("- b="), "shared generation preserves exact source and real target facts");
+            Test.True(!prompt.Contains("- dead=") && !prompt.Contains("- vassal="), "shared generation excludes ineligible candidate facts");
+            Test.True(!prompt.Contains("round_plan") && !prompt.Contains("player_diplomacy=true")
+                && !prompt.Contains("soft time scale") && !prompt.Contains("软时长"), "shared generation has no legacy seats, privileges or ending clock");
+            string system = WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt("stable-contract", 10, 640, world.LocalizePrompt);
+            Test.True(system.Contains("64") && !system.Contains("player_diplomacy=true") && !system.Contains("round_plan"), "common system contract matches shared validator in either language");
+            Test.True(system.Contains(english ? "silence" : "沉默"), "same non-escalation contract reaches both package consumers");
+            string analysis = WorldDiplomacyPromptComposer.BuildAnalysisPrompt(world, orch, doc);
+            Test.True(analysis.Contains("【MODE=ANALYZE】") && analysis.Contains("source") && analysis.Contains("original terms"), "analysis retains known exact offers and source body");
         }
-        Test.True(WorldDiplomacyPromptComposer.BuildGenerationPrompt(world, orch,"a",null,null,true,null,false,"r",false,null,false)=="", "080 response requires target");
-        Test.True(WorldDiplomacyPromptComposer.BuildGenerationPrompt(world, orch,"a",null,null,false,null,false,"r",false,new(){"b"},false).Contains("- b="), "080 untargeted opening dispatch");
-        world.Events.Clear();
-        string relay = WorldDiplomacyPromptComposer.BuildRelayConversationTurnPrompt(world, orch, round, "a", "b", doc, true);
-        Test.True(world.Events[0] == "prune" && relay.Contains("本篇优先任务：回应玩家王国宣言"), "080 prune before relay and player response priority");
-        Test.True(relay.Contains("允许动作对象=b,c") && relay.Contains("最多接受一份") && relay.Contains("【对象决策硬事实】c】"), "080 stable target order and multi-peace constraint");
-        Test.True(relay.Contains("当前已进入最后阶段") && relay.Contains("当前可提出和平方案的对象=c"), "080 relay timing and peace options");
-        string plan = WorldDiplomacyPromptComposer.BuildRoundPlanPrompt(world, orch, doc, new(){"b","missing"});
-        Test.True(plan.Contains("【MODE=ROUND_PLAN】") && plan.Contains("- b=") && !plan.Contains("- missing"), "080 round plan mode and candidates");
-        Test.True(WorldDiplomacyPromptComposer.BuildRoundPlanSystemPrompt(world, round).StartsWith("stable-contract"), "080 stable system contract");
-        world.Events.Clear();
-        string analysis = WorldDiplomacyPromptComposer.BuildAnalysisPrompt(world, orch, doc);
-        Test.True(world.Events[0] == "prune" && analysis.Contains("【MODE=ANALYZE】") && analysis.Contains("公文正文："), "080 player analysis admission and protocol");
-        Test.True(!analysis.Contains("- dead =") && !analysis.Contains("- a ="), "080 analysis excludes eliminated and author");
-        Test.True(analysis.Contains("原样接受或明确拒绝") && analysis.Contains("来源=source"), "080 analysis original peace terms");
+        Test.True(WorldDiplomacyPromptComposer.BuildGenerationPrompt(world, orch,"a",null,null,true,null,false,"r",false,null,false)=="", "shared generation requires an actual target");
         var source = new WorldDiplomacyJob { JobId="job", Kind="generate", RoundId="r", SourceDocumentId="source", AuthorKingdomId="a", TargetKingdomId="b", SystemPrompt="stable-system", UserPrompt="original-user", MaxTokens=900, HistorySnapshotHash="hash", HistorySnapshotThroughSequence=7, HistoryThroughSequence=7, HistoryRevision=2, IsRelayTurn=true };
         var before = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(source, world.BuildCanonicalHistoryBlock);
         WorldDiplomacyDraftRepairApplication.RejectGeneratedDraftBeforePublication(world, orch, source, "rejected draft", "a", "b", "invalid_target", new JObject());
@@ -76,7 +58,7 @@ internal static class Dpl080PromptReplay
         private readonly PromptWorldFixture _w;
         internal PromptOrch(PromptWorldFixture w) { _w = w; }
         public override void PruneInvalidOffers(WorldDiplomacyRound round) => _w.PruneInvalidOffers(round);
-        public override List<string> GetResultSettlementActionableTargetIds(WorldDiplomacyRound round, string authorId) => _w.GetResultSettlementActionableTargets(round, authorId);
+
         public override List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string authorId, string targetId) => _w.BuildLegalDiplomaticActionIntents(round, authorId, targetId);
         public override List<string> BuildLegalDiplomaticDeclarationIntents(WorldDiplomacyRound round, string authorId, string targetId, bool isRelayTurn, string resultSettlementSlotId, bool isExternalResponseOnly, WorldDiplomacyDocument responseSource) => _w.BuildLegalDiplomaticDeclarationIntents(round, authorId, targetId, isRelayTurn, isExternalResponseOnly, responseSource);
         public override Dictionary<string, List<string>> BuildLegalDiplomaticDeclarationIntentMap(WorldDiplomacyRound round, string authorId, List<string> ids, bool isRelayTurn, string resultSettlementSlotId, bool isExternalResponseOnly, WorldDiplomacyDocument responseSource) => _w.BuildLegalDiplomaticDeclarationIntentMap(round, authorId, ids, isRelayTurn, resultSettlementSlotId, isExternalResponseOnly, responseSource);
@@ -93,15 +75,16 @@ internal static class Dpl080PromptReplay
 internal sealed class PromptWorldFixture : IWorldDiplomacyDraftRepairWorld
 {
     internal bool EnglishPrompts;
+    internal bool PackagePrompts;
+    internal bool RejectRetiredScores;
     private static readonly Dictionary<string, string> ChinesePrompts = LoadPromptStrings();
     private static Dictionary<string, string> LoadPromptStrings()
     {
-        using var stream = typeof(PromptWorldFixture).Assembly.GetManifestResourceStream("AnimusForge.Diplomacy.PromptCompatibility.json");
-        using var reader = new System.IO.StreamReader(stream);
+        using var reader = new System.IO.StreamReader(System.IO.Path.Combine(AppContext.BaseDirectory, "ModuleData", "DiplomacyPromptTexts.json"));
         return JObject.Parse(reader.ReadToEnd()).Properties().ToDictionary(x => x.Name, x => (string)x.Value);
     }
     public string LocalizePrompt(string id, string englishFallback)
-        => (EnglishPrompts ? englishFallback : ChinesePrompts.TryGetValue(id, out var legacy) ? legacy : DiplomacyPromptTexts.Get(id, englishFallback)).Replace("[[AF_JSON_OPEN]]", "{").Replace("[[AF_JSON_CLOSE]]", "}");
+        => (PackagePrompts ? DiplomacyPromptTexts.Get(id, englishFallback) : EnglishPrompts ? englishFallback : ChinesePrompts.TryGetValue(id, out var legacy) ? legacy : DiplomacyPromptTexts.Get(id, englishFallback)).Replace("[[AF_JSON_OPEN]]", "{").Replace("[[AF_JSON_CLOSE]]", "}");
     internal readonly List<string> Events = new();
     internal readonly List<WorldDiplomacyJob> Enqueued = new();
     internal readonly List<string> Abandoned = new();
@@ -141,8 +124,8 @@ internal sealed class PromptWorldFixture : IWorldDiplomacyDraftRepairWorld
     public WorldDiplomacyBorderRelation BorderRelation(string authorId,string targetId)=>new();
     public int RulerRelation(string authorId,string targetId)=>3;
     public int CulturalClaimCount(string authorId,string targetId)=>2;
-    public int NationalPrestige(string kingdomId)=>50;
-    public int InternationalReputation(string kingdomId)=>50;
+    public int NationalPrestige(string kingdomId)=>RejectRetiredScores ? throw new Exception("retired prestige consumer") : 50;
+    public int InternationalReputation(string kingdomId)=>RejectRetiredScores ? throw new Exception("retired reputation consumer") : 50;
     public int WarPressure(string authorId,string targetId)=>10;
     public string RulerVoiceContext(string kingdomId)=>"voice-"+kingdomId;
     public string RealmInstitutionalVoiceContext(string kingdomId)=>"realm-"+kingdomId;
@@ -156,7 +139,7 @@ internal sealed class PromptWorldFixture : IWorldDiplomacyDraftRepairWorld
     public List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round,string author,string target)=>new(){"accept_peace","reject_peace"};
     public List<string> BuildLegalDiplomaticDeclarationIntents(WorldDiplomacyRound round,string author,string target,bool isRelayTurn,bool isExternalResponseOnly,WorldDiplomacyDocument responseSource)=>BuildLegalDiplomaticActionIntents(round,author,target);
     public Dictionary<string,List<string>> BuildLegalDiplomaticDeclarationIntentMap(WorldDiplomacyRound round,string author,List<string> ids,bool isRelayTurn,string resultSettlementSlotId,bool isExternalResponseOnly,WorldDiplomacyDocument responseSource)=>new(){["c"]=new(){"propose_peace"},["b"]=new(){"accept_peace","reject_peace"}};
-    public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round,string author,string resultSettlementSlotId,bool isExternalResponseOnly,string sourceDocumentId,bool requireAnyOpenPeaceOffer)=>Offer;
+
     public bool HasCessionBoundMultiplePeaceAcceptanceOptions(WorldDiplomacyRound round,string author,Dictionary<string,List<string>> actions)=>true;
     public List<string> GetAuthorizedGenerationTargetIds(WorldDiplomacyJob source,WorldDiplomacyRound round,string author)=>Authorized;
     public bool IsAlly(string author,string target)=>false;

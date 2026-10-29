@@ -32,20 +32,20 @@ internal static class RequestHistoryBudgetReplay
         storage.Documents.Add(Doc("source", "b", "a", "current", 2, "EXACT_ORIGINAL_PROPOSAL"));
         WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(storage.KingdomKnowledge, "a", "source", 2);
         storage.Documents.Add(Doc("recent", "a", "b", "current", 99, "RECENT_REPLY"));
-        storage.Documents.Add(Doc("recent-other-event", "a", "b", "another", 98, "RECENT_BILATERAL_EVENT"));
+        storage.Documents.Add(Doc("recent-other-event", "a", "b", "another", 98, "trade RECENT_BILATERAL_EVENT"));
         for (int i = 0; i < 100; i++) storage.Documents.Add(Doc("third" + i, "a", "c", "other", 100, "UNRELATED_BILATERAL"));
-        storage.RoundSummaries.Add(new() { RoundId = "old-round", CreatedDay = 3, KingdomIds = new() { "a", "b" }, Summary = "RELEVANT_OLD_SUMMARY" });
+        storage.RoundSummaries.Add(new() { RoundId = "old-round", CreatedDay = 3, KingdomIds = new() { "a", "b" }, SourceDocumentIds = new() { "old" }, Summary = "trade RELEVANT_OLD_SUMMARY" });
         storage.RoundSummaries.Add(new() { RoundId = "other-summary", CreatedDay = 100, KingdomIds = new() { "c", "d" }, Summary = "UNRELATED_SUMMARY" });
+        storage.ConcurrentRounds.Add(new() { RoundId = "current", State = "active", RoundTopic = "trade" });
         var job = new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", TargetKingdomId = "b",
             RoundId = "current", SourceDocumentId = "source", SystemPrompt = "rules", UserPrompt = "current facts" };
         WorldDiplomacyHistoryCaptureApplication.Capture(storage, job, false, long.MaxValue, new Port(), new Orch());
         string context = job.DeclarationHistoryBlock;
         Test.True(context.Contains("EXACT_ORIGINAL_PROPOSAL") && context.Contains("RECENT_REPLY") && context.Contains("RELEVANT_OLD_SUMMARY"), "reading window retains original old source, current event and related summary");
-        Test.True(context.Contains("RECENT_BILATERAL_EVENT") && !context.Contains("UNRELATED_BILATERAL"), "bilateral index finds relevant event even when third-party declarations dominate recent country records");
+        Test.True(context.Contains("RECENT_BILATERAL_EVENT") && !context.Contains("UNRELATED_BILATERAL"), "topic retrieval finds related history without a recent bilateral quota");
         Test.True(!context.Contains("UNRELATED_WORLD_RULES") && !context.Contains("UNRELATED_SUMMARY") && !context.Contains("OLD_RAW_DECLARATION"), "reading window excludes unrelated and stale raw history");
         Test.True(storage.CanonicalHistory.Snapshot.Content.Length == 800000 && storage.Documents.Count == 4104
             && storage.CanonicalHistory.Snapshot.CoveredThroughSequence == 6205, "selection leaves archive and compression coverage intact");
-        LocalizedHistoryProjection();
         var messages = WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(job, _ => throw new Exception("full history renderer called"));
         Test.True(messages.Count == 3 && messages[1]?["content"]?.ToString() == context && messages.ToString().Length < 5000, "800k archive produces a small real declaration request");
         Test.True(!JsonConvert.SerializeObject(job).Contains("RELEVANT_OLD_SUMMARY"), "reading window is runtime-only and not another persisted history copy");
@@ -85,54 +85,15 @@ internal static class RequestHistoryBudgetReplay
         DeliveredVisibility();
     }
 
-    private static void LocalizedHistoryProjection()
-    {
-        string Text(string key, string fallback) => key switch
-        {
-            "History_ContextMarker" => "[Relevant Diplomatic History for this Event]",
-            "History_DocPrefix" => "[Document ",
-            "History_ExcerptPrefix" => "[Excerpt] ",
-            "History_ExecutedPrefix" => "[Executed by game] ",
-            "History_RelatedOldRoundPrefix" => "[Related prior round ",
-            "History_ProtectedFactPrefix" => "[Protected historical fact; kind=",
-            _ => fallback
-        };
-        var storage = new WorldDiplomacyStorage();
-        WorldDiplomacyDocument document = Doc("projection", "a", "b", "current", 100, "中文正文");
-        document.GameDate = "中文日期";
-        document.Title = "中文标题";
-        document.ChangedDiplomaticState = true;
-        document.MechanicalResult = "中文执行结果";
-        storage.Documents.Add(document);
-        storage.RoundSummaries.Add(new() { RoundId = "old", CreatedDay = 3, KingdomIds = new() { "a", "b" }, Summary = "中文旧摘要" });
-        storage.CanonicalHistory.Snapshot.ProtectedFacts.Add(new()
-        {
-            Kind = "note",
-            SourceId = "projection",
-            AuthorKingdomId = "a",
-            TargetKingdomIds = new() { "b" },
-            Text = "中文受保护事实"
-        });
-        var job = new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", TargetKingdomId = "b",
-            RoundId = "current", SourceDocumentId = "projection" };
-        string context = WorldDiplomacyRequestHistoryApplication.Build(storage, job, 100, 16000, null, Text);
-        Test.True(context.StartsWith("[Relevant Diplomatic History for this Event]", StringComparison.Ordinal)
-            && context.Contains("[Document projection;") && context.Contains("[Excerpt] 中文正文")
-            && context.Contains("[Executed by game] 中文执行结果") && context.Contains("中文标题"),
-            "English history markers project without changing dynamic Chinese document fields");
-        Test.True(context.Contains("[Related prior round old] 中文旧摘要")
-            && context.Contains("[Protected historical fact; kind=note; source=projection] 中文受保护事实"),
-            "English history markers cover summaries and protected facts while keeping their source text");
-    }
-
     private static void DeliveredVisibility()
     {
         var storage = new WorldDiplomacyStorage();
         storage.Documents.Add(Doc("undelivered", "b", "a", "current", 100, "NOT_YET_DELIVERED"));
         storage.RoundSummaries.Add(new() { RoundId = "old", KingdomIds = new() { "a", "b" },
-            SourceDocumentIds = new() { "undelivered" }, Summary = "HIDDEN_LINKED_SUMMARY" });
+            SourceDocumentIds = new() { "undelivered" }, Summary = "trade HIDDEN_LINKED_SUMMARY" });
         storage.CanonicalHistory.Snapshot.ProtectedFacts.Add(new() { SourceId = "undelivered",
-            AuthorKingdomId = "b", TargetKingdomIds = new() { "a" }, Text = "HIDDEN_LINKED_FACT" });
+            AuthorKingdomId = "b", TargetKingdomIds = new() { "a" }, Text = "trade HIDDEN_LINKED_FACT" });
+        storage.ConcurrentRounds.Add(new() { RoundId = "current", State = "active", RoundTopic = "trade" });
         var job = new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", TargetKingdomId = "b",
             RoundId = "current", SourceDocumentId = "undelivered" };
         WorldDiplomacyHistoryCaptureApplication.Capture(storage, job, false, long.MaxValue, new Port(), new Orch());
@@ -213,7 +174,7 @@ internal static class RequestHistoryBudgetReplay
         int rebuilds = 0, sends = 0;
         var selected = WorldDiplomacyLlmDispatchApplication.SelectAndPrepareLlmJob(storage, 2400, "",
             _ => "", _ => true, _ => true, j => { rebuilds++; j.UserPrompt = "fresh 【MODE=DECLARE】"; return true; },
-            _ => null, (_, _) => { }, _ => true, () => "", consume => { if (consume) sends++; return true; },
+            _ => null, (_, _) => { }, () => "", consume => { if (consume) sends++; return true; },
             j => WorldDiplomacyHistoryCaptureApplication.Capture(storage, j, false, long.MaxValue, new Port(), new Orch()),
             j => WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(j, _ => throw new Exception("legacy request read full archive")),
             out var prepared, 800000, 48000, s => s.Length, _ => throw new Exception("legacy budget read archive"),

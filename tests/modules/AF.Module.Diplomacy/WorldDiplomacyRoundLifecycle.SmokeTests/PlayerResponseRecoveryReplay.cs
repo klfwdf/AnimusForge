@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using AnimusForge;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -65,6 +65,7 @@ internal static class PlayerResponseRecoveryReplay
         var h = new Host { PublishEnabled=true }; var o = new WorldDiplomacyOrchestration(h, new WorldDiplomacyRuntimeState()); h.Owner = o;
         var r = o.EnsureActiveRound("p", "a", true);
         r.EventSourceType = followup ? "player_followup" : "player_declaration";
+        r.Participants.Single(x => x.KingdomId == "a").State = "active";
         r.RelayPlanned = true; r.HardEndDay = 30;
         r.RelayRouteKingdomIds = new() { "a", "p" };
         var d = new WorldDiplomacyDocument { DocumentId = "original-player-source", RoundId = r.RoundId,
@@ -78,22 +79,6 @@ internal static class PlayerResponseRecoveryReplay
     private static WorldDiplomacyJob Job(WorldDiplomacyRound r, WorldDiplomacyDocument d) => new()
     { JobId = "old-saved-followup-job", Kind = "generate", RoundId = r.RoundId, AuthorKingdomId = "a", TargetKingdomId = "p",
       IsExternalResponseOnly = true, IsRelayTurn = true, SourceDocumentId = d.DocumentId, PlayerResponseSourceIds = new() { d.DocumentId } };
-
-    internal static void VerifyStatementResponse()
-    {
-        var f = Fixture(); f.r.PlayerResponses.Clear(); f.d.RequiresResponse = false;
-        Invoke(f.o, "RegisterPlayerResponseWork", f.d, true);
-        var job = f.o.CurrentStorage.Jobs.Single(j => j.Kind == "generate");
-        Test.True(f.r.PlayerResponses.Count == 1 && f.o.CanDispatchDiplomacyJob(job),
-            "player statement without requires_response still schedules eligible response");
-        job.SuspendedReason = "test-provider-failure";
-        Test.True(!f.o.CanDispatchDiplomacyJob(job), "technical suspension prevents dispatch");
-        var old = Fixture(); old.h.Unavailable.Add("p"); var unbound = Job(old.r, old.d);
-        old.o.CurrentStorage.Jobs.Add(unbound);
-        Test.True(!old.o.CanDispatchDiplomacyJob(unbound) && old.r.PlayerResponses[0].Status == "pending", "unbound fixture stops before availability reconciliation");
-        DiplomacyPlayerEventRules.Bind(old.r, unbound);
-        Test.True(!old.o.CanDispatchDiplomacyJob(unbound) && old.r.PlayerResponses[0].Status == "unavailable", "owner/epoch binding reaches unavailable reconciliation");
-    }
 
     internal static void Run()
     {
@@ -140,7 +125,7 @@ internal static class PlayerResponseRecoveryReplay
             "unpublished response keeps obligation and defers one game day");
         foreach (var participant in r.Participants) if (!participant.IsPlayerAsync) participant.State="withdrawn";
         int counter=h.Counter;
-        for(int i=0;i<100;i++) { o.ProcessRoundLifecycle(); Invoke(o,"SchedulePlayerResponseWork",r); o.ScheduleNextRelayHop(r,true); o.AdvanceRelay(r,true); }
+        for(int i=0;i<100;i++) { o.ProcessRoundLifecycle(); Invoke(o,"SchedulePlayerResponseWork",r); }
         o.ReconcileActiveDiplomacyAfterLoad();
         Test.True(o.ResolveRound(r.RoundId)==r && r.State=="active" && h.Counter==counter && !o.CurrentStorage.Jobs.Any(),
             "repeated no-progress pumps keep exactly the same live obligation, no round/job/API storm");

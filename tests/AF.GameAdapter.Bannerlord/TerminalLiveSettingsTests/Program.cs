@@ -70,6 +70,14 @@ class Program
                 TerminalProviderProbe.Owners.Add(owner.Id, owner);
             }
             var duel = (BaseSettings)TerminalProviderProbe.Owners["AnimusForge_global_settings"];
+#if !AF_BASELINE
+            if (args.Contains("--country-selection-only"))
+            {
+                CountrySelectionSettingsChecks.Run(af, root, Check);
+                Console.WriteLine("PASS " + checks + " country selection settings checks");
+                return 0;
+            }
+#endif
 #if AF_TTS_ONLY
             SharedMcmChecks.Run(af, duel, root, Check, true);
             TtsVisibilityChecks.Run(af, Check);

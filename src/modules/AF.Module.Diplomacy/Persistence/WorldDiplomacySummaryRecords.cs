@@ -8,6 +8,8 @@ public sealed class WorldDiplomacyRoundSummary
 	[JsonProperty("archiveSchemaVersion")] public int ArchiveSchemaVersion { get; set; }
 	[JsonProperty("roundId")] public string RoundId { get; set; } = "";
 	[JsonProperty("summary")] public string Summary { get; set; } = "";
+	[JsonProperty("legacySummaryOriginal")] public string LegacySummaryOriginal { get; set; } = "";
+	[JsonProperty("legacyFactsOriginal")] public List<WorldDiplomacyRoundFact> LegacyFactsOriginal { get; set; } = new List<WorldDiplomacyRoundFact>();
 	[JsonProperty("createdDay")] public int CreatedDay { get; set; }
 	[JsonProperty("sourceDocumentIds")] public List<string> SourceDocumentIds { get; set; } = new List<string>();
 	[JsonProperty("facts")] public List<WorldDiplomacyRoundFact> Facts { get; set; } = new List<WorldDiplomacyRoundFact>();

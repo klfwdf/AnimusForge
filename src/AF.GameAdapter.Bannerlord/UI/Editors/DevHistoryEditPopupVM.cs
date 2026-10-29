@@ -9,6 +9,10 @@ public class DevHistoryEditPopupVM : ViewModel
 	private readonly Action<string> _onSave;
 
 	private readonly Action _onCancel;
+	private readonly Func<string> _resetText;
+	[DataSourceProperty] public bool CanRestoreDefaults => _resetText != null;
+	[DataSourceProperty] public string RestoreDefaultsText => new TextObject("{=AF_MCM_Editor_RestoreDefault}Restore default").ToString();
+	public void ExecuteRestoreDefaults() { if (_resetText != null) EditedText = _resetText() ?? ""; }
 
 	private string _titleText;
 
@@ -149,8 +153,9 @@ public class DevHistoryEditPopupVM : ViewModel
 		}
 	}
 
-	public DevHistoryEditPopupVM(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText)
+	public DevHistoryEditPopupVM(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText, Func<string> resetText = null)
 	{
+		_resetText = resetText;
 		_onSave = onSave;
 		_onCancel = onCancel;
 		TitleText = titleText ?? new TextObject("{=AF_UI_Editor_EditDialogueLine}Edit dialogue line").ToString();

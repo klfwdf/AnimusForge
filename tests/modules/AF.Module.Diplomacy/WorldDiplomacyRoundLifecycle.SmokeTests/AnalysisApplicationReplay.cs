@@ -30,8 +30,8 @@ internal static class AnalysisApplicationReplay
         public override void SettleInternationalReputationForDocument(WorldDiplomacyDocument doc) => _effects.Events.Add("reputation");
         public override void RecordDiplomacyWeeklyMaterial(WorldDiplomacyDocument doc) => _effects.Events.Add("weekly");
         public override void ReconcileReachedCourts(WorldDiplomacyDocument doc) => _effects.Events.Add("courts");
-        public override void ScheduleNextResultSettlementTurn(WorldDiplomacyRound round) => _effects.Events.Add("settlement");
-        public override void AdvanceRelay(WorldDiplomacyRound round, bool scheduleImmediately) => _effects.Events.Add("advance");
+
+
         public override void CompleteExchange(string id, string reason) => _effects.Events.Add("complete:" + reason);
         public override void CloseActiveRound(string reason) => _effects.Events.Add("close:" + reason);
     }
@@ -58,9 +58,10 @@ internal static class AnalysisApplicationReplay
         p.Storage.ActiveRound = p.Effects.Round;
         p.Effects.Events.Clear(); job.DocumentId = "ai";
         WorldDiplomacyAnalysisApplication.Commit(p, orch, job, "{}");
-        Test.True(!p.Storage.Documents.Contains(ai) && p.Effects.Round.RootDocumentId == "" && !p.Effects.Round.RelayWaiting
-            && p.Effects.Events.Contains("settlement") && !p.Effects.Events.Contains("history"),
-            "unusable AI analysis removes the unpublished document, clears root and advances settlement without publishing a fact");
+        Test.True(p.Storage.Documents.Contains(ai) && ai.AnalysisStatus == "rejected_draft" && !ai.IsReadyForPublication
+            && p.Effects.Round.RootDocumentId == "" && p.Effects.Round.State == "active"
+            && !p.Effects.Events.Contains("settlement") && !p.Effects.Events.Contains("history"),
+            "unusable AI analysis retains rejected evidence and clears the root without political closure or fictional facts");
         p.Effects.StoredDocument = null; p.Effects.Events.Clear();
         WorldDiplomacyAnalysisApplication.Commit(p, orch, job, "{}");
         Test.True(p.Effects.Events.Count == 0, "late analysis for an absent document has no effects");

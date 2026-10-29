@@ -57,15 +57,15 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private WorldDiplomacyDialogueTerms ParseFormalTreatyTerms(JObject json, string intent, string author, string target)
     {
-        if (!IsFormalTreatyIntent(intent) || json == null) return null;
+        if ((!IsFormalTreatyIntent(intent) && NormalizeIntent(intent) is not "propose_trade" and not "accept_trade") || json == null) return null;
         JObject value = json["treaty_terms"] as JObject;
         if (value == null) return null;
         var peace = json["peace_terms"] as JObject;
         // Retain explicit clauses (including invalid values) for the authoritative
         // declaration guard. Returning null here could make an acceptance silently
         // adopt the original terms after its own extra clauses were discarded.
-        int tribute = ReadInteger(value, "daily_tribute");
-        int days = ReadInteger(value, "duration_days");
+        int tribute = value["daily_tribute"] == null ? 0 : TryReadInteger(value, "daily_tribute", out int tributeValue) ? tributeValue : -1;
+        int days = value["duration_days"] == null ? 0 : TryReadInteger(value, "duration_days", out int daysValue) ? daysValue : -1;
         if (tribute == 0) tribute = ReadInteger(peace, "daily_tribute");
         if (days == 0) days = ReadInteger(peace, "duration_days");
         return new WorldDiplomacyDialogueTerms {

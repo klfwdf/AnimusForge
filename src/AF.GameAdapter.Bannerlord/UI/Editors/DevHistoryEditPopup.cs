@@ -29,7 +29,7 @@ public sealed class DevHistoryEditPopup : IDisposable
 
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
-	private DevHistoryEditPopup(ScreenBase screen, string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText, ScreenLayer inputOwner, Func<bool> isInputOwnerAlive, Action onDismissed)
+	private DevHistoryEditPopup(ScreenBase screen, string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText, ScreenLayer inputOwner, Func<bool> isInputOwnerAlive, Action onDismissed, Func<string> resetText = null)
 	{
 		_screen = screen;
 		_onSave = onSave;
@@ -37,20 +37,20 @@ public sealed class DevHistoryEditPopup : IDisposable
         _inputOwner = inputOwner;
         _isInputOwnerAlive = isInputOwnerAlive;
         _onDismissed = onDismissed;
-		_dataSource = new DevHistoryEditPopupVM(titleText, dateText, originalContentText, editedText, HandleSaveRequested, HandleCancelRequested, inputHintText, saveText, cancelText);
+		_dataSource = new DevHistoryEditPopupVM(titleText, dateText, originalContentText, editedText, HandleSaveRequested, HandleCancelRequested, inputHintText, saveText, cancelText, resetText);
 		// Resolve only the named/captured parent at open time; never scan layers per tick.
         int order = inputOwner == null ? 4000 : Math.Max(4000, inputOwner.InputRestrictions.Order + 1);
         _layer = new GauntletLayer("DevHistoryEditPopup", order, false);
 	}
 
-	public static bool Show(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText = null, string saveText = null, string cancelText = null)
+	public static bool Show(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText = null, string saveText = null, string cancelText = null, Func<string> resetText = null)
 	{
         // Replacement must release the previous editor before capturing its restored parent.
         _activePopup?.Close(silent: true);
         ScreenBase screen = ScreenManager.TopScreen;
         ScreenLayer parent = CaptureInputOwner(screen);
         return TryShowOwned(titleText, dateText, originalContentText, editedText, onSave, onCancel,
-            inputHintText, saveText, cancelText, parent, null, null, out _);
+            inputHintText, saveText, cancelText, parent, null, null, out _, resetText);
     }
 
     internal static ScreenLayer CaptureInputOwner(ScreenBase screen)
@@ -71,7 +71,7 @@ public sealed class DevHistoryEditPopup : IDisposable
 
     internal static bool TryShowOwned(string titleText, string dateText, string originalContentText, string editedText,
         Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText,
-        ScreenLayer inputOwner, Func<bool> isInputOwnerAlive, Action onDismissed, out IDisposable session)
+        ScreenLayer inputOwner, Func<bool> isInputOwnerAlive, Action onDismissed, out IDisposable session, Func<string> resetText = null)
     {
         session = null;
         ScreenBase topScreen = ScreenManager.TopScreen;
@@ -83,7 +83,7 @@ public sealed class DevHistoryEditPopup : IDisposable
         {
             _activePopup?.Close(silent: true);
             popup = new DevHistoryEditPopup(topScreen, titleText, dateText, originalContentText, editedText,
-                onSave, onCancel, inputHintText, saveText, cancelText, inputOwner, isInputOwnerAlive, onDismissed);
+                onSave, onCancel, inputHintText, saveText, cancelText, inputOwner, isInputOwnerAlive, onDismissed, resetText);
             _activePopup = popup;
             popup.Open();
             session = popup;

@@ -1,0 +1,62 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000A0">
+      <Children>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="640" SuggestedHeight="640" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <!-- Clip only the opaque outer matte; retain the artwork's original coordinates. -->
+            <Widget Id="ChromeClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="14" ClipContents="true" DoNotAcceptEvents="true">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="640" SuggestedHeight="640" MarginLeft="-14" MarginTop="-12" Sprite="@ChromeSprite" DoNotAcceptEvents="true" />
+              </Children>
+            </Widget>
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46" MarginLeft="44" MarginRight="44" MarginTop="22" Brush="AFEvent.Title" Text="@TitleText" DoNotAcceptEvents="true" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="156" SuggestedHeight="24" HorizontalAlignment="Center" MarginTop="78" Brush="AFEvent.Stage" Text="@StageText" DoNotAcceptEvents="true" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="562" SuggestedHeight="188" HorizontalAlignment="Center" MarginTop="111" DoNotAcceptEvents="true">
+              <Children>
+                <Widget IsVisible="@HasIllustration" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="558" SuggestedHeight="186" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="@IllustrationSprite" DoNotAcceptEvents="true" />
+                <TextWidget IsVisible="@HasNoIllustration" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFEvent.IllustrationFallback" Text="@IllustrationFallbackText" DoNotAcceptEvents="true" />
+              </Children>
+            </Widget>
+            <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="50" MarginRight="50" MarginTop="324" MarginBottom="96" ClipRect="Clip" InnerPanel="Clip\Content" VerticalScrollbar="..\ScrollBar" AutoHideScrollBars="true">
+              <Children>
+                <Widget Id="Clip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <ListPanel Id="Content" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom" MarginRight="10" MarginBottom="8">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="AFEvent.Body" Text="@BodyText" />
+                        <TextWidget IsVisible="@HasNotice" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="12" Brush="AFEvent.Meta" Text="@NoticeText" />
+                        <Widget IsVisible="@HasParticipants" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1" MarginTop="10" MarginBottom="6" Sprite="BlankWhiteSquare_9" Color="#97774C99" DoNotAcceptEvents="true" />
+                        <TextWidget IsVisible="@HasParticipants" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="AFEvent.Heading" Text="@ParticipantsHeading" />
+                        <TextWidget IsVisible="@HasParticipants" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="6" Brush="AFEvent.Body" Text="@ParticipantsText" />
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1" MarginTop="10" MarginBottom="6" Sprite="BlankWhiteSquare_9" Color="#97774C99" DoNotAcceptEvents="true" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="AFEvent.Heading" Text="@EffectsHeading" />
+                        <ListPanel DataSource="{Effects}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="6" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                          <ItemTemplate>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="24" MarginBottom="5">
+                              <Children>
+                                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="20" SuggestedHeight="24" Brush="AFEvent.Heading" Brush.FontColor="@MarkerColor" Text="@Marker" DoNotAcceptEvents="true" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="24" Brush="AFEvent.Effect" Text="@Text" />
+                              </Children>
+                            </Widget>
+                          </ItemTemplate>
+                        </ListPanel>
+                        <TextWidget IsVisible="@HasNoEffects" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="6" Brush="AFEvent.Meta" Text="@NoEffectsText" />
+                      </Children>
+                    </ListPanel>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <ScrollbarWidget Id="ScrollBar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="6" HorizontalAlignment="Right" MarginRight="39" MarginTop="324" MarginBottom="96" AlignmentAxis="Vertical" Handle="Handle" MinValue="0" MaxValue="100" Sprite="BlankWhiteSquare_9" Color="#6B492666">
+              <Children><Widget Id="Handle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" Sprite="BlankWhiteSquare_9" Color="#A98048FF" /></Children>
+            </ScrollbarWidget>
+            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="36" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="29" Command.Click="ExecuteClose" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+              <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFEvent.ButtonText" Text="@CloseText" DoNotAcceptEvents="true" /></Children>
+            </ButtonWidget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

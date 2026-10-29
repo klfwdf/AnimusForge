@@ -10,7 +10,19 @@ internal static class ActualMessageAssemblyChecks
     static int checks;
     static void Check(bool condition, string name) { checks++; if (!condition) throw new Exception("FAIL " + name); }
     static string Field(object value, string name) => (string)value.GetType().GetProperty(name).GetValue(value);
-    static object Call(Type type, string name, params object[] values) => type.GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, values);
+    static object Call(Type type, string name, params object[] values)
+    {
+        MethodInfo method = type.GetMethod(name, BindingFlags.Static | BindingFlags.NonPublic);
+        var parameters = method.GetParameters();
+        object[] arguments = new object[parameters.Length];
+        Array.Copy(values, arguments, values.Length);
+        for (int i = values.Length; i < arguments.Length; i++)
+        {
+            if (!parameters[i].IsOptional) throw new ArgumentException("Missing required argument: " + parameters[i].Name);
+            arguments[i] = parameters[i].DefaultValue;
+        }
+        return method.Invoke(null, arguments);
+    }
     static int Main(string[] args)
     {
         try
@@ -171,6 +183,8 @@ internal static class ActualMessageAssemblyChecks
                     "CompactArrival" => new[] { "private", "persisted", J("runtime", "knowledge"), J(J("local", "trust", "misc"), "fact") },
                     _ => throw new Exception("unknown product layout")
                 };
+                expected[0] = "<af-recall-personal>\nprivate\n</af-recall>";
+                expected[1] = "<af-recall-personal>\npersisted\n</af-recall>";
                 Check(actual.SequenceEqual(expected), "actual DLL Scene layout " + name);
             }
             Type shout = product.GetType("AnimusForge.ShoutBehavior", true);

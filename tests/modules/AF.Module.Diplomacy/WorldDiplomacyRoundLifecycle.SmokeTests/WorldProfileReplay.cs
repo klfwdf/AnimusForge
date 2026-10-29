@@ -12,6 +12,16 @@ internal static class WorldProfileReplay
         => new(id, id, "k" + kingdom, kingdom, active, fort, ruling, prosperity);
     internal static void Run()
     {
+        var geoForts = new[] { Fort("saneopa", 0), Fort("myzea", 0), Fort("chaikand", 1), Fort("nearer-khuzait", 1) };
+        var geoDistances = new float[,] { { 0, 91, 172, 160 }, { 91, 0, 81, 69 }, { 172, 81, 0, 12 }, { 160, 69, 12, 0 } };
+        var geo = WorldDiplomacyWorldProfileRules.BuildFortGeography(geoForts, geoDistances, 72);
+        Test.True(geo["saneopa"].Count == 0 && geo["myzea"].Single().settlement_id == "nearer-khuzait",
+            "realm adjacency cannot turn a distant interior city into a foreign frontier; nearest in-radius foreign fort only");
+        geoForts[1] = Fort("myzea", 1);
+        geo = WorldDiplomacyWorldProfileRules.BuildFortGeography(geoForts, geoDistances, 72);
+        Test.True(geo["myzea"].Count == 0, "rebuilding with changed ownership removes now-domestic proximity");
+        Test.True(WorldDiplomacyWorldProfileRules.BuildFortGeography(Array.Empty<WorldDiplomacyFortSnapshot>(), new float[0,0], 24).Count == 0,
+            "empty map contributes no invented geographic evidence");
         var raw = new[] { Fort("a", 0), Fort("A", 1), Fort("b", 1), Fort("village", 2, fort: false), Fort("gone", 3, active: false) };
         Test.True(WorldDiplomacyWorldProfileRules.SelectBorderFortIndices(raw).SequenceEqual(new[] { 0, 2 }),
             "border selection retains first case-insensitive fort identity and rejects nonfort/eliminated owners");
@@ -69,7 +79,7 @@ internal static class WorldProfileReplay
             WorldDiplomacyLifecycleApplication.Run(lifecycle, orchestration, ref source);
             string[] expected = lifecycle == WorldDiplomacyLifecycleEvent.NewGame
                 ? new[] { "ResetStorageForNewGame", "EnsureScheduleInitialized", "reset:new-game" }
-                : new[] { "NormalizeStorage", "RecoverUnsettledAiInternationalReputation", "RecoverPlayerCourtReceiptsFromKnowledge",
+                : new[] { "NormalizeStorage", "RecoverPlayerCourtReceiptsFromKnowledge",
                     "EnsureScheduleInitialized", lifecycle == WorldDiplomacyLifecycleEvent.Loaded ? "reset:game-loaded" : "reset:session-launched", "ReconcileActiveDiplomacyAfterLoad" };
             Test.True(orchestration.Calls.SequenceEqual(expected), "Application owns complete lifecycle order: " + lifecycle);
         }

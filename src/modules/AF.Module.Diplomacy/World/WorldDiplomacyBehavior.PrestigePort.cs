@@ -10,6 +10,12 @@ namespace AnimusForge;
 
 public sealed partial class WorldDiplomacyBehavior
 {
+    private sealed partial class OrchestrationHost : IWorldDiplomacyThreatMechanicsHost
+    {
+        public IWorldDiplomacyPrestigePort Prestige() => new PrestigePort();
+        public IWorldDiplomacyThreatBindingPort ThreatBinding() => new ThreatBindingPort(_owner);
+    }
+
     private sealed class PrestigePort : IWorldDiplomacyPrestigePort
     {
         private readonly Dictionary<string, Hero> _heroes = new Dictionary<string, Hero>(StringComparer.OrdinalIgnoreCase);

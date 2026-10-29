@@ -32,14 +32,17 @@ probe+='\n'.join(method(n) for n in ['ReplaceSelection','NormalizeText','Sanitiz
 items=ET.SubElement(project,'ItemGroup')
 for f in [H/'Stubs.cs',H/'Program.cs',H/'LongTextSafetyReplay.cs',H/'LocalizationFixture.cs',out/'WidgetInputProbe.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Common/DevTextEditorHelper.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopupVM.cs']:ET.SubElement(items,'Compile',Include=str(f))
 ET.ElementTree(project).write(out/'Tests.csproj',encoding='utf-8')
-dotnet=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else R/'local/dotnet/8.0.425/dotnet.exe'
+sys.path.insert(0,str(R/'tests'))
+from output_isolation import resolve_dotnet
+dotnet=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else resolve_dotnet(R)
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Tests.csproj'),'-c','Release'],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
 (out/'run.log').write_text(r.stdout+r.stderr,encoding='utf-8');print(r.stdout+r.stderr,end='')
 if r.returncode:raise SystemExit(r.returncode)
 xml=ET.parse(R/'content/modules/AF.Module.UI/GUI/Prefabs/DevHistoryEditPopup.xml')
 editor=list(xml.iter('DevMultilineEditableTextWidget'))
 assert len(editor)==1 and editor[0].get('AutoFocus')=='true' and editor[0].get('DoNotAcceptEvents')=='false'
-buttons=list(xml.iter('ButtonWidget'));assert len(buttons)==2
+buttons=list(xml.iter('ButtonWidget'));assert len(buttons)==3
+assert any(b.get('Command.Click')=='ExecuteRestoreDefaults' and b.get('IsVisible')=='@CanRestoreDefaults' for b in buttons)
 for b in buttons:
  assert b.get('DoNotAcceptEvents')=='false' and b.get('DoNotPassEventsToChildren')=='true'
  assert all(t.get('DoNotAcceptEvents')=='true' for t in b.iter('TextWidget'))

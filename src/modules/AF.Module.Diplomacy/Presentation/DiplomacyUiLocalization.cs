@@ -4,6 +4,21 @@ namespace AnimusForge;
 
 internal static class DiplomacyUiLocalization
 {
+    internal static string CampaignDate(int day, int daysInSeason, int daysInYear)
+    {
+        day = System.Math.Max(0, day);
+        daysInSeason = daysInSeason > 0 ? daysInSeason : 21;
+        daysInYear = daysInYear > 0 ? daysInYear : daysInSeason * 4;
+        int dayOfYear = day % daysInYear;
+        string season = ((dayOfYear / daysInSeason) % 4) switch {
+            0 => Text("AF_DIP_UI_EventDate_Spring", "Spring"),
+            1 => Text("AF_DIP_UI_EventDate_Summer", "Summer"),
+            2 => Text("AF_DIP_UI_EventDate_Autumn", "Autumn"),
+            _ => Text("AF_DIP_UI_EventDate_Winter", "Winter")
+        };
+        return Format("AF_DIP_UI_EventDate", "Year {YEAR}, {SEASON} {DAY}",
+            ("YEAR", day / daysInYear), ("SEASON", season), ("DAY", dayOfYear % daysInSeason + 1));
+    }
     // Resolve the template once, then insert display data without re-parsing its braces.
     private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFSWEEPLITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 

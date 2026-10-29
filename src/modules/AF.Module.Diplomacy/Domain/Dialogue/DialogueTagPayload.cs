@@ -12,6 +12,7 @@ public sealed class DialogueTagPayload
     public string TargetKingdomId { get; private set; }
     public string SourceDocumentId { get; private set; }
     public string SourceActionId { get; private set; }
+    public string EventRoundId { get; private set; }
     public DialogueDiplomaticTerms Terms { get; private set; }
     public string SupersedesArrangementId { get; private set; }
     public int SupersedesVersion { get; private set; }
@@ -22,7 +23,7 @@ public sealed class DialogueTagPayload
         if (string.IsNullOrWhiteSpace(payload) || payload.Length > 1800) return false;
         var fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var allowed = new HashSet<string>(new[] { "action", "move", "target", "source_document", "source_action", "receiving", "joining",
-            "payer", "receiver", "tribute", "days", "cession_from", "cession_to", "settlement", "supersedes", "version", "reason" }, StringComparer.OrdinalIgnoreCase);
+            "payer", "receiver", "tribute", "days", "cession_from", "cession_to", "settlement", "supersedes", "version", "reason", "event" }, StringComparer.OrdinalIgnoreCase);
         foreach (string part in payload.Split(';'))
         {
             int separator = part.IndexOf('=');
@@ -45,6 +46,7 @@ public sealed class DialogueTagPayload
             || !int.TryParse(Get("version"), out version) || version <= 0 || version == int.MaxValue
             || string.IsNullOrWhiteSpace(Get("reason")) || Get("reason").Length > 180)) return false;
         result = new DialogueTagPayload { Action = action, Move = move, TargetKingdomId = Get("target"),
+            EventRoundId = Get("event"),
             SupersedesArrangementId = Get("supersedes"), SupersedesVersion = version, RevisionReason = Get("reason"),
             SourceDocumentId = Get("source_document"), SourceActionId = Get("source_action"),
             Terms = new DialogueDiplomaticTerms(Get("receiving"), Get("joining"), Get("payer"), Get("receiver"), tribute, days,

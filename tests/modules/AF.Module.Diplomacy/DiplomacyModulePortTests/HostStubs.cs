@@ -31,7 +31,11 @@ namespace TaleWorlds.CampaignSystem
 }
 namespace TaleWorlds.CampaignSystem.Settlements
 {
-    internal sealed class Settlement { public string StringId { get; set; } }
+    internal sealed class Settlement
+    {
+        public string StringId { get; set; }
+        public static Settlement Find(string id) => null; // Native registry behavior is covered by NativeAdmissionIdentityTests.
+    }
 }
 namespace AnimusForge
 {
@@ -312,6 +316,9 @@ namespace AnimusForge
             public bool HasOwner => owner!=null;
             public bool IsEnabled => true;
             public bool DisabledStateApplied => false;
+            public bool MonitorTimings => false;
+            public void ReportSlowPhase(string phase, double milliseconds) { }
+            public void AdvanceMaterialCapture() { }
             public void ProcessComposePopup() { owner.Ticks++; }
             public void ClearDisabledState() { }
         }
@@ -381,6 +388,13 @@ namespace AnimusForge
 {
     // Wiring boundary only; actual memory selection is exercised by PromptMemoryReplay.
     internal readonly struct WorldDiplomacyMemorySnapshot { }
+    internal interface IWorldDiplomacySemanticSource { float[] Embed(string text); }
+    public sealed class OnnxEmbeddingEngine
+    {
+        public static OnnxEmbeddingEngine Instance => null;
+        public bool IsAvailable => false;
+        public bool TryGetEmbedding(string text, out float[] vector) { vector = null; return false; }
+    }
     internal interface IWorldDiplomacyMemorySource
     {
         bool TryCapture(string heroId, string kingdom, out WorldDiplomacyMemorySnapshot snapshot);

@@ -49,7 +49,7 @@ internal static class CompletionApplicationReplay
         public override void CommitGeneratedDocument(WorldDiplomacyJob job, string content) => Commit("generate", content);
         public override void CommitAnalysis(WorldDiplomacyJob job, string content) => Commit("analyze", content);
         public override void CommitCompression(WorldDiplomacyJob job, string content) => Commit("compress", content);
-        public override void CommitRoundPlan(WorldDiplomacyJob job, string content) => Commit("round_plan", content);
+
         public override void CommitRoundCompression(WorldDiplomacyJob job, string content)
         {
             Commit("round_compress", content);
@@ -65,7 +65,7 @@ internal static class CompletionApplicationReplay
                 WorldDiplomacyFailureApplication.Commit(job, error, state.Storage, 96, 6, () => 100,
                     (j, a, t, reason) => state.Events.Add("abandon:" + reason),
                     j => "{}", (j, raw) => state.Events.Add("analysis-fallback"),
-                    j => state.Events.Add("threat-fallback"), (j, raw) => state.Events.Add("plan-fallback"),
+                    j => state.Events.Add("threat-fallback"),
                     j => "{}", (j, raw) => state.Events.Add("archive-fallback"),
                     id => { state.Events.Add("remove"); state.Storage.Jobs.RemoveAll(j => j.JobId == id); },
                     msg => state.Events.Add("log:" + msg));
@@ -95,7 +95,7 @@ internal static class CompletionApplicationReplay
         var empty = new State(); Run(empty);
         Test.True(empty.Reads == 0 && empty.Events.Count == 0, "idle tick neither scans jobs nor invokes dependencies");
 
-        foreach (string kind in new[] { "generate", "analyze", "compress", "round_plan", "round_compress" })
+        foreach (string kind in new[] { "generate", "analyze", "compress", "round_compress" })
         {
             var s = new State(); s.Storage.ConsecutiveServiceFailures = 1;
             var job = Enqueue(s, "  " + kind.ToUpperInvariant() + "  ");
@@ -104,7 +104,7 @@ internal static class CompletionApplicationReplay
             expected.AddRange(new[] { kind + ":raw", "remove" });
             Test.True(s.Events.SequenceEqual(expected) && !s.Lease.IsRunning && s.Storage.Jobs.Count == 0
                 && s.Storage.ConsecutiveServiceFailures == 0 && job.Kind == "  " + kind.ToUpperInvariant() + "  ",
-                "all five routes preserve payload, ordering, removal, counter reset and persisted kind");
+                "all four current routes preserve payload, ordering, removal, counter reset and persisted kind");
         }
 
         var late = new State(); var currentJob = Enqueue(late, generation: 6);
@@ -171,6 +171,7 @@ internal static class CompletionApplicationReplay
             job.PresentedLegalActionSignature = "";
             if (threat)
             {
+                s.Storage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "doc-t", AuthorKingdomId = "a", IsReadyForPublication = true });
                 s.Storage.DiplomaticThreats.Add(new WorldDiplomacyThreat
                 {
                     ThreatId = "t", Status = "open", IssuerKingdomId = "a", StageDocumentId = "doc-t"

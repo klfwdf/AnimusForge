@@ -66,20 +66,75 @@ public sealed class WorldDiplomacyExchange
 
 public sealed class WorldDiplomacyJob
 {
+    [JsonProperty("storyReviewVersion")] public int StoryReviewVersion { get; set; }
+    [JsonProperty("responseContinuityReviewVersion")] public int ResponseContinuityReviewVersion { get; set; }
+    public string EndingRecoveryDocumentId { get; set; } = "";
+    public string PlayerContactId { get; set; } = "";
+    public int ContactNotBeforeDay { get; set; }
+    public string DeferredContactDraft { get; set; } = "";
+    public string AuditedAgendaQuote { get; set; } = "";
+    public List<string> AuditedAgendaAnswers { get; set; } = new();
+    public int MaterialSearchPass { get; set; }
+    public int MaterialNextSearchDay { get; set; }
+    public string MaterialRepairFeedback { get; set; } = "";
+    [JsonProperty("materialCountryContractVersion")] public int MaterialCountryContractVersion { get; set; }
+    [JsonProperty("declarationAuditEvidenceVersion")] public int DeclarationAuditEvidenceVersion { get; set; }
+    [JsonProperty("declarationAnswerSources")] public List<string> DeclarationAnswerSources { get; set; } = new();
+    [JsonProperty("declarationAnswerSnapshotVersion")] public int DeclarationAnswerSnapshotVersion { get; set; }
+    [JsonProperty("declarationRepairVersion")] public int DeclarationRepairVersion { get; set; }
+    [JsonProperty("declarationRepairField")] public string DeclarationRepairField { get; set; } = "";
+    [JsonProperty("declarationRepairAttempts")] public int DeclarationRepairAttempts { get; set; }
+    [JsonProperty("positionCorrectionRequired")] public bool PositionCorrectionRequired { get; set; }
+    [JsonProperty("positionOwnerReviewVersion")] public int PositionOwnerReviewVersion { get; set; }
+    [JsonProperty("eventNarrativeReviewVersion")] public int EventNarrativeReviewVersion { get; set; }
+    [JsonProperty("eventProgressContractVersion")] public int EventProgressContractVersion { get; set; }
+    [JsonProperty("endingContextVersion")] public int EndingContextVersion { get; set; }
+    [JsonProperty("worldBookWaitRevision")] public string WorldBookWaitRevision { get; set; } = "";
+    [JsonProperty("worldBookWaitNotice")] public string WorldBookWaitNotice { get; set; } = "";
+    [JsonProperty("negotiationIssueId")] public string NegotiationIssueId { get; set; } = "";
+    [JsonProperty("materialReactionId")] public string MaterialReactionId { get; set; } = "";
     [JsonProperty("lifecycleClassificationAttempts")] public int LifecycleClassificationAttempts { get; set; }
     [JsonProperty("replyRoutingCandidateDocumentIds")] public List<string> ReplyRoutingCandidateDocumentIds { get; set; } = new();
     [JsonProperty("ownershipEpoch")] public int OwnershipEpoch { get; set; }
     [JsonProperty("schedulingOwner")] public string SchedulingOwner { get; set; } = "";
     [JsonProperty("playerAuthorityRulerId")] public string PlayerAuthorityRulerId { get; set; } = "";
+    [JsonProperty("silenceConsequence")] public string SilenceConsequence { get; set; } = "";
     [JsonProperty("silenceSourceDocumentId")] public string SilenceSourceDocumentId { get; set; } = "";
     [JsonProperty("suspendedReason")] public string SuspendedReason { get; set; } = "";
+    [JsonProperty("technicalRecoveryAttempts")] public int TechnicalRecoveryAttempts { get; set; }
+    [JsonProperty("recoveryConfiguration")] public string RecoveryConfiguration { get; set; } = "";
+    [JsonProperty("recoveryRevision")] public int RecoveryRevision { get; set; }
+    [JsonProperty("recoveryKnowledgeRevision")] public int RecoveryKnowledgeRevision { get; set; }
+    [JsonProperty("recoveryServiceEpoch")] public long RecoveryServiceEpoch { get; set; }
+    [JsonProperty("recoverOnService")] public bool RecoverOnService { get; set; }
+    [JsonIgnore] internal long NextRecoveryProbeUtcTicks;
     [JsonProperty("privacySourceMaterial")] public string PrivacySourceMaterial { get; set; } = "";
     [JsonProperty("privacyPublicContext")] public string PrivacyPublicContext { get; set; } = "";
     [JsonProperty("privacyRevision")] public int PrivacyRevision { get; set; } = -1;
     [JsonProperty("privacyKnowledgeRevision")] public int PrivacyKnowledgeRevision { get; set; } = -1;
     [JsonProperty("courtKnowledgeRevision")] public int CourtKnowledgeRevision { get; set; }
     [JsonProperty("privacyRewrites")] public int PrivacyRewrites { get; set; }
+    [JsonProperty("privacyAuditRetries")] public int PrivacyAuditRetries { get; set; }
+    [JsonProperty("privacyRepairFeedback")] public string PrivacyRepairFeedback { get; set; } = "";
     [JsonProperty("privacyDraft")] public string PrivacyDraft { get; set; } = "";
+    [JsonProperty("eventMaterialSnapshot")] public string EventMaterialSnapshot { get; set; } = "";
+    [JsonProperty("eventProbeSnapshot")] public string EventProbeSnapshot { get; set; } = "";
+    [JsonProperty("eventProbeVersion")] public string EventProbeVersion { get; set; } = "";
+    [JsonProperty("eventExplorationTheme")] public string EventExplorationTheme { get; set; } = "";
+    [JsonProperty("eventThemePass")] public int EventThemePass { get; set; }
+    [JsonProperty("eventThemeInvestigations")] public int EventThemeInvestigations { get; set; }
+    [JsonProperty("playerLoreContractVersion")] public int PlayerLoreContractVersion { get; set; }
+    [JsonProperty("eventSelectionStage")] public string EventSelectionStage { get; set; } = "";
+    [JsonProperty("eventCandidatePool")] public string EventCandidatePool { get; set; } = "";
+    [JsonProperty("eventSelectedCandidate")] public string EventSelectedCandidate { get; set; } = "";
+    [JsonProperty("admissionSeedRewrites")] public int AdmissionSeedRewrites { get; set; }
+    [JsonProperty("countryAdmissionSeed")] public string CountryAdmissionSeed { get; set; } = "";
+    [JsonProperty("countryAdmission")] public string CountryAdmission { get; set; } = "";
+    [JsonProperty("admissionSupplementedCountries")] public List<string> AdmissionSupplementedCountries { get; set; } = new();
+    [JsonProperty("admissionRequiredSourceKeys")] public List<string> AdmissionRequiredSourceKeys { get; set; } = new();
+    [JsonProperty("eventComparison")] public string EventComparison { get; set; } = "";
+    [JsonProperty("eventInvestigationKingdoms")] public List<string> EventInvestigationKingdoms { get; set; } = new();
+    [JsonProperty("eventTriggerMaterial")] public string EventTriggerMaterial { get; set; } = "";
     [JsonProperty("privacyDeclarationSystem")] public string PrivacyDeclarationSystem { get; set; } = "";
     [JsonIgnore] internal bool PrivacyApproved;
     // Optional binding for oral writing in the existing generation queue.
@@ -235,6 +290,13 @@ public sealed class WorldDiplomacyJob
 	[JsonProperty("compressionDocumentIds")]
 	public List<string> CompressionDocumentIds { get; set; } = new List<string>();
 
+    [JsonProperty("compressionFragmentId")] public string CompressionFragmentId { get; set; } = "";
+    [JsonProperty("compressionFragmentHash")] public string CompressionFragmentHash { get; set; } = "";
+    [JsonProperty("compressionFragmentOffset")] public int CompressionFragmentOffset { get; set; }
+    [JsonProperty("compressionFragmentLength")] public int CompressionFragmentLength { get; set; }
+    [JsonProperty("compressionFragmentDraftHash")] public string CompressionFragmentDraftHash { get; set; } = "";
+    [JsonProperty("compressionFragmentAudit")] public bool CompressionFragmentAudit { get; set; }
+    [JsonProperty("compressionConfigurationFingerprint")] public string CompressionConfigurationFingerprint { get; set; } = "";
 	[JsonProperty("compressionBatchId")]
 	public string CompressionBatchId { get; set; } = "";
 
@@ -259,6 +321,7 @@ public sealed class WorldDiplomacyJob
     [JsonProperty("requestAttempt")] public int RequestAttempt { get; set; }
     [JsonProperty("transportRetryAttempts")] public int TransportRetryAttempts { get; set; }
     [JsonProperty("retryAfterUtcTicks")] public long RetryAfterUtcTicks { get; set; }
+    [JsonIgnore] internal bool RequestPreparationPending { get; set; }
     [JsonProperty("personalMemoryRulerId")]
 	public string PersonalMemoryRulerId { get; set; } = "";
 }

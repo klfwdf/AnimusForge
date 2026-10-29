@@ -10,6 +10,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Stubs.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Recall/WorldNewsFactArchive.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="PromptComposerTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalTexts.cs" Link="PromptRetrievalTexts.cs" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalCompatibility.json" LogicalName="AnimusForge.Prompt.RetrievalCompatibility.json" />

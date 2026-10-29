@@ -28,6 +28,8 @@ internal sealed partial class WorldDiplomacyOrchestration
             && x.ActorKingdomId == actorId);
         if (item == null || string.IsNullOrWhiteSpace(reason)) return DiplomacyMiscPromptTexts.Get("DialogueControl_AmbiguousSourceReason", "Commitment disposition not submitted: source or reason unclear.");
         owner.RecoverDialoguePublicationReceipt(item);
+        if (DiplomacyCommitmentRules.IsPending(item) && state != "accepted")
+            return DiplomacyMiscPromptTexts.Get("DialogueControl_CommitmentBinding", "An accepted commitment must be fulfilled; further conversation cannot cancel or postpone it.");
         if (item.LastControlState == state && item.LastControlReason == reason)
             return DiplomacyMiscPromptTexts.Get("DialogueControl_AlreadyUpdatedPrefix", "Diplomatic commitment was previously updated: ") + item.Status + "。";
         if (item.Status == "published" && state == "cancelled")

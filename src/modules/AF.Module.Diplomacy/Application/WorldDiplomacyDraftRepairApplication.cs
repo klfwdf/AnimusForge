@@ -72,14 +72,17 @@ internal static class WorldDiplomacyDraftRepairApplication
 		string repairTarget = target != null && authorizedTargetIds.Contains(target, StringComparer.OrdinalIgnoreCase)
 			? target
 			: authorizedTargetIds.Count == 1 ? world.ResolveKingdom(authorizedTargetIds[0]) : null;
-		WorldDiplomacyRoundOffer requiredPeaceOffer = world.FindRequiredPeaceOfferResponse(
-			repairRound,
-			author,
-			source.ResultSettlementSlotId,
-			source.IsExternalResponseOnly,
-			source.SourceDocumentId,
-			requireAnyOpenPeaceOffer: source.IsRelayTurn);
 		StringBuilder correctionBuilder = new StringBuilder();
+        correctionBuilder.AppendLine(new JObject { ["validation_error"] = reason,
+            ["action_index"] = rejectedActionIndex }.ToString());
+        if (reason == "intent_commitment_mismatch")
+        {
+            var action = rejectedActionIndex >= 0 && rejectedJson?["actions"] is JArray actions && rejectedActionIndex < actions.Count
+                ? actions[rejectedActionIndex] as JObject : rejectedJson;
+            string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadString(action, "intent", "author_intent.intent"));
+            correctionBuilder.AppendLine(new JObject { ["validation_error"] = reason, ["action_index"] = rejectedActionIndex,
+                ["intent"] = intent, ["required_commitment"] = WorldDiplomacyIntentVocabulary.DefaultCommitmentForIntent(intent) }.ToString());
+        }
 		WorldDiplomacyPromptContractRules.AppendGeneratedRepairCorrection(
 			correctionBuilder,
 			reason,
@@ -90,7 +93,6 @@ internal static class WorldDiplomacyDraftRepairApplication
 			repairTarget,
 			repairTarget == null ? "" : world.KingdomName(repairTarget),
 			repairTarget == null ? "" : WorldDiplomacyPromptComposer.BilateralStateLabel(world, author, repairTarget),
-			requiredPeaceOffer,
 			() => world.BuildGovernmentHardFact(author), world.LocalizePrompt);
 		correctionBuilder.AppendLine(orchestration.BuildCurrentLegalDiplomaticOptions(
 			repairRound,
@@ -123,6 +125,10 @@ internal static class WorldDiplomacyDraftRepairApplication
         repair.RoundConversationRevision = source.RoundConversationRevision;
         repair.PlayerResponseSourceIds = new List<string>(source.PlayerResponseSourceIds ?? new());
         repair.PersonalMemoryRulerId = source.PersonalMemoryRulerId;
+        repair.TechnicalRecoveryAttempts = source.TechnicalRecoveryAttempts;
+        repair.RecoveryConfiguration = source.RecoveryConfiguration;
+        repair.RecoveryServiceEpoch = source.RecoveryServiceEpoch;
+        repair.RecoverOnService = source.RecoverOnService;
 		orchestration.EnqueueJob(repair);
 		world.Log("generated declaration repair queued sourceJob=" + source.JobId + " repairJob=" + repair.JobId + " reason=" + reason);
 		return true;

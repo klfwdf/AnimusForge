@@ -1,17 +1,43 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace AnimusForge;
 
 public sealed class WorldDiplomacyRound
 {
+    [JsonProperty("countryAdmissionVersion")] public int CountryAdmissionVersion { get; set; }
+    [JsonProperty("countryAdmission")] public string CountryAdmission { get; set; } = "";
+    [JsonProperty("eventConvergence")] public DiplomacyEventConvergence EventConvergence { get; set; } = new();
+    [JsonProperty("playerContactPublicationId")] public string PlayerContactPublicationId { get; set; } = "";
+    [JsonProperty("eventSelectionEvidence")] public string EventSelectionEvidence { get; set; } = "";
+    [JsonProperty("eventTheme")] public string EventTheme { get; set; } = "";
+    [JsonProperty("eventPartyReview")] public string EventPartyReview { get; set; } = "";
+    [JsonProperty("eventBackground")] public string EventBackground { get; set; } = "";
+    [JsonProperty("eventMaterialKeys")] public List<string> EventMaterialKeys { get; set; } = new();
+    [JsonProperty("eventLoreEvidence")] public string EventLoreEvidence { get; set; } = "";
+    [JsonProperty("eventNarrative")] public List<DiplomacyEventNarrativeFact> EventNarrative { get; set; } = new();
+    [JsonProperty("eventPhase")] public string EventPhase { get; set; } = "";
+    [JsonProperty("eventProgressRevision")] public int EventProgressRevision { get; set; } = -1;
+    [JsonProperty("eventClosureReviewVersion")] public int EventClosureReviewVersion { get; set; }
+    [JsonProperty("eventWait")] public DiplomacyEventWait EventWait { get; set; }
+    [JsonProperty("eventOutcome")] public string EventOutcome { get; set; } = "";
+    [JsonProperty("eventOutcomeReason")] public string EventOutcomeReason { get; set; } = "";
+    [JsonProperty("eventSystemVersion")] public int EventSystemVersion { get; set; }
+    [JsonProperty("eventBeginningId")] public string EventBeginningId { get; set; } = "";
+    [JsonProperty("eventEndingId")] public string EventEndingId { get; set; } = "";
+    [JsonProperty("eventCloseReason")] public string EventCloseReason { get; set; } = "";
+    [JsonProperty("eventOpeningOrigin")] public string EventOpeningOrigin { get; set; } = "";
+    [JsonProperty("birthLane")] public string BirthLane { get; set; } = "";
     [JsonProperty("schedulingOwner")] public string SchedulingOwner { get; set; } = "";
     [JsonProperty("ownershipEpoch")] public int OwnershipEpoch { get; set; } = 1;
     [JsonProperty("playerAuthorityKingdomId")] public string PlayerAuthorityKingdomId { get; set; } = "";
     [JsonProperty("playerAuthorityRulerId")] public string PlayerAuthorityRulerId { get; set; } = "";
     [JsonProperty("npcInitiatedPlayerEvent")] public bool NpcInitiatedPlayerEvent { get; set; }
     [JsonProperty("technicalHoldReason")] public string TechnicalHoldReason { get; set; } = "";
+    [JsonProperty("technicalHoldStartedHour")] public double TechnicalHoldStartedHour { get; set; } = -1;
+    [JsonProperty("technicalRequestHoldReason")] public string TechnicalRequestHoldReason { get; set; } = "";
     [JsonProperty("playerNegotiationWaits")] public List<WorldDiplomacyPlayerWait> PlayerNegotiationWaits { get; set; } = new();
     [JsonProperty("playerCourtWork")] public List<WorldDiplomacyPlayerCourtWork> PlayerCourtWork { get; set; } = new();
     [JsonProperty("courtKnowledgeVersions")] public Dictionary<string, int> CourtKnowledgeVersions { get; set; } = new(StringComparer.OrdinalIgnoreCase);
@@ -109,6 +135,11 @@ public sealed class WorldDiplomacyRoundOffer
 
 public sealed class WorldDiplomacyRoundParticipant
 {
+    [JsonProperty("pendingParticipationSourceId")] public string PendingParticipationSourceId { get; set; } = "";
+    [JsonProperty("agendaSourceKeys")] public List<string> AgendaSourceKeys { get; set; } = new();
+    [JsonProperty("agendaAddressTo")] public List<string> AgendaAddressTo { get; set; } = new();
+    [JsonProperty("agendaExpressionDocumentId")] public string AgendaExpressionDocumentId { get; set; } = "";
+    [JsonProperty("agendaAnswerDocumentIds")] public List<string> AgendaAnswerDocumentIds { get; set; } = new();
     [JsonProperty("refuseRepeatedUntilDay")] public int RefuseRepeatedUntilDay { get; set; }
     [JsonProperty("withdrawalSourceDocumentId")] public string WithdrawalSourceDocumentId { get; set; } = "";
 	[JsonProperty("kingdomId")] public string KingdomId { get; set; } = "";
@@ -128,7 +159,50 @@ public sealed class WorldDiplomacyRoundParticipant
 	[JsonProperty("primaryTargetKingdomId")] public string PrimaryTargetKingdomId { get; set; } = "";
 	[JsonProperty("preferredOutcome")] public string PreferredOutcome { get; set; } = "";
 	[JsonProperty("redLine")] public string RedLine { get; set; } = "";
+    [JsonProperty("expectedCost")] public string ExpectedCost { get; set; } = "";
+    [JsonProperty("alternative")] public string Alternative { get; set; } = "";
 	[JsonProperty("leverage")] public string Leverage { get; set; } = "";
 	[JsonProperty("requiredContribution")] public string RequiredContribution { get; set; } = "";
 	[JsonProperty("contributionMade")] public bool ContributionMade { get; set; }
+}
+
+// Part of the existing chunked round JSON; no new save key or assembly identity.
+public sealed partial class DiplomacyEventConvergence
+{
+    internal bool AllowsNewObligation(WorldDiplomacyDocument document, string intent) => !Ending
+        || !string.IsNullOrEmpty(document?.DialogueArrangementId)
+        || document != null && Actor == document.AuthorKingdomId && Target == document.TargetKingdomId
+            && string.IsNullOrEmpty(DecisionDocumentId) && string.IsNullOrEmpty(Result) && Intent == intent
+            && (Route == "threat" || Route == "agreement");
+    public int Version { get; set; }
+    public int CompletedRounds { get; set; }
+    public List<DiplomacyNegotiationReceipt> Receipts { get; set; } = new();
+    public bool Ending { get; set; }
+    public string Route { get; set; } = "";
+    public string Actor { get; set; } = "";
+    public string Target { get; set; } = "";
+    public string Intent { get; set; } = "";
+    public string DecisionDocumentId { get; set; } = "";
+    public List<string> RequiredSources { get; set; } = new();
+    public List<string> RequiredJobIds { get; set; } = new();
+    public List<string> FinalDocumentIds { get; set; } = new();
+    public string Result { get; set; } = "";
+    public string TechnicalFailure { get; set; } = "";
+    public int ExecutionRecoveryAttempts { get; set; }
+    public long NextExecutionRecoveryUtcTicks { get; set; }
+    public int ThreatWeight { get; set; }
+    public int AgreementWeight { get; set; }
+    public int DeadlockWeight { get; set; }
+    public int Draw { get; set; } = -1;
+    public bool ActualWar { get; set; }
+    [JsonIgnore] internal Dictionary<string, DiplomacyNegotiationReceipt> ReceiptIndex;
+}
+
+public sealed class DiplomacyNegotiationReceipt
+{
+    public string DocumentId { get; set; } = "";
+    public string SourceId { get; set; } = "";
+    public string Author { get; set; } = "";
+    public int Round { get; set; }
+    public bool Answer { get; set; }
 }

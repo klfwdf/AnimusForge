@@ -38,4 +38,5 @@
   <LanguageFile xml_path="afduel_strings.xml" />
   <LanguageFile xml_path="afcoup_strings.xml" />
   <LanguageFile xml_path="afpersona_ui_strings.xml" />
+  <LanguageFile xml_path="afdip_event_ui_strings.xml" />
 </LanguageData>

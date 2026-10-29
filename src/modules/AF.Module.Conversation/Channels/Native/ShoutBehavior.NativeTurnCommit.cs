@@ -153,6 +153,8 @@ namespace AnimusForge;
                 nativeRequestConversationToken, admission, new NativeConversationCompletionRequest
                 {
                     PlayerText = shouldRecordPlayerInput ? promptPlayerText : null,
+                    NpcReplyText = postprocessReply,
+                    DiplomacyInteractionId = "native-reply:" + Guid.NewGuid().ToString("N"),
                     RewriteTurn = rewriteTurn,
                     OpeningFact = npcOpeningConsumed ? npcOpeningPersistentFactText : null,
                     TtsAlreadyDispatched = nativeTtsDispatchedBeforePostprocess,

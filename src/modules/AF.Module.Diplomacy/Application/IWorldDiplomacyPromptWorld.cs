@@ -36,15 +36,12 @@ internal interface IWorldDiplomacyPromptWorld
     string BuildWorldDiplomacyVassalageSnapshot();
     string BuildPolicySnapshot(string id);
     string BuildGatheringSnapshot(IEnumerable<string> ids, int count);
-    WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string resultSettlementSlotId, bool isExternalResponseOnly, string sourceDocumentId, bool requireAnyOpenPeaceOffer);
     IReadOnlyList<string> CessionCandidates(string cedingId, string receivingId, float cessionScore);
     WarSituationSnapshot WarSituation(string authorId, string targetId);
     WorldDiplomacyRealmRelationProfile RelationProfile(string authorId, string targetId);
     WorldDiplomacyBorderRelation BorderRelation(string authorId, string targetId);
     int RulerRelation(string authorId, string targetId);
     int CulturalClaimCount(string authorId, string targetId);
-    int NationalPrestige(string kingdomId);
-    int InternationalReputation(string kingdomId);
     int WarPressure(string authorId, string targetId);
     // Bilateral state label precedence (at-war > ally > trade > peace) is decided
     // by WorldDiplomacyTextRules.BuildBilateralStateLabel over the leaf facts above.

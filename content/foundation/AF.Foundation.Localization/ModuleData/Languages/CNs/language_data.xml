@@ -38,4 +38,5 @@
   <LanguageFile xml_path="CNs/afduel_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afcoup_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afpersona_ui_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afdip_event_ui_strings-zh-CN.xml" />
 </LanguageData>

@@ -186,35 +186,15 @@ public static WorldDiplomacyPeaceTerms ResolveOfferedPeaceTerms(
 		}
 		return source.PeaceTerms;
 	}
-public static string FormatRoundFactForPrompt(WorldDiplomacyRoundFact fact, Func<string, string, string> localize = null)
+public static string FormatRoundFactForPrompt(WorldDiplomacyRoundFact fact)
 	{
 		if (fact == null || string.IsNullOrWhiteSpace(fact.Text)) return "";
 		string text = fact.Text.Trim();
-	string executedPrefix = DiplomacyCompatibilityTexts.Get("Fact_ExecutedPrefix");
-	if (text.StartsWith(executedPrefix, StringComparison.Ordinal))
-		return PromptFactText("History_FactExecutedPrefix", "[Executed by game] ", localize) + text.Substring(executedPrefix.Length);
-	string declarationPrefix = DiplomacyCompatibilityTexts.Get("Fact_DeclarationRecordPrefix");
-	if (text.StartsWith(declarationPrefix, StringComparison.Ordinal))
-		return PromptFactText("History_FactDeclarationPrefix", "[Declaration record; not an executed outcome] ", localize) + text.Substring(declarationPrefix.Length);
-	string legacyExecutedPrefix = DiplomacyCompatibilityTexts.Get("History_LegacyExecutedPrefix");
-	if (text.StartsWith(legacyExecutedPrefix, StringComparison.Ordinal))
-		return PromptFactText("History_FactExecutedPrefix", "[Executed by game] ", localize) + text.Substring(legacyExecutedPrefix.Length);
-	string legacyDeclarationPrefix = DiplomacyCompatibilityTexts.Get("History_LegacyDeclarationRecordPrefix");
-	if (text.StartsWith(legacyDeclarationPrefix, StringComparison.Ordinal))
-		return PromptFactText("History_FactDeclarationPrefix", "[Declaration record; not an executed outcome] ", localize) + text.Substring(legacyDeclarationPrefix.Length);
-	string legacySummaryPrefix = DiplomacyCompatibilityTexts.Get("History_LegacySummaryPrefix");
-	if (text.StartsWith(legacySummaryPrefix, StringComparison.Ordinal))
-		return PromptFactText("History_FactLegacySummaryPrefix", "Legacy diplomatic summary; it records the declaration narrative as saved and does not establish that any diplomatic mechanic was executed: ", localize) + text.Substring(legacySummaryPrefix.Length);
-	string legacySummaryBracketPrefix = DiplomacyCompatibilityTexts.Get("History_LegacySummaryBracketPrefix");
-	if (text.StartsWith(legacySummaryBracketPrefix, StringComparison.Ordinal))
-		return PromptFactText("History_FactLegacySummaryBracketPrefix", "[Legacy declaration summary; not evidence of game execution] ", localize) + text.Substring(legacySummaryBracketPrefix.Length);
 		if (text.StartsWith("[", StringComparison.Ordinal)) return text;
 		return string.Equals(fact.Kind, "confirmed_result", StringComparison.OrdinalIgnoreCase)
-		? PromptFactText("History_FactExecutedPrefix", "[Executed by game] ", localize) + text
-		: PromptFactText("History_FactDeclarationPrefix", "[Declaration record; not an executed outcome] ", localize) + text;
+			? DiplomacyCompatibilityTexts.Get("Fact_ExecutedPrefix") + text
+			: DiplomacyCompatibilityTexts.Get("Fact_DeclarationRecordPrefix") + text;
 	}
-private static string PromptFactText(string key, string fallback, Func<string, string, string> localize)
-	=> localize?.Invoke(key, fallback) ?? DiplomacyMiscPromptTexts.Get(key, fallback);
 public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 	{
 		string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(document?.Intent);
@@ -345,53 +325,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
         string toPattern = BuildPeaceKingdomReferencePattern(toName, toIsAuthor, toIsTarget);
         string body = text ?? "";
         return Regex.IsMatch(body, fromPattern + @"[^。；\n]{0,40}(?:" + actionPattern + @")[^。；\n]{0,40}" + toPattern, RegexOptions.CultureInvariant)
-            || Regex.IsMatch(body, fromPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfix") + toPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfixSuffix") + actionPattern + ")", RegexOptions.CultureInvariant)
-            || ContainsEnglishDirectedPeaceTerm(body, fromName, fromIsAuthor, fromIsTarget,
-                toName, toIsAuthor, toIsTarget, actionPattern);
-    }
-
-    // Preserve the legacy Chinese grammar. English direction needs an explicit
-    // grammatical payer/recipient, not just both names somewhere around "paid".
-    private static bool ContainsEnglishDirectedPeaceTerm(string text,
-        string fromName, bool fromIsAuthor, bool fromIsTarget,
-        string toName, bool toIsAuthor, bool toIsTarget, string actionPattern)
-    {
-        string action;
-        string passive;
-        bool payment = actionPattern == DiplomacyCompatibilityTexts.Get("Regex_PayKeywords");
-        if (payment)
-        {
-            action = DiplomacyCompatibilityTexts.Get("Regex_EnglishPayKeywords");
-            passive = DiplomacyCompatibilityTexts.Get("Regex_EnglishPaidKeywords");
-        }
-        else if (actionPattern == DiplomacyCompatibilityTexts.Get("Regex_CedeKeywords"))
-        {
-            action = DiplomacyCompatibilityTexts.Get("Regex_EnglishCedeKeywords");
-            passive = DiplomacyCompatibilityTexts.Get("Regex_EnglishCededKeywords");
-        }
-        else return false;
-        string from = BuildEnglishPeaceKingdomReferencePattern(fromName, fromIsAuthor, fromIsTarget);
-        string to = BuildEnglishPeaceKingdomReferencePattern(toName, toIsAuthor, toIsTarget);
-        const string modal = @"\s+(?:(?:will|shall|must|would|agrees?\s+to)\s+)?(?:";
-        // Stop at the first direction preposition and at sentence boundaries.
-        // Otherwise "A pays C ... to B" or "A receives money paid by B" can reverse roles.
-        const string details = @"(?:(?!\b(?:to|from|by|not|never)\b)[^.;!?\r\n。；]){0,120}";
-        const string passiveModal = @"\s+(?:(?:will|shall|must|would)\s+be|is|are|was|were)\s+(?:";
-        var options = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
-        return Regex.IsMatch(text, from + modal + action + @")" + details + @"\bto\s+" + to, options)
-            || (payment && (Regex.IsMatch(text, from + modal + action + @")\s+" + to + @"\s+\d", options)
-                || Regex.IsMatch(text, to + passiveModal + passive + ")" + details + @"\bby\s+" + from, options)))
-            // A ceded asset is the passive subject; it must not become the recipient.
-            || Regex.IsMatch(text, passiveModal + passive + ")" + details + @"\bby\s+" + from + @"\s+to\s+" + to, options)
-            || Regex.IsMatch(text, passiveModal + passive + ")" + details + @"\bto\s+" + to + @"\s+by\s+" + from, options);
-    }
-
-    private static string BuildEnglishPeaceKingdomReferencePattern(string name, bool isAuthor, bool isTarget)
-    {
-        string aliases = isAuthor ? DiplomacyCompatibilityTexts.Get("Regex_EnglishAuthorKingdomKeywords")
-            : isTarget ? DiplomacyCompatibilityTexts.Get("Regex_EnglishTargetKingdomKeywords") : "";
-        return @"(?<![\p{L}\p{N}_])(?:" + Regex.Escape(name)
-            + (aliases.Length == 0 ? "" : "|" + aliases) + @")(?![\p{L}\p{N}_])";
+            || Regex.IsMatch(body, fromPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfix") + toPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfixSuffix") + actionPattern + ")", RegexOptions.CultureInvariant);
     }
 
     public static void RecordDiplomaticStandingChange(WorldDiplomacyDocument document,
@@ -483,8 +417,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 		if (knowledge.DocumentIds.Count > MaxKnownDocumentsPerLocation * 2) knowledge.DocumentIds.RemoveRange(0, knowledge.DocumentIds.Count - MaxKnownDocumentsPerLocation * 2);
 		knowledge.LastUpdatedDay = day;
 	}
-    public static string BuildRecentNativeSignalContext(IEnumerable<NativeDiplomacySignal> signals, string sourceId, string targetId,
-        Func<string, string, string> localize = null)
+	public static string BuildRecentNativeSignalContext(IEnumerable<NativeDiplomacySignal> signals, string sourceId, string targetId)
 	{
 		return string.Join("\n", (signals ?? Enumerable.Empty<NativeDiplomacySignal>())
 			.Where(x => x != null
@@ -492,10 +425,8 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 				&& string.Equals(x.TargetKingdomId, targetId, StringComparison.OrdinalIgnoreCase))
 			.OrderByDescending(x => x.Day)
 			.Take(4)
-            .Select(x => localize == null
-                ? DiplomacyCompatibilityTexts.Get("History_DayPrefix") + x.Day.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("History_DaySuffix") + x.Reason
-                : string.Format(CultureInfo.InvariantCulture, localize("NativeSignal_DayReason", "- Day {0}: {1}"),
-                    x.Day, DiplomacyLegacyPromptProjection.NativeReason(x.Reason, localize))));
+			.Select(x => DiplomacyCompatibilityTexts.Get("History_DayPrefix") + x.Day.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("History_DaySuffix")
+                + DiplomacyMiscPromptTexts.Get("NativeRequest_NotExecuted", "Intercepted native diplomatic request, not an execution receipt: ") + x.Reason));
 	}
 	public static string BuildRelevantCompletedRoundContext(IEnumerable<WorldDiplomacyRoundSummary> summaries,
 		string activeRoundId, string sourceId, string targetId)

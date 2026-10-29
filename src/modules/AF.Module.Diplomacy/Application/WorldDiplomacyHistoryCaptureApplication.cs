@@ -69,9 +69,11 @@ internal static class WorldDiplomacyHistoryCaptureApplication
         WorldDiplomacyCanonicalHistoryState history = storage.CanonicalHistory;
         job.HistoryThroughSequence = WorldDiplomacyCanonicalHistoryRules.ClampCanonicalHistoryThroughSequence(history, throughSequence);
         bool declaration = WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate");
-        string block = declaration
-            ? WorldDiplomacyRequestHistoryApplication.Build(storage, job, port.CurrentHour() / 24,
-                WorldDiplomacyRequestHistoryApplication.WindowBudget(job, estimateTokens), estimateTokens)
+        string block = declaration && !string.IsNullOrWhiteSpace(job.PrivacyPublicContext)
+            ? WorldDiplomacyRequestHistoryApplication.ContextMarker
+            : declaration ? WorldDiplomacyRequestHistoryApplication.Build(storage, job, port.CurrentHour() / 24,
+                WorldDiplomacyRequestHistoryApplication.WindowBudget(job, estimateTokens), estimateTokens,
+                syncSources && orchestration is WorldDiplomacyOrchestration owner ? owner.EmbedHistory : null)
             : orchestration.BuildCanonicalHistoryBlock(job.HistoryThroughSequence);
         job.DeclarationHistoryBlock = declaration ? block : null;
         job.AwaitingHistoryCompression = false;

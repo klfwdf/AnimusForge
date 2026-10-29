@@ -44,14 +44,9 @@ public sealed partial class WorldDiplomacyBehavior
                 alliance != null && alliance.IsAllyWithKingdom(first, second),
                 trade != null && BannerlordApiCompat.HasTradeAgreement(trade, first, second));
         }
-        public IReadOnlyList<WorldDiplomacyThreat> Threats => _owner._storage?.DiplomaticThreats;
-        public int LastFailedRoundDay(WorldDiplomacyOfferCooldownKey key) => _owner.GetOfferCooldownLastFailedRoundDay(key);
-        public int CooldownDays() => GetTradeAllianceFailedProposalCooldownDays();
-        public int CurrentDay() => WorldDiplomacyBehavior.CurrentDay();
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
         public IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second)
             => new WarAdmissionPort(_owner, Party(first), Party(second));
-        public IWorldDiplomacyNoActionPort CaptureNoActionPort(string author, string target)
-            => new NoActionPort(_owner, Party(author), Party(target));
+
     }
 }

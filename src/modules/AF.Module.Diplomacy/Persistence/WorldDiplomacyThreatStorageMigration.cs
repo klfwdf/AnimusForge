@@ -49,7 +49,7 @@ public static class WorldDiplomacyThreatStorageMigration
     }
 
     storage.NationalPrestigeByKingdom = WorldDiplomacyRoundLifecycleRules.NormalizeKingdomIntDictionary(
-        storage.NationalPrestigeByKingdom, 0, WorldDiplomacyReputationRules.DefaultNationalPrestige);
+        storage.NationalPrestigeByKingdom, 0, 100);
     storage.InternationalReputationByKingdom = WorldDiplomacyRoundLifecycleRules.NormalizeKingdomIntDictionary(
         storage.InternationalReputationByKingdom, 0, 100);
     storage.InternationalReputationNaturalChangeLastDayByKingdom =
@@ -70,7 +70,7 @@ public static class WorldDiplomacyThreatStorageMigration
 
     foreach (IGrouping<string, WorldDiplomacyThreat> issuerGroup in storage.DiplomaticThreats
         .Where(x => x != null && WorldDiplomacyRoundLifecycleRules.IsOpenDiplomaticThreatStatus(x.Status))
-        .GroupBy(x => x.IssuerKingdomId, StringComparer.OrdinalIgnoreCase))
+        .GroupBy(x => x.IssuerKingdomId + "|" + x.TargetKingdomId + "|" + x.StageRoundId, StringComparer.OrdinalIgnoreCase))
     {
         WorldDiplomacyThreat retained =
             WorldDiplomacyRoundLifecycleRules.SelectRetainedOpenThreatForIssuer(issuerGroup);

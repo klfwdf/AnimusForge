@@ -3,7 +3,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace AnimusForge;
 
-// Resolve against the current campaign index on each synchronous call. Never retain live targets.
+// Resolve against each type's native owner on synchronous boundaries. Never retain live targets.
 internal static class DiplomacyIdentityResolver
 {
     internal static Hero Hero(string id)
@@ -21,7 +21,8 @@ internal static class DiplomacyIdentityResolver
     internal static Settlement Settlement(string id)
     {
         if (string.IsNullOrEmpty(id)) return null;
-        try { return Campaign.Current?.CampaignObjectManager?.Find<Settlement>(id); }
+        // Settlements are MBObjectManager objects, unlike heroes and kingdoms.
+        try { return Campaign.Current == null ? null : TaleWorlds.CampaignSystem.Settlements.Settlement.Find(id); }
         catch { return null; }
     }
 }

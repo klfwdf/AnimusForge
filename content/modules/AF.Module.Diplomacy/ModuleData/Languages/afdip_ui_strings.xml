@@ -4,6 +4,10 @@
     <tag language="English" />
   </tags>
   <strings>
+    <string id="AF_DIP_UI_Aid_RequestTitle" text="Request allied aid" />
+    <string id="AF_DIP_UI_Aid_RequestBody" text="Ask {ALLY} to join the war against {ENEMY}? Your ally will decide separately. This request does not declare war for them or pay the native automatic call-to-war fee." />
+    <string id="AF_DIP_UI_Aid_Send" text="Send request" />
+
     <string id="AF_DIP_UI_Common_Acknowledge" text="Got it" />
     <string id="AF_DIP_UI_Common_Close" text="Close" />
     <string id="AF_DIP_UI_Common_UnknownDate" text="Unknown date" />
@@ -305,7 +309,7 @@
     <string id="AF_DIP_UI_KingdomProfile_GenerationConfigError" text="The kingdom founding profile could not be generated because the event/rebellion API is not configured." />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="Generated and locked the national personality and long-term strategy for new kingdom “" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”." />
-    <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="This action is managed by AI diplomacy." />
     <string id="AF_DIP_UI_Reward_VassalageTitle" text="Vassalage treaty" />
     <string id="AF_DIP_UI_Reward_AnnexationTitle" text="Kingdom annexation" />
     <string id="AF_DIP_UI_Reward_FailureSuffix" text=" failed" />
@@ -432,7 +436,6 @@
     <string id="AF_DIP_UI_KingdomProfile_ReloadCloneFailed" text="The kingdom profile reload copy could not be created." />
     <string id="AF_DIP_UI_KingdomProfile_ReloadTargetMissing" text="The world changed and the kingdom target could not be found: {TARGET}" />
     <string id="AF_DIP_UI_KingdomProfile_ReloadComplete" text="Reloaded {IMPORTED} kingdom profile(s); the other {RESET} current kingdom profile(s) returned to their defaults." />
-    <string id="AF_DIP_UI_KingdomProfile_ReloadSkippedDynamic" text="Skipped {COUNT} unmatched dynamic kingdom profile(s); existing save profiles for those IDs were preserved. First entries: {PROFILES}" />
     <string id="AF_DIP_UI_KingdomProfile_ImportNoSafeMatch" text="The import contains no safely matching profile for “{KINGDOM}”. Dynamic kingdom IDs match only when the names agree." />
     <string id="AF_DIP_UI_KingdomProfile_ImportComplete" text="Imported {IMPORTED}; skipped duplicates {DUPLICATES}; invalid or unmatched {UNMATCHED}." />
     <string id="AF_DIP_UI_KingdomProfile_SingleImportTargetOrPathEmpty" text="The single-kingdom import target or path is empty." />
@@ -1065,6 +1068,7 @@
     <string id="AF_KINGDOM_CW_Outcome_RebelsSecede" text="Rebels secede" />
     <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="Rebels take the throne" />
     <string id="AF_DIP_UI_Notice_ThirdPartyReceived" text="Third-party diplomacy: {TITLE}. The news has reached your kingdom; read the full text in the kingdom bulletin." />
+    <string id="AF_DIP_UI_Notice_EventDeclaration" text="【Diplomatic Event: {TITLE}】&#xA;【Speaker | {SPEAKER}】&#xA;{BODY}" />
     <string id="AF_DIP_UI_Notice_DeclarationText" text="[Diplomatic Declaration] {ISSUER} issued &quot;{TITLE}&quot;: {BODY}" />
     <string id="AF_DIP_UI_Notice_PlayerCourtDelivery" text="Your declaration has reached {RECEIVER}." />
     <string id="AF_DIP_UI_StandingNoChange" text="No change" />
@@ -1185,14 +1189,24 @@
     <string id="AF_DIP_UI_OralGeneration_DelayedFact" text="The diplomatic declaration previously promised has not yet been published and awaits redrafting; the agreed terms have not changed." />
     <string id="AF_DIP_UI_OralGeneration_WithdrawalFact" text="I have explicitly agreed to withdraw the earlier public diplomatic proposal, pending publication of the formal withdrawal declaration; the original proposal has not become invalid as a result yet." />
     <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceNotExecutedDetail" text="Peace proposal not executed: {REASON}" />
-    <string id="AF_DIP_UI_AllianceInfinite" text="Indefinite" />
-    <string id="AF_DIP_UI_Presentation_DocumentPageExpired" text="This document page has expired; please reopen it." />
-    <string id="AF_DIP_UI_Presentation_CannotReparse" text="This document cannot be reparsed currently." />
-    <string id="AF_DIP_UI_Presentation_ReparsedResubmitted" text="Original text resubmitted for parsing; declaration will not be published again." />
-    <string id="AF_DIP_UI_Presentation_ReparsingPending" text="Declaration published; reparsing original text, diplomatic action not yet executed." />
-    <string id="AF_DIP_UI_Vassalage_SubjectWarSyncPrefix" text="Suzerain war status synchronized:" />
-    <string id="AF_DIP_UI_Vassalage_SubjectWarConfirmedPrefix" text="Suzerain war status confirmed:" />
-    <string id="AF_DIP_UI_KingdomProfile_UnmatchedLimitExceeded" text="More than 3 non-dynamic kingdom profiles could not be matched. Import stopped without changing the save. First unmatched entries: {PROFILES}" />
-    <string id="AF_DIP_UI_KingdomProfile_ReloadSkippedStatic" text="Skipped {COUNT} unmatched non-dynamic kingdom profile(s) (maximum 3): {PROFILES}" />
+    <string id="AF_DIP_UI_EventEffect_Description" text="{TARGET}: {KIND}; applied {TOTAL}; scheduled {DELTA} per day ending on {DAY}. {REASON}" />
+    <string id="AF_DIP_UI_EventEffect_InstantDescription" text="{TARGET}: {KIND} {TOTAL}. {REASON}" />
+    <string id="AF_DIP_UI_EventEffect_Removed" text="Ended: {EFFECT}" />
+    <string id="AF_DIP_UI_EventEffect_ruler_relation" text="ruler relations" />
+    <string id="AF_DIP_UI_EventEffect_town_loyalty" text="loyalty" />
+    <string id="AF_DIP_UI_EventEffect_town_security" text="security" />
+    <string id="AF_DIP_UI_EventEffect_town_prosperity" text="prosperity" />
+    <string id="AF_DIP_UI_EventEffect_town_food" text="food stocks" />
+    <string id="AF_DIP_UI_SilenceLoyaltyPenalty" text="Ignored diplomatic correspondence: all current towns in your kingdom lose 0.5 loyalty daily for 7 days. Overlapping penalties extend the duration without stacking their strength." />
+    <string id="AF_DIP_UI_EventDate" text="Year {YEAR}, {SEASON} {DAY}" />
+    <string id="AF_DIP_UI_EventDate_Spring" text="Spring" />
+    <string id="AF_DIP_UI_EventDate_Summer" text="Summer" />
+    <string id="AF_DIP_UI_EventDate_Autumn" text="Autumn" />
+    <string id="AF_DIP_UI_EventDate_Winter" text="Winter" />
+    <string id="AF_DIP_UI_Notice_UnknownSpeaker" text="Unrecorded issuer" />
+    <string id="AF_DIP_UI_WorldBookEmpty" text="The world book is empty. Your declaration is preserved, but the event opening needs background sources. Import a world book; the event will retry automatically." />
+    <string id="AF_DIP_UI_WorldBookNoMatch" text="The world book is loaded, but no usable background source was found for this event. Your declaration is preserved. Update the relevant world-book content; the event will retry automatically." />
+    <string id="AF_DIP_UI_WorldBookLoadFailed" text="The world book could not be loaded. Your declaration is preserved and its event is waiting. Check the world-book data and import a valid copy to continue." />
+    <string id="AF_DIP_UI_WorldBookUnavailable" text="The world book is not ready. Your declaration is preserved; its event will retry when the background sources become available." />
   </strings>
 </base>

@@ -64,8 +64,10 @@ internal static class DiplomacyPeaceTermsService
         string diagnostic = "";
         try
         {
-            MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(source ?? "diplomacy_make_peace", () =>
+            Action apply = () => MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(source ?? "diplomacy_make_peace", () =>
                 MakePeaceAction.ApplyByKingdomDecision(payer, receiver, requestedDailyTribute, days));
+            if (source == "world_diplomacy_make_peace") WorldDiplomacyBehavior.RunAuthorizedEventPeace(payer, receiver, apply);
+            else apply();
         }
         catch (Exception ex) { diagnostic = ex.Message; }
         return ConfirmPeace(payer, receiver, requestedDailyTribute, days, source, diagnostic);

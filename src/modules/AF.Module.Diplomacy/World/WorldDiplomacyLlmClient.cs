@@ -51,6 +51,16 @@ internal static class WorldDiplomacyLlmClient
 		return TryResolveApiConfig(DuelSettings.GetSettings(), out _, out _, out _, out _, out errorMessage);
 	}
 
+    internal static string ConfigurationFingerprint()
+    {
+        var settings = DuelSettings.GetSettings();
+        TryResolveApiConfig(settings, out string url, out string key, out string model, out string route, out _);
+        // Only a one-way digest crosses into the persisted owner; never log raw configuration/credentials.
+        return AnimusForge.Refactor.Domain.WorldDiplomacyPromptContractRules.StablePromptHash(
+            (url ?? "") + "\n" + (model ?? "") + "\n" + (route ?? "") + "\n" + ResolveConfiguredOutputTokenLimit(settings, route)
+            + "\n" + AnimusForge.Refactor.Domain.WorldDiplomacyPromptContractRules.StablePromptHash(key ?? ""));
+    }
+
 	internal static int GetConfiguredOutputTokenLimit()
 	{
 		DuelSettings settings = DuelSettings.GetSettings();

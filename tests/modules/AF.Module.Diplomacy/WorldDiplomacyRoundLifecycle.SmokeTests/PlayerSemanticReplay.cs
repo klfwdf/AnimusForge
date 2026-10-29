@@ -44,7 +44,7 @@ internal static class PlayerSemanticReplay
         var failureStorage = new WorldDiplomacyStorage(); failureStorage.Documents.Add(failed); int removed = 0;
         WorldDiplomacyFailureApplication.Commit(failedJob, "timeout", failureStorage, 24, 1, () => 1, null,
             _ => throw new Exception("player failure must not synthesize a statement"), (_, raw) => RetryCommit(raw),
-            _ => { }, (_, _) => { }, _ => "", (_, _) => { }, _ => removed++, _ => { });
+            _ => { }, _ => "", (_, _) => { }, _ => removed++, _ => { });
         Test.True(removed == 1 && failedEffects == 0 && failed.AnalysisStatus == "analysis_failed",
             "transport failure takes the same no-effects retryable path and retires its job");
         var failedRestored = JsonConvert.DeserializeObject<WorldDiplomacyDocument>(JsonConvert.SerializeObject(failed));
@@ -67,7 +67,7 @@ internal static class PlayerSemanticReplay
         VerifyTradeAcceptanceTerms();
         VerifyPrompt();
         VerifyTreatiesAndWithdrawal();
-        var port = new DocumentExecutionReplay.Port { RestrictRound = true,
+        var port = new DocumentExecutionReplay.Port { PlayerKingdomId = "a", RestrictRound = true,
             Round = new() { RoundId = "r", State = "active" }, RequiredPeace = new() { SourceDocumentId = "peace" } };
         var independent = PlayerDocument(); independent.Intent = "declare_war"; independent.Commitment = "binding";
         WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(port, new DocumentExecutionReplay.Orch(port),
@@ -80,7 +80,7 @@ internal static class PlayerSemanticReplay
     {
         public override int AnalysisMaxTokens() => 12000;
     }
-    private sealed class PlayerEnvelopeHost : FakeOrchestrationHost
+    private sealed class PlayerEnvelopeHost : ConcurrentOralMigrationReplay.Host
     {
         public override bool IsPlayerAffiliatedParty(string id) => id == "p";
         public override string ResolveKingdomIdOrNull(string id) => id is "a" or "b" or "p" ? id : null;
@@ -91,10 +91,11 @@ internal static class PlayerSemanticReplay
     }
     private static void VerifyGeneratedPlayerEnvelope()
     {
-        var owner = new WorldDiplomacyOrchestration(new PlayerEnvelopeHost(), new WorldDiplomacyRuntimeState());
-        owner.CurrentStorage.ConcurrentRounds.Add(new WorldDiplomacyRound { RoundId = "r", State = "active", SchedulingOwner = "player" });
+        var host = new PlayerEnvelopeHost();
+        var owner = new WorldDiplomacyOrchestration(host, new WorldDiplomacyRuntimeState()); host.Owner = owner;
+        owner.CurrentStorage.ConcurrentRounds.Add(new WorldDiplomacyRound { RoundId = "r", State = "active", SchedulingOwner = "player", EventSystemVersion = 1, BirthLane = "player", Participants = new() { new() { KingdomId = "a", State = "active" }, new() { KingdomId = "b", State = "active" }, new() { KingdomId = "p", State = "active" } } });
         var job = new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", RoundId = "r", IsRelayTurn = true };
-        // Player target appears last. Earlier actions must inherit the full declaration's policy.
+        // Every action uses the same admission rules, regardless of a player target.
         var actions = new JArray(new[] { "statement", "condemn", "apology", "concession", "declare_war" }
             .Select((intent, index) => new JObject { ["intent"] = intent,
                 ["target_kingdom_id"] = index == 4 ? "p" : "b",
@@ -103,16 +104,16 @@ internal static class PlayerSemanticReplay
             ["round_plan"] = new JObject { ["selected_kingdom_ids"] = new JArray() }, ["mentioned_kingdom_ids"] = new JArray(),
             ["requires_response"] = false, ["tone"] = "firm", ["confidence"] = 1 };
         bool invalid = owner.TryGetGeneratedIntentLegalityViolation(job, json, "a", null, out _, out string reason);
-        Test.True(!invalid, "player envelope bypasses AI action count, route and statement restrictions for every action: " + reason);
+        Test.True(!invalid, "shared envelope permits distinct supported actions without old count/route restrictions: " + reason);
         var document = new WorldDiplomacyDocument { AuthorKingdomId = "a", RoundId = "r", IsRelayTurn = true };
         Test.True(owner.TryApplyGeneratedSemanticEnvelope(document, json, "a", null, false, true)
             && document.Actions.Count == 5 && document.Actions[0].Intent == "statement",
             "five generated actions retain public semantics and player context through transient records");
         var pureAi = (JObject)json.DeepClone(); pureAi["actions"][4]["target_kingdom_id"] = "b";
-        Test.True(owner.TryGetGeneratedIntentLegalityViolation(new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", RoundId = "ordinary", IsRelayTurn = true }, pureAi, "a", null, out _, out _),
-            "pure AI envelope retains four-action limit");
+        Test.True(!owner.TryGetGeneratedIntentLegalityViolation(new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", RoundId = "r", IsRelayTurn = true }, pureAi, "a", null, out _, out _),
+            "NPC-only envelope uses the same action capacity and state checks");
         var player = PlayerDocument(); player.Actions = document.Actions;
-        var port = new DocumentExecutionReplay.Port();
+        var port = new DocumentExecutionReplay.Port { PlayerKingdomId = "a" };
         WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(port, new DocumentExecutionReplay.Orch(port),
             player, "statement", "non_binding", false, "firm", 1);
         Test.True(player.Actions.Count == 5 && port.Effects == 1 && !port.Events.Any(x => x.StartsWith("reject:")),
@@ -133,10 +134,9 @@ internal static class PlayerSemanticReplay
                 _ => d, _ => null, id => id, id => id, (_, _, _) => null,
                 (ids, excluded) => ids.Where(x => x != excluded && !string.IsNullOrEmpty(x)).ToList(),
                 (_, _) => throw new Exception("text must survive"), (_, _, _, _, _, _) => effects++, _ => { }),
-            _ => { }, (_, _) => { }, _ => "", (_, _) => { }, _ => { }, _ => { });
+            _ => { }, _ => "", (_, _) => { }, _ => { }, _ => { });
         Test.True(effects == 0 && d.AnalysisStatus == "analysis_failed" && d.Body == "原文"
-            && d.MechanicalResult.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "truncated" : "截断")
-            && d.MechanicalResult.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "output limit" : "输出上限"),
+            && d.MechanicalResult == DiplomacyMiscPromptTexts.Get("Analysis_TruncatedResult", ""),
             "truncated transport preserves text, explains cause, and never pretends to execute");
     }
     private static void VerifyCompoundAnalysis()
@@ -144,7 +144,7 @@ internal static class PlayerSemanticReplay
         foreach (bool invalid in new[] { false, true })
         {
             var d = PlayerDocument(); d.Body = "废除贸易协定，再正式宣战";
-            var port = new DocumentExecutionReplay.Port { InvalidTarget = "b", AfterFirstEffect = true };
+            var port = new DocumentExecutionReplay.Port { PlayerKingdomId = "a" };
             port.Legal.Clear();
             var execution = new DocumentExecutionReplay.Orch(port); int commands = 0;
             var json = new JObject { ["status"] = "success", ["tone"] = "hostile", ["actions"] = new JArray(
@@ -160,7 +160,7 @@ internal static class PlayerSemanticReplay
             Commit(); if (!invalid) Commit();
             Test.True(d.Body == "废除贸易协定，再正式宣战", "compound analysis retains submitted speech");
             Test.True(commands == (invalid ? 0 : 1) && port.Effects == (invalid ? 0 : 2),
-                "compound analysis validates all semantics, executes same-target actions once, bypasses AI whitelist and recheck");
+                "compound analysis validates all semantics and executes currently eligible same-target actions once");
             if (!invalid) Test.True(d.Actions.Select(x => x.Intent).SequenceEqual(new[] { "cancel_trade", "declare_war" })
                 && d.Actions.All(x => x.ChangedDiplomaticState), "ordered actions retain individual execution receipts");
             else Test.True(d.AnalysisStatus == "analysis_failed" && !d.PlayerAnalysisCommitted, "bad compound extraction remains retryable without partial effects");
@@ -170,7 +170,7 @@ internal static class PlayerSemanticReplay
         playerTarget.Legal.Clear();
         WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(playerTarget, new DocumentExecutionReplay.Orch(playerTarget),
             ai, "declare_war", "binding", false, "neutral", 1);
-        Test.True(playerTarget.Effects == 1, "AI declaration involving player also bypasses autonomous AI policy");
+        Test.True(playerTarget.Effects == 0, "an NPC cannot impersonate a player-controlled ruler even when addressing the player");
         var pureAi = new DocumentExecutionReplay.Port { AuthorAllowed = false };
         WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(pureAi, new DocumentExecutionReplay.Orch(pureAi),
             new() { AuthorKingdomId = "a", TargetKingdomId = "b" }, "declare_war", "binding", false, "neutral", 1);
@@ -284,8 +284,7 @@ internal static class PlayerSemanticReplay
                     if (GamePort != null) return WorldDiplomacyOfferActionApplication.Execute(kind, offer, source, response, GamePort, Owner);
                     response.ChangedDiplomaticState = true; return WorldDiplomacyOfferOutcome.Applied; },
                 (_, _) => false, _ => { });
-        public override void SettleInternationalReputationForDocument(WorldDiplomacyDocument document)
-            => WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(Reputation, document, x => x, _ => { });
+
         public override void SuppressInvalidDocumentBeforePropagation(WorldDiplomacyDocument document, string reason)
         {
             Rejection = reason;
@@ -328,7 +327,7 @@ internal static class PlayerSemanticReplay
             if (scenario == "wrong-discussion") raw["related_public_document_id"] = discussion.DocumentId;
             if (scenario.StartsWith("wrong-discussion")) raw["related_round_id"] = unrelated.RoundId;
             var execution = new AcceptanceExecution(owner);
-            var port = new DocumentExecutionReplay.Port { Owner = owner };
+            var port = new DocumentExecutionReplay.Port { Owner = owner, PlayerKingdomId = "p" };
             void Process(WorldDiplomacyDocument d, string intent, string commitment, bool response, string tone, float confidence)
             {
                 typeof(WorldDiplomacyOrchestration).GetMethod("BindPlayerDeclarationToSharedEvent",
@@ -343,18 +342,18 @@ internal static class PlayerSemanticReplay
             Commit();
             bool valid = scenario == "normal" || scenario.StartsWith("wrong-discussion");
             string expectedRejection = scenario == "ambiguous"
-                ? "player_action_not_executable:player_offer_response_missing_source_offer"
+                ? "action_not_executable:player_offer_response_missing_source_offer"
                 : "player_offer_response_source_not_available";
             Test.True(document.TargetKingdomId == "a", "target alias canonicalized before source binding: " + scenario);
             Test.True(valid ? document.RoundId == original.RoundId && original.PendingOffers[0].Status == "accepted"
-                && execution.Effects == 1 && document.ChangedDiplomaticState && execution.Reputation["p"] == 52
+                && execution.Effects == 1 && document.ChangedDiplomaticState && execution.Reputation["p"] == 50
                 : execution.Rejection == expectedRejection && execution.Effects == 0
                 && !document.ChangedDiplomaticState && execution.Reputation["p"] == 50
                 && document.InternationalReputationEvaluationDelta == 0,
                 "analysis through settlement respects exact source and actual effects: " + scenario
                 + $" rejection={execution.Rejection} effects={execution.Effects} changed={document.ChangedDiplomaticState} reputation={execution.Reputation["p"]} delta={document.InternationalReputationEvaluationDelta} source={document.RespondingToOfferDocumentId} round={document.RoundId}");
-            Commit(); execution.SettleInternationalReputationForDocument(document);
-            Test.True(execution.Effects == (valid ? 1 : 0) && execution.Reputation["p"] == (valid ? 52 : 50),
+            Commit();
+            Test.True(execution.Effects == (valid ? 1 : 0) && execution.Reputation["p"] == 50,
                 "repeated analysis and reputation settlement cannot replay effects: " + scenario);
         }
     }
@@ -397,7 +396,7 @@ internal static class PlayerSemanticReplay
                 ["responding_to_offer_document_id"] = claimed, ["responding_to_offer_action_id"] = action };
             var logs = new List<string>();
             var execution = new AcceptanceExecution(owner) { BaseIntent = "propose_trade", AtWar = scenario == "at-war" };
-            var port = new DocumentExecutionReplay.Port { Owner = owner };
+            var port = new DocumentExecutionReplay.Port { Owner = owner, PlayerKingdomId = "p" };
             void Process(WorldDiplomacyDocument d, string kind, string commitment, bool response, string tone, float confidence)
             {
                 typeof(WorldDiplomacyOrchestration).GetMethod("BindPlayerDeclarationToSharedEvent",
@@ -467,7 +466,7 @@ internal static class PlayerSemanticReplay
                     System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(owner, new object[] { d });
                 if (!owner.ValidateFormalTreatyDeclaration(d, kind, d.TreatyTerms, "p", "a", d.RespondingToOfferDocumentId,
                     d.RespondingToOfferActionId, out string reason)) { execution.SuppressInvalidDocumentBeforePropagation(d, reason); return; }
-                WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(new DocumentExecutionReplay.Port { Owner = owner },
+                WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(new DocumentExecutionReplay.Port { Owner = owner, PlayerKingdomId = "p" },
                     execution, d, kind, commitment, reply, tone, confidence);
             }
             void Commit() => WorldDiplomacyAnalysisApplication.CommitAnalysis(new() { DocumentId = response.DocumentId }, raw.ToString(), 3,

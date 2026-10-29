@@ -40,7 +40,7 @@ internal static class PublicationRoutingReplay
         { _p.Events.Add("round"); return _p.Storage.ActiveRound = new WorldDiplomacyRound { RoundId = "r", State = "active" }; }
         public override void RecordDiplomacyWeeklyMaterial(WorldDiplomacyDocument doc) => _p.Events.Add("weekly");
         public override void SuppressInvalidDocumentBeforePropagation(WorldDiplomacyDocument doc, string reason) => _p.Events.Add("reject:" + reason);
-        public override void TryScheduleMandatoryCourtResponse(WorldDiplomacyRound round, WorldDiplomacyRoundParticipant participant, string receiverId, WorldDiplomacyDocument trigger) => _p.Events.Add("respond:" + receiverId);
+        public override void ProcessCourtArrival(string receiverId, WorldDiplomacyDocument trigger) => _p.Events.Add("respond:" + receiverId);
     }
     internal static void Run()
     {
@@ -84,13 +84,13 @@ internal static class PublicationRoutingReplay
         var p = new Port(); var orch = new Orch(p); var doc = new WorldDiplomacyDocument { DocumentId = "d", AuthorKingdomId = "a", TargetKingdomId = "b" };
         WorldDiplomacyPublicationRoutingApplication.Start(p, orch, doc, "a");
         Test.True(doc.PropagationCompleted && doc.HasReachedPlayerCourt && doc.IsReadyForPublication && p.Captures == 1
-            && p.Events.IndexOf("authority") < p.Events.IndexOf("round") && p.Events.IndexOf("weekly") < p.Events.IndexOf("snapshot"),
+            && p.Events.IndexOf("authority") >= 0 && p.Events.IndexOf("authority") < p.Events.IndexOf("round") && p.Events.IndexOf("weekly") < p.Events.IndexOf("snapshot"),
             "publication admission, canonical state, weekly material and bounded snapshot preserve order");
         Test.True(p.Storage.PropagationArrivals.Count == 2 && p.Storage.PropagationArrivals[0].DueDay <= p.Storage.PropagationArrivals[1].DueDay,
             "geography snapshot schedules sorted civilian and court arrivals");
         WorldDiplomacyPublicationRoutingApplication.Start(p, orch, doc, "a");
         Test.True(p.Captures == 1 && p.Storage.PropagationArrivals.Count == 2, "completed publication never recaptures or duplicates deliveries");
-        p = new Port { Allowed = false }; orch = new Orch(p); doc = new WorldDiplomacyDocument { DocumentId = "d" };
+        p = new Port { Allowed = false }; orch = new Orch(p); doc = new WorldDiplomacyDocument { DocumentId = "d", AuthorKingdomId = "a", TargetKingdomId = "b" };
         WorldDiplomacyPublicationRoutingApplication.Start(p, orch, doc, "a");
         Test.True(p.Events.SequenceEqual(new[] { "authority", "reject:blocked" }) && p.Captures == 0 && !doc.IsReadyForPublication,
             "rejected AI publication performs no world capture, state mutation or scheduling");
@@ -101,6 +101,9 @@ internal static class PublicationRoutingReplay
         p.Events.Clear();
         WorldDiplomacyPublicationRoutingApplication.ReconcileReachedCourts(p, orch, doc);
         Test.True(p.Events.SequenceEqual(new[] { "respond:b" }), "reconciliation schedules only eligible, addressed, formally reached court");
+        p.Events.Clear(); doc.TargetKingdomId = "vassal";
+        WorldDiplomacyPublicationRoutingApplication.ReconcileReachedCourts(p, orch, doc);
+        Test.True(p.Events.Count == 0, "player-authored primary target cannot bypass independent authority during compensation");
         p.Events.Clear(); p.Storage.ActiveRound.State = "closed";
         WorldDiplomacyPublicationRoutingApplication.ReconcileReachedCourts(p, orch, doc);
         Test.True(p.Events.Count == 0, "closed round cannot reschedule reached-court responses");

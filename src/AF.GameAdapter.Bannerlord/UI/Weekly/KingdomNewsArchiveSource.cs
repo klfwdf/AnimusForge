@@ -107,7 +107,7 @@ internal static class KingdomNewsArchiveSource
 			WeekIndex = day / 7,
 			Title = FirstNonEmpty(document.Title, label),
 			BodyText = body.Length == 0 ? Localize("AF_UI_Weekly_Browser_DiplomaticEmpty", "(This diplomatic message has no body text.)") : body,
-			CreatedDate = DiplomacyDateProjection.ForUi(FirstNonEmpty(document.GameDate, FormatDay(day))),
+			CreatedDate = CampaignDateProjection.ForUi(FirstNonEmpty(document.GameDate, FormatDay(day))),
 			CreatedDay = day,
 			TagText = "",
 			HasFullReport = true
@@ -131,7 +131,7 @@ internal static class KingdomNewsArchiveSource
 			WeekIndex = day / 7,
 			Title = FirstNonEmpty(policy.TitleText, scope),
 			BodyText = body.Length == 0 ? Localize("AF_UI_Weekly_Browser_PolicyEmpty", "(This policy has no body text.)") : body,
-			CreatedDate = DiplomacyDateProjection.ForUi(FirstNonEmpty(policy.DateText, FormatDay(day))),
+			CreatedDate = CampaignDateProjection.ForUi(FirstNonEmpty(policy.DateText, FormatDay(day))),
 			CreatedDay = day,
 			TagText = "",
 			HasFullReport = true

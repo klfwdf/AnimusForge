@@ -1,3 +1,10 @@
+<a id="vassal-diplomacy-buttons-20261029"></a>
+## 封臣原版外交按钮已对齐 — 2026-10-29
+
+产品 59b902c3d，检查点43a0ee216。封臣与君主在AI外交开启时统一禁用原版外交提议按钮、显示既有双语说明并拦截点击；君主专用宣言和后台外交规则不变。双API/Bootstrap/seam通过；实际DLL原生VM 1.3专项158项、1.4合集259项通过，1.3旧整页检查受本地地图UI引用不匹配影响，未计通过。**OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。前次部署不包含本次修复。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#vassal-diplomacy-buttons-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#vassal-diplomacy-buttons-20261029)。
+
+---
+
 # 已交付：AF 1.6.6 / 游戏1.5.6特别版（2026-10-28）
 
 - 四前置已反编译，3处API签名适配及仅1.5.6 Bootstrap完成；CN已部署，安装只留1.5实现。按用户要求停止校验/哈希核对，部署后生成CN/EN双包，位于一键编译覆盖推送/packages/Bannerlord_1.5.6_Special/，文件时间戳1028_1605，AF版本固定1.6.6。包未回读/门禁校验，未实机或旧档。[台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bannerlord156-delivery-20261028)。本地证据artifacts/bannerlord156-delivery-20261028/，恢复点7c689f8；不推送。

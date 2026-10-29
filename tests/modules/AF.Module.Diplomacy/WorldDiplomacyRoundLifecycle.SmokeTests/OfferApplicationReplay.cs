@@ -23,20 +23,20 @@ internal static class OfferApplicationReplay
         blocked.ProposalBlockReason = "invalid state";
         blocked.Run();
         Test.True(blocked.Round.PendingOffers.Count == 1
-                && blocked.Response.MechanicalResult == "提议未登记：invalid state",
+                && blocked.Response.MechanicalResult == (DiplomacyMiscPromptTexts.Get("Offer_NotRegisteredPrefix", "") + "invalid state"),
             "invalid proposal changes only its recorded mechanical result");
 
         var missingSource = NewHarness("accept_peace");
         missingSource.Response.RespondingToOfferDocumentId = "";
         missingSource.Run();
-        Test.True(missingSource.Response.MechanicalResult == "答复未执行：缺少唯一来源提议"
+        Test.True(missingSource.Response.MechanicalResult == DiplomacyMiscPromptTexts.Get("Offer_ReplyMissingUniqueSource", "")
                 && missingSource.Trace.SequenceEqual(new[] { "prune" }),
             "unbound response never reaches a game action");
 
         var wrongVersion = NewHarness("accept_peace");
         wrongVersion.Response.RespondingToOfferActionId = "late-action";
         wrongVersion.Run();
-        Test.True(wrongVersion.Response.MechanicalResult == "答复未执行：来源提议已关闭、失效或不唯一"
+        Test.True(wrongVersion.Response.MechanicalResult == DiplomacyMiscPromptTexts.Get("Offer_ReplySourceClosedOrInvalid", "")
                 && wrongVersion.Round.PendingOffers[0].Status == "open",
             "late or mismatched source action cannot settle a newer offer");
 
@@ -50,7 +50,7 @@ internal static class OfferApplicationReplay
         missingDocument.SourceAvailable = false;
         missingDocument.Run();
         Test.True(missingDocument.Round.PendingOffers[0].Status == "invalidated"
-                && missingDocument.Response.MechanicalResult == "接受未执行：原提议或当事国已失效"
+                && missingDocument.Response.MechanicalResult == DiplomacyMiscPromptTexts.Get("Offer_AcceptSourceOrKingdomInvalid", "")
                 && !missingDocument.Trace.Contains("parties"),
             "missing canonical source invalidates acceptance before world resolution");
 
@@ -65,7 +65,7 @@ internal static class OfferApplicationReplay
         invalidTerms.TermsExecutable = false;
         invalidTerms.Run();
         Test.True(invalidTerms.Round.PendingOffers[0].Status == "invalidated"
-                && invalidTerms.Response.MechanicalResult == "接受未执行：和平原案条款已无法原样履行",
+                && invalidTerms.Response.MechanicalResult == DiplomacyMiscPromptTexts.Get("Offer_AcceptPeaceTermsCannotFulfill", ""),
             "peace acceptance revalidates the original terms immediately before the effect");
 
         var accepted = NewHarness("accept_peace");
@@ -88,7 +88,7 @@ internal static class OfferApplicationReplay
         failed.ThrowOnExecute = true;
         failed.Run();
         Test.True(failed.Round.PendingOffers[0].Status == "execution_failed"
-                && failed.Response.MechanicalResult.StartsWith("接受未执行：", StringComparison.Ordinal)
+                && failed.Response.MechanicalResult.StartsWith(DiplomacyMiscPromptTexts.Get("Offer_AcceptNotExecutedPrefix", ""), StringComparison.Ordinal)
                 && failed.Trace.Last().StartsWith("log:", StringComparison.Ordinal),
             "mechanical exception without effect records failure and logs it");
 

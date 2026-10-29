@@ -195,7 +195,7 @@ internal static bool IsAfefConversationMessage(ConversationMessage msg)
 internal static List<ConversationMessage> KeepAfefFactsAndRecentConversationMessages(List<ConversationMessage> messages, int maxConversationMessages)
 	{ return SceneHistoryProjectionOwner.KeepAfefFactsAndRecentConversationMessages(messages, maxConversationMessages); }
 
-internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessage msg, SceneHistoryMessageContext context, out object chatMessage, HashSet<string> currentAfefFactKeys = null)
+internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessage msg, SceneHistoryMessageContext context, out object chatMessage, HashSet<string> currentAfefFactKeys = null, Action<int> lengthSink = null)
 	{
 		chatMessage = null;
 		if (msg == null)
@@ -226,11 +226,11 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 			}
 			if (ConversationRoleClassificationOwner.IsViewerAssistant(msg, null, npcHeroId, npcAgentIndex, useStableIdentity: true))
 			{
-				chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("assistant", PrefixConversationMessageForPrompt(context, msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? "NPC" : msg.SpeakerName.Trim(), text3));
+				chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("assistant", PrefixConversationMessageForPrompt(context, msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? "NPC" : msg.SpeakerName.Trim(), text3), lengthSink);
 				return true;
 			}
 			string text4 = string.IsNullOrWhiteSpace(msg.SpeakerName) ? PromptComposerTexts.Get("residual_other_npc") : msg.SpeakerName.Trim();
-			chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text4, PromptComposerTexts.Format("residual_heard_speech", ("NAME", text4), ("TEXT", text3))));
+			chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text4, PromptComposerTexts.Format("residual_heard_speech", ("NAME", text4), ("TEXT", text3))), lengthSink);
 			return true;
 		}
 		if (text.Equals("user", StringComparison.OrdinalIgnoreCase))
@@ -239,30 +239,30 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 			if (msg.TargetAgentIndex == npcAgentIndex || SameHero(msg.TargetHeroId, npcHeroId))
 			{
 				float promptDistanceMeters = context.UseDistanceLabels ? msg.PlayerDistanceMeters : -1f;
-				chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, "【" + FormatScenePlayerDirectSpeechLabel(text5, promptDistanceMeters) + "】" + text2));
+				chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, "【" + FormatScenePlayerDirectSpeechLabel(text5, promptDistanceMeters) + "】" + text2), lengthSink);
 				return true;
 			}
 			if (msg.TargetAgentIndex >= 0)
 			{
 				string text6 = string.IsNullOrWhiteSpace(msg.TargetName) ? PromptComposerTexts.Get("residual_other_person") : msg.TargetName.Trim();
-				chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, PromptComposerTexts.Format("residual_heard_target_speech", ("NAME", text5), ("TARGET", text6), ("TEXT", text2))));
+				chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, PromptComposerTexts.Format("residual_heard_target_speech", ("NAME", text5), ("TARGET", text6), ("TEXT", text2))), lengthSink);
 				return true;
 			}
-			chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, PromptComposerTexts.Format("residual_heard_speech", ("NAME", text5), ("TEXT", text2))));
+			chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, PromptComposerTexts.Format("residual_heard_speech", ("NAME", text5), ("TEXT", text2))), lengthSink);
 			return true;
 		}
 		if (text.Equals("system", StringComparison.OrdinalIgnoreCase))
 		{
 			if (isAfefFact && isAfefNpcFact)
 			{
-				chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, "AFEF", BuildScopedAfefFactLineForPrompt(afefFactLine, isCurrentAfefFact)));
+				chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("user", PrefixConversationMessageForPrompt(context, msg, "AFEF", BuildScopedAfefFactLineForPrompt(afefFactLine, isCurrentAfefFact)), lengthSink);
 				return true;
 			}
 			string text6 = (isAfefFact && isAfefPlayerFact) ? BuildScopedAfefFactLineForPrompt(afefFactLine, isCurrentAfefFact) : (PromptComposerTexts.Get("residual_scene_fact") + text2);
-			chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, isAfefPlayerFact ? "AFEF" : PromptComposerTexts.Get("residual_system"), text6));
+			chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("user", PrefixConversationMessageForPrompt(context, msg, isAfefPlayerFact ? "AFEF" : PromptComposerTexts.Get("residual_system"), text6), lengthSink);
 			return true;
 		}
-		chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? PromptComposerTexts.Get("residual_record") : msg.SpeakerName.Trim(), text2));
+		chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("user", PrefixConversationMessageForPrompt(context, msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? PromptComposerTexts.Get("residual_record") : msg.SpeakerName.Trim(), text2), lengthSink);
 		return true;
 	}
 internal static string PrefixConversationMessageForPrompt(SceneHistoryMessageContext context, ConversationMessage msg, string fallbackSpeaker, string content)
@@ -311,6 +311,7 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
             messages[0] = new ConversationPromptMessage(first.role, first.content, revision: revision);
         if (!string.IsNullOrWhiteSpace(input.StablePersona))
             messages.Add(new ConversationPromptMessage("user", PromptComposerTexts.Format("scene_prefix_persona", ("TEXT", input.StablePersona))));
+        var recall = new RequestRecallBudget(input.PrefixUserSections);
         var pending = (input.PendingCurrentFacts ?? Enumerable.Empty<ConversationMessage>())
             .Where(x => x != null && IsAfefConversationMessage(x)).Select(BuildCurrentFactIdentity);
         var keys = new HashSet<string>(pending.Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.Ordinal);
@@ -359,6 +360,15 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
         var recalled = history.Where(x => x.PromptIsRecall).ToList();
         history = KeepAfefFactsAndRecentConversationMessages(history.Where(x => !x.PromptIsRecall).ToList(), input.HistoryLineLimit);
         history.InsertRange(0, recalled);
+        var projected = new Dictionary<ConversationMessage, object>();
+        var sizes = new Dictionary<ConversationMessage, int>();
+        foreach (var entry in history)
+            if (TryConvertSceneMessageToStrictChatMessage(entry, input.Context, out var message, keys, x => sizes[entry] = x)) projected[entry] = message;
+        // Captured history uses copies; compare stable identities rather than object references.
+        var activeScene = new HashSet<string>(scene.Select(x => BuildConversationMessageDedupeKey(x, input.Context.SpeechTextOptions)));
+        history = recall.SelectMessages(history, x => sizes.TryGetValue(x, out int count) ? count : 0,
+            x => activeScene.Contains(BuildConversationMessageDedupeKey(x, input.Context.SpeechTextOptions))
+                || (x.PromptFactScopeCaptured && x.PromptIsCurrentFact));
         string query = input.CurrentInputMessage?.Content ?? history.LastOrDefault(x => x.Role == "user" && !x.PromptIsRecall)?.Content ?? "";
         // Recall (day recall and earlier relevant turns) changes with every input; keep it out
         // of the chronological prefix so it cannot break the provider cache after the persona.
@@ -368,7 +378,7 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
         foreach (var entry in history)
         {
             if (entry.Role != "system" && (group == 0 || entry.Role == "user")) group++;
-            if (TryConvertSceneMessageToStrictChatMessage(entry, input.Context, out var message, keys))
+            if (projected.TryGetValue(entry, out var message))
             {
                 if (message is ConversationPromptMessage speech && entry.Role != "system" && group < lastGroup)
                     message = new ConversationPromptMessage(speech.role, speech.content, group);
@@ -381,7 +391,7 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
         // would also move the transcript cache breakpoint into this request-varying tail.
         var recallLines = new List<string>(recallHistory.Count);
         foreach (var entry in recallHistory)
-            if (TryConvertSceneMessageToStrictChatMessage(entry, input.Context, out var recallMessage, keys)
+            if (projected.TryGetValue(entry, out var recallMessage)
                 && recallMessage is ConversationPromptMessage quoted && !string.IsNullOrWhiteSpace(quoted.content))
                 recallLines.Add(quoted.content.Trim());
         if (recallLines.Count > 0)
@@ -389,7 +399,7 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
                 ("TEXT", string.Join("\n", recallLines)))));
         if (!string.IsNullOrWhiteSpace(input.CurrentInstructions))
             messages.Add(new ConversationPromptMessage("user", PromptComposerTexts.Format("scene_prefix_current", ("TEXT", input.CurrentInstructions))));
-        AppendSections(messages, input.PrefixUserSections);
+        AppendSections(messages, recall.FinishSections());
         AppendSections(messages, input.SuffixUserSections);
         if (input.CurrentInputMessage != null && TryConvertSceneMessageToStrictChatMessage(input.CurrentInputMessage, input.Context, out var current))
             messages.Add(current);

@@ -1,0 +1,23 @@
+<Brushes>
+  <Brush Name="AFEvent.Title" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
+    <Styles><Style Name="Default" FontSize="27" FontColor="#F4E5C8FF" TextOutlineAmount="0.2" TextGlowRadius="0" /></Styles>
+  </Brush>
+  <Brush Name="AFEvent.Stage" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
+    <Styles><Style Name="Default" FontSize="19" FontColor="#F4E5C8FF" TextOutlineAmount="0" TextGlowRadius="0" /></Styles>
+  </Brush>
+  <Brush Name="AFEvent.Body" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Left" TextVerticalAlignment="Top">
+    <Styles><Style Name="Default" FontSize="17" FontColor="#261A10FF" TextOutlineAmount="0" TextGlowRadius="0" TextShadowOffset="0" /></Styles>
+  </Brush>
+  <Brush Name="AFEvent.Meta" BaseBrush="AFEvent.Body"><Styles><Style Name="Default" FontSize="16" FontColor="#6B5237FF" /></Styles></Brush>
+  <Brush Name="AFEvent.Heading" BaseBrush="AFEvent.Body"><Styles><Style Name="Default" FontSize="19" /></Styles></Brush>
+  <Brush Name="AFEvent.Effect" BaseBrush="AFEvent.Body"><Styles><Style Name="Default" FontSize="17" /></Styles></Brush>
+  <Brush Name="AFEvent.IllustrationFallback" BaseBrush="AFEvent.Stage"><Styles><Style Name="Default" FontSize="19" FontColor="#6B5237FF" /></Styles></Brush>
+  <Brush Name="AFEvent.ButtonText" BaseBrush="AFEvent.Stage">
+    <Styles>
+      <Style Name="Default" FontSize="21" />
+      <Style Name="Hovered" FontSize="21" FontColor="#FFFFFFFF" />
+      <Style Name="Pressed" FontSize="21" FontColor="#CEB483FF" />
+    </Styles>
+    <SoundProperties><EventSounds><EventSound EventName="Click" Audio="panels/next" /></EventSounds></SoundProperties>
+  </Brush>
+</Brushes>

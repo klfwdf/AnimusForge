@@ -39,11 +39,22 @@ internal static class WorldDiplomacyLiveRoundRules
         storage.LastAppliedRoundIntervalDays = 1;
     }
 
+    internal static void RefreshOpeningInterval(WorldDiplomacyStorage storage, int interval)
+    {
+        InitializeOrdinaryAdmission(storage);
+        if (storage == null) return;
+        interval = Math.Max(1, Math.Min(30, interval));
+        if (storage.LastAppliedRoundIntervalDays == interval) return;
+        storage.LastAppliedRoundIntervalDays = interval;
+        int previous = storage.LastOrdinaryRoundStartedDay ?? -1;
+        storage.NextNormalRoundDay = previous < 0 ? 0 : WorldDiplomacyRoundLifecycleRules.ComputeNextRoundDay(previous, interval);
+    }
+
     internal static bool CanStartOrdinary(WorldDiplomacyStorage storage, int day, int maximum)
     {
         if (storage == null) return false;
         InitializeOrdinaryAdmission(storage);
-        if (storage.LastOrdinaryRoundStartedDay.Value >= day) return false;
+        if (storage.LastOrdinaryRoundStartedDay.Value >= day || day < storage.NextNormalRoundDay) return false;
         int count = 0, limit = Math.Max(1, maximum);
         foreach (var round in Live(storage))
             if (WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State) && IsOrdinary(round)

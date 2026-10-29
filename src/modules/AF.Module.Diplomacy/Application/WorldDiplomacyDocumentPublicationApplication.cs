@@ -38,10 +38,6 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         string normalizedIntent,
         bool recordNoActionDecision,
         IReadOnlyList<WorldDiplomacyThreat> threats,
-        Action<WorldDiplomacyDocument, string, string, string> recordThreatDecisions,
-        Func<WorldDiplomacyDocument, string, string, string, bool> deferUnresolvedThreatAction,
-        Action<WorldDiplomacyThreat, WorldDiplomacyDocument> applyThreatReputationPenalty,
-        Action<WorldDiplomacyDocument> settleReputation,
         Action<WorldDiplomacyDocument, string> startPropagation,
         Action<WorldDiplomacyDocument> recordWeeklyMaterial,
         Action<WorldDiplomacyDocument> reconcilePlayerDeclaration,
@@ -56,17 +52,6 @@ internal static class WorldDiplomacyDocumentPublicationApplication
     {
         if (document == null || string.IsNullOrWhiteSpace(authorKingdomId)) return;
         document.IsReadyForPublication = true;
-        if (recordNoActionDecision)
-        {
-            recordThreatDecisions?.Invoke(document, authorKingdomId, targetKingdomId, normalizedIntent);
-        }
-        bool requiredThreatActionDeferred = deferUnresolvedThreatAction?.Invoke(document, authorKingdomId, targetKingdomId, normalizedIntent) == true;
-        if (!requiredThreatActionDeferred)
-        {
-            WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
-            document, threats, authorKingdomId, applyThreatReputationPenalty);
-        }
-        settleReputation?.Invoke(document);
         try
         {
             startPropagation?.Invoke(document, authorKingdomId);
@@ -122,10 +107,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         Action<WorldDiplomacyOfferDomain> clearBilateralCooldowns,
         Func<string, string, string, bool, WorldDiplomacyDocument> createDocument,
         Func<string, string> buildFactBody,
-        Func<bool, WorldDiplomacyRound> ensureActiveRound,
         Func<WorldDiplomacyRound, bool> canFactJoinRound,
-        Func<WorldDiplomacyRound, string, bool> tryIncludeSettlementTarget,
-        Func<string, string> createId,
         Action<WorldDiplomacyDocument> addDocument,
         Action<WorldDiplomacyDocument> startPropagation,
         Action<WorldDiplomacyDocument> appendCanonicalEvents,
@@ -182,17 +164,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         fact.HistoryDeclarationRecorded = true;
         var candidates = WorldDiplomacyLiveRoundRules.Live(storage).Where(x => canFactJoinRound?.Invoke(x) == true).Take(2).ToList();
         WorldDiplomacyRound activeRound = candidates.Count == 1 ? candidates[0] : null;
-        WorldDiplomacyRound round = activeRound ?? (WorldDiplomacyLiveRoundRules.Live(storage).Any()
-            ? null : ensureActiveRound?.Invoke(initiatorIsPlayer));
-        bool appendedExternalSettlementTarget = round?.ResultSettlementPending == true
-            && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, targetId);
-        if (appendedExternalSettlementTarget
-            && tryIncludeSettlementTarget?.Invoke(round, targetId) != true) round = null;
-        else if (appendedExternalSettlementTarget)
-        {
-            WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, targetId, "route",
-                fact.DocumentId, initiatorId, prioritize: false, tryIncludeSettlementTarget, createId);
-        }
+        WorldDiplomacyRound round = activeRound;
         fact.RoundId = round?.RoundId ?? "";
         fact.ExchangeId = fact.RoundId;
         fact.AddressedKingdomIds = new List<string> { targetId };

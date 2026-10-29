@@ -31,19 +31,12 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     {
         Calls.Add("EnqueueGeneration");
     }
-    public virtual string EnqueueMandatoryReplyJob(string receiverId, string targetId, WorldDiplomacyDocument source, string roundId, bool isRelayTurn)
-    {
-        Calls.Add("EnqueueMandatoryReplyJob");
-        return "";
-    }
+
     public virtual void EnqueueAnalysisJob(WorldDiplomacyDocument document, int priority)
     {
         Calls.Add("EnqueueAnalysisJob");
     }
-    public virtual void EnqueueRoundPlanJob(WorldDiplomacyRound round, WorldDiplomacyDocument root)
-    {
-        Calls.Add("EnqueueRoundPlanJob");
-    }
+
     public virtual void EnqueueCompressionJob(long throughSequence, long tokenCount, int targetTokens)
     {
         Calls.Add("EnqueueCompressionJob");
@@ -121,10 +114,7 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
         Calls.Add("RefreshDiplomaticThreatPresentationAndPrompt");
         return false;
     }
-    public virtual void ProcessRelayArrivals()
-    {
-        Calls.Add("ProcessRelayArrivals");
-    }
+
     public virtual void ProcessRoundLifecycle()
     {
         Calls.Add("ProcessRoundLifecycle");
@@ -145,14 +135,8 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     {
         Calls.Add("ProcessCourtArrival");
     }
-    public virtual void TryScheduleMandatoryCourtResponse(WorldDiplomacyRound round, WorldDiplomacyRoundParticipant participant, string receiverId, WorldDiplomacyDocument trigger)
-    {
-        Calls.Add("TryScheduleMandatoryCourtResponse");
-    }
-    public virtual void MarkPlayerCourtReachedByRelay(string receiverId, WorldDiplomacyDocument document)
-    {
-        Calls.Add("MarkPlayerCourtReachedByRelay");
-    }
+
+
     public virtual void ReconcileReachedCourts(WorldDiplomacyDocument document)
     {
         Calls.Add("ReconcileReachedCourts");
@@ -166,26 +150,14 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     {
         Calls.Add("CloseActiveRound");
     }
-    public virtual void AdvanceRelay(WorldDiplomacyRound round, bool scheduleImmediately)
-    {
-        Calls.Add("AdvanceRelay");
-    }
+
     public virtual void CompleteExchange(string exchangeId, string reason)
     {
         Calls.Add("CompleteExchange");
     }
-    public virtual void ScheduleNextResultSettlementTurn(WorldDiplomacyRound round)
-    {
-        Calls.Add("ScheduleNextResultSettlementTurn");
-    }
-    public virtual void ScheduleNextRelayHop(WorldDiplomacyRound round, bool scheduleImmediately)
-    {
-        Calls.Add("ScheduleNextRelayHop");
-    }
-    public virtual void BeginOrExtendRoundResultSettlement(WorldDiplomacyRound round, WorldDiplomacyDocument document, string closeReason, string roundStatus)
-    {
-        Calls.Add("BeginOrExtendRoundResultSettlement");
-    }
+
+
+
     public virtual void HandleRoundDocumentProcessed(WorldDiplomacyDocument document)
     {
         Calls.Add("HandleRoundDocumentProcessed");
@@ -199,15 +171,8 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     {
         Calls.Add("IntegratePlayerDeclaration");
     }
-    public virtual void CommitEmbeddedRoundPlan(WorldDiplomacyRound round, WorldDiplomacyDocument root)
-    {
-        Calls.Add("CommitEmbeddedRoundPlan");
-    }
-    public virtual void CommitRoundPlan(WorldDiplomacyJob job, string raw)
-    {
-        if (OnCommitRoundPlan != null) { OnCommitRoundPlan(job, raw); return; }
-        Calls.Add("CommitRoundPlan");
-    }
+
+
     public virtual void CommitRoundCompression(WorldDiplomacyJob job, string raw)
     {
         if (OnCommitRoundCompression != null) { OnCommitRoundCompression(job, raw); return; }
@@ -221,20 +186,9 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     {
         Calls.Add("UpgradeRoundSummaryToStructuredArchive");
     }
-    public virtual void RefreshResultSettlementActionSlots(WorldDiplomacyRound round)
-    {
-        Calls.Add("RefreshResultSettlementActionSlots");
-    }
-    public virtual bool TryIncludeResultSettlementTarget(WorldDiplomacyRound round, string kingdomId)
-    {
-        Calls.Add("TryIncludeResultSettlementTarget");
-        return false;
-    }
-    public virtual bool CanUseResultSettlementTarget(WorldDiplomacyRound round, string authorId, string targetId)
-    {
-        Calls.Add("CanUseResultSettlementTarget");
-        return false;
-    }
+
+
+
     public virtual void ReconcileActiveDiplomacyAfterLoad()
     {
         Calls.Add("ReconcileActiveDiplomacyAfterLoad");
@@ -446,21 +400,13 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
         Calls.Add("BuildLegalDiplomaticDeclarationIntentMap");
         return new Dictionary<string, List<string>>();
     }
-    public virtual List<string> GetResultSettlementActionableTargetIds(WorldDiplomacyRound round, string authorId)
-    {
-        Calls.Add("GetResultSettlementActionableTargetIds");
-        return new List<string>();
-    }
+
     public virtual List<string> GetActionableDiplomaticTargetIds(string authorId, WorldDiplomacyRound round)
     {
         Calls.Add("GetActionableDiplomaticTargetIds");
         return new List<string>();
     }
-    public virtual List<string> GetRoundPlanActionableParticipantIds(string authorId, WorldDiplomacyRound round)
-    {
-        Calls.Add("GetRoundPlanActionableParticipantIds");
-        return new List<string>();
-    }
+
     public virtual List<string> GetAuthorizedGenerationTargetIds(WorldDiplomacyJob source, WorldDiplomacyRound round, string authorId)
     {
         Calls.Add("GetAuthorizedGenerationTargetIds");
@@ -481,11 +427,7 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
         Calls.Add("BuildCurrentLegalDiplomaticOptions");
         return "";
     }
-    public virtual bool IsNonRootAiRelayNoActionAllowed(WorldDiplomacyRound round, string resultSettlementSlotId, string authorId, string targetId, bool isRelayTurn, bool isExternalResponseOnly, WorldDiplomacyDocument responseSource)
-    {
-        Calls.Add("IsNonRootAiRelayNoActionAllowed");
-        return false;
-    }
+
     public virtual bool OfferedPeaceTermsCurrentlyExecutable(WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source, string proposerId, string targetId)
     {
         Calls.Add("OfferedPeaceTermsCurrentlyExecutable");
@@ -498,26 +440,14 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
         Calls.Add("BuildGenerationLegalActionSignature");
         return "";
     }
-    public virtual string BuildRelayTurnGenerationPrompt(WorldDiplomacyRound round, string authorId, string targetId, WorldDiplomacyDocument prioritySource, bool priorityResponseOnly)
-    {
-        Calls.Add("BuildRelayTurnGenerationPrompt");
-        return "";
-    }
+
     public virtual string BuildGenerationPromptForJob(string authorId, string targetId, WorldDiplomacyExchange exchange, bool isResponse, WorldDiplomacyDocument source, bool isReminder, string roundId, bool allowUntargeted, List<string> planCandidates, bool externalResponseOnly)
     {
         Calls.Add("BuildGenerationPromptForJob");
         return "";
     }
-    public virtual string BuildRoundPlanSystemPrompt(WorldDiplomacyRound round)
-    {
-        Calls.Add("BuildRoundPlanSystemPrompt");
-        return "";
-    }
-    public virtual string BuildRoundPlanPrompt(WorldDiplomacyDocument root, List<string> candidateIds)
-    {
-        Calls.Add("BuildRoundPlanPrompt");
-        return "";
-    }
+
+
     public virtual string BuildAnalysisPrompt(WorldDiplomacyDocument document)
     {
         Calls.Add("BuildAnalysisPrompt");
@@ -528,11 +458,7 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
         Calls.Add("BuildFallbackAnalysisJson");
         return "";
     }
-    public virtual string BuildRelayConversationTurnPrompt(WorldDiplomacyRound round, string authorId, string previousId, WorldDiplomacyDocument prioritySource, bool priorityResponseOnly)
-    {
-        Calls.Add("BuildRelayConversationTurnPrompt");
-        return "";
-    }
+
     public virtual WorldDiplomacyDocument CreateDocument(string authorId, string targetId, string title, string body, string origin, bool isPlayerAuthored, bool isResponse, string exchangeId)
     {
         Calls.Add("CreateDocument");

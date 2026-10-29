@@ -47,6 +47,7 @@ internal static class TerminalSettingsCoverage
 
     internal static string CategoryFor(string owner, string property, string fallback, string group = "")
     {
+        if (owner == nameof(DuelSettings) && UiProperties.Contains(property)) return TerminalCategories.Ui;
         if (owner == nameof(IllustratorSettings) || property.StartsWith("Illustrator.", StringComparison.Ordinal)) return TerminalCategories.Ai;
         if (property.StartsWith("ConversationContext", StringComparison.Ordinal)) return TerminalCategories.Ai;
         if (property.IndexOf("WeeklyReport", StringComparison.Ordinal) >= 0 || property.IndexOf("WorldBulletin", StringComparison.Ordinal) >= 0)
@@ -67,8 +68,24 @@ internal static class TerminalSettingsCoverage
         return fallback;
     }
 
+    private static readonly HashSet<string> RetiredDiplomacySettings = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "WorldDiplomacyMaxConcurrentOrdinaryRounds",
+        "WorldDiplomacyRoundLengthDropdown",
+        "WorldDiplomacyContinentSpreadDays",
+        "WorldDiplomacyDeclarationMinCharacters",
+        "WorldDiplomacyOffensiveWarCooldownDays",
+        "WorldDiplomacyPeaceProtectionDays",
+        "WorldDiplomacyTradeAllianceFailedProposalCooldownDays",
+        "WorldDiplomacyThreatComplianceIssuerRelationReward",
+        "WorldDiplomacyHistoryCompressionTriggerThousands",
+        "WorldDiplomacyHistoryCompressionTargetThousands",
+        "RestoreDefaultWorldDiplomacyPrompt",
+    };
+
     internal static bool IsVisible(string id)
     {
+        if (RetiredDiplomacySettings.Contains(id)) return false;
         if (id == "Illustrator.DirectorMaxTokens" || id == "ScreenNotifications"
             || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled"
             || id == "TerminalHotkeyEnabled" || id == "TerminalMapIconEnabled") return false;

@@ -60,7 +60,7 @@ internal static class PlayerIndependentReplay
         storage.ConcurrentRounds.Add(round); storage.Documents.Add(Doc("original","one","a"));
         var other=Round("other","normal"); storage.ConcurrentRounds.Add(other);
         foreach (string kind in new[]{"generate","analyze","round_plan","round_compress"})
-        { var job=new WorldDiplomacyJob { JobId=kind,Kind=kind,RoundId="one",AuthorKingdomId="a",TargetKingdomId="p"};DiplomacyPlayerEventRules.Bind(round,job);storage.Jobs.Add(job); }
+        { var job=new WorldDiplomacyJob { JobId=kind,Kind=kind,RoundId="one",AuthorKingdomId="a",TargetKingdomId="p"};DiplomacyEventRules.Bind(round,job);storage.Jobs.Add(job); }
         var unrelated=new WorldDiplomacyJob { JobId="unrelated",Kind="generate",RoundId="other" };storage.Jobs.Add(unrelated);
         var old=storage.Jobs[0]; var oldResult=Result(old,round,"{}");
         Test.True(o.RequestLeases.TryClaim(old,1,100,100,true,out var lease),"old speech can be in flight at handoff");
@@ -71,7 +71,7 @@ internal static class PlayerIndependentReplay
         Test.True(lease.Cancellation.IsCancellationRequested,"handoff revokes unsent transport admission for this event only");
         Test.True(!o.AdmitCompletion(old,oldResult),"old result cannot commit after event handoff");
         int epoch=round.OwnershipEpoch; Invoke(o,"TransferEvent",round,true,"repeat");Test.True(round.OwnershipEpoch==epoch,"repeated insertion is idempotent");
-        string context=(string)Invoke(o,"BuildPlayerEventContinuity",round,"a");
+        string context=(string)Invoke(o,"BuildEventContinuity",round,"a");
         Test.True(context.Contains("original") && context.Contains("Recorded future intention") && context.Contains("Original dispute"),"successor actually reads clauses, recorded intentions and topic");
         var copy=JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(storage))!;
         Test.True(copy.ConcurrentRounds[0].SchedulingOwner=="player" && copy.ConcurrentRounds[0].OwnershipEpoch==2 && copy.ConcurrentRounds[0].PendingOffers.Count==1,"handoff ownership and proposals survive storage roundtrip");
@@ -105,17 +105,17 @@ internal static class PlayerIndependentReplay
         Test.True(sink.Shown==1 && !sink.LastMap && doc.ActualPlayerNoticeHour==245,"disabled right notice produces text even for pre-read incoming request");
         sink.Enabled=true;sink.Hour=270;notices.Poll(storage,now.AddSeconds(6),sink);Test.True(sink.Shown==1 && doc.ActualPlayerNoticeHour==245,"switch/read cannot renotify or reset clock");
         var wait=new WorldDiplomacyPlayerWait { SourceDocumentId=doc.DocumentId,NotifiedHour=doc.ActualPlayerNoticeHour };
-        Test.True(!DiplomacyPlayerEventRules.SilenceDue(wait,316) && DiplomacyPlayerEventRules.SilenceDue(wait,317),"exact three game days from actual display hour");
+        Test.True(!DiplomacyEventRules.SilenceDue(wait,316) && DiplomacyEventRules.SilenceDue(wait,317),"exact three game days from actual display hour");
         wait.NotifiedHour=245.75;
-        Test.True(!DiplomacyPlayerEventRules.SilenceDue(wait,317.74) && DiplomacyPlayerEventRules.SilenceDue(wait,317.75),"fractional actual display time cannot expire nearly one hour early");
+        Test.True(!DiplomacyEventRules.SilenceDue(wait,317.74) && DiplomacyEventRules.SilenceDue(wait,317.75),"fractional actual display time cannot expire nearly one hour early");
         wait.NotifiedHour=245;
-        wait.AnswerDocumentId="published_not_delivered";Test.True(!DiplomacyPlayerEventRules.SilenceDue(wait,1000),"public player reply stops silence before NPC knowledge");
+        wait.AnswerDocumentId="published_not_delivered";Test.True(!DiplomacyEventRules.SilenceDue(wait,1000),"public player reply stops silence before NPC knowledge");
         var (h,o)=ConcurrentOralMigrationReplay.Fixture();var round=Round("one");o.CurrentStorage.ConcurrentRounds.Add(round);o.CurrentStorage.Documents.Add(doc);
         round.PlayerNegotiationWaits.Add(wait);wait.AnswerDocumentId="";
         var reply=Doc("reply","provisional","p","a");reply.SourceDocumentId=doc.DocumentId;o.CurrentStorage.Documents.Add(reply);
         reply.AnsweredNpcDocumentIds.Add(doc.DocumentId);
         Invoke(o,"RegisterPublishedPlayerAnswer",reply);Test.True(wait.AnswerDocumentId=="reply","actual publication command stops relevant waiting");
-        var closure=new WorldDiplomacyJob{JobId="closing",RoundId="one",Kind="generate",SilenceSourceDocumentId=doc.DocumentId};DiplomacyPlayerEventRules.Bind(round,closure);
+        var closure=new WorldDiplomacyJob{JobId="closing",RoundId="one",Kind="generate",SilenceSourceDocumentId=doc.DocumentId};DiplomacyEventRules.Bind(round,closure);
         Test.True(!o.AdmitCompletion(closure,Result(closure,round,"{}")),"in-flight silent closing discarded after relevant player publication");
         var unrelated=Doc("unrelated","other","p","c");Invoke(o,"RegisterPublishedPlayerAnswer",unrelated);Test.True(wait.AnswerDocumentId=="reply","unrelated declaration does not change this wait");
         var legacy=Round("legacy");legacy.PlayerNegotiationWaits.Clear();o.CurrentStorage.ConcurrentRounds.Add(legacy);var old=Doc("legacy_doc","legacy","a");old.FormalNoticeShown=true;old.IsNotified=true;o.CurrentStorage.Documents.Add(old);
@@ -127,7 +127,7 @@ internal static class PlayerIndependentReplay
     {
         var (h,o)=ConcurrentOralMigrationReplay.Fixture();var round=Round("privacy");o.CurrentStorage.ConcurrentRounds.Add(round);
         var job=new WorldDiplomacyJob { JobId="privacy_job",RoundId=round.RoundId,Kind="generate",AuthorKingdomId="a",TargetKingdomId="p",PersonalMemoryRulerId="ruler_a",UserPrompt="Known public insult. SECRET_PRIVATE_ROMANCE",SystemPrompt="declaration rules" };
-        DiplomacyPlayerEventRules.Bind(round,job);o.CurrentStorage.Jobs.Add(job);
+        DiplomacyEventRules.Bind(round,job);o.CurrentStorage.Jobs.Add(job);
         Invoke(o,"PrepareDiplomacyPrivacy",job);Test.True(job.Kind=="privacy_material" && job.UserPrompt.Contains("SECRET_PRIVATE_ROMANCE"),"protected raw material is isolated in specialist request");
         o.TryCompleteDiplomacyPipeline(job,Result(job,round,"{\"safe\":true,\"public_context\":\"Known public insult; exact legal action IDs\",\"attitude_summary\":\"Reserved attitude\"}"));
         Test.True(job.Kind=="generate" && job.PrivacyPublicContext.Contains("Known public insult"),"ordinary public insult remains available after isolation");
@@ -139,7 +139,7 @@ internal static class PlayerIndependentReplay
             Invoke(o,"DeferDraftForPrivacyCheck",job,"{\"title\":\"leak\",\"body\":\"SECRET_PRIVATE_ROMANCE\"}");
             o.TryCompleteDiplomacyPipeline(job,Result(job,round,"{\"safe\":false}"));
         }
-        Test.True(job.SuspendedReason=="privacy_rewrites_exhausted" && o.CurrentStorage.Documents.Count==0,"finite confidentiality rewrites suspend without declaration or political refusal");
+        Test.True(job.SuspendedReason=="declaration_rewrites_exhausted:confidentiality_rejected" && o.CurrentStorage.Documents.Count==0,"finite confidentiality rewrites suspend without declaration or political refusal");
         Test.True(!round.PlayerNegotiationWaits.Any(),"protected draft never starts silence time");
         var saved=JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(o.CurrentStorage))!;
         Test.True(saved.Jobs[0].SuspendedReason==job.SuspendedReason && saved.Jobs[0].PrivacyDraft.Contains("SECRET_PRIVATE_ROMANCE"),"held work and failure reason survive roundtrip for recovery");
@@ -172,7 +172,7 @@ internal static class PlayerIndependentReplay
     {
         var (h,o)=ConcurrentOralMigrationReplay.Fixture();var first=Round("npc_active");first.NpcInitiatedPlayerEvent=true;o.CurrentStorage.ConcurrentRounds.Add(first);
         o.CurrentStorage.ConcurrentRounds.Add(Round("player_started_a"));o.CurrentStorage.ConcurrentRounds.Add(Round("player_started_b"));
-        Test.True(DiplomacyPlayerEventRules.HasNpcOpening(o.CurrentStorage.ConcurrentRounds),"player initiated cases coexist with the sole NPC opening");
+        Test.True(DiplomacyEventRules.HasNpcOpening(o.CurrentStorage.ConcurrentRounds),"player initiated cases coexist with the sole NPC opening");
         Invoke(o,"TrySchedulePlayerAgenda");Test.True(o.CurrentStorage.ConcurrentRounds.Count==3,"independent major development cannot force another proactive case");
         var closed=Doc("exit","npc_active","a");closed.RequiresResponse=false;closed.RoundParticipation="withdraw";o.CurrentStorage.Documents.Add(closed);
         o.HandleRoundDocumentProcessed(closed);Test.True(first.Participants[0].State=="withdrawn" && first.Participants[1].State=="active","one country withdrawal preserves other participants");
@@ -246,13 +246,13 @@ internal static class PlayerIndependentReplay
         var old=Round("former_realm");var retained=Round("new_realm_case");retained.Participants.Add(new(){KingdomId="b",State="active"});
         old.PendingOffers.Add(new(){SourceDocumentId="national_treaty",Status="accepted"});
         o.CurrentStorage.ConcurrentRounds.Add(old);o.CurrentStorage.ConcurrentRounds.Add(retained);
-        var job=new WorldDiplomacyJob{JobId="old_request",Kind="analyze",RoundId=old.RoundId,AuthorKingdomId="p"};DiplomacyPlayerEventRules.Bind(old,job);o.CurrentStorage.Jobs.Add(job);
+        var job=new WorldDiplomacyJob{JobId="old_request",Kind="analyze",RoundId=old.RoundId,AuthorKingdomId="p"};DiplomacyEventRules.Bind(old,job);o.CurrentStorage.Jobs.Add(job);
         h.Realm="b";Invoke(o,"RefreshPlayerAuthority");
         Test.True(old.SchedulingOwner=="normal" && WorldDiplomacyLiveRoundRules.IsOrdinary(old) && old.PendingOffers[0].Status=="accepted","former player realm returns to ordinary owner while established national facts survive");
         Test.True(retained.SchedulingOwner=="player" && retained.PlayerAuthorityKingdomId=="b" && retained.OwnershipEpoch==3,"case involving new player realm remains player-owned after authority handoff");
         Test.True(job.JobId!="old_request" && job.PlayerAuthorityRulerId=="","old national authority cannot retain request identity");
         var quiet=Round("quiet_agenda");quiet.NpcInitiatedPlayerEvent=true;o.CurrentStorage.ConcurrentRounds.Add(quiet);Invoke(o,"InvalidateDialogueIndex");
-        var decision=new WorldDiplomacyJob{JobId="quiet",Kind="player_decision",RoundId=quiet.RoundId,AuthorKingdomId="a",TargetKingdomId="b",ForcedIntent="opening"};DiplomacyPlayerEventRules.Bind(quiet,decision);o.CurrentStorage.Jobs.Add(decision);
+        var decision=new WorldDiplomacyJob{JobId="quiet",Kind="player_decision",RoundId=quiet.RoundId,AuthorKingdomId="a",TargetKingdomId="b",ForcedIntent="opening"};DiplomacyEventRules.Bind(quiet,decision);o.CurrentStorage.Jobs.Add(decision);
         o.TryCompleteDiplomacyPipeline(decision,Result(decision,quiet,"{\"participate\":false,\"reason\":\"No current motive\"}"));
         Test.True(quiet.State!="active" && o.CurrentStorage.Documents.Count==0 && !o.CurrentStorage.Jobs.Contains(decision),"interval expiry permits quiet with no forced declaration or fabricated political refusal");
     }
@@ -275,7 +275,7 @@ internal static class PlayerIndependentReplay
         Test.True((bool)Invoke(o,"HasActiveDisputeRefusal","a") && ((string)Invoke(o,"BuildDisputeRefusalContext","a")).Contains("unchanged border claim"),"new event generation actually reads the persisted prior refusal scope");
         var newRound=Round("new_scope");o.CurrentStorage.ConcurrentRounds.Add(newRound);Invoke(o,"InvalidateDialogueIndex");
         newRound.PlayerResponses.Add(new(){SourceDocumentId="repeat",KingdomId="a",Status="pending"});
-        var decision=new WorldDiplomacyJob{JobId="repeat_review",Kind="player_decision",RoundId=newRound.RoundId,AuthorKingdomId="a",SourceDocumentId="repeat",ForcedIntent="reconsider_temporarily_refused_dispute"};DiplomacyPlayerEventRules.Bind(newRound,decision);o.CurrentStorage.Jobs.Add(decision);
+        var decision=new WorldDiplomacyJob{JobId="repeat_review",Kind="player_decision",RoundId=newRound.RoundId,AuthorKingdomId="a",SourceDocumentId="repeat",ForcedIntent="reconsider_temporarily_refused_dispute"};DiplomacyEventRules.Bind(newRound,decision);o.CurrentStorage.Jobs.Add(decision);
         o.TryCompleteDiplomacyPipeline(decision,Result(decision,newRound,"{\"participate\":false,\"same_dispute_repeat\":true,\"reason\":\"same unchanged dispute\"}"));
         Test.True(newRound.PlayerResponses[0].Status=="declined_repeat" && !o.CurrentStorage.Documents.Any(x=>x.DocumentId=="repeat_review"),"model-confirmed repetition may stay quiet after an actual prior closing declaration");
         h.CurrentDayValue+=3;Test.True(!(bool)Invoke(o,"HasActiveDisputeRefusal","a"),"three-day refusal ends at boundary without permanent suppression");

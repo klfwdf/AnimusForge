@@ -27,28 +27,16 @@ internal sealed partial class WorldDiplomacyOrchestration
         IsLiveRound(round) && string.Equals(round.InitiatorKingdomId, kingdomId, StringComparison.OrdinalIgnoreCase)
         && WorldDiplomacyLiveRoundRules.IsOrdinary(round));
 
-    internal bool IsPlayerDiplomacyContext(string author, string target, WorldDiplomacyRound round, WorldDiplomacyDocument source = null) =>
-        DiplomacyPlayerEventRules.IsPlayer(round) || _host.IsPlayerAffiliatedParty(author) || _host.IsPlayerAffiliatedParty(target)
-        || WorldDiplomacyPlayerApplication.InvolvesPlayer(source, round, _host.IsPlayerAffiliatedParty);
-    internal bool IsPlayerDiplomacyDocument(WorldDiplomacyDocument document) =>
-        WorldDiplomacyPlayerApplication.InvolvesPlayer(document, ResolveRound(document?.RoundId), _host.IsPlayerAffiliatedParty);
-    internal bool IsPlayerGeneratedEnvelope(WorldDiplomacyJob job, Newtonsoft.Json.Linq.JObject json) =>
-        IsPlayerDiplomacyJob(job) || (json?["actions"] is Newtonsoft.Json.Linq.JArray actions
-            && actions.OfType<Newtonsoft.Json.Linq.JObject>().Any(x => _host.IsPlayerAffiliatedParty(
-                WorldDiplomacyEnvelopeJsonRules.ReadString(x, "target_kingdom_id", "primary_target_kingdom_id", "target"))));
-    internal bool IsPlayerDiplomacyJob(WorldDiplomacyJob job) => job != null &&
-        (DiplomacyPlayerEventRules.IsPlayer(ResolveRound(job.RoundId)) || job.PlayerResponseSourceIds?.Count > 0 || _host.IsPlayerAffiliatedParty(job.AuthorKingdomId)
-         || _host.IsPlayerAffiliatedParty(job.TargetKingdomId)
-         || IsPlayerDiplomacyDocument(ResolveDocument(job.DocumentId))
-         || IsPlayerDiplomacyDocument(ResolveDocument(job.SourceDocumentId))
-         || WorldDiplomacyPlayerApplication.InvolvesPlayer(null, ResolveRound(job.RoundId), _host.IsPlayerAffiliatedParty));
+    internal bool IsEventContext(string author, string target, WorldDiplomacyRound round, WorldDiplomacyDocument source = null)
+        => DiplomacyEventRules.IsEvent(round);
+    internal bool IsEventJob(WorldDiplomacyJob job) => job != null && DiplomacyEventRules.IsEvent(ResolveRound(job.RoundId));
     private bool IsDirectPlayerSchedulingJob(WorldDiplomacyJob job) => job != null &&
-        (IsOralDeclarationJob(job) || IsPlayerDiplomacyJob(job)
+        (IsOralDeclarationJob(job) || IsEventJob(job)
          || ((job.Kind == "analyze" || job.Kind == "round_plan") && ResolveDocument(job.DocumentId)?.IsPlayerAuthored == true)
          || (job.Kind == "generate" && (ResolveRound(job.RoundId)?.PlayerResponses?.Any(x => x != null
              && x.Status == "pending" && x.KingdomId == job.AuthorKingdomId
              && HasCourtDocumentKnowledge(job.AuthorKingdomId, x.SourceDocumentId)) == true)));
-    private bool IsPlayerSchedulingJob(WorldDiplomacyJob job) => DiplomacyPlayerEventRules.IsPlayer(ResolveRound(job?.RoundId))
+    private bool IsPlayerSchedulingJob(WorldDiplomacyJob job) => DiplomacyEventRules.IsPlayer(ResolveRound(job?.RoundId))
         || (job?.Kind == "compress" && Storage.Jobs.Any(x => x != null && x.AwaitingHistoryCompression && IsDirectPlayerSchedulingJob(x)));
 
 
@@ -60,11 +48,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     private bool CanPlayerDocumentJoinRound(WorldDiplomacyDocument document, WorldDiplomacyRound round)
     {
         if (!IsLiveRound(round)) return false;
-        if (!round.ResultSettlementPending) return true;
-        var newTargets = GetDocumentTargetIds(document).Where(id =>
-            !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, id)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-        return (round.RelayRouteKingdomIds?.Count ?? 0) + newTargets.Count <= _host.MaxRelayParticipants()
-            && newTargets.All(id => _host.PartyResolved(id) && _host.HasIndependentAuthority(id));
+        return true;
     }
 
     // Submission/analysis/load/close boundaries only; no archive work on ticks.
@@ -133,9 +117,10 @@ internal sealed partial class WorldDiplomacyOrchestration
             var answerRound = answerSources[0];
             TransferEvent(answerRound, true, "player_semantic_reply_attached");
             RehomePlayerReplyEvent(provisional, answerRound);
-            EnsureRoundParticipant(answerRound, document.AuthorKingdomId, "active", false);
+            EnsurePlayerDocumentParticipant(answerRound, document);
             IntegratePlayerDeclaration(answerRound, document);
             CloseActiveRound("player_declaration_attached_to_shared_event", provisional);
+            StartEventDiscussion(answerRound);
             return;
         }
         // Shared subject/parties do not turn a new player action or counterproposal
@@ -192,15 +177,20 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (sources.Count != 1) return; // Independent player speech is always retained.
         var destination = sources[0];
         if (!CanPlayerDocumentJoinRound(document, destination)) return;
-        EnsureRoundParticipant(destination, document.AuthorKingdomId, "active", false);
+        EnsurePlayerDocumentParticipant(destination, document);
         TransferEvent(destination, true, "player_declaration_attached");
         MovePlayerDocumentRouting(document, destination);
         destination.ConversationRevision++;
-        EnsureRoundParticipant(destination, document.AuthorKingdomId, "active", false);
+        EnsurePlayerDocumentParticipant(destination, document);
         IntegratePlayerDeclaration(destination, document);
         CloseActiveRound("player_declaration_attached_to_shared_event", provisional);
         InvalidateDialogueIndex();
     }
+
+    private static bool NeedsDirectedPlayerReaction(string intent) => NormalizeIntent(intent) is
+        "declare_war" or "condemn" or "warning" or "ultimatum" or "cancel_trade" or "break_alliance"
+        or "release_subject" or "propose_peace" or "propose_trade" or "propose_alliance"
+        or "propose_annexation" or "propose_tributary" or "propose_garrison" or "propose_vassal";
 
     private void RegisterPlayerResponseWork(WorldDiplomacyDocument document, bool schedule = true)
     {
@@ -209,19 +199,30 @@ internal sealed partial class WorldDiplomacyOrchestration
         BindPlayerDeclarationToSharedEvent(document);
         var round = ResolveRound(document.RoundId);
         if (!IsLiveRound(round)) return;
-        EnsureRoundParticipant(round, document.AuthorKingdomId, "active", false);
+        if (!EventBoundaryComplete(round, "started")) EnsurePlayerOpeningPlan(round);
+        EnsurePlayerDocumentParticipant(round, document);
         TransferEvent(round, true, "player_declaration");
-        MarkPlayerEventDirty(round);
+        MarkEventDirty(round);
         round.PlayerResponses ??= new List<WorldDiplomacyPlayerResponse>();
         var receivers = GetDocumentTargetIds(document)
             .Concat(document.AddressedKingdomIds ?? Enumerable.Empty<string>()).Select(_host.ResolvePartyId)
             .Select(_host.ResolveRepresentativeId).Where(x => x != null && !_host.IsPlayerParty(x)
                 && !_host.IsEliminatedParty(x)).Distinct().ToList();
-        if (receivers.Count == 0)
+        // Questions/invitations are not the only reason to react. A directed
+        // action remains addressed even when it contains no interrogative sentence.
+        var reactionTargets = (document.Actions ?? new List<WorldDiplomacyDocumentAction>())
+            .Where(x => x != null && NeedsDirectedPlayerReaction(x.Intent)).Select(x => x.TargetKingdomId)
+            .Concat(NeedsDirectedPlayerReaction(document.Intent) ? new[] { document.TargetKingdomId } : Array.Empty<string>())
+            .Select(_host.ResolvePartyId).Where(x => !string.IsNullOrEmpty(x) && !_host.IsPlayerParty(x)
+                && !_host.IsEliminatedParty(x)).Distinct().ToList();
+        if (document.ResponseRequestsClassified)
+            receivers = document.ResponseRequests.Select(x => x.KingdomId).Concat(reactionTargets).Where(x => !_host.IsPlayerParty(x)
+                && !_host.IsEliminatedParty(x)).Distinct().ToList();
+        if (receivers.Count == 0 && !document.ResponseRequestsClassified)
         {
             // Existing event participants first; deterministic rotation breaks
             // ties for a wholly independent, untargeted declaration.
-            receivers = _host.AllKingdomIds().Where(id => !_host.IsEliminatedParty(id) && !_host.IsPlayerAffiliatedParty(id)).OrderByDescending(x => RoundContainsKingdom(round, x))
+            receivers = _host.AllKingdomIds().Where(id => !_host.IsEliminatedParty(id) && !_host.IsPlayerParty(id)).OrderByDescending(x => RoundContainsKingdom(round, x))
                 .ThenByDescending(x => document.MentionedKingdomIds?.Contains(x, StringComparer.OrdinalIgnoreCase) == true)
                 .ThenByDescending(x => _host.PartiesAtWar(document.AuthorKingdomId, x))
                 .ThenBy(x => x, StringComparer.OrdinalIgnoreCase).Take(1).ToList();
@@ -229,20 +230,17 @@ internal sealed partial class WorldDiplomacyOrchestration
         bool added = false;
         foreach (var receiver in receivers)
         {
+            if (IsEnding(round) && !IsEndingDutySource(round, receiver, document.DocumentId)) continue;
             if (round.PlayerResponses.Any(x => x.SourceDocumentId == document.DocumentId && x.KingdomId == receiver)) continue;
             round.PlayerResponses.Add(new WorldDiplomacyPlayerResponse { SourceDocumentId = document.DocumentId,
-                KingdomId = receiver, OriginalRoundId = round.RoundId, CreatedDay = document.Day });
+                KingdomId = receiver, OriginalRoundId = round.RoundId, CreatedDay = document.Day,
+                RequestKind = document.ResponseRequests.Any(x => x.KingdomId == receiver && x.Kind == "invitation") ? "invitation"
+                    : document.ResponseRequests.Any(x => x.KingdomId == receiver && x.Kind == "case_question") ? "case_question"
+                    : reactionTargets.Contains(receiver) ? "reaction" : document.ResponseRequestsClassified ? "side_question" : "case_question",
+                RequestQuote = reactionTargets.Contains(receiver) ? document.Body
+                    : string.Join("\n", document.ResponseRequests.Where(x => x.KingdomId == receiver).Select(x => x.Quote)) });
             added = true;
-            EnsureRoundParticipant(round, receiver, "active", true);
-            // The old selection limit still applies to optional observers;
-            // explicitly owed speakers and the player must fit this negotiation.
-            foreach (string id in new[] { receiver, document.AuthorKingdomId })
-            {
-                if (round.RelayPlanned && !round.RelayRouteKingdomIds.Contains(id)) round.RelayRouteKingdomIds.Add(id);
-                var participant = EnsureRoundParticipant(round, id, "active", id == receiver);
-                participant.SelectedForRelay = round.RelayPlanned;
-                participant.IsPlayerAsync = id == document.AuthorKingdomId;
-            }
+            ObserveEventTarget(round, receiver, true);
         }
         if (added) round.ConversationRevision++;
         if (schedule) SchedulePlayerResponseWork(round);
@@ -251,13 +249,16 @@ internal sealed partial class WorldDiplomacyOrchestration
     private string PlayerResponseUnavailableReason(string receiverId, string sourceId)
     {
         var source = ResolveDocument(sourceId);
-        if (source?.IsPlayerAuthored != true || !source.IsReadyForPublication) return "source_unavailable";
+        if (source?.IsReadyForPublication != true) return "source_unavailable";
+        if (!source.IsPlayerAuthored && !source.ResponseRequests.Any(x => x.KingdomId == receiverId)
+            && ResolveRound(source.RoundId)?.Participants.Any(x => x.AgendaExpressionDocumentId == sourceId
+                && x.AgendaAddressTo.Contains(receiverId)) != true) return "source_unavailable";
         // Resolve the original parties only. A changed suzerain never inherits this declaration.
         string author = _host.ResolvePartyId(source.AuthorKingdomId);
         if (author == null || _host.IsEliminatedParty(author))
             return "source_author_unavailable";
         string receiver = _host.ResolvePartyId(receiverId);
-        if (receiver == null || _host.IsEliminatedParty(receiver))
+        if (receiver == null || _host.IsEliminatedParty(receiver) || !_host.HasIndependentAuthority(receiver))
             return "receiver_unavailable";
         return "";
     }
@@ -285,11 +286,17 @@ internal sealed partial class WorldDiplomacyOrchestration
     private bool CanDispatchPlayerResponse(WorldDiplomacyJob job)
     {
         var round = ResolveRound(job?.RoundId);
+        if (!string.IsNullOrEmpty(job?.EndingRecoveryDocumentId))
+        {
+            var original = ResolveDocument(job.EndingRecoveryDocumentId);
+            return original?.RoundId == round?.RoundId && CanRecoverEndingWar(original)
+                && original.AuthorKingdomId == job.AuthorKingdomId && original.TargetKingdomId == job.TargetKingdomId;
+        }
         bool followup = string.Equals(round?.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase);
         if (followup && (job.Kind == "round_plan" || (job.Kind == "generate" && !job.IsExternalResponseOnly))) return false;
         if (job?.Kind != "generate") return true;
         var sourceIds = (job.PlayerResponseSourceIds ?? new List<string>()).ToList();
-        if (job.IsExternalResponseOnly && ResolveDocument(job.SourceDocumentId)?.IsPlayerAuthored == true)
+        if (job.IsExternalResponseOnly && ResolveDocument(job.SourceDocumentId)?.IsReadyForPublication == true)
             sourceIds.Add(job.SourceDocumentId);
         if (sourceIds.Count == 0) return true;
         ValidatePlayerResponseObligations(round);
@@ -317,26 +324,16 @@ internal sealed partial class WorldDiplomacyOrchestration
         _diplomacyWorkNeedsReconcile = true;
     }
 
-    private bool MaintainPlayerFollowup(WorldDiplomacyRound round)
-    {
-        if (!string.Equals(round?.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase)) return false;
-        ValidatePlayerResponseObligations(round);
-        bool pending = round.PlayerResponses?.Any(x => x != null && x.Status == "pending" && string.IsNullOrWhiteSpace(x.AnswerDocumentId)) == true;
-        if (!pending) { CloseRound("player_responses_finished", round); return true; }
-        // These obligations do not own a relay circuit. Withdrawn AI participants
-        // cannot close and re-create the same request; only the existing deadline ends it.
-        if (!IsHardEndReached(_host.CurrentDay(), round.HardEndDay))
-        { SchedulePlayerResponseWork(round); return true; }
-        if (Storage.Jobs.Any(x => x != null && x.RoundId == round.RoundId && x.IsRunning)) return true;
-        CloseRound("player_response_deadline", round);
-        return true;
-    }
+
 
     private void SchedulePlayerResponseWork(WorldDiplomacyRound round)
     {
         if (!IsLiveRound(round) || round.PlayerResponses == null) return;
+        if (IsEnding(round))
+            foreach (var response in round.PlayerResponses.Where(x => x.Status == "pending"
+                && !IsEndingDutySource(round, x.KingdomId, x.SourceDocumentId))) response.Status = "event_ending";
         ValidatePlayerResponseObligations(round);
-        if (DiplomacyPlayerEventRules.IsPlayer(round) && HasPlayerSpeakerWork(round)) return;
+        if (DiplomacyEventRules.IsEvent(round) && HasEventSpeakerWork(round)) return;
         if (string.Equals(round.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase))
             foreach (var obsolete in Storage.Jobs.Where(x => x != null && !x.IsRunning && x.RoundId == round.RoundId
                 && (x.Kind == "round_plan" || (x.Kind == "generate" && !x.IsExternalResponseOnly))).ToList()) RemoveJob(obsolete.JobId);
@@ -358,7 +355,14 @@ internal sealed partial class WorldDiplomacyOrchestration
             var source = received.Select(x => ResolveDocument(x.SourceDocumentId)).FirstOrDefault(x => x != null);
             if (source == null) continue;
             var participant = round.Participants.FirstOrDefault(x => x.KingdomId == group.Key);
-            if (!source.ChangedDiplomaticState && ((participant?.State == "withdrawn" && participant.RefuseRepeatedUntilDay > _host.CurrentDay())
+            var undecided = received.FirstOrDefault(x => x.RequestKind == "invitation" && string.IsNullOrEmpty(x.ParticipationDecision));
+            if (undecided != null)
+            {
+                var invitation = ResolveDocument(undecided.SourceDocumentId);
+                EnqueuePlayerDecision(round, receiver, invitation.AuthorKingdomId, invitation, "answer_invitation");
+                return;
+            }
+            if (!received.Any(x => x.RequestKind == "invitation" || !string.IsNullOrEmpty(x.ParticipationDecision)) && !source.ChangedDiplomaticState && ((participant?.State == "withdrawn" && participant.RefuseRepeatedUntilDay > _host.CurrentDay())
                 || HasActiveDisputeRefusal(receiver)))
             {
                 EnqueuePlayerDecision(round, receiver, source.AuthorKingdomId, source, "reconsider_temporarily_refused_dispute");
@@ -377,21 +381,13 @@ internal sealed partial class WorldDiplomacyOrchestration
                 }
                 continue; // Rebuilt from all pending sources at actual send.
             }
-            if (round.ResultSettlementPending)
-            {
-                foreach (var item in received) WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, group.Key, "player_response",
-                    item.SourceDocumentId, source.AuthorKingdomId, true, TryIncludeResultSettlementTarget, _host.NewId);
-                // A pending old slot/job must finish before the merged slot.
-                ScheduleNextResultSettlementTurn(round);
-                continue;
-            }
             if (Storage.Jobs.Count(x => x.SchedulingOwner == round.SchedulingOwner) >= _host.MaxPendingJobs()) return; // Obligation persists; no eviction.
             // The existing priority reply completes in this event, without
             // cancelling a scheduled hop or moving the ordinary relay cursor.
             EnqueueGeneration(receiver, ResolveDialogueParty(source.AuthorKingdomId), null, true, source,
-                95, externalResponseOnly: true, roundId: round.RoundId, isRelayTurn: round.RelayPlanned,
+                95, externalResponseOnly: true, roundId: round.RoundId, isRelayTurn: false,
                 previousKingdomId: source.AuthorKingdomId, scheduledDay: _host.CurrentDay());
-            if (DiplomacyPlayerEventRules.IsPlayer(round)) return;
+            if (DiplomacyEventRules.IsEvent(round)) return;
         }
     }
 
@@ -400,12 +396,6 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (job.Kind != "generate") return;
         var round = ResolveRound(job.RoundId);
         if (!IsLiveRound(round)) return;
-        if (job.IsRelayTurn && !job.IsExternalResponseOnly && !round.ResultSettlementPending)
-        {
-            round.RelayWaiting = true;
-            int index = round.RelayRouteKingdomIds.FindIndex(x => x == job.AuthorKingdomId);
-            if (index >= 0) round.RelayCursor = index;
-        }
         // A repair retains its frozen chain only while its event is unchanged.
         if (job.SemanticRepairAttempts > 0 && job.RoundConversationRevision == round.ConversationRevision) return;
         job.LlmMessages?.Clear();
@@ -443,7 +433,7 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private void RecoverRoundSchedulingAfterLoad()
     {
-        if (Storage.RoundSchedulingSchemaVersion >= 1) return;
+        if (Storage.RoundSchedulingSchemaVersion >= 2) return;
         foreach (var document in Storage.Documents.Where(x => x != null && x.IsPlayerAuthored
             && x.IsReadyForPublication && x.AnalysisStatus != "pending_analysis"
             && IsLiveRound(ResolveRound(x.RoundId))).ToList())
@@ -452,13 +442,14 @@ internal sealed partial class WorldDiplomacyOrchestration
             var round = ResolveRound(document.RoundId);
             foreach (var receipt in round?.PlayerResponses ?? Enumerable.Empty<WorldDiplomacyPlayerResponse>())
             {
+                if (receipt.Status != "pending" || !string.IsNullOrEmpty(receipt.AnswerDocumentId)) continue;
                 var reply = Storage.Documents.FirstOrDefault(x => x != null && x.IsReadyForPublication && !x.IsPlayerAuthored
                     && x.AuthorKingdomId == receipt.KingdomId && DocumentRespondsTo(x, receipt.SourceDocumentId));
                 if (reply != null) { receipt.Status = "answered"; receipt.AnswerDocumentId = reply.DocumentId; }
             }
         }
         foreach (var round in GetLiveRounds().ToList()) SchedulePlayerResponseWork(round);
-        Storage.RoundSchedulingSchemaVersion = 1;
+        Storage.RoundSchedulingSchemaVersion = 2;
     }
 
     private bool ValidatePlayerResponseCoverage(WorldDiplomacyJob job, Newtonsoft.Json.Linq.JObject json)
@@ -503,7 +494,9 @@ internal sealed partial class WorldDiplomacyOrchestration
             item.Status = "transferred";
             followup.PlayerResponses.Add(new WorldDiplomacyPlayerResponse { SourceDocumentId = item.SourceDocumentId,
                 KingdomId = item.KingdomId, CreatedDay = item.CreatedDay, OriginalRoundId = item.OriginalRoundId,
-                RetryNotBeforeDay = item.RetryNotBeforeDay, FailureReason = item.FailureReason });
+                RetryNotBeforeDay = item.RetryNotBeforeDay, FailureReason = item.FailureReason,
+                RequestKind = item.RequestKind, RequestQuote = item.RequestQuote,
+                ParticipationDecision = item.ParticipationDecision, DecisionReason = item.DecisionReason, DecisionPosition = item.DecisionPosition });
             if (!followup.RelayRouteKingdomIds.Contains(item.KingdomId)) followup.RelayRouteKingdomIds.Add(item.KingdomId);
             EnsureRoundParticipant(followup, item.KingdomId, "active", true);
         }

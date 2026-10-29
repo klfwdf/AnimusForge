@@ -7,9 +7,7 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
 {
     public void ApplyExternalPrestigeDelta(string kingdomId, int delta, string reason)
     {
-        var owner = Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
-        if (owner?.IsPersistenceAvailable != true) return;
-        owner?.Orchestration.ApplyNationalPrestigeDelta(kingdomId, delta, null, reason ?? "");
+        // Compatibility port only: global national prestige has been retired.
     }
     public bool OpenComposeFromTerminal(System.Action onClose = null) => WorldDiplomacyPresentation.OpenComposeFromTerminal(onClose);
     public bool ShowRoyalAnnouncementArchive(System.Action onClose = null) => WorldDiplomacyPresentation.ShowRoyalAnnouncementArchive(onClose);
@@ -19,10 +17,15 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
         try { return Presentation?.Standing(kingdomId) ?? ""; }
         catch { return ""; }
     }
-    private sealed class MemorySource : IWorldDiplomacyMemorySource
+    private sealed class MemorySource : IWorldDiplomacyMemorySource, IWorldDiplomacySemanticSource
     {
         public bool TryCapture(string heroId, string kingdomOverride, out WorldDiplomacyMemorySnapshot snapshot)
             => WorldDiplomacyBehavior.TryCaptureMemory(heroId, kingdomOverride, out snapshot);
+        public float[] Embed(string text)
+        {
+            var engine = OnnxEmbeddingEngine.Instance;
+            return engine != null && engine.IsAvailable && engine.TryGetEmbedding(text, out var vector) ? vector : null;
+        }
         public string FormatDate(int day) => WorldDiplomacyBehavior.FormatDateForProactive(day);
     }
     private static readonly IWorldDiplomacyMemorySource Memory = new MemorySource();

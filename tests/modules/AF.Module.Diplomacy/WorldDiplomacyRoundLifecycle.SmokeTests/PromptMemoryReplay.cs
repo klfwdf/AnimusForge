@@ -86,14 +86,14 @@ internal static class PromptMemoryReplay
         Test.True(WorldDiplomacyMemoryApplication.Build(memory, "hero", "a", "", null, false) == "" && memory.Captures == 0, "idle memory query does no capture");
         for (int i = 0; i < 10; i++)
         {
-            var doc = new WorldDiplomacyDocument { DocumentId = "d" + i, AuthorKingdomId = "a", AuthorKingdomName = "甲国", Title = "可见公文" + i, Body = "正文" + i, Day = i };
+            var doc = new WorldDiplomacyDocument { DocumentId = "d" + i, AuthorKingdomId = "a", AuthorKingdomName = "甲国", Title = "可见公文" + i, Body = "正文" + i, Day = i, IsReadyForPublication = true };
             memory.Storage.Documents.Add(doc); memory.Known.Add(doc.DocumentId);
         }
         memory.Storage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "secret", Title = "秘密", Body = "不可见内容", Day = 100 });
         text = WorldDiplomacyMemoryApplication.Build(memory, "hero", "a", "外交", null, false);
-        Test.True(memory.Captures == 1 && !text.Contains("不可见内容") && text.Split((SmokeLocalizationEnvironment.EnglishPackage ? "[Directly relevant]" : "[直接相关]")).Length - 1 == 3, "one captured knowledge set preserves visibility and three direct-document slots");
+        Test.True(memory.Captures == 1 && text == "", "generic topic does not fill three unrelated recent-document slots");
         text = WorldDiplomacyMemoryApplication.Build(memory, "hero", "a", "可见公文9", null, false);
-        Test.True(text.Contains((SmokeLocalizationEnvironment.EnglishPackage ? "[Matches the current question]" : "[当前问题命中]")) && text.Contains("正文9"), "known title triggers query-aware memory without a topic hit");
+        Test.True(text.Contains("正文9") && !text.Contains("不可见内容"), "known content triggers query-aware memory without leaking unknown sources");
         Test.True(WorldDiplomacyMemoryApplication.Build(memory, "hero", "a", "秘密", null, false) == "", "unknown titles cannot trigger memory");
     }
 }

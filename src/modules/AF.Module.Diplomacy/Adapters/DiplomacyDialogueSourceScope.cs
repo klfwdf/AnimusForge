@@ -18,7 +18,7 @@ internal sealed class DiplomacyDialogueSourceScope : IDisposable
         string playerText = "", string npcText = "", string interactionId = "")
     {
         if (_current != null) return _current;
-        if (!IsRelevant(content)) return null;
+        if (!IsRelevant(content) && string.IsNullOrWhiteSpace(npcText)) return null;
         return new DialogueInteractionOrigin(channel, interactionId, sessionId, playerText, npcText);
     }
     internal static DiplomacyDialogueSourceScope Begin(string content, string channel, string sessionId,

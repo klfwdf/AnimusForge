@@ -3968,7 +3968,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_nonhero", "{=AF_UI_Developer_RootNonHero}Non-hero NPC editor (troops, civilians, unnamed NPCs)", DevRootSubOptionCondition, DevRootNonHeroOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_knowledge", "{=AF_UI_Developer_RootKnowledge}Knowledge editor", DevRootSubOptionCondition, DevRootKnowledgeOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_event", "{=AF_UI_Developer_RootEvent}Event editor", DevRootSubOptionCondition, DevRootEventOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_kingdom_strategic_profiles", "{=AF_UI_Developer_RootKingdomProfiles}Kingdom strategy and personality", DevRootSubOptionCondition, DevRootKingdomStrategicProfilesOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_all", "{=AF_UI_Developer_RootImportExport}Export / import all data", DevRootSubOptionCondition, DevRootAllOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_voice", "{=AF_UI_Developer_RootVoiceMapping}Voice mapping management (VoiceMapping)", DevRootSubOptionCondition, DevRootVoiceMappingOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_back", "{=AF_UI_Developer_Back}Back", DevRootBackCondition, DevRootBackConsequence, isLeave: true);

@@ -75,7 +75,7 @@ internal static class WorldDiplomacyCompletionApplication
         bool IsCompletionKind(string kind) => string.Equals(completionKind, kind, StringComparison.OrdinalIgnoreCase);
         if (resultSuccess
             && IsCompletionKind("generate")
-            && WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(job, storage?.DiplomaticThreats))
+            && WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(job, WorldDiplomacyThreatScope.For(storage, job.AuthorKingdomId, job.RoundId)))
         {
             if (orchestration.RefreshDiplomaticThreatPresentationAndPrompt(job) != true)
             {
@@ -138,6 +138,7 @@ internal static class WorldDiplomacyCompletionApplication
         if (storage != null) storage.ConsecutiveServiceFailures = 0;
         try
         {
+            int priorDeclarationRewrites = job.PrivacyRewrites;
             if (IsCompletionKind("generate"))
             {
                 orchestration.CommitGeneratedDocument(job, resultContent);
@@ -150,10 +151,6 @@ internal static class WorldDiplomacyCompletionApplication
             {
                 orchestration.CommitCompression(job, resultContent);
             }
-            else if (IsCompletionKind("round_plan"))
-            {
-                orchestration.CommitRoundPlan(job, resultContent);
-            }
             else if (IsCompletionKind("round_compress"))
             {
                 orchestration.CommitRoundCompression(job, resultContent);
@@ -163,7 +160,10 @@ internal static class WorldDiplomacyCompletionApplication
                 orchestration.CommitFailedJob(job, "unknown job kind");
                 return;
             }
-            if (string.Equals((job.Kind ?? "").Trim(), completionKind, StringComparison.OrdinalIgnoreCase)
+            // Structural preflight can request a rewrite on the same generation
+            // job. It is pending work even though its route remains "generate".
+            bool declarationRewritePending = IsCompletionKind("generate") && job.PrivacyRewrites > priorDeclarationRewrites;
+            if (!declarationRewritePending && string.Equals((job.Kind ?? "").Trim(), completionKind, StringComparison.OrdinalIgnoreCase)
                 && string.IsNullOrEmpty(job.SuspendedReason)) effects.RemoveJob(job.JobId);
         }
         catch (Exception ex)

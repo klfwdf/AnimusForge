@@ -453,6 +453,14 @@ internal static class StartupPatchComposition
 			}
 			try
 			{
+				KingdomDiplomacyDeclarationEntry.EnsurePatched(harmony);
+			}
+			catch (Exception diplomacyEntryEx)
+			{
+				Logger.LogTrace("SubModule", ">>> Diplomacy declaration entry init failed: " + diplomacyEntryEx.Message);
+			}
+			try
+			{
 				harmony.CreateClassProcessor(typeof(Patch_PlayerKingdomNameChange_RecordMaterials)).Patch();
 			}
 			catch (Exception ex18ac)

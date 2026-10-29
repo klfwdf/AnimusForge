@@ -17,7 +17,8 @@ internal static class DiplomacyNativeCommitmentApplication
             || parsed.Terms.TributePayerKingdomId.IndexOf(':') >= 0 || parsed.Terms.TributeReceiverKingdomId.IndexOf(':') >= 0)
             return DiplomacyMiscPromptTexts.Get("Commitment_InvalidTerms", "Diplomatic action not executed: invalid terms format.");
         if (parsed.Move == DialogueDiplomaticMove.Discussion) return "";
-        if (parsed.Move != DialogueDiplomaticMove.NewMatter || !string.IsNullOrEmpty(parsed.SupersedesArrangementId))
+        if (parsed.Move != DialogueDiplomaticMove.NewMatter || !string.IsNullOrEmpty(parsed.SupersedesArrangementId)
+            || !string.IsNullOrEmpty(parsed.EventRoundId))
             return DiplomacyMiscPromptTexts.Get("Commitment_AiDisabled", "AI diplomacy is disabled; cannot directly execute replies or amendments to earlier documents. Clarify specific actions and terms.");
         var terms = parsed.Terms;
         bool cession = !string.IsNullOrEmpty(terms.CessionFromKingdomId) || !string.IsNullOrEmpty(terms.CessionToKingdomId)

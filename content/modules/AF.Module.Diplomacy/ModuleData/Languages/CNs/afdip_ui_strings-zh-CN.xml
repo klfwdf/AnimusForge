@@ -4,6 +4,10 @@
     <tag language="简体中文" />
   </tags>
   <strings>
+    <string id="AF_DIP_UI_Aid_RequestTitle" text="请求盟友援助" />
+    <string id="AF_DIP_UI_Aid_RequestBody" text="请求{ALLY}参加对{ENEMY}的战争吗？盟友将单独决定。本次请求不会替盟友宣战，也不支付原版自动召战费用。" />
+    <string id="AF_DIP_UI_Aid_Send" text="发出求援" />
+
     <string id="AF_DIP_UI_Common_Acknowledge" text="知道了" />
     <string id="AF_DIP_UI_Common_Close" text="关闭" />
     <string id="AF_DIP_UI_Common_UnknownDate" text="未知日期" />
@@ -305,7 +309,7 @@
     <string id="AF_DIP_UI_KingdomProfile_GenerationConfigError" text="国家建国卡生成失败：事件/叛乱 API 尚未配置。" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="已为新国家“" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”生成并固化国家性格与长期战略。" />
-    <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="该项已由 AI 外交接管，请在“王国公告”中发布外交宣言。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="该项已由 AI 外交接管。" />
     <string id="AF_DIP_UI_Reward_VassalageTitle" text="臣属国条约" />
     <string id="AF_DIP_UI_Reward_AnnexationTitle" text="国家吞并" />
     <string id="AF_DIP_UI_Reward_FailureSuffix" text="失败" />
@@ -432,7 +436,6 @@
     <string id="AF_DIP_UI_KingdomProfile_ReloadCloneFailed" text="无法创建王国资料重载副本。" />
     <string id="AF_DIP_UI_KingdomProfile_ReloadTargetMissing" text="当前世界已变化，找不到王国目标：{TARGET}" />
     <string id="AF_DIP_UI_KingdomProfile_ReloadComplete" text="已重载 {IMPORTED} 个王国；其余 {RESET} 个当前王国恢复默认资料。" />
-    <string id="AF_DIP_UI_KingdomProfile_ReloadSkippedDynamic" text="已跳过 {COUNT} 条无法匹配的动态王国资料，保留存档中这些 ID 的原有资料。部分条目：{PROFILES}" />
     <string id="AF_DIP_UI_KingdomProfile_ImportNoSafeMatch" text="导入文件中没有与“{KINGDOM}”安全匹配的国家卡。动态建国 ID 只有在名称一致时才会匹配。" />
     <string id="AF_DIP_UI_KingdomProfile_ImportComplete" text="已导入 {IMPORTED} 条；跳过重复 {DUPLICATES} 条；无效或无法匹配 {UNMATCHED} 条。" />
     <string id="AF_DIP_UI_KingdomProfile_SingleImportTargetOrPathEmpty" text="单国导入目标或路径为空。" />
@@ -1065,6 +1068,7 @@
     <string id="AF_KINGDOM_CW_Outcome_RebelsSecede" text="叛军独立" />
     <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="叛军夺取王位" />
     <string id="AF_DIP_UI_Notice_ThirdPartyReceived" text="【第三方外交消息】{TITLE}。消息已传至本国，可在王国公告中查看全文。" />
+    <string id="AF_DIP_UI_Notice_EventDeclaration" text="【外交事件：{TITLE}】&#xA;【发言者｜{SPEAKER}】&#xA;{BODY}" />
     <string id="AF_DIP_UI_Notice_DeclarationText" text="【外交宣言】{ISSUER}发布《{TITLE}》：{BODY}" />
     <string id="AF_DIP_UI_Notice_PlayerCourtDelivery" text="你的宣言已传播至{RECEIVER}。" />
     <string id="AF_DIP_UI_StandingNoChange" text="无变化" />
@@ -1185,14 +1189,24 @@
     <string id="AF_DIP_UI_OralGeneration_DelayedFact" text="此前答应的外交宣言尚未发布，待重新拟文；约定条款没有改变。" />
     <string id="AF_DIP_UI_OralGeneration_WithdrawalFact" text="我已明确同意撤回此前的公开外交提案，待正式撤回宣言发布；原案尚未因此失效。" />
     <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceNotExecutedDetail" text="和平提案未执行：{REASON}" />
-    <string id="AF_DIP_UI_AllianceInfinite" text="无限期" />
-    <string id="AF_DIP_UI_Presentation_DocumentPageExpired" text="该公文页面已失效，请重新打开。" />
-    <string id="AF_DIP_UI_Presentation_CannotReparse" text="该公文当前不能重新解析。" />
-    <string id="AF_DIP_UI_Presentation_ReparsedResubmitted" text="已重新提交原文解析；不会再次发布宣言。" />
-    <string id="AF_DIP_UI_Presentation_ReparsingPending" text="宣言已公开；正在重新解析原文，尚未执行外交动作。" />
-    <string id="AF_DIP_UI_Vassalage_SubjectWarSyncPrefix" text="宗主国战争状态已同步：" />
-    <string id="AF_DIP_UI_Vassalage_SubjectWarConfirmedPrefix" text="宗主国战争状态已确认：" />
-    <string id="AF_DIP_UI_KingdomProfile_UnmatchedLimitExceeded" text="超过 3 个普通国家资料无法匹配，已停止导入，未修改存档。前几个不匹配国家：{PROFILES}" />
-    <string id="AF_DIP_UI_KingdomProfile_ReloadSkippedStatic" text="已跳过 {COUNT} 个无法匹配的普通国家资料（最多允许 3 个）：{PROFILES}" />
+    <string id="AF_DIP_UI_EventEffect_Description" text="{TARGET}：{KIND}；已施加 {TOTAL}，计划每日 {DELTA}，于 {DAY} 到期。{REASON}" />
+    <string id="AF_DIP_UI_EventEffect_InstantDescription" text="{TARGET}：{KIND} {TOTAL}。{REASON}" />
+    <string id="AF_DIP_UI_EventEffect_Removed" text="已结束：{EFFECT}" />
+    <string id="AF_DIP_UI_EventEffect_ruler_relation" text="君主关系" />
+    <string id="AF_DIP_UI_EventEffect_town_loyalty" text="忠诚度" />
+    <string id="AF_DIP_UI_EventEffect_town_security" text="安全度" />
+    <string id="AF_DIP_UI_EventEffect_town_prosperity" text="繁荣度" />
+    <string id="AF_DIP_UI_EventEffect_town_food" text="粮食储备" />
+    <string id="AF_DIP_UI_SilenceLoyaltyPenalty" text="忽视外交照会：王国当前所有城镇每日忠诚度 -0.5，持续 7 天。再次触发只延长期限，不叠加惩罚强度。" />
+    <string id="AF_DIP_UI_EventDate" text="{YEAR}年{SEASON}{DAY}日" />
+    <string id="AF_DIP_UI_EventDate_Spring" text="春季" />
+    <string id="AF_DIP_UI_EventDate_Summer" text="夏季" />
+    <string id="AF_DIP_UI_EventDate_Autumn" text="秋季" />
+    <string id="AF_DIP_UI_EventDate_Winter" text="冬季" />
+    <string id="AF_DIP_UI_Notice_UnknownSpeaker" text="未记载的发布者" />
+    <string id="AF_DIP_UI_WorldBookEmpty" text="当前世界书为空，暂时无法生成外交事件背景。您的宣言已保留，请通过世界书导入功能补充资料，完成后系统会重新尝试。" />
+    <string id="AF_DIP_UI_WorldBookNoMatch" text="世界书已载入，但未找到支持本次事件的可用背景资料。您的宣言已保留；补充相关世界书内容后，系统会重新尝试。" />
+    <string id="AF_DIP_UI_WorldBookLoadFailed" text="世界书加载失败。您的宣言已保留，事件正在等待资料。请检查世界书数据，导入有效资料后继续。" />
+    <string id="AF_DIP_UI_WorldBookUnavailable" text="世界书尚未就绪。您的宣言已保留，背景资料可用后系统会重新尝试。" />
   </strings>
 </base>

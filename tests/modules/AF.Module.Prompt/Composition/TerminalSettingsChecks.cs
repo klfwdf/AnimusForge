@@ -167,6 +167,11 @@ internal static class TerminalSettingsChecks
                 Type mcmVisibility = product.GetType("AnimusForge.AnimusForgeMcmVisibility", true);
                 foreach (var pair in imageDefinitions)
                 {
+                    if (pair.Key == "Illustrator.DirectorMaxTokens")
+                    {
+                        Check(!visible.ContainsKey(pair.Key), "legacy director approximate-length option remains hidden");
+                        continue;
+                    }
                     PropertyInfo property = imageOwner.GetProperty(pair.Key.Substring("Illustrator.".Length));
                     object groupAttribute = property.GetCustomAttributes(true).Single(a => a.GetType().Name == "SettingPropertyGroupAttribute");
                     string rawGroup = (string)Property(groupAttribute, "GroupName");

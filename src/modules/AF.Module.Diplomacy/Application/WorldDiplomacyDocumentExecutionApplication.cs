@@ -177,8 +177,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 RespondingToThreatActionId = document.RespondingToThreatActionId } }
             : document.Actions;
         // Reject malformed or oversized saved action lists before copying values.
-        bool playerDiplomacy = WorldDiplomacyPlayerApplication.InvolvesPlayer(document, port.ResolveRound(document.RoundId), port.IsPlayerAffiliated);
-        if (actions.Count < 1 || (!playerDiplomacy && actions.Count > port.MaxDiplomaticActionsPerDocument)) return;
+        if (actions.Count < 1 || actions.Count > 64) return;
         var command = new WorldDiplomacyDocumentExecutionCommand(document, actions);
         // Keep the saved record, but detach its input action objects from callbacks.
         // The separate validation view never exposes mutable canonical actions.
@@ -187,224 +186,67 @@ internal static class WorldDiplomacyDocumentExecutionApplication
         ExecuteItems(port, orchestration, document, command, legacy, receipts);
     }
 
-    private static bool TryGetExecutionStateViolation(IWorldDiplomacyOrchestration orchestration,
-        WorldDiplomacyDocument document, bool isPlayerAuthored, bool playerDiplomacy, string intent, string commitment,
-        string author, string target, out string reason)
-    {
-        if (isPlayerAuthored)
-            return orchestration.TryGetPlayerWorldStateIntentViolation(document, intent, commitment, author, target, out reason);
-        if (playerDiplomacy) { reason = ""; return false; }
-        return orchestration.TryGetDiplomaticStateViolation(intent, author, target, out reason);
-    }
-
     private static void ExecuteItems(IWorldDiplomacyDocumentExecutionPort port,
         IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument document,
         WorldDiplomacyDocumentExecutionCommand command, bool legacy,
         List<WorldDiplomacyDocumentActionReceipt> receipts)
     {
         var conditionalDeferrals = DiplomacyConditionalExecutionRules.DeferredActions(command.MaterializeActions(), port.ResolveDocument);
-        string author = port.ResolveKingdomId(command.AuthorKingdomId);
-        bool playerDiplomacy = WorldDiplomacyPlayerApplication.InvolvesPlayer(document, port.ResolveRound(command.RoundId), port.IsPlayerAffiliated);
-        if (command.ActionCount < 1 || (!playerDiplomacy && command.ActionCount > port.MaxDiplomaticActionsPerDocument) || author == null) return;
-		if (!playerDiplomacy && !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(author)))
-		{
-			orchestration.SuppressInvalidDocumentBeforePropagation(document, "controlled_vassal_has_no_diplomatic_authority");
-			return;
-		}
-		if (!playerDiplomacy && !WorldDiplomacyAuthorityRules.CanAiAuthor(port.CaptureAuthority(author), out string authorBlockReason))
-		{
-			orchestration.SuppressInvalidDocumentBeforePropagation(document, authorBlockReason);
-			return;
-		}
-		string sourceContextDocumentId = command.SourceDocumentId ?? "";
-        WorldDiplomacyRound round = port.ResolveRound(command.RoundId);
-        orchestration.PruneInvalidOffers(round);
-        WorldDiplomacyDocument validationDocument = legacy ? document : new WorldDiplomacyDocument
+        if (command.MaterializeActions().Any(x => x.Intent == "declare_war" && conditionalDeferrals.Contains(x.ActionId)))
         {
-            Actions = command.MaterializeActions()
-        };
-		List<string> targets = new List<string>(command.ActionCount);
-		HashSet<string> uniqueTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		HashSet<string> newSettlementTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		int statementCount = 0;
-		for (int index = 0; index < command.ActionCount; index++)
-		{
-			var input = command.ActionAt(index);
-			string target = port.ResolveKingdomId(input.TargetKingdomId);
-			string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent);
-            bool publicStatement = playerDiplomacy
-                && WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent)
-                && !WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent);
-            bool claimedNoAction = command.IsRoundResponseNoActionDeclaration || command.IsWarResponseNoActionDeclaration;
-            bool noAction = intent == "statement";
-            if (noAction) statementCount++;
-            bool allowedNoAction = noAction && !command.IsPlayerAuthored && claimedNoAction
-                && orchestration.IsNonRootAiRelayNoActionAllowed(round, command.ResultSettlementSlotId,
-                    author, target, command.IsRelayTurn, command.IsExternalResponseOnly,
-                    port.ResolveDocument(command.SourceDocumentId));
-            if (!playerDiplomacy && legacy && claimedNoAction && !allowedNoAction)
-            {
-                orchestration.SuppressInvalidDocumentBeforePropagation(document, "stale_round_response_no_action_declaration");
-                return;
-            }
-            if ((!WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent) && !allowedNoAction && !publicStatement)
-                || (!legacy && !WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(intent, input.Commitment)))
-            {
-                orchestration.SuppressInvalidDocumentBeforePropagation(document, legacy ? "non_actionable_diplomatic_intent" : "multi_action_is_not_executable");
-                if (legacy && command.IsPlayerAuthored && !command.WasReadyForPublication)
-                    port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_MustContainAction", "The diplomatic declaration was not published: the text must clearly include an actionable diplomatic action."));
-                return;
-            }
-            if (publicStatement) { targets.Add(target); continue; }
-            if (conditionalDeferrals.Contains(input.ActionId) && !WorldDiplomacyIntentVocabulary.IsProposalIntent(intent)
-                && input.Exists && target != null && target != author && !port.IsEliminated(target))
-            { targets.Add(target); continue; }
+            orchestration.SuppressInvalidDocumentBeforePropagation(document, "conditional_war_requires_prepublication_repair");
+            return;
+        }
+        string author = port.ResolveKingdomId(command.AuthorKingdomId);
+        if (command.ActionCount < 1 || command.ActionCount > 64 || author == null) return;
+        if (!WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(author)))
+        { orchestration.SuppressInvalidDocumentBeforePropagation(document, "author_has_no_diplomatic_authority"); return; }
+        if (!command.IsPlayerAuthored && !WorldDiplomacyAuthorityRules.CanAiAuthor(port.CaptureAuthority(author), out string authorReason))
+        { orchestration.SuppressInvalidDocumentBeforePropagation(document, authorReason); return; }
+        if (command.IsPlayerAuthored && !port.IsPlayerKingdom(author))
+        { orchestration.SuppressInvalidDocumentBeforePropagation(document, "player_is_not_reigning_ruler"); return; }
+        string sourceContextDocumentId = command.SourceDocumentId ?? "";
+        WorldDiplomacyRound round = port.ResolveRound(command.RoundId);
+        if (round?.EventSystemVersion > 0 && !command.IsPlayerAuthored
+            && !round.Participants.Any(x => x.KingdomId == author && (x.State == "active"
+                || !string.IsNullOrEmpty(x.PendingParticipationSourceId) && x.PendingParticipationSourceId == sourceContextDocumentId))
+            && !round.PlayerResponses.Any(x => x.KingdomId == author && x.Status == "pending"
+                && (document.AnsweredPlayerDocumentIds.Contains(x.SourceDocumentId)
+                    || x.SourceDocumentId == sourceContextDocumentId))
+            && !(orchestration is WorldDiplomacyOrchestration endingOwner && endingOwner.CanPublishBoundEndingDecision(round, document)))
+        { orchestration.SuppressInvalidDocumentBeforePropagation(document, "author_is_not_event_participant"); return; }
+        orchestration.PruneInvalidOffers(round);
+        var targets = new List<string>(command.ActionCount);
+        var identities = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        for (int index = 0; index < command.ActionCount; index++)
+        {
+            var input = command.ActionAt(index);
+            string target = port.ResolveKingdomId(input.TargetKingdomId);
+            string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent);
+            if (!input.Exists || !WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent)
+                || !WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(intent, input.Commitment)
+                || !identities.Add((target ?? "") + ":" + intent))
+            { orchestration.SuppressInvalidDocumentBeforePropagation(document, "invalid_or_duplicate_action"); return; }
+            bool hasEffect = WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent);
+            bool subjectRelease = intent == "release_subject" && orchestration is WorldDiplomacyOrchestration releaseOwner
+                && releaseOwner.ValidatePlayerSubjectRelease(document, author, target, out _);
+            if (hasEffect && (target == null || target == author || port.IsEliminated(target)
+                || (!subjectRelease && !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target)))))
+            { orchestration.SuppressInvalidDocumentBeforePropagation(document, "action_has_no_eligible_target"); return; }
+            if (!legacy) WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(document, input.Materialize());
             if (orchestration is WorldDiplomacyOrchestration owner
                 && !owner.ValidateFormalTreatyDeclaration(document, intent, input.Materialize().TreatyTerms,
                     author, target, input.RespondingToOfferDocumentId, input.RespondingToOfferActionId, out string treatyReason))
             { orchestration.SuppressInvalidDocumentBeforePropagation(document, treatyReason); return; }
-            bool playerRelease = command.IsPlayerAuthored && intent == "release_subject"
-                && orchestration is WorldDiplomacyOrchestration releaseOwner
-                && releaseOwner.ValidatePlayerSubjectRelease(document, author, target, out _);
-            if (!input.Exists || target == null || target == author || port.IsEliminated(target)
-                || (!playerDiplomacy && !playerRelease && !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target)))
-                || !uniqueTargets.Add(playerDiplomacy ? target + ":" + intent : target))
-            {
-                orchestration.SuppressInvalidDocumentBeforePropagation(document, legacy
-                    ? "final_live_state_guard:diplomatic_action_has_no_live_target" : "multi_action_has_invalid_or_duplicate_target");
-                if (legacy && command.IsPlayerAuthored && !command.WasReadyForPublication)
-                    port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_IncompatibleAction", "The diplomatic declaration was not published: the diplomatic action in the text is incompatible with the current realm state."));
-                return;
-            }
-			List<string> finalLiveIntents = playerDiplomacy ? null : command.IsPlayerAuthored
-                ? orchestration.BuildLegalDiplomaticActionIntents(null, author, target)
-                    .Concat(orchestration.BuildLegalDiplomaticActionIntents(round, author, target)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
-				: orchestration.BuildLegalDiplomaticDeclarationIntents(
-					round,
-					author,
-					target,
-					command.IsRelayTurn,
-					command.ResultSettlementSlotId,
-					command.IsExternalResponseOnly,
-					port.ResolveDocument(command.SourceDocumentId));
-			if (!playerDiplomacy && !finalLiveIntents.Contains(intent, StringComparer.OrdinalIgnoreCase))
-			{
-				// Recover the concrete war admission failure only on rejection. Keep the
-				// legal-list guard when the failure is contextual rather than world state.
-				string rejectionReason = "final_live_legal_action_guard";
-				if (intent == "declare_war"
-					&& orchestration.TryGetDiplomaticStateViolation(intent, author, target, out string warBlockReason)
-					&& !string.IsNullOrWhiteSpace(warBlockReason))
-					rejectionReason += ":" + warBlockReason;
-				port.Log("final diplomacy action rejected document=" + command.DocumentId
-					+ " round=" + command.RoundId + " author=" + author + " target=" + target
-					+ " intent=" + intent + " offer=" + input.RespondingToOfferDocumentId
-					+ " offerAction=" + input.RespondingToOfferActionId + " legal=" + string.Join(",", finalLiveIntents)
-					+ " reason=" + rejectionReason);
-				orchestration.SuppressInvalidDocumentBeforePropagation(document, rejectionReason);
-				return;
-			}
-			if (!playerDiplomacy && !playerRelease && round?.ResultSettlementPending == true && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target))
-			{
-				if (!CanUseResultSettlementTarget(port, round, author, target))
-				{
-					orchestration.SuppressInvalidDocumentBeforePropagation(document, "result_settlement_target_capacity_reached");
-                    if (legacy && command.IsPlayerAuthored && !command.WasReadyForPublication)
-                        port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_CapacityReached", "The diplomatic declaration was not published: no more kingdoms can be added to this diplomatic round."));
-					return;
-				}
-				newSettlementTargets.Add(target);
-			}
-			else if (!playerDiplomacy && !legacy && command.IsRelayTurn && round != null && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target))
-			{
-				orchestration.SuppressInvalidDocumentBeforePropagation(document, "kingdom_not_in_relay_route");
-				return;
-			}
-			if (!playerDiplomacy && orchestration.TryGetDiplomaticStateViolation(intent, author, target, out string liveStateReason))
-			{
-				orchestration.SuppressInvalidDocumentBeforePropagation(document, "final_live_state_guard:" + liveStateReason);
-                if (legacy && command.IsPlayerAuthored && !command.WasReadyForPublication)
-                    port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_IncompatibleAction", "The diplomatic declaration was not published: the diplomatic action in the text is incompatible with the current realm state."));
-				return;
-			}
-			if (!playerDiplomacy && intent == "propose_peace"
-				&& WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(round, command.ResultSettlementSlotId,
-				author, target, port.ResolveDocument))
-			{
-				orchestration.SuppressInvalidDocumentBeforePropagation(document, "immediate_war_response_peace_suppressed");
-				return;
-			}
-            if (!legacy) WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(document, input.Materialize());
-            if (command.IsPlayerAuthored
-                && orchestration.TryGetPlayerWorldStateIntentViolation(document, intent, input.Commitment, author, target, out string playerActionBlockReason))
-            {
-                orchestration.SuppressInvalidDocumentBeforePropagation(document, "player_action_not_executable:" + playerActionBlockReason);
-                if (!command.WasReadyForPublication) port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_IncompatibleAction", "The diplomatic declaration was not published: the diplomatic action in the text is incompatible with the current realm state."));
-                return;
-            }
-			string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
-			if (!command.IsPlayerAuthored && !string.IsNullOrWhiteSpace(proposalIntent)
-				&& !(orchestration is WorldDiplomacyOrchestration oralOwner && oralOwner.HasConfirmedOralPlayerAgreement(document))
-				&& !WorldDiplomacyRoundLifecycleRules.HasOpenProposalForDocument(document, author, target, proposalIntent, port.ResolveRound))
-			{
-				orchestration.SuppressInvalidDocumentBeforePropagation(document, "offer_ownership_guard");
-				return;
-			}
-			if (!playerDiplomacy && WorldDiplomacyIntentVocabulary.IsPeaceIntent(intent)
-				&& !port.IsAtWar(author, target))
-			{
-				orchestration.SuppressInvalidDocumentBeforePropagation(document, "peace_legality_guard");
-				return;
-			}
-			targets.Add(target);
-		}
-		if (!playerDiplomacy && statementCount > 0 && command.ActionCount != 1)
-		{
-			orchestration.SuppressInvalidDocumentBeforePropagation(document, "statement_must_be_the_only_diplomatic_action");
-			return;
-		}
-        bool legacyPublic = legacy && command.IsPlayerAuthored
-            && !WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(command.ActionAt(0).Intent);
-        if (!legacyPublic)
-        {
-		WorldDiplomacyRoundOffer requiredPeaceOffer = playerDiplomacy ? null : port.FindRequiredPeaceOfferResponse(
-			round,
-			author,
-			command.ResultSettlementSlotId,
-			command.IsExternalResponseOnly,
-			command.SourceDocumentId,
-			requireAnyOpenPeaceOffer: command.IsRelayTurn || command.IsPlayerAuthored);
-		if (!WorldDiplomacyDocumentFactRules.DocumentContainsRequiredPeaceOfferResponse(validationDocument, requiredPeaceOffer))
-		{
-			orchestration.SuppressInvalidDocumentBeforePropagation(document, "required_peace_offer_response_missing");
-			if (command.IsPlayerAuthored && (!legacy || !command.WasReadyForPublication))
-			{
-				port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_MustRespondPeace", "The diplomatic declaration was not published: this document must first accept or reject the pending peace proposal."));
-			}
-			return;
-		}
-		if (!legacy && WorldDiplomacyDocumentFactRules.DocumentHasUnsafeMultiplePeaceAcceptances(validationDocument, port.ResolveDocument))
-		{
-			orchestration.SuppressInvalidDocumentBeforePropagation(document, "multiple_peace_acceptances_have_cross_terms");
-			return;
-		}
-		if (!playerDiplomacy && round?.ResultSettlementPending == true
-			&& (round.RelayRouteKingdomIds?.Count ?? 0) + newSettlementTargets.Count > port.MaxRelayParticipants)
-		{
-			orchestration.SuppressInvalidDocumentBeforePropagation(document, "result_settlement_target_capacity_reached");
-			return;
-		}
-		foreach (string targetId in newSettlementTargets.OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
-		{
-			if (!TryIncludeResultSettlementTarget(port, round, targetId))
-			{
-				orchestration.SuppressInvalidDocumentBeforePropagation(document, "result_settlement_target_capacity_reached");
-				return;
-			}
-			WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, targetId, "route", document.DocumentId, author, prioritize: false, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
-		}
-
+            if (!conditionalDeferrals.Contains(input.ActionId)
+                && orchestration.TryGetPlayerWorldStateIntentViolation(document, intent, input.Commitment, author, target, out string actionReason))
+            { orchestration.SuppressInvalidDocumentBeforePropagation(document, "action_not_executable:" + actionReason); return; }
+            targets.Add(target);
         }
+        if (!legacy && WorldDiplomacyDocumentFactRules.DocumentHasUnsafeMultiplePeaceAcceptances(
+            new WorldDiplomacyDocument { Actions = command.MaterializeActions() }, port.ResolveDocument))
+        { orchestration.SuppressInvalidDocumentBeforePropagation(document, "multiple_peace_acceptances_have_cross_terms"); return; }
+        bool legacyPublic = legacy && !WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(command.ActionAt(0).Intent);
 
 		document.IsReadyForPublication = true;
 		List<string> inputTargets = null;
@@ -438,8 +280,8 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                     document.MechanicalResult = DiplomacyPromptTexts.Get("PlayerConditionalDeferred", "The dependent exchange has not taken effect. Its prerequisites and safe coordinated execution must be settled before any part is fulfilled; independent agreed matters remain eligible.");
                     document.ChangedDiplomaticState = false;
                 }
-                else if (!legacy && !noAction && TryGetExecutionStateViolation(orchestration, document,
-                    command.IsPlayerAuthored, playerDiplomacy, input.Intent, input.Commitment, author, target, out string executionBlockReason))
+                else if (!legacy && !noAction && orchestration.TryGetPlayerWorldStateIntentViolation(document,
+                    input.Intent, input.Commitment, author, target, out string executionBlockReason))
 				{
 					document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Analysis_MechanicNotExecutedPrefix", "Diplomatic action not executed: ")
                         + WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic(executionBlockReason);
@@ -449,7 +291,6 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				else if (!noAction || legacyPublic)
 				{
 					effectAttempted = true;
-					WorldDiplomacyThreatApplication.ApplyDocumentPressure(document, port.FindWarPressure, port.NormalizeKingdomIdList, port.AddWarPressure);
                     if (!legacyPublic)
                     {
 					if (WorldDiplomacyIntentVocabulary.IsImmediateIntent(input.Intent))
@@ -458,10 +299,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 					orchestration.ProcessDiplomaticThreatDocument(document, author, target, recordTargetDecisions: legacy);
 					outcomeKnown &= orchestration.TrySettleRelayOffer(document) != WorldDiplomacyOfferOutcome.Unknown;
                     }
-					orchestration.ApplyDiplomaticPressureEffect(document);
 				}
-            if (legacy && noAction && !legacyPublic)
-                orchestration.RecordDiplomaticThreatTargetDecisions(document, author, target, input.Intent);
 
 			}
 			catch (Exception ex)
@@ -480,6 +318,8 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			if (!legacy)
             {
                 WorldDiplomacyDocumentAction resultAction = input.Materialize();
+                resultAction.ExecutionState = !outcomeKnown ? "uncertain" : receipt.Applied ? "applied"
+                    : effectAttempted ? "not_applied" : "not_attempted";
                 if (conditionalDeferrals.Contains(input.ActionId) && !effectAttempted) resultAction.ExecutionState = "deferred_conditions";
                 WorldDiplomacyDocumentApplication.CaptureActionResult(document, resultAction, receipt);
                 // CaptureActionResult copies peace terms from the mutable document.
@@ -495,18 +335,12 @@ internal static class WorldDiplomacyDocumentExecutionApplication
             return;
         }
 		document.Actions = resultActions;
-		orchestration.RecordDiplomaticThreatTargetDecisionsForActions(document, author);
-		bool requiredThreatActionDeferred = orchestration.DeferUnresolvedRequiredThreatAction(
-			document,
-			author,
-			targets[0],
-			command.ActionAt(0).Intent);
-		if (!requiredThreatActionDeferred) WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
-			document, orchestration.Threats(), author,
-			(threat, doc) => orchestration.ApplyDiplomaticThreatReputationPenalty(threat, doc));
-
 		WorldDiplomacyDocumentApplication.SealActions(document, allAddressed, sourceContextDocumentId, receipts);
-		orchestration.SettleInternationalReputationForDocument(document);
+        if (orchestration is WorldDiplomacyOrchestration eventOwner)
+        {
+            if (!eventOwner.FinalizeSilenceBeforePublication(document)) return;
+            eventOwner.SettleThreatDeclaration(document);
+        }
 		try
 		{
 			orchestration.AppendCanonicalDocumentEvents(document);
@@ -527,43 +361,9 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 		try { orchestration.HandleRoundDocumentProcessed(document); }
 		catch (Exception ex) { port.Log("valid multi-target declaration round progress deferred document=" + document.DocumentId + " error=" + ex.Message); }
 	}
-	internal static bool TryIncludeResultSettlementTarget(IWorldDiplomacyDocumentExecutionPort port, WorldDiplomacyRound round, string kingdomId)
-	{
-		if (round == null) return false;
-		round.RelayRouteKingdomIds ??= new List<string>();
-		bool alreadyOnRoute = round.RelayRouteKingdomIds.Contains(kingdomId, StringComparer.OrdinalIgnoreCase);
-		string kingdom = alreadyOnRoute ? null : port.ResolveKingdomId(kingdomId);
-		switch (WorldDiplomacyRoundLifecycleRules.EvaluateSettlementTargetAdmission(
-			round.ResultSettlementPending,
-			!string.IsNullOrWhiteSpace(kingdomId),
-			alreadyOnRoute,
-			kingdom != null && !port.IsEliminated(kingdom) && WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(kingdom)),
-			round.RelayRouteKingdomIds.Count,
-			port.MaxRelayParticipants))
-		{
-			case WorldDiplomacyRouteAdmission.AlreadyOnRoute:
-				return true;
-			case WorldDiplomacyRouteAdmission.Denied:
-				return false;
-		}
-		round.RelayRouteKingdomIds.Add(kingdomId);
-		round.HardEndDay = WorldDiplomacyRoundLifecycleRules.ExtendHardEndDay(round.HardEndDay, port.CurrentDay, 3);
-		WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, kingdomId, "active", mandatoryReply: false);
-		participant.SelectedForRelay = true;
-		participant.IsPlayerAsync = port.IsPlayerKingdom(kingdom);
-		port.Log("round result settlement participant appended round=" + round.RoundId + " kingdom=" + kingdomId);
-		WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, kingdomId, "route",
-			round.ResultSettlementTriggerDocumentId, "", prioritize: false, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
-		return true;
-	}
 
-    private static bool CanUseResultSettlementTarget(IWorldDiplomacyDocumentExecutionPort port, WorldDiplomacyRound round, string author, string target)
-    {
-        if (round == null || author == null) return false;
-        return WorldDiplomacyRoundLifecycleRules.IsSettlementTargetUsable(round.ResultSettlementPending, target != null, target == author,
-            target != null && port.IsEliminated(target), target != null && WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target)),
-            WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target), round.RelayRouteKingdomIds?.Count ?? 0, port.MaxRelayParticipants);
-    }
+
+
 
 	internal static void FinalizePublishedDocumentAfterAnalysis(IWorldDiplomacyDocumentExecutionPort port,
         IWorldDiplomacyOrchestration orchestration,
@@ -573,6 +373,8 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 		string normalizedIntent,
 		bool recordNoActionDecision)
 	{
+        if (orchestration is WorldDiplomacyOrchestration owner && !owner.FinalizeSilenceBeforePublication(document)) return;
+		(orchestration as WorldDiplomacyOrchestration)?.SettleThreatDeclaration(document);
 		WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(
 			document,
 			author,
@@ -580,10 +382,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			normalizedIntent,
 			recordNoActionDecision,
 			port.Threats,
-			orchestration.RecordDiplomaticThreatTargetDecisions,
-			orchestration.DeferUnresolvedRequiredThreatAction,
-			orchestration.ApplyDiplomaticThreatReputationPenalty,
-			orchestration.SettleInternationalReputationForDocument,
+
 			orchestration.StartDocumentPropagation,
 			orchestration.RecordDiplomacyWeeklyMaterial,
 			orchestration.ReconcileReachedCourts,
@@ -597,32 +396,5 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			port.Log);
 	}
 
-    internal static void RefreshResultSettlementActionSlots(IWorldDiplomacyDocumentExecutionPort port, WorldDiplomacyStorage storage, WorldDiplomacyRound round, Action<WorldDiplomacyRound> pruneInvalidOffers)
-	{
-		if (round == null || !round.ResultSettlementPending || !round.RelayPlanned) return;
-		WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(round, storage?.Documents, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
-		pruneInvalidOffers?.Invoke(round);
-		foreach (WorldDiplomacyRoundOffer offer in (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
-			.Where(x => WorldDiplomacyRoundLifecycleRules.IsOfferOfStatus(x, "open")))
-		{
-			string target = port.ResolveKingdomId(offer.TargetKingdomId);
-			if (target == null || !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target))
-				|| !TryIncludeResultSettlementTarget(port, round, target))
-			{
-				offer.Status = "invalidated";
-				continue;
-			}
-			WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, target, "offer_response",
-				offer.SourceDocumentId, offer.ProposerKingdomId, prioritize: true, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
-		}
-		foreach (WorldDiplomacyThreat threat in (storage.DiplomaticThreats ?? new List<WorldDiplomacyThreat>())
-			.Where(x => WorldDiplomacyRoundLifecycleRules.IsThreatRelevantToResultSettlement(x, round?.RoundId)))
-		{
-			WorldDiplomacyThreatSettlementSlotDecision threatSlot =
-				WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot(threat);
-			if (!threatSlot.Applies) continue;
-			WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, threatSlot.KingdomId, threatSlot.Kind,
-				threatSlot.SourceDocumentId, threatSlot.RelatedKingdomId, prioritize: true, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
-		}
-	}
+
 }

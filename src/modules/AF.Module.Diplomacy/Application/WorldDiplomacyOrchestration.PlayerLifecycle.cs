@@ -67,7 +67,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                 .Select(x => new { x.DocumentId, x.RoundId, x.Title, x.Body, x.AuthorKingdomId, x.Day }) });
         job.MaxTokens = _host.AnalysisMaxTokens(); job.LlmMessages?.Clear();
         job.RoundConversationRevision = ResolveRound(job.RoundId)?.ConversationRevision ?? 0;
-        job.CourtKnowledgeRevision = DiplomacyPlayerEventRules.KnowledgeRevision(ResolveRound(job.RoundId), job.AuthorKingdomId);
+        job.CourtKnowledgeRevision = DiplomacyEventRules.KnowledgeRevision(ResolveRound(job.RoundId), job.AuthorKingdomId);
         job.PersonalMemoryRulerId = _host.PartyRulerId(job.AuthorKingdomId);
     }
 
@@ -97,9 +97,12 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private string PlayerLifecycleContract() => DiplomacyPromptTexts.Get("PlayerLifecycleContract", "");
 
+    private static bool IsUnpublishedPlayerLifecycleJob(WorldDiplomacyJob job)
+        => job?.Kind == "player_lifecycle" && job.ForcedIntent != "recover_published_lifecycle";
+
     private bool DeferIncompletePlayerLifecycle(WorldDiplomacyJob job, string raw)
     {
-        if (!IsPlayerDiplomacyJob(job) || IsOralDeclarationJob(job)) return false;
+        if (!IsEventJob(job) || IsOralDeclarationJob(job)) return false;
         if (!WorldDiplomacyEnvelopeJsonRules.TryParseJsonObject(raw, out var json) || json["actions"] is not JArray
             || HasExplicitPlayerLifecycle(json)) return false;
         job.PrivacyDraft = raw;
@@ -112,6 +115,16 @@ internal sealed partial class WorldDiplomacyOrchestration
     private void PreparePlayerLifecycleRequest(WorldDiplomacyJob job)
     {
         var round = ResolveRound(job.RoundId);
+        if (IsUnpublishedPlayerLifecycleJob(job) && !HasPlayerLifecycleDraft(job))
+        {
+            // Older recovery code could persist a metadata job after deleting
+            // its draft. Re-enter full generation rather than classify nothing.
+            job.Kind = "generate"; job.PrivacyDraft = "";
+            job.PrivacyRevision = -1; job.PrivacyPublicContext = "";
+            job.SemanticRepairAttempts = 0;
+            PrepareSharedRequest(job);
+            return;
+        }
         if (job.ForcedIntent == "recover_published_lifecycle")
         {
             var saved = ResolveDocument(job.DocumentId);
@@ -120,12 +133,14 @@ internal sealed partial class WorldDiplomacyOrchestration
         job.SystemPrompt = PromptComposerTexts.ApplyOutputLanguage(DiplomacyPromptTexts.Get("PlayerLifecycleAnalysis", ""));
         job.UserPrompt = JsonConvert.SerializeObject(new {
             purpose = job.ForcedIntent == "recover_published_lifecycle" ? "classify_existing_public_document_without_republication" : "complete_draft_metadata",
-            public_declaration = job.PrivacyDraft, event_context = BuildPlayerEventContinuity(round, job.AuthorKingdomId)
+            public_declaration = job.PrivacyDraft, event_context = BuildEventContinuity(round, job.AuthorKingdomId),
+            validation_error = job.LifecycleClassificationAttempts > 0
+                ? "requires_response:boolean;round_participation:continue|withdraw;round_status:continue|resolved|deadlocked;return_complete_metadata_for_same_draft" : ""
         });
         job.MaxTokens = _host.AnalysisMaxTokens();
         job.LlmMessages?.Clear();
         job.RoundConversationRevision = round?.ConversationRevision ?? 0;
-        job.CourtKnowledgeRevision = DiplomacyPlayerEventRules.KnowledgeRevision(round, job.AuthorKingdomId);
+        job.CourtKnowledgeRevision = DiplomacyEventRules.KnowledgeRevision(round, job.AuthorKingdomId);
         job.PersonalMemoryRulerId = _host.PartyRulerId(job.AuthorKingdomId);
     }
 
@@ -134,6 +149,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!HasExplicitPlayerLifecycle(json))
         {
             if (++job.LifecycleClassificationAttempts >= 2) SuspendDiplomacyJob(job, "player_lifecycle_metadata_invalid");
+            else { job.IsRunning = false; PreparePlayerLifecycleRequest(job); }
             return;
         }
         if (job.ForcedIntent == "recover_published_lifecycle")
@@ -149,7 +165,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             var participant = round.Participants.FirstOrDefault(x => x.KingdomId == document.AuthorKingdomId);
             bool finished = document.RoundParticipation == "withdraw" || document.RoundStatus is "resolved" or "deadlocked";
             if (participant != null) participant.State = finished ? "withdrawn" : "active";
-            if (document.RequiresResponse && !finished && GetDocumentTargetIds(document).Contains(CurrentPlayerAuthority()))
+            if (!document.LegacyNoticeSuppressed && document.RequiresResponse && !finished && GetDocumentTargetIds(document).Contains(CurrentPlayerAuthority()))
             {
                 // The earlier notification never announced the recovered obligation. Notify again; no retrospective penalty.
                 document.ActualPlayerNoticeHour = -1; document.FormalNoticeShown = document.IsNotified = false;
@@ -160,34 +176,40 @@ internal sealed partial class WorldDiplomacyOrchestration
             }
             round.TechnicalHoldReason = "";
             RemoveJob(job.JobId);
+            if (document.RequiresResponse && !finished)
+                foreach (string receiver in GetDocumentTargetIds(document).Where(x => x != CurrentPlayerAuthority()
+                    && DialogueDocumentKnown(x, document.DocumentId)))
+                    ProcessPlayerEventCourtArrival(receiver, document);
             // Existing published replies are reclassified for source attribution, never executed a second time.
             foreach (var reply in Storage.Documents.Where(x => x?.IsPlayerAuthored == true && x.IsReadyForPublication
                 && !x.PlayerReplyRoutingRechecked && x.Day >= document.Day && GetDocumentTargetIds(x).Contains(document.AuthorKingdomId)).ToList())
                 QueuePlayerReplyRoutingCheck(reply);
-            MarkPlayerEventDirty(round);
+            MarkEventDirty(round);
             return;
         }
+        if (!HasPlayerLifecycleDraft(job)) { SuspendDiplomacyJob(job, "player_lifecycle_draft_missing"); return; }
         var draft = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(job.PrivacyDraft);
-        if (draft == null) { SuspendDiplomacyJob(job, "player_lifecycle_draft_missing"); return; }
         foreach (string name in new[] { "requires_response", "round_participation", "round_status" }) draft[name] = json[name].DeepClone();
         job.Kind = "generate"; job.SystemPrompt = job.PrivacyDeclarationSystem;
-        job.PrivacyApproved = true;
-        try { CommitGeneratedDocument(job, draft.ToString(Formatting.None)); }
-        finally { job.PrivacyApproved = false; }
-        if (job.Kind == "generate" && string.IsNullOrEmpty(job.SuspendedReason)) RemoveJob(job.JobId);
+        // Lifecycle classification can change obligations or withdrawal. Review
+        // the merged draft before publication; the earlier audit predates it.
+        DeferDraftForPrivacyCheck(job, draft.ToString(Formatting.None));
     }
 
-    private bool HasExplicitPlayerEventConclusion(WorldDiplomacyRound round)
-    {
-        // A country's withdrawal cannot close active counterparts. Lack of work is never consent or conclusion.
-        var nationalParties = round.Participants.Where(x => x.KingdomId != CurrentPlayerAuthority() && x.State != "observer").ToList();
-        return nationalParties.Count > 0 && nationalParties.All(x => x.State == "withdrawn" || _host.IsEliminatedParty(x.KingdomId));
-    }
+    private static bool HasPlayerLifecycleDraft(WorldDiplomacyJob job)
+        => WorldDiplomacyEnvelopeJsonRules.TryParseJsonObject(job.PrivacyDraft, out var draft)
+            && draft["title"]?.Type == JTokenType.String && draft["body"]?.Type == JTokenType.String
+            && !string.IsNullOrWhiteSpace((string)draft["title"])
+            && !string.IsNullOrWhiteSpace((string)draft["body"]) && draft["actions"] is JArray;
 
     private void RehomePlayerReplyEvent(WorldDiplomacyRound provisional, WorldDiplomacyRound destination)
     {
         RequestLeases.InvalidateRound(provisional.RoundId);
-        var migratingJobs = Storage.Jobs.Where(x => x.RoundId == provisional.RoundId && x.Kind != "compress").ToList();
+        var provisionalJobs = Storage.Jobs.Where(x => x.RoundId == provisional.RoundId && x.Kind != "compress").ToList();
+        // A provisional opening is not continuation work. Its frozen evidence,
+        // review and pending transport must never acquire the destination root.
+        foreach (var obsolete in provisionalJobs.Where(IsProvisionalOpeningWork)) RemoveJob(obsolete.JobId);
+        var migratingJobs = provisionalJobs.Where(x => !IsProvisionalOpeningWork(x)).ToList();
         destination.ConversationRevision++;
         foreach (var doc in Storage.Documents.Where(x => x != null && x.RoundId == provisional.RoundId).ToList())
             MovePlayerDocumentRouting(doc, destination);
@@ -212,18 +234,77 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (!destination.CourtKnowledgeReceipts.Contains(receipt)) destination.CourtKnowledgeReceipts.Add(receipt);
         destination.CourtKnowledgeReceiptIndex = new(destination.CourtKnowledgeReceipts, StringComparer.OrdinalIgnoreCase);
         foreach (var knowledge in provisional.CourtKnowledgeVersions)
-            destination.CourtKnowledgeVersions[knowledge.Key] = Math.Max(DiplomacyPlayerEventRules.KnowledgeRevision(destination, knowledge.Key), knowledge.Value);
+            destination.CourtKnowledgeVersions[knowledge.Key] = Math.Max(DiplomacyEventRules.KnowledgeRevision(destination, knowledge.Key), knowledge.Value);
+        // These records now belong to the destination. Closing the shell must
+        // not mutate the same response objects to "transferred" or spawn a
+        // second follow-up case for obligations we already moved.
+        provisional.PlayerResponses.Clear();
+        provisional.PlayerCourtWork.Clear();
+        provisional.PlayerNegotiationWaits.Clear();
         foreach (var job in migratingJobs)
         {
             job.RoundId = job.ExchangeId = destination.RoundId;
             job.JobId = _host.NewId("diplomacy_reply_handoff"); job.IsRunning = false; job.RequestAttempt = 0;
             job.LlmMessages?.Clear(); job.PrivacyRevision = -1; job.PrivacyPublicContext = "";
-            if (IsPrivacyPipelineJob(job) || (job.Kind == "player_lifecycle" && job.ForcedIntent != "recover_published_lifecycle")) job.Kind = "generate";
+            if (job.Kind == "generate" || IsPrivacyPipelineJob(job) || (job.Kind == "player_lifecycle" && job.ForcedIntent != "recover_published_lifecycle"))
+            { job.Kind = "generate"; job.PrivacyDraft = ""; InvalidateDraftRepair(job); }
             job.RoundConversationRevision = destination.ConversationRevision;
-            DiplomacyPlayerEventRules.Bind(destination, job);
+            DiplomacyEventRules.Bind(destination, job);
         }
         _diplomacyWorkNeedsReconcile = true;
         InvalidateDialogueIndex();
+    }
+
+    private static bool IsProvisionalOpeningWork(WorldDiplomacyJob job) => IsEventPlanningJob(job)
+        || (job.Kind is "event_boundary" or "event_boundary_audit" && job.ForcedIntent == "started");
+
+    private void RecoverMisroutedPlayerOpenings()
+    {
+        // Load only; recognize the exact invalid ownership combination, not a
+        // transient provider failure. Removing the task makes recovery idempotent.
+        foreach (var round in GetLiveRounds().Where(IsPlayerDeclarationOpening).ToList())
+        {
+            if (!EventBoundaryComplete(round, "started")) continue;
+            var obsolete = Storage.Jobs.Where(x => x.RoundId == round.RoundId && IsEventPlanningJob(x)
+                && x.EventSelectionStage == "player" && !string.IsNullOrEmpty(x.DocumentId)
+                && x.DocumentId != round.RootDocumentId
+                && ResolveDocument(x.DocumentId) is { IsPlayerAuthored: true, IsReadyForPublication: true } doc
+                && doc.RoundId == round.RoundId).ToList();
+            if (obsolete.Count == 0) continue;
+            bool ownedHold = obsolete.Any(x => !string.IsNullOrEmpty(x.SuspendedReason)
+                && (x.SuspendedReason == round.TechnicalHoldReason || x.SuspendedReason == round.TechnicalRequestHoldReason));
+            RequestLeases.InvalidateRound(round.RoundId);
+            foreach (var job in obsolete) RemoveJob(job.JobId);
+            if (ownedHold && !Storage.Jobs.Any(x => x.RoundId == round.RoundId && !string.IsNullOrEmpty(x.SuspendedReason))
+                && !Storage.EventEffects.Any(x => x.EventId == round.RoundId && x.Status is "applying" or "uncertain")
+                && round.TechnicalHoldReason is not "event_document_execution_uncertain" and not "legacy_unverified_work_preserved")
+            {
+                AccrueTechnicalPause(round);
+                round.TechnicalHoldReason = ""; round.TechnicalRequestHoldReason = ""; round.TechnicalHoldStartedHour = -1;
+            }
+            foreach (var id in obsolete.Select(x => x.DocumentId).Distinct())
+            {
+                foreach (var duplicate in GetLiveRounds().Where(x => x != round && x.EventSourceType == "player_followup"
+                    && x.RootDocumentId == id && x.PlayerResponses.All(r => r.SourceDocumentId == id)
+                    && !Storage.Documents.Any(d => d.RoundId == x.RoundId)
+                    && !Storage.EventAnnouncements.Any(a => a.EventId == x.RoundId)
+                    && !Storage.EventEffects.Any(e => e.EventId == x.RoundId)
+                    && !Storage.DialogueArrangements.Any(a => a.RoundId == x.RoundId)
+                    && !Storage.AidRequests.Any(a => a.RoundId == x.RoundId)).ToList())
+                {
+                    RequestLeases.InvalidateRound(duplicate.RoundId);
+                    duplicate.PlayerResponses.Clear(); duplicate.PlayerCourtWork.Clear(); duplicate.PlayerNegotiationWaits.Clear();
+                    CloseActiveRound("player_declaration_attached_to_shared_event", duplicate);
+                }
+                foreach (var response in round.PlayerResponses.Where(x => x.SourceDocumentId == id
+                    && x.Status == "transferred" && string.IsNullOrEmpty(x.AnswerDocumentId))) response.Status = "pending";
+                RegisterPlayerResponseWork(ResolveDocument(id));
+            }
+            CommitPendingEventDocuments(round);
+            round.ConversationRevision++;
+            MarkEventDirty(round);
+            _host.Log("diplomacy.retired_misrouted_opening event=" + round.RoundId + " count=" + obsolete.Count);
+        }
     }
 
     private void NormalizePlayerLifecycleRecovery()
@@ -257,7 +338,7 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private void StartNextPlayerLifecycleRecovery()
     {
-        if (Storage.PlayerLifecycleRecoveryRoundIds?.Count is not > 0 || DiplomacyPlayerEventRules.HasNpcOpening(GetLiveRounds())
+        if (Storage.PlayerLifecycleRecoveryRoundIds?.Count is not > 0 || DiplomacyEventRules.HasNpcOpening(GetLiveRounds())
             || Storage.Jobs.Count(x => x.SchedulingOwner == "player") >= _host.MaxPendingJobs()) return;
         string id = Storage.PlayerLifecycleRecoveryRoundIds[0];
         var round = Storage.CompletedRounds.FirstOrDefault(x => x.RoundId == id);

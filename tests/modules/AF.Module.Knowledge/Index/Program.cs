@@ -35,13 +35,39 @@ internal static class Program
         Seeds();
         SparseIndex();
         OnnxIndexAndFallback();
+        DetachedIndexBuild();
         CollapseAndSelect();
         RerankAndCache();
         Budgets();
         Retriever();
+        DiplomaticThemeRecall();
         ImportSupport();
         ColdPromptCases.Run(Check);
         Console.WriteLine("PASS knowledge-index+lore-retriever checks=" + _checks);
+    }
+
+    private static void DetachedIndexBuild()
+    {
+        var snapshot = new List<LoreRule> { Rule("apple", "apple") };
+        int liveReads = 0;
+        var ports = new FakePorts { Embed = Vec };
+        var index = new KnowledgeRuleIndex(ports, () => { liveReads++; throw new Exception("live game rules read"); });
+        long version = index.Version;
+        index.EnsureVectorIndex(snapshot, version); index.EnsureOnnxIndex(snapshot, version);
+        Check(liveReads == 0 && index.SparseReady && index.OnnxReady, "detached index build never falls back to live rule provider");
+        int calls = ports.EmbedCalls;
+        index.EnsureVectorIndex(snapshot, version); index.EnsureOnnxIndex(snapshot, version);
+        Check(ports.EmbedCalls == calls, "warm detached capture reuses versioned indexes");
+        index.Touch();
+        index.EnsureVectorIndex(snapshot, version); index.EnsureOnnxIndex(snapshot, version);
+        Check(!index.SparseReady && !index.OnnxReady && ports.EmbedCalls == calls, "stale detached generation is rejected before expensive work");
+        version = index.Version; bool changed = false;
+        ports.Embed = text => { if (!changed) { changed = true; index.Touch(); } return Vec(text); };
+        index.EnsureOnnxIndex(snapshot, version);
+        Check(!index.OnnxReady, "version change during embedding cannot publish an old snapshot as current");
+        ports.Embed = Vec;
+        index.EnsureOnnxIndex(snapshot, index.Version);
+        Check(index.OnnxReady && liveReads == 0, "new detached version can rebuild after discarded work");
     }
 
     private static void ImportSupport()
@@ -303,5 +329,22 @@ internal static class Program
         var lower = r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "berry" } }, 1, 10, 4, 3, out mode);
         Check(lower.Count == 2 && logs.Last(l => l.StartsWith("entity_allocation")).Contains("allowLowerRanks=True") && logs.Last(l => l.StartsWith("entity_allocation")).Contains("secondary=1"), "limit > entity count allows rank-2 sweep");
         Check(r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = " ", Weight = 1f }, new WeightedKnowledgeInput { Text = "x", Weight = 0f } }, 2, 10, 4, 3, out mode).Count == 0 && mode == "none", "blank/zero-weight inputs ignored");
+    }
+
+    private static void DiplomaticThemeRecall()
+    {
+        // A custom world has no vanilla identities. Real sparse retrieval must
+        // receive the theme itself; a country-only query cannot recover it.
+        var rules = new List<LoreRule> { Rule("realm-profile", "Asterion"), Rule("ordinary-lord-history", "succession grievance") };
+        var index = new KnowledgeRuleIndex(new FakePorts { EmbeddingAvailable=false, SemanticMinScore=0.01f, SemanticTopK=4 },()=>rules);
+        index.EnsureVectorIndex();
+        var retriever = new LoreCandidateRetriever(index,(_,__)=>{});
+        Check(!retriever.CollectCandidateRules(new[] { "Asterion" },true).OrderedRules.Any(x=>x.Id=="ordinary-lord-history"),
+            "country-only mention misses independent historical theme");
+        Check(retriever.CollectCandidateRules(new[] { "Asterion succession grievance" },true).OrderedRules.Any(x=>x.Id=="ordinary-lord-history"),
+            "actual theme entity recalls ordinary-lord history in a custom world");
+        rules.Clear();index.Touch();index.EnsureVectorIndex();
+        Check(retriever.CollectCandidateRules(new[] { "Asterion succession grievance" },true).OrderedRules.Count==0,
+            "empty active world book never falls back to invented vanilla history");
     }
 }

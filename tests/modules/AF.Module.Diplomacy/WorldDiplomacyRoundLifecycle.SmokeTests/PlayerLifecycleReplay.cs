@@ -11,11 +11,11 @@ internal static class PlayerLifecycleReplay
         public override string ResolveKingdomNameOrEmpty(string id) => id;
         public override int MaxDiplomaticActionsPerDocument() => 8;
         public override IWorldDiplomacyPeaceAdmissionPort PeaceAdmission() => new PeaceAdmissionReplay.Port {War=false};
-        public override IWorldDiplomacyNoActionPort NoActionPort(string author, string target) => new ActionSelectionReplay.NoActionPort(author,target);
+
     }
     private static object Call(WorldDiplomacyOrchestration o, string name, params object[] args) =>
         typeof(WorldDiplomacyOrchestration).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(o, args)!;
-    internal static WorldDiplomacyRound Case(string id) => new() { RoundId=id, State="active", SchedulingOwner="player",
+    internal static WorldDiplomacyRound Case(string id) => new() { RoundId=id, State="active", SchedulingOwner="player", EventSystemVersion=1, BirthLane="player",
         NpcInitiatedPlayerEvent=true, InitiatorKingdomId="a", PlayerAuthorityKingdomId="p", PlayerAuthorityRulerId="ruler_p",
         Participants=new() { new() {KingdomId="a",State="active"}, new() {KingdomId="p",State="active"} } };
     internal static void Run()
@@ -49,7 +49,7 @@ internal static class PlayerLifecycleReplay
         var o=new WorldDiplomacyOrchestration(h,new WorldDiplomacyRuntimeState());h.Owner=o;
         var r=Case("observed_generation");o.CurrentStorage.ConcurrentRounds.Add(r);
         var job=new WorldDiplomacyJob { JobId="observed",Kind="generate",RoundId=r.RoundId,AuthorKingdomId="a",TargetKingdomId="p",PrivacyApproved=true };
-        DiplomacyPlayerEventRules.Bind(r,job);o.CurrentStorage.Jobs.Add(job);
+        DiplomacyEventRules.Bind(r,job);o.CurrentStorage.Jobs.Add(job);
         string raw=ObservedDraft().ToString();o.CommitGeneratedDocument(job,raw);job.PrivacyApproved=false;
         Test.True(job.Kind=="player_lifecycle" && o.CurrentStorage.Documents.Count==0,"observed missing metadata is privately classified before any public artifact or effect");
         o.PrepareSharedRequest(job);
@@ -64,7 +64,7 @@ internal static class PlayerLifecycleReplay
         Test.True(r.State=="active" && r.PlayerNegotiationWaits[0].NotifiedHour<0,"long pre-arrival delay cannot silently finish the event or start a deadline");
         var other=Case("finite_missing");o.CurrentStorage.ConcurrentRounds.Add(other);
         var bad=new WorldDiplomacyJob { JobId="bad_metadata",Kind="player_lifecycle",RoundId=other.RoundId,AuthorKingdomId="a",PrivacyDraft=raw };
-        DiplomacyPlayerEventRules.Bind(other,bad);o.CurrentStorage.Jobs.Add(bad);
+        DiplomacyEventRules.Bind(other,bad);o.CurrentStorage.Jobs.Add(bad);
         for(int i=0;i<2;i++)o.TryCompleteDiplomacyPipeline(bad,Result(bad,"{\"requires_response\":\"false\"}"));
         Test.True(bad.LifecycleClassificationAttempts==2 && bad.SuspendedReason!="" && other.State=="active","invalid metadata has finite attempts then technical hold, never political closure");
         Test.True(o.CurrentStorage.Documents.Count==1 && h.Effects==0,"technical classification failure cannot fabricate documents or mechanics");
@@ -82,7 +82,7 @@ internal static class PlayerLifecycleReplay
         o.CurrentStorage.Documents.Add(followup);
         provisional.PendingOffers.Add(new(){SourceDocumentId=followup.DocumentId,SourceActionId="action_1",Status="open"});
         var pending=new WorldDiplomacyJob { JobId="old_pending",RoundId=provisional.RoundId,Kind="generate",AuthorKingdomId="a",TargetKingdomId="p",IsRunning=true };
-        DiplomacyPlayerEventRules.Bind(provisional,pending);o.CurrentStorage.Jobs.Add(pending);
+        DiplomacyEventRules.Bind(provisional,pending);o.CurrentStorage.Jobs.Add(pending);
         o.RequestLeases.TryClaim(pending,1,100,1000,true,out var lease);
         Call(o,"QueuePlayerReplyRoutingCheck",reply);var route=o.CurrentStorage.Jobs.Single(x=>x.Kind=="player_reply_routing");o.PrepareSharedRequest(route);
         Test.True(route.UserPrompt.Contains(source.DocumentId) && route.UserPrompt.Contains(reply.Body),"routing specialist sees the actual public question and eligible incoming artifact");
@@ -128,7 +128,7 @@ internal static class PlayerLifecycleReplay
         o.CurrentStorage.ConcurrentRounds.Add(r);o.CurrentStorage.Documents.Add(new(){DocumentId=r.RootDocumentId,RoundId=r.RoundId,AuthorKingdomId="a",IsReadyForPublication=true,RoundParticipation="withdraw",RoundStatus="resolved"});
         o.ProcessRoundLifecycle();Test.True(r.State=="active","one country leaving does not finish the continuing counterpart");
         r.Participants.Last().State="withdrawn";h.CurrentDayValue++;o.ProcessRoundLifecycle();
-        Test.True(r.State=="closed" && o.CurrentStorage.NextPlayerAgendaDay>=h.CurrentDayValue+3 && o.CurrentStorage.NextPlayerAgendaDay<=h.CurrentDayValue+5,"explicit final withdrawal releases the slot and only then starts the 3-5 day interval");
+        Test.True(r.State=="active" && r.EventEndingId=="","withdrawal alone cannot fabricate a conclusion or skip actual ending effects");
     }
 
     private static void RoutingBackpressureAndSave()

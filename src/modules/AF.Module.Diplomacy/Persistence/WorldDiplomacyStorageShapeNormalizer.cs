@@ -40,6 +40,7 @@ internal static class WorldDiplomacyStorageShapeNormalizer
         storage.RecentBattles ??= new List<WorldDiplomacyBattleFact>();
         storage.NativeSignals ??= new List<NativeDiplomacySignal>();
         storage.Jobs ??= new List<WorldDiplomacyJob>();
+        storage.LegacyPreservedJobs ??= new List<WorldDiplomacyJob>();
         storage.SuspendedExchanges ??= new List<WorldDiplomacyExchange>();
         storage.LastOffensiveWarDayByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         storage.LastPeaceDayByPair ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);

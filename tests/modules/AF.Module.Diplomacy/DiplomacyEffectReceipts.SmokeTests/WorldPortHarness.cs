@@ -11,7 +11,7 @@ namespace AnimusForge
         private static bool CanAiAuthorDiplomaticDocument(Kingdom a,out string reason) { reason="";return true; }
         internal static IWorldDiplomacyOfferActionPort NewOfferPort() => new OfferActionPort(new());
         private readonly WorldDiplomacyStorage _storage = new();
-        internal sealed class PlayerDiplomacyContext { internal bool IsPlayerDiplomacyDocument(WorldDiplomacyDocument d) => d.IsPlayerAuthored; }
+        internal sealed class PlayerDiplomacyContext { internal bool IsEventDocument(WorldDiplomacyDocument d) => d.IsPlayerAuthored; }
         private PlayerDiplomacyContext Orchestration => new();
         private static int CurrentDay() => 1;
         private WorldDiplomacyRound ResolveRound(string id) => new();

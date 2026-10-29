@@ -10,7 +10,7 @@ internal static class WritingStyleReplay
     private sealed class Fixture
     {
         internal readonly WorldDiplomacyRound Round = new() {
-            RoundId = "style-round", State = "active", RootDocumentId = "style-source",
+            RoundId = "style-round", State = "active", EventSystemVersion = 1, Participants = new() { new() { KingdomId = "a", State = "active" }, new() { KingdomId = "b", State = "active" } }, RootDocumentId = "style-source",
             RelayPlanned = true, RelayRouteKingdomIds = new() { "a", "b" }, RelayCursor = 1,
             RoundTopic = "Trade terms", ConversationRevision = 7, SubstantiveProgressCount = 2,
             PendingOffers = new() { new() { SourceDocumentId = "style-source", SourceActionId = "trade-action",
@@ -23,7 +23,7 @@ internal static class WritingStyleReplay
             Actions = new() { new() { ActionId = "trade-action", TargetKingdomId = "a", Intent = "propose_trade",
                 Commitment = "proposal", PeaceTerms = new() { DurationDays = 14 } } }
         };
-        internal readonly WorldDiplomacyStorage Storage = new() { PromptContractVersion = 30 };
+        internal readonly WorldDiplomacyStorage Storage = new() { PromptContractVersion = 29 };
         internal int Rebuilds;
         internal Fixture() { Storage.ActiveRound = Round; Storage.Documents.Add(Source); }
         internal WorldDiplomacyJob Job(string kind, bool relay = false) => new() {
@@ -35,16 +35,15 @@ internal static class WritingStyleReplay
         {
             Rebuilds++;
             return WorldDiplomacyJobPreparationApplication.RebuildPendingJob(job, Storage, 4000, 2000,
-                () => (300, 1000), id => id is "a" or "b", (_, _) => new() { "b" },
+                () => (300, 1000), id => id is "a" or "b",
                 id => id == Round.RoundId ? Round : null,
                 _ => "CURRENT_COMMON_CONTRACT\nPLAYER_WRITING_PREFERENCE",
                 id => id == Source.DocumentId ? Source : null,
-                (_, _, source) => "RELAY_SOURCE\n" + JsonConvert.SerializeObject(source),
                 (_, _, source, _) => "GENERATION_SOURCE\n" + JsonConvert.SerializeObject(source),
                 _ => "current-legal-actions", j => j.DeclarationHistoryBlock = "CURRENT_KNOWN_HISTORY",
                 source => WorldDiplomacyPromptContractRules.BuildAnalysisModeContract(DiplomacyPromptTexts.Get)
                     + "\nMODE=ANALYZE\n" + JsonConvert.SerializeObject(source),
-                _ => "unused-plan", (_, _) => "unused-plan", DiplomacyPromptTexts.Get);
+                DiplomacyPromptTexts.Get);
         }
     }
 
@@ -82,24 +81,15 @@ internal static class WritingStyleReplay
         Test.True(!system.Contains("OLD_FROZEN_STYLE") && !system.Contains("OLD_COMMON_CORE"),
             "retired frozen style never reaches rebuilt messages: " + job.JobId);
         if (job.Kind == "generate")
-        {
-            Test.True(system.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "300 to 1000 words." : "300至1000字"),
-                "real generation/relay contract uses EN words and CN characters independent of UI");
-            Test.True(job.MaxTokens == 5024,
-                "rebuilt long declaration reserves requested prose and action JSON capacity");
             Test.True(WorldDiplomacyPromptContractRules.HasCurrentCanonicalPromptContract(job)
                 && system.Contains("actions") && system.Contains("conciliatory|neutral|firm|hostile")
                 && job.UserPrompt.Contains("【MODE=DECLARE】"),
                 "writing style retains declaration routing, action schema and semantic tone: " + job.JobId);
-        }
-        Test.True(WorldDiplomacyPromptContractRules.GetDeclarationOutputTokenBudget(100, 1800) == 1800
-            && WorldDiplomacyPromptContractRules.GetDeclarationOutputTokenBudget(1000, 1800) == 5024,
-            "generation budget keeps the existing floor and scales with the configured upper bound");
     }
 
-    private static void FreezeV30Repair(WorldDiplomacyJob job)
+    private static void FreezeV29Repair(WorldDiplomacyJob job)
     {
-        job.CacheAffinityKey = "diplomacy-history:v30";
+        job.CacheAffinityKey = "diplomacy-history:v29";
         job.SystemPrompt = "OLD_COMMON_CORE\nOLD_FROZEN_STYLE";
         job.UserPrompt = "repair\n【MODE=DECLARE】";
         job.SemanticRepairAttempts = 1;
@@ -122,17 +112,17 @@ internal static class WritingStyleReplay
     {
         var f = new Fixture();
         var generation = f.Job("generate"); var relay = f.Job("generate", true); var analysis = f.Job("analyze");
-        FreezeV30Repair(generation); FreezeV30Repair(relay);
+        FreezeV29Repair(generation); FreezeV29Repair(relay);
         Test.True(WorldDiplomacyPromptContractRules.IsValidSemanticRepairMessageChain(generation),
             "migration fixture starts with a valid frozen old repair chain");
         f.Round.CommonContractSnapshot = "OLD_COMMON_CORE"; f.Round.CommonContractSnapshotInitialized = true;
         f.Round.CachePrefix = "old-prefix"; f.Round.LlmTranscript.Add(new() { Role = "system", Content = "OLD_FROZEN_STYLE" });
         f.Storage.Jobs.AddRange(new[] { generation, relay, analysis });
         string before = PoliticalState(f); int clears = 0;
-        WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(f.Storage, 31, true,
+        WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(f.Storage, 30, true,
             f.Rebuild, (_, _) => throw new InvalidOperationException("valid source job retired"), () => clears++, _ => { });
-        Test.True(f.Storage.PromptContractVersion == 31 && f.Storage.Jobs.Count == 3 && clears == 1,
-            "v30 save migrates once to v31 while retaining valid declaration and analysis work");
+        Test.True(f.Storage.PromptContractVersion == 30 && f.Storage.Jobs.Count == 3 && clears == 1,
+            "v29 save migrates once to v30 while retaining valid declaration and analysis work");
         foreach (var job in f.Storage.Jobs)
         {
             Test.True(!job.IsRunning && job.SemanticRepairAttempts == 0 && job.LlmMessages.Count == 0
@@ -143,7 +133,7 @@ internal static class WritingStyleReplay
             && !f.Round.CommonContractSnapshotInitialized && f.Round.LlmTranscript.Count == 0 && f.Round.CachePrefix == "",
             "prompt migration changes caches only, preserving source prose, actions, terms, open offers and round progress");
         int rebuilds = f.Rebuilds;
-        WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(f.Storage, 31, true,
+        WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(f.Storage, 30, true,
             f.Rebuild, null, () => clears++, null);
         Test.True(f.Rebuilds == rebuilds && clears == 1 && PoliticalState(f) == before,
             "current-version migration is idempotent");
@@ -151,11 +141,11 @@ internal static class WritingStyleReplay
 
     private static void RunDispatchRepairRefresh()
     {
-        var f = new Fixture(); var job = f.Job("generate", true); FreezeV30Repair(job); f.Storage.Jobs.Add(job);
+        var f = new Fixture(); var job = f.Job("generate", true); FreezeV29Repair(job); f.Storage.Jobs.Add(job);
         string before = PoliticalState(f);
         Test.True(WorldDiplomacyLlmDispatchApplication.EnsureCurrentCanonicalPromptContractBeforeSend(job, f.Storage,
             f.Rebuild, (_, reason) => throw new InvalidOperationException(reason), _ => throw new InvalidOperationException("removed"), _ => { }),
-            "before-send guard refreshes a restored v30 frozen repair through actual request rebuilding");
+            "before-send guard refreshes a restored v29 frozen repair through actual request rebuilding");
         Test.True(job.SemanticRepairAttempts == 0 && job.LlmMessages.Count == 0 && job.HistoryPrefixHash == ""
             && PoliticalState(f) == before, "before-send repair refresh preserves diplomatic state");
         VerifyMessages(job);

@@ -288,7 +288,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 		}
 
-		if (CourierLetterInputPopup.IsOpen || CourierLetterReplyPopup.IsOpen || DiplomacyPresentationBridge.IsOpen)
+		if (DiplomacyEventPresentationBridge.IsOpen || CourierLetterInputPopup.IsOpen || CourierLetterReplyPopup.IsOpen || DiplomacyPresentationBridge.IsOpen)
 
 		{
 
@@ -747,13 +747,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 		{
 
-			Node("custom_policy_management", Ui("AF_TERMINAL_UI_Root_KingdomNotices", "Kingdom notices"), TerminalCategories.Diplomacy, "♚", Ui("AF_TERMINAL_UI_Root_KingdomNotices_Hint", "Open the subpanel for notices and local policies."),
+			Node("event_popup_preview_start", DiplomacyEventPopupVM.Text("PreviewStartAction", "Preview event beginning"), TerminalCategories.Ui, "⚐", DiplomacyEventPopupVM.Text("PreviewHint", "Preview the illustrated event window. Does not publish an event or apply effects.")),
+			Node("event_popup_preview_end", DiplomacyEventPopupVM.Text("PreviewEndAction", "Preview event conclusion"), TerminalCategories.Ui, "⚐", DiplomacyEventPopupVM.Text("PreviewHint", "Preview the illustrated event window. Does not publish an event or apply effects.")),
+			Node("custom_policy_management", Ui("AF_TERMINAL_UI_Root_KingdomNotices", "Write policies"), TerminalCategories.Diplomacy, "♚", Ui("AF_TERMINAL_UI_Root_KingdomNotices_Hint", "Choose custom or local policies to write."),
 
-				Node("policy_compose", Ui("AF_TERMINAL_UI_Root_ComposeNotice", "Compose kingdom notice"), TerminalCategories.Diplomacy, "✍", Ui("AF_TERMINAL_UI_Root_ComposeNotice_Hint", "Continue to custom policy or diplomatic declaration."),
-
-					Node("custom_policy", Ui("AF_TERMINAL_UI_Root_CustomPolicy", "Compose custom policy"), TerminalCategories.Diplomacy, "⚖", Ui("AF_TERMINAL_UI_Root_CustomPolicy_Hint", "Open the custom policy editor.")),
-
-					Node("diplomatic_document", Ui("AF_TERMINAL_UI_Root_DiplomaticDocument", "Compose diplomatic declaration"), TerminalCategories.Diplomacy, "⚐", Ui("AF_TERMINAL_UI_Root_DiplomaticDocument_Hint", "Publish a diplomatic declaration."))),
+				Node("custom_policy", Ui("AF_TERMINAL_UI_Root_CustomPolicy", "Custom policy"), TerminalCategories.Diplomacy, "⚖", Ui("AF_TERMINAL_UI_Root_CustomPolicy_Hint", "Open the custom policy editor.")),
 
 				Node("local_policies", Ui("AF_TERMINAL_UI_Root_LocalPolicies", "Local policies"), TerminalCategories.Diplomacy, "♜", Ui("AF_TERMINAL_UI_Root_LocalPolicies_Hint", "Publish policies that affect only the player's clan fiefs."))),
 
@@ -827,6 +825,12 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 		{
 
+		case "event_popup_preview_start":
+			DiplomacyEventPreview.Request(AnimusForge.Refactor.Contracts.DiplomacyEventStage.Started);
+			return true;
+		case "event_popup_preview_end":
+			DiplomacyEventPreview.Request(AnimusForge.Refactor.Contracts.DiplomacyEventStage.Ended);
+			return true;
 		case "war_stats":
 
 			if (popupVm != null)
@@ -1907,7 +1911,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	{
 
-		if (PlayerRpForgePopup.IsOpen
+		if (DiplomacyEventPresentationBridge.IsOpen || PlayerRpForgePopup.IsOpen
 
 			|| CourierLetterInputPopup.IsOpen
 

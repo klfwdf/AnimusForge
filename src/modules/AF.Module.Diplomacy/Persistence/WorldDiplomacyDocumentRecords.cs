@@ -30,9 +30,31 @@ public sealed class WorldDiplomacyDocumentAction
 
 public sealed class WorldDiplomacyDocument
 {
+    [JsonProperty("endingRecoveryDocumentId")] public string EndingRecoveryDocumentId { get; set; } = "";
+    [JsonProperty("playerEventParticipation")] public string PlayerEventParticipation { get; set; } = "";
+    [JsonProperty("responseRequests")] public List<DiplomacyResponseRequest> ResponseRequests { get; set; } = new();
+    [JsonProperty("responseRequestsClassified")] public bool ResponseRequestsClassified { get; set; }
+    [JsonProperty("playerContactCounted")] public bool PlayerContactCounted { get; set; }
+    [JsonProperty("playerContactId")] public string PlayerContactId { get; set; } = "";
+    [JsonProperty("auditedAgendaQuote")] public string AuditedAgendaQuote { get; set; } = "";
+    [JsonProperty("auditedAgendaAnswers")] public List<string> AuditedAgendaAnswers { get; set; } = new();
+    [JsonProperty("negotiationIssueId")] public string NegotiationIssueId { get; set; } = "";
+    [JsonProperty("materialReactionId")] public string MaterialReactionId { get; set; } = "";
+    [JsonProperty("aidDecisions")] public List<DiplomacyAidDecision> AidDecisions { get; set; } = new();
+    [JsonProperty("eventExecutionPending")] public bool EventExecutionPending { get; set; }
+    [JsonProperty("eventExecutionTone")] public string EventExecutionTone { get; set; } = "";
+    [JsonProperty("eventExecutionConfidence")] public float EventExecutionConfidence { get; set; }
     [JsonProperty("playerLifecycleClassified")] public bool PlayerLifecycleClassified { get; set; }
     [JsonProperty("playerReplyRoutingRechecked")] public bool PlayerReplyRoutingRechecked { get; set; }
     [JsonProperty("playerReplyRoutingPending")] public bool PlayerReplyRoutingPending { get; set; }
+    [JsonProperty("silenceSourceDocumentId")] public string SilenceSourceDocumentId { get; set; } = "";
+    [JsonProperty("silenceConsequenceSettled")] public bool SilenceConsequenceSettled { get; set; }
+    [JsonProperty("silenceConsequence")] public string SilenceConsequence { get; set; } = "";
+
+    [JsonProperty("threatConsequencesSettled")]
+	public bool ThreatConsequencesSettled { get; set; }
+
+	[JsonProperty("legacyNoticeSuppressed")] public bool LegacyNoticeSuppressed { get; set; }
     [JsonProperty("actualPlayerNoticeHour")] public double ActualPlayerNoticeHour { get; set; } = -1;
     [JsonProperty("answeredNpcDocumentIds")] public List<string> AnsweredNpcDocumentIds { get; set; } = new();
 	[JsonProperty("subjectReleaseTokens", NullValueHandling = NullValueHandling.Ignore)]

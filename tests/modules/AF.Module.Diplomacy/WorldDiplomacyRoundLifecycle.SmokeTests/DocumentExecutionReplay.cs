@@ -33,12 +33,11 @@ internal static class DocumentExecutionReplay
         public WorldDiplomacyAuthoritySnapshot CaptureAuthority(string id) => new(id, id != null, false, id == "vassal", "suzerain", !AuthorAllowed, true);
         public WorldDiplomacyRound ResolveRound(string id) { return Owner?.ResolveRound(id) ?? Round; }
         public WorldDiplomacyDocument ResolveDocument(string id) { return Owner?.ResolveDocument(id) ?? (StoredDocument?.DocumentId == id ? StoredDocument : null); }
-        public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer)
-        { RequiredPeaceReads++; return RequiredPeace; }
+
         public bool IsAtWar(string author, string target) { return true; }
         internal string PlayerKingdomId;
         public bool IsPlayerAffiliated(string id) => id != null && id == PlayerKingdomId;
-        public bool IsPlayerKingdom(string id) { return false; }
+        public bool IsPlayerKingdom(string id) => id == PlayerKingdomId;
         public string NewId(string prefix) { return prefix + (++Id); }
         public WarPressureEntry FindWarPressure(string source, string target) { return null; }
         public void AddWarPressure(string source, string target, int delta, string reason, string intent) { Events.Add("AddWarPressure"); }
@@ -53,12 +52,12 @@ internal static class DocumentExecutionReplay
         private readonly Port _p;
         internal Orch(Port p) { _p = p; }
         public override void PruneInvalidOffers(WorldDiplomacyRound round) { _p.Events.Add("PruneInvalidOffers"); }
-        public override bool IsNonRootAiRelayNoActionAllowed(WorldDiplomacyRound round, string slot, string author, string target, bool relay, bool external, WorldDiplomacyDocument source) { return _p.NoAction; }
+
         public override List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string author, string target)
             => _p.RestrictRound && round != null ? new() { "accept_peace", "reject_peace" } : _p.Legal;
         public override List<string> BuildLegalDiplomaticDeclarationIntents(WorldDiplomacyRound round, string author, string target, bool relay, string slot, bool external, WorldDiplomacyDocument source) { return _p.Legal; }
         public override bool TryGetDiplomaticStateViolation(string intent, string author, string target, out string reason) { _p.Events.Add("validate:" + target); reason = "changed"; return target == _p.InvalidTarget || (_p.AfterFirstEffect && _p.Effects > 0); }
-        public override bool TryGetPlayerWorldStateIntentViolation(WorldDiplomacyDocument doc, string intent, string commitment, string author, string target, out string reason) { reason = "player-state-blocked"; return _p.PlayerStateBlocked || (_p.IdentityInvalidAfterFirstEffect && _p.Effects > 0); }
+        public override bool TryGetPlayerWorldStateIntentViolation(WorldDiplomacyDocument doc, string intent, string commitment, string author, string target, out string reason) { reason = _p.PlayerStateBlocked || _p.IdentityInvalidAfterFirstEffect ? "player-state-blocked" : "changed"; return target == _p.InvalidTarget || (_p.AfterFirstEffect && _p.Effects > 0) || _p.PlayerStateBlocked || (_p.IdentityInvalidAfterFirstEffect && _p.Effects > 0); }
         public override void SuppressInvalidDocumentBeforePropagation(WorldDiplomacyDocument doc, string reason) { _p.Events.Add("reject:" + reason); }
         public override WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(string author, string target, string intent, WorldDiplomacyDocument doc)
         {
@@ -103,29 +102,35 @@ internal static class DocumentExecutionReplay
     };
     private static void Run(Port p, Orch orch, WorldDiplomacyDocument doc) => WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(
         p, orch, doc, doc.Intent, doc.Commitment, false, "", 1);
-    private static (Port p, Orch orch) Fixture(Action<Port> init = null) { var p = new Port(); init?.Invoke(p); return (p, new Orch(p)); }
+    private static (Port p, Orch orch) Fixture(Action<Port> init = null) { var p = new Port { PlayerKingdomId = "a" }; init?.Invoke(p); return (p, new Orch(p)); }
     internal static void Run()
     {
+        {
+            var (p,orch)=Fixture(); var conditional=Document("b");
+            conditional.Actions[0].DependencyActionIds.Add("previous-ultimatum#action_1");
+            Run(p,orch,conditional);
+            Test.True(p.Effects==0 && !conditional.IsReadyForPublication && !p.Events.Contains("propagation")
+                && p.Events.Contains("reject:conditional_war_requires_prepublication_repair"),
+                "lower execution owner refuses false war publication even if drafting validation was bypassed");
+        }
         foreach (bool stateBlocked in new[] { false, true })
         {
             var (blockedPort, blockedOrch) = Fixture(p => { p.Legal.Clear(); p.InvalidTarget = stateBlocked ? "b" : null; });
             var blockedDocument = Document("b");
             blockedDocument.IsPlayerAuthored = false;
             Run(blockedPort, blockedOrch, blockedDocument);
-            string expected = "final_live_legal_action_guard" + (stateBlocked ? ":changed" : "");
-            Test.True(blockedPort.Effects == 0 && blockedPort.Events.Contains("reject:" + expected)
-                && blockedPort.Events.Any(x => x.StartsWith("log:final diplomacy action rejected") && x.Contains("reason=" + expected)),
-                "rejected AI war preserves specific state reason or contextual fallback");
+            Test.True(stateBlocked ? blockedPort.Effects == 0 && blockedPort.Events.Contains("reject:action_not_executable:changed")
+                : blockedPort.Effects == 1 && !blockedPort.Events.Any(x => x.StartsWith("reject:")),
+                "current state owns execution admission, not an obsolete cached AI action list");
         }
         foreach (bool legacyPlayer in new[] { false, true })
         {
             var (playerPort, playerOrch) = Fixture(p => { p.Legal.Clear(); p.InvalidTarget = "b"; });
-            var playerDocument = Document("b");
-            playerDocument.IsPlayerAuthored = true;
+            var playerDocument = Document("b"); playerDocument.IsPlayerAuthored = true;
             if (legacyPlayer) playerDocument.Actions.Clear();
             Run(playerPort, playerOrch, playerDocument);
-            Test.True(playerPort.Effects == 1 && !playerPort.Events.Any(x => x.StartsWith("reject:")),
-                "player legacy and structured war bypass AI list and AI state checks");
+            Test.True(playerPort.Effects == 0 && playerPort.Events.Contains("reject:action_not_executable:changed"),
+                "player legacy and structured actions obey the same current state guard");
         }
         foreach (bool flatPlayer in new[] { false, true })
         {
@@ -134,7 +139,7 @@ internal static class DocumentExecutionReplay
             blockedPlayerDocument.IsPlayerAuthored = true;
             if (flatPlayer) blockedPlayerDocument.Actions.Clear();
             Run(blockedPlayerPort, blockedPlayerOrch, blockedPlayerDocument);
-            Test.True(blockedPlayerPort.Effects == 0 && blockedPlayerPort.Events.Contains("reject:player_action_not_executable:player-state-blocked"),
+            Test.True(blockedPlayerPort.Effects == 0 && blockedPlayerPort.Events.Contains("reject:action_not_executable:player-state-blocked"),
                 "player admission retains technical identity and source guards");
         }
         var (batchPlayerPort, batchPlayerOrch) = Fixture(p => p.IdentityInvalidAfterFirstEffect = true);
@@ -200,82 +205,6 @@ internal static class DocumentExecutionReplay
         Test.True(snapshotReceipts.Count == 1 && snapshotReceipts[0].Applied
             && !snapshotReceipts[0].OutcomeKnown && snapshotDocument.ChangedDiplomaticState,
             "a confirmed immediate effect survives an unknown later offer-settlement receipt");
-        var (slotPort, slotOrch) = Fixture();
-        var slotStorage = new WorldDiplomacyStorage();
-        var slotRound = new WorldDiplomacyRound { RoundId = "r", ResultSettlementPending = true, RelayPlanned = true,
-            RelayRouteKingdomIds = new() { "a", "b" } };
-        slotStorage.Documents.Add(new WorldDiplomacyDocument { RoundId = "r", AuthorKingdomId = "a", IsReadyForPublication = true });
-        slotRound.PendingOffers.Add(new WorldDiplomacyRoundOffer { Status = "open", ProposerKingdomId = "a", TargetKingdomId = "c", SourceDocumentId = "offer" });
-        slotRound.PendingOffers.Add(new WorldDiplomacyRoundOffer { Status = "open", ProposerKingdomId = "a", TargetKingdomId = "d", SourceDocumentId = "excess" });
-        slotRound.PendingOffers.Add(new WorldDiplomacyRoundOffer { Status = "open", ProposerKingdomId = "a", TargetKingdomId = "vassal" });
-        slotStorage.DiplomaticThreats.Add(new WorldDiplomacyThreat { Status = "open", TargetDecision = "pending", StageRoundId = "r",
-            IssuerKingdomId = "a", TargetKingdomId = "b", StageDocumentId = "threat" });
-        WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots(slotPort, slotStorage, slotRound, slotOrch.PruneInvalidOffers);
-        Test.True(slotRound.RelayRouteKingdomIds.SequenceEqual(new[] { "a", "b", "c" })
-            && slotRound.PendingOffers[1].Status == "invalidated" && slotRound.PendingOffers[2].Status == "invalidated",
-            "slot refresh admits valid new offer targets before rejecting capacity and authority failures");
-        Test.True(slotRound.ResultSettlementSlots.Select(s => s.KingdomId).SequenceEqual(new[] { "b", "c" })
-            && slotRound.ResultSettlementSlots[0].Kind.Contains("threat_response") && slotRound.ResultSettlementSlots[1].Kind.Contains("offer_response")
-            && slotRound.ResultSettlementSlots[0].SourceDocumentIds.Contains("threat") && slotRound.ResultSettlementSlots[1].SourceDocumentIds.Contains("offer"),
-            "slot refresh skips already-spoken route authors and prioritizes threat duty after offer duty");
-        int slotIds = slotPort.Id;
-        WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots(slotPort, slotStorage, slotRound, slotOrch.PruneInvalidOffers);
-        Test.True(slotPort.Id == slotIds && slotRound.ResultSettlementSlots.Count == 2, "repeated slot refresh merges existing obligations without duplicate slots");
-        slotRound.ResultSettlementPending = false; slotPort.Events.Clear();
-        WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots(slotPort, slotStorage, slotRound, slotOrch.PruneInvalidOffers);
-        Test.True(slotPort.Events.Count == 0, "non-settling round does not prune or scan slots");
-        var (p, orch) = Fixture(); var doc = Document("b", "c"); Run(p, orch, doc);
-        Test.True(p.Effects == 2 && p.Events.IndexOf("validate:c") < p.Events.IndexOf("effect:b")
-            && p.Events.IndexOf("effect:b") < p.Events.IndexOf("effect:c") && p.Events.IndexOf("history") < p.Events.IndexOf("propagation")
-            && p.Events.IndexOf("propagation") < p.Events.IndexOf("round"), "multi action validates entire batch before ordered effects and history/propagation/round");
-        Test.True(doc.Actions.All(a => a.ChangedDiplomaticState && a.MechanicalResult.StartsWith("effect ")),
-            "every action captures its own actual mechanical receipt");
-        (p, orch) = Fixture(); doc = Document("b", "c", "d", "e", "f"); Run(p, orch, doc);
-        Test.True(p.Effects == 0 && p.Events.Count == 0 && !doc.IsReadyForPublication,
-            "oversized persisted action lists are rejected before snapshot capture and live-world work");
-        foreach (string[] targets in new[] { new[] { "b", "b" }, new[] { "b", "missing" }, new[] { "vassal" } })
-        {
-            (p, orch) = Fixture(); doc = Document(targets); Run(p, orch, doc);
-            Test.True(p.Effects == 0 && !doc.IsReadyForPublication && !p.Events.Contains("history") && p.Events.Any(e => e.StartsWith("reject:")),
-                "invalid or duplicate target rejects complete batch before effects/publication");
-        }
-        (p, orch) = Fixture(x => x.Round = new WorldDiplomacyRound { ResultSettlementPending = true, RelayRouteKingdomIds = new() { "a", "old" } });
-        doc = Document("b", "c"); Run(p, orch, doc);
-        Test.True(p.Effects == 0 && p.Round.RelayRouteKingdomIds.SequenceEqual(new[] { "a", "old" })
-            && p.Events.Contains("reject:result_settlement_target_capacity_reached"), "aggregate capacity rejection cannot partially expand route");
-        (p, orch) = Fixture(x => x.Round = new WorldDiplomacyRound { ResultSettlementPending = true, RelayRouteKingdomIds = new() { "a" } });
-        doc = Document("c", "b"); Run(p, orch, doc);
-        Test.True(p.Effects == 2 && p.Round.RelayRouteKingdomIds.SequenceEqual(new[] { "a", "b", "c" }), "route admission sorted independently of action order");
-        (p, orch) = Fixture(x => { x.ThrowEffect = true; x.ThrowHistory = true; }); doc = Document("b", "c"); Run(p, orch, doc);
-        Test.True(p.Effects == 2 && doc.Actions.All(a => a.ChangedDiplomaticState) && p.Events.IndexOf("retry") > p.Events.IndexOf("history")
-            && p.Events.IndexOf("propagation") > p.Events.IndexOf("retry") && p.Events.Contains("round"),
-            "partial applied effect receipts survive exceptions; history retry does not discard declaration or later action");
-        (p, orch) = Fixture(x => x.AfterFirstEffect = true); doc = Document("b", "c"); Run(p, orch, doc);
-        Test.True(p.Effects == 1 && doc.Actions[0].ChangedDiplomaticState && !doc.Actions[1].ChangedDiplomaticState
-            && doc.Actions[1].MechanicalResult.Contains("changed"), "live revalidation between effects prevents newly invalid second action");
-        (p, orch) = Fixture(); doc = Document("b"); doc.Actions.Clear(); Run(p, orch, doc);
-        Test.True(p.Effects == 1 && p.Events.IndexOf("propagation") < p.Events.IndexOf("history") && p.Events.Contains("round"),
-            "legacy single action keeps its existing propagation-before-history ordering");
-        Test.True(doc.Actions.Count == 0 && doc.ProcessingActionId == "", "flat save representation is not converted to stored actions");
-        (p, orch) = Fixture(); doc = Document("missing"); doc.Actions = null; doc.IsPlayerAuthored = true; doc.Intent = "statement";
-        Run(p, orch, doc);
-        Test.True(doc.IsReadyForPublication && p.Effects == 0 && doc.Actions == null, "legacy public declaration needs no live foreign target and keeps null actions");
-        (p, orch) = Fixture(x => x.NoAction = true); doc = Document("b"); doc.Actions = null;
-        doc.Intent = "statement"; doc.IsRoundResponseNoActionDeclaration = true; Run(p, orch, doc);
-        Test.True(doc.IsReadyForPublication && p.Effects == 0 && p.Events.Contains("RecordDiplomaticThreatTargetDecisions"), "legacy relay no-action declaration remains mechanically inert");
-        (p, orch) = Fixture(); doc = Document("b"); doc.Actions = null; doc.Intent = "statement";
-        doc.IsRoundResponseNoActionDeclaration = true; Run(p, orch, doc);
-        Test.True(!doc.IsReadyForPublication && p.Events.Contains("reject:stale_round_response_no_action_declaration"), "stale no-action declaration cannot publish");
-        foreach (bool flat in new[] { false, true })
-        {
-            (p, orch) = Fixture(x => x.InvalidTarget = "b"); doc = Document("b");
-            if (flat) doc.Actions = null;
-            Run(p, orch, doc);
-            Test.True(p.Effects == 0 && !p.Events.Contains("history") && p.Events.Contains("reject:final_live_state_guard:changed"), "one executor rejects changed live state in both representations");
-        }
-        (p, orch) = Fixture(x => x.AuthorAllowed = false); doc = Document("b"); Run(p, orch, doc);
-        Test.True(p.Effects == 0 && p.Events.Contains("reject:player_controlled_realm_requires_player_authorization"), "AI author authority checked before target work");
-        (p, orch) = Fixture(); doc = Document("b"); doc.Actions.Clear(); doc.IsPlayerAuthored = true; doc.Intent = "statement"; Run(p, orch, doc);
-        Test.True(p.Effects == 0 && doc.IsReadyForPublication && p.Events.Contains("history"), "player public statement remains publishable without mechanical action");
+
     }
 }

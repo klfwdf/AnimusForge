@@ -1,0 +1,135 @@
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using AnimusForge;
+
+namespace AnimusForge
+{
+    internal enum AfVassalageType { Tributary, Garrison, Vassal }
+    internal sealed class Hero { public Clan Clan; public Kingdom MapFaction; public string StringId; }
+    internal sealed class Clan { public Kingdom Kingdom; }
+    internal sealed class Kingdom { public string StringId; public Hero Ruler; }
+    internal sealed class CharacterObject { public Hero HeroObject; public string StringId; }
+    internal sealed class PostprocessRuleEntry
+    {
+        public string Tag, Description, SingleFramedNpcDescription;
+        public HashSet<string> RuntimeAllowedParameterValues;
+    }
+    internal static class AIConfigHandler
+    {
+        internal static List<PostprocessRuleEntry> Rules;
+        public static string ActionPostprocessFallbackMoodTag => "[ACTION:MOOD:NEUTRAL]";
+        internal static List<PostprocessRuleEntry> GetGuardrailRulePostprocessRules(string id) => Rules;
+    }
+    internal static class DiplomacyMiscPromptTexts { internal static string Get(string id, string fallback) => fallback; }
+    internal static class DiplomacyUiLocalization { internal static string Text(string id, string fallback) => fallback; }
+    internal static class WorldDiplomacyBehavior
+    {
+        internal static string BuildPlayerSubjectReleaseContext(Hero hero) => "release-only-context";
+    }
+    internal static class VassalageDiagnosticLog
+    {
+        internal static object DescribeHero(Hero value) => value?.StringId;
+        internal static object DescribeKingdom(Kingdom value) => value?.StringId;
+        internal static void Event(string key, Dictionary<string, object> fields) { }
+    }
+    internal sealed class VassalageBehavior
+    {
+        internal static Kingdom Player;
+        internal static Hero MainHero;
+        internal static int CreateCalls;
+        private static Kingdom GetPlayerKingdom() => Player;
+        private static bool IsValidKingdom(Kingdom k) => k != null;
+        private static bool IsPlayerRuler(Kingdom k) => k.Ruler == MainHero;
+        private static bool IsKingdomRuler(Hero hero, Kingdom k) => hero == k.Ruler;
+        private static Kingdom ResolveKingdomByToken(string id, Hero hero) => hero?.Clan?.Kingdom?.StringId == id ? hero.Clan.Kingdom : null;
+        private static bool TryParseVassalageType(string text, out AfVassalageType type) => Enum.TryParse(text, true, out type);
+        private static AfVassalageType NormalizeVassalageType(AfVassalageType type) => type;
+        // Recording game-effect port. Real creation/revision bodies are untouched and
+        // checked against the pre-restoration source by run.py.
+        private bool TryCreatePlayerVassalage(Hero hero, Kingdom k, AfVassalageType type, out string status)
+        { CreateCalls++; status = "confirmed original signing"; return true; }
+        @@METHODS@@
+    }
+    internal static class Normalization
+    {
+        @@NORMALIZATION@@
+    }
+    internal sealed class Port : IDiplomacyPoliticalRewardPort
+    {
+        internal Hero Speaker;
+        public bool GiverIsPlayer { get; set; }
+        public bool ReceiverIsPlayer { get; set; } = true;
+        public DiplomacyPoliticalRewardReceipt Apply(DiplomacyPoliticalRewardKind kind, string type, string target)
+        {
+            bool ok = new VassalageBehavior().TryApplyVassalageAction(Speaker, "SUBMIT", type, target, out string status);
+            return new(true, ok, status);
+        }
+        public void Record(DiplomacyPoliticalRewardKind k, string stage, string tag, string type, string target, bool ok, string status) { }
+        public void Show(DiplomacyPoliticalRewardKind k, bool ok, string status) { }
+        public void Unsupported(DiplomacyPoliticalRewardKind k, string tag) { }
+    }
+}
+internal static class Program
+{
+    private static int assertions;
+    private static void Check(bool value, string message)
+    { if (!value) throw new Exception(message); assertions++; }
+    static void Main(string[] args)
+    {
+        foreach (string edition in new[] { "", ".en" })
+        {
+            using var corpus = JsonDocument.Parse(File.ReadAllText(Path.Combine(args[0],
+                "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts" + edition + ".json")));
+            var rule = corpus.RootElement.GetProperty("RulePrompts").EnumerateArray().Single(x => x.GetProperty("Id").GetString() == "kingdom_vassalage");
+            AIConfigHandler.Rules = rule.GetProperty("PostprocessRules").EnumerateArray().Select(x => new PostprocessRuleEntry {
+                Tag = x.GetProperty("Tag").GetString(), Description = x.GetProperty("Description").GetString() }).ToList();
+            var player = new Hero { StringId = "player" };
+            var npc = new Hero { StringId = "ruler" };
+            var target = new Kingdom { StringId = "target", Ruler = npc };
+            npc.Clan = new Clan { Kingdom = target };
+            VassalageBehavior.MainHero = player;
+            VassalageBehavior.Player = new Kingdom { StringId = "player_kingdom", Ruler = player };
+            Check(VassalageBehavior.CanInjectVassalageRuleForExternal(npc), "original ruler qualification");
+            Check(VassalageBehavior.CanInjectVassalageRuleForPromptCapture(npc), "captured gate agrees");
+            var rules = VassalageBehavior.BuildRuntimeVassalagePostprocessRulesForExternal(npc);
+            Check(rules.Count == 4 && rules.All(x => !x.Tag.Contains("{kingdomId}")), "real runtime rules bind exact target");
+            foreach (string channel in new[] { "native", "scene", "courier" })
+            foreach (string type in new[] { "TRIBUTARY", "GARRISON", "VASSAL" })
+            {
+                string tag = $"[ACTION:VASSALAGE:SUBMIT:{type}:target]";
+                string text = Normalization.NormalizeVassalagePostprocessTagsForScene(tag, rules);
+                Check(text.Contains(tag), "real exact whitelist preserves original tag " + edition + channel + type);
+                int before = VassalageBehavior.CreateCalls;
+                var giver = new List<string>(); var receiver = new List<string>();
+                bool applied = DiplomacyPoliticalRewardApplication.Apply(new Port { Speaker = npc },
+                    DiplomacyPoliticalRewardKind.Vassalage, ref text, giver, receiver);
+                Check(applied && VassalageBehavior.CreateCalls == before + 1, "real reward dispatch calls original signing entry");
+                Check(!text.Contains("VASSALAGE") && giver.Count == 1 && receiver.Count == 1, "hidden directive and shared receipt facts");
+                string wrong = Normalization.NormalizeVassalagePostprocessTagsForScene(tag.Replace(":target]", ":third]"), rules);
+                Check(!wrong.Contains("VASSALAGE"), "wrong target blocked before dispatch");
+            }
+            Check(!Normalization.NormalizeVassalagePostprocessTagsForScene(
+                "[ACTION:DIPLOMACY:COMMIT:action=Vassal;move=NewMatter;target=player_kingdom;receiving=player_kingdom;joining=target]", rules).Contains("COMMIT"),
+                "restored signing topic does not authorize formal COMMIT");
+            string release = "[ACTION:DIPLOMACY:RELEASE_SUBJECT:target=target;agreement=current_token]";
+            Check(Normalization.NormalizeVassalagePostprocessTagsForScene(release, rules).Contains(release), "later release preserved");
+            string refusal = Normalization.NormalizeVassalagePostprocessTagsForScene("No. [ACTION:MOOD:NEUTRAL]", rules);
+            Check(!refusal.Contains("VASSALAGE"), "no inferred signing without tag");
+            int previous = VassalageBehavior.CreateCalls;
+            Check(!new VassalageBehavior().TryApplyVassalageAction(npc, "REVOKE", "VASSAL", "target", out _), "unsupported action blocked");
+            Check(!new VassalageBehavior().TryApplyVassalageAction(npc, "SUBMIT", "UNKNOWN", "target", out _), "unknown type blocked");
+            Check(previous == VassalageBehavior.CreateCalls, "invalid inputs never enter effect owner");
+            var ordinary = new Hero { Clan = npc.Clan };
+            Check(!VassalageBehavior.CanInjectVassalageRuleForExternal(ordinary), "ordinary lord cannot sign");
+            VassalageBehavior.Player.Ruler = ordinary;
+            Check(!VassalageBehavior.CanInjectVassalageRuleForExternal(npc)
+                && !VassalageBehavior.CanInjectVassalageRuleForPromptCapture(npc)
+                && VassalageBehavior.BuildRuntimeVassalagePostprocessRulesForExternal(npc).Count == 0, "non-ruler has no original tags");
+            VassalageBehavior.Player.Ruler = player; target.Ruler = npc; VassalageBehavior.Player = target;
+            Check(!VassalageBehavior.CanInjectVassalageRuleForExternal(npc), "own kingdom not a valid original target");
+            VassalageBehavior.Player = null;
+            Check(!VassalageBehavior.CanInjectVassalageRuleForExternal(npc), "no player kingdom has no original entry");
+        }
+        Console.WriteLine("PASS original oral vassalage entry/normalization/dispatch assertions=" + assertions);
+    }
+}

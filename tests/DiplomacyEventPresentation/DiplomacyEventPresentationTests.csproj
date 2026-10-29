@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings></PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="TextureColorProbe.cs" />
+    <Compile Include="../../src/AF.Contracts/Internal/DiplomacyEventPresentation.cs" Link="DiplomacyEventPresentation.cs" />
+    <Compile Include="../../src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventIllustrations.cs" Link="DiplomacyEventIllustrations.cs" />
+    <Compile Include="../../src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventSprites.cs" Link="DiplomacyEventSprites.cs" />
+    <Compile Include="../../src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPreview.cs" Link="DiplomacyEventPreview.cs" />
+  </ItemGroup>
+</Project>

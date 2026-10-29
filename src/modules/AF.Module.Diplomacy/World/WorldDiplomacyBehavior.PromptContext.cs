@@ -122,7 +122,6 @@ public sealed partial class WorldDiplomacyBehavior
         string IWorldDiplomacyPromptWorld.BuildWorldDiplomacyVassalageSnapshot() => WorldDiplomacyBehavior.BuildWorldDiplomacyVassalageSnapshot();
         string IWorldDiplomacyPromptWorld.BuildPolicySnapshot(string id) => WorldDiplomacyPolicyContext.BuildSnapshot(id);
         string IWorldDiplomacyPromptWorld.BuildGatheringSnapshot(IEnumerable<string> ids, int count) => NobleGatheringBehavior.BuildRecentDiplomacyMaterialForExternal(ids, count);
-        WorldDiplomacyRoundOffer IWorldDiplomacyPromptWorld.FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string resultSettlementSlotId, bool isExternalResponseOnly, string sourceDocumentId, bool requireAnyOpenPeaceOffer) => WorldDiplomacyBehavior.FindRequiredPeaceOfferResponse(round, Resolve(author), resultSettlementSlotId, isExternalResponseOnly, sourceDocumentId, requireAnyOpenPeaceOffer);
         IReadOnlyList<string> IWorldDiplomacyPromptWorld.CessionCandidates(string cedingId, string receivingId, float cessionScore)
             => WorldDiplomacyBehavior.ProjectCessionCandidates(_owner.BuildCessionCandidates(Resolve(cedingId), Resolve(receivingId), cessionScore)).ToList();
         WarSituationSnapshot IWorldDiplomacyPromptWorld.WarSituation(string authorId, string targetId) => _owner.GetWarSituation(Resolve(authorId), Resolve(targetId));
@@ -130,14 +129,12 @@ public sealed partial class WorldDiplomacyBehavior
         WorldDiplomacyBorderRelation IWorldDiplomacyPromptWorld.BorderRelation(string authorId, string targetId) => _owner.GetKingdomBorderRelation(Resolve(authorId), Resolve(targetId));
         int IWorldDiplomacyPromptWorld.RulerRelation(string authorId, string targetId) => WorldDiplomacyBehavior.GetRulerRelation(Resolve(authorId), Resolve(targetId));
         int IWorldDiplomacyPromptWorld.CulturalClaimCount(string authorId, string targetId) => WorldDiplomacyBehavior.CountCulturalClaims(Resolve(authorId), Resolve(targetId));
-        int IWorldDiplomacyPromptWorld.NationalPrestige(string kingdomId) => WorldDiplomacyReputationRules.GetNationalPrestige(_owner._storage?.NationalPrestigeByKingdom, kingdomId);
-        int IWorldDiplomacyPromptWorld.InternationalReputation(string kingdomId) => WorldDiplomacyReputationRules.GetInternationalReputation(_owner._storage?.InternationalReputationByKingdom, kingdomId);
         int IWorldDiplomacyPromptWorld.WarPressure(string authorId, string targetId) => WorldDiplomacyWarPressureRules.GetWarPressure(_owner._storage?.WarPressure, authorId, targetId);
         string IWorldDiplomacyPromptWorld.RulerVoiceContext(string kingdomId) => WorldDiplomacyBehavior.BuildRulerVoiceContext(Resolve(kingdomId) ?? ResolveAny(kingdomId));
         string IWorldDiplomacyPromptWorld.RealmInstitutionalVoiceContext(string kingdomId) => _owner.BuildRealmInstitutionalVoiceContext(Resolve(kingdomId) ?? ResolveAny(kingdomId));
         string IWorldDiplomacyPromptWorld.AuthorRulerFamilyContext(string kingdomId) => WorldDiplomacyBehavior.BuildAuthorRulerFamilyContext(Resolve(kingdomId) ?? ResolveAny(kingdomId));
         string IWorldDiplomacyPromptWorld.BilateralRulerFamilyContext(string authorId, string targetId) => WorldDiplomacyBehavior.BuildBilateralRulerFamilyContext(Resolve(authorId), Resolve(targetId));
-        string IWorldDiplomacyPromptWorld.RecentNativeSignalContext(string authorId, string targetId) => WorldDiplomacyDocumentFactRules.BuildRecentNativeSignalContext(_owner._storage?.NativeSignals, authorId, targetId, DiplomacyPromptTexts.Get);
+        string IWorldDiplomacyPromptWorld.RecentNativeSignalContext(string authorId, string targetId) => WorldDiplomacyDocumentFactRules.BuildRecentNativeSignalContext(_owner._storage?.NativeSignals, authorId, targetId);
         string IWorldDiplomacyPromptWorld.RecentBilateralBattleContext(string authorId, string targetId) => WorldDiplomacyTextRules.BuildRecentBilateralBattleContext(
             _owner._storage?.RecentBattles, authorId, targetId, WorldDiplomacyBehavior.CurrentDay(),
             WorldDiplomacyBehavior.RecentBattleRetentionDays,

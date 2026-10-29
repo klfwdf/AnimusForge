@@ -383,8 +383,8 @@ public static class WorldDiplomacyStorageMigration
 {
     if (document.RoundProgressHandled) document.RoundAccountingHandled = true;
     document.NegotiationMove = WorldDiplomacyIntentVocabulary.NormalizeNegotiationMove(document.NegotiationMove);
-    document.InternationalReputationEvaluationDelta = Math.Max(-WorldDiplomacyReputationRules.MaximumInternationalReputationChangePerDocument,
-        Math.Min(WorldDiplomacyReputationRules.MaximumInternationalReputationChangePerDocument, document.InternationalReputationEvaluationDelta));
+    document.InternationalReputationEvaluationDelta = Math.Max(-10,
+        Math.Min(10, document.InternationalReputationEvaluationDelta));
     document.InternationalReputationEvaluationReason = WorldDiplomacyTextRules.Limit((document.InternationalReputationEvaluationReason ?? "").Trim(), 240);
     document.InternationalReputationEvaluationSource = WorldDiplomacyTextRules.Limit(
         WorldDiplomacyIntentVocabulary.NormalizeToken(document.InternationalReputationEvaluationSource), 40);
@@ -459,11 +459,16 @@ public static class WorldDiplomacyStorageMigration
     {
         document.GameDate = formatCampaignDate(document.Day);
     }
-    if (string.Equals(document.TargetKingdomName, DiplomacyMiscPromptTexts.Get("Prompt_UnknownKingdomFallback", "Unknown Kingdom"), StringComparison.Ordinal))
+    if (string.Equals(document.TargetKingdomName, DiplomacyMiscPromptTexts.Get("Prompt_UnknownKingdomFallback", "Unknown Kingdom"), StringComparison.Ordinal)
+        || string.Equals(document.TargetKingdomName, DiplomacyCompatibilityTexts.Get("Legacy_UnknownKingdomName"), StringComparison.Ordinal)
+        || string.Equals(document.TargetKingdomName, "Unknown Kingdom", StringComparison.Ordinal))
     {
         document.TargetKingdomName = "";
     }
-    if (!document.IsReadyForPublication
+    // Analysis is not publication. Modern oral drafts can wait across daily/save
+    // normalization for their event opening before any treaty effect is executed.
+    if (!document.IsReadyForPublication && !document.EventExecutionPending
+        && string.IsNullOrEmpty(document.DialogueArrangementId)
         && (!string.IsNullOrWhiteSpace(document.AnalysisStatus) || document.IsCompressed))
     {
         document.IsReadyForPublication = true;

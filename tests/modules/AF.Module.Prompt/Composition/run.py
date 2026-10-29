@@ -36,6 +36,9 @@ output = new_run_root(ROOT, "prompt-j04-composition", args.run_root)
 for name in ("Program.cs", "Stubs.cs", "PromptCompositionTests.csproj"):
     shutil.copy(HERE / name, output / name)
 project = (output / "PromptCompositionTests.csproj").read_text(encoding="utf-8").replace("../../../../", (str(ROOT) + "/").replace("\\", "/"))
+from xml.sax.saxutils import escape
+json_dll=max((dotnet.parent/'sdk').glob('*/Newtonsoft.Json.dll'),key=lambda p: tuple(int(x) for x in p.parent.name.split('-')[0].split('.')))
+project=project.replace((str(ROOT)+'/local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll').replace('\\','/'),escape(str(json_dll)))
 if args.mutate:
     src_dir = output / "mutated"
     src_dir.mkdir()

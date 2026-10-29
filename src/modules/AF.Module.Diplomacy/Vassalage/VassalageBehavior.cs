@@ -1288,11 +1288,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
 			["negotiatedWith"] = VassalageDiagnosticLog.DescribeHero(negotiatedWith)
 		});
-		string actionName = NormalizeVassalageType(type) == AfVassalageType.Tributary ? "Tributary"
-			: NormalizeVassalageType(type) == AfVassalageType.Garrison ? "Garrison" : "Vassal";
-		statusText = WorldDiplomacyBehavior.SubmitOralDiplomaticCommitment(negotiatedWith,
-			"action=" + actionName + ";move=NewMatter;target=" + GetPlayerKingdom()?.StringId
-			+ ";receiving=" + GetPlayerKingdom()?.StringId + ";joining=" + targetKingdom?.StringId, out bool result);
+		bool result = TryCreatePlayerVassalage(negotiatedWith, targetKingdom, type, out statusText);
 		VassalageDiagnosticLog.Event("action.apply.done", new Dictionary<string, object>
 		{
 			["ok"] = result,
@@ -2385,7 +2381,16 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 
 	public static bool CanInjectVassalageRuleForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
-		return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(targetHero, targetCharacter);
+		bool result = TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out var playerKingdom, out var targetKingdom, out var speaker);
+		VassalageDiagnosticLog.Event("runtime.can_inject", new Dictionary<string, object>
+		{
+			["ok"] = result,
+			["speaker"] = VassalageDiagnosticLog.DescribeHero(speaker),
+			["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
+			["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+			["targetCharacterId"] = targetCharacter?.StringId ?? ""
+		});
+		return result;
 	}
 
 	// J06 capture runs for every prompt, not only when this topic is evaluated.
@@ -2397,29 +2402,81 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 
 	public static string BuildRuntimeVassalageInstructionForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
-		Hero speaker = targetHero ?? targetCharacter?.HeroObject;
-		if (!CanInjectVassalageRuleForExternal(speaker)) return "";
-		return DiplomacyPromptTexts.Format("VassalageRuntimeNegotiation", "[Subject and annexation negotiation facts]\nYour represented kingdom ID={NPC}; player kingdom ID={PLAYER}. Any player may persuade, but signing parties must have national authority; either legal national direction may be discussed. Specify the receiving/suzerain and annexed/subject kingdoms. Oral assent first publishes a formal proposal, requiring formal acceptance by the other party. The player publishes their own declarations.\n",
-			"NPC", speaker.Clan.Kingdom.StringId, "PLAYER", Clan.PlayerClan?.Kingdom?.StringId ?? DiplomacyPromptTexts.Get("VassalageNoPlayerKingdom", "None"))
-			+ string.Join("\n", Kingdom.All.Where(x => x != null && !x.IsEliminated).Select(x => x.StringId + "=" + x.Name))
-			+ "\n" + WorldDiplomacyBehavior.BuildOralArrangementContext(speaker);
+		if (!TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out var playerKingdom, out var targetKingdom, out var speaker))
+		{
+			VassalageDiagnosticLog.Event("runtime.instruction", new Dictionary<string, object>
+			{
+				["ok"] = false,
+				["targetHero"] = VassalageDiagnosticLog.DescribeHero(targetHero),
+				["targetCharacterId"] = targetCharacter?.StringId ?? ""
+			});
+			return "";
+		}
+		VassalageDiagnosticLog.Event("runtime.instruction", new Dictionary<string, object>
+		{
+			["ok"] = true,
+			["speaker"] = VassalageDiagnosticLog.DescribeHero(speaker),
+			["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
+			["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom)
+		});
+		return DiplomacyPromptTexts.Format("VassalageLegacyRuntime",
+			"[AF oral vassalage facts]\nThe player rules {PLAYER}; {SPEAKER} rules {TARGET}. This entry only handles {TARGET} submitting to the player's kingdom. Target kingdom ID={ID}. TRIBUTARY pays for protection without sending troops and retains military autonomy; GARRISON sends troops without tribute, lacks military autonomy and uses 0-100 loyalty; VASSAL pays and sends troops under the suzerain's diplomatic and military control. Interpret generic submission by its actual obligations. The current ruler may also agree to change an existing player subject's treaty type. Explicit final assent signs the treaty directly; the notice reports the oath, not a second confirmation. Explicit responses to existing formal proposals remain in formal diplomacy.",
+			"PLAYER", GetKingdomDisplayName(playerKingdom, DiplomacyMiscPromptTexts.Get("Prompt_PlayerKingdomFallback", "player kingdom")),
+			"SPEAKER", GetHeroDisplayName(speaker, DiplomacyMiscPromptTexts.Get("Prompt_RulerFallback", "ruler")),
+			"TARGET", GetKingdomDisplayName(targetKingdom, DiplomacyMiscPromptTexts.Get("Prompt_TargetKingdomFallback", "target kingdom")),
+			"ID", targetKingdom.StringId ?? "");
 	}
 
 	public static string BuildRuntimeVassalageConstraintHintForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
-		return CanInjectVassalageRuleForExternal(targetHero, targetCharacter)
-			? DiplomacyPromptTexts.Get("VassalageRuntimeConstraint", "Submit only after the current NPC ruler explicitly gives final assent. New terms open a separate event; responses to existing proposals bind the source accurately. Clarify ambiguity first. Subject treaties and annexation both require formal declarations first; never accept on the player's behalf.") : "";
+		if (!TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out _, out var targetKingdom, out _))
+			return "";
+		return DiplomacyPromptTexts.Format("VassalageLegacyConstraint",
+			"Use oral vassalage tags only after the NPC ruler explicitly accepts submission to the player ruler. kingdomId must be {ID}. Types: TRIBUTARY, GARRISON, VASSAL. Vassal means VASSAL. Explicit replies to existing formal proposals use the formal diplomacy route without a simultaneous oral signing tag.",
+			"ID", targetKingdom.StringId ?? "");
 	}
 
 	public static List<PostprocessRuleEntry> BuildRuntimeVassalagePostprocessRulesForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
-		if (!CanInjectVassalageRuleForExternal(targetHero, targetCharacter)) return new List<PostprocessRuleEntry>();
-		string context = DiplomacyBehavior.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject);
-		return (AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_vassalage") ?? new List<PostprocessRuleEntry>())
-			.Select((rule, index) => new PostprocessRuleEntry { Tag = rule.Tag,
-				Description = rule.Description + (index == 0 ? "\n" + context : ""),
+		List<PostprocessRuleEntry> result = new List<PostprocessRuleEntry>();
+		if (!TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out _, out var targetKingdom, out _))
+		{
+			VassalageDiagnosticLog.Event("postprocess.rules.build", new Dictionary<string, object>
+			{
+				["ok"] = false,
+				["targetHero"] = VassalageDiagnosticLog.DescribeHero(targetHero),
+				["targetCharacterId"] = targetCharacter?.StringId ?? ""
+			});
+			return result;
+		}
+		string kingdomId = (targetKingdom.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(kingdomId)) return result;
+		foreach (PostprocessRuleEntry rule in AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_vassalage") ?? new List<PostprocessRuleEntry>())
+		{
+			string tag = (rule?.Tag ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(tag)) continue;
+			tag = tag.Replace("{kingdomId}", kingdomId).Replace("{targetKingdomId}", kingdomId);
+			result.Add(new PostprocessRuleEntry
+			{
+				Tag = tag,
+				Description = (rule.Description ?? "").Replace("{kingdomId}", kingdomId).Replace("{targetKingdomId}", kingdomId),
 				SingleFramedNpcDescription = rule.SingleFramedNpcDescription,
-				RuntimeAllowedParameterValues = rule.RuntimeAllowedParameterValues }).ToList();
+				RuntimeAllowedParameterValues = rule.RuntimeAllowedParameterValues
+			});
+		}
+		// Preserve the later unilateral-release entry alongside the restored signing tags.
+		string releaseContext = WorldDiplomacyBehavior.BuildPlayerSubjectReleaseContext(targetHero ?? targetCharacter?.HeroObject);
+		if (result.Count > 0 && !string.IsNullOrWhiteSpace(releaseContext))
+			result[0].Description += "\n" + releaseContext;
+		VassalageDiagnosticLog.Event("postprocess.rules.build", new Dictionary<string, object>
+		{
+			["ok"] = result.Count > 0,
+			["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+			["kingdomId"] = kingdomId,
+			["ruleCount"] = result.Count,
+			["tags"] = result.Select((PostprocessRuleEntry x) => x?.Tag ?? "").ToList()
+		});
+		return result;
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
@@ -4050,14 +4107,15 @@ statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_AcknowledgedS
 		bool peaceAfterAgreement = !wasAtWarWithPlayer || !IsAtWar(playerKingdom, targetKingdom);
 		string warSyncStatusText = normalizedNewType == AfVassalageType.Tributary
 				? ((syncedWarCount > 0 || queuedWarSyncCount > 0)
-					? string.Format(CultureInfo.InvariantCulture, DiplomacyMiscPromptTexts.Get("Vassalage_NpcSuzerainTookOverWarsFormat", "Suzerain took over tributary's active wars: {0} effective, {1} will take effect when situations are safe."), syncedWarCount, queuedWarSyncCount)
+					? DiplomacyMiscPromptTexts.Get("Vassalage_NpcSuzerainTookOverWarsFormat", "Suzerain took over tributary's active wars: {0} effective, {1} will take effect when situations are safe.").Split(':')[0] + ": " + syncedWarCount.ToString(CultureInfo.InvariantCulture) + ", " + queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + ", pending safe."
 					: "")
-			: ((syncedWarCount > 0 || queuedWarSyncCount > 0) ? string.Format(CultureInfo.InvariantCulture, DiplomacyMiscPromptTexts.Get("Vassalage_WarsSyncedFormat", "Shared wars: {0} synchronized, {1} pending until safe."), syncedWarCount, queuedWarSyncCount) : "");
+			: ((syncedWarCount > 0 ? (DiplomacyCompatibilityTexts.Get("Vassalage_CommonEnemiesSynced_Prefix") + syncedWarCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_Items_Suffix")) : "")
+				+ (queuedWarSyncCount > 0 ? (queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_CommonEnemiesSafe_Suffix")) : ""));
 statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_AcknowledgedPlayerSuzeraintyTypeFormat", "{0} has recognized the suzerainty of {1}; treaty type: {2}."), GetKingdomDisplayName(targetKingdom, DiplomacyMiscPromptTexts.Get("StrategicProfile_DefaultKingdomFallback", "the kingdom")), GetKingdomDisplayName(playerKingdom, DiplomacyMiscPromptTexts.Get("Vassalage_PlayerKingdom", "Player's Kingdom")), GetVassalageTypeDisplayName(type))
 			+ (normalizedNewType == AfVassalageType.Tributary ? DiplomacyMiscPromptTexts.Get("Vassalage_TributaryTermsDesc", "Tributary pays tribute periodically in exchange for suzerain protection; does not join military campaigns.") : "")
 			+ (wasAtWarWithPlayer ? (peaceAfterAgreement ? DiplomacyMiscPromptTexts.Get("Vassalage_HostilityCeased", "Former hostilities have ceased with the treaty.") : DiplomacyMiscPromptTexts.Get("Vassalage_HostilityWillCeaseSafe", "Former hostilities will cease synchronously when safe.")) : "")
 			+ warSyncStatusText
-			+ (otherQueuedDiplomacySyncCount > 0 ? string.Format(CultureInfo.InvariantCulture, DiplomacyMiscPromptTexts.Get("Vassalage_OtherDiplomacySafeFormat", "Other diplomatic changes: {0} pending until safe."), otherQueuedDiplomacySyncCount) : "");
+			+ (otherQueuedDiplomacySyncCount > 0 ? (DiplomacyCompatibilityTexts.Get("Vassalage_OtherDiplomacySafe_Prefix") + otherQueuedDiplomacySyncCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_OtherDiplomacySafe_Suffix")) : "");
 		Logger.Log("Vassalage", "Agreement created suzerain=" + agreement.SuzerainKingdomId + " vassal=" + agreement.VassalKingdomId + " type=" + agreement.Type);
 		MyBehavior.Instance?.CaptureWorldBulletinVassalage(playerKingdom, targetKingdom, GetVassalageTypeDisplayName(type), true);
 		VassalageDiagnosticLog.Event("agreement.create.success", new Dictionary<string, object>
@@ -4159,14 +4217,15 @@ CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(existing.VassalKingdom
 		string newTypeText = GetVassalageTypeDisplayName(newType);
 		string revisedWarSyncStatusText = newType == AfVassalageType.Tributary
 				? ((syncedWarCount > 0 || queuedWarSyncCount > 0)
-					? string.Format(CultureInfo.InvariantCulture, DiplomacyMiscPromptTexts.Get("Vassalage_NpcSuzerainTookOverWarsFormat", "Suzerain took over tributary's active wars: {0} effective, {1} will take effect when situations are safe."), syncedWarCount, queuedWarSyncCount)
+					? DiplomacyMiscPromptTexts.Get("Vassalage_NpcSuzerainTookOverWarsFormat", "Suzerain took over tributary's active wars: {0} effective, {1} will take effect when situations are safe.").Split(':')[0] + ": " + syncedWarCount.ToString(CultureInfo.InvariantCulture) + ", " + queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + ", pending safe."
 					: "")
-			: ((syncedWarCount > 0 || queuedWarSyncCount > 0) ? string.Format(CultureInfo.InvariantCulture, DiplomacyMiscPromptTexts.Get("Vassalage_WarsSyncedFormat", "Shared wars: {0} synchronized, {1} pending until safe."), syncedWarCount, queuedWarSyncCount) : "");
+			: ((syncedWarCount > 0 ? (DiplomacyCompatibilityTexts.Get("Vassalage_MutualWarsSynced_Prefix") + syncedWarCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_Items_Suffix")) : "")
+				+ (queuedWarSyncCount > 0 ? (queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_MutualWarsSafe_Suffix")) : ""));
 statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_TypeAmendedFromToFormat", "Vassalage treaty of {0} amended from {1} to {2}"), GetKingdomDisplayName(targetKingdom, DiplomacyMiscPromptTexts.Get("StrategicProfile_DefaultKingdomFallback", "the kingdom")), oldTypeText, newTypeText)
 			+ (newType == AfVassalageType.Tributary ? DiplomacyMiscPromptTexts.Get("Vassalage_TributaryTermsDesc", "Tributary pays tribute periodically in exchange for suzerain protection; does not join military campaigns.") : "")
 			+ (wasAtWarWithPlayer ? (peaceAfterAgreement ? DiplomacyMiscPromptTexts.Get("Vassalage_BothSidesTruceAfterAmend", "Both sides made peace following the amendment.") : DiplomacyMiscPromptTexts.Get("Vassalage_BothSidesTrucePendingSync", "Truce between both sides will execute synchronously when safe.")) : "")
 			+ revisedWarSyncStatusText
-			+ (otherQueuedDiplomacySyncCount > 0 ? string.Format(CultureInfo.InvariantCulture, DiplomacyMiscPromptTexts.Get("Vassalage_OtherDiplomacySafeFormat", "Other diplomatic changes: {0} pending until safe."), otherQueuedDiplomacySyncCount) : "");
+			+ (otherQueuedDiplomacySyncCount > 0 ? (DiplomacyCompatibilityTexts.Get("Vassalage_OtherDiplomacySafe_Prefix") + otherQueuedDiplomacySyncCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_OtherDiplomacySafe_Suffix")) : "");
 		string summary = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_AgreementRevisedSummary",
 			"The vassalage treaty of {SUBJECT} has been revised from {OLD} to {NEW}.",
 			("SUBJECT", GetKingdomDisplayName(targetKingdom, GetVassalageTypeProjection(oldType))),
@@ -4849,12 +4908,11 @@ statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_TypeAmendedFr
 			&& !((reason ?? "").Trim().EndsWith("_controlled_subject_cascade", StringComparison.OrdinalIgnoreCase));
 		if (shouldDisplayControlledSubjectWarSyncNotice)
 		{
+string subjectWarSyncNoticePrefix = declaredNowCount + queuedCount > 0 ? DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainWarsSyncedFormat", "Suzerain war status synchronized: ").Split(':')[0] + ": " : DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainWarsConfirmedFormat", "Suzerain war status confirmed: ").Split(':')[0] + ": ";
 			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
 				"AF_DIP_UI_Vassalage_SubjectWarSync",
 				"{PREFIX} {DECLARED} subjects joined the war, {QUEUED} will join when conditions are safe, and {ALREADY} were already at war.",
-                ("PREFIX", declaredNowCount + queuedCount > 0
-                    ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SubjectWarSyncPrefix", "Suzerain war status synchronized:")
-                    : DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SubjectWarConfirmedPrefix", "Suzerain war status confirmed:")),
+				("PREFIX", declaredNowCount + queuedCount > 0 ? "Suzerain war status synchronized:" : "Suzerain war status confirmed:"),
 				("DECLARED", declaredNowCount.ToString(CultureInfo.InvariantCulture)),
 				("QUEUED", queuedCount.ToString(CultureInfo.InvariantCulture)),
 				("ALREADY", alreadyAtWarCount.ToString(CultureInfo.InvariantCulture))), Color.FromUint(4278242559u)));

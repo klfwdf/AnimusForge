@@ -21,7 +21,7 @@ internal static class DocumentApplicationReplay
                 && created.AuthorKingdomId == "author" && created.AuthorRulerId == "ruler"
                 && created.TargetKingdomId == "target" && created.AddressedKingdomIds.Single() == "target",
             "document creation preserves stable IDs, round identity and initial addressee");
-        Test.True(created.Title == "外交宣言" && created.Body == "The declaration."
+        Test.True(created.Title == DiplomacyMiscPromptTexts.Get("Document_DefaultTitleDeclaration", "") && created.Body == "The declaration."
                 && created.Day == 12 && created.GameDate == "date" && created.CreatedUtcTicks == 12345,
             "document creation keeps canonical title/body normalization and captured game time");
         Test.True(created.IsPlayerAuthored && created.IsResponse && created.IsRead,

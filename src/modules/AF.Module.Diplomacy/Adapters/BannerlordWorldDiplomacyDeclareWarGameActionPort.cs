@@ -97,7 +97,8 @@ public sealed class BannerlordWorldDiplomacyDeclareWarGameActionPort
         {
             MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(
                 "diplomacy_declare_war",
-                () => DeclareWarAction.ApplyByKingdomDecision(declarer, target));
+                () => WorldDiplomacyBehavior.RunAuthorizedEventWar(declarer, target,
+                    () => DeclareWarAction.ApplyByKingdomDecision(declarer, target)));
             if (!DirectDiplomacyWarGuard.DidDeclarationTakeEffect(FactionManager.IsAtWarAgainstFaction(declarer, target)))
             {
                 return Receipt(WorldDiplomacyDeclareWarExecutionStatus.ActionNotApplied, command,
