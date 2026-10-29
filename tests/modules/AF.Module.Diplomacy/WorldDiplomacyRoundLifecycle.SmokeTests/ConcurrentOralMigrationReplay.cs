@@ -13,6 +13,7 @@ internal static class ConcurrentOralMigrationReplay
     {
         internal WorldDiplomacyOrchestration Owner;
         internal bool PublishEnabled;
+        internal string PlayerAffiliation = "p", PlayerSovereign = "p";
         internal bool PlayerAwareExecution;
         internal bool OralEffectPortsEnabled;
         internal bool WorldWar;
@@ -38,10 +39,10 @@ internal static class ConcurrentOralMigrationReplay
         public override string ResolveRepresentativeId(string id) => id;
         public override bool PartyResolved(string id) => !string.IsNullOrWhiteSpace(id);
         public override bool HasIndependentAuthority(string id) => !string.IsNullOrWhiteSpace(id);
-        public override bool IsPlayerParty(string id) => id == "p";
-        public override bool IsPlayerAffiliatedParty(string id) => id == "p";
-        public override string PlayerKingdomId() => "p";
-        public override bool CanAiAuthorParty(string id, out string reason) { reason = ""; return !Dead && id != "p"; }
+        public override bool IsPlayerParty(string id) => !string.IsNullOrEmpty(PlayerSovereign) && id == PlayerSovereign;
+        public override bool IsPlayerAffiliatedParty(string id) => !string.IsNullOrEmpty(PlayerAffiliation) && id == PlayerAffiliation;
+        public override string PlayerKingdomId() => PlayerAffiliation;
+        public override bool CanAiAuthorParty(string id, out string reason) { reason = ""; return !Dead && !IsPlayerParty(id); }
         public override string PartyNameOrEmpty(string id) => id ?? "";
         public override string PartyRulerId(string id) => string.IsNullOrEmpty(id) ? "" : "ruler_" + id;
         public override string PartyRulerName(string id) => PartyRulerId(id);
@@ -59,11 +60,11 @@ internal static class ConcurrentOralMigrationReplay
         public override string ResolvePropagationReceiverId(string kingdomId, string settlementId) => kingdomId ?? settlementId;
         public override IWorldDiplomacyHistoryCapturePort HistoryCapture() => new HistoryPort(this);
         public override IWorldDiplomacyDocumentExecutionPort DocumentExecution() => PublishEnabled
-            ? new DocumentExecutionReplay.Port { Owner = Owner, PlayerKingdomId = "p" } : null;
+            ? new DocumentExecutionReplay.Port { Owner = Owner, PlayerKingdomId = PlayerSovereign } : null;
         public override IWorldDiplomacyActionSelectionPort ActionSelection() => PublishEnabled ? new SelectionPort(this) : null;
 
         public bool RulerAlive(string id) => !Dead;
-        public bool IsPlayerRuler(string id) => id == "ruler_p";
+        public bool IsPlayerRuler(string id) => !string.IsNullOrEmpty(PlayerSovereign) && id == "ruler_" + PlayerSovereign;
         public string RulerName(string id) => id;
         public (bool available, bool cycle, bool existing) TreatyState(string receiving, string joining) => (true, Cycle, false);
         public (bool success, bool changed, string reason) ExecuteTreaty(string intent, string receiving, string joining)

@@ -448,6 +448,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         var selectedHistory = SelectPriorStoryWindow(prior, relevantKeys, proposedFingerprint);
         job.SystemPrompt = DiplomacyPromptTexts.Get(job.Kind == "event_concept_audit" ? "EventConceptAudit" : "EventConceptWriter", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignPositionContract", "");
+        job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignControlContract", "");
         job.PositionOwnerReviewVersion = 1;
         if (job.Kind == "event_concept_audit") job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("PositionOwnerReview", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("EventNarrativeSafety", "");
@@ -461,7 +462,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         job.UserPrompt = JsonConvert.SerializeObject(new {
             round.RoundId, round.EventOpeningOrigin, round.ExternalOpeningContext,
             candidates, world_source_key = "world:current",
-            sovereign_speakers = candidates.Select(x => new { kingdom = x, ruler_hero_id = _host.PartyRulerId(x) }),
+            sovereign_speakers = SovereignSpeakersForModel(candidates),
             narrative_actors = NarrativeActors(candidates),
             sources = PlanningSources(job, frozenMaterial),
             trigger_material = job.EventTriggerMaterial,

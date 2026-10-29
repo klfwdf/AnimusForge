@@ -93,6 +93,10 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Contains("--sovereign-control"))
+        { try { SovereignControlReplay.Run(); Console.WriteLine("PASS sovereign control assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--sovereign-regression"))
+        { try { SpeechReviewReplay.Run(); MaterialRecoveryReplay.Run(); CountryAdmissionReplay.Run(); Console.WriteLine("PASS sovereign regression assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--worldbook-repair"))
         { try { MaterialCountryThirdReplay.WorldBookWaitEnding(); Console.WriteLine("PASS worldbook repair assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--diplomacy-stall-repair"))

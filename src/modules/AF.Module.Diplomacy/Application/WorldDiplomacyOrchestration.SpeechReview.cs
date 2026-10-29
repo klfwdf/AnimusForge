@@ -122,9 +122,12 @@ internal sealed partial class WorldDiplomacyOrchestration
         bool correctingPayload = job.Kind == "oral_review" && correction == SpeechPayloadFailure;
         if (correctingPayload) job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SpeechReview_RepairPayload", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SpeechReview_EventAttribution", "");
+        job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignControlContract", "");
         job.UserPrompt = JsonConvert.SerializeObject(new {
             speaker = item.Actor, ruler = item.Ruler, player_kingdom = item.PlayerKingdom,
             player_is_ruler = SpeechPlayerHasAuthority(item),
+            player_controlled_kingdom = CurrentPlayerAuthority(),
+            sovereign_speakers = SovereignSpeakersForModel(_host.AllKingdomIds()),
             current_public_facts = JArray.Parse(evidence),
             actual_player_text = item.PlayerText, actual_npc_text = item.NpcText, untrusted_tag_hints = item.TagHints,
             known_agreements = BuildOralArrangementContext(item.Ruler, item.Actor),

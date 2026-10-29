@@ -229,6 +229,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("EventEffectPayloadContract", "");
         if (job.ForcedIntent == "ended") job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("EventEndingContract", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignPositionContract", "");
+        job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignControlContract", "");
         job.PositionOwnerReviewVersion = 1;
         if (job.Kind == "event_boundary_audit" && job.ForcedIntent == "started" && !HasEventFoundation(round))
             job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("PositionOwnerReview", "");
@@ -253,7 +254,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                 .Select(x => new { x.AuthorKingdomId, x.TargetKingdomId, x.Title, x.Body, x.Intent, x.TreatyTerms }),
             world = ending ? "" : CompactPlanningWorld(EventHost.CaptureEventWorld(participants), 6000),
             narrative_actors = NarrativeActors(participants),
-            participants, sovereign_speakers = participants.Select(x => new { kingdom = x, ruler_hero_id = _host.PartyRulerId(x) }),
+            participants, sovereign_speakers = SovereignSpeakersForModel(participants),
             public_documents = evidence["documents"], exact_commitments = evidence["commitments"],
             pending_offers = evidence["pending_offers"], history_selection = evidence["history_selection"],
             prior_public_boundaries = Storage.EventAnnouncements.Where(x => x.EventId == round.RoundId && x.State == "public"),

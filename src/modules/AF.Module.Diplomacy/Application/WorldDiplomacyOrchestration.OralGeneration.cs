@@ -121,11 +121,13 @@ internal sealed partial class WorldDiplomacyOrchestration
         job.SystemPrompt = WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(
             _host.CommonDiplomacyContract(ResolveRound(item.RoundId)), range.minimum, range.maximum, DiplomacyPromptTexts.Get)
             + DiplomacyPromptTexts.Get("OralGeneration_System", "\n[Oral agreement drafting] The action in this request was confirmed in conversation. Draft only the declaration using the shared writing guidance; do not renegotiate or select an action. For this writing task return actions=[]; the program binds the confirmed action and terms independently of model output. Agreed bilateral accept_* actions come from the two rulers' oral agreement and do not require an invented original proposal document. The agreed declaration must explicitly announce fulfillment now; propose_* matters without a third kingdom's consent must remain proposals. Conversation material only informs the agreement and tone: do not publish private dialogue, secrets or unverified player claims verbatim. Public reasons require public facts. body must fully disclose the fixed terms without internal IDs, tags, program status, receipts or technical explanations.");
+        job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignControlContract", "");
         job.SystemPrompt = PromptComposerTexts.ApplyOutputLanguage(job.SystemPrompt);
         var sb = new StringBuilder(DiplomacyPromptTexts.Get("OralGeneration_UserHeader", "player_diplomacy=true\nDraft a complete public diplomatic declaration from the confirmed agreement below.\n"));
         sb.AppendLine(DiplomacyPromptTexts.Format("OralGeneration_Author", "Publishing kingdom: {ACTOR}; ruler: {RULER}",
             "ACTOR", _host.PartyNameOrEmpty(item.ActorKingdomId), "RULER", _host.PartyRulerName(item.ActorKingdomId)));
         sb.AppendLine(DiplomacyPromptTexts.Get("OralGeneration_Target", "Target kingdom: ") + _host.PartyNameOrEmpty(item.TargetKingdomId));
+        sb.AppendLine(JsonConvert.SerializeObject(new { sovereign_speakers = SovereignSpeakersForModel(new[] { item.ActorKingdomId, item.TargetKingdomId }) }));
         sb.AppendLine(DiplomacyPromptTexts.Get("OralGeneration_Agreed", "Both rulers agreed; fulfillment upon publication=") + HasCurrentPlayerConsent(item));
         sb.AppendLine(DiplomacyPromptTexts.Get("OralGeneration_FixedAction", "Fixed action (copy fields only; do not add, remove or amend terms): ") + OralAction(item, intent).ToString(Formatting.None));
         sb.AppendLine(DiplomacyPromptTexts.Get("OralGeneration_PublicTerms", "Public facts of the terms: ") + DescribeDialogueTerms(item.Terms.ToTerms()));

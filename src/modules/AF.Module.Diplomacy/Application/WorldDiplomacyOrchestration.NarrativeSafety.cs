@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AnimusForge.Refactor.Domain;
@@ -10,6 +11,39 @@ namespace AnimusForge;
 internal sealed partial class WorldDiplomacyOrchestration
 {
     private static readonly string[] PositionFields = { "agenda", "gain", "cost", "red_line", "alternative" };
+    // Request-boundary snapshot of the existing authority owner. Affiliation
+    // never transfers an NPC ruler's decisions to a vassal or mercenary player.
+    private object SovereignSpeakersForModel(IEnumerable<string> kingdoms)
+    {
+        string affiliated = _host.PlayerKingdomId();
+        return kingdoms.Select(x => new {
+            kingdom = x, ruler_hero_id = _host.PartyRulerId(x),
+            human_controlled = _host.IsPlayerParty(x), player_affiliated = x == affiliated
+        }).ToArray();
+    }
+
+    private string NpcConceptPositionFailure(string kingdom) =>
+        "event_concept_invalid:participants[" + kingdom + "].agenda_gain_cost_red_line_alternative_require_nonempty_strings_at_most_1000_chars"
+        + ";human_controlled=false;ruler_hero_id=" + _host.PartyRulerId(kingdom)
+        + ";player_affiliation_is_not_sovereignty;provide_this_NPC_rulers_five_positions_and_nonempty_address_to"
+        + ";preserve_confirmed_oral_action_target_terms_and_consent;do_not_require_player_acceptance_for_NPC_authority";
+
+    private bool TryRecoverLegacyOralNpcPosition(WorldDiplomacyJob job, out string feedback)
+    {
+        feedback = "";
+        string country = _host.PlayerKingdomId();
+        if (job.Kind != "event_concept" || job.EventSelectionStage != "oral" || !IsBoundMatterPlanning(job)
+            || string.IsNullOrEmpty(country) || _host.IsPlayerParty(country)
+            || job.SuspendedReason != "event_concept_invalid:participants[" + country
+                + "].agenda_gain_cost_red_line_alternative_require_nonempty_strings_at_most_1000_chars") return false;
+        var draft = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(job.PrivacyDraft);
+        var row = (draft?["participants"] as JArray)?.OfType<JObject>().FirstOrDefault(x => (string)x["kingdom"] == country);
+        if (row == null || PositionFields.Any(x => row[x]?.Type != JTokenType.String || (string)row[x] != "")) return false;
+        // Consume only the exact retired diagnostic. New failures include authority
+        // evidence, so save/load cannot replenish this finite repair budget.
+        feedback = NpcConceptPositionFailure(country);
+        return true;
+    }
     private static string PublicSpeechPattern => DiplomacyCompatibilityTexts.Get("Event_PublicSpeechPattern");
     private static readonly Lazy<Regex> PublicSpeech = new(() => new Regex(PublicSpeechPattern,
         RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
@@ -293,7 +327,7 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private bool TryReadConceptPosition(string kingdom, JObject row, out WorldDiplomacyRoundParticipant position, out string reason)
     {
-        reason = "event_concept_invalid:participants[" + kingdom + "].agenda_gain_cost_red_line_alternative_require_nonempty_strings_at_most_1000_chars";
+        reason = NpcConceptPositionFailure(kingdom);
         if (!_host.IsPlayerParty(kingdom)) return TryReadEventPosition(row, out position);
         position = null;
         reason = "event_concept_player_agency:participants[" + kingdom + "];player_agenda_gain_cost_red_line_alternative_and_address_to_must_be_empty;do_not_author_player_intentions";

@@ -213,13 +213,15 @@ internal sealed partial class WorldDiplomacyOrchestration
             && (job.SuspendedReason.Contains("narrative_world_book_")
                 || job.SuspendedReason.StartsWith("boundary_audit_rejected:", StringComparison.Ordinal)
                     && job.SuspendedReason.Contains("world_book_basis"));
-        bool changed = resumedWorldBook || repairedEndingEvidence || repairedBoundMatter || repairedEndingBudget || repairedProgressBudget || repairedEndingAuthor || recoveredAdmissionIdentity || IsLegacyAdmissionProtocolFailure(job, job.SuspendedReason) || repairedWorldBookAudit || repairedOpeningEffects || repairedEmptyPlayerOpening || repairedProgressRoute || repairedDraftContract || repairedFoundationContract || repairedDeclarationContract || repairedEvidenceContract || repairedOptionalTermsContract || repairedAnswerContract || explicitResume || job.RecoveryConfiguration != configuration
+        bool repairedSovereignControl = TryRecoverLegacyOralNpcPosition(job, out string sovereignFeedback);
+        bool changed = repairedSovereignControl || resumedWorldBook || repairedEndingEvidence || repairedBoundMatter || repairedEndingBudget || repairedProgressBudget || repairedEndingAuthor || recoveredAdmissionIdentity || IsLegacyAdmissionProtocolFailure(job, job.SuspendedReason) || repairedWorldBookAudit || repairedOpeningEffects || repairedEmptyPlayerOpening || repairedProgressRoute || repairedDraftContract || repairedFoundationContract || repairedDeclarationContract || repairedEvidenceContract || repairedOptionalTermsContract || repairedAnswerContract || explicitResume || job.RecoveryConfiguration != configuration
             || job.RecoveryRevision != round.ConversationRevision
             || job.RecoveryKnowledgeRevision != DiplomacyEventRules.KnowledgeRevision(round, job.AuthorKingdomId)
             || job.RecoverOnService && job.RecoveryServiceEpoch < Storage.SpeechServiceRecoveryEpoch;
         if (!changed && job.TechnicalRecoveryAttempts >= 3) return;
         if (!changed && job.SuspendedReason.StartsWith("event_required_input_budget_exceeded:", StringComparison.Ordinal)) return;
         if (changed) job.TechnicalRecoveryAttempts = 0;
+        if (repairedSovereignControl) job.MaterialRepairFeedback = sovereignFeedback;
         if (repairedBoundMatter) { job.StoryReviewVersion = 2; job.MaterialRepairFeedback = ""; }
         if (repairedEndingBudget) job.EndingContextVersion = 1;
         if (repairedEndingEvidence)

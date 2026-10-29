@@ -80,6 +80,16 @@ internal static class PromptMemoryReplay
         Test.True(text.Contains((SmokeLocalizationEnvironment.EnglishPackage ? "Independent landholding clan: 家族" : "独立有城家族：家族")) && prompt.Templates.SequenceEqual(new[] { "player_independent_settlement_clan", "level_3" }), "missing independent-clan template retains trust fallback");
         prompt = new Prompt { PlayerRuler = false };
         Test.True(DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】").Contains("player_not_king") && prompt.Templates.Count == 1, "non-ruler state stops before trust template");
+        foreach (bool independent in new[] { false, true })
+        foreach (bool ruler in new[] { false, true })
+        {
+            var participant = new Prompt { Independent = independent, PlayerRuler = ruler };
+            string instruction = DiplomacyPromptTexts.Get("ConversationPersuasion", "");
+            Test.True(instruction.Length > 100 && DiplomacyPromptApplication.Build(participant, "【附加规则:diplomacy】").Contains(instruction),
+                "actual shared main reply includes persuasion independent of player signing authority");
+        }
+        Test.True(!nativeMain.Contains(DiplomacyPromptTexts.Get("ConversationPersuasion", "missing")),
+            "AI diplomacy disabled does not acquire formal publication requirements");
         prompt = new Prompt { TopicAllowed = false };
         Test.True(DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】").Length == 0 && prompt.Wars == 0, "ineligible NPC never scans wars");
         var memory = new Memory();
