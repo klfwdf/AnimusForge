@@ -1,3 +1,17 @@
+<a id="player-ultimatum-reply-repair-20261029"></a>
+## 玩家通牒回复与沉默/收尾衔接 — 2026-10-29
+
+源码 `421aad45e`，检查点 `d577f21b7`。[主台账、范围及未验项](../animusforge-refactoring-and-repository-reorganization-plan.md#player-ultimatum-reply-repair-20261029)。下表路径相对仓库，行号一基；同 DLL 外交 Application 责任，不新增公开 API、存档字段或配置。
+
+| 源码路径 | 符号 / 行号 | 已覆盖责任与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Threats.cs` | `RecordThreatNonCompliance` 67–75；`BindPlayerThreatAnswerSources` 79–100；`IsPublishedPlayerThreatAnswer` 102–111 | 复用原未服从记录；明确来源优先，同案面向通牒方不依赖内容相关性；资格、时间、发布及知情守卫 |
+| 同上 | `ReconcilePlayerThreatAnswer` 113–137；`RecoverPublishedPlayerThreatAnswers` 139–155 | 晚归案同步原通牒、沿用历史重试，加载仅恢复确切旧回答；不重执行外交动作或重置一次性标记 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Scheduling.cs` | `BindPlayerDeclarationToSharedEvent` 108–111 | 归案前补确定性回复来源，复用原归案消费者 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerEvents.cs` | `RegisterPublishedPlayerAnswer` 209–238 | 回复记账与通牒决定同步；普通问答及沉默资格原入口保留 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerLifecycle.cs` | `NormalizePlayerLifecycleRecovery` 310–314 | 加载入口接入确切旧回答恢复；不新增 Tick 档案扫描 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/EventConvergencePlayerThreatReplyReplay.cs` | `PlayerThreatReplyRepair`、`DirectedPlayerThreatReplies`、`PlayerThreatReplyRecovery`、`PlayerThreatReplyGuards` | 真实生产方法与记录序列化回放；假宿主模拟游戏对象，未覆盖实机、真实模型及玩家 `.sav` |
+
 <a id="diplomacy-token-optimization-20261029"></a>
 ## 外交 token 优化发送与恢复边界 — 2026-10-29
 

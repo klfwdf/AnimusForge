@@ -1,3 +1,8 @@
+<a id="player-ultimatum-reply-repair-20261029"></a>
+## 玩家回复最后通牒后卡收尾已本地修复 — 2026-10-29
+
+产品 `421aad45e`，检查点 `d577f21b7`。对应通牒的发言先算回复，再判断服从；晚归案与确切旧回答补齐通牒状态，保留原沉默/服从/NPC 后续决定及幂等。CN 全套 15,389 项、CN/EN 相关专项各 844 项、双 API/Bootstrap/seam/registration 与分块检查通过；EN 全套及两项旧专项有修前同点失败，详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-ultimatum-reply-repair-20261029)和[代码证据图](docs/architecture/af-framework-code-scope.md#player-ultimatum-reply-repair-20261029)。**SCOPED_OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**；未操作玩家存档，保留其他会话改动。
+
 <a id="diplomacy-token-optimization-20261029"></a>
 ## 外交 token 优化已本地完成，尚未部署 — 2026-10-29
 

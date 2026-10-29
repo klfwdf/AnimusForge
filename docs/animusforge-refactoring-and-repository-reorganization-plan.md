@@ -1,3 +1,15 @@
+<a id="player-ultimatum-reply-repair-20261029"></a>
+## 玩家通牒回复与收尾一致性修复 — 2026-10-29
+
+- **IMPLEMENTED / SCOPED_OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。产品提交 `421aad45e`，意图检查点 `d577f21b7`，基线 main `0f416a8b1`；用户已明确批准最终方案：对应事件/通牒内的发言算回复，答非所问属于已回复但未服从，不因语义不相关继续沉默处理。本条替代本任务 ACTIVE 状态。保留其他会话的政策、索引、维护、UI 和文档改动。
+- 原因与修复：Logs (14) 中“吕卡隆的挑衅”的玩家发言先在临时事件发表，之后被语义路由归入原案；普通等待已记录回答，通牒却仍为 pending，原一次性 `ThreatConsequencesSettled` 已置位。现由原回复登记入口同步补齐确切通牒决定，复用未服从事件记录方法，不重跑惩罚/宣战。不改变 NPC 原有跟进决策、有效服从执行、普通非通牒沉默规则。
+- 回复资格：确切回复入口/已核实回答来源优先；同案且面向通牒发出方的发言无须模型判定语义相关。仅绑定仍有效、玩家已知、早于回复且指向当前玩家国家的通牒。明确来源不消耗另一案件的通牒；未发布、待分析、待执行、失去资格、已结束/已服从等不补造拒绝。
+- 旧记录恢复：仅加载边界读取仍存活事件的确切 `PlayerNegotiationWaits.AnswerDocumentId`，匹配原通牒与真实已发布回复；沿用原回复日期、原字段/存档身份，幂等补齐未服从状态及原历史入口。缺失原文、无确切回答或已结算记录不推测恢复。无新 JSON 字段、Prompt/UI 资源、模型调用、Tick IO/全历史扫描；工作只在发表/归案和加载边界发生。CN/EN 同一实际消费者，不改自然语言输出限制。
+- 修前证据：新增真实生产链路回放首先在 `late semantic attachment settles the exact pending ultimatum even after initial publication was settled` 断言复现失败。修后 CN/EN 各 `--baseline-restoration` 255、`--diplomacy-stall-repair` 88、`--player-semantics` 501 项通过；覆盖晚归案、模型不认相关的明确回复入口、同案答非所问、正常服从、72 小时沉默边界、普通问答、跨国/跨案、来源可见性、无效资格、序列化读回及重复处理。CN 完整回归 15,389 项通过。
+- 验证限制：EN 完整回归仍在 `EventStructureReplay.MaterialAdmission` 的 `correction/audit reuses complete frozen records after bounded selection-time supplementation` 失败；`--player-lifecycle` 在 `privacy_context_missing`、`--player-response-recovery` 在原发文国失效解释断言失败。用独立临时项目替换回 `d577f21b7` 的本次四个生产文件，其余输入不变，均复现同点失败，未记为本次通过或修复。首次隔离构建包含旧 obj 造成重复程序集属性，明确排除 obj 后成功；初次全套未加载真实 UI 语言资源，补 `AF_SMOKE_UI_MODULE` 后 CN 全套通过。
+- 构建：原 `scripts/build/build_single_module.ps1 -ProjectRoot <当前仓库> -BannerlordRoot E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord -WorkshopContentDir E:/SteamLibrary/steamapps/workshop/content/261550 -HarmonyCorePath <该目录>/2859188632/bin/Win64_Shipping_Client/0Harmony.dll -Configuration Debug`，不带 Stage/Deploy；1.3.15.110062 / 1.4.6.115628、Bootstrap、双 coup seam、每 API 20 项 memory port 及 registration smoke 全通过。初次缺 Harmony 实际路径失败，补原脚本参数后成功；未改变构建脚本。成功日志记录的实现 SHA256：1.3 `e8a3efd432cd1123aba2ca78d094c0e0b2df459156b1dfd75360d87626e4fbdc`，1.4 `cd64179ecee781b8de7e7d7cba9c1bb13c203f63a7ce87b127746526ca460843`。共享构建输出随后被其他工作重新生成，以上仅绑定本次成功门禁日志，不声称当前目录哈希不变。
+- 存档边界：`PersistenceChunkReplayTests` 与 `validate_persistence_profile_config.py --chunk-contract-only` 通过（22 分块键、47 扁平字典键、已知直接 JSON 风险 0）；本次未变分块协议。游戏/真实模型/玩家 `.sav` 未运行，旧档恢复结论仅为记录序列化回放。未部署、打包、推送或直接修改玩家存档。本次独立临时目录在收尾清理，不清理其他任务/共用构建产物。回滚使用 `421aad45e` 的定向逆提交；代码责任及行号见[证据图](architecture/af-framework-code-scope.md#player-ultimatum-reply-repair-20261029)。
+
 <a id="diplomacy-token-optimization-20261029"></a>
 ## 外交 token 优化：紧凑请求、有效结果复用与有限重试 — 2026-10-29
 
