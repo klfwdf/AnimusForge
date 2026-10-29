@@ -1,3 +1,9 @@
+# 未部署：内政“贵族家族”表最后一行压住底部说明（2026-10-30，未提交）
+
+无派系（成派条件）页上方最多6条条件行，下面每页5个家族，表格高度超出后第5行画到底部“按家族不满由高到低 / 红色刻度为成派门槛”上。`KingdomInteriorPanel.cs`：该页每页改为4行（`LedgerRows` 5→4，翻页自动增加），条件行高28→24，家族行区域加 ClipContents，任何情况下都不会再盖住底部说明。估算该页所需高度653→593。InteriorChronicle 31项（复制测试并补 `CivilWarUiText.Date` 桩后，1.3/1.4各通过；原测试在HEAD上同样因缺该桩编不过）。未编译、未部署、未实机。
+
+---
+
 # 已推送：SETS 冲突卡顿修复 + TTS 主音量/会话结束取消（2026-10-30）
 
 按用户“推送”授权，在远端 f33af1e90 之上用独立 index 生成单个提交 134365229fe86c3253abd9cd687c37c460ff1a22，普通快进推送，ls-remote 确认。13 个文件（+124/−28），保留原换行符；排除 HANDOFF 与主台账。发布树本身双API+Bootstrap Release构建通过，pre-push 源码交付检查通过，凭据/内网地址扫描无命中。本地 HEAD c821a7c1a 与工作区不变。回滚：在 origin/main 上 revert 134365229。证据 artifacts/push-sets-perf-tts-volume-20261030/。
