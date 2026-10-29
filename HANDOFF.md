@@ -1,3 +1,9 @@
+# 百科、人物与派系本轮本地完成（2026-10-29）
+
+产品 `43290bc9b`：百科三列两行；新增按本次提示词重生；玩家外貌上下文明确主体（未发现写入NPC profile）；派系累计日期转历法；玩家创建免冷却，NPC/起兵规则保持。双API/Bootstrap及专项离线验证通过；旧知识库全量检查的公告模板失败、未实机/模型/部署等边界见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#encyclopedia-persona-factions-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#encyclopedia-persona-factions-20261029)。其他截图仅调查记录，未宣称修复。证据与本地候选在 `artifacts/encyclopedia-persona-20261029/`；回滚用本产品聚焦inverse提交。
+
+---
+
 # 投票议程前二原因链路已复核（2026-10-29）
 
 - 原生双API各21项合成状态检查：无族长家族可同时破坏详情与投票；普通易主/转国会提前移除或取消；中心点缺失估值可复现但正常有地王国会重算。未找到玩家具体坏对象或AF制造该状态的证据。a1e9cf147只修诊断自身getter二次异常；双API/Bootstrap与注册检查通过，未部署。新候选artifacts/agenda-vote-failure-20261029/chain-probe/candidate/。[唯一台账与复现边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#agenda-vote-failure-20261029)。

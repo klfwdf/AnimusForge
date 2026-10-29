@@ -1,3 +1,23 @@
+<a id="encyclopedia-persona-factions-20261029"></a>
+## 百科/人物与派系受影响源码 — 2026-10-29
+
+产品 `43290bc9b5a356debe98bd7180729ddf5959f3f7`；[状态、验证与回滚](../animusforge-refactoring-and-repository-reorganization-plan.md#encyclopedia-persona-factions-20261029)。下表为关键一基源码片段，完整变动以该提交为准；未覆盖实机、玩家存档、外部模型及其余截图根因。无公开API/存档身份变更。
+
+| 源码片段 | 符号 | 责任 |
+| --- | --- | --- |
+| src/AF.GameAdapter.Bannerlord/UI/Common/HeroEncyclopediaActionBar.cs:8–67 | GetOrCreate / AddButton | 创建时共享三列两行容器；稳定排序，原button事件和显示权限保留 |
+| src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:2215–2250 | EnsurePromptedRerollButton | 新按钮、当前Hero解析及弱引用缓存；UpdateGeneratedRoot复用原权限/生成状态 |
+| src/AF.GameAdapter.Bannerlord/UI/Editors/PersonaEditorController.cs:282–325 | OpenHeroPersonaPromptedReroll / RunHeroPersonaRerollAsync | 本次提示词、空值/重复/取消/换目标/换档保护 |
+| src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs:95–115 | GenerateNpcPersonaAsync | 主线程capture时只追加本次要求；不写全局或其他NPC |
+| src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs:724–759 | GetPlayerAppearanceForPrompt / BuildPermanentPlayerAppearanceContext | 独立字段读取；明确玩家主体及结束边界，原文不替换 |
+| src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Actions.cs:135–163 | Quote | 玩家创建不检查冷却；NPC分支、加入与其他资格保留 |
+| src/modules/AF.Module.Kingdom/CivilWar/CivilWarUiText.cs:26–29 | Date | 复用整数历法投影，避免Days(float)大天数前一日偏差 |
+| src/modules/AF.Module.Kingdom/Runtime/KingdomCivilWarTexts.cs:20–29 | Date | 模型上下文按内容包日期/季节模板投影，与界面语言独立 |
+
+源文件hash和明确未验边界见 `artifacts/encyclopedia-persona-20261029/code-map.json`。Illustrator布局消费者、Composition接线、CN/EN资源及测试同产品提交；唯一详细记录留在主台账。
+
+---
+
 <a id="agenda-vote-failure-20261029"></a>
 ## 玩家投票议程空引用诊断 — 2026-10-29
 

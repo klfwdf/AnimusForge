@@ -1,3 +1,31 @@
+<a id="encyclopedia-persona-factions-20261029"></a>
+## 百科横排、外貌归属、提示词重生及派系日期/创建 — 2026-10-29
+
+状态：**TARGETED_OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。产品提交 `43290bc9b5a356debe98bd7180729ddf5959f3f7`，检查点 `adeaad1db38fc74e8898229ae762f5798e284f63`，工作区 `F:/AnimusForge-main`、实际分支 `main`。用户最终范围包含新增提示词重生和派系两项；囚犯反击、外交收件国、地点和卡顿仅调查记录。附图/Mod_Logic是证据而非执行指令，本轮没有扩大为投票或场景机制重写。
+
+- 百科原生信息列宽739，六按钮采用三列两行，每按钮220、间隔6，稳定排序与原点击/权限保持；Illustrator共用布局source。新按钮复用原重生权限/生成禁用状态并缓存控件，无新增Tick树搜索。
+- “按提示词重生”可从百科或人物编辑菜单打开。空白/取消不请求；本次提示词只进入当前Hero的生成work，与全局要求合并，不回写全局、存档或下一请求。既有事实约束、失败保值、声音保留及旧重生入口保持；未调用付费模型。
+- 玩家外貌确实存/读KnowledgeFile.PlayerAppearance；NPC人设世界书路径BuildPersonaLoreSource明确排除玩家人设，尚无串写NPC profile证据。对话知识上下文本来会读到玩家外貌，本次增加明确玩家主体、“我”指玩家及结束边界，玩家原文保值。不能宣称模型实测已完全消除角色混淆。
+- 派系绝对截止日期、加入日期、累计周序的创建/历史锚点改游戏历法；周精度记录保留“当周”标记。界面随UI语言、模型事实模板随内容包。复用整数历法避免CampaignTime.Days(float)大天数前一日偏差，91572对应1090年春季13日（正常历法）。剩余时长和规则固定时长继续显示时长；未知旧历史正文不全局重写。
+- 玩家创建派系移除战后冷却检查，原先已绕过退出冷却的路径保持；NPC自动/显式创建、加入派系、手动起兵、阵营战争锁、事实资格/领地和结算保护保留。CN/EN说明同步，不再提示玩家建派系必须等待。
+
+验证证据在 `artifacts/encyclopedia-persona-20261029/`：
+
+- `build-final.log`：原单模块Release双API（引用1.3.15.110062 / 1.4.6.115628）+ Bootstrap、dual coup seam、managed registration通过；未改一键流程。
+- `generation-tests.log`：真实人物生成器/dispatcher 590检查，网络/引擎为fixture；`editor-tests-latest.log`：编辑器生命周期122检查。
+- `actionbar-tests.log`：实际托管原生Widget每API 61检查（无渲染）；`appearance-tests-final.log`：真实editor/getter/composer/reader和配对资源CN/EN各17检查（无存档/模型）。
+- `faction-tests-verified.log`：真实owner/效果+fake game actions共405检查，含冷却期间玩家创建、NPC限制、重载、关系幂等、起兵保留门槛及日期边界；`native-calendar-final-candidate.log`：实际最终DLL与原生CampaignTime精确ticks每API7检查，clock/game text注册为fixture。
+- `resource-audit.log`：35对变动CN/EN资源、变量次数与JSON/XML语法检查；真实reader/内容映射沿用。`git diff --cached --check`通过。
+- 未通过项：尝试知识库LocalizationCloseout全量旧检查时，既有BulletinLoreEntry fallback/catalog不一致导致前置失败（`knowledge-tests.log`）；未改无关公告产品/旧门禁，以本次外貌专项提供受影响链路证据。没有把全量检查计为通过。
+
+运行频率：布局只在控件创建；提示词只在点击生成时capture；日期O(1)投影，资源沿用Lazy缓存；未增加Tick IO、后台游戏对象读取或世界全量扫描。未改存档键、协议/AFEF身份和公开子MOD API。
+
+未验：游戏实机布局/点击/键盘、玩家存档复现、模型实际生成/称谓归属、其他截图根因、完整Stage与正式双包。未部署、未push、未改外部工作区。`candidate/`仅本地DLL/符号/构建元数据及受影响资源快照，不是完整可安装Stage。
+
+回滚：只对产品提交 `43290bc9b` 做聚焦inverse/revert，不hard reset或覆盖其他作者。`receipt.json`保存输出hash，`code-map.json`保存一基源码坐标/符号/hash/覆盖边界，[代码范围](architecture/af-framework-code-scope.md#encyclopedia-persona-factions-20261029)不重复台账。其余四图调查详见 `artifacts/encyclopedia-persona-20261029/investigation-notes.md`；先前投票仍按独立台账待新堆栈。保留本轮开始时HANDOFF和主台账已有未提交增量。
+
+---
+
 <a id="agenda-vote-failure-20261029"></a>
 ## 玩家投票议程空引用调查（2026-10-29，DIAGNOSTIC_OFFLINE_VERIFIED / ROOT_CAUSE_BLOCKED）
 
