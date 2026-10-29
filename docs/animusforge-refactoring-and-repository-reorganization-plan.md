@@ -1,3 +1,16 @@
+<a id="diplomacy-event-map-only-20261029"></a>
+## 外交事件通知的大地图显示与退出修复 — 2026-10-29
+
+- 用户批准：对话期间不能显示，Esc能够退出，自动事件通知只在大地图出现。基线5a2558130，意图检查点9576aa700，产品967fd59cc；本轮没有部署、推送、游戏启动或存档修改授权。
+- 原因：事件队列按应用Tick推进，展示入口没有对话/地图资格限制；弹窗的焦点早退位于已收到关闭请求之前，失焦会搁置关闭并保留输入/暂停占用。
+- 实现：通知入口要求实际MapScreen与MapState、地图就绪、无Mission/进行中或切换中的对话、无自由对话/喊话编辑器、无原版菜单与模态窗口、无其他暂停owner且焦点归地图SceneLayer。显示期间重验资格；切屏、对话、其他模态抢焦点或图层停用时关闭但不确认，沿原队列稍后重试。Esc/Exit保持一帧延迟防按键穿透，已接收的Esc/知晓关闭请求先于焦点处理；仅无主焦点或地图焦点可恢复到事件层，其他窗口取得焦点则主动释放。Close保留原输入租约/暂停owner清理和generation校验。
+- 范围：只改展示入口和生命周期；事件发布、效果执行、存档身份及队列确认owner保持。终端明确点选的预览通过独立内部入口保留，不当成自动事件通知。沿用既有CN/EN文案和prefab绑定，没有新配置、资源键或Prompt。
+- 性能：待显示沿用每秒一次队列尝试；打开时每帧仅定长状态与焦点读取，无新层扫描、反射、IO或游戏对象全量遍历。
+- 验证：旧967fd59cc之前的检查点生产Popup源码在同一回放中触发“native conversation”拒绝断言失败（仅测试末尾的预览调用适配旧签名）；当前生产Popup/VM/输入租约源码回放112项通过，覆盖地图与对话资格、菜单/模态、Esc/Exit/知晓、焦点变化、状态切换与未读重试、图片准备跨对话、代际退出和终端预览。首次回放的“其他暂停owner”断言误将原有暂停计作新增，修正为前后计数比较后通过，未为此放宽产品规则。
+- 既有事件展示586项通过，覆盖图片选择/异步资源生命周期、快照、预览等待和本地化绑定。原build_single_module.ps1最终build-only通过1.3(v1.3.15.110062)、1.4(v1.4.6.115628)、Bootstrap与双coup seam/managed registration；保留已有编译警告和离线NU1900审计警告。git diff --cached --check通过。
+- 证据：artifacts/diplomacy-event-map-only-20261029/receipt.json、build-final.log、build-source-hashes.json、baseline-run.log、lifecycle-final-run.log、lifecycle-final-receipt.json、presentation-run.log；receipt绑定产品修订、源码/日志与两个候选DLL哈希。新建临时回放目录清理，保留小型证据及正式构建产物。
+- 边界：离线回放中的native screen/input/render为替身，未实机验证真实鼠标命中、按键时序、画面与其他模组竞争；没有宣称实机验收。未部署、未推送。回退仅对967fd59cc做定向逆向提交，不回滚他人改动。代码路径/符号/行号见[已验代码地图](architecture/af-framework-code-scope.md#diplomacy-event-map-only-20261029)。
+
 <a id="vassal-diplomacy-buttons-20261029"></a>
 ## 封臣原版外交按钮接管对齐 — 2026-10-29
 

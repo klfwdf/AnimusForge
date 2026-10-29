@@ -1,3 +1,8 @@
+<a id="diplomacy-event-map-only-20261029"></a>
+## 外交事件通知限制大地图并修复退出 — 2026-10-29
+
+产品967fd59cc，检查点9576aa700。自动事件通知仅在空闲大地图出现；对话、场景、菜单与其他窗口期间保留未读，显示后被打断则收起待重试。Esc/知晓均可确认关闭，焦点变化不再搁置已收到的关闭请求；终端手动预览保留。旧版对话拦截回归复现失败；修复后112项生命周期与586项既有展示/资源检查通过，最终双API/Bootstrap/seam通过。**OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-event-map-only-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-event-map-only-20261029)。
+
 <a id="vassal-diplomacy-buttons-20261029"></a>
 ## 封臣原版外交按钮已对齐 — 2026-10-29
 

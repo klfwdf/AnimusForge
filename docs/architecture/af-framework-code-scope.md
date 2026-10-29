@@ -1,3 +1,16 @@
+<a id="diplomacy-event-map-only-20261029"></a>
+## 外交事件通知显示与退出边界 — 2026-10-29
+
+源码修订967fd59cc，基线5a2558130，检查点9576aa700。[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-event-map-only-20261029)。
+
+| 路径与一基行号 | 符号 / 责任 | 覆盖及未覆盖 |
+|---|---|---|
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:47–116 | TryShow / TryShowPreview / TryShowCore / IsNotificationContextAvailable | 自动通知仅空闲地图；保留显式终端预览；未改变事件执行owner |
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:138–183 | OnApplicationTick / Close | 关闭请求优先、Esc延迟、上下文与失焦撤回、输入/暂停清理；未实机验证 |
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPreview.cs:16–29 | ProcessPending | 真实预览消费者改接专用入口，沿用准备中重试与双语提示 |
+| tests/DiplomacyEventPopupLifecycle/Program.cs:1–133；Stubs.cs:1–123；run.py:1–44 | 生产源码生命周期回放 | 112项，native边界是替身；runner记录源码哈希，输出隔离 |
+| tests/DiplomacyEventPresentation/PreviewPendingReplay.cs:1–65 | 既有预览替身入口适配 | 既有展示/本地化/异步资源合集586项；不代表真实绘制 |
+
 <a id="vassal-diplomacy-buttons-20261029"></a>
 ## 封臣原版外交按钮接管 — 2026-10-29
 
