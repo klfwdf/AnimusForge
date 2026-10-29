@@ -1,3 +1,18 @@
+<a id="deploy-cn-persona-factions-20261029"></a>
+## 本轮改动 CN 部署 — 2026-10-29
+
+**CN_DEPLOYED / FILE_VERIFIED / LIVE_NOT_RUN**。用户明确授权“先部署CN”。实际根F:/AnimusForge-main、main，源码 `476eb6c8f5df16e08bd0f0ac2347446712f02092`，空意图检查点 `c13da1914c5bd90b1f5746794e5873c7fea628e3`。只用原scripts/build/build_single_module.ps1 -Configuration Release -Deploy，引用 .tmp/build_check/1.3（1.3.15.110062）及1.4（1.4.6.115628），目标 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`。AF版本v1.7.0不递增，不打包/push。
+
+本次安装当前源码：产品43290bc9b的百科横排、按本次提示词重生、玩家外貌主体边界、派系历法与玩家创建冷却豁免；此前57caba7f7/a1e9cf147议程诊断也随当前源码。外交476eb6c8f只文档分析，没有声称外交选错/不回信已修复。沿用普通Bootstrap及1.3/1.4布局，未执行1.5特别版构建或清理未知目录。
+
+执行证据 `artifacts/deploy-cn-persona-factions-20261029/build-deploy.log`：双API Release、Bootstrap、dual coup seams、managed registration通过；原脚本content projection→clean Stage/目标路径/player保护→Stage管理文件覆盖成功。任务receipt保存十个关键Stage/目标文件hash，确认Bootstrap-only SubModule、双API DLL、CN知识/派系模板和双语UI资源一致；CN运行模板逐字节等于源中文文件。verify-deployment.py可复读。未重跑与部署无关的业务回放，先前专项/旧检查失败仍按原台账状态。
+
+玩家文件保护由原deploy_module.ps1实施：已有CustomPrompts/Configs/TerminalSettings保留，PlayerExports按修改时间合并且安装端同时间获胜；未列出的文件、Logs/Cache/Recovery/ONNX不镜像删除，不读写MCM Documents设置。未检测到运行中的游戏进程再执行覆盖。未创建部署Recovery/备份/manifest/完成标记/自动回滚。
+
+旧项目Stage在覆盖前保留到 `artifacts/deploy-cn-persona-factions-20261029/previous-project-stage`（已核实源目标都在当前工作区且无reparse），是项目产物保留而非游戏安装备份。新Stage位于 `F:\AnimusForge-main\bin\Release\single_module_stage\AnimusForge`。回滚必须选择明确候选重新经Stage部署，本轮没有游戏自动恢复点；源码需要撤改时聚焦inverse产品43290bc9b，不能hard reset或覆盖其他作者。未运行游戏、旧档或实际provider，不能声明实机按钮/模型/外交/投票结果验收通过。HANDOFF和主台账本轮开始前dirty增量保留。
+
+---
+
 <a id="diplomacy-civil-war-analysis-20261029"></a>
 ## 重做后外交：玩家叛乱新国向原国宣言 — 2026-10-29
 

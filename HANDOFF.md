@@ -1,3 +1,9 @@
+# 当前安装：AF1.7.0 CN / 本轮百科人物与派系改动已部署（2026-10-29）
+
+已按用户“先部署CN”授权用原统一脚本构建并覆盖游戏 `Modules/AnimusForge`，包含普通Bootstrap和1.3/1.4两实现。源码 `476eb6c8f`、部署检查点 `c13da1914`；本轮百科三列两行、提示词重生、外貌主体边界、派系历法及玩家创建免冷却已进入安装，投票诊断也随当前源码部署。外交上一轮只有分析，无新修复。双API/Bootstrap/seam/registration和CN Stage门禁通过，10个关键目标文件与Stage hash一致；未启动游戏/模型/打包/push。原脚本保护玩家文件、保留未知安装文件，无Recovery/自动回滚。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-persona-factions-20261029)；证据 `artifacts/deploy-cn-persona-factions-20261029/receipt.json`。
+
+---
+
 # 当前外交内战场景分析（2026-10-29，仅调查）
 
 用户澄清为“玩家领派系从本国叛出，向原国发宣言”。当前源码 `5ade3a7fd`：发件国取玩家当前王国；目标由正文分析决定；内战本身不会走完整附庸的宗主国替换。首次目标分析未直接注入原国/叛军国结构化关系，是已确认的信息缺口，尚未复现具体选错。回信须开场/准入/世界书/实际宫廷知识等条件完成。CN/EN开场各552、准入5826、世界书268、停滞81专项通过；旧player-response-recovery未通过，不计全套通过。无产品修改/实机/provider/部署。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-civil-war-analysis-20261029)；本机详细报告 `artifacts/diplomacy-civil-war-analysis-20261029/analysis.md`。
