@@ -529,6 +529,10 @@ public static class WorldDiplomacyGenerationValidationRules
                     }
                     json["peace_terms"] = WorldDiplomacyEnvelopeJsonRules.BuildPeaceTermsJson(offeredTerms);
                 }
+                if (intent == "accept_trade" && !WorldDiplomacyOfferContractRules.TryResolveTradeAcceptanceTerms(
+                    resolveDocument?.Invoke(claimedOfferDocumentId), claimedActionId,
+                    WorldDiplomacyOfferContractRules.ParseTreatyTerms(json, intent), out _, out reason))
+                    return true;
             }
             else if (intent != "withdraw_offer" && !string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_offer_document_id")))
             {

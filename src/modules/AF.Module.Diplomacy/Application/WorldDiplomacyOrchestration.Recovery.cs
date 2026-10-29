@@ -432,6 +432,67 @@ internal sealed partial class WorldDiplomacyOrchestration
         NormalizePlayerEventState();
         NormalizePlayerLifecycleRecovery();
         RestoreEventBaselineAfterLoad();
+        RecoverRejectedAcceptanceDrafts();
+    }
+
+    // Load/reconciliation boundary only. No archive scan is added to Tick.
+    // Requeue an exact unpublished reply, never execute or silently alter its terms.
+    private void RecoverRejectedAcceptanceDrafts()
+    {
+        var rounds = GetLiveRounds().Where(x => x.TechnicalHoldReason is
+            "invalid_draft:action_not_executable:player_accept_peace_changes_offer_terms"
+            or "invalid_draft:trade_acceptance_changes_terms").ToList();
+        if (rounds.Count == 0) return;
+        var rejectedByRound = Storage.Documents.Where(x => x != null && x.AnalysisStatus == "rejected_draft")
+            .ToLookup(x => x.RoundId, StringComparer.Ordinal);
+        foreach (var round in rounds)
+        {
+            string reason = round.TechnicalHoldReason;
+            if (!string.IsNullOrEmpty(round.TechnicalRequestHoldReason)
+                || !string.IsNullOrEmpty(round.EventEndingId)
+                || Storage.Jobs.Any(x => x.RoundId == round.RoundId)
+                || Storage.EventEffects.Any(x => x.EventId == round.RoundId && x.Status is "applying" or "uncertain")) continue;
+            var candidates = rejectedByRound[round.RoundId].Where(x => !x.IsPlayerAuthored && x.AcceptanceRepairVersion < 1
+                && !x.IsReadyForPublication && !x.ChangedDiplomaticState && !x.EventExecutionPending && !x.HistoryResultRecorded
+                && string.IsNullOrEmpty(x.MechanicalResult)
+                && (x.Actions == null || (x.Actions.Count <= 1 && x.Actions.All(a => a != null && !a.ChangedDiplomaticState
+                    && !a.HistoryResultRecorded && string.IsNullOrEmpty(a.ExecutionState) && string.IsNullOrEmpty(a.MechanicalResult))))
+                && x.Intent == (reason.EndsWith("player_accept_peace_changes_offer_terms", StringComparison.Ordinal)
+                    ? "accept_peace" : "accept_trade")).Take(2).ToList();
+            if (candidates.Count != 1) continue;
+            var document = candidates[0];
+            string sourceId = document.RespondingToOfferDocumentId;
+            string actionId = document.RespondingToOfferActionId ?? "";
+            var source = ResolveDocument(sourceId);
+            if (source?.IsReadyForPublication != true || source.RoundId != round.RoundId
+                || !DialogueDocumentKnown(document.AuthorKingdomId, source.DocumentId)
+                || !round.PendingOffers.Any(o => o.Status == "open" && o.SourceDocumentId == sourceId
+                    && o.SourceActionId == actionId && o.ProposerKingdomId == document.TargetKingdomId
+                    && o.TargetKingdomId == document.AuthorKingdomId
+                    && o.Intent == WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(document.Intent))) continue;
+            var oral = Storage.DialogueArrangements.FirstOrDefault(x => x.ArrangementId == document.DialogueArrangementId);
+            if (!string.IsNullOrEmpty(document.DialogueArrangementId))
+            {
+                if (oral == null || oral.DocumentId != document.DocumentId || oral.Version != document.DialogueArrangementVersion
+                    || oral.Status != "cancelled" || oral.ExplicitlyDeferred || !string.IsNullOrEmpty(oral.SupersededByArrangementId)
+                    || !string.IsNullOrEmpty(oral.TreatyExecutionState)) continue;
+                oral.Status = "accepted";
+                if (!TryValidateOralDeclarationWork(oral, out var intent) || intent != document.Intent)
+                { oral.Status = "cancelled"; continue; }
+                oral.GenerationRetryAfterDay = _host.CurrentDay();
+                // Queue a fresh audited draft; never use the immediate fallback
+                // writer while normalizing a loaded campaign.
+                oral.GenerationFailureAttempts = 0;
+                PublishDialogueArrangement(oral);
+            }
+            else QueueEventDeclaration(round, document.AuthorKingdomId, document.TargetKingdomId, source, 100, false, false);
+            if (!Storage.Jobs.Any(x => x.RoundId == round.RoundId && x.AuthorKingdomId == document.AuthorKingdomId)) continue;
+            document.AcceptanceRepairVersion = 1;
+            AccrueTechnicalPause(round);
+            round.TechnicalHoldReason = ""; round.TechnicalHoldStartedHour = -1;
+            MarkEventDirty(round);
+            _host.Log("diplomacy.acceptance_draft_requeued document=" + document.DocumentId + " source=" + sourceId);
+        }
     }
 
 }

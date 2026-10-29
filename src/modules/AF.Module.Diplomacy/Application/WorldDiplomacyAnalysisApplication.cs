@@ -337,7 +337,9 @@ internal static class WorldDiplomacyAnalysisApplication
                 document.SourceDocumentId = document.RespondingToThreatDocumentId;
                 document.IsResponse = true;
             }
-            if (json?["treaty_terms"] is JObject treaty
+            if (intent == "accept_trade")
+                document.TreatyTerms = WorldDiplomacyOfferContractRules.ParseTreatyTerms(json, intent);
+            else if (json?["treaty_terms"] is JObject treaty
                 && (!string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "receiving_kingdom_id"))
                     || !string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "joining_kingdom_id"))
                     || WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "daily_tribute") != 0

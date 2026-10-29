@@ -84,6 +84,8 @@ public static class WorldDiplomacyOfferContractRules
 
 	public static bool ArePeaceTermsEquivalent(WorldDiplomacyPeaceTerms first, WorldDiplomacyPeaceTerms second)
 	{
+		if (HasNoPeaceClauses(first)) first = null;
+		if (HasNoPeaceClauses(second)) second = null;
 		if (first == null || second == null) return first == null && second == null;
 		return string.Equals(first.TributePayerKingdomId ?? "", second.TributePayerKingdomId ?? "", StringComparison.OrdinalIgnoreCase)
 			&& string.Equals(first.TributeReceiverKingdomId ?? "", second.TributeReceiverKingdomId ?? "", StringComparison.OrdinalIgnoreCase)
@@ -93,6 +95,66 @@ public static class WorldDiplomacyOfferContractRules
 			&& string.Equals(first.CessionToKingdomId ?? "", second.CessionToKingdomId ?? "", StringComparison.OrdinalIgnoreCase)
 			&& string.Equals(first.CessionSettlementId ?? "", second.CessionSettlementId ?? "", StringComparison.OrdinalIgnoreCase);
 	}
+
+	private static bool HasNoPeaceClauses(WorldDiplomacyPeaceTerms terms) => terms == null
+        || terms.DailyTribute == 0 && terms.DurationDays == 0
+        && string.IsNullOrWhiteSpace(terms.TributePayerKingdomId) && string.IsNullOrWhiteSpace(terms.TributeReceiverKingdomId)
+        && string.IsNullOrWhiteSpace(terms.CessionFromKingdomId) && string.IsNullOrWhiteSpace(terms.CessionToKingdomId)
+        && string.IsNullOrWhiteSpace(terms.CessionSettlementId);
+
+    // Missing optional clauses inherit the source. Explicit zero, invalid values,
+    // or a changed role remain explicit and must survive until validation.
+    public static WorldDiplomacyDialogueTerms ParseTreatyTerms(JObject json, string intent)
+    {
+        intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(intent);
+        if (!WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent) && intent is not "propose_trade" and not "accept_trade") return null;
+        if (json?["treaty_terms"] is not JObject value)
+            return intent == "accept_trade" && json?["treaty_terms"] != null && json["treaty_terms"].Type != JTokenType.Null
+                ? new WorldDiplomacyDialogueTerms { DurationDays = -1 } : null;
+        var peace = json["peace_terms"] as JObject;
+        if (intent == "accept_trade" && !value.Properties().Any(p => p.Name is "duration_days" or "daily_tribute"
+                || !string.IsNullOrWhiteSpace(p.Value?.ToString()))
+            && WorldDiplomacyEnvelopeJsonRules.ReadInteger(peace, "duration_days") == 0
+            && WorldDiplomacyEnvelopeJsonRules.ReadInteger(peace, "daily_tribute") == 0
+            && string.IsNullOrEmpty(WorldDiplomacyEnvelopeJsonRules.ReadString(peace, "cession_settlement_id"))) return null;
+        int tribute = value["daily_tribute"] == null ? 0
+            : WorldDiplomacyEnvelopeJsonRules.TryReadInteger(value, "daily_tribute", out int amount) ? amount : -1;
+        int days = value["duration_days"] == null ? 0
+            : WorldDiplomacyEnvelopeJsonRules.TryReadInteger(value, "duration_days", out int duration) ? duration : -1;
+        // Do not overwrite explicitly supplied zero with a value from another field.
+        if (intent != "accept_trade")
+        {
+            tribute = WorldDiplomacyEnvelopeJsonRules.ReadInteger(value, "daily_tribute");
+            days = WorldDiplomacyEnvelopeJsonRules.ReadInteger(value, "duration_days");
+        }
+        if (value["daily_tribute"] == null || (intent != "accept_trade" && tribute == 0)) tribute = WorldDiplomacyEnvelopeJsonRules.ReadInteger(peace, "daily_tribute");
+        if (value["duration_days"] == null || (intent != "accept_trade" && days == 0)) days = WorldDiplomacyEnvelopeJsonRules.ReadInteger(peace, "duration_days");
+        return new WorldDiplomacyDialogueTerms {
+            ReceivingKingdomId = WorldDiplomacyEnvelopeJsonRules.ReadString(value, "receiving_kingdom_id"),
+            JoiningKingdomId = WorldDiplomacyEnvelopeJsonRules.ReadString(value, "joining_kingdom_id"),
+            DailyTribute = tribute, DurationDays = days,
+            CessionSettlementId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
+                WorldDiplomacyEnvelopeJsonRules.ReadString(value, "cession_settlement_id"),
+                WorldDiplomacyEnvelopeJsonRules.ReadString(peace, "cession_settlement_id")) };
+    }
+
+    public static bool TryResolveTradeAcceptanceTerms(WorldDiplomacyDocument source, string sourceActionId,
+        WorldDiplomacyDialogueTerms acceptedTerms, out WorldDiplomacyDialogueTerms original, out string reason)
+    {
+        original = null;
+        reason = "trade_acceptance_missing_source_offer";
+        if (source == null) return false;
+        var action = source.Actions?.Find(x => x != null && string.Equals(x.ActionId, sourceActionId, StringComparison.Ordinal));
+        if (source.Actions?.Count > 0 && action == null) return false;
+        original = action != null ? action.TreatyTerms : source.TreatyTerms;
+        reason = "trade_acceptance_changes_terms";
+        if (original?.DurationDays < 0 || original?.DailyTribute < 0
+            || acceptedTerms?.DurationDays < 0 || acceptedTerms?.DailyTribute < 0) return false;
+        var expected = (original ?? new WorldDiplomacyDialogueTerms()).ToTerms();
+        if (acceptedTerms != null && !acceptedTerms.ToTerms().Equals(expected)) return false;
+        reason = "";
+        return true;
+    }
 
 	public static WorldDiplomacyPeaceTerms ClonePeaceTerms(WorldDiplomacyPeaceTerms source)
 	{

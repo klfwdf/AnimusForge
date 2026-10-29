@@ -93,6 +93,8 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Contains("--acceptance-terms-repair"))
+        { AcceptanceTermsRepairReplay.Run(); Console.WriteLine("PASS acceptance terms repair assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--runtime-maintenance"))
         { try { RuntimeMaintenanceReplay.Run(); Console.WriteLine("PASS runtime maintenance assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--token-log"))
@@ -380,6 +382,7 @@ internal static class Program
             Console.WriteLine($"R1 generation task replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        AcceptanceTermsRepairReplay.Run();
         MaterialCountryThirdReplay.TokenOptimization();
         MaterialSupplyReplay.StructureObservation();
         OralDeclarationReplay.Run();
