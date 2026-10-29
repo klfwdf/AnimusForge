@@ -1,3 +1,11 @@
+<a id="diplomacy-acceptance-deployed-20261030"></a>
+## 停战/贸易修复部署完成 — 2026-10-30
+
+- 用户明确“部署”授权；实际Git根E:/Mount-Blade-Bannerlord-AnimusForge-mod-main，main，部署源bfd1239d3，产品8e7f48b46，亦包含此前49087e5e4通知修复。未提交项仅既有文档及Microsoft/NuGet/外交设计资料，未改产品源码、部署脚本或版本。本段明确替代两项旧记录的NOT_DEPLOYED状态，其源码/离线/实机验收边界继续保留。
+- 使用原 `scripts/build/build_single_module.ps1 -Configuration Debug -Deploy`，显式沿用已验证的游戏根、1.3/1.4引用及Harmony路径。1.3/1.4实现、Bootstrap、双seam及managed注册全部通过。旧项目Stage在Reset前的完整校验发现旧DiplomacyMiscCompatibility.json，首次流程停止于游戏写入之前；旧Stage经路径核验完整移至 `artifacts/diplomacy-acceptance-deploy-20261030/prior-stage`，保留原产物。随后用原 `deploy_module.ps1`、本次刚构建的双实现/Bootstrap及原运行依赖重新创建Stage，通过完整内容映射/当前产物/目标保护校验后覆盖。未放宽门禁，未创建部署Recovery或自动回滚，未删除未知安装文件。
+- 结果：`Deploy Result: success; managed files updated: 10`，目标 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。独立核对410个Stage一致文件，按原部署规则保留的CustomPrompts/Configs/较新PlayerExports单独列明；部署前记录的39个配置/自定义文件逐一SHA256保持不变。双实现与本次构建逐字节相同，Bootstrap单模块XML及外交兼容资源与源码相同。证据目录保留build-deploy.log（首次前置拒绝）、deploy-clean-stage.log（成功）、verification.json、可复跑verify_deployment.py及protected-before.json。
+- **DEPLOYED / LIVE_NOT_RUN / USER_SAVE_NOT_RUN / NOT_PACKAGED / NOT_PUSHED**。未启动游戏或加载实际存档；前次英文全量既有素材快照断言失败仍是已登记的离线限制，本次没有宣称其通过。[修复代码范围](architecture/af-framework-code-scope.md#diplomacy-acceptance-repair-20261030)，旧暂存输出按保护规则保留；其余一次性索引文件在提交后清理。
+
 <a id="diplomacy-acceptance-repair-20261030"></a>
 ## 停战/贸易接受、方向识别与旧拒稿恢复 — 2026-10-30
 

@@ -1,3 +1,10 @@
+<a id="diplomacy-acceptance-deployed-20261030"></a>
+## 停战/贸易修复已部署 — 2026-10-30
+
+用户明确“部署”授权后，按现有统一脚本将main/bfd1239d3（产品8e7f48b46，含此前地图菜单/百科通知修复49087e5e4）覆盖到 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。双API/Bootstrap/seam/注册与干净Stage校验通过，更新10个文件；独立核对410个非保留例外文件及39个原配置/自定义文件通过，实际游戏/实际旧档仍NOT_RUN，未打包或推送。
+
+本段将下方停战修复及地图覆盖层通知记录的部署状态更新为 **DEPLOYED**，不改变它们原有验收限制。旧Stage因保留旧规则资源被前置校验拒绝，完整移存到本次本地证据目录后重新生成；未更改脚本或绕过门禁。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-acceptance-deployed-20261030)，代码范围仍见[本次修复](docs/architecture/af-framework-code-scope.md#diplomacy-acceptance-repair-20261030)。
+
 <a id="diplomacy-acceptance-repair-20261030"></a>
 ## 停战/贸易接受与旧拒稿恢复 — 2026-10-30
 
