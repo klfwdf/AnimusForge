@@ -1,3 +1,14 @@
+<a id="agenda-vote-failure-20261029"></a>
+## 玩家投票议程空引用诊断 — 2026-10-29
+
+诊断提交57caba7f7a7b3509a7c5ec47aac0cc6ea3f30220；[状态及详细证据](../animusforge-refactoring-and-repository-reorganization-plan.md#agenda-vote-failure-20261029)。不改变选票/候选人、存档、协议、语言资源或公开API；无新Tick工作。
+
+| 源码与一基行号 | 符号 | 覆盖与边界 |
+| --- | --- | --- |
+| src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.cs:2833–2864、2856 | TryLaunchRequiredAgendaVote | 将仅PushState的日志标为请求UI，不能作为成功投票证据；其他行为保持。 |
+| 同文件:4302–4495 | KingdomAgendaItemVM.LoadDetail | 候选/排序/赞助/支持/选项VM/时序分阶段；catch记录类型、国家、提议家族、标题和完整异常。仅定位日志，不保证任一原生对象非空。 |
+| 同文件:4900–4954 | KingdomAgendaVMMixin.StartVoteMeeting | 资格、取消、时序、原生RefreshWith/激活/通知分阶段；完整堆栈，成功路径独立日志。未验证玩家真实存档或UI渲染，也未更改原生投票状态。 |
+
 <a id="vassal-diplomacy-buttons-20261029"></a>
 ## 封臣原版外交按钮接管 — 2026-10-29
 
