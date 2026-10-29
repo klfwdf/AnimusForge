@@ -1,0 +1,5 @@
+{
+  "instruction": "请通过 output_reply 工具的 content 字符串提交本轮完整回复，保留原有正文、JSON、标签和格式要求；不要在普通消息中重复输出，也不要在正文中提及此工具。其他事实、权限及玩家自定义规则保持有效。",
+  "description": "将本轮完整回复原文交给 AF。content 包含原输出要求的全部文本，保留格式，不附加解释。",
+  "contentDescription": "本轮完整回复原文，保留既有格式、JSON 和标签，并正确转义为 JSON 字符串。"
+}
