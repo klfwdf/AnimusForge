@@ -22,6 +22,16 @@ sources += [ROOT / p for p in [
     "src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopupVM.cs",
     "src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs",
     "src/AF.Contracts/Internal/DiplomacyEventPresentation.cs"]]
+# Compile the exact existing Harmony prefix body, not a reimplementation of its
+# decision. The full persona patch has unrelated widget/injection dependencies.
+guard_source = ROOT / "src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs"
+guard_text = guard_source.read_text(encoding="utf-8-sig")
+start = guard_text.index("public static bool EncyclopediaDataOnTickPrefix()")
+end = guard_text.index("}", start) + 1
+guard = out / "EncyclopediaInputGuard.cs"
+guard.write_text("namespace AnimusForge { internal static class EncyclopediaInputGuard {\n"
+                 + guard_text[start:end] + "\n} }", encoding="utf-8")
+sources.append(guard)
 project = ET.Element("Project", Sdk="Microsoft.NET.Sdk")
 group = ET.SubElement(project, "PropertyGroup")
 for key, value in dict(OutputType="Exe", TargetFramework="net8.0", ImplicitUsings="enable",
@@ -38,7 +48,7 @@ result = subprocess.run([str(dotnet), "run", "--project", str(out / "Replay.cspr
                         encoding="utf-8", errors="replace")
 (out / "run.log").write_text(result.stdout + result.stderr, encoding="utf-8")
 (out / "receipt.json").write_text(json.dumps(dict(exit_code=result.returncode,
-    sources={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},
-    limitations="Production popup/VM/input-lease source; native screen/input/rendering are fixtures. No game/provider/deployment."), indent=2))
+    sources={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources + [guard_source]},
+    limitations="Production popup/VM/input-lease source plus exact encyclopedia Harmony prefix body; native screen/input/rendering are fixtures. No game/provider/deployment."), indent=2))
 print(result.stdout + result.stderr)
 raise SystemExit(result.returncode)

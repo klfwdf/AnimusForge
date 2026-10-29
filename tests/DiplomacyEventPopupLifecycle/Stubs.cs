@@ -19,6 +19,8 @@ namespace AnimusForge
     internal static class DiplomacyPresentationBridge { internal static bool IsOpen; }
     internal static class ShoutTextInputPopup { internal static bool IsOpen; }
     internal static class AnimusForgeNativeConversationOverlay { internal static bool IsOpen; }
+    internal static class DevHistoryEditPopup { internal static bool IsOpen; }
+    internal static class CourierDeliveryBehavior { internal static bool IsCourierInputOpen; }
 }
 namespace TaleWorlds.Library
 {

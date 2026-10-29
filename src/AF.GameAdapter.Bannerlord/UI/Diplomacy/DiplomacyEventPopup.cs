@@ -60,7 +60,10 @@ internal sealed class DiplomacyEventPopup
         if (data == null || !SaveRuntimeGuard.IsCurrentGeneration(data.Generation) || IsOpen || ScreenManager.TopScreen == null || InformationManager.IsAnyInquiryActive()
             || CourierLetterReplyPopup.IsOpen || CourierLetterInputPopup.IsOpen || DiplomacyPresentationBridge.IsOpen)
             return false;
-        if (mapOnly && !IsNotificationContextAvailable(opening: true)) return false;
+        if (mapOnly && !IsNotificationContextAvailable()) return false;
+        // A global modal outside this screen cannot be leased/restored as a map panel.
+        // Check membership only when opening, never in the per-frame context check.
+        if (mapOnly && ScreenManager.FocusedLayer != null && !ScreenManager.TopScreen.HasLayer(ScreenManager.FocusedLayer)) return false;
         DiplomacyEventPopup popup = null;
         try
         {
@@ -90,7 +93,7 @@ internal sealed class DiplomacyEventPopup
         }
     }
 
-    private static bool IsNotificationContextAvailable(bool opening)
+    private static bool IsNotificationContextAvailable()
     {
         // Only scalar state reads. Pending notices retry once per second; an open
         // notice rechecks here each frame without scanning layers or game objects.
@@ -101,17 +104,12 @@ internal sealed class DiplomacyEventPopup
             || Campaign.Current.ConversationManager?.IsConversationFlowActive == true
             || ShoutTextInputPopup.IsOpen || AnimusForgeNativeConversationOverlay.IsOpen
             || InformationManager.IsAnyInquiryActive()
-            || CourierLetterReplyPopup.IsOpen || CourierLetterInputPopup.IsOpen || DiplomacyPresentationBridge.IsOpen
-            || map.IsInMenu || map.IsEscapeMenuOpened || map.IsInCampaignOptions
-            || map.IsInBattleSimulation || map.IsInTownManagement || map.IsInHideoutTroopManage
-            || map.IsInArmyManagement || map.IsInRecruitment || map.IsMarriageOfferPopupActive
-            || map.IsHeirSelectionPopupActive || map.IsMapCheatsActive || map.IsMapIncidentActive
-            || map.IsOverlayContextMenuEnabled || map.EncyclopediaScreenManager?.IsEncyclopediaOpen == true)
+            || CourierLetterReplyPopup.IsOpen || CourierLetterInputPopup.IsOpen || DiplomacyPresentationBridge.IsOpen)
             return false;
-        // While open, our own disable request intentionally pauses the map.
-        return !opening || (!Game.Current.GameStateManager.ActiveStateDisabledByUser
-            && map.SceneLayer != null && map.SceneLayer.IsActive
-            && ReferenceEquals(ScreenManager.FocusedLayer, map.SceneLayer));
+        // Settlement waiting, encyclopedia and management menus remain on MapScreen.
+        // Their focus and pause requests do not mean a conversation/mission started.
+        // Open leases the focused parent UI; Close restores it and releases only our pause.
+        return true;
     }
 
     private void Open()
@@ -145,7 +143,7 @@ internal sealed class DiplomacyEventPopup
         // Defer Escape by one tick so its release cannot also close the restored terminal/map UI.
         // A button/Exit request already received must survive focus changes.
         if (popup._closeRequested) { popup.Close(true); return; }
-        if ((popup._mapOnly && !IsNotificationContextAvailable(opening: false)) || !popup._layer.IsActive)
+        if ((popup._mapOnly && !IsNotificationContextAvailable()) || !popup._layer.IsActive)
         { popup.Close(false); return; }
         if (ScreenManager.FocusedLayer != popup._layer)
         {

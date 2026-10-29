@@ -61,7 +61,10 @@ public sealed class DevPopupInputLease : IDisposable
         if (_suspendParent && !_externallyChanged && _wasActive && !_layer.IsActive && ReferenceEquals(ScreenManager.TopScreen, _screen))
             ScreenManager.SetSuspendLayer(_layer, isSuspended: false);
         if (!_externallyChanged) _layer.LastActiveState = _lastActiveState;
-        if (!_externallyChanged && _wasFocused && _layer.IsActive && ReferenceEquals(ScreenManager.TopScreen, _screen))
+        // A conversation or another panel may have taken focus while the popup
+        // was closing. Restore the parent input without taking that focus back.
+        if (!_externallyChanged && _wasFocused && _layer.IsActive && ReferenceEquals(ScreenManager.TopScreen, _screen)
+            && (ScreenManager.FocusedLayer == null || ReferenceEquals(ScreenManager.FocusedLayer, _layer)))
             ScreenManager.TrySetFocus(_layer);
     }
 }

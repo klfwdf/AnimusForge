@@ -24,6 +24,7 @@ void Reset()
     InformationManager.Inquiry = false;
     CourierLetterReplyPopup.IsOpen = CourierLetterInputPopup.IsOpen = DiplomacyPresentationBridge.IsOpen = false;
     ShoutTextInputPopup.IsOpen = AnimusForgeNativeConversationOverlay.IsOpen = false;
+    DevHistoryEditPopup.IsOpen = CourierDeliveryBehavior.IsCourierInputOpen = false;
     Input.Escape = false; GauntletLayer.Last = null;
     DiplomacyEventSprites.Ready = true; acknowledged = 0;
 }
@@ -49,12 +50,54 @@ Refused(() => InformationManager.Inquiry = true, "inquiry");
 Refused(() => CourierLetterReplyPopup.IsOpen = true, "courier reply");
 Refused(() => CourierLetterInputPopup.IsOpen = true, "courier editor");
 Refused(() => DiplomacyPresentationBridge.IsOpen = true, "declaration editor");
-Refused(() => map.EncyclopediaScreenManager.IsEncyclopediaOpen = true, "encyclopedia");
-Refused(() => Game.Current.GameStateManager.RegisterActiveStateDisableRequest(new object()), "another pause owner");
-Refused(() => ScreenManager.FocusedLayer = new GauntletLayer("terminal", 4000, false), "another modal");
-Refused(() => ScreenManager.FocusedLayer = null, "map not focused yet");
-foreach (var flag in typeof(MapScreen).GetFields().Where(x => x.FieldType == typeof(bool) && x.Name != "IsReady"))
-    Refused(() => flag.SetValue(map, true), flag.Name);
+Refused(() => map.IsFinalized = true, "finalized map");
+Refused(() => ScreenManager.FocusedLayer = new GauntletLayer("global", 5000, false), "global modal outside map screen");
+
+void MapPanel(Action context, string name)
+{
+    Reset(); context();
+    var parent = new GauntletLayer(name, 4400, false);
+    parent.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+    map.AddLayer(parent); ScreenManager.FocusedLayer = parent;
+    object pause = new(); Game.Current.GameStateManager.RegisterActiveStateDisableRequest(pause);
+    Check(Show(), name + " opens over map UI despite its pause/focus");
+    Check(!parent.IsActive && !parent.IsFocusLayer && parent.InputUsageMask == InputUsageMask.None,
+        name + " temporarily leases parent input");
+    Check(Game.Current.GameStateManager.Requests.Count == 2, name + " retains original pause owner");
+    DiplomacyEventPopup.OnApplicationTick();
+    Check(DiplomacyEventPopup.IsOpen, name + " stays open while parent map flags remain set");
+    Check(!EncyclopediaInputGuard.EncyclopediaDataOnTickPrefix(), name + " blocks underlying encyclopedia hotkeys");
+    var layer = GauntletLayer.Last; layer.Input.Escape = true;
+    DiplomacyEventPopup.OnApplicationTick();
+    Check(DiplomacyEventPopup.IsOpen && !EncyclopediaInputGuard.EncyclopediaDataOnTickPrefix(),
+        name + " consumes Escape release before restoring parent");
+    layer.Input.Escape = false; DiplomacyEventPopup.OnApplicationTick();
+    Check(!DiplomacyEventPopup.IsOpen && acknowledged == 1, name + " Escape closes once");
+    Check(parent.IsActive && parent.IsFocusLayer && parent.InputUsageMask == InputUsageMask.All
+        && parent.InputRestrictions.MouseVisibility && ScreenManager.FocusedLayer == parent,
+        name + " restores parent focus, activation and input");
+    Check(map.HasLayer(parent) && map.Layers.Count == 2
+        && Game.Current.GameStateManager.Requests.SetEquals(new[] { pause }),
+        name + " preserves original panel and pause");
+    Check(EncyclopediaInputGuard.EncyclopediaDataOnTickPrefix(), name + " resumes encyclopedia after close");
+    DiplomacyEventPopup.OnApplicationTick(); Check(acknowledged == 1, name + " cannot acknowledge twice");
+}
+foreach (var flag in typeof(MapScreen).GetFields().Where(x => x.DeclaringType == typeof(MapScreen)
+    && x.FieldType == typeof(bool) && x.Name != "IsReady"))
+    MapPanel(() => flag.SetValue(map, true), flag.Name);
+MapPanel(() => map.EncyclopediaScreenManager.IsEncyclopediaOpen = true, "encyclopedia");
+Check(map.EncyclopediaScreenManager.IsEncyclopediaOpen, "Escape closes only event, preserving encyclopedia page");
+MapPanel(() => { map.IsInMenu = true; map.EncyclopediaScreenManager.IsEncyclopediaOpen = true; }, "encyclopedia during settlement wait");
+Check(map.IsInMenu && map.EncyclopediaScreenManager.IsEncyclopediaOpen, "nested map menu and encyclopedia survive event");
+MapPanel(() => map.SceneLayer.IsActive = false, "map scene input suspended by a panel");
+Reset(); ScreenManager.FocusedLayer = null;
+Check(Show(), "ready map without current focus can show");
+Reset(); Game.Current.GameStateManager.RegisterActiveStateDisableRequest(new object());
+Check(Show(), "pause alone does not change map eligibility");
+Reset(); DevHistoryEditPopup.IsOpen = true;
+Check(!EncyclopediaInputGuard.EncyclopediaDataOnTickPrefix(), "existing history editor guard preserved");
+DevHistoryEditPopup.IsOpen = false; CourierDeliveryBehavior.IsCourierInputOpen = true;
+Check(!EncyclopediaInputGuard.EncyclopediaDataOnTickPrefix(), "existing courier guard preserved");
 
 Reset(); Check(Show(), "idle map opens");
 Check(Game.Current.GameStateManager.Requests.Count == 1 && map.Layers.Count == 2, "open owns pause and one layer");
@@ -87,7 +130,6 @@ foreach (var interruption in new (string Name, Action Change)[] {
     ("conversation begins", () => Campaign.Current.ConversationManager.IsConversationInProgress = true),
     ("scene begins", () => Mission.Current = new()),
     ("screen changes", () => ScreenManager.TopScreen = new ScreenBase()),
-    ("menu opens", () => map.IsInMenu = true),
     ("inquiry opens", () => InformationManager.Inquiry = true),
     ("layer deactivated", () => GauntletLayer.Last.IsActive = false),
     ("other modal takes focus", () => ScreenManager.FocusedLayer = new GauntletLayer("other", 5000, false)) })
@@ -103,6 +145,17 @@ foreach (var interruption in new (string Name, Action Change)[] {
     GauntletLayer.Last.Vm.ExecuteClose(); DiplomacyEventPopup.OnApplicationTick();
     Check(acknowledged == 1, interruption.Name + " acknowledged only after reading");
 }
+Reset(); Show(); map.IsInMenu = true; DiplomacyEventPopup.OnApplicationTick();
+Check(DiplomacyEventPopup.IsOpen && acknowledged == 0, "opening a map menu does not discard visible notification");
+Reset();
+var menuParent = new GauntletLayer("settlement-menu", 200, false);
+map.AddLayer(menuParent); ScreenManager.FocusedLayer = menuParent; Show();
+var conversationLayer = new GauntletLayer("conversation", 5000, false);
+map.AddLayer(conversationLayer); ScreenManager.FocusedLayer = conversationLayer;
+Campaign.Current.ConversationManager.IsConversationInProgress = true;
+DiplomacyEventPopup.OnApplicationTick();
+Check(!DiplomacyEventPopup.IsOpen && acknowledged == 0, "dialogue interrupts event above a menu without consuming it");
+Check(ScreenManager.FocusedLayer == conversationLayer, "restoring menu must not steal the new dialogue focus");
 foreach (bool nullFocus in new[] { true, false })
 {
     Reset(); Show(); ScreenManager.FocusedLayer = nullFocus ? null : map.SceneLayer;
