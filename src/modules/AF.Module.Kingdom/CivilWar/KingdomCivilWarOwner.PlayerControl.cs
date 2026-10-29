@@ -26,7 +26,7 @@ internal sealed partial class KingdomCivilWarOwner
         int cooldown = Math.Max(state?.CooldownUntilDay ?? 0, (state?.CooldownUntilWeek ?? 0) * 7);
         if (CivilWarWorld.CurrentDay() < cooldown)
         {
-            reason = CivilWarUiText.T("AF_KINGDOM_CW_PlayerControl_KingdomCooldown", "The kingdom is in post-war cooldown until day {A}; the player cannot raise a rebellion by hand either.", ("A", cooldown.ToString()));
+            reason = CivilWarUiText.T("AF_KINGDOM_CW_PlayerControl_KingdomCooldown", "The kingdom is in post-war cooldown until {A}; the player cannot raise a rebellion by hand either.", ("A", CivilWarUiText.Date(cooldown)));
             return false;
         }
         int threshold = DuelSettings.BuildCivilWarTuning().PlayerDetonationStrengthPercent;

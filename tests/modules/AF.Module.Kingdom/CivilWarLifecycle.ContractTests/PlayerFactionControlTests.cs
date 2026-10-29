@@ -34,9 +34,9 @@ internal static class PlayerFactionControlTests
         f.Owner.Execute(dissolve, Clan.PlayerClan);
         Check(ChangeRelationAction.Changes.Count == 2, "dissolution receipt prevents repeat penalties");
         var found = Request(f, CivilWarAction.Found, "redress");
-        Check(!f.Owner.Quote(found, Clan.PlayerClan).Allowed, "player founding respects post-war cooldown");
-        CampaignTime.Day = 730;
-        Check(f.Owner.Execute(found, Clan.PlayerClan).Status == CivilWarActionStatus.Applied, "founding unlocks exactly on cooldown day");
+        Check(f.Owner.Quote(found, Clan.PlayerClan).Allowed, "player founding bypasses post-war cooldown");
+        Check(!f.Owner.Quote(found, f.Follower).Allowed, "NPC founding still respects post-war cooldown");
+        Check(f.Owner.Execute(found, Clan.PlayerClan).Status == CivilWarActionStatus.Applied, "player can execute founding during cooldown");
         Check(ChangeRelationAction.Changes.Last().First == Clan.PlayerClan.Leader && ChangeRelationAction.Changes.Last().Second == f.Home.Leader && ChangeRelationAction.Changes.Last().Delta == -10, "player founder loses relation with ruler");
         int penalties = ChangeRelationAction.Changes.Count; f.Owner.Execute(found, Clan.PlayerClan);
         Check(ChangeRelationAction.Changes.Count == penalties, "founding receipt never double-charges relationship");
@@ -62,6 +62,10 @@ internal static class PlayerFactionControlTests
         Clan.PlayerClan.CurrentTotalStrength = 50;
         f.State.CooldownUntilDay = 701;
         Check(!f.Owner.Quote(detonate, Clan.PlayerClan).Allowed, "manual detonation also respects post-war cooldown");
+        Check(f.Owner.Quote(detonate, Clan.PlayerClan).Reason.Contains(CivilWarUiText.Date(701)), "detonation reason projects cooldown deadline as calendar date");
+        Check(KingdomCivilWarTexts.Date(91572) == "1090年春季13日", "screenshot absolute day uses year season and day");
+        Check(KingdomCivilWarTexts.Date(91584) == "1090年夏季4日", "calendar crosses season boundary using game constants");
+        Check(KingdomCivilWarTexts.Date(84) == "1年春季1日", "calendar year boundary is not relative to current day");
         f.State.CooldownUntilDay = 0;
         Check(f.Owner.Execute(detonate, Clan.PlayerClan).Status == CivilWarActionStatus.AwaitingKingdom, "explicit qualified player command starts war");
         Check(!f.Owner.Quote(Request(f, CivilWarAction.DissolveOwn), Clan.PlayerClan).Allowed, "naming/open war prevents administrative dissolution");

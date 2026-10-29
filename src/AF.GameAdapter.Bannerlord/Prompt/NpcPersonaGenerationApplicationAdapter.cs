@@ -92,7 +92,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
         catch { _reservations.Complete(lease, saved: false); throw; }
     }
 
-    internal async Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
+    internal async Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting, string requestRequirements = null)
     {
         long generation = SaveRuntimeGuard.CaptureGeneration();
         NpcPersonaGenerationWork work = null;
@@ -104,6 +104,9 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
             bool captured = await _dispatch(generation, () =>
             {
                 work = CaptureNpcPersonaGeneration(hero, ignoreRetryCooldown, overwriteExisting);
+                if (work?.Reservation != null && !string.IsNullOrWhiteSpace(requestRequirements))
+                    work.Requirements = string.IsNullOrWhiteSpace(work.Requirements) ? requestRequirements.Trim()
+                        : work.Requirements.Trim() + "\n\n" + requestRequirements.Trim();
                 return true;
             }).ConfigureAwait(false);
             if (!captured || work == null) return overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_InvalidatedNotSaved", "The request was invalidated; the new persona was not saved.") : "";

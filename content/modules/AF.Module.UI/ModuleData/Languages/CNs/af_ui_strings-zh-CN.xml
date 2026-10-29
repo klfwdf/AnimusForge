@@ -3410,5 +3410,10 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_DiplomacyEntry_AiDisabled" text="未开启 AI 外交。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyWarTendency_Title" text="战争倾向" />
     <string id="AF_DIP_UI_EventProcessingDelayed" text="《{EVENT}》的外交处理在有限纠正后仍无法完成。草稿和交涉记录已保留；这是技术暂停，不代表该国保持沉默。" />
+  <string id="AF_UI_Persona_PromptedRerollButton" text="按提示词重生" />
+  <string id="AF_UI_Persona_PromptedRerollTitle" text="按提示词重生 - {NAME}" />
+  <string id="AF_UI_Persona_PromptedRerollIntro" text="填写本次人物性格与背景的重生方向。要求仅用于本次生成，保留声音；生成失败时保留原人物设定。" />
+  <string id="AF_UI_Persona_PromptedRerollHint" text="可填写背景经历、性格方向或需要保留的细节，当前游戏事实仍然有效。" />
+  <string id="AF_UI_Persona_PromptedRerollEmpty" text="请先填写本次重生要求。" />
 </strings>
 </base>

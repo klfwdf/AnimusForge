@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="../../../src/AF.GameAdapter.Bannerlord/UI/Common/HeroEncyclopediaActionBar.cs" Link="UI/HeroEncyclopediaActionBar.cs" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics.Vectors">
       <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\System.Numerics.Vectors.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\System.Numerics.Vectors.dll</HintPath>

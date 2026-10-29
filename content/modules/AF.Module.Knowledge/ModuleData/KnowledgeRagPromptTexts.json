@@ -19,7 +19,7 @@
   "PersonaLoreHeader": "【世界书资料：{TITLE}】\n",
   "NpcFallback": "该NPC",
   "PlayerAppearanceHeader": "【玩家外貌信息（常驻）】",
-  "PlayerAppearanceObservation": "{NPC}与玩家面对面互动时，都可以直接观察到这些外貌特征；",
+  "PlayerAppearanceObservation": "以下原文只描述玩家，即正在与{NPC}互动的对方，不是{NPC}自己的外貌、性格或背景。原文中的“我”等第一人称均指玩家。只将其作为玩家资料；面对面互动时可以观察其中可见的外貌特征。",
   "KnowledgeRecallHeader": "参与互动让你的脑海里浮现了这些知识",
   "RelatedMeaning": "相关语义",
   "MatchedKnowledgeHeader": "【以下是关于（{TOPIC}）的背景知识，{NPC}可酌情参考作为聊天素材】",
@@ -62,5 +62,6 @@
   "WhenGender": "性别",
   "WhenClanLeader": "族长",
   "WhenSkill": "技能",
-  "WhenSpecific": "专属({CATEGORIES})"
+  "WhenSpecific": "专属({CATEGORIES})",
+  "PlayerAppearanceEnd": "【玩家外貌信息结束】"
 }

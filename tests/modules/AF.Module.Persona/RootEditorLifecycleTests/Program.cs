@@ -31,6 +31,7 @@ int clampReads=0;Check(DeveloperRootEditorController.ReadHistoryReturnCap(()=>nu
 Check(DeveloperRootEditorController.ReadHistoryReturnCap(()=>8,v=>{clampReads++;return v+1;})==9&&clampReads==1,"root history cap captures then dispatches same narrow clamp once");
 PersonaMenuLifecycleReplay.Run(Check);
 ExpandedPersonaEditorReplay.Run(Check);
+PromptedPersonaRerollReplay.Run(Check);
 Console.WriteLine($"PASS: {n} actual Root/Persona/NpcAction/Dialog editor lifecycle assertions (game/domain declarations fixture, no save/file mutation).");
 
 internal sealed class RootSaveSettingsFixture {internal int Saves;internal bool Throw;public void Save(){Saves++;if(Throw)throw new Exception("controlled save unavailable");}}

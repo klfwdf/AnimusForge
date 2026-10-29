@@ -47,9 +47,9 @@ internal static class PlayerFactionReviewFixTests
         f = Prewar(true); OnlyMember(f, Clan.PlayerClan); f.State.CooldownUntilDay = 730; f.State.CooldownUntilWeek = 104;
         Check(f.Owner.Execute(Request(f, CivilWarAction.Leave), Clan.PlayerClan).Status == CivilWarActionStatus.Applied, "last player exit allowed with prior cooldown");
         Check(f.State.CooldownUntilDay == 730 && f.State.CooldownUntilWeek == 104, "last exit neither clears nor extends existing cooldown");
-        Check(!f.Owner.Quote(Request(f, CivilWarAction.Found), Clan.PlayerClan).Allowed, "existing post-war cooldown still blocks manual founding");
-        f.Reload(); CampaignTime.Day = 730;
-        Check(f.Owner.Quote(Request(f, CivilWarAction.Found), Clan.PlayerClan).Allowed, "existing cooldown expires at exact saved day");
+        Check(f.Owner.Quote(Request(f, CivilWarAction.Found), Clan.PlayerClan).Allowed, "saved post-war cooldown never blocks player founding");
+        f.Reload();
+        Check(f.Owner.Quote(Request(f, CivilWarAction.Found), Clan.PlayerClan).Allowed, "player founding stays available after reload before cooldown expires");
 
         f = Prewar(false); OnlyMember(f, f.Leader);
         Check(f.Owner.Execute(Request(f, CivilWarAction.Leave), f.Leader).Status == CivilWarActionStatus.Applied, "NPC last-member exit still supported");

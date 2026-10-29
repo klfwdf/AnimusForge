@@ -61,8 +61,8 @@
   "KW_Prompt_059": "Better relations reduce willingness to join the opposition but do not forbid it; sufficient persuasion or benefit can still secure agreement.",
   "KW_Prompt_060": "You are not the clan chief and cannot join or leave a faction on behalf of your clan.",
   "KW_Prompt_061": "You lead this faction and cannot be recruited by others. If you decide to leave, leadership will pass to a successor.",
-  "KW_Prompt_062": "Your clan recently left a faction. Its cooldown ends on day ",
-  "KW_Prompt_063": " days; you cannot join a faction during this cooldown.",
+  "KW_Prompt_062": "Your clan recently left a faction. Its cooldown ends on ",
+  "KW_Prompt_063": "; you cannot join a faction during this cooldown.",
   "KW_Prompt_064": "Current week: ",
   "KW_Prompt_065": " weeks",
   "KW_Prompt_066": "Leading clan: ",
@@ -84,5 +84,11 @@
   "KW_Prompt_082": "Rebellion background: last week, the report from ",
   "KW_Prompt_083": " stated: ",
   "KW_Prompt_084": ". The rebellion arose amid this situation: the leading clan leaves the former kingdom with its existing fiefs and prepares to become a new political entity.",
-  "KW_Prompt_085": " (clan chief: "
+  "KW_Prompt_085": " (clan chief: ",
+  "KW_CalendarDate": "Year {YEAR}, {SEASON} {DAY}",
+  "KW_CalendarSeason_0": "Spring",
+  "KW_CalendarSeason_1": "Summer",
+  "KW_CalendarSeason_2": "Autumn",
+  "KW_CalendarSeason_3": "Winter",
+  "KW_RecruitCooldown": "This clan recently left a faction and cannot be recruited until {DATE}."
 }

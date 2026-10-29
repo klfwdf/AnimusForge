@@ -33,7 +33,7 @@ internal sealed partial class KingdomCivilWarOwner
 					("A", p.Gold > 0
 						? CivilWarUiText.T("AF_KINGDOM_CW_Action_ResponseOfferGold", "{A} gold", ("A", p.Gold.ToString()))
 						: CivilWarUiText.T("AF_KINGDOM_CW_Action_ResponseOfferInfluence", "{A} influence", ("A", p.Influence.ToString()))));
-			text += CivilWarUiText.T("AF_KINGDOM_CW_Action_ResponseDeadline", "\nReply deadline: day {A}; missing it counts as {B}.", ("A", p.DeadlineDay.ToString()),
+			text += CivilWarUiText.T("AF_KINGDOM_CW_Action_ResponseDeadline", "\nReply deadline: {A}; missing it counts as {B}.", ("A", CivilWarUiText.Date(p.DeadlineDay)),
 				("B", p.Dissolve ? CivilWarUiText.T("AF_KINGDOM_CW_Action_ResponseDeadlineDefy", "defiance") : CivilWarUiText.T("AF_KINGDOM_CW_Action_ResponseDeadlineRefuse", "refusal")));
 			return true;
 		}
@@ -90,7 +90,7 @@ internal sealed partial class KingdomCivilWarOwner
 			else if (f.PendingResponse != null) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_AwaitingFactionResponse", "Waiting for the faction to respond.");
 			else if (f.Stage == KingdomCivilWarStage.OpenWar && (r.Action == CivilWarAction.Suppress || r.Action == CivilWarAction.ForceDissolve)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_NoSuppressAfterFounding", "Once the kingdom-founding request has started, the faction cannot be suppressed or administratively dissolved.");
 			else if (f.Stage == KingdomCivilWarStage.OpenWar && string.IsNullOrWhiteSpace(f.RebelKingdomId)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_RebelsFoundingKingdom", "The rebels are founding their kingdom; wait for it to finish.");
-			else if (r.Action != CivilWarAction.Concede && CivilWarWorld.CurrentDay() < f.GovernanceUntilDay) { q.CooldownUntilDay = f.GovernanceUntilDay; q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_GovernanceCooldown", "Political actions are on cooldown until day {A}.", ("A", f.GovernanceUntilDay.ToString())); }
+			else if (r.Action != CivilWarAction.Concede && CivilWarWorld.CurrentDay() < f.GovernanceUntilDay) { q.CooldownUntilDay = f.GovernanceUntilDay; q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_GovernanceCooldown", "Political actions are on cooldown until {A}.", ("A", CivilWarUiText.Date(f.GovernanceUntilDay))); }
 			if (r.Action == CivilWarAction.Suppress) { q.Influence = CivilWarPoliticalRules.SuppressCost; q.Consequence = CivilWarUiText.T("AF_KINGDOM_CW_Action_SuppressConsequence", "Members lose up to 20 influence; the leader takes +7.5 grievance and the rest +4; −5 relation with the king. The first suppression delays the deadline by 7 days."); }
 			if (r.Action == CivilWarAction.ForceDissolve)
 			{
@@ -134,16 +134,14 @@ internal sealed partial class KingdomCivilWarOwner
 			}
 			else if (r.Action == CivilWarAction.Found && actor == Clan.PlayerClan)
 			{
-				int until = Math.Max(s?.CooldownUntilDay ?? 0, (s?.CooldownUntilWeek ?? 0) * 7);
-				if (CivilWarWorld.CurrentDay() < until) { q.CooldownUntilDay = until; q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_KingdomCooldownFound", "The kingdom is on post-war cooldown until day {A}; founding a player faction must wait too.", ("A", until.ToString())); }
-				else if (own?.PendingResponse?.Accepted == true || !string.IsNullOrEmpty(own?.PendingConcessionOperationId)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_AgreementSettling", "An agreement is still settling; the faction cannot be refounded.");
+				if (own?.PendingResponse?.Accepted == true || !string.IsNullOrEmpty(own?.PendingConcessionOperationId)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_AgreementSettling", "An agreement is still settling; the faction cannot be refounded.");
 				else if (!GetFoundingOptions(k.StringId, actor).Any(x => x.DemandId == r.DemandId && x.TargetId == r.TargetId)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_DemandInvalid", "The demand or target is not valid, or the required holdings are missing.");
 				q.Consequence = CivilWarUiText.T("AF_KINGDOM_CW_Action_FoundConsequence", "Found a faction: −10 relation with the ruler. If you are already in a camp, you leave it first and bear the member relation loss, and your old faction dissolves. A player leader only starts a rebellion manually.");
 			}
 			else if (r.Action == CivilWarAction.Leave)
 			{
 				if (member == null || member.Side == KingdomCivilWarSide.Middle) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_AlreadyNeutral", "You are already uncommitted.");
-				q.Consequence = CivilWarUiText.T("AF_KINGDOM_CW_Action_LeaveConsequence", "−10 relation with the former member leader and −20 with the faction leader (not cumulative); you cannot join or found a faction for 7 days.");
+				q.Consequence = CivilWarUiText.T("AF_KINGDOM_CW_Action_LeaveConsequence", "−10 relation with the former member leader and −20 with the faction leader (not cumulative); you cannot join a faction for 7 days. The player may still found a faction.");
 			}
 			else if (r.Action == CivilWarAction.Detonate)
 			{
@@ -156,7 +154,7 @@ internal sealed partial class KingdomCivilWarOwner
 			else if (!same)
 			{
 				if (member != null && member.Side != KingdomCivilWarSide.Middle) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_MustLeaveCampFirst", "You must leave your current camp first, bearing the relation loss and the 7-day cooldown.");
-				else if (_storage.ClanExitUntilDay.TryGetValue(actor.StringId, out int until) && CivilWarWorld.CurrentDay() < until) { q.CooldownUntilDay = until; q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_ExitCooldown", "Exit cooldown runs until day {A}; changing kingdoms does not bypass it.", ("A", until.ToString())); }
+				else if (_storage.ClanExitUntilDay.TryGetValue(actor.StringId, out int until) && CivilWarWorld.CurrentDay() < until) { q.CooldownUntilDay = until; q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_ExitCooldown", "Exit cooldown runs until {A}; changing kingdoms does not bypass it.", ("A", CivilWarUiText.Date(until))); }
 				else if (r.Action == CivilWarAction.JoinOpposition && !IsPreWar(f)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_SelectJoinableFaction", "Select a pre-war faction you can join.");
 				else if (r.Action == CivilWarAction.Found)
 				{

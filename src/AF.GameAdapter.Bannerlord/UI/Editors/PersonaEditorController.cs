@@ -53,6 +53,7 @@ internal sealed class PersonaEditorPort
  internal Action<Hero, Action<MyBehavior.NpcPersonaProfile>> UpdatePersonaProfile;
  internal IReadOnlyCollection<string> TraitIds;
  internal Func<Hero, Task<string>> GeneratePersona;
+ internal Func<Hero, string, Task<string>> GeneratePersonaWithPrompt;
  internal Func<long, Func<bool>, Task<bool>> CompleteOnMainThread;
 }
 internal sealed class PersonaEditorController
@@ -158,6 +159,7 @@ internal sealed class PersonaEditorController
 			list.Add(new InquiryElement("set_personality", Localize("AF_UI_Persona_SetPersonality", "Set or edit persona"), null));
 			list.Add(new InquiryElement("edit_expanded", Localize("AF_UI_Persona_EditExpanded", "Edit expanded persona"), null));
 			list.Add(new InquiryElement("reroll_persona", Localize("AF_UI_Persona_RerollPersona", "Regenerate persona (LLM)"), null));
+			list.Add(new InquiryElement("reroll_persona_prompt", Localize("AF_UI_Persona_PromptedRerollButton", "Regenerate with prompt"), null));
 			list.Add(new InquiryElement("set_voice", Localize("AF_UI_Persona_SetVoice", "Set or edit voice ID"), null));
 			list.Add(new InquiryElement("clear_persona", Localize("AF_UI_Persona_ClearPersona", "Clear persona, structured information, and voice ID"), null));
 			list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
@@ -218,6 +220,9 @@ internal sealed class PersonaEditorController
 		case "reroll_persona":
 			OpenDevRerollPersonaConfirmation(devEditingHero);
 			break;
+		case "reroll_persona_prompt":
+			OpenHeroPersonaPromptedReroll(devEditingHero, () => OpenDevPersonaMenu(devEditingHero));
+			break;
 		case "set_voice":
 			OpenDevSetVoiceId(devEditingHero);
 			break;
@@ -274,7 +279,35 @@ internal sealed class PersonaEditorController
 		}), pauseGameActiveState: true);
 	}
 
-	internal async Task RunHeroPersonaRerollAsync(Hero npc, Action onClosed)
+    internal void OpenHeroPersonaPromptedReroll(Hero npc, Action onClosed)
+    {
+        long generation = _port.CaptureGeneration();
+        if (npc == null || !_port.IsCurrent(generation)) return;
+        _port.SelectedHero = npc;
+        bool submitted = false;
+        DevTextEditorHelper.ShowLongTextEditor(
+            Localize("AF_UI_Persona_PromptedRerollTitle", "Regenerate with prompt - {NAME}", ("NAME", npc.Name?.ToString() ?? "NPC")),
+            Localize("AF_UI_Persona_PromptedRerollIntro", "Describe how to regenerate this character's personality and background. These requirements apply only to this request. The voice is kept, and a failed request keeps the existing persona."),
+            Localize("AF_UI_Persona_PromptedRerollHint", "Enter a background, personality direction, or details to preserve. Current game facts still apply."), "",
+            prompt =>
+            {
+                if (submitted || !IsEditorCurrent(npc, generation)) return;
+                submitted = true;
+                if (string.IsNullOrWhiteSpace(prompt))
+                {
+                    InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_PromptedRerollEmpty", "Enter requirements before generating.")));
+                    OpenHeroPersonaPromptedReroll(npc, onClosed);
+                    return;
+                }
+                _ = RunHeroPersonaRerollAsync(npc, onClosed, prompt.Trim());
+            }, () =>
+            {
+                if (submitted || !IsEditorCurrent(npc, generation)) return;
+                submitted = true;
+                InvokePersonaRerollClosed(onClosed);
+            }, Localize("AF_UI_Persona_ConfirmGenerate", "Generate"), Localize("AF_UI_Persona_Cancel", "Cancel"));
+    }
+	internal async Task RunHeroPersonaRerollAsync(Hero npc, Action onClosed, string requestPrompt = null)
 	{
 		if (npc == null)
 		{
@@ -287,7 +320,9 @@ internal sealed class PersonaEditorController
 		string failureDetail;
 		try
 		{
-			failureDetail = await _port.GeneratePersona(npc);
+			failureDetail = string.IsNullOrWhiteSpace(requestPrompt)
+                ? await _port.GeneratePersona(npc)
+                : await _port.GeneratePersonaWithPrompt(npc, requestPrompt);
 		}
 		catch (Exception ex)
 		{

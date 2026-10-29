@@ -210,15 +210,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             button.AddChild(textWidget);
 
-            Widget contentList = GetRightSideContentList(root);
-            if (ReferenceEquals(parent, contentList))
-            {
-                parent.AddChildAtIndex(button, 0);
-            }
-            else
-            {
-                parent.AddChild(button);
-            }
+            HeroEncyclopediaActionBar.AddButton(parent, button);
         }
 
         private static void TrackButton(ButtonWidget button)
@@ -301,7 +293,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static Widget GetButtonParent(object root)
         {
-            return GetRightSideContentList(root) ?? GetRightSideRoot(root);
+            return HeroEncyclopediaActionBar.GetOrCreate(root, GetRightSideContentList(root) ?? GetRightSideRoot(root));
         }
 
         private static Widget GetRightSideContentList(object root)

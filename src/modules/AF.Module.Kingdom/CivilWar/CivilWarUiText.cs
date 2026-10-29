@@ -23,6 +23,11 @@ internal static class CivilWarUiText
         return LiteralValues.Replace(text.ToString(), match => variables[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
     }
 
+    // Display boundary only: keep persisted day/week indices and scheduling unchanged.
+    internal static string Date(int day)
+        => DiplomacyUiLocalization.CampaignDate(day, TaleWorlds.CampaignSystem.CampaignTime.DaysInSeason,
+            TaleWorlds.CampaignSystem.CampaignTime.DaysInYear);
+
     internal static string DemandTag(CivilWarDemandDef demand)
     {
         string id = demand?.Id ?? "unknown";

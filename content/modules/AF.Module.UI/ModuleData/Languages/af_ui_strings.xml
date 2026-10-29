@@ -3378,5 +3378,10 @@ Choose how to proceed:" />
   <string id="AF_UI_DiplomacyEntry_AiDisabled" text="AI diplomacy is not enabled." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyWarTendency_Title" text="War tendency" />
     <string id="AF_DIP_UI_EventProcessingDelayed" text="Diplomatic processing for {EVENT} could not complete after bounded repairs. The draft and negotiation record are preserved; this is a technical pause, not political silence." />
+  <string id="AF_UI_Persona_PromptedRerollButton" text="Regenerate with prompt" />
+  <string id="AF_UI_Persona_PromptedRerollTitle" text="Regenerate with prompt - {NAME}" />
+  <string id="AF_UI_Persona_PromptedRerollIntro" text="Describe how to regenerate this character&#x27;s personality and background. These requirements apply only to this request. The voice is kept, and a failed request keeps the existing persona." />
+  <string id="AF_UI_Persona_PromptedRerollHint" text="Enter a background, personality direction, or details to preserve. Current game facts still apply." />
+  <string id="AF_UI_Persona_PromptedRerollEmpty" text="Enter requirements before generating." />
 </strings>
 </base>

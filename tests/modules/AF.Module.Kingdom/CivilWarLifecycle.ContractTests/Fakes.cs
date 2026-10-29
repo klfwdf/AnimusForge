@@ -53,7 +53,7 @@ namespace TaleWorlds.CampaignSystem
         public int GetTraitLevel(TraitObject trait) => 0;
     }
     public class PolicyObject { public string StringId, Name; }
-    public struct CampaignTime { public static int Day = 700; public static CampaignTime Now => new() { ToDays = Day }; public double ToDays; }
+    public struct CampaignTime { public const int DaysInSeason = 21, DaysInYear = 84; public static int Day = 700; public static CampaignTime Days(double day) => new() { ToDays = day }; public override string ToString() => $"Year {(int)ToDays / 84}, season {(int)ToDays % 84 / 21}, day {(int)ToDays % 21 + 1}"; public static CampaignTime Now => new() { ToDays = Day }; public double ToDays; }
 }
 namespace TaleWorlds.CampaignSystem.Settlements
 {
@@ -166,7 +166,7 @@ namespace AnimusForge
     }
     internal static class PlayerKingdomRebellionImmunity { internal static bool Protected; internal static bool ShouldProtectKingdom(Kingdom k) => Protected; }
     internal static class DiplomacyConversationBridge { internal static void ApplyExternalPrestigeDelta(string id,int delta,string reason) { } }
-    internal static class WorldDiplomacyBehavior { internal static void ApplyExternalPrestigeDelta(string id, int delta, string reason) { } }
+    internal static class WorldDiplomacyBehavior { internal static void RunAuthorizedEventPeace(Kingdom first, Kingdom second, Action apply) => apply(); internal static void ApplyExternalPrestigeDelta(string id, int delta, string reason) { } }
     internal partial class CivilWarCampaignBehavior
     {
         internal static int MaterialWrites;

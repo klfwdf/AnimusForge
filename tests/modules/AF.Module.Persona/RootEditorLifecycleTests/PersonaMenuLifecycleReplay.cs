@@ -43,6 +43,7 @@ internal static class PersonaMenuLifecycleReplay
                 "Persona language switch preserves authoritative profile and completion callback");
         }
         check(!MBInformationManager.Selection.Options.Any(o => Equals(o.Identifier, "set_background")), "unified editor has no second body entry");
+        check(MBInformationManager.Selection.Options.Single(o => Equals(o.Identifier, "reroll_persona_prompt")).Title == "按提示词重生", "prompted regeneration is connected to the Chinese UI resource");
         TaleWorlds.Localization.TextObject.UseLanguage(false);
         editor.OpenDevPersonaMenuFromExternal(a, () => closesA++);
         var old = MBInformationManager.Selection;

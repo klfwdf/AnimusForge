@@ -19,7 +19,7 @@
   "PersonaLoreHeader": "[Worldbook reference: {TITLE}]\n",
   "NpcFallback": "this NPC",
   "PlayerAppearanceHeader": "[Player appearance (always available)]",
-  "PlayerAppearanceObservation": "{NPC} can directly observe these appearance features when interacting with the player face to face;",
+  "PlayerAppearanceObservation": "The description below belongs only to the player, the person {NPC} is interacting with. It does not describe {NPC}'s appearance, personality, or background. First-person wording in the quoted description refers to the player. Use it only as information about the player; face-to-face interaction allows observation of visible traits.",
   "KnowledgeRecallHeader": "This interaction brings the following knowledge to mind",
   "RelatedMeaning": "related concepts",
   "MatchedKnowledgeHeader": "[The following is background knowledge about ({TOPIC}); {NPC} may draw on it for conversation as appropriate]",
@@ -62,5 +62,6 @@
   "WhenGender": "Gender",
   "WhenClanLeader": "Clan leader",
   "WhenSkill": "Skill",
-  "WhenSpecific": "Specific ({CATEGORIES})"
+  "WhenSpecific": "Specific ({CATEGORIES})",
+  "PlayerAppearanceEnd": "[End of player appearance]"
 }

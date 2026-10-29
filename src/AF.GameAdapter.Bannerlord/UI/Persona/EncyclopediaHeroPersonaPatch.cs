@@ -62,6 +62,8 @@ public static class EncyclopediaHeroPersonaPatch
 
 	private const string RerollButtonId = "AnimusForgeHeroPersonaRerollButton";
 	private const string VoiceButtonId = "AnimusForgeHeroGptSoVitsVoiceButton";
+	private const string PromptedRerollButtonId = "AnimusForgeHeroPersonaPromptedRerollButton";
+	private static readonly ConditionalWeakTable<object, ButtonWidget> PromptedRerollButtons = new ConditionalWeakTable<object, ButtonWidget>();
 
 	private static readonly string PlayerNotorietyMarker = AdapterPromptCaptureTexts.PcapCompat("Marker_PlayerNotoriety");
 
@@ -825,6 +827,11 @@ public static class EncyclopediaHeroPersonaPatch
 			stateWriteSucceeded &= SetWidgetVisibleIfChanged(rerollButton, shouldShowReroll);
 
 			stateWriteSucceeded &= SetWidgetEnabledIfChanged(rerollButton, shouldShowReroll && !generationActive);
+            if (PromptedRerollButtons.TryGetValue(root, out var prompted))
+            {
+                stateWriteSucceeded &= SetWidgetVisibleIfChanged(prompted, shouldShowReroll);
+                stateWriteSucceeded &= SetWidgetEnabledIfChanged(prompted, shouldShowReroll && !generationActive);
+            }
 
 		}
 
@@ -1781,21 +1788,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 		button.AddChild(textWidget);
 
-		if (ReferenceEquals(parent, GetRightSideContentList(root)))
-
-		{
-
-			parent.AddChildAtIndex(button, 0);
-
-		}
-
-		else
-
-		{
-
-			parent.AddChild(button);
-
-		}
+		HeroEncyclopediaActionBar.AddButton(parent, button);
 
 	}
 
@@ -1811,6 +1804,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 		EnsureRerollButton(root);
 		EnsureVoiceButton(root);
+		EnsurePromptedRerollButton(root);
 
 	}
 
@@ -1912,21 +1906,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 		button.AddChild(textWidget);
 
-		if (ReferenceEquals(parent, GetRightSideContentList(root)))
-
-		{
-
-			parent.AddChildAtIndex(button, 0);
-
-		}
-
-		else
-
-		{
-
-			parent.AddChild(button);
-
-		}
+		HeroEncyclopediaActionBar.AddButton(parent, button);
 
 	}
 
@@ -2050,21 +2030,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 		button.AddChild(textWidget);
 
-		if (ReferenceEquals(parent, GetRightSideContentList(root)))
-
-		{
-
-			parent.AddChildAtIndex(button, GetEditButton(root) != null ? 1 : 0);
-
-		}
-
-		else
-
-		{
-
-			parent.AddChild(button);
-
-		}
+		HeroEncyclopediaActionBar.AddButton(parent, button);
 
 	}
 
@@ -2136,7 +2102,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 	{
 
-		return GetRightSideContentList(root) ?? GetRightSideRoot(root);
+		return HeroEncyclopediaActionBar.GetOrCreate(root, GetRightSideContentList(root) ?? GetRightSideRoot(root));
 
 	}
 
@@ -2242,10 +2208,43 @@ public static class EncyclopediaHeroPersonaPatch
 			text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center;
 		}
 		button.AddChild(text);
-		if (ReferenceEquals(parent, GetRightSideContentList(root))) parent.AddChildAtIndex(button, 0);
-		else parent.AddChild(button);
+		HeroEncyclopediaActionBar.AddButton(parent, button);
 	}
 
+
+    private static void EnsurePromptedRerollButton(object root)
+    {
+        Widget parent = GetEditButtonParent(root);
+        if (parent == null || (root as Widget)?.FindChild(PromptedRerollButtonId, true) != null) return;
+        var button = new ButtonWidget(parent.Context)
+        {
+            Id = PromptedRerollButtonId, WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
+            SuggestedHeight = 38f, VerticalAlignment = VerticalAlignment.Top,
+            Brush = parent.Context.GetBrush("Popup.Done.Button.NineGrid") ?? parent.Context.GetBrush("ButtonBrush2"),
+            IsVisible = false, IsEnabled = true, DoNotAcceptEvents = false, DoNotPassEventsToChildren = true
+        };
+        button.ClickEventHandlers.Add(delegate
+        {
+            Hero hero = ResolveHero(GetDataSource(root));
+            if (hero != null) MyBehavior.OpenHeroPersonaPromptedRerollForExternal(hero);
+        });
+        var text = new TextWidget(parent.Context)
+        {
+            WidthSizePolicy = SizePolicy.StretchToParent, HeightSizePolicy = SizePolicy.StretchToParent,
+            Text = new TextObject("{=AF_UI_Persona_PromptedRerollButton}Regenerate with prompt").ToString(),
+            Brush = parent.Context.GetBrush("Popup.Button.Text") ?? parent.Context.GetBrush("Encyclopedia.SubPage.Info.Text"),
+            DoNotAcceptEvents = true
+        };
+        if (text.Brush != null)
+        {
+            text.Brush.FontSize = 16;
+            text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center;
+            text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center;
+        }
+        button.AddChild(text);
+        HeroEncyclopediaActionBar.AddButton(parent, button);
+        PromptedRerollButtons.Add(root, button);
+    }
 
 }
 
