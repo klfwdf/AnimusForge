@@ -1,6 +1,13 @@
 <a id="agenda-vote-failure-20261029"></a>
 ## 玩家投票议程空引用调查（2026-10-29，DIAGNOSTIC_OFFLINE_VERIFIED / ROOT_CAUSE_BLOCKED）
 
+### 前二原因链路复核（2026-10-29）
+
+a1e9cf147沿创建/取消/详情/原生选举追踪，实际1.3/1.4 DLL各21项合成状态探针通过。无族长家族可穿过玩家提案取消检查，随后候选生成/正式选举同处空引用；原生支持者也不排除无族长/残留灭亡家族。普通领地易主和提议家族转国已有原生移除/取消，不能笼统归因于旧议程；中心定居点缺失的估值helper可复现空引用，但正常归属/入离国/AfterLoad会重算，有地玩家王国持续缺中心尚无证据。未发现相关AF路径主动SetLeader(null)，征募先处理继承/销毁；未证实玩家命中任一状态。
+
+顺带修正上一轮诊断catch读取Kingdom getter可能二次抛异常；新增失败安全的国家ID诊断读取，不改选举规则。原双API/Bootstrap及seam/registration构建通过；精确生产helper原样抽取验证空getter/缓存/回退。证据、实际DLL身份、完整链路及范围在artifacts/agenda-vote-failure-20261029/chain-probe/chain-findings.md、native-1.3.log、native-1.4.log、receipt.json、build.log。探针为真实原生方法+合成状态，无AF Harmony、玩家存档或Game；中心点仅helper验证，不宣称完整评分实机。当前根因仍ROOT_CAUSE_BLOCKED，未部署/打包/push；新诊断候选在chain-probe/candidate/，原候选保留。聚焦回滚git revert a1e9cf147。
+
+
 用户提供 Mod_Logic.txt 和异常统计截图；未知玩家游戏版本和是否仅分封议程。Git 根 F:/AnimusForge-main，main，起点8254c4be6，检查点f5b4ba5。既有HANDOFF/主台账未提交增量保留。范围仅VoteDealBehavior详情/召开入口的诊断与成功日志真实性；不按未证实的外交对象缺失假设改变选票、候选人、权限、存档或默认入口。
 
 日志67593–67736：8次LoadDetail和12次StartVoteMeeting空引用，与截图计数一致。首次失败14:16:31/32，早于14:16:43外交复议入队；14:16:10刚发布“贾尔马律斯的领主”通知，14:16:43强制入口也请求同一分封议程。现有catch仅ex.Message，不能确定空对象或证明全部议程受影响。“Opened required vote”只证明PushState被请求，不能证明StartVoteMeeting成功。新增阶段、类型/国家/提议家族ID、标题与完整异常堆栈，真实召开成功后单独记日志；不推测或绕过原生规则。完成条件：受影响日志接线、原双API/Bootstrap构建、既有议程专项、记录真实复现未验边界。证据及修改前文件：artifacts/agenda-vote-failure-20261029/。诊断仅在原详情加载/点击/自动请求回调运行，阶段为常量字符串赋值，异常上下文与堆栈只在故障发生时构建；无新增Tick、扫描、反射、IO或配置/文案资源。

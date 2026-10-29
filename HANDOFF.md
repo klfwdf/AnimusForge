@@ -1,3 +1,9 @@
+# 投票议程前二原因链路已复核（2026-10-29）
+
+- 原生双API各21项合成状态检查：无族长家族可同时破坏详情与投票；普通易主/转国会提前移除或取消；中心点缺失估值可复现但正常有地王国会重算。未找到玩家具体坏对象或AF制造该状态的证据。a1e9cf147只修诊断自身getter二次异常；双API/Bootstrap与注册检查通过，未部署。新候选artifacts/agenda-vote-failure-20261029/chain-probe/candidate/。[唯一台账与复现边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#agenda-vote-failure-20261029)。
+
+---
+
 # 玩家投票议程异常：诊断版已构建（2026-10-29，根因待复现）
 
 - 原日志确认详情8次、召开12次空引用；首发早于外交复议，不能认定外交对象缺失。57caba7f7增加失败阶段、议程身份和完整堆栈，纠正请求界面被误记为打开成功；未改变投票规则。双API/Bootstrap、既有注册检查与议程专项5项通过；未复现玩家存档、未确认根因、未部署或打包/push。[唯一台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#agenda-vote-failure-20261029)、[源码范围](docs/architecture/af-framework-code-scope.md#agenda-vote-failure-20261029)。诊断候选artifacts/agenda-vote-failure-20261029/candidate/；下一步需玩家对应版本复现后的新堆栈。此诊断不是无法召开问题的修复验收。

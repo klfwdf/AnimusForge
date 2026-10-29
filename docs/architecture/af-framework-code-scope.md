@@ -1,6 +1,10 @@
 <a id="agenda-vote-failure-20261029"></a>
 ## 玩家投票议程空引用诊断 — 2026-10-29
 
+### 前二原因复核及诊断getter修正
+
+a1e9cf147；[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#agenda-vote-failure-20261029)。VoteDealBehavior.cs:801–806 GetDecisionKingdomIdForDiagnostics；4500/4952为两处catch真实消费者。仅诊断在原国家getter抛出时返回unavailable，不改变投票。原生双API合成状态各21项、生产helper原样抽取及双API/Bootstrap/seam/registration通过；详细链路/源码坐标与原生DLL身份在artifacts/agenda-vote-failure-20261029/chain-probe/。无玩家存档/实机根因证据。
+
 诊断提交57caba7f7a7b3509a7c5ec47aac0cc6ea3f30220；[状态及详细证据](../animusforge-refactoring-and-repository-reorganization-plan.md#agenda-vote-failure-20261029)。不改变选票/候选人、存档、协议、语言资源或公开API；无新Tick工作。
 
 | 源码与一基行号 | 符号 | 覆盖与边界 |
