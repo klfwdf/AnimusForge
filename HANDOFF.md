@@ -1,3 +1,8 @@
+<a id="oral-sovereign-control-20261029"></a>
+## 口头外交区分所属国与掌权国 — 2026-10-29
+
+产品cf963f440，检查点2d2876229。各身份玩家均可劝说本国/外国NPC君主；生成与审核明确NPC掌权、保留承诺，精确旧空立场挂起记录获一次有限重试。宣战单方执行，结盟/贸易保留双方君主同意及无需玩家重复接受的规则。CN/EN各1086专项与6092原有回归通过，最终双API/Bootstrap/seam通过；英文预算回归已修正。**OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-sovereign-control-20261029)和[代码范围](docs/architecture/af-framework-code-scope.md#oral-sovereign-control-20261029)。未处理回应另开事件，待实机验证；此前未提交资料保留。
+
 <a id="diplomacy-event-map-only-20261029"></a>
 ## 外交事件通知限制大地图并修复退出 — 2026-10-29
 

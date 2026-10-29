@@ -1,3 +1,22 @@
+<a id="oral-sovereign-control-20261029"></a>
+## 口头外交国家控制权 — 2026-10-29
+
+源码修订cf963f440，检查点2d2876229。[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#oral-sovereign-control-20261029)。以下路径相对仓库，行号为一基；现有执行与权限owner仍为唯一实际授权依据。
+
+| 路径与行号 | 符号 / 责任 | 覆盖及未覆盖 |
+|---|---|---|
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.NarrativeSafety.cs:16–45 | SovereignSpeakersForModel / NpcConceptPositionFailure / TryRecoverLegacyOralNpcPosition | 复用host当前君主与玩家掌权判断；精确旧故障恢复；不新建权限状态 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.NarrativeSafety.cs:328–337 | TryReadConceptPosition | NPC必须填写立场，纠正携带控制权；保留玩家主权国留空规则 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SpeechReview.cs:125–131 | PrepareSpeechReview | 抽取/审核请求携带实际掌权国、所属国与君主事实；共享三渠道入口 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs:124–131 | RebuildOralDeclarationJob | 正式发布请求携带发起/目标掌权事实；沿用既有外交执行链 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EventPlanning.cs:451–478 | PrepareEventConceptRequest | 形成与审核共用短控制权规则和顶层快照；不重复增加内层快照 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EventProgress.cs:174–192 | PrepareEventProgressRequest | 后续事件维持当前控制权；既有材料预算不变 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EventRuntime.cs:232–267 | 收尾请求 | 收尾/审核使用同一控制权快照；不直接授权效果 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs:216–227 | TryResumeTechnicalRequest | 精确旧错误恢复正常有限次数；新标记阻止读档无限重试 |
+| src/modules/AF.Module.Diplomacy/Application/DiplomacyPromptApplication.cs:103–110 | Build | 正式模式主对话说明劝说与签署权限；原版模式不注入正式承诺规则 |
+| content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json:2–9; 同名.en.json:2–9 | SovereignControlContract / ConversationPersuasion / CountryAdmissionOral | CN/EN成对资源，真实消费者及预算回归；非规则词法替换 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/SovereignControlReplay.cs:27–149 | Run / Persuasion / PlanningAndRecovery | 身份×渠道×行为矩阵、原日志失败形状、恢复上限；受控模型/游戏端口，不代表实机 |
+
 <a id="diplomacy-event-map-only-20261029"></a>
 ## 外交事件通知显示与退出边界 — 2026-10-29
 
