@@ -1,3 +1,9 @@
+# 当前安装：CN 内政标题/居中/人物重生音色修复（2026-10-29）
+
+按用户“部署CN”授权，已把产品 `3e8fc53ef` 用原部署脚本覆盖至游戏Modules/AnimusForge（AF1.7.0，普通Bootstrap+1.3/1.4）。已核对43个审查文件和候选DLL与此前最终测试相同，复用双版本构建、界面各230/人物生成598检查；本次完整CN Stage门禁通过，10关键安装文件及两API候选hash一致。未实机/真实语音/模型、未打包/push；玩家数据沿原脚本保护，无部署Recovery/自动回滚。本条替代下方“这三项尚未部署”的安装状态。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-interior-fixes-20261029)；`artifacts/deploy-cn-interior-fixes-20261029/receipt.json`。
+
+---
+
 # 内政显示修复及本轮全部改动审查（2026-10-29，本地未部署）
 
 产品 `3e8fc53ef`：恢复“内政事务/王国议程”等6个缺失VM文字属性；修正无倒计时块时左占位导致的详情标题偏右；审查另外补齐人物重生保留GPT-SoVITS选定声音（包括生成期间换音）。当前实际DLL每API230标签/语言/原生布局检查通过，人物生成598通过；双API/Bootstrap/seam/registration通过。复核本会话43个源码/资源/测试文件，其余未发现确定新增缺陷，原投票/外交/性能现场与旧测试失败仍未确认。**这三项新修复尚未部署**，游戏仍为下条CN安装，已核对未被本次构建改变。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#interior-review-20261029)、[源码范围](docs/architecture/af-framework-code-scope.md#interior-review-20261029)；详细审查 `artifacts/interior-missing-headings-20261029/review.md`。未实机/模型/播放/打包/push。

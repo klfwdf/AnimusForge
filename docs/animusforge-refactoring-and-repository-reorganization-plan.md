@@ -1,3 +1,18 @@
+<a id="deploy-cn-interior-fixes-20261029"></a>
+## CN部署：内政标题/居中与人物重生音色 — 2026-10-29
+
+**CN_DEPLOYED / FILE_VERIFIED / LIVE_NOT_RUN**。用户明确要求“部署CN”。main/F:/AnimusForge-main，来源HEAD `caedd2db31cfbb2d86ea9a696415ba5e88403871`、实际产品 `3e8fc53efd1e76d24362d6e7c17443e6b6f1605c`、部署意图检查点 `5d1365cbfe772423081ec3a5cc6e513d0df3188d`。本条显式替代[上轮本地未部署状态](#interior-review-20261029)，不改变原未验项。AF版本v1.7.0保持，普通Bootstrap+API1.3/1.4。
+
+先核对reviewed-files.json的43个源/资源/测试hash和两最终DLLhash均未变化，复用 `artifacts/interior-missing-headings-20261029/build-final.log` 的双API/Bootstrap/seam/registration及界面每API230、人物生成598项；没有无意义重建。直接使用原 `scripts/build/deploy_module.ps1 -Configuration Release`、显式BuildDll13/14及BootstrapDll，组装CN Stage并经原clean Stage/目标/玩家文件保护门禁覆盖 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`。部署前未检测到Bannerlord/TaleWorlds进程。未修改一键脚本/版本/语言资源，不调用模型。
+
+证据 `artifacts/deploy-cn-interior-fixes-20261029/deploy.log`、verified-build-inputs.json、receipt.json、verify-deploy.py：部署成功；安装10个关键DLL/XML/中英UI和CN Prompt资源与完整Stage hash一致，两安装实现hash与已测试候选一致，SubModule只声明Bootstrap，CN知识/派系模板逐字节等于源中文。原Stage保留在同任务previous-project-stage，新Stage为 `F:\AnimusForge-main\bin\Release\single_module_stage\AnimusForge`，路径核实均在工作区，无reparse。是项目输出保留，不是游戏部署备份。
+
+玩家文件按原脚本保留：已有CustomPrompts/Configs/TerminalSettings不覆盖，PlayerExports修改时间合并且安装端同时间获胜，未知安装文件及ONNX/Logs/Cache/Recovery不镜像删除，不更改MCM文档数据。未生成Modules部署Recovery、备份、manifest、完成标记或自动回滚。未部署1.5特别版/清理未知文件。
+
+未验实机标题字体/显示/点击、玩家sav、真实GPT-SoVITS播放和模型；投票空引用、外交发错/不回信及卡顿仍按原调查边界，不能称本次部署修好。未打包/push。若需恢复安装，选择明确候选走同一Stage部署，没有自动回滚点；源码回滚只聚焦inverse 3e8fc53ef。原HANDOFF206/主台账290行dirty保留。
+
+---
+
 <a id="interior-review-20261029"></a>
 ## 内政标题/居中修复及上文本轮改动审查 — 2026-10-29
 
