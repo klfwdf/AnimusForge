@@ -1,3 +1,15 @@
+<a id="diplomacy-token-optimization-20261029"></a>
+## 外交 token 优化：紧凑请求、有效结果复用与有限重试 — 2026-10-29
+
+- 授权与状态：用户明确要求按推荐方案实施；不把实机验证作为交付前置条件，后续正常游玩再比较历史用量。检查点 `faf42ac9e`，产品提交 `4a0f405bd`，main；**IMPLEMENTED / SCOPED_OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_MODEL_NOT_RUN**。本条交付 token 优化，不实施下方其他会话已确认但未授权实施的政策、每日维护或历史索引方案。
+- 发送边界：已知世界 JSON 转为结构对象，相同的关系/城镇数值边界一次声明；具体数值、来源身份/版本、不同边界、未知字段及不完整标记保留。边界/推进草稿去掉重复 JSON 转义；只有节约超过新增解释契约与安全余量时才采用。CN/EN 契约已接入最终 system messages；原冻结材料、摘要身份与保存对象不改，语义修复的固定消息链不重写。无新增 Tick IO、全局缓存或全量历史扫描；解析限制 512 KiB/64 层，异常保留原文。
+- 审核与恢复：审核仍取得完整证据，仅跳过已在原文中的完全相同生成上下文；网络失败保留可用草稿，未变依据/知识/配置下保留合格隔离结果，实际重建源文变化则重新隔离。连续三次格式审核失败或字段修复耗尽后，不允许外层恢复把本地额度重新灌满；存读档也不补额度。配置、真实版本变化、明确恢复等原路径继续有效；未公开 NPC 事件仍走原候选/释放路径，已有公文义务不假装成功或丢弃。未减少日常事件频率，未取消审核，未修改模型或用户设置。
+- 观测：cache-shape 使用实际发送的 messages；cache-usage 增加 event/job/attempt，继续沿用实际 provider usage；新增 context_projection/audit_context_reused/isolation_retained 诊断便于后续归因。源文件与一基行号、职责边界见[代码证据图](architecture/af-framework-code-scope.md#diplomacy-token-optimization-20261029)。未新增存档字段或配置 owner。
+- 验证：CN 完整生命周期 smoke **15,363 assertions PASS**；CN/EN token 专项各 **72 PASS**，覆盖事实可还原、冻结依据不变、实际请求消费者、去重、四种审核网络恢复、隔离源变化、重试耗尽及序列化重载。原单模块脚本 Debug 双 API+Bootstrap、coup seam 与注册 smoke PASS。两份 Prompt 资源重复 key 检查及 git diff --check PASS。现有编译/离线 NuGet 警告仍存在，未宣称零警告。
+- 英文全套限制：完整 EN 回放在 EventStructureReplay.MaterialAdmission:256 的 frozen records 断言失败；独立以 `faf42ac9e` 原源码/原测试组成的临时 harness，在相同 EN 资源下 `--event-structure` 同点复现。属于已有失败，未扩大范围修复；不能宣称英文全套通过。本次 EN 专项及前面已完成的相关回放通过。
+- 历史静态估算：只读 2026-10-23 起 3,245 条成功外交请求，把历史 user JSON 输入投影并计入新增契约后，字符数 82,940,999 → 77,543,627（6.51%）；构思 11.69%、边界 5.22%、推进 6.76%。这是编码层字符量，不是实际 provider token 或计费降幅；未包含审核上下文去重、避免重写和失败重试节约。未进行付费模型请求。
+- 本地证据：`artifacts/diplomacy-token-optimization-20261029/{full-cn,full-en,focused-cn,focused-en,baseline-en,build-final,historical-projection}.log`；临时 baseline harness/EN 映射目录在验证后清理。产物仅本地 `bin/Debug/single_module_artifacts`，未写入游戏安装、打包、推送。下一步需另行明确授权覆盖游戏；其后玩家正常游玩/挂机样本按实际运行小时、输入/输出/缓存、请求数和阶段比较，保留事件完成量与错误情况，避免以停滞证明省量。实机不是本次完成门禁。
+
 <a id="oral-sovereign-deploy-20261029"></a>
 ## 口头外交修复部署确认 — 2026-10-29
 

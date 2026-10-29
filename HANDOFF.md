@@ -1,3 +1,8 @@
+<a id="diplomacy-token-optimization-20261029"></a>
+## 外交 token 优化已本地完成，尚未部署 — 2026-10-29
+
+产品提交 `4a0f405bd`，检查点 `faf42ac9e`。紧凑世界请求、审核上下文去重、网络失败有效草稿/隔离复用、阻止相同条件反复补满审核重试额度已接入。CN 完整回放 15,363 项、CN/EN 专项各 72 项与双 API/Bootstrap 构建通过；EN 全套一项材料快照断言在改动前也同点失败，未声称全套通过。实机/付费模型未运行，不作为本次门禁；未部署、未推送，后续授权覆盖后由用户正常游玩再查实际用量。完整证据、收益边界、旧失败与其他方案交界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-token-optimization-20261029)与[代码证据图](docs/architecture/af-framework-code-scope.md#diplomacy-token-optimization-20261029)。下方其他任务的设计状态和未提交修改保留。
+
 <a id="oral-sovereign-deploy-20261029"></a>
 ## 口头外交修复已部署 — 2026-10-29
 

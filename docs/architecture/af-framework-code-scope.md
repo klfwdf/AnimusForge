@@ -1,3 +1,19 @@
+<a id="diplomacy-token-optimization-20261029"></a>
+## 外交 token 优化发送与恢复边界 — 2026-10-29
+
+源码修订 `4a0f405bd`，检查点 `faf42ac9e`。[主台账与验证限制](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-token-optimization-20261029)。下表路径相对仓库、一基行号；同 DLL Application/host 适配，无独立公共 API 或新 DLL。
+
+| 路径与行号 | 符号 / 责任 | 覆盖及未覆盖 |
+|---|---|---|
+| src/modules/AF.Module.Diplomacy/Application/DiplomacyRequestProjection.cs:15–99 | Project / TryWorld / ExtractShared / AppendContextOnce | 有界 detached 发送投影与完整块去重；保留未知字段/原材料，不改变游戏事实或审核裁决 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmMessageApplication.cs:34–70 | BuildLlmMessageArray | 实际 messages 消费 CN/EN 契约，仅净减量采用；固定语义修复链不改 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Privacy.cs:90–120,252–278 | PrepareDiplomacyPrivacy / PrepareDeclarationAudit | 新源重验、阶段空尾保留已隔离源、完全重复生成块只传一次；保密审核仍执行 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs:11–30,233–299 | HasExhaustedLocalReview / HoldTechnicalRequest / TryResumeTechnicalRequest | 同条件额度不补满，网络恢复保留当前有效阶段草稿；不改未知执行结果阻断及公文义务 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs:131,193 | IWorldDiplomacyLlmDispatchSource / Dispatch | 将实际发送消息交给诊断；本地接口变更，无外部 API 版本变化 |
+| src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs:27–35; WorldDiplomacyBehavior.cs:625–693 | BuildMessageArray / LogPromptCacheShape / LogPromptCacheUsage | host 薄适配；实际消息形状及 event/job/attempt 归因，未自行估算为 provider usage |
+| content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json:2; DiplomacyPromptTexts.en.json:2 | RequestWorldProjection | 双语固定契约由既有 resource reader 读取；不强制输出语言，不引入配置 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/TokenOptimizationReplay.cs:7–103; TokenLogProjectionReplay.cs:8–57 | TokenOptimization / Run | 中英文实际消费者及恢复回放、只读历史字符估算；无真实模型行为或游戏验收保证 |
+
 <a id="oral-sovereign-control-20261029"></a>
 ## 口头外交国家控制权 — 2026-10-29
 
