@@ -74,6 +74,7 @@ internal static partial class EventConvergenceReplay
     { foreach (var j in o.CurrentStorage.Jobs.Where(x => x.AuthorKingdomId == author && x.Kind == "generate").ToList()) o.RemoveJob(j.JobId); }
     internal static void Run()
     {
+        PlayerThreatReplyRepair();
         WithdrawnThreatAuthor(false); WithdrawnThreatAuthor(true);
         Dependencies(); ExecutionRecovery(); ExecutionRecovery(true); RecoveryGuards();
         UnexpressedCoreAgenda();

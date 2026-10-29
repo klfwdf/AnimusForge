@@ -310,6 +310,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     private void NormalizePlayerLifecycleRecovery()
     {
         if (Storage.PlayerLifecycleSchemaVersion < 1 && string.IsNullOrEmpty(CurrentPlayerAuthority())) return;
+        RecoverPublishedPlayerThreatAnswers();
         _pendingPlayerReplyRoutingIds.Clear();
         _playerReplyRoutingBacklog.Clear();
         foreach (var reply in Storage.Documents.Where(x => x?.PlayerReplyRoutingPending == true))

@@ -48,12 +48,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             {
                 var compliance = (document.Actions ?? new()).FirstOrDefault(x => WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAction(x, threat));
                 if (compliance != null || WorldDiplomacyIntentVocabulary.NormalizeIntent(document.Intent) == "comply_ultimatum") continue;
-                threat.TargetDecision = "noncomplied";
-                threat.TargetDecisionDocumentId = document.DocumentId;
-                threat.TargetDecisionRoundId = document.RoundId;
-                threat.TargetDecisionDay = threat.UpdatedDay = _host.CurrentDay();
-                threat.ResolutionReason = "target_did_not_comply_in_first_declaration";
-                WorldDiplomacyRoundLifecycleRules.CaptureThreatNonComplianceEvent(threat);
+                RecordThreatNonCompliance(threat, document, _host.CurrentDay());
             }
             if (threat.IssuerKingdomId != document.AuthorKingdomId
                 || document.PresentedThreatFollowThroughDocumentIds?.Contains(threat.StageDocumentId) != true) continue;
@@ -67,6 +62,96 @@ internal sealed partial class WorldDiplomacyOrchestration
                 _host.Log("threat follow-through deferred after technical failure threat=" + threat.ThreatId + " document=" + document.DocumentId);
         }
         document.ThreatConsequencesSettled = true;
+    }
+
+    private static void RecordThreatNonCompliance(WorldDiplomacyThreat threat, WorldDiplomacyDocument document, int day)
+    {
+        threat.TargetDecision = "noncomplied";
+        threat.TargetDecisionDocumentId = document.DocumentId;
+        threat.TargetDecisionRoundId = document.RoundId;
+        threat.TargetDecisionDay = threat.UpdatedDay = day;
+        threat.ResolutionReason = "target_did_not_comply_in_first_declaration";
+        WorldDiplomacyRoundLifecycleRules.CaptureThreatNonComplianceEvent(threat);
+    }
+
+    // Publication/routing only. Reply ownership is independent of whether the
+    // model considers the player's words relevant or cooperative.
+    private void BindPlayerThreatAnswerSources(WorldDiplomacyDocument reply)
+    {
+        if (reply?.IsPlayerAuthored != true || !reply.IsReadyForPublication || reply.LegacyNoticeSuppressed
+            || reply.AnalysisStatus == "pending_analysis" || reply.AuthorKingdomId != CurrentPlayerAuthority()) return;
+        var explicitSources = new HashSet<string>((reply.AnsweredNpcDocumentIds ?? new()).Concat(new[] {
+            reply.SourceDocumentId, reply.DiscussionSourceDocumentId, reply.RespondingToThreatDocumentId })
+            .Concat((reply.Actions ?? new()).Where(x => x != null).Select(x => x.RespondingToThreatDocumentId))
+            .Where(x => !string.IsNullOrEmpty(x)), StringComparer.OrdinalIgnoreCase);
+        var candidates = Storage.DiplomaticThreats.Where(x => x.Status == "open" && x.TargetDecision == "pending"
+            && x.TargetKingdomId == reply.AuthorKingdomId && IsLiveRound(ResolveRound(x.StageRoundId))).ToList();
+        bool exact = candidates.Any(x => explicitSources.Contains(x.StageDocumentId));
+        var targets = GetDocumentTargetIds(reply);
+        foreach (var threat in candidates)
+        {
+            bool bound = explicitSources.Contains(threat.StageDocumentId);
+            if (!bound && (exact || threat.StageRoundId != reply.RoundId || !targets.Contains(threat.IssuerKingdomId))) continue;
+            var source = ResolveDocument(threat.StageDocumentId);
+            if (!IsPublishedPlayerThreatAnswer(reply, source, threat) || !PlayerKnowsPublicSource(source, reply)) continue;
+            reply.AnsweredNpcDocumentIds ??= new();
+            if (!reply.AnsweredNpcDocumentIds.Contains(source.DocumentId)) reply.AnsweredNpcDocumentIds.Add(source.DocumentId);
+        }
+    }
+
+    private bool IsPublishedPlayerThreatAnswer(WorldDiplomacyDocument reply, WorldDiplomacyDocument source, WorldDiplomacyThreat threat) =>
+        reply?.IsPlayerAuthored == true && reply.IsReadyForPublication && !reply.LegacyNoticeSuppressed
+        && reply.AnalysisStatus is "success" or "published_action_rejected" && !reply.EventExecutionPending
+        && reply.AuthorKingdomId == CurrentPlayerAuthority() && threat.TargetKingdomId == reply.AuthorKingdomId
+        && source?.IsReadyForPublication == true && !source.LegacyNoticeSuppressed
+        && source.AuthorKingdomId == threat.IssuerKingdomId && source.RoundId == threat.StageRoundId
+        && source.DocumentId != reply.DocumentId && source.Day <= reply.Day
+        && (source.CreatedUtcTicks <= 0 || reply.CreatedUtcTicks <= 0 || source.CreatedUtcTicks <= reply.CreatedUtcTicks)
+        && IsLiveRound(ResolveRound(threat.StageRoundId))
+        && string.IsNullOrEmpty(_host.ValidateOpenThreatWorldEligibility(threat));
+
+    private void ReconcilePlayerThreatAnswer(WorldDiplomacyDocument reply, WorldDiplomacyDocument source)
+    {
+        if (_host is not IWorldDiplomacyThreatMechanicsHost) return;
+        foreach (var threat in Storage.DiplomaticThreats.Where(x => x.Status == "open" && x.TargetDecision == "pending"
+            && x.StageDocumentId == source.DocumentId && x.StageRoundId == reply.RoundId))
+        {
+            if (!IsPublishedPlayerThreatAnswer(reply, source, threat)) continue;
+            // Compliance stays with its existing validated execution owner. Never
+            // convert an unfinished/failed compliance attempt into a refusal.
+            if ((reply.Actions ?? new()).Any(x => WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAction(x, threat))
+                || reply.Intent == "comply_ultimatum" && reply.RespondingToThreatDocumentId == source.DocumentId) continue;
+            RecordThreatNonCompliance(threat, reply, reply.Day);
+            try
+            {
+                WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(
+                    reply, new[] { threat }, TryAppendDiplomaticThreatNonComplianceHistoryResult);
+            }
+            catch (Exception ex)
+            {
+                ScheduleDeferredCanonicalHistoryRetry(reply.DocumentId);
+                _host.Log("player threat answer history deferred document=" + reply.DocumentId + " error=" + ex.Message);
+            }
+            _host.Log("diplomacy.player_threat_answer_reconciled threat=" + threat.ThreatId + " document=" + reply.DocumentId);
+        }
+    }
+
+    private void RecoverPublishedPlayerThreatAnswers()
+    {
+        // Load boundary: only an existing exact answer receipt can repair an old
+        // pending threat. Do not reclassify archived prose or reopen closed cases.
+        foreach (var threat in Storage.DiplomaticThreats.Where(x => x.Status == "open" && x.TargetDecision == "pending"
+            && x.TargetKingdomId == CurrentPlayerAuthority()).ToList())
+        {
+            var round = ResolveRound(threat.StageRoundId);
+            if (!IsLiveRound(round)) continue;
+            var wait = round.PlayerNegotiationWaits.FirstOrDefault(x => x.SourceDocumentId == threat.StageDocumentId
+                && !string.IsNullOrEmpty(x.AnswerDocumentId) && string.IsNullOrEmpty(x.ClosureDocumentId));
+            var reply = ResolveDocument(wait?.AnswerDocumentId); var source = ResolveDocument(threat.StageDocumentId);
+            if (!IsPublishedPlayerThreatAnswer(reply, source, threat) || reply.RoundId != round.RoundId) continue;
+            ReconcilePlayerThreatAnswer(reply, source);
+            MarkEventDirty(round);
+        }
     }
 
     private string BuildHiddenThreatContext(WorldDiplomacyJob job)
