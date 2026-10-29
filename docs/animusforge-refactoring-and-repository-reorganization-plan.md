@@ -1,3 +1,16 @@
+<a id="agenda-vote-failure-20261029"></a>
+## 玩家投票议程空引用调查（2026-10-29，DIAGNOSTIC_OFFLINE_VERIFIED / ROOT_CAUSE_BLOCKED）
+
+用户提供 Mod_Logic.txt 和异常统计截图；未知玩家游戏版本和是否仅分封议程。Git 根 F:/AnimusForge-main，main，起点8254c4be6，检查点f5b4ba5。既有HANDOFF/主台账未提交增量保留。范围仅VoteDealBehavior详情/召开入口的诊断与成功日志真实性；不按未证实的外交对象缺失假设改变选票、候选人、权限、存档或默认入口。
+
+日志67593–67736：8次LoadDetail和12次StartVoteMeeting空引用，与截图计数一致。首次失败14:16:31/32，早于14:16:43外交复议入队；14:16:10刚发布“贾尔马律斯的领主”通知，14:16:43强制入口也请求同一分封议程。现有catch仅ex.Message，不能确定空对象或证明全部议程受影响。“Opened required vote”只证明PushState被请求，不能证明StartVoteMeeting成功。新增阶段、类型/国家/提议家族ID、标题与完整异常堆栈，真实召开成功后单独记日志；不推测或绕过原生规则。完成条件：受影响日志接线、原双API/Bootstrap构建、既有议程专项、记录真实复现未验边界。证据及修改前文件：artifacts/agenda-vote-failure-20261029/。诊断仅在原详情加载/点击/自动请求回调运行，阶段为常量字符串赋值，异常上下文与堆栈只在故障发生时构建；无新增Tick、扫描、反射、IO或配置/文案资源。
+
+诊断提交57caba7f7a7b3509a7c5ec47aac0cc6ea3f30220；原build_single_module.ps1 Release build-only通过双API（实际引用v1.3.15.110062/v1.4.6.115628）、普通Bootstrap、双coup seam及managed registration。既有AgendaMapNotification.SmokeTests 5项通过，独立命令exit0；首次复合读取命令末尾因不存在的本机Framework路径导致exit1，与已通过的测试无关，未隐藏失败。保留既有编译/审计和net6 EOL警告。未新增测试：现有专项仅源码契约，构建不能证明玩家UI异常已消失。
+
+[源码坐标与覆盖范围](architecture/af-framework-code-scope.md#agenda-vote-failure-20261029)。候选DLL/PDB/标记保存artifacts/agenda-vote-failure-20261029/candidate/，receipt.json绑定源码及产物，build.log/smoke-isolated.log保存验证输出。仅诊断已离线验证；根因确认/修复、玩家存档复现及实机尚未完成，真实阻塞为原日志缺少堆栈且无玩家存档。待玩家使用对应API诊断版复现并回传新Mod_Logic日志；不应凭此诊断提交宣布修复。未部署、打包或push。回滚本任务源码用git revert 57caba7f7；原件和既有文档dirty快照在任务目录。
+
+---
+
 <a id="vassal-diplomacy-buttons-20261029"></a>
 ## 封臣原版外交按钮接管对齐 — 2026-10-29
 
