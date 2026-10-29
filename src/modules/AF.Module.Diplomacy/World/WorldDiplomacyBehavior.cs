@@ -621,9 +621,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return (minimum, maximum);
 	}
 
-	private void LogPromptCacheShape(WorldDiplomacyJob job)
+	private void LogPromptCacheShape(WorldDiplomacyJob job, JArray requestMessages)
 	{
-		List<WorldDiplomacyLlmMessage> messages = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(job, _orchestration.BuildCanonicalHistoryBlock);
+		List<WorldDiplomacyLlmMessage> messages = requestMessages.OfType<JObject>()
+			.Select(x => new WorldDiplomacyLlmMessage { Role = (string)x["role"], Content = (string)x["content"] }).ToList();
 		string system = messages.FirstOrDefault(x => x != null && string.Equals(x.Role, "system", StringComparison.OrdinalIgnoreCase))?.Content ?? "";
 		string user = messages.LastOrDefault(x => x != null && string.Equals(x.Role, "user", StringComparison.OrdinalIgnoreCase))?.Content ?? "";
 		string frozenContract = ResolveCommonContractForCacheDiagnostics(job, out string contractSource);
@@ -680,6 +681,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				: hit + creation + uncached;
 		string rate = !usageKnown || denominator <= 0 ? "n/a" : (100d * hit / denominator).ToString("F1", CultureInfo.InvariantCulture) + "%";
 		Log("cache-usage kind=" + (job?.Kind ?? "")
+			+ " event=" + (job?.RoundId ?? "") + " job=" + (job?.JobId ?? "")
+			+ " attempt=" + (job?.RequestAttempt ?? 0).ToString(CultureInfo.InvariantCulture)
 			+ " affinity=" + WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(job)
 			+ " prompt_tokens=" + (result?.PromptTokens?.ToString(CultureInfo.InvariantCulture) ?? "")
 			+ " completion_tokens=" + (result?.CompletionTokens?.ToString(CultureInfo.InvariantCulture) ?? "")

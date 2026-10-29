@@ -32,16 +32,16 @@ internal static partial class MaterialCountryThirdReplay
             var example = JObject.Load(reader);
             Test.True(new[] { "safe", "position_owner_valid", "negotiation_consistent", "position_correction_valid", "agreement_consistent", "silence_consistent" }
                 .All(x => example[x]?.Type == JTokenType.Boolean), "actual CN/EN output example covers every enforced boolean review");
+            for (int n = 0; n < 3; n++) Complete(o, j, (JObject)missing[n % missing.Count]!.DeepClone());
             for (int cycle = 0; cycle < 3; cycle++)
             {
-                for (int n = 0; n < 3; n++) Complete(o, j, (JObject)missing[n % missing.Count]!.DeepClone());
                 Test.True(j.SuspendedReason.StartsWith("declaration_audit_invalid:") && j.RetryAfterUtcTicks == 0
-                    && j.TechnicalRecoveryAttempts == cycle + 1 && j.PrivacyDraft == draft && j.PrivacyRewrites == 0,
-                    "format failure keeps the same finite budget and draft without 30/60 second outage backoff");
+                    && j.TechnicalRecoveryAttempts == 3 && j.PrivacyAuditRetries == 3 && j.PrivacyDraft == draft && j.PrivacyRewrites == 0,
+                    "local format allowance is consumed once; the outer loop cannot multiply it or rewrite the draft");
                 Reload(o); j = o.CurrentStorage.Jobs.Single(x => x.JobId == j.JobId);
                 Call(o, "TryResumeTechnicalRequest", j, false); // No clock edits and no explicit user resume.
-                Test.True(cycle == 2 ? j.SuspendedReason != "" : j.SuspendedReason == "" && j.Kind == "privacy_audit",
-                    "saved format failure resumes promptly twice, then remains bounded across reload");
+                Test.True(j.SuspendedReason != "" && j.Kind == "privacy_audit",
+                    "saved format failure remains held across reload until relevant change or explicit recovery");
             }
             Test.True(h.Notices.Count == 0 && o.CurrentStorage.Documents.Count == 0 && o.ResolveRound(r.RoundId).State == "active",
                 "persistent malformed reviews remain visible technical holds, never political closure or publication");
@@ -50,7 +50,7 @@ internal static partial class MaterialCountryThirdReplay
             var (h, o, _, j) = EvidenceOpening(); SubmitEvidenceDraft(o, j, "We seek recognition through a public hearing.");
             string draft = j.PrivacyDraft;
             for (int n = 0; n < 3; n++) Complete(o, j, (JObject)missing[n % missing.Count]!.DeepClone());
-            Call(o, "TryResumeTechnicalRequest", j, false);
+            Call(o, "TryResumeTechnicalRequest", j, true);
             Complete(o, j, SpanReview(Evidence(o, j), true)); // Explicit controlled semantic judgement.
             Test.True(o.CurrentStorage.Documents.Single(x => x.IsReadyForPublication).Body == (string)JObject.Parse(draft)["body"]!
                 && o.CurrentStorage.Documents.Single().Day == h.CurrentDayValue,

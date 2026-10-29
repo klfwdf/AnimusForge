@@ -32,7 +32,7 @@ public static List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(WorldDiploma
 	}
 
 public static JArray BuildLlmMessageArray(WorldDiplomacyJob job,
-		Func<long, string> buildCanonicalHistoryBlock)
+		Func<long, string> buildCanonicalHistoryBlock, Action<string> log = null)
 	{
 		List<WorldDiplomacyLlmMessage> source = BuildLlmMessagesForJob(job, buildCanonicalHistoryBlock);
 		JArray messages = new JArray();
@@ -43,6 +43,25 @@ public static JArray BuildLlmMessageArray(WorldDiplomacyJob job,
 				["role"] = message.Role,
 				["content"] = message.Content ?? ""
 			});
+		}
+		if (!IsValidSemanticRepairMessageChain(job))
+		{
+			var user = messages.OfType<JObject>().LastOrDefault(x => (string)x["role"] == "user");
+			var system = messages.OfType<JObject>().FirstOrDefault(x => (string)x["role"] == "system");
+			if (user != null && system != null)
+			{
+				string original = (string)user["content"];
+				string projected = DiplomacyRequestProjection.Project(job?.Kind, original, out bool world);
+				string contract = world ? DiplomacyPromptTexts.Get("RequestWorldProjection", "") : "";
+				if ((!world || !string.IsNullOrWhiteSpace(contract)) && projected.Length + contract.Length + 64 < original.Length)
+				{
+					user["content"] = projected;
+					if (world) system["content"] = (string)system["content"] + "\n" + contract;
+					log?.Invoke("diplomacy.context_projection job=" + job?.JobId + " kind=" + job?.Kind
+						+ " beforeChars=" + original.Length + " afterChars=" + (projected.Length + contract.Length + 1)
+						+ " world=" + world);
+				}
+			}
 		}
 		return messages;
 	}

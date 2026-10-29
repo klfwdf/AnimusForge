@@ -93,6 +93,10 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Contains("--token-log"))
+        { try { TokenLogProjectionReplay.Run(args[Array.IndexOf(args, "--token-log") + 1]); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--token-optimization"))
+        { try { MaterialCountryThirdReplay.TokenOptimization(); Console.WriteLine("PASS token optimization assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--sovereign-control"))
         { try { SovereignControlReplay.Run(); Console.WriteLine("PASS sovereign control assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--sovereign-regression"))
@@ -374,6 +378,7 @@ internal static class Program
             Console.WriteLine($"R1 generation task replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        MaterialCountryThirdReplay.TokenOptimization();
         MaterialSupplyReplay.StructureObservation();
         OralDeclarationReplay.Run();
         MaterialSupplyReplay.StructureSelection();

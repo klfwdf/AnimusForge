@@ -93,7 +93,7 @@ internal static partial class MaterialCountryThirdReplay
             for(int cycle=0;cycle<3;cycle++)
             {
                 if(cycle==0){var noOwner=SpanReview(Evidence(o,j),true);noOwner["position_owner_valid"]=false;noOwner["repair_feedback"]="Dissident demands are assigned to the king.";Complete(o,j,noOwner);}
-                for(int n=0;n<3;n++)Complete(o,j,new());
+                for(int n=0;cycle==0&&n<3;n++)Complete(o,j,new());
                 if(cycle<2){j.RetryAfterUtcTicks=0;j.NextRecoveryProbeUtcTicks=0;Call(o,"TryResumeTechnicalRequest",j,false);}
             }
             Test.True(j.TechnicalRecoveryAttempts==3&&h.Notices.Count==notices&&o.CurrentStorage.Documents.Count==0&&r.State=="active",

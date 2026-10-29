@@ -90,16 +90,22 @@ internal sealed partial class WorldDiplomacyOrchestration
         var round = ResolveRound(job.RoundId);
         int revision = round?.ConversationRevision ?? 0;
         int knowledge = DiplomacyEventRules.KnowledgeRevision(round, job.AuthorKingdomId);
+        // Isolation completion clears UserPrompt until the dispatcher rebuilds it.
+        // That transition has no replacement source; it must retain the source
+        // just reviewed rather than treating an empty tail as new private input.
+        string sourceMaterial = string.IsNullOrEmpty(job.UserPrompt) && job.PrivacyRevision >= 0
+            && !string.IsNullOrEmpty(job.PrivacySourceMaterial) ? job.PrivacySourceMaterial
+            : (job.UserPrompt ?? "") + "\n" + BuildPrivateDiplomacyRecall(job);
+        bool sourceChanged = !string.Equals(job.PrivacySourceMaterial, sourceMaterial, StringComparison.Ordinal);
         job.CourtKnowledgeRevision = knowledge;
-        if (job.PrivacyRevision >= 0 && (job.PrivacyRevision != revision || job.PrivacyKnowledgeRevision != knowledge))
+        if (job.PrivacyRevision >= 0 && (sourceChanged || job.PrivacyRevision != revision || job.PrivacyKnowledgeRevision != knowledge))
         { InvalidateDraftRepair(job); job.PrivacyDraft = ""; }
-        if (job.PrivacyRevision != revision || job.PrivacyKnowledgeRevision != knowledge || string.IsNullOrWhiteSpace(job.PrivacyPublicContext))
+        if (sourceChanged || job.PrivacyRevision != revision || job.PrivacyKnowledgeRevision != knowledge || string.IsNullOrWhiteSpace(job.PrivacyPublicContext))
         {
             job.PrivacyRevision = revision;
             job.PrivacyKnowledgeRevision = knowledge;
             job.PrivacyPublicContext = "";
-            job.PrivacySourceMaterial = (job.UserPrompt ?? "") + "\n"
-                + BuildPrivateDiplomacyRecall(job);
+            job.PrivacySourceMaterial = sourceMaterial;
             job.PrivacyDeclarationSystem = job.SystemPrompt;
             job.Kind = "privacy_material";
             job.SystemPrompt = PromptComposerTexts.ApplyOutputLanguage(DiplomacyPromptTexts.Get("PlayerPrivacyIsolation",
@@ -256,10 +262,15 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("NegotiationConsistencyAudit", "");
             job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignPositionCorrectionAudit", "");
-            job.UserPrompt += "\n" + BuildResponseEvidence(job);
+            job.UserPrompt = DiplomacyRequestProjection.AppendContextOnce(job.UserPrompt, job.PrivacySourceMaterial, BuildResponseEvidence(job));
         }
-        job.UserPrompt += "\n" + BuildEventContinuity(ResolveRound(job.RoundId), job.AuthorKingdomId);
-        job.UserPrompt += "\n" + BuildEndingContext(ResolveRound(job.RoundId));
+        int beforeContextChars = job.UserPrompt.Length;
+        string continuityContext = BuildEventContinuity(ResolveRound(job.RoundId), job.AuthorKingdomId);
+        string endingContext = BuildEndingContext(ResolveRound(job.RoundId));
+        job.UserPrompt = DiplomacyRequestProjection.AppendContextOnce(job.UserPrompt, job.PrivacySourceMaterial, continuityContext);
+        job.UserPrompt = DiplomacyRequestProjection.AppendContextOnce(job.UserPrompt, job.PrivacySourceMaterial, endingContext);
+        int savedContextChars = beforeContextChars + continuityContext.Length + endingContext.Length + 2 - job.UserPrompt.Length;
+        if (savedContextChars > 0) _host.Log("diplomacy.audit_context_reused job=" + job.JobId + " savedChars=" + savedContextChars);
         if (!string.IsNullOrEmpty(job.SilenceSourceDocumentId))
         {
             job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("PlayerSilenceAudit", "");

@@ -8,6 +8,7 @@
     <BannerlordBin Condition="'$(BannerlordBin)' == ''">F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client</BannerlordBin>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DiplomacyRequestProjection.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SpeechEventRouting.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.BaselineMigration.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/DiplomacyRetiredIssueState.cs" />
