@@ -1,3 +1,8 @@
+<a id="oral-sovereign-push-20261029"></a>
+## 口头外交修复已推送 — 2026-10-29
+
+用户明确授权后，普通推送origin/main至e68aa14b5并回读确认。包含口头外交控制权修复cf963f440、先前大地图弹窗修复967fd59cc及各自验证记录；正常合并远端8d3619f88，未重写历史。合并后双API、Bootstrap、seam及注册smoke通过，原有未提交资料未上传。**PUSH_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。本条取代上述修复的NOT_PUSHED状态；详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-sovereign-push-20261029)及[代码范围](docs/architecture/af-framework-code-scope.md#oral-sovereign-control-20261029)。
+
 <a id="oral-sovereign-control-20261029"></a>
 ## 口头外交区分所属国与掌权国 — 2026-10-29
 

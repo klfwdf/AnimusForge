@@ -1,3 +1,10 @@
+<a id="oral-sovereign-push-20261029"></a>
+## 口头外交修复推送确认 — 2026-10-29
+
+- 本轮用户明确要求推送该修复。远端更新至8d3619f88后，正常合并为e68aa14b5；本地外交修复cf963f440、事件通知修复967fd59cc及相关测试/说明一并普通推送origin/main。git push成功，git ls-remote回读为e68aa14b5797fa3c33dafa35fcd6bb3ce04b091f。本条替代这两项修复此前NOT_PUSHED状态，不改变未部署及未实机验证状态。
+- 合并没有冲突，已验证修复文件逐字节不变；复用CN/EN各1086专项与6092既有回归。合并后原一键构建再次通过1.3、1.4、Bootstrap、双API coup seam及registration smoke，日志在本地`artifacts/oral-sovereign-push-20261029/build-merged.log`。原有编译/NU1900警告保留，零错误；未扩大测试或产品修复范围。
+- 原有未提交文档及未跟踪目录未上传；哈希核对既有工作文档在合并后保持原值，本条仅在HANDOFF/主台账前追加推送摘要并单独提交。未强推、未部署、未启动游戏。状态：**PUSH_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。[修复详情](#oral-sovereign-control-20261029)与[代码范围](architecture/af-framework-code-scope.md#oral-sovereign-control-20261029)。
+
 <a id="oral-sovereign-control-20261029"></a>
 ## 口头外交国家控制权修复 — 2026-10-29
 
