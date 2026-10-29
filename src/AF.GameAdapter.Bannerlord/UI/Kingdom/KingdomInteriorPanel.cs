@@ -326,7 +326,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 			"MarginLeft='40' MarginRight='40' MarginTop='20' MarginBottom='12'"));
 
 	private static string FactionHeader() => Row("*", "112",
-		Layer("230", "*", "")
+		Layer("230", "*", "", "IsVisible='@HasBlock'")
 		+ Col("*", "*",
 			Row("~", "28",
 				Chip("28", "@TagColor", T("@TagText", "~", "*", 16, Light, extra: "MarginLeft='12' MarginRight='12'"))

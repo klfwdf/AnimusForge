@@ -1,10 +1,15 @@
 ﻿param(
     [Parameter(Mandatory=$true)][string]$AssemblyPath,
-    [string]$GamePath = 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord'
+    [string]$GamePath = 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord',
+    [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
-$fixture = Join-Path $root 'artifacts/yj-interior-ui-20261015/localization/AnimusForge'
+if ([string]::IsNullOrWhiteSpace($RunRoot)) {
+    $RunRoot = Join-Path $root ('artifacts/interior-localization-' + [Guid]::NewGuid().ToString('N'))
+}
+$fixture = Join-Path ([System.IO.Path]::GetFullPath($RunRoot)) 'AnimusForge'
+if (Test-Path -LiteralPath $fixture) { throw 'Use a fresh test output directory.' }
 $data = Join-Path $fixture 'ModuleData/Languages'
 New-Item -ItemType Directory -Force (Join-Path $data 'CNs') | Out-Null
 Copy-Item -LiteralPath (Join-Path $root 'content/modules/AF.Module.Kingdom/ModuleData/Languages/afkingdom_ui_strings.xml') -Destination $data
@@ -24,6 +29,6 @@ foreach ($module in @('Bannerlord.Harmony','Bannerlord.UIExtenderEx','Bannerlord
 }
 $resolver = New-Object OfflineAssemblyResolver -ArgumentList (,([string[]]$dirs))
 try {
-    Add-Type -Path (Join-Path $PSScriptRoot 'Checks.cs') -ReferencedAssemblies 'System.Xml.dll'
+    Add-Type -Path @((Join-Path $PSScriptRoot 'Checks.cs'), (Join-Path $PSScriptRoot 'HeaderLayoutChecks.cs')) -ReferencedAssemblies 'System.Xml.dll'
     [InteriorLocalizationChecks]::Run((Resolve-Path $AssemblyPath).Path, $fixture)
 } finally { $resolver.Dispose() }

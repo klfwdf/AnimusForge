@@ -82,8 +82,9 @@ namespace AnimusForge {
   @@REROLL_UI@@
   internal Task<string> Generate(Hero h,bool reroll=false,bool ignore=false,string prompt=null)=>GenerateNpcPersonaAsync(h,ignore,reroll,prompt);
   internal void Release(string text="P|B",bool success=true,bool fail=false){if(fail)response.TrySetException(new Exception("transport failed"));else response.TrySetResult(new ApiCallResult{Content=text,Success=success,ErrorMessage="transport failed"});}
-  internal void Seed(string p,string b,string voice="voice"){profile=new(){Personality=p,Background=b,VoiceId=voice};}
+  internal void Seed(string p,string b,string voice="voice",string localVoice="local-voice"){profile=new(){Personality=p,Background=b,VoiceId=voice};profile.GptSoVitsVoiceId=localVoice;}
   internal string[] Values()=>new[]{profile.Personality,profile.Background,profile.VoiceId};
+  internal string LocalVoice()=>profile.GptSoVitsVoiceId;
   internal void ResetGenerationState(){@@RESET@@;dispatcher.Reset();}
   internal bool Active(string id){@@ACTIVE@@}
   internal bool Cooling(string id){@@COOLING@@}
@@ -113,7 +114,7 @@ internal static class Program {
    if(kind=="reroll_edit" || kind=="ui_edit")o.Seed("editedP","editedB");
    if(kind=="extras_edit"||kind=="reroll_extras_edit")o.EditExtras();
    if(kind=="normal_edit")o.Seed("editedP","");
-   if(kind=="reroll_voice")o.Seed("oldP","oldB","newVoice");
+   if(kind=="reroll_voice")o.Seed("oldP","oldB","newVoice","local-new");
    o.Release(kind=="new_protocol"?"{\"profile\":\"P\\n\\nB\",\"traits\":[{\"id\":\"bold\",\"strength\":2}]}":(kind=="parse" || kind=="external_failure" || kind=="ui_failure")?"bad":kind=="one_field"?"P|":"P|B",kind!="http",kind=="throw");
   }
   if(kind=="ui_reset_accept"){
@@ -124,7 +125,7 @@ internal static class Program {
   Check(Probe.OffThread==0,kind+" all game/config/profile reads and writes on main");
   bool noSave=kind is "owner" or "generation" or "target" or "reset" or "reroll_reset" or "reroll_edit" or "parse" or "http" or "throw" or "complete" or "null" or "external_failure" or "ui_failure" or "ui_edit" or "ui_reset" or "ui_reset_before" or "ui_reset_accept" or "normal_edit" or "partial_p" or "partial_b" or "extras_edit" or "reroll_extras_edit";
   Check(o.Saves==(noSave?0:1),kind+" save count");
-  if(!noSave){Check(v[0]==(kind=="one_field"?"P":"P\n\nB"),kind+" unified description");Check(v[1]=="",kind+" no duplicate background");Check(v[2]==(kind=="reroll_voice"?"newVoice":"voice"),kind+" voice preserved");}
+  if(!noSave){Check(v[0]==(kind=="one_field"?"P":"P\n\nB"),kind+" unified description");Check(v[1]=="",kind+" no duplicate background");Check(v[2]==(kind=="reroll_voice"?"newVoice":"voice"),kind+" voice preserved");Check(o.LocalVoice()==(kind=="reroll_voice"?"local-new":"local-voice"),kind+" GPT-SoVITS voice preserved, including edits while generating");}
   if(kind is "partial_p" or "partial_b" or "complete")Check(o.Calls==0,kind+" existing body skips generation");
   if(ui)Check(AnimusForge.InformationManager.Refreshed==(noSave?0:1),kind+" truthful UI success");
   if(kind=="reroll_reset")Check(!string.IsNullOrWhiteSpace(failure),"reset must not report reroll success");

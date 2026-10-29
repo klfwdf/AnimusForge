@@ -3748,6 +3748,9 @@ namespace AnimusForge
 
 		public class KingdomAgendaVM : ViewModel
 		{
+			[DataSourceProperty] public string InteriorAgendaSectionText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaSection", "Kingdom agendas");
+			[DataSourceProperty] public string InteriorAgendaEmptyText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaEmpty", "No agenda in progress");
+
 			public sealed class Snapshot
 			{
 				public KingdomDecision Decision;
@@ -4198,6 +4201,7 @@ namespace AnimusForge
 			RefreshTimingState();
 		}
 
+		[DataSourceProperty] public string InteriorAgendaNoDetailText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaNoDetail", "No voting details for this agenda yet");
 		[DataSourceProperty] public string CatalogTitleText => Clip(TitleText, 12);
 		[DataSourceProperty] public string MeetingButtonText { get; private set; } = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_MeetingButton", "Open vote meeting");
 
@@ -4571,6 +4575,8 @@ namespace AnimusForge
 		}
 	public class AgendaOptionVM : ViewModel
 	{
+		[DataSourceProperty] public string InteriorLeadingText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Leading", "Leading");
+
 		private string _name;
 		private string _description;
 		private string _sponsorName;
@@ -4791,6 +4797,8 @@ namespace AnimusForge
 		[ViewModelMixin("RefreshValues", true)]
 		internal sealed class KingdomAgendaVMMixin : BaseViewModelMixin<KingdomManagementVM>
 		{
+			[DataSourceProperty] public string InteriorTitleText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Title", "Interior affairs");
+			[DataSourceProperty] public string InteriorSelectHintText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_SelectHint", "Select an entry on the left to view details");
 
 			[DataSourceProperty]
 			public string AgendaTabText { get; set; }
