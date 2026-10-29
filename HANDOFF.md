@@ -1,3 +1,8 @@
+<a id="oral-sovereign-deploy-20261029"></a>
+## 口头外交修复已部署 — 2026-10-29
+
+用户授权部署，源码e1aba41bc，含外交控制权修复cf963f440及大地图弹窗修复967fd59cc。原一键流程重新构建双API、Bootstrap并通过seam/注册检查后，部署至`E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。19个文件更新，410个受管理文件与Stage哈希一致，32个自定义文件未变。**DEPLOY_VERIFIED / LIVE_NOT_RUN**；未启动游戏。本条替代上述修复的NOT_DEPLOYED状态，推送状态沿用前条；本次交付记录仅本地提交。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-sovereign-deploy-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#oral-sovereign-control-20261029)。
+
 <a id="oral-sovereign-push-20261029"></a>
 ## 口头外交修复已推送 — 2026-10-29
 

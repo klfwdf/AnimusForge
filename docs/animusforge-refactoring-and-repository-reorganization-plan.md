@@ -1,3 +1,11 @@
+<a id="oral-sovereign-deploy-20261029"></a>
+## 口头外交修复部署确认 — 2026-10-29
+
+- 用户明确授权部署当前源码e1aba41bcbaccc7dbf80e0d84798689715e0e39d；含已推送的cf963f440口头外交与967fd59cc地图弹窗修复，以及正常合并的远端更新。目标为`E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；单模块Bootstrap加载、双实现布局保持。
+- 使用原`build_single_module.ps1 -Deploy`，双API、Bootstrap、coup seam及注册smoke成功。首次Stage校验因旧`ModuleData/DiplomacyPromptTexts.json`与当前锁定源不符，在游戏写入前停止；完整保留旧项目Stage于本地`artifacts/oral-sovereign-deploy-20261029/previous-stage`，用原`deploy_module.ps1`与同次新构建DLL重新生成干净Stage并完成部署。未修改脚本、放宽门禁、创建部署Recovery/备份/回滚或覆盖旧暂存资料。
+- 原脚本报告19个受管理文件更新。独立核对410个非玩家管理Stage文件与目标SHA-256一致；双DLL、Bootstrap及受影响外交规则分别匹配本次构建/源码，XML仅声明Bootstrap。32个既有CustomPrompts/终端文件哈希未变。PlayerExports沿原脚本新者优先规则；未知安装文件不参与镜像删除。原有工作文档哈希保持，仅本条及HANDOFF摘要单独提交。
+- 证据在本地`artifacts/oral-sovereign-deploy-20261029/`：`build-deploy.log`、`deploy-fresh-stage.log`、`before.json`、`deployment-receipt.json`及保留的旧Stage。本次无额外产品修改、打包、推送、游戏启动或实机交互。状态：**DEPLOY_VERIFIED / LIVE_NOT_RUN**；替代上述两项修复的NOT_DEPLOYED状态；[既有修复与回归](#oral-sovereign-control-20261029)、[推送确认](#oral-sovereign-push-20261029)、[代码范围](architecture/af-framework-code-scope.md#oral-sovereign-control-20261029)。
+
 <a id="oral-sovereign-push-20261029"></a>
 ## 口头外交修复推送确认 — 2026-10-29
 
