@@ -1825,6 +1825,7 @@ public MyBehavior()
 		try
 		{
 			SaveRuntimeGuard.AdvanceGeneration(reason);
+			_mergedMainPartyTroopMemoryIds.Clear();
 			ResetExecutionMemoryRuntime();
 			PublicExecutionOrderRuntime.Reset();
 			if (reason == "new_game_created") _executionTranscripts.Load(null);

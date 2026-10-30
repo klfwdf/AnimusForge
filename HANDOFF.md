@@ -1,3 +1,9 @@
+# 未部署：大地图就地扎营 第3步 营中交谈与兵种记忆（2026-10-30）
+
+新增 `FieldCamp/MainPartyTroopMemory.cs`：玩家主队普通士兵（agent origin 为主队且非俘虏、非 Hero；无 agent 时须在主队名册）按兵种取持久记忆 `af_nonhero:troop:<兵种>|party:party_string_id:<主队>`，接在 `SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroMemory` 的 Hero 排除之后，所以场景喊话写入/读取、原生对话历史键、后处理等所有已用该入口的链路同步生效，城内也写；保留规则沿用全体 NPC 通用的 260 行/日结压缩/MCM 注入窗口（用户确认）。`MyBehavior.MainPartyTroopMemory.cs` 每会话每兵种一次把旧的带势力/领主后缀的同主队同兵种记录合并进新键。营地场景的场景描述改为“在某地就地扎营的营地”（列队时说明正在检阅），中英两份 ConversationRuntimePrompts。信使仍只能寄给 Hero，按原设计不变。验证：1.3/1.4 隔离 dotnet build 0 错误，TerminalLiveSettings 1.4 PASS 1188，中英键齐全，键/别名匹配规则脚本回放 PASS；CampaignMemoryPersistence/NativeHistorySnapshot 测试的探针在当前工作区编不过（缺 MemoryFailureUiText 等类型，与本轮无关），未作证据。未部署、未实机。
+
+---
+
 # 未部署：大地图就地扎营 第2步 营地场景（2026-10-30）
 
 营地菜单新增“巡视营地”：按地形开原版野战场景的和平 mission `AnimusForge_FieldCamp`（`FieldCamp/FieldCampMissionLauncher.cs`，自带 `[ViewMethod]` 视图），`FieldCampLayout` 按真实兵力排营帐网格、篝火、旗帜、补给堆（随存粮）、伤兵帐与床、俘虏栏栅栏、外围岗哨；`FieldCampProps` 每类候选预制体逐个尝试，帐篷/栅栏开物理。士兵按兵种比例抽样（默认150），无敌 origin 不回写伤亡；营地生活为围篝火坐、站岗、巷道闲逛，每0.5秒处理≤20人。喊话后处理新增运行时标签 `[ACTION:SCENE_CAMP_ASSEMBLE]`/`[ACTION:SCENE_CAMP_DISMISS]`（只在营地 mission 的直接回复注入；规则文本在 ConversationRuntimePrompts 中英两份），集合按兵种列方阵、解散各回原位。TAB 离开后在等待菜单扣巡视耗时（默认1h）；营地 mission 跳过场景挑衅行为。同伴职务站位、军团领主、俘虏留到第5步。验证：1.3/1.4 隔离 dotnet build 0 错误，TerminalLiveSettings 1.4 PASS 1188 / 1.3 PASS 1132，中英键齐全；ScenePostprocessParity 因工作区他人 TTS 改动编不过，未能作为证据。未部署、未实机。

@@ -1949,6 +1949,18 @@ internal static string BuildSceneNonHeroNamingNoteForPrompt(IEnumerable<NpcDataP
 
 			}
 
+			// Main-party regular soldiers: one memory per troop type, in any scene (field camp step 3).
+
+			if (MainPartyTroopMemory.TryResolve(targetHero, targetCharacter, agentIndex, out memoryId, out memoryName))
+
+			{
+
+				LogNonHeroMemoryTrace("stage=resolve ok=1 mode=main_party_troop agent=" + agentIndex + " memoryId=" + memoryId);
+
+				return true;
+
+			}
+
 			if (!IsWildernessNonHeroMemoryScope(agentIndex))
 
 			{

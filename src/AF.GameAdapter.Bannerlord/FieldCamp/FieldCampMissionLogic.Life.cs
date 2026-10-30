@@ -246,6 +246,13 @@ public sealed partial class FieldCampMissionLogic
 		return action;
 	}
 
+	/// <summary>Scene line for the shout prompt while the camp mission runs (built per request, no I/O after first load).</summary>
+	internal static string BuildSceneDescription(string location)
+	{
+		FieldCampMissionLogic camp = Current;
+		return ConversationRuntimeTexts.FormatPrompt(camp != null && camp._assembled ? "AF_FC_SceneAssembled" : "AF_FC_Scene", ("LOCATION", location ?? ""));
+	}
+
 	// ---------- camp-local coordinates ----------
 
 	private Vec3 ToWorld(Vec2 local)

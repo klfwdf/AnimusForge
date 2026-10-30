@@ -1109,6 +1109,10 @@ public static class ShoutUtils
 			}
 			return ConversationRuntimeTexts.Prompt("AF_CONV_Location_0758");
 		}
+		if (FieldCampMissionLogic.Current != null && TryBuildMapLandSceneDescription(out var campLocation))
+		{
+			return FieldCampMissionLogic.BuildSceneDescription(campLocation);
+		}
 		string text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0759");
 		string text2 = "";
 		bool flag = false;
