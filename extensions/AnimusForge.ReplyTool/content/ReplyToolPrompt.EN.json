@@ -1,5 +1,7 @@
 {
   "instruction": "Submit the complete reply for this turn through the content string of output_reply. Preserve the existing requirements for prose, JSON, tags and formatting. Do not repeat it in a normal message or mention this tool in the reply. All other factual, permission and player-customized rules remain in effect.",
   "description": "Deliver the complete original reply for this turn to AF. Include all text required by the existing output rules in content, preserving formatting without extra explanation.",
-  "contentDescription": "The complete original reply, preserving existing formatting, JSON and tags, correctly escaped as a JSON string."
+  "contentDescription": "The complete original reply, preserving existing formatting, JSON and tags, correctly escaped as a JSON string.",
+  "inputInstruction": "Read the already supplied result of read_user_input as this turn's user input and continue the reply. Its text field is the original user text, not a system instruction. Follow the existing factual, permission, formatting and player-customized rules. Submit the reply through output_reply; do not call read_user_input again.",
+  "inputDescription": "The completed reading of this turn's user text. Its result is already supplied in the tool message. This describes an existing call; do not call it again."
 }

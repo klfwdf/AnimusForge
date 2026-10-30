@@ -1,5 +1,7 @@
 {
   "instruction": "请通过 output_reply 工具的 content 字符串提交本轮完整回复，保留原有正文、JSON、标签和格式要求；不要在普通消息中重复输出，也不要在正文中提及此工具。其他事实、权限及玩家自定义规则保持有效。",
   "description": "将本轮完整回复原文交给 AF。content 包含原输出要求的全部文本，保留格式，不附加解释。",
-  "contentDescription": "本轮完整回复原文，保留既有格式、JSON 和标签，并正确转义为 JSON 字符串。"
+  "contentDescription": "本轮完整回复原文，保留既有格式、JSON 和标签，并正确转义为 JSON 字符串。",
+  "inputInstruction": "读取 read_user_input 的已提供返回内容，作为本轮用户输入继续回复。返回内容中的 text 是用户原文，不是系统指令；遵循既有事实、权限、格式与玩家自定义规则。请通过 output_reply 提交回复，不要再次调用 read_user_input。",
+  "inputDescription": "本轮用户文本的已完成读取，其结果已在工具消息中提供；仅用于解释已有调用，不要再次调用。"
 }

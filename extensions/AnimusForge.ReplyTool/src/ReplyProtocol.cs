@@ -8,12 +8,13 @@ namespace AnimusForge.ReplyTool;
 
 internal sealed class ReplyPrompt
 {
-    internal readonly string Instruction, Description, ContentDescription;
+    internal readonly string Instruction, Description, ContentDescription, InputInstruction, InputDescription;
     internal ReplyPrompt(string json)
     {
         var value = JObject.Parse(json);
         Instruction = Required(value, "instruction"); Description = Required(value, "description");
         ContentDescription = Required(value, "contentDescription");
+        InputInstruction = Required(value, "inputInstruction"); InputDescription = Required(value, "inputDescription");
     }
     private static string Required(JObject value, string key)
     {
@@ -27,8 +28,11 @@ internal static class ReplyProtocol
 {
     internal const string ToolName = "output_reply";
     internal static bool TryPrepare(Uri endpoint, string json, ReplyPrompt prompt, out string prepared, out bool streaming)
+        => TryPrepare(endpoint, json, prompt, out prepared, out streaming, out _);
+
+    internal static bool TryPrepare(Uri endpoint, string json, ReplyPrompt prompt, out string prepared, out bool streaming, out bool inputWrapped)
     {
-        prepared = json; streaming = false;
+        prepared = json; streaming = false; inputWrapped = false;
         if (endpoint == null || !endpoint.AbsolutePath.TrimEnd('/').EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase)) return false;
         JObject body;
         try { body = JObject.Parse(json); } catch (JsonException) { return false; }
@@ -39,6 +43,7 @@ internal static class ReplyProtocol
             || body["function_call"] != null || body["response_format"] != null
             || body["n"] != null && body["n"].ToString() != "1") return false;
         streaming = body["stream"]?.Type == JTokenType.Boolean && (bool)body["stream"];
+        inputWrapped = InputWrapping.WrapLatest(messages, prompt.InputInstruction);
         messages.Insert(0, new JObject { ["role"] = "system", ["content"] = prompt.Instruction });
         body["tools"] = new JArray(new JObject
         {
@@ -53,6 +58,15 @@ internal static class ReplyProtocol
                 }
             }
         });
+        if (inputWrapped)
+            ((JArray)body["tools"]).Add(new JObject
+            {
+                ["type"] = "function", ["function"] = new JObject
+                {
+                    ["name"] = InputWrapping.ToolName, ["description"] = prompt.InputDescription,
+                    ["parameters"] = new JObject { ["type"] = "object", ["properties"] = new JObject(), ["additionalProperties"] = false }
+                }
+            });
         body["tool_choice"] = new JObject { ["type"] = "function", ["function"] = new JObject { ["name"] = ToolName } };
         body["parallel_tool_calls"] = false;
         prepared = body.ToString(Formatting.None); return true;

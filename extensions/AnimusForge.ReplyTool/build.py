@@ -39,7 +39,7 @@ def main():
     hosts = {api: game / f'Modules/AnimusForge/bin/Win64_Shipping_Client/versions/{api}/AnimusForge.dll'
              for api in ['1.3', '1.4']}
     before = {api: digest(path) for api, path in hosts.items()}
-    receipt = {'module': MODULE, 'version': '0.1.0', 'af_sha256_before': before, 'references': {},
+    receipt = {'module': MODULE, 'version': '0.1.1', 'af_sha256_before': before, 'references': {},
                'live_provider': 'NOT-RUN', 'live_game': 'NOT-RUN', 'deployment': 'NOT-RUN'}
     for api, refs in [('1.3', args.refs13.resolve(strict=True)), ('1.4', game / 'bin/Win64_Shipping_Client')]:
         paths = [refs / f'TaleWorlds.{name}.dll' for name in ['MountAndBlade', 'Core', 'Library', 'DotNet']]

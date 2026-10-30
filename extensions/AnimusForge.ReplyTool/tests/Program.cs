@@ -81,9 +81,15 @@ internal static class Program
             Check(ReplyProtocol.TryPrepare(new Uri("https://example.invalid/v1/chat/completions"), raw, prompt, out var prepared, out var stream), "prepare " + lang);
             var body = JObject.Parse(prepared);
             Check(body["tool_choice"]["function"]["name"].ToString() == "output_reply", "forced tool");
-            Check(JToken.DeepEquals(payload["messages"], new JArray(((JArray)body["messages"]).Skip(1))), "original messages unchanged");
+            Check(JToken.DeepEquals(payload["messages"][0], body["messages"][1]), "original system unchanged");
+            var wrapped = JObject.Parse(body["messages"][4]["content"].ToString());
+            Check(wrapped["source"].ToString() == "user_input" && wrapped["text"].ToString() == payload["messages"][1]["content"].ToString(), "original user text preserved in tool result");
+            Check(body["messages"][2]["content"].ToString() == prompt.InputInstruction, "localized input reminder consumed " + lang);
+            Check(body["messages"][3]["tool_calls"][0]["id"].ToString() == body["messages"][4]["tool_call_id"].ToString(), "paired current input IDs");
+            Check(body["tools"][1]["function"]["name"].ToString() == "read_user_input", "input history tool declared");
             Check(body["messages"][0]["content"].ToString() == prompt.Instruction && !stream, "actual localized prompt");
         }
+        InputTests();
         foreach (var field in new[] { "tools", "functions", "tool_choice", "function_call", "response_format" })
         {
             var payload = Payload(); payload[field] = new JObject(); string raw = payload.ToString();
@@ -164,6 +170,11 @@ internal static class Program
                 sends++;
                 var body = JObject.Parse(await request.Content.ReadAsStringAsync());
                 Check(body["tools"][0]["function"]["name"].ToString() == "output_reply", "actual patched sender payload");
+                var inputCall = body["messages"][3]["tool_calls"][0];
+                var inputResult = body["messages"][4];
+                Check(inputCall["function"]["name"].ToString() == "read_user_input"
+                    && inputCall["id"].ToString() == inputResult["tool_call_id"].ToString()
+                    && JObject.Parse(inputResult["content"].ToString())["text"].ToString() == "玩家原文", "actual patched sender input wrapping");
                 Check(request.Headers.Authorization.Parameter == "test-key" && request.RequestUri.Host == "example.invalid", "original auth and endpoint");
                 return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(streaming ? Sse(text) : Response(text), Encoding.UTF8, streaming ? "text/event-stream" : "application/json") };
             };
@@ -212,6 +223,65 @@ internal static class Program
         }, CancellationToken.None, true, null);
         Check(originalPayload, "uninstall restores original outgoing request");
         Check(!ReplyToolInstaller.Install(typeof(Program).Assembly, promptJson, Console.WriteLine), "unsupported AF shape adds no patches");
+    }
+
+    private static void InputTests()
+    {
+        var messages = new JArray(new JObject { ["role"] = "system", ["content"] = "keep system" },
+            new JObject { ["role"] = "user", ["content"] = "old user" },
+            new JObject { ["role"] = "assistant", ["content"] = "old assistant" },
+            new JObject { ["role"] = "user", ["name"] = "player", ["cache_control"] = new JObject { ["type"] = "ephemeral" },
+                ["content"] = "新输入\n\"quoted\" \\ 😀 [AFEF:KEEP] {\"x\":1}" });
+        var history = new JArray(messages.Take(3).Select(m => m.DeepClone()));
+        string original = messages[3]["content"].ToString();
+        Check(InputWrapping.WrapLatest(messages, _prompt.InputInstruction), "wrap latest user");
+        Check(JToken.DeepEquals(history, new JArray(messages.Take(3).Select(m => m.DeepClone()))), "prior user and assistant history unchanged");
+        Check(messages[3]["name"].ToString() == "player" && messages[3]["cache_control"]["type"].ToString() == "ephemeral", "user metadata retained");
+        Check(JObject.Parse(messages[5]["content"].ToString())["text"].ToString() == original, "quotes newline unicode tags preserved exactly");
+        string once = messages.ToString(); string firstId = messages[4]["tool_calls"][0]["id"].ToString();
+        Check(InputWrapping.WrapLatest(messages, _prompt.InputInstruction) && messages.ToString() == once, "complete current input pair is idempotent");
+        foreach (string fault in new[] { "id", "source", "text", "json" })
+        {
+            var broken = (JArray)messages.DeepClone();
+            if (fault == "id") broken[5]["tool_call_id"] = "mismatched";
+            else
+            {
+                var payload = JObject.Parse(broken[5]["content"].ToString());
+                if (fault == "source") payload["source"] = "other";
+                if (fault == "text") payload["text"] = 42;
+                broken[5]["content"] = fault == "json" ? "{" : payload.ToString(Formatting.None);
+            }
+            Bad(() => InputWrapping.WrapLatest(broken, _prompt.InputInstruction), "invalid current pair " + fault);
+        }
+        var older = (JArray)messages.DeepClone();
+        older.Add(new JObject { ["role"] = "assistant", ["content"] = "previous answer" });
+        older.Add(new JObject { ["role"] = "user", ["content"] = "new turn" });
+        var oldPrefix = older.Take(7).Select(m => m.DeepClone()).ToArray();
+        Check(InputWrapping.WrapLatest(older, _prompt.InputInstruction), "old pair does not exempt newest user");
+        Check(JToken.DeepEquals(new JArray(oldPrefix), new JArray(older.Take(7).Select(m => m.DeepClone()))), "old wrapped turn intact");
+        Check(older[8]["tool_calls"][0]["id"].ToString() != firstId
+            && JObject.Parse(older[9]["content"].ToString())["text"].ToString() == "new turn", "fresh IDs and current text");
+
+        var image = new JObject { ["type"] = "image_url", ["image_url"] = new JObject { ["url"] = "https://example.invalid/image.png" } };
+        var multimodal = new JArray(new JObject { ["role"] = "user", ["content"] = new JArray(
+            new JObject { ["type"] = "text", ["text"] = "first\n" }, image.DeepClone(),
+            new JObject { ["type"] = "text", ["text"] = "第二段" }) });
+        Check(InputWrapping.WrapLatest(multimodal, _prompt.InputInstruction), "multimodal text wrapped");
+        Check(JToken.DeepEquals(multimodal[0]["content"][1], image) && ((JArray)multimodal[0]["content"]).Count == 2, "image stays in user content");
+        Check(JObject.Parse(multimodal[2]["content"].ToString())["text"].ToString() == "first\n第二段", "text parts concatenate without rewriting");
+        var imageOnly = new JArray(new JObject { ["role"] = "user", ["content"] = new JArray(image.DeepClone()) });
+        string untouched = imageOnly.ToString();
+        Check(!InputWrapping.WrapLatest(imageOnly, _prompt.InputInstruction) && imageOnly.ToString() == untouched, "image-only input unchanged");
+        var unknown = new JArray(new JObject { ["role"] = "user", ["content"] = new JArray("unknown", new JObject { ["type"] = "audio" }) });
+        string unknownRaw = unknown.ToString();
+        Check(!InputWrapping.WrapLatest(unknown, _prompt.InputInstruction) && unknown.ToString() == unknownRaw, "unknown content parts unchanged");
+        var prefill = new JArray(new JObject { ["role"] = "user", ["content"] = "prompt" }, new JObject { ["role"] = "assistant", ["content"] = "prefill" });
+        Check(InputWrapping.WrapLatest(prefill, _prompt.InputInstruction) && prefill[3]["content"].ToString() == "prefill", "assistant prefill retained after input pair");
+        Check(!InputWrapping.WrapLatest(new JArray(new JObject { ["role"] = "system", ["content"] = "system only" }), _prompt.InputInstruction), "no user turn unchanged");
+        var payloadBody = Payload();
+        Check(ReplyProtocol.TryPrepare(new Uri("https://example.invalid/chat/completions"), payloadBody.ToString(), _prompt, out var prepared, out _), "prepare input wrapped request");
+        Check(!ReplyProtocol.TryPrepare(new Uri("https://example.invalid/chat/completions"), prepared, _prompt, out var repeated, out _)
+            && prepared == repeated, "whole request cannot be double wrapped");
     }
 
     private static object Property(object value, string name) => value.GetType().GetProperty(name, Any).GetValue(value);
