@@ -17,6 +17,8 @@ internal interface ICivilWarHost
 	bool DiscontinueLandlessKingdom(Kingdom kingdom, string reason);
 	// Independent clans left over from a settled war make peace with everyone they are not permanently at war with.
 	void MakeClansPeaceful(IEnumerable<Clan> clans, string reason);
+	// Clan leaves its kingdom keeping its fiefs (granted autonomy); not reported as a rebellion.
+	void LeaveKingdomKeepingFiefs(Clan clan);
 	void QueueRebellion(Kingdom kingdom, Clan leader, List<Clan> followers, string factionId, bool startNow);
 	void ApplyPrestige(Kingdom kingdom, int delta, string reason);
 	void RecordMaterial(Kingdom kingdom, int week, string text);
@@ -374,18 +376,21 @@ internal sealed class GrantPrivilegesEffect : ICivilWarEffect
 		return CivilWarEffects.Refuse(ctx, "KingGone", KingdomCivilWarTexts.Raw("KW_Raw_053"), out reason);
 	}
 
+	// Autonomy = the faction clans leave the kingdom keeping their fiefs, as independent clans. Vanilla LeaveKingdom
+	// hands fiefs to the king, so the host leaves by the fief-keeping rebellion detail and ends the wars it starts.
 	public void Apply(CivilWarEffectContext ctx)
 	{
-		foreach (Clan clan in ctx.FactionClans())
+		List<Clan> leaving = ctx.FactionClans().Where(x => x.Kingdom == ctx.Kingdom && x != ctx.Kingdom.RulingClan).ToList();
+		bool failed = false;
+		foreach (Clan clan in leaving)
 		{
-			CivilWarWorld.ChangeRelation(clan.Leader, ctx.Kingdom.Leader, 8);
-			// Privileges float with the clan's standing (tier) and a stable per-faction jitter instead of a flat grant.
-			float grant = (clan == ctx.LeaderClan ? 40f + 12f * Math.Max(0, clan.Tier) : 15f + 5f * Math.Max(0, clan.Tier))
-				* CivilWarPoliticalRules.Jitter((ctx.Faction?.Id ?? "") + ":" + ctx.Week + ":" + clan.StringId);
-			try { ChangeClanInfluenceAction.Apply(clan, (float)Math.Round(grant)); }
-			catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] influence grant failed: " + ex.Message); throw; }
+			try { ctx.Host.LeaveKingdomKeepingFiefs(clan); }
+			catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] autonomy leave failed clan=" + clan.StringId + " error=" + ex.Message); }
+			if (clan.Kingdom == ctx.Kingdom) failed = true;
 		}
-		ctx.Note("PrivilegesGranted", KingdomCivilWarTexts.Raw("KW_Raw_054") + CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_055"), CivilWarWorld.ClanName(ctx.LeaderClan));
+		// Re-run is safe: clans that already left are skipped by the kingdom filter above.
+		if (failed) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_036"), "RebelClansNotHome");
+		ctx.Note("PrivilegesGranted", CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_055"), CivilWarWorld.ClanName(ctx.LeaderClan));
 	}
 }
 

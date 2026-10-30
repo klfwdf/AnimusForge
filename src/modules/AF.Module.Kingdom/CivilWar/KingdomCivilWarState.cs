@@ -116,8 +116,6 @@ internal sealed class KingdomCivilWarFactionState
 	public string RestorationKingdomShortName = "";
 	// Set only by the war-result owner before its own peace/return effects run.
 	public bool RestorationVictoryConfirmed;
-	// The king conceded a secession demand before any war: the founded kingdom is recognized at once instead of fought.
-	public bool PeacefulSecession;
 }
 
 internal sealed class KingdomCivilWarHistoryEntry

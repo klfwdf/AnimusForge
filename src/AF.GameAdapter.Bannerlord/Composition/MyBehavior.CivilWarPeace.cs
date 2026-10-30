@@ -52,6 +52,21 @@ public partial class MyBehavior
 		}
 	}
 
+	// Granted autonomy: vanilla LeaveKingdom hands fiefs to the king, so leave by the fief-keeping rebellion detail.
+	// The bulletin flag stops it being reported as a rebellion. The wars that detail starts (old kingdom and its
+	// enemies) are ended at once, for the player clan too, so the clan leaves in peace.
+	internal static void LeaveKingdomKeepingFiefsForExternal(Clan clan)
+	{
+		if (clan == null || clan.Kingdom == null) return;
+		WorldBulletinEventCaptureAdapter.CivilWarRebellionExecuting = true;
+		try { ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(clan, showNotification: true); }
+		finally { WorldBulletinEventCaptureAdapter.CivilWarRebellionExecuting = false; }
+		if (clan.Kingdom != null) return;
+		int ended = 0;
+		foreach (IFaction other in clan.FactionsAtWarWith.ToList()) if (TryMakePeaceQuietly(clan, other)) ended++;
+		Logger.Log("KingdomCivilWar", "[autonomy_leave] clan=" + (clan.StringId ?? "") + " ended=" + ended + " remainingWars=" + clan.FactionsAtWarWith.Count);
+	}
+
 	// True only while this file makes peace, so the civil-war grievance listener does not count it as a crown-imposed peace.
 	internal static bool QuietPeaceActive;
 

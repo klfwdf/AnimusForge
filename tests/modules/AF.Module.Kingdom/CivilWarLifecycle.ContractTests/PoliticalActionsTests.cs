@@ -202,9 +202,7 @@ internal static class PoliticalActionsTests
         f = new Fixture(); f.Faction.DemandId = "autonomy"; f.Faction.ResolutionOutcomeId = "";
         Check(f.Owner.Execute(Request(f, CivilWarAction.Concede), f.Home.RulingClan).Status == CivilWarActionStatus.Applied && !f.Home.IsAtWarWith(f.Rebel) && f.Leader.Kingdom == f.Rebel && !f.Rebel.IsEliminated, "wartime autonomy concession really preserves independent kingdom");
         f = Prewar(); f.Faction.DemandId = "autonomy";
-        Check(f.Owner.Execute(Request(f, CivilWarAction.Concede), f.Home.RulingClan).Status == CivilWarActionStatus.AwaitingKingdom && f.Faction.PeacefulSecession && f.Faction.Stage == KingdomCivilWarStage.OpenWar, "pre-war autonomy concession founds a kingdom instead of granting privileges");
-        f.Owner.OnRebelKingdomCreated(f.Faction.Id, f.Rebel, 101);
-        Check(f.State.Factions.Count == 0 && !f.Home.IsAtWarWith(f.Rebel) && !f.Rebel.IsEliminated, "conceded secession is recognized at once without a civil war");
+        Check(f.Owner.Execute(Request(f, CivilWarAction.Concede), f.Home.RulingClan).Status == CivilWarActionStatus.Applied && f.Leader.Kingdom == null && f.Follower.Kingdom == null && f.Follower.Settlements.Contains(f.RebelTown) && f.State.Factions.Count == 0, "pre-war autonomy concession: faction clans leave the kingdom keeping their fiefs");
 
         f = Prewar(); crown = f.Home.RulingClan; f.Faction.LeaderClanId = Clan.PlayerClan.StringId;
         f.Owner.Execute(Request(f, CivilWarAction.Negotiate), crown);
