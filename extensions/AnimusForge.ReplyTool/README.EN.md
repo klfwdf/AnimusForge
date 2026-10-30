@@ -1,4 +1,4 @@
-# AnimusForge.ReplyTool 0.1.2
+# AnimusForge.ReplyTool 0.1.3
 
 An independent Bannerlord submodule. Harmony wraps AF's two HTTP sender delegates in memory, moves the current user text into an ID-paired, completed `read_user_input` call/result, forces `output_reply(content)`, and restores that reply tool's arguments as ordinary AF text. AF retains its endpoint, authentication, sender, cancellation, timeout, admission, action and memory owners. No AF source, DLL, settings or saves are changed. No proxy or additional model requests are used.
 
@@ -12,11 +12,11 @@ Startup diagnostics and one `request_prepared;input_wrapped=True/False;stream=Tr
 
 ## Gemini image generation
 
-Version 0.1.2 also hooks AF Illustrator's image-generation send site. Non-streaming `/chat/completions` image requests with `gemini` in the model name wrap their input in a completed `read_user_input` call/result. Reference images keep their original positions; `text_parts` and position markers preserve the relationship between each original text block and image. Aspect ratio, image configuration, budgets and authentication stay intact. Only the completed input tool is declared, with `tool_choice: none` preventing new calls.
+AF Illustrator's image-generation send site is also hooked. Non-streaming `/chat/completions` image requests with `gemini` in the model name wrap their input in a completed `read_user_input` call/result. Reference images keep their original positions; `text_parts` and position markers preserve the relationship between each original text block and image. Aspect ratio, image configuration, budgets and authentication stay intact. Version 0.1.3 retains only the completed input history and sends no custom tool declarations or tool-choice parameters: the actual image provider rejects custom functions even with `tool_choice: none`. Requests with other existing tool protocols still pass through.
 
 The response retains the provider's native image fields. AF's existing bounded reader and decoder consume `inlineData`, `b64_json`, `base64` or image data URIs. URL images use AF's original download path. The model is not asked to write image base64 as text or place images inside `output_reply`. Only one send call site in the specific async method is replaced; HttpClient is not globally patched. `image_transport_installed` confirms installation, and `image_request_prepared` confirms an individual request was wrapped.
 
-Native Gemini `generateContent`, standard Images/Edits, Player2 and other models retain their original routes. Providers rejecting tool history may return an error; this module adds no retries. Producing an image from a wrapped input does not demonstrate reduced truncation or improved success rates.
+Native Gemini `generateContent`, standard Images/Edits, Player2 and other models retain their original routes. Providers rejecting tool history may still return an error; this module adds no retries. Content refusals such as content_filter in an HTTP200 response remain failures, without retrying or rewriting a request to bypass them. Producing an image from a wrapped input does not demonstrate reduced truncation or improved success rates.
 
 ## Scope and behavior
 

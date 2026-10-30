@@ -1,4 +1,4 @@
-# AnimusForge.ReplyTool 0.1.2
+# AnimusForge.ReplyTool 0.1.3
 
 独立 Bannerlord 子模组，通过 Harmony 在内存中包装 AF 的流式/非流式发送委托。发送前将本轮用户文本移到 ID 配对的 `read_user_input` 已完成调用/结果，再声明并强制 `output_reply(content)`；响应中将该回复工具参数还原为 AF 原有正文。AF 的原始 URL、认证、发送器、取消、超时、准入、动作与记忆 owner 保持不变；不修改 AF 源码、DLL、设置或存档，不启动代理，不增加模型请求。
 
@@ -12,11 +12,11 @@
 
 ## Gemini 生图
 
-0.1.2 另外挂接 AF Illustrator 的生图发送点：模型名包含 `gemini`、走 `/chat/completions` 的非流式生图请求会包装输入。文本放入已完成的 `read_user_input` 调用/结果；参考图保留原位置，分段文本通过 `text_parts` 与位置标记对应，画幅、图像配置、预算和认证保持。只声明已完成的输入工具，并用 `tool_choice: none` 禁止新的工具调用。
+另外挂接 AF Illustrator 的生图发送点：模型名包含 `gemini`、走 `/chat/completions` 的非流式生图请求会包装输入。文本放入已完成的 `read_user_input` 调用/结果；参考图保留原位置，分段文本通过 `text_parts` 与位置标记对应，画幅、图像配置、预算和认证保持。0.1.3只保留已完成的输入历史，不发送自定义工具声明或工具选择参数：实际生图上游会拒绝自定义函数，即使指定 `tool_choice: none`。现有其他工具协议请求仍原样放行。
 
 输出保持接口的原生图片字段，由 AF 现有有界读取和解码链路处理 `inlineData`、`b64_json`、`base64` 或图片 data URI；URL 图片仍由 AF 原有下载流程处理。不会要求模型以文字生成图片 base64，也不把图片强塞进 `output_reply`。生图补丁只替换指定异步方法中的一个发送调用点，不修改全局 HttpClient。`image_transport_installed` 表示生图补丁挂接成功，`image_request_prepared` 表示本次请求实际包装。
 
-Gemini 原生 `generateContent`、标准 Images/Edits、Player2 和其他模型请求沿用原路径。服务不接受工具历史时可能返回错误；本子模组不自动重试。输入包装请求出图不等于抗截断或通过率改善。
+Gemini 原生 `generateContent`、标准 Images/Edits、Player2 和其他模型请求沿用原路径。服务不接受工具历史时仍可能返回错误；本子模组不自动重试。HTTP200中的content_filter等内容拒绝保持失败，不通过重试或改写请求绕过。输入包装请求出图不等于抗截断或通过率改善。
 
 ## 范围与行为
 

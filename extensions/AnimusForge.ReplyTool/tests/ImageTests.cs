@@ -42,8 +42,8 @@ internal static class ImageTests
             var original = Payload(); string raw = original.ToString();
             check(ImageRequestProtocol.TryPrepare(Endpoint, raw, localized, out var prepared), "image prepare " + lang);
             var actual = JObject.Parse(prepared);
-            check(actual["tool_choice"].ToString() == "none" && ((JArray)actual["tools"]).Count == 1
-                && actual["tools"][0]["function"]["name"].ToString() == "read_user_input", "image output not forced into a function");
+            check(actual["tool_choice"] == null && actual["tools"] == null && actual["functions"] == null
+                && actual["function_call"] == null, "image has completed input history without callable tools");
             check(JToken.DeepEquals(original["extra_body"], actual["extra_body"]) && (int)actual["max_tokens"] == 1234
                 && JToken.DeepEquals(original["messages"][0], actual["messages"][0]), "image config budget and system preserved");
             var userParts = (JArray)actual["messages"][1]["content"];
@@ -88,7 +88,7 @@ internal static class ImageTests
             handler.Observe = request =>
             {
                 var body = JObject.Parse(request.Content.ReadAsStringAsync().GetAwaiter().GetResult());
-                check(body["messages"].Count() == 3 && body["tool_choice"].ToString() == "none", "actual AF image send input wrapped");
+                check(body["messages"].Count() == 3 && body["tool_choice"] == null && body["tools"] == null, "actual AF image send input wrapped without custom tool declarations");
                 check(JObject.Parse(body["messages"][2]["content"].ToString())["text"].ToString() == "red cube", "actual AF image original prompt preserved");
                 check(request.Headers.Authorization.Parameter == "test-key" && request.RequestUri == Endpoint, "actual AF image auth and endpoint");
             };

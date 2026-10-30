@@ -29,7 +29,7 @@ public static class ReplyToolInstaller
             foreach (var method in methods)
                 if (Harmony.GetPatchInfo(method)?.Owners.Contains(Owner) != true)
                     Patcher.Patch(method, prefix: new HarmonyMethod(typeof(ReplyToolInstaller), nameof(Prefix)));
-            log?.Invoke("installed;transports=2;mode=gemini_reply_tool;input_wrapper=enabled;version=0.1.2;retries=0");
+            log?.Invoke("installed;transports=2;mode=gemini_reply_tool;input_wrapper=enabled;version=0.1.3;retries=0");
             return ImageTransportPatch.Install(af, prompt, log);
         }
         catch (Exception error)

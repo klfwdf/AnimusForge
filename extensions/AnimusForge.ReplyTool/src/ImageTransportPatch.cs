@@ -33,7 +33,7 @@ internal static class ImageTransportPatch
         {
             new Harmony(ReplyToolInstaller.Owner).Patch(moveNext,
                 transpiler: new HarmonyMethod(typeof(ImageTransportPatch), nameof(Transpile)));
-            log?.Invoke("image_transport_installed;sites=1;input_wrapper=enabled;output=native_image;retries=0");
+            log?.Invoke("image_transport_installed;sites=1;input_wrapper=completed_history;tool_declarations=0;output=native_image;retries=0");
             return true;
         }
         catch (Exception error)
@@ -72,7 +72,7 @@ internal static class ImageTransportPatch
                         && !header.Key.Equals("Content-Type", StringComparison.OrdinalIgnoreCase))
                         replacement.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 request.Content = replacement; previous.Dispose();
-                try { _log?.Invoke("image_request_prepared;input_wrapped=True;output=native_image;retries=0"); }
+                try { _log?.Invoke("image_request_prepared;input_wrapped=True;tool_declarations=0;output=native_image;retries=0"); }
                 catch (Exception) { /* Diagnostics cannot decide whether to send. */ }
             }
         }

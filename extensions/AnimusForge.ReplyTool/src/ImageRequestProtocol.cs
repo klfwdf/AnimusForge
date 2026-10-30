@@ -21,18 +21,10 @@ internal static class ImageRequestProtocol
             || body["stream"] != null && (body["stream"].Type != JTokenType.Boolean || (bool)body["stream"])
             || body["n"] != null && body["n"].ToString() != "1") return false;
         if (!InputWrapping.WrapLatest(messages, prompt.ImageInputInstruction, preserveTextPositions: true)) return false;
-        body["tools"] = new JArray(new JObject
-        {
-            ["type"] = "function", ["function"] = new JObject
-            {
-                ["name"] = InputWrapping.ToolName, ["description"] = prompt.InputDescription,
-                ["parameters"] = new JObject { ["type"] = "object", ["properties"] = new JObject(), ["additionalProperties"] = false }
-            }
-        });
-        // The input call is already complete. Do not request a new function call
-        // from an image model, or ask it to produce textual base64.
-        body["tool_choice"] = "none";
+        // Image APIs may reject any custom function declaration, even with
+        // tool_choice:none. Keep only the completed input history; there is no
+        // callable tool or output function to translate to the image backend.
         prepared = body.ToString(Formatting.None);
-        return true;
+        return prepared != json;
     }
 }
