@@ -103,7 +103,8 @@ defines = "" if args.settings_only else "<DefineConstants>PERSONA_LORE</DefineCo
 items = "".join(f'<Compile Include="{f}"/>' for f in files) + resources
 (out / "Proof.csproj").write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>{args.framework}</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit>{defines}</PropertyGroup><ItemGroup>{items}<Reference Include="Newtonsoft.Json"><HintPath>{newtonsoft.as_posix()}</HintPath></Reference></ItemGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text("<configuration><packageSources><clear/></packageSources></configuration>", encoding="utf-8")
-result = subprocess.run([str(dotnet), "run", "--project", str(out / "Proof.csproj"), "-c", "Release", "-p:RestoreConfigFile=" + str(out / "NuGet.Config"), "--", str(out), str(ROOT / "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json"), args.prompt_language], cwd=out, env=minimal_test_environment(dotnet, out), capture_output=True, text=True, encoding="utf-8", errors="replace")
+editable_default = ROOT / "content/modules/AF.Module.Persona/CustomPrompts" / ("NpcPersonaGenerationRequirements.en.json" if args.prompt_language == "en" else "NpcPersonaGenerationRequirements.json")
+result = subprocess.run([str(dotnet), "run", "--project", str(out / "Proof.csproj"), "-c", "Release", "-p:RestoreConfigFile=" + str(out / "NuGet.Config"), "--", str(out), str(editable_default), args.prompt_language], cwd=out, env=minimal_test_environment(dotnet, out), capture_output=True, text=True, encoding="utf-8", errors="replace")
 (out / "run.log").write_text(result.stdout + result.stderr, encoding="utf-8")
 print(result.stdout + result.stderr, end="")
 raise SystemExit(result.returncode)

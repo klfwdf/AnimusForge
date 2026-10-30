@@ -58,11 +58,13 @@ prompt_dir=ROOT/'content/modules/AF.Module.Persona/ModuleData'
 if a.experience_language:
  assert not a.original and not a.mutate, "locale replay requires current unmutated sources"
  original_main=ex.declaration(code,'static int Main(')
- code=code.replace(original_main, 'static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{ExperienceCases();Console.WriteLine($"Persona experience locale: {checks} checks, {failures} failures");return failures==0?0:1;}catch(Exception e){Console.WriteLine(e);return 1;}}',1)
+ code=code.replace(original_main, 'static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{ExperienceCases();TextRuleCases();Console.WriteLine($"Persona experience and text locale: {checks} checks, {failures} failures");return failures==0?0:1;}catch(Exception e){Console.WriteLine(e);return 1;}}',1)
  prompt_dir=out/'locale-module-data';prompt_dir.mkdir()
  source=ROOT/'content/modules/AF.Module.Persona/ModuleData'/('PersonaPromptTexts.en.json' if a.experience_language=='en' else 'PersonaPromptTexts.json')
  (prompt_dir/'PersonaPromptTexts.json').write_bytes(source.read_bytes())
 code=code.replace('@@PROMPT_DIR@@',str(prompt_dir).replace('\\','/'))
+editable_default=ROOT/'content/modules/AF.Module.Persona/CustomPrompts'/('NpcPersonaGenerationRequirements.en.json' if a.experience_language=='en' else 'NpcPersonaGenerationRequirements.json')
+code=code.replace('@@EDITABLE_DEFAULT@@',str(editable_default).replace('\\','/'))
 if not a.original:
  code=code.replace('internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>',
   'internal static string GetMemoryHeroId(TaleWorlds.CampaignSystem.Hero hero)=>hero.StringId;internal static string GetNpcActionHeroKey(TaleWorlds.CampaignSystem.Hero hero)=>hero.StringId;internal static string RenderNpcActionEntriesForPrompt(TaleWorlds.CampaignSystem.Hero hero,List<AnimusForge.NpcActionEntry> entries){Probe.Read();return string.Join("\\n",entries.ConvertAll(x=>x.Text));}internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>',1)
