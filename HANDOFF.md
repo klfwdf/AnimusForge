@@ -1,3 +1,9 @@
+# 未部署：TTS 双星号/表情正文修复（2026-10-30）
+
+产品 `7b05436e8ff5` 保留双星号内正文，并在OpenAI兼容TTS的流式/非流式请求边界过滤 `❤️` 等装饰/组合表情，保留后续正文。中英文清理各17项、真实网关源码离线HTTP回放53项通过；1.3/1.4完整构建均被既有SceneAmbient缺失方法阻塞，Bootstrap/真实服务/游戏播放未验，未部署。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-symbol-speech-20261030)，证据 `artifacts/tts-symbol-20261030/`；仅聚焦逆提交本修复。
+
+---
+
 # 未部署：交马事实接通任务完成、描述人物绑定（2026-10-30）
 
 普通给予的实际马匹数量进入当前原版任务日志，验收/后处理读取同一证据；QUEST_TURN_IN 走原版结算，已交马不重复扣、已确认报酬不重复发，交马不再依赖静默对话。任务面板缺失人物属性按自身发布者绑定。候选双API/Bootstrap及原门禁通过，CN/EN四组真实DLL回放84断言通过；**当前工作区仍被另一会话未完成SceneAmbient依赖阻塞**，候选仅对三个无关Scene文件使用显式验证overlay，工作文件未变。未部署/实机/真实provider；修复前旧任务交付不猜测补记。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#horse-quest-turn-in-20261030)，证据 artifacts/horse-quest-fix-20261030/，回滚只revert本修复。

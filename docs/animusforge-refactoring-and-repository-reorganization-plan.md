@@ -12754,3 +12754,15 @@ run `33fc0456789abcd0123456789def0123` / PID37308，新EN战役，Lucon原生为
 - CN已部署：F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，AF1.6.6，仅Bootstrap+versions/1.5实现。拷贝384个程序/内容文件，按原时间戳/路径规则跳过4415个已有玩家文件；已知1.3/1.4各DLL/PDB/build.json共6个程序文件直接退役。未知文件、玩家设置/自定义Prompt/较新导出、日志/缓存/Recovery及ONNX保留，不声称已作部署后哈希核对。无部署备份/Recovery或自动回滚。direct-deployment.json记录执行结果。
 - 部署成功后打包：一键编译覆盖推送/packages/Bannerlord_1.5.6_Special/AnimusForge_v1.6.6_CN_1028_1605.zip（4799个写入文件）和AnimusForge_v1.6.6_EN_1028_1605.zip（4790个写入文件）。两包均从Stage制作，仅一个AnimusForge根和1.5实现，不含ONNX/第三方前置原件；EN沿用现有资产/世界书映射选版，UI保留双语。包未回读或校验，不标记门禁通过。打包首次因本机缺tzdata失败，已改用UTC+8，仅重跑打包；未重复部署。direct-packages.json记录路径、数量和部署/打包顺序，不含新哈希。
 - NOT-RUN/中止：完整Stage/语言/ZIP门禁、部署后哈希、实机、旧档。保留已有离线证据不冒充实机兼容。源码坐标见同目录code-map.json；回滚点7c689f8，以本次提交做聚焦逆向；游戏需另用明确选定的旧程序手动覆盖，无自动恢复。
+
+
+<a id="tts-symbol-speech-20261030"></a>
+## OpenAI 兼容 TTS 符号导致停读（2026-10-30，源码离线通过，完整构建受阻）
+
+- 用户复现包含 `**` 和 `❤️`。产品提交 `7b05436e8ff5cb5b7b4af1dc9717b2d4ca292ae2`，修改前本地检查点 `ce2b13c39`；仅修正文清理和兼容 TTS 发送边界，不部署、打包、改配置或调用真实服务。
+- 已确认本地原因：`ConversationSpeechTextRules.StripStageDirectionsForPassiveShout`（263–267）与 `SanitizeSceneSpeechTextForTts`（398–401）原先整段删除双星号内容，整段加粗会清空。现在移除双星号标记、保留正文和未闭合双星号后文字；原单星号与括号动作描述过滤保留。此处有意将双星号按强调正文处理；原 UI/历史消费者继续使用共享入口。信使可见信件的独立动作过滤不在此次语音修复范围。
+- `OpenAiCompatibleTtsGateway.SendAsync`（35–37、46）调用 `PrepareSpeechText`（89–110）：每次请求一次 O(n) 扫描（原上限4096），按 Unicode code point 去除 OtherSymbol、emoji肤色/变体/连接/旗帜标签及星号，保留普通标点、数值、CN/EN和补充平面文字；只改 outgoing input，不写回可见文本或历史。流式/非流式共用，不重试，不新增 Tick IO/扫描。`❤️` 服务端停读原因尚未通过真实服务复现；此为兼容输入修复。
+- 验证：`SceneHistoryMessageAssemblyTests/run.py --tts-only --package-language zh-CN/en` 各17断言通过；覆盖全段/局部/未闭合强调、分段、原动作过滤、三种显示选项的UI→TTS路径。`OpenAiCases` 实际生产网关源码 HTTP handler 回放53断言通过，含两请求模式的表情/ZWJ/肤色/双星号、正文尾部保留、扩展汉字/重音、纯表情不发请求、原HTTP错误/取消/超时/音频/资源释放。独立 gateway.csproj 直接引用当前生产网关、PCM解析和请求契约；结果DTO按生产原文提取，未运行完整游戏DLL加载/设置部分。未把此证据称为真实provider验收。
+- 完整构建：官方统一入口使用1.3.15.110062与1.4.6.115628已验证引用；1.3因工作区既有未提交 `ShoutBehavior.SceneAmbient.cs:143` 调用不存在的 `SceneTauntBehavior.TryCaptureScenePeaceConflictFacts`（CS0117）停止。按同一已核实1.4引用/隔离输出单独构建，亦在相同位置失败（两版各1错误）。未修改这项并行工作，Bootstrap未运行。第一次自建测试输出误放work被默认Compile收录，已移入排除的artifacts并保留首次失败日志，复查只剩上述既有错误。
+- 原综合历史fixture还存在与本修改无关的observer角色期望/默认动作parser替身断言失败；保留原断言与日志，新增 `--tts-only` 只验证本次纯文本职责，不将其称为整套历史回归通过。
+- 证据统一在 `artifacts/tts-symbol-20261030/`：`result.json`绑定产品修订及源hash；`cn-final/run.log`、`en-final/run.log`、`gateway.log`、`build-fixed.log`、`build14.log`。回滚仅聚焦逆提交 `7b05436e8ff5`；不回滚其他作者工作。尚未完整双API/Bootstrap通过、真实TTS/游戏播放/部署/正式包；本次不宣称游戏已修复上线。
