@@ -23,11 +23,13 @@ internal sealed class BilingualTextTable
 
     private readonly Lazy<Dictionary<string, string>> _chinese;
     private readonly Lazy<Dictionary<string, string>> _english;
+    private readonly Lazy<Dictionary<string, string[]>> _variants;
 
     private BilingualTextTable(Func<Dictionary<string, string>> chinese, Func<Dictionary<string, string>> english)
     {
         _chinese = new Lazy<Dictionary<string, string>>(() => chinese() ?? new Dictionary<string, string>(StringComparer.Ordinal), true);
         _english = new Lazy<Dictionary<string, string>>(() => english() ?? new Dictionary<string, string>(StringComparer.Ordinal), true);
+        _variants = new Lazy<Dictionary<string, string[]>>(BuildVariants, true);
     }
 
     /// <summary>Embedded resource pair: <paramref name="logicalName"/> and the same name with <c>.en.json</c>.</summary>
@@ -78,12 +80,19 @@ internal sealed class BilingualTextTable
             || string.Equals(value, EnglishOr(key, chinese), StringComparison.Ordinal);
     }
 
-    /// <summary>The distinct Chinese and English values of an entry, Chinese first.</summary>
-    internal string[] Variants(string key)
+    /// <summary>The distinct Chinese and English values of an entry, Chinese first. Cached; do not modify.</summary>
+    internal string[] Variants(string key) => _variants.Value[key];
+
+    private Dictionary<string, string[]> BuildVariants()
     {
-        string chinese = Chinese(key);
-        string english = EnglishOr(key, chinese);
-        return string.Equals(chinese, english, StringComparison.Ordinal) ? new[] { chinese } : new[] { chinese, english };
+        var result = new Dictionary<string, string[]>(_chinese.Value.Count, StringComparer.Ordinal);
+        foreach (KeyValuePair<string, string> entry in _chinese.Value)
+        {
+            string english = EnglishOr(entry.Key, entry.Value);
+            result[entry.Key] = string.Equals(entry.Value, english, StringComparison.Ordinal)
+                ? new[] { entry.Value } : new[] { entry.Value, english };
+        }
+        return result;
     }
 
     /// <summary>All Chinese entries (for building value-to-key indexes over both languages).</summary>
