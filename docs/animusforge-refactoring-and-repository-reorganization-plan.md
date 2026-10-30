@@ -12776,3 +12776,9 @@ run `33fc0456789abcd0123456789def0123` / PID37308，新EN战役，Lucon原生为
 - 实际对照：自由对话 `NativeConversationSpeechAdapter.cs:182,259` 与场景 `ScenePresentationController.cs:114,135` 先共享 `SanitizeTtsText` 后入同一 `TtsEngine`；`ConversationSpeechTextRules.cs:382–406` 原规则删除双/单星号段及圆括号段，既非火山专属也没有语义分类。`TtsEngine.cs:890–891` 仅在合成调用处分流；火山V1 `LegacyVolcTtsGateway.cs:52` 和V3 `VolcV3TtsGateway.cs:49` 将已清理文本传入服务，未再次识别动作/正文。
 - 验证：CN/EN `--tts-only` 修正fixture各11断言通过（证据 `artifacts/tts-symbol-20261030/{cn-correction,en-correction}/run.log`），确认单/双星号动作仍被排除且后续无标记正文保留。前版gateway53断言的生产源码未变，可复用；前版“17项双星号正文保留”不再代表当前行为。未重跑已被并行SceneAmbient缺失方法挡住的完整构建，未实机或部署。
 - 未完成：同一星号形式内动作与台词的语义区分。现有火山实现本身也无法满足该要求，不将恢复原过滤宣称为语义需求完成。源码回滚用逆提交 `a57a5bb63`；如要撤销表情过滤，需另对 `7b05436e8` 的网关改动做聚焦逆向，不整体恢复其他文件。
+
+
+<a id="tts-volc-parity-final-20261030"></a>
+## TTS 最终范围：沿用火山规则（2026-10-30）
+
+用户最新要求“跟火山一样识别”，明确替代上节待实现的语义分类要求；不新增模型分类或改后处理。已核对共享 `ConversationSpeechTextRules` 与检查点 `ce2b13c39` 无差异：双/单星号及括号段按原规则排除，剩余正文经同一引擎分流至火山或OpenAI；兼容网关额外过滤表情以避免服务端符号停读。沿用已通过CN/EN各11断言与网关53断言。源码修正 `a57a5bb63`，表情修复 `7b05436e8`；不再将额外语义识别列为本任务未完成项。完整双版构建/Bootstrap、真实服务与游戏播放仍保留既有未验边界，未部署。回滚仍按前两节聚焦逆提交。

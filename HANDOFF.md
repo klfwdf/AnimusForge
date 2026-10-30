@@ -1,3 +1,9 @@
+# TTS 最终口径：按火山同一规则（2026-10-30，未部署）
+
+用户确认“跟火山一样识别”，替代下方额外语义分类待办。当前两者共用原朗读前过滤：跳过单/双星号及括号段，朗读剩余正文；OpenAI兼容网关保留表情过滤。源码 `a57a5bb63` / `7b05436e8`，CN/EN各11项与网关53项离线验证通过；完整构建仍有既有阻塞，未真实服务/游戏验收或部署。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-volc-parity-final-20261030)。
+
+---
+
 # TTS 最新纠正：恢复动作过滤，语义区分尚未实现（2026-10-30，未部署）
 
 用户明确动作跳过、正文照读，且星号数量不能判断语义。`a57a5bb63` 撤回双星号统一保正文的错误改动，保留OpenAI兼容网关表情清理。实际检查火山与OpenAI共用上游TTS清理，火山本身也按星号/括号删除，没有动作语义识别。修正CN/EN回放各11项通过；同标记内动作/正文区分仍待实现，不宣称已完成。此条替代下方双星号修复摘要；[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-symbol-semantics-correction-20261030)。
