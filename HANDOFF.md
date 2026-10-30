@@ -1,3 +1,12 @@
+<a id="lobbyist-diplomacy-20261030"></a>
+## 2026-10-30 说客外交确定登记交付
+
+产品 `5ddc8a0b5` + 最终修正 `c6d2b69d8`（意图检查点 `61750a208`）：说客 COMMIT 逐项校验后复用固定事件/发文/目标答复/执行；真实付款及跨轮 pending、旧复核退出、CN/EN 接线已完成。原直接外交、AI-off、特殊臣属及复杂本国责任保留。
+
+**LOCAL_VERIFIED / LIVE_NOT_RUN**。双 API、Bootstrap、两实现 managed gates、CN/EN 六组定向回归和分块验证通过；两个外围 smoke 在改动前检查点同样失败，未扩大修复。未实机、部署、打包或 push。
+
+完整状态、测试与限制：[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#lobbyist-diplomacy-20261030)；[已核对代码图](docs/architecture/af-framework-code-scope.md#lobbyist-diplomacy-20261030)。开工前未提交文档保持未提交；不要把该交付记录视为推送授权。
+
 <a id="diplomacy-acceptance-deployed-20261030"></a>
 ## 停战/贸易修复已部署 — 2026-10-30
 

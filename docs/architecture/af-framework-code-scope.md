@@ -1,3 +1,25 @@
+<a id="lobbyist-diplomacy-20261030"></a>
+## 2026-10-30 说客外交确定登记代码图
+
+版本 `c6d2b69d8c67403d76c5f2392444af79a506f29d`。当前状态、完整验收与未验边界只登记于[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#lobbyist-diplomacy-20261030)。以下行号为该提交一基行号；不改写旧范围表。
+
+| 源码 / 行范围 | 符号与责任 | 覆盖 / 未覆盖 |
+| --- | --- | --- |
+| src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs:40–106 | Process：逐事项说客优先，隔离旧复核失败，保留直接/原机制 | 共用 dispatcher 回放；实机未验 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Lobbyist.cs:15–52 | ObserveSponsorPayment / SponsorPayments：真实交付边界、旧事实导入、UsedBy 防重复 | 同日同额、AFEF别名、归档后去重复；经济 API 是替身 |
+| 同上:64–204 | TryProcessLobbyistTag / LinkLegacyLobbyistEvidence：身份、条件、条款、来源、去重、原项接续与旧证据链接 | 真实日志派生及异常反例；不声称真实模型验收 |
+| 同上:206–287 | CompletesLobbyistPayload / MaintainLobbyistPending / BuildLobbyistContext / ValidLobbyistEvent | 补缺、公平四项/日、自然上下文、公开事件/多动作目标；日常不读取旧历史 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dialogue.cs:31–126,131–187,244–321,350–414 | SubmitReviewedOralCommitment / BuildOralArrangementContext / SubmitDialogueWork / MaintainDialogueArrangements | 复用确定事件、同条记录升级、失败恢复、版本/来源；名称沿用，未增加重识别 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SpeechReview.cs:20–140,227–228,288–303 | EnsureSpeechReviewIndex / LegacyReviewHasRetainedMatter / CaptureSpeechReview / MaintainSpeechReviews / IsCurrentSpeechReview | 退出说客旧提取与迟到结果，保留明确复杂本国事项；无批量清队列 |
+| src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueTagPayload.cs:19–71；Domain/DiplomacySponsorReceiptRules.cs:10–28 | 新可选条件字段严格解析；精确旧 AFEF 兼容投影 | 未知文本不作金钱证明；不改既有协议身份 |
+| src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyDialogueRecords.cs:8–31；WorldDiplomacyStorageRecord.cs:9；WorldDiplomacyStorageShapeNormalizer.cs 的 SponsorReceipts 初始化 | 同存档追加 DTO/defaults，原严格分块容器 | helper/catalog/strict replay；真实 sav 未验 |
+| src/AF.GameAdapter.Bannerlord/Scene/SceneTradeBannerlordAdapter.cs:1015–1026；src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs:250–259 | 原金币增量确认后观察，不修改经济结算 | 源码接线 + 双 API 编译；无实机转账声称 |
+| src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DialogueAdapter.cs:8–28；DialogueHost.cs:9–28；Adapters/DiplomacyOralTagSource.cs | 同 DLL host 接口、260 条历史边界 | 维持原分层与游戏主线程边界，无新 public API |
+| src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs:75–106,145–157；DiplomacyPromptApplication.cs:55–78 | 主/后处理消费者及独立家族事实共存 | 11 对 CN/EN 键及双包真实消费者；主回复无标签协议指令 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs:150–157；CountryAdmission.cs:616–627；EventRequestEvidence.cs:59–70 | 新说客的公开任务材料排除私人原话 | 公开写作和隐私/audit owner 仍复用 |
+| src/modules/AF.Module.Conversation/Actions/ConversationActionExecutorComposition.cs:170,301；Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs:53–54；src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs:32–42 | 原三渠道 origin → 共用标签/上下文消费者（本轮未修改） | 源码追踪 + 共用实际 dispatcher 三渠道回放；非实际 UI 回放 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/LobbyistReplay.cs:76–335；SovereignControlReplay.cs:27–108 | 新168项、主权执行980项和相关旧回归 | CN/EN；效果/模型替身边界见台账 |
+
 <a id="diplomacy-acceptance-repair-20261030"></a>
 ## 外交接受与旧拒稿恢复代码范围 — 2026-10-30
 

@@ -1,3 +1,46 @@
+<a id="lobbyist-diplomacy-20261030"></a>
+## 说客外交确定登记改造 — 2026-10-30
+
+**LOCAL_VERIFIED / LIVE_NOT_RUN / NO_DEPLOY_NO_PUSH**。已完成用户批准的本轮说客外交改造与本地自查。基线 `main@fb4e1b1d3`，意图检查点 `61750a208`，产品主体 `5ddc8a0b5`，最终修正与回归提交 `c6d2b69d8c67403d76c5f2392444af79a506f29d`。本节取代本任务先前 ACTIVE 条目；不取代其他作者的未提交文档。代码范围见[本轮代码图](architecture/af-framework-code-scope.md#lobbyist-diplomacy-20261030)，机器验证证据见[verification.json](fixtures/lobbyist-diplomacy-20261030/verification.json)。
+
+### 最终行为与保留边界
+
+- 非君主玩家，以及玩家君主劝 NPC 处理 NPC/第三国事项，均由共用三渠道后处理 COMMIT 逐项进入确定登记。实际交谈的现任 NPC 君主决定 actor，玩家无需主权；目标、条款、正式源文书/动作、已知事件、版本、条件和去重仍由程序校验。缺标签不补做全文提取，不把讨论当承诺，不由玩家替目标国接受。单次混合输出中的直接本国事项、说客事项、复杂本国事项分别归原责任方处理。
+- 确认事项复用原 DialogueArrangements、固定事件/文书队列、目标国答复、执行回执和传播；内部复用 SubmitReviewedOralCommitment 名称不代表重跑提取模型。登记不进入随机新事件选拔。新案独立办理；显式 event 必须是已公开且双方参与的活动案，或有本人已知且覆盖双方的已发布文书，含多动作目标。未知、跨国无关、关闭案件保持待澄清，不改投最近案件。接受/拒绝绑定原提案，不能改条款冒充接受。
+- 私人付款基于实际金币增量见证和精确旧 AFEF 投影。原交易/信使在结算成功后、该次 AFEF 写入前导入此前历史，再记新 receipt；因此旧款后同日同额新款独立可用，新款之后的 AFEF 展示不能成为第三笔钱。绝不额外扣款、退款、改托管结算或把赞助改作国家贡金。UsedBy 永久保留已归属承诺，旧完成事项归档后也不能重用同款。
+- 条款/来源可在同一个 pending 项补齐；跨轮短确认通过 continuation 精确接续已定内容。不能移除已定付款义务，也不能用 condition=none 清除不可验证的额外前提。付款/登记技术失败保留原项；日常恢复最多四项/游戏日，按重试时间公平推进。失败的旧复核或单项登记不吞掉同轮其他标签。
+- 旧未登记说客复核退出执行权并保留证据。无法证明范围的旧记录待澄清；明确复杂本国事项继续原复核，已登记承诺继续既有事件。只有单个完全匹配的旧标签证据才记 continued_by_tag → 新 arrangement，读档后保持终态；被移除的旧异步结果不能再登记。没有批量丢弃存档或复活旧条件循环。
+- 说客私下原话/付款不再传入固定公开写作与事件材料；主回复只收到自然交流约束、真实事实和待办，完整标签协议只在后处理。原公开隐私审核仍保留。CN/EN 同步修改 11 个键并接通原 reader；不强制模型输出语言。
+- 保留：原本国双方君主六类直接外交；AI 关闭的原生回退；独立家族原和平；特殊原臣属签署；不属于本次替换的复杂本国复核；正式文书答复、耦合条件、传播与游戏执行 owner。新条件字段不能被旧原生/复杂入口静默忽略。未增加 MCM、框架、业务存档容器、独立 DLL、Tick IO 或后台游戏对象读取。
+
+### 验证证据
+
+同一实际 orchestration / dispatcher / parser / publication / offer 代码，在 CN、EN 各跑一遍；LLM 答案与原生效果端口是受控测试替身，不能等同实机：
+
+| 回归入口 | CN | EN | 主要证据 |
+| --- | ---: | ---: | --- |
+| --lobbyist | 168 PASS | 168 PASS | 三渠道共同分发、付款/重复/读档/失效/公平恢复/事件归属/正文隐私/主与后处理/旧队列迁移；和平正式提案须目标接受且只执行一次 |
+| --sovereign-control | 980 PASS | 980 PASS | 六类玩家身份 × 三渠道 × 战争/联盟/贸易；确定发文、目标同意、真实执行 owner、重复、失败恢复 |
+| --bilateral-direct | 194 PASS | 194 PASS | 本国直接六类及来源/权限/混合边界 |
+| --speech-review | 741 PASS | 741 PASS | 保留复杂本国复核；说客旧提取退出及正式来源 |
+| --oral-declaration | 645 PASS | 645 PASS | 既有发文、接收、执行与旧双边责任 |
+| --original-oral-vassalage | 343 PASS | 343 PASS | 特殊原臣属签署不回归 |
+
+- 真实日志派生：18:21:39 的 100000 私人交付、18:22:04 的 `Peace / NewMatter / nord2`，使用 `vlandia / lord_4_1` 且玩家非君主。确认进入固定和平事项、不伪造付款/贡金/即时和平；不是调用实机重演。
+- 旧队列接续后存取档仍不重新注入；原事件公开通报尚无文书、多动作目标、未知/无关/关闭事件；缺来源/条款后补齐；同日同额两笔、typed+AFEF 一笔、已用款跨归档/读档不可重复；登记端口抛错转失败后仍恢复，都有新增反例。
+- 原脚本纯构建：API 1.3（引用 v1.3.15.110062）、API 1.4（引用 v1.4.6.115628）、Bootstrap 和两实现 managed coup seam/registration gates 均通过。使用项目已有 `.tmp/stage_game_root` 依赖映射；**未传 Stage/Deploy，未改构建脚本**。DLL 路径及 SHA256 见 verification.json，日志见 [build-output.txt](fixtures/lobbyist-diplomacy-20261030/build-output.txt)。既有编译警告及 NU1900 网络漏洞源警告保留，不宣称零警告。
+- PersistenceChunkReplayTests（原 helper + integrity/civilWar replay）、当前 chunk-contract（22 个分块键/47 个长值字典键）通过；strict diplomacy helper/adapter/store/SyncData 回放 227 项通过。严格回放选本任务检查点 `--legacy-baseline 61750a208`，因为脚本默认更早 ed92b3b 的 helper 已在此前项目工作中改变；本次未改 helper。DTO/native store 为替身，不是实际坏 sav 修复。详见 [checks.txt](fixtures/lobbyist-diplomacy-20261030/checks.txt)。
+- 11 个资源键 CN/EN 配对、变量一致、EN 固定资源扫描和真实请求消费者回放通过；不以词法扫描替代语义/接线。定向自查修复了事件公共通报/多动作归属、旧终态读档复活、底层登记异常被吞后的重试、同日同额真实新付款误判，已用付款随旧事项裁剪后可重复，以及混合大小写字段不能接续更正的问题。
+- 两个外围失败在检查点源文件隔离对照中同样出现：`--audit-fixes` 的 PolicyStyleNoticeReplay 文本通知格式断言；`--concurrent-oral-migration` 的既有 player response 并入队列断言。未顺手修改；[baseline-failures.txt](fixtures/lobbyist-diplomacy-20261030/baseline-failures.txt)保留对应证据。未宣称全仓 smoke 全绿。
+
+### 频率、限制与交接
+
+标签登记/事实投影仅在游戏主线程请求或实际交付边界运行；旧 AFEF 最多读取原历史窗口 260 条，日常恢复只读已存结构收据、不读历史。说客恢复最多四项/日，旧复核维护沿用四项/小时；已用收据保留小型 ID 归属，未用旧收据按 365 天清理但保留相关 pending 证据。没有新增每 Tick IO/序列化/反射扫描。
+
+旧未知或改名文本、无法证明的同日重复旧原文、旧混合物品/部分交付文本不猜测成付款；当前新混合/部分成功交付由实际金币增量见证。额外无法结构化/验证的条件继续澄清，不自动当满足。已登记旧承诺不按当前玩家身份追溯重分类。尚未验证：真实模型持续遵从、三渠道实际 UI/经济/目标国在游戏内表现、物理旧 sav 修复。此任务没有实机、打包、部署或 push 授权。
+
+本地回退依次对 `c6d2b69d8`、`5ddc8a0b5` 作定向反向提交，并保留已经产生的追加存档证据；不得 hard reset、重写历史或回退其他作者。开工前 HANDOFF、主台账、代码图、design-discussion 及已有未跟踪内容保持未提交。已用仓库既有生成入口在全新目录重现 EN 168 项；复跑命令和 harness 说明见 [REPRODUCE.md](fixtures/lobbyist-diplomacy-20261030/REPRODUCE.md)。任务临时测试树在正式证据保存后清理；最终构建产物和本节链接的验收证据作为交付保留。
+
 <a id="diplomacy-acceptance-deployed-20261030"></a>
 ## 停战/贸易修复部署完成 — 2026-10-30
 

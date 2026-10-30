@@ -1,0 +1,13 @@
+--audit-fixes
+System.InvalidOperationException: real UI resource and literal author/title/body placeholders compose correctly
+ real UI resource and literal author/title/body placeholders compose correctly
+   at Test.True(Boolean value, String message) in E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\.tmp\lobbyist-20261030\baseline\src\tests\modules\AF.Module.Diplomacy\WorldDiplomacyRoundLifecycle.SmokeTests\Program.cs:line 18
+   at PolicyStyleNoticeReplay.Run() in E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\tests\modules\AF.Module.Diplomacy\WorldDiplomacyRoundLifecycle.SmokeTests\PolicyStyleNoticeReplay.cs:line 73
+   at Program.Main(String[] args) in E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\.tmp\lobbyist-20261030\baseline\src\tests\modules\AF.Module.Diplomacy\WorldDiplomacyRoundLifecycle.SmokeTests\Program.cs:line 187
+
+--concurrent-oral-migration
+System.InvalidOperationException: player merges into existing country speech instead of side conversation
+ player merges into existing country speech instead of side conversation
+   at Test.True(Boolean value, String message) in E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\.tmp\lobbyist-20261030\baseline\src\tests\modules\AF.Module.Diplomacy\WorldDiplomacyRoundLifecycle.SmokeTests\Program.cs:line 18
+   at ConcurrentOralMigrationReplay.Run() in E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\tests\modules\AF.Module.Diplomacy\WorldDiplomacyRoundLifecycle.SmokeTests\ConcurrentOralMigrationReplay.cs:line 209
+   at Program.Main(String[] args) in E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\.tmp\lobbyist-20261030\baseline\src\tests\modules\AF.Module.Diplomacy\WorldDiplomacyRoundLifecycle.SmokeTests\Program.cs:line 322

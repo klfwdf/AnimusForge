@@ -1,0 +1,12 @@
+An issue was encountered verifying workloads. For more information, run "dotnet workload update".
+  Determining projects to restore...
+  Restored E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\.tmp\lobbyist-20261030\reproduce-en\Recovery.csproj (in 153 ms).
+  Recovery -> E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\.tmp\lobbyist-20261030\reproduce-en\bin\Release\net8.0\Recovery.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:22.12
+
+PASS lobbyist assertions=168
