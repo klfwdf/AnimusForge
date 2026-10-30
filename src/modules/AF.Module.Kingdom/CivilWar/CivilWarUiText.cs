@@ -53,7 +53,7 @@ internal static class CivilWarUiText
             "continue_war" => "Do not make peace with {TARGET}",
             "revoke_policy" => "Repeal {TARGET}",
             "redress" => "Pay compensation and hold those responsible to account",
-            "autonomy" => "Recognize autonomy for this faction's fiefs",
+            "autonomy" => "Let this faction leave the kingdom with its fiefs as an independent realm",
             CivilWarCatalog.UsurpDemandId => "The king abdicates and the faction leader succeeds",
             _ => "Pursue the faction's demand"
         };
@@ -145,6 +145,8 @@ internal static class CivilWarUiText
         "DissolveSentToPlayer" => "The dissolution order has been delivered; the player has three days to respond.",
         "OfferSentToPlayer" => "The compensation offer has been delivered; the player has three days to respond.",
         "Conceded" => "The king honors the {A} in full: {B}",
+        "SecessionAccepted" => "The king grants the {A} peaceful independence; its new kingdom is being founded.",
+        "SecessionBlocked" => "The war cap or player-kingdom immunity blocks the faction from founding its kingdom; independence cannot be granted yet.",
         "WarEligibilityChanged" => "War eligibility changed; the original dissolution order is void and the faction is kept.",
         "DissolveOrderExpired" => "The dissolution order expired; the faction is kept, and a player leader must decide on rebellion manually.",
         "FactionDefied" => "The faction defied the order and enters the rebellion process.",

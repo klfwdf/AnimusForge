@@ -568,7 +568,7 @@
     <string id="AF_KINGDOM_CW_Action_ChangeOwnDemandOnly" text="只能更改自己领导的战前派系诉求。" />
     <string id="AF_KINGDOM_CW_Action_ClanAllegianceChanged" text="家族归属已变化，不能回应原协议。" />
     <string id="AF_KINGDOM_CW_Action_ClanLeaderIneligible" text="家族领袖不具备资格。" />
-    <string id="AF_KINGDOM_CW_Action_ConcedeConsequence" text="完整兑现当前诉求；宣权将退位，独立战争将承认独立。" />
+    <string id="AF_KINGDOM_CW_Action_ConcedeConsequence" text="完整兑现当前诉求；宣权将退位，分离派将携封地和平独立建国。" />
     <string id="AF_KINGDOM_CW_Action_DemandChangeLocked" text="王室交涉或协议结算中，暂不能更改诉求。" />
     <string id="AF_KINGDOM_CW_Action_DemandInvalid" text="诉求或目标不合法，或缺少所需领地。" />
     <string id="AF_KINGDOM_CW_Action_DemandUnchanged" text="诉求及目标未改变，无需重新评估成员。" />

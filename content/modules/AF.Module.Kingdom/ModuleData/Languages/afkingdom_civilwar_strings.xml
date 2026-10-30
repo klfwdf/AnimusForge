@@ -15,7 +15,7 @@
     <string id="AF_KINGDOM_CW_Demand_continue_war" text="Do not make peace with {TARGET}" />
     <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="Repeal {TARGET}" />
     <string id="AF_KINGDOM_CW_Demand_redress" text="Pay compensation and hold those responsible to account" />
-    <string id="AF_KINGDOM_CW_Demand_autonomy" text="Recognize autonomy for this faction's fiefs" />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="Let this faction leave the kingdom with its fiefs as an independent realm" />
     <string id="AF_KINGDOM_CW_Demand_usurp" text="The king abdicates and the faction leader succeeds" />
     <string id="AF_KINGDOM_CW_Demand_unknown" text="Pursue the faction's demand" />
     <string id="AF_KINGDOM_CW_Target" text="the target" />

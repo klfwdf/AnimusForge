@@ -404,7 +404,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (ruling.Ruling == CivilWarRuling.Accept)
 		{
 			var result = Execute(new CivilWarActionRequest { OperationId = "ultimatum:" + faction.Id + ":" + CivilWarWorld.CurrentDay(), KingdomId = kingdom.StringId, FactionId = faction.Id, Action = CivilWarAction.Concede }, kingdom.RulingClan);
-			return result.Status == CivilWarActionStatus.Applied;
+			return result.Status == CivilWarActionStatus.Applied || result.Status == CivilWarActionStatus.AwaitingKingdom;
 		}
 		if (ruling.Ruling == CivilWarRuling.Defer)
 		{
@@ -609,6 +609,14 @@ internal sealed partial class KingdomCivilWarOwner
 		_activeNamingRequests.Remove(faction.Id);
 		faction.WarStartWeek = Math.Max(week, faction.WarRequestWeek);
 		faction.WarStartDay = CivilWarWorld.CurrentDay();
+		if (faction.PeacefulSecession)
+		{
+			// Conceded independence: no outbreak penalties or war; settle at once as a recognized secession.
+			faction.ResolutionOutcomeId = CivilWarCatalog.SecedeOutcomeId;
+			ResolveWar(kingdom, state, faction, week, DuelSettings.BuildCivilWarTuning(), HostStability);
+			Revision++;
+			return;
+		}
 		if (faction.LeaderClanId == Clan.PlayerClan?.StringId) { faction.PlayerFollowPending = false; faction.PlayerFollowAccepted = true; }
 		IndexOppositionSettlements(state, faction);
 		faction.RebelFortShareAtStart = CivilWarWorld.FortificationCount(rebelKingdom) / (float)Math.Max(1, CivilWarWorld.FortificationCount(kingdom));
@@ -712,7 +720,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (_storage.Operations.TryGetValue(faction.RebellionOperationId ?? "", out var failedRequest)) { failedRequest.Status = (int)CivilWarActionStatus.PartialFailure; failedRequest.Message = faction.ResolutionError; }
 		if (leader?.Kingdom == kingdom)
 		{
-			faction.Stage = KingdomCivilWarStage.FactionFormed; faction.WarRequestDay = -1; faction.WarClanIds.Clear();
+			faction.Stage = KingdomCivilWarStage.FactionFormed; faction.WarRequestDay = -1; faction.WarClanIds.Clear(); faction.PeacefulSecession = false;
 			_openWarFactions.Remove(faction);
 			faction.PlayerFollowPending = false; faction.PlayerFollowAsked = false;
 			faction.UltimatumDay = CivilWarWorld.CurrentDay() + 7; faction.WaitingForOtherWar = false;
@@ -983,7 +991,7 @@ internal sealed partial class KingdomCivilWarOwner
 			var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom.StringId, FactionId = faction.Id, Action = CivilWarAction.Concede }, Clan.PlayerClan);
 			// Display path: the Concede result carries a projection key, so the notification renders the
 			// localized sentence instead of the raw Chinese receipt text.
-			message = CivilWarUiText.ResultNotice(result); return result.Status == CivilWarActionStatus.Applied;
+			message = CivilWarUiText.ResultNotice(result); return result.Status == CivilWarActionStatus.Applied || result.Status == CivilWarActionStatus.AwaitingKingdom;
 		}
 		int week = CivilWarWorld.CurrentWeek();
 		CivilWarTuning tuning = DuelSettings.BuildCivilWarTuning();

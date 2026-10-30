@@ -568,7 +568,7 @@
     <string id="AF_KINGDOM_CW_Action_ChangeOwnDemandOnly" text="You can only change the demand of a pre-war faction you lead." />
     <string id="AF_KINGDOM_CW_Action_ClanAllegianceChanged" text="The clan's allegiance changed; the original agreement can no longer be answered." />
     <string id="AF_KINGDOM_CW_Action_ClanLeaderIneligible" text="The clan leader is not eligible." />
-    <string id="AF_KINGDOM_CW_Action_ConcedeConsequence" text="The current demand is honored in full; a claim to the throne means abdication, and a war of independence means recognizing independence." />
+    <string id="AF_KINGDOM_CW_Action_ConcedeConsequence" text="The current demand is honored in full; a claim to the throne means abdication, and secession lets the faction leave with its fiefs as an independent kingdom." />
     <string id="AF_KINGDOM_CW_Action_DemandChangeLocked" text="A royal negotiation or agreement settlement is in progress; the demand cannot be changed yet." />
     <string id="AF_KINGDOM_CW_Action_DemandInvalid" text="The demand or target is not valid, or the required holdings are missing." />
     <string id="AF_KINGDOM_CW_Action_DemandUnchanged" text="The demand and target are unchanged; members do not need to be reassessed." />

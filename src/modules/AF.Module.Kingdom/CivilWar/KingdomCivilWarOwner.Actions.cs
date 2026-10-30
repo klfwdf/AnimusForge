@@ -104,7 +104,7 @@ internal sealed partial class KingdomCivilWarOwner
 				else q.Gold = CompensationOffer(k, s, f, r.OfferTier, false);
 				q.Consequence = CivilWarUiText.T("AF_KINGDOM_CW_Action_NegotiateConsequence", "Accepting transfers the compensation, withdraws the demand, and dissolves the faction; refusing costs nothing but consumes the 7-day cooldown. During a war, make peace first and return home.");
 			}
-			if (r.Action == CivilWarAction.Concede) q.Consequence = CivilWarUiText.T("AF_KINGDOM_CW_Action_ConcedeConsequence", "The current demand is honored in full; a claim to the throne means abdication, and a war of independence means recognizing independence.");
+			if (r.Action == CivilWarAction.Concede) q.Consequence = CivilWarUiText.T("AF_KINGDOM_CW_Action_ConcedeConsequence", "The current demand is honored in full; a claim to the throne means abdication, and secession lets the faction leave with its fiefs as an independent kingdom.");
 			if (q.Reason.Length == 0 && (actor.Influence < q.Influence || actor.Leader.Gold < q.Gold)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_RulingClanResources", "The ruling clan lacks the resources.");
 		}
 		else
@@ -371,6 +371,19 @@ internal sealed partial class KingdomCivilWarOwner
 			if (f.PendingConcessionRulerId != actor.StringId || f.PendingConcessionLeaderId != f.LeaderClanId) throw new InvalidOperationException(KingdomCivilWarTexts.Raw("KW_Raw_097"));
 			f.PendingConcessionOperationId = r.OperationId;
 			var demand = CivilWarCatalog.FindDemand(f.DemandId);
+			// Conceding a secession demand before any war lets the faction leave in peace: its kingdom is
+			// founded through the normal rebellion path and then settled at once as recognized independence.
+			if (f.Stage != KingdomCivilWarStage.OpenWar && CivilWarCatalog.EffectiveWarGoal(demand) == CivilWarWarGoal.Secede)
+			{
+				f.PendingConcessionOperationId = "";
+				if (!CanStartPoliticalWar(k, s, f, true)) { result.Status = CivilWarActionStatus.Rejected; result.Message = KingdomCivilWarTexts.Raw("KW_Raw_168"); Project(result, "SecessionBlocked"); return result; }
+				f.PeacefulSecession = true; f.PlayerAnswerPending = false; f.PlayerAnswerPending = false;
+				f.RebellionOperationId = r.OperationId;
+				OpenWar(k, s, f, CivilWarWorld.FindClan(f.LeaderClanId), week, tuning, HostStability, playerAuthorized: true);
+				result.Status = CivilWarActionStatus.AwaitingKingdom; result.Message = KingdomCivilWarTexts.Raw("KW_Raw_169");
+				Project(result, "SecessionAccepted", CivilWarUiText.DemandTag(demand));
+				return result;
+			}
 			var ctx = BuildContext(k, s, f, demand, CivilWarWorld.FindClan(f.LeaderClanId), week);
 			string effect = demand.AcceptEffectId;
 			if (f.Stage == KingdomCivilWarStage.OpenWar)

@@ -22,6 +22,8 @@
     <string id="AF_KINGDOM_CW_Notice_DissolveSentToPlayer" text="The dissolution order has been delivered; the player has three days to respond." />
     <string id="AF_KINGDOM_CW_Notice_OfferSentToPlayer" text="The compensation offer has been delivered; the player has three days to respond." />
     <string id="AF_KINGDOM_CW_Notice_Conceded" text="The king honors the {A} in full: {B}" />
+    <string id="AF_KINGDOM_CW_Notice_SecessionAccepted" text="The king grants the {A} peaceful independence; its new kingdom is being founded." />
+    <string id="AF_KINGDOM_CW_Notice_SecessionBlocked" text="The war cap or player-kingdom immunity blocks the faction from founding its kingdom; independence cannot be granted yet." />
     <string id="AF_KINGDOM_CW_Notice_WarEligibilityChanged" text="War eligibility changed; the original dissolution order is void and the faction is kept." />
     <string id="AF_KINGDOM_CW_Notice_DissolveOrderExpired" text="The dissolution order expired; the faction is kept, and a player leader must decide on rebellion manually." />
     <string id="AF_KINGDOM_CW_Notice_FactionDefied" text="The faction defied the order and enters the rebellion process." />

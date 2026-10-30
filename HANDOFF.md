@@ -1,3 +1,14 @@
+# 未部署：内战分离派诉求改为和平独立（2026-10-31）
+
+用户要求“自治派诉求就应该是独立出去”。原先未开战时国王接受 autonomy 诉求只执行 GrantPrivileges（关系+8、加影响力），派系随即解散，玩家看不到效果。
+- `KingdomCivilWarOwner.Actions.cs` Concede：诉求战争目标为 Secede 且尚未开战时，不再发特权，改为标记 `PeacefulSecession` 并走原有建国流程（同战争上限/玩家王国免疫检查，受阻返回 SecessionBlocked）；结果为 AwaitingKingdom。
+- `KingdomCivilWarOwner.cs` OnRebelKingdomCreated：PeacefulSecession 时跳过内战爆发惩罚，直接以 rebels_secede 结算（议和+承认独立）。建国失败时清除标记。AI 裁决与玩家国王接受把 AwaitingKingdom 视为已兑现。
+- 诉求文案 CN/EN 改为“准许本派携封地脱离王国独立”；新增 KW_Raw_168/169 与 Notice_SecessionAccepted/SecessionBlocked 双语。开战后的 autonomy 让步路径未改（原本即承认独立）。
+
+验证：CivilWarLifecycle.ContractTests 全部通过（407 检查，含新增和平独立 2 条）。未编译 1.3/1.4 主工程、未部署、未实机。
+
+---
+
 # 未部署：大地图扎营 V2 营地布局（2026-10-31）
 
 按用户确认的方案 v2 重做营地场景（俯视图 `.tmp/camp_plan/proposal.png`，代码移植图 `v2code_120.png`/`v2code_400.png`）：
