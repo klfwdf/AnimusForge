@@ -1565,7 +1565,9 @@ namespace AnimusForge.XihaiAction
                         deferred.Content,
                         deferred.AllowTts,
                         deferred.AttachTtsToSceneAgent,
-                        deferred.SuppressInteractionTimeoutArm
+                        deferred.SuppressInteractionTimeoutArm,
+                        null,
+                        null
                     });
                 if (result == null)
                 {
@@ -1653,7 +1655,9 @@ namespace AnimusForge.XihaiAction
                         content,
                         allowTts,
                         allowTts,
-                        true
+                        true,
+                        null,
+                        null
                     });
                 if (result == null)
                 {
@@ -1928,7 +1932,7 @@ namespace AnimusForge.XihaiAction
             ParameterInfo[] parameters = method?.GetParameters();
             return method != null &&
                    method.ReturnType == typeof(void) &&
-                   parameters.Length == 16 &&
+                   parameters.Length == 17 &&
                    parameters[0].ParameterType == npcType &&
                    parameters[1].ParameterType == typeof(string) &&
                    IsListOf(parameters[2].ParameterType, npcType) &&
@@ -1944,7 +1948,8 @@ namespace AnimusForge.XihaiAction
                    parameters[12].ParameterType == typeof(int) &&
                    parameters[13].ParameterType == typeof(Func<bool>) &&
                    parameters[14].ParameterType == typeof(string) &&
-                   parameters[15].ParameterType == typeof(string);
+                   parameters[15].ParameterType == typeof(string) &&
+                   IsTaskOfNamedType(parameters[16].ParameterType, "AnimusForge.LocalTtsSpeech");
         }
 
         private static bool IsExpectedShownReplyMethod(MethodInfo method, Type npcType)
@@ -1952,13 +1957,24 @@ namespace AnimusForge.XihaiAction
             ParameterInfo[] parameters = method?.GetParameters();
             return method != null &&
                    method.ReturnType != typeof(void) &&
-                   parameters.Length == 6 &&
+                   parameters.Length == 8 &&
                    parameters[0].ParameterType == npcType &&
                    parameters[1].ParameterType == typeof(Agent) &&
                    parameters[2].ParameterType == typeof(string) &&
                    parameters[3].ParameterType == typeof(bool) &&
                    parameters[4].ParameterType == typeof(bool) &&
-                   parameters[5].ParameterType == typeof(bool);
+                   parameters[5].ParameterType == typeof(bool) &&
+                   parameters[6].ParameterType.FullName == "AnimusForge.LocalTtsSpeech" &&
+                   IsTaskOfNamedType(parameters[7].ParameterType, "AnimusForge.LocalTtsSpeech");
+        }
+
+        // Trailing optional local-TTS parameters (AF b8164a72e); the bridge always passes null.
+        private static bool IsTaskOfNamedType(Type candidate, string elementFullName)
+        {
+            return candidate != null &&
+                   candidate.IsGenericType &&
+                   candidate.GetGenericTypeDefinition() == typeof(Task<>) &&
+                   candidate.GetGenericArguments()[0].FullName == elementFullName;
         }
 
         private static bool IsExpectedReplyPromptMethod(MethodInfo method)

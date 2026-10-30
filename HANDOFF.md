@@ -1,3 +1,9 @@
+# 未部署：SceneActions 桥接签名恢复（2026-10-31）
+
+`SceneActions.log` 自 10-29 起每次启动 `initialization failed closed: NPC queued-reply publication signature drifted`，自然动作/手势/战场喊话桥全部关闭。原因：AF `b8164a72e`（10-18）给 `EnqueueSpeechLineWithOptions`（16→17）和 `ShowNpcSpeechOutput`（6→8）追加了可选本地 TTS 参数，桥接 `AfCompatV130` 的 `IsExpectedQueuedReplyMethod`/`IsExpectedShownReplyMethod` 未同步；两处反射调用 `ShowNpcSpeechOutput` 同步补两个 null。StaticVerifier 的同名契约同步，`--bridge-only` 可用 `AF_SCENE_PROMPT_CORPUS` 指向 `SceneActionPromptTexts.xml` 以离线安装桥。验证：在 HEAD 干净 worktree 套用本次改动，Release 双API+Bootstrap、Coup 门禁、注册冒烟 PASS；新 1.3/1.4 DLL `--bridge-only` 各 4/4 PASS（含真实 Harmony 安装/卸载），已部署旧 DLL 同测仍报原错误。主工作区当前被他人未跟踪的 `scratch/decomp/ChangeKingdomAction.cs` 编译阻塞（未处理）。未部署、未实机。证据 `artifacts/fix-sceneactions-bridge-20261031/`。回滚：逆提交本条对应提交。
+
+---
+
 # 未编译未部署：场景对话不再把坐着的人拉起来罚站（2026-10-31）
 
 用户截图：接力/喊话时坐着的镇民被拉起站立。原因是注视保持（`AddAgentToStareList`、多人移动抑制）对每个参与者都 `SetScriptedPosition` 当前位置并限速0，坐着的人因此离开椅子；这是 10-08 以来的既有行为，本轮框选18人的接力把它放大。修复：正在使用物体（坐/靠/弹奏）的人只转视线，不设脚本位置、不限速；站着的人照旧原地定住。另查到 SceneActions 自 10-29 起每次启动 fail-closed（`EnqueueSpeechLineWithOptions` 签名漂移），与本问题无关，未处理。未编译、未实机。回滚：逆提交本条对应提交。
