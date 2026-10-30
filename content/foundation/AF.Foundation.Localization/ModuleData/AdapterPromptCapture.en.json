@@ -629,5 +629,7 @@
   "Project_SceneRole_Preacher": "preacher",
   "Project_SceneRole_GangLeader": "gang leader",
   "Project_SceneRole_RuralNotable": "rural notable",
-  "Project_SceneRole_Shipwright": "shipyard worker"
+  "Project_SceneRole_Shipwright": "shipyard worker",
+  "SceneHistory_AddressedToYou": "(to you) ",
+  "SceneHistory_AddressedToTarget": "(to {TARGET}) "
 }

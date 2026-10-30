@@ -3344,6 +3344,38 @@ Choose how to proceed:" />
   <string id="AF_UI_KingdomStability_FactionImmunity" text="Player-kingdom immunity prevents faction uprisings." />
   <string id="AF_MCM_Shout_MaxRelayTurns" text="Maximum scene-shout relay turns" />
   <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="Maximum total NPC speaking turns after one player shout, including the first reply. Repeated speakers count again. Set to 1 for only the first reply. Range: 1-8; default: 8. Changes apply to the next shout; characters may end the relay earlier." />
+  <string id="AF_MCM_Shout_RelayMutualGaze" text="Relay speakers face each other" />
+  <string id="AF_MCM_Shout_RelayMutualGaze_Hint" text="During a scene relay, the speaker looks at the person being answered and the other participants look at the speaker. Only the look direction changes. Default: on." />
+  <string id="AF_MCM_Shout_RelayPrefetch" text="Prepare the next relay speaker early" />
+  <string id="AF_MCM_Shout_RelayPrefetch_Hint" text="When a relay will continue and at most two characters may answer next, their memory is loaded while the current line is still being spoken. The line itself is still generated only when it is that character's turn. Shortens pauses but may load memory that is not used. Default: off." />
+  <string id="AF_MCM_Ambient_Enabled" text="Enable ambient scene interaction" />
+  <string id="AF_MCM_Ambient_Enabled_Hint" text="While you stay idle in a peaceful tavern, lord's hall, town or village scene, nearby named characters may talk to each other or come over to speak to you. Each line uses a model request. Default: off." />
+  <string id="AF_MCM_Ambient_IdleSeconds" text="Player idle time before ambient interaction (s)" />
+  <string id="AF_MCM_Ambient_IdleSeconds_Hint" text="You must not have shouted, talked or opened a menu for this long. Default: 20." />
+  <string id="AF_MCM_Ambient_Cooldown" text="Interval between ambient interactions (s)" />
+  <string id="AF_MCM_Ambient_Cooldown_Hint" text="Minimum time after one ambient interaction ends before another may start. Default: 120." />
+  <string id="AF_MCM_Ambient_PairCooldown" text="Same-pair cooldown (real minutes)" />
+  <string id="AF_MCM_Ambient_PairCooldown_Hint" text="The same two characters will not start another ambient chat with each other within this time. Default: 10." />
+  <string id="AF_MCM_Ambient_MaxPerScene" text="Maximum ambient interactions per scene" />
+  <string id="AF_MCM_Ambient_MaxPerScene_Hint" text="Counted from when you enter the scene. Default: 5." />
+  <string id="AF_MCM_Ambient_MaxLines" text="Maximum lines per ambient chat" />
+  <string id="AF_MCM_Ambient_MaxLines_Hint" text="Total spoken lines in one NPC-to-NPC chat before it ends. Default: 4." />
+  <string id="AF_MCM_Ambient_NpcWeight" text="Chance of NPC-to-NPC chat (%)" />
+  <string id="AF_MCM_Ambient_NpcWeight_Hint" text="Share of ambient interactions in which two NPCs talk to each other; the rest are an NPC coming over to talk to you. If one kind has no candidate, the other is tried. Default: 70." />
+  <string id="AF_MCM_Ambient_PlayerRadius" text="Ambient hearing radius (m)" />
+  <string id="AF_MCM_Ambient_PlayerRadius_Hint" text="Only characters within this distance of you take part, and you are recorded as having overheard the chat. Default: 15." />
+  <string id="AF_MCM_Ambient_AbortRadius" text="Ambient stop distance (m)" />
+  <string id="AF_MCM_Ambient_AbortRadius_Hint" text="An ambient interaction stops when you move farther away than this; lines not yet spoken are discarded. Default: 20." />
+  <string id="AF_MCM_Ambient_Voice" text="Voice ambient chat" />
+  <string id="AF_MCM_Ambient_Voice_Hint" text="When off, ambient lines show only as bubbles and messages even if speech synthesis is enabled. Default: on." />
+  <string id="AF_MCM_Ambient_TopicRelation" text="Ambient topic: the speakers' relationship" />
+  <string id="AF_MCM_Ambient_TopicRelation_Hint" text="Allow chats seeded by kinship, friendship or rivalry between the speakers. Default: on." />
+  <string id="AF_MCM_Ambient_TopicWorld" text="Ambient topic: wars and the realm" />
+  <string id="AF_MCM_Ambient_TopicWorld_Hint" text="Allow chats seeded by the speaker's kingdom and its current wars. Default: on." />
+  <string id="AF_MCM_Ambient_TopicPlace" text="Ambient topic: this settlement" />
+  <string id="AF_MCM_Ambient_TopicPlace_Hint" text="Allow chats seeded by the current settlement's owner and condition. Default: on." />
+  <string id="AF_MCM_Ambient_TopicPlayer" text="Ambient topic: the player" />
+  <string id="AF_MCM_Ambient_TopicPlayer_Hint" text="Allow chats in which the speakers talk about you. Default: on." />
   <string id="AF_UI_Editor_LengthStatus" text="Characters: {CURRENT} / {MAX}" />
   <string id="AF_UI_Editor_LengthLimit" text="Maximum: {MAX} characters." />
   <string id="AF_UI_Editor_InputTruncated" text="Some input was truncated at the limit; check the end of your text." />

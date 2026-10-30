@@ -629,5 +629,7 @@
   "Project_SceneRole_Preacher": "传教士",
   "Project_SceneRole_GangLeader": "帮派头目",
   "Project_SceneRole_RuralNotable": "乡绅",
-  "Project_SceneRole_Shipwright": "船坊工人"
+  "Project_SceneRole_Shipwright": "船坊工人",
+  "SceneHistory_AddressedToYou": "（对你）",
+  "SceneHistory_AddressedToTarget": "（对{TARGET}）"
 }

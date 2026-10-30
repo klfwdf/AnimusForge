@@ -3127,6 +3127,41 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return CanInitializePeaceSceneConflict(settlement);
 	}
 
+	// Shared read-only snapshot of the peace-scene facts. Ambient scene interaction
+	// reuses it with the same ScenePeaceConflictContextOwner allowlist.
+	internal static bool TryCaptureScenePeaceConflictFacts(Settlement settlement, out ScenePeaceConflictContext facts)
+	{
+		facts = default;
+		Mission mission = Mission.Current;
+		if (mission == null || settlement == null)
+		{
+			return false;
+		}
+		var encounter = PlayerEncounter.LocationEncounter;
+		var location = CampaignMission.Current?.Location;
+		if (encounter == null || location == null)
+		{
+			return false;
+		}
+		facts = new ScenePeaceConflictContext(
+			hasMission: true,
+			hasSettlement: true,
+			hasLocationEncounter: true,
+			hasCampaignLocation: true,
+			sameSettlement: encounter.Settlement == settlement,
+			hasBattle: PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null,
+			hasSiegeHandler: mission.GetMissionBehavior<CampaignSiegeStateHandler>() != null,
+			hasBattleTeamType: mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege
+				|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut
+				|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle,
+			hasBattleMode: mission.Mode == MissionMode.Deployment
+				|| mission.Mode == MissionMode.Stealth
+				|| mission.Mode == MissionMode.Duel,
+			settlementUnderSiege: settlement.IsUnderSiege,
+			locationId: location.StringId);
+		return true;
+	}
+
 	private static bool CanInitializePeaceSceneConflict(Settlement settlement, bool physicalAttack = false)
 	{
 		if (ExecutionSceneConflictBridge.IsSceneControlled(Mission.Current)) return false;
@@ -3137,33 +3172,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			Mission mission = Mission.Current;
-			if (mission == null || settlement == null)
+			if (!TryCaptureScenePeaceConflictFacts(settlement, out ScenePeaceConflictContext facts))
 			{
 				return false;
 			}
-			var encounter = PlayerEncounter.LocationEncounter;
-			var location = CampaignMission.Current?.Location;
-			if (encounter == null || location == null)
-			{
-				return false;
-			}
-			ScenePeaceConflictContext facts = new ScenePeaceConflictContext(
-				hasMission: true,
-				hasSettlement: true,
-				hasLocationEncounter: true,
-				hasCampaignLocation: true,
-				sameSettlement: encounter.Settlement == settlement,
-				hasBattle: PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null,
-				hasSiegeHandler: mission.GetMissionBehavior<CampaignSiegeStateHandler>() != null,
-				hasBattleTeamType: mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege
-					|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut
-					|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle,
-				hasBattleMode: mission.Mode == MissionMode.Deployment
-					|| mission.Mode == MissionMode.Stealth
-					|| mission.Mode == MissionMode.Duel,
-				settlementUnderSiege: settlement.IsUnderSiege,
-				locationId: location.StringId);
 			return physicalAttack
 				? ScenePeaceConflictContextOwner.CanInitializePhysical(physicalEnabled, in facts)
 				: ScenePeaceConflictContextOwner.CanInitialize(in facts);

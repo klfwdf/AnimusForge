@@ -436,6 +436,27 @@ internal sealed partial class SceneConversationSessionRuntime
 		return BuildSceneCompositeUserBlock("", relayTurnContext, continuation);
 	}
 
+	// Prefetch: while the relay choice is pending, start the cached persisted-memory build for
+	// at most two candidates. The next turn reuses the same cached task; nothing touches scene
+	// state, and the chosen speaker is still validated live before generation.
+	private void WarmRelayCandidateMemory(bool relayPending, List<NpcDataPacket> candidates, string playerText,
+		Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts)
+	{
+		if (!relayPending || precomputedContexts == null || candidates == null || candidates.Count == 0 || candidates.Count > 2
+			|| DuelSettings.LoadedForSceneRuntime()?.ShoutRelayPrefetch != true)
+		{
+			return;
+		}
+		for (int i = 0; i < candidates.Count; i++)
+		{
+			NpcDataPacket candidate = candidates[i];
+			if (candidate == null || candidate.AgentIndex < 0) continue;
+			Task<string> warm = _ports.StartPrecomputedPersistedHistoryContextTask(candidate.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn");
+			warm?.ContinueWith(t => Logger.Log("Logic", "[MemoryPerf] relay_prefetch_failed agent=" + candidate.AgentIndex + " error=" + t.Exception?.GetBaseException().Message),
+				TaskContinuationOptions.OnlyOnFaulted);
+		}
+	}
+
 	internal async Task HandleGroupResponsePerHeroIndependent(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
 	{
 		long sceneReplyGeneration = SaveRuntimeGuard.CaptureGeneration();
@@ -953,9 +974,12 @@ internal sealed partial class SceneConversationSessionRuntime
 						{
 							roundNpcSpeakerIndices.Add(currentSpeaker.AgentIndex);
 						}
+						// First turn answers the player; later turns answer the previous speaker.
+						int relayAddresseeAgentIndex = firstTurn ? -1 : (previousSpeaker?.AgentIndex ?? -1);
 						bool historyRecorded = await RecordSceneReplyHistoryOnMainThreadAsync(
 							currentSpeaker, allNpcData, speakingHero, npcCharacter, historyText,
-							sceneReplyGeneration, sceneReplySessionId, conversationEpoch, requireMemoryReceipt: receipt != null);
+							sceneReplyGeneration, sceneReplySessionId, conversationEpoch, requireMemoryReceipt: receipt != null,
+							addresseeAgentIndex: relayAddresseeAgentIndex, addresseeName: firstTurn ? null : previousSpeaker?.Name);
 						if (!IsCurrentModuleGroup()) return;
 						if (!historyRecorded)
 						{
@@ -1045,6 +1069,14 @@ internal sealed partial class SceneConversationSessionRuntime
 					var speechCompletion = receipt == null ? null : new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 					var localSpeechCompletion = flag11 && speechLanguage != null
                         ? new TaskCompletionSource<LocalTtsSpeech>(TaskCreationOptions.RunContinuationsAsynchronously) : null;
+					int gazeAddresseeAgentIndex = firstTurn ? -1 : (previousSpeaker?.AgentIndex ?? -1);
+					await _dispatcher.RunAsync("scene_relay_addressee", currentSpeaker.Name, currentSpeaker.AgentIndex, () =>
+					{
+						if (!IsSceneConversationEpochCurrent(conversationEpoch)) return false;
+						_ports.RegisterRelaySpeechAddressee?.Invoke(currentSpeaker.AgentIndex, gazeAddresseeAgentIndex);
+						return true;
+					}, false);
+					if (!IsCurrentModuleGroup()) return;
                     bool speechQueued = await QueueSceneMainReplyOnMainThreadAsync(
 						currentSpeaker, allNpcData, speakingHero, npcCharacter, cleaned,
 						sceneReplyGeneration, sceneReplySessionId, conversationEpoch,
@@ -1065,6 +1097,7 @@ internal sealed partial class SceneConversationSessionRuntime
 						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId, relayConversationContext: relayConversationContext, localSpeechCompletion: localSpeechCompletion, speechLanguage: speechLanguage);
 						ObserveSceneRewritePostprocess(conversationEpoch, postprocessTask);
 						receipt?.AddPostprocess(postprocessTask);
+						WarmRelayCandidateMemory(relayPostprocessSelected, relayCandidatesForNextTurn, playerText, resolvedHeroes, receipt == null ? precomputedContexts : null);
 						if (relayPostprocessSelected)
 						{
 							// Release the processing flag while keeping the input gate: queued speech

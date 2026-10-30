@@ -16,7 +16,7 @@ public partial class ShoutBehavior
  {
   SanitizeUiText = SanitizeSceneSpeechText, SanitizeTtsText = SanitizeSceneSpeechTextForTts,
   BuildPatienceBadge = BuildPatienceBadgeForNpc, NpcDisplayName = GetSceneNpcHistoryNameForPrompt,
-  IsHostile = IsAgentHostileToMainAgent, IsTtsEnabled = IsTtsPlaybackEnabledForShout, CanLipSync = CanAgentUseSceneLipSync,
+  IsHostile = IsAgentHostileToMainAgent, IsTtsEnabled = IsTtsPlaybackEnabledForSceneSpeech, CanLipSync = CanAgentUseSceneLipSync,
   IsLocalProvider = () => DuelSettings.GetSettings()?.TtsUseGptSoVits == true,
   PrimaryTtsAllowed = agent => GptSoVitsVoiceRuntime.IsPrimarySceneSpeaker(Mission.Current, agent, agent?.Index ?? -1, _sceneConversationEpoch),
   ResolveHero = ResolveHeroFromAgentIndex, ExternalHeroVoice = MyBehavior.GetNpcVoiceIdForExternal,
@@ -24,8 +24,8 @@ public partial class ShoutBehavior
   RemoveHostileInteraction = RemoveHostileSpeechInteraction, CaptureInteractionToken = CaptureSpeechInteractionToken,
   Report = LogTtsReport, ClearPendingBubble = ClearPendingTtsBubbleSyncForAgent,
   ClearPendingFeed = ClearPendingSceneDialogueFeedForAgent, EnqueueCompletionToken = EnqueuePendingSpeechCompletionToken,
-  EnqueueBubble = EnqueuePendingNpcBubble, ScheduleFeed = ScheduleNpcSpeechToMessageFeed,
-  PublishFeedImmediately = (index, name, text, info) => _j17SceneSpeechOutputQueueController.PublishNpcSpeechToMessageFeedImmediately(index, name, text, info),
+  EnqueueBubble = EnqueuePendingNpcBubble, ScheduleFeed = ScheduleSceneSpeechFeed,
+  PublishFeedImmediately = (index, name, text, info) => _j17SceneSpeechOutputQueueController.PublishNpcSpeechToMessageFeedImmediately(index, AmbientFeedLabel(index, name), text, info),
   ShowBubble = TryShowNpcBubble, ArmInteractionTimeout = ScheduleInteractionTimeoutArm,
  };
 private void RemoveHostileSpeechInteraction(int agentIndex) => _j17SceneInteractionLifecycleController.RemoveHostileSpeechInteraction(agentIndex);

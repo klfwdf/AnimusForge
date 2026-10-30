@@ -352,6 +352,17 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				}
 				try
 				{
+					using (FreezeWatchdog.Scope("ShoutMissionBehavior.TickAmbientSceneInteraction"))
+					{
+						_parent.TickAmbientSceneInteraction();
+					}
+				}
+				catch (Exception ambientEx)
+				{
+					BannerlordExceptionSentinel.ReportObservedException("Ambient.TickAmbientSceneInteraction", ambientEx, "behavior=ShoutMissionBehavior");
+				}
+				try
+				{
 					using (FreezeWatchdog.Scope("ShoutMissionBehavior.ProcessDeferredCleanup"))
 					{
 						_parent.ProcessDeferredCleanup();
@@ -4805,6 +4816,9 @@ private long _sceneShoutProcessingSequence { get => _j17SceneShoutInputControlle
 			DeactivateMultiSceneMovementSuppression();
 			ClearPendingSceneConversationAttentionRelease();
 			ResetStaringBehavior();
+			ClearRelaySpeechPresentation();
+			EndAmbientSession("mission_end", applyCooldown: false, releaseAgents: false);
+			_ambientMission = null;
 			_activeInteractionSessions.Clear();
 			_pendingInteractionTimeoutArms.Clear();
 			ClearPendingNativeSceneMechanismActions("reset_runtime:" + (reason ?? ""));

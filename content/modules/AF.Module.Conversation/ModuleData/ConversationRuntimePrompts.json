@@ -362,5 +362,19 @@
   "AF_FC_Fact_Refuse": "玩家在营中驳回了“{ISSUE}”，士气{MORALE}。",
   "AF_FC_Fact_Discipline": "玩家在营中就“{ISSUE}”整肃军纪{DISMISSED}，士气{MORALE}。",
   "AF_FC_Fact_Cost": "，花费{GOLD}第纳尔",
-  "AF_FC_Fact_Dismissed": "，开除了{COUNT}名闹事者"
+  "AF_FC_Fact_Dismissed": "，开除了{COUNT}名闹事者",
+  "AF_CONV_Ambient_OpenNpc": "【场景闲聊】玩家没有对你说话。你此刻主动开口，对{TARGET}说一句话，开启一段自然的闲聊。话题：{TOPIC}。只以{SELF}的身份说话，只对{TARGET}说，不要对玩家说话，也不要代替任何人说话。",
+  "AF_CONV_Ambient_ReplyNpc": "【场景闲聊】玩家没有插话。{PREV}刚才对你说：{LINE}。请只以{SELF}的身份回应{PREV}，可以认同、反驳或追问，不要对玩家说话，也不要代替任何人说话。",
+  "AF_CONV_Ambient_OpenPlayer": "【主动搭话】你注意到玩家就在身边，于是走上前主动和玩家说一句话。话题：{TOPIC}。只以{SELF}的身份说话，不要代替玩家回答。",
+  "AF_CONV_Ambient_NoActions": "这是闲聊：不要承诺或执行交易、赠与、入队、决斗、领地、外交等任何机制行为。",
+  "AF_CONV_Ambient_Topic_Kin": "你们是亲属，可以聊家里的近况",
+  "AF_CONV_Ambient_Topic_Friend": "你们交情不错，可以叙叙旧或分享见闻",
+  "AF_CONV_Ambient_Topic_Rival": "你们之间素有嫌隙，可以话中带刺",
+  "AF_CONV_Ambient_Topic_SameFaction": "你们同属{FACTION}，可以聊聊效忠之事与王国近况",
+  "AF_CONV_Ambient_Topic_War": "{FACTION}正与{ENEMIES}交战，可以聊聊战事",
+  "AF_CONV_Ambient_Topic_Place": "你们正在{PLACE}，此地归{OWNER}所有，可以聊聊此地的状况",
+  "AF_CONV_Ambient_Topic_Player": "不远处的{PLAYER}，可以议论一下他的名声与作为（只说你确实知道的事）",
+  "AF_CONV_Ambient_Topic_Open": "眼下的所见所闻",
+  "AF_CONV_Ambient_SummaryNpc": "在{PLACE}与{OTHERS}闲聊：{LINE}",
+  "AF_CONV_Ambient_SummaryOverheard": "在{PLACE}与{OTHERS}闲聊时，{PLAYER}就在旁边听着。"
 }

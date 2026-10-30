@@ -3376,6 +3376,38 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomStability_FactionImmunity" text="玩家王国叛乱免疫会阻止派系起兵。" />
   <string id="AF_MCM_Shout_MaxRelayTurns" text="场景喊话最大接力轮数" />
   <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="玩家一次喊话后 NPC 最多发言的总次数，包含首次回复，同一人物再次发言也计一次。设为 1 时仅首次回复，不继续接力。范围 1–8，默认 8；下一次喊话生效，人物仍可提前结束接力。" />
+  <string id="AF_MCM_Shout_RelayMutualGaze" text="接力时发言者互相注视" />
+  <string id="AF_MCM_Shout_RelayMutualGaze_Hint" text="场景接力中，发言者看向被回应的人，其他参与者看向发言者。只改变视线方向。默认开启。" />
+  <string id="AF_MCM_Shout_RelayPrefetch" text="提前准备下一位接力者" />
+  <string id="AF_MCM_Shout_RelayPrefetch_Hint" text="接力还会继续、且下一位可能接话的人不超过两个时，在当前这句还在播放时就预先读取他们的记忆；台词本身仍在轮到对方时才生成。可缩短停顿，但可能读取了用不上的记忆。默认关闭。" />
+  <string id="AF_MCM_Ambient_Enabled" text="启用场景自主互动" />
+  <string id="AF_MCM_Ambient_Enabled_Hint" text="你在和平的酒馆、领主大厅、城镇或村庄场景中空闲时，附近有名有姓的人物可能彼此交谈，或走过来和你说话。每句台词都会调用一次模型。默认关闭。" />
+  <string id="AF_MCM_Ambient_IdleSeconds" text="触发自主互动前的玩家空闲时间（秒）" />
+  <string id="AF_MCM_Ambient_IdleSeconds_Hint" text="在这段时间内你没有喊话、对话或打开菜单。默认 20。" />
+  <string id="AF_MCM_Ambient_Cooldown" text="两次自主互动的间隔（秒）" />
+  <string id="AF_MCM_Ambient_Cooldown_Hint" text="一次自主互动结束后，至少间隔这么久才会开始下一次。默认 120。" />
+  <string id="AF_MCM_Ambient_PairCooldown" text="同一对人物冷却（现实分钟）" />
+  <string id="AF_MCM_Ambient_PairCooldown_Hint" text="同样两个人物在这段时间内不会再次自主闲聊。默认 10。" />
+  <string id="AF_MCM_Ambient_MaxPerScene" text="每个场景最多自主互动次数" />
+  <string id="AF_MCM_Ambient_MaxPerScene_Hint" text="从进入场景起计算。默认 5。" />
+  <string id="AF_MCM_Ambient_MaxLines" text="每次闲聊最多台词数" />
+  <string id="AF_MCM_Ambient_MaxLines_Hint" text="一次 NPC 之间的闲聊在说满这么多句后结束。默认 4。" />
+  <string id="AF_MCM_Ambient_NpcWeight" text="NPC 彼此闲聊的概率（%）" />
+  <string id="AF_MCM_Ambient_NpcWeight_Hint" text="自主互动中由两个 NPC 彼此交谈的比例，其余为 NPC 主动来找你说话；某一类找不到人选时改试另一类。默认 70。" />
+  <string id="AF_MCM_Ambient_PlayerRadius" text="自主互动听觉范围（米）" />
+  <string id="AF_MCM_Ambient_PlayerRadius_Hint" text="只有离你这么近的人物会参与，并会记录你旁听了这次闲聊。默认 15。" />
+  <string id="AF_MCM_Ambient_AbortRadius" text="自主互动中止距离（米）" />
+  <string id="AF_MCM_Ambient_AbortRadius_Hint" text="你离开超过这个距离时，自主互动停止，尚未说出的台词会被丢弃。默认 20。" />
+  <string id="AF_MCM_Ambient_Voice" text="自主闲聊语音" />
+  <string id="AF_MCM_Ambient_Voice_Hint" text="关闭后，即使启用了语音合成，自主互动的台词也只显示气泡和消息。默认开启。" />
+  <string id="AF_MCM_Ambient_TopicRelation" text="闲聊话题：两人之间的关系" />
+  <string id="AF_MCM_Ambient_TopicRelation_Hint" text="允许以亲属、友谊或嫌隙作为闲聊话题。默认开启。" />
+  <string id="AF_MCM_Ambient_TopicWorld" text="闲聊话题：战争与王国" />
+  <string id="AF_MCM_Ambient_TopicWorld_Hint" text="允许以发言者所属王国及其当前战事作为闲聊话题。默认开启。" />
+  <string id="AF_MCM_Ambient_TopicPlace" text="闲聊话题：当前定居点" />
+  <string id="AF_MCM_Ambient_TopicPlace_Hint" text="允许以当前定居点的领主与状况作为闲聊话题。默认开启。" />
+  <string id="AF_MCM_Ambient_TopicPlayer" text="闲聊话题：玩家" />
+  <string id="AF_MCM_Ambient_TopicPlayer_Hint" text="允许人物在闲聊中谈论你。默认开启。" />
   <string id="AF_UI_Editor_LengthStatus" text="字符：{CURRENT} / {MAX}" />
   <string id="AF_UI_Editor_LengthLimit" text="最多可输入 {MAX} 个字符。" />
   <string id="AF_UI_Editor_InputTruncated" text="部分输入已因长度上限截断，请检查文本末尾。" />

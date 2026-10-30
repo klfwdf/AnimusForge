@@ -64,7 +64,9 @@ internal static class TerminalSettingsCoverage
             property == "DisableProsperityFoodConsumption") return TerminalCategories.Diplomacy;
         if (property == "SetsOtherSettlementFollowerLimit" || property.StartsWith("FieldCamp", StringComparison.Ordinal)) return TerminalCategories.Duel;
         if (group.IndexOf("SAX_MCM_Group", StringComparison.Ordinal) >= 0 ||
-            property == "AutoExcludeUnframedShoutParticipants" || property == "ShoutMaxRelayTurns") return TerminalCategories.Scene;
+            property == "AutoExcludeUnframedShoutParticipants" || property == "ShoutMaxRelayTurns"
+            || property == "ShoutRelayMutualGaze" || property == "ShoutRelayPrefetch"
+            || property.StartsWith("AmbientScene", StringComparison.Ordinal)) return TerminalCategories.Scene;
         return fallback;
     }
 

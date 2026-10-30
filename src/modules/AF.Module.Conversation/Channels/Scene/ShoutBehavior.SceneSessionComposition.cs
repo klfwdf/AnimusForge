@@ -82,14 +82,16 @@ public partial class ShoutBehavior
         RetireRelayInteractionWaits = _j17SceneInteractionLifecycleController.RetireRelayInteractionWaits,
         NotePresentationRoundGroup = NotePresentationRoundGroup,
         PersistExtraFactToNamedHeroes = PersistExtraFactToNamedHeroes,
-        PersistNpcSpeechToNamedHeroes = PersistNpcSpeechToNamedHeroes,
+        PersistNpcSpeechToNamedHeroes = (speaker, name, text, audience, receipt, target, targetName) => SceneHistoryPromptCapture.PersistNpcSpeechToNamedHeroes(speaker, name, text, audience, receipt, target, targetName),
         PrepareAutoGroupParticipantsForIdleTimeout = PrepareAutoGroupParticipantsForIdleTimeout,
+        RegisterRelaySpeechAddressee = RegisterRelaySpeechAddressee,
+        ClearRelaySpeechPresentation = ClearRelaySpeechPresentation,
         PromotePersonalizedExtraFactInScenePrivateHistory = PromotePersonalizedExtraFactInScenePrivateHistory,
         QueueSceneInfoMessage = QueueSceneInfoMessage,
         RecordExtraFactToSceneHistory = RecordExtraFactToSceneHistory,
         RecordPlayerMessage = RecordPlayerMessage,
         RecordPlayerSpeechToMessageFeed = RecordPlayerSpeechToMessageFeed,
-        RecordResponseForAllNearbySafe = RecordResponseForAllNearbySafe,
+        RecordResponseForAllNearbySafe = (audience, speaker, name, text, receipt, target, targetName) => SceneHistoryPromptCapture.RecordResponseForAllNearbySafeCaptured(audience, speaker, name, text, receipt, target, targetName),
         ReleaseSceneConversationConstraints = ReleaseSceneConversationConstraints,
         RemoveSceneMovementSuppressionAgents = RemoveSceneMovementSuppressionAgents,
         ResetStaringBehavior = ResetStaringBehavior,
@@ -213,7 +215,7 @@ private Task<DetachedInteractionHostResult> GenerateSceneShoutMainReplyAsync(
 private Task<bool> RecordSceneReplyHistoryOnMainThreadAsync(
 		NpcDataPacket speaker, List<NpcDataPacket> audience,
 		Hero expectedHero, CharacterObject expectedCharacter, string historyText,
-		long generation, int sceneSessionId, int conversationEpoch, bool requireMemoryReceipt = false) => _sceneConversation.RecordSceneReplyHistoryOnMainThreadAsync(speaker, audience, expectedHero, expectedCharacter, historyText, generation, sceneSessionId, conversationEpoch, requireMemoryReceipt);
+		long generation, int sceneSessionId, int conversationEpoch, bool requireMemoryReceipt = false, int addresseeAgentIndex = -1, string addresseeName = null) => _sceneConversation.RecordSceneReplyHistoryOnMainThreadAsync(speaker, audience, expectedHero, expectedCharacter, historyText, generation, sceneSessionId, conversationEpoch, requireMemoryReceipt, addresseeAgentIndex, addresseeName);
 private Task<bool> QueueSceneMainReplyOnMainThreadAsync(
 		NpcDataPacket speaker, List<NpcDataPacket> audience,
 		Hero expectedHero, CharacterObject expectedCharacter, string replyText,

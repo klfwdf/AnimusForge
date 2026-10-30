@@ -42,6 +42,7 @@ internal sealed class SceneConversationSessionPorts
     internal void DeactivateMultiSceneMovementSuppression(){}
     internal void ClearPendingSceneConversationAttentionRelease(){}
     internal void ResetStaringBehavior(){}
+    internal Action ClearRelaySpeechPresentation;
     internal void ClearQueuedSceneSpeech(){}
     internal void StopAllLipSyncPlaybackAndCleanup(bool preserveVisibleBubbles){PreserveVisibleBubbles=preserveVisibleBubbles;}
 }

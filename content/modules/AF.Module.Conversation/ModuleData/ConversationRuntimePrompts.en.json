@@ -362,5 +362,19 @@
   "AF_FC_Fact_Refuse": "In camp the player refused \"{ISSUE}\"; morale {MORALE}.",
   "AF_FC_Fact_Discipline": "In camp the player enforced discipline over \"{ISSUE}\"{DISMISSED}; morale {MORALE}.",
   "AF_FC_Fact_Cost": ", spending {GOLD} denars",
-  "AF_FC_Fact_Dismissed": ", discharging {COUNT} troublemakers"
+  "AF_FC_Fact_Dismissed": ", discharging {COUNT} troublemakers",
+  "AF_CONV_Ambient_OpenNpc": "[Scene chat] The player has not spoken to you. You now speak first and say one line to {TARGET} to start a natural chat. Topic: {TOPIC}. Speak only as {SELF} and only to {TARGET}; do not address the player and do not speak for anyone else.",
+  "AF_CONV_Ambient_ReplyNpc": "[Scene chat] The player has not joined in. {PREV} just said to you: {LINE}. Reply to {PREV} only as {SELF}; you may agree, disagree or ask a question. Do not address the player and do not speak for anyone else.",
+  "AF_CONV_Ambient_OpenPlayer": "[Approach] You notice the player close by, step over and say one line to the player on your own initiative. Topic: {TOPIC}. Speak only as {SELF} and do not answer for the player.",
+  "AF_CONV_Ambient_NoActions": "This is small talk: do not promise or carry out any trade, gift, recruitment, duel, fief, diplomacy or other game action.",
+  "AF_CONV_Ambient_Topic_Kin": "you are kin and can talk about family news",
+  "AF_CONV_Ambient_Topic_Friend": "you are on good terms and can catch up or share news",
+  "AF_CONV_Ambient_Topic_Rival": "there is bad blood between you, so the words may have an edge",
+  "AF_CONV_Ambient_Topic_SameFaction": "you both serve {FACTION} and can talk about loyalty and the realm",
+  "AF_CONV_Ambient_Topic_War": "{FACTION} is at war with {ENEMIES}; you can talk about the fighting",
+  "AF_CONV_Ambient_Topic_Place": "you are in {PLACE}, held by {OWNER}; you can talk about how things stand here",
+  "AF_CONV_Ambient_Topic_Player": "{PLAYER}, who is close by; you may discuss their reputation and deeds (only what you actually know)",
+  "AF_CONV_Ambient_Topic_Open": "what you see and hear around you",
+  "AF_CONV_Ambient_SummaryNpc": "Chatted with {OTHERS} in {PLACE}: {LINE}",
+  "AF_CONV_Ambient_SummaryOverheard": "While chatting with {OTHERS} in {PLACE}, {PLAYER} was close by and listening."
 }

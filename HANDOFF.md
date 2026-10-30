@@ -1,3 +1,15 @@
+# 未编译未部署：场景接力说话对象/互相注视 + 场景自主闲聊（2026-10-30）
+
+两期按 grill-me 共识一起实现，未编译、未跑测试、未实机。
+- 第一期（接力细化）：接力历史写入说话对象（首轮=玩家，之后=上一位发言者），旁听者记忆显示“（对你）/（对某人）”，Prompt 残留历史按对象选 `residual_heard_speech_to_you`/`residual_heard_target_speech`；发言时说话者看对象、其他参与者看说话者（只改 SetLookAgent，会面场景不动）；可选预取只预热下一位（≤2人）记忆，台词仍轮到时生成。MCM：互相注视默认开、预取默认关。
+- 第二期（自主闲聊，总开关默认关）：玩家空闲且在和平定居点（复用嘲讽冲突白名单，排除处决/监狱/港口/小巷），每5秒探测一次；70% NPC↔NPC（最多4句、仅文本、无后处理/动作）、30% Hero 主动走近玩家开场；全局/同对/每场景上限、玩家插话按 epoch 打断、离开20m或战斗即停；每人一条本地摘要（玩家在场追加“旁听”），不写 AFEF；消息栏“（闲聊）”标签，语音开关。设置同时进入终端 Scene 分类。
+- 新文件：`ShoutBehavior.SceneAmbient.cs`、`ShoutBehavior.SceneAmbientChat.cs`、`ShoutBehavior.SceneRelayPresentation.cs`、`DuelSettings.SceneAmbient.cs`；CN/EN 文案在 ConversationRuntimePrompts、AdapterPromptCapture、PromptComposerTexts、afconv_ui_strings、af_ui_strings。
+- 已验证：JSON/XML 可解析、CN/EN 键对齐；只读审查修正了 `SceneTauntMissionBehavior.TryCaptureScenePeaceConflictFacts` 调用（此前他人构建日志中的 SceneAmbient CS0117 即此处）并补处决场景排除、预取说明改为与实现一致。
+- 未验证：1.3/1.4/Bootstrap 编译；ChannelCutoverBoundary、SceneImmediateLifecycle、SceneSpeechEffectsRuntime 的源码逐字/哈希审查在 HEAD 上已失败，本轮又加偏差，未重建投影；实机注视、走近、闲聊与 provider 输出均未看。
+- 回滚：逆提交本条对应的单个本地提交。
+
+---
+
 # 未部署：可编辑人设示例与扩展人设开关（2026-10-30）
 
 示例/篇幅与分段要求移入CN/EN可编辑默认；新增“提示词扩展 → 扩展人设”总开关（默认开），终端/MCM共用原owner。关闭时只生成/注入正文，暂停演变并保留已有扩展数据及丢弃在途扩展更新；重新开启恢复使用。源码 `8a56f0f81` / `d7f0c3e65`。中文645、英文231、演变70项通过；隔离候选双API/Bootstrap与原门禁通过，实际MCM/终端1.3 PASS1155、1.4 PASS1211。当前dirty工作区仍被已有SceneAmbient缺失方法阻塞；设置测试只投影223个非世界书实际资产，避开无关缺失世界书，未降低行为断言。未部署/实机/provider。详见[唯一台账与代码范围图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-editable-example-20261030)，证据 `artifacts/persona-editable-example-20261030/`；仅逆提交本次两个产品提交。

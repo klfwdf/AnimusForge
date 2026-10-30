@@ -940,6 +940,8 @@ internal void Publish(SceneSpeechQueueItem item)
 
 									_ports.AddAgentToStareList(agent, interruptCurrentUse: false);
 
+									_ports.ApplyRelaySpeechGaze?.Invoke(agent, allNpcData);
+
 								}
 
 								if (commitHistory && !string.IsNullOrWhiteSpace(fullHistoryText))

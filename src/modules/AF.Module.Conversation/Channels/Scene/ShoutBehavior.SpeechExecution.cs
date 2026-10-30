@@ -131,6 +131,7 @@ private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, Lis
         TryConsumeSceneNpcSurrenderTag = TryConsumeSceneNpcSurrenderTag,
         TryTriggerOpenLordsHallAction = TryTriggerOpenLordsHallAction,
         GetDuelLiteralHit = () => _lastShoutDuelLiteralHit,
+        ApplyRelaySpeechGaze = ApplyRelaySpeechGazeForSpeaker,
     }, _sceneMovement);
     private SceneSpeechCompletionController _sceneSpeechCompletionController;
     private SceneSpeechCompletionController _sceneSpeechCompletion => _sceneSpeechCompletionController ??= new SceneSpeechCompletionController(new SceneSpeechCompletionPorts
