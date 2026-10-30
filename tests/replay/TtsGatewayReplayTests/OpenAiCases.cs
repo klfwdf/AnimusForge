@@ -48,6 +48,30 @@ internal static class OpenAiCases
             Assert(!handler.Body.Contains("fixture-openai-secret") && !handler.Body.Contains("appid") && !handler.Body.Contains("resource"), "Credential/provider boundary");
             Assert(handler.Content.Disposed, "Success response disposed");
         }
+        foreach (bool streaming in new[] { false, true })
+        foreach (string text in new[] { "你好❤️朋友，继续说完。", "Hello 👩🏽‍🚀 friend, keep speaking!", "**Welcome back!**", "你好𠀀，café！" })
+        {
+            using var handler = new Handler(Wave());
+            using var client = new HttpClient(handler);
+            if (streaming)
+            {
+                object gateway = Activator.CreateInstance(gatewayType, client);
+                var task = (Task)gatewayType.GetMethod("StreamAsync").Invoke(gateway, new object[] {
+                    Request(text:text), "fixture-openai-secret", new Action<byte[], int, long?>((_,_,_) => {}), CancellationToken.None });
+                await task;
+                object result = task.GetType().GetProperty("Result").GetValue(task);
+                Assert((bool)result.GetType().GetProperty("Success").GetValue(result), "Symbol-safe streaming synthesis");
+            }
+            else Assert((await Send(client, Request(text:text))).Ok, "Symbol-safe buffered synthesis");
+            using var body = JsonDocument.Parse(handler.Body);
+            string speech = body.RootElement.GetProperty("input").GetString();
+            Assert(handler.Calls == 1 && !speech.Contains("❤") && !speech.Contains("👩") && !speech.Contains("🏽") &&
+                !speech.Contains("🚀") && !speech.Contains("\u200D") && !speech.Contains("\uFE0F") && !speech.Contains("*"), "Symbols removed in actual outgoing JSON, no retry");
+            Assert(text == "**Welcome back!**" ? speech == "Welcome back!" :
+                text.StartsWith("你好❤️") ? speech.StartsWith("你好") && speech.EndsWith("朋友，继续说完。") :
+                text.StartsWith("Hello") ? speech.StartsWith("Hello") && speech.EndsWith("friend, keep speaking!") : speech == text,
+                "Speech after symbols and supplementary Unicode letters survive");
+        }
         foreach (int status in new[] { 401, 403, 429, 504, 302 })
         {
             using var handler = new Handler(Encoding.UTF8.GetBytes("error"), status);
@@ -84,7 +108,8 @@ internal static class OpenAiCases
                 (Request(url:"file:///tmp/speech"), "tts_openai_endpoint_invalid"),
                 (Request(speed:float.NaN), "tts_openai_speed_invalid"),
                 (Request(timeout:5), "tts_openai_timeout_invalid"),
-                (Request(text:new string('a',4097)), "tts_openai_text_invalid") })
+                (Request(text:new string('a',4097)), "tts_openai_text_invalid"),
+                (Request(text:"❤️👩🏽‍🚀**"), "tts_openai_text_invalid") })
                 Assert((await Send(client, item.Item1)).Error == item.Item2, "Input validation " + item.Item2);
             Assert((await Send(client, Request(), key:"")).Error == "tts_openai_configuration_incomplete" && handler.Calls == 0, "Invalid input sends no request");
         }
@@ -112,6 +137,11 @@ internal static class OpenAiCases
         using (var client = new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan })
             Assert((await Send(client, Request(timeout:10))).Error == "tts_openai_timeout" && handler.Content.Disposed, "Body stall shares the total deadline");
 
+        if (Environment.GetEnvironmentVariable("AF_TTS_GATEWAY_ONLY") == "1")
+        {
+            Console.WriteLine("PASS OpenAI-compatible production gateway checks=" + _checks);
+            return;
+        }
         const BindingFlags hidden = BindingFlags.Instance | BindingFlags.NonPublic;
         Type settingsType = assembly.GetType("AnimusForge.DuelSettings", true);
 #pragma warning disable SYSLIB0050

@@ -18,8 +18,25 @@ internal static class Program
         SpeakerHeroId = speaker == 7 ? "ada" : "other", SpeakerName = speaker == 7 ? "Ada" : "Borin",
         TargetAgentIndex = 7, GameDate = "Autumn 11", GameHour = 9, Scene = "square"
     };
+    static void TtsCases()
+    {
+        Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(null)=="","TTS null empty");
+        foreach (var spoken in new[]{"你好，欢迎回来！", "Hello, welcome back!"})
+        {
+            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**"+spoken+"**")==spoken,"TTS keeps fully bold reply");
+            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("Before **"+spoken+"** After")=="Before "+spoken+" After","TTS keeps speech around bold");
+            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**"+spoken)==spoken,"TTS keeps unfinished bold reply");
+            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("*waves* **"+spoken+"** (thinks)")==spoken,"TTS still strips single-star and parenthesized narration");
+            foreach (var options in new[]{new ConversationSpeechTextOptions(false,false),new ConversationSpeechTextOptions(false,true),new ConversationSpeechTextOptions(true,false)})
+                Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(ConversationSpeechTextRules.SanitizeSceneSpeechText("**"+spoken+"**",options))==spoken,"UI to TTS keeps bold speech for each presentation mode");
+        }
+        Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**First**\n**Second**")=="First\nSecond","TTS multiple bold paragraphs");
+        Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**")=="","TTS markers alone stay empty");
+    }
     static void Main()
     {
+        TtsCases();
+        if (Environment.GetCommandLineArgs().Contains("--tts-only")) return;
         var context = new SceneHistoryMessageContext { ViewerAgentIndex = 7, ViewerHeroId = "ada", PlayerName = "Player", GameDate = "today", GameHour = 10, Scene = "town", UseDistanceLabels = false };
         var fact = Message(1, "system", "[AFEF NPC行为补充] delivered");
         var self = Message(3, "assistant", "Ada: hello");
