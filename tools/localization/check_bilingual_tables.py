@@ -28,8 +28,15 @@ def flatten(value, prefix=''):
         yield prefix[:-1], value
 
 
+# Canonical ASCII AFEF envelopes are equivalent to the legacy Chinese ones (history parsers accept both).
+AFEF_EQUIVALENT = {
+    '[AFEF NPC行为补充]': '[AFEF NPC_ACTION]',
+    '[AFEF玩家行为补充]': '[AFEF PLAYER_ACTION]',
+}
+
+
 def tokens(pattern, text):
-    return sorted(set(pattern.findall(text)))
+    return sorted(set(AFEF_EQUIVALENT.get(t, t) for t in pattern.findall(text)))
 
 
 def main(argv):
