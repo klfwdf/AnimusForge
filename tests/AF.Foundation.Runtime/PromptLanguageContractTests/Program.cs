@@ -84,6 +84,23 @@ internal static class Program
                 && HasHan(SceneActionPromptPackage.NativeConversationActionInstruction), "scene package returns the Chinese corpus");
             Check(!HasHan(sceneEnglish), "scene package English corpus has no Chinese");
 
+            // BilingualTextTable: Get follows the language, "=" keeps the source, matching accepts both.
+            PromptLanguage.Install(() => language, id => id == "简体中文");
+            language = "English";
+            Check(KnowledgeSourceTexts.Get("KN_Raw_007") == "the player", "table Get returns English under an English game");
+            Check(KnowledgeSourceTexts.Get("KN_Raw_000") == "的", "an English '=' entry keeps the Chinese source identity");
+            string[] playerWords = KnowledgeSourceTexts.Variants("KN_Raw_007");
+            Check(playerWords.Length == 2 && playerWords[0] == "玩家" && playerWords[1] == "the player", "Variants lists Chinese then English");
+            Check(KnowledgeSourceTexts.Variants("KN_Raw_000").Length == 1, "Variants collapses identical editions");
+            language = "简体中文";
+            Check(KnowledgeSourceTexts.Get("KN_Raw_007") == "玩家", "table Get returns Chinese under a Chinese game");
+            var table = BilingualTextTable.FromLoaders(
+                () => new System.Collections.Generic.Dictionary<string, string> { ["A"] = "甲", ["B"] = "乙" },
+                () => new System.Collections.Generic.Dictionary<string, string> { ["A"] = "Alpha" });
+            language = "English";
+            Check(table.Get("B") == "乙", "a missing English entry keeps the Chinese source");
+            Check(table.Is("甲", "A") && table.Is("Alpha", "A") && !table.Is("Beta", "A"), "Is matches either language only");
+
             Console.WriteLine("PromptLanguage contract checks=" + _checks);
             return 0;
         }

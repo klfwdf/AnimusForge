@@ -680,4 +680,11 @@
   <Target Name="CopyModuleXmlsToBannerlordModule" AfterTargets="Build" Condition="'$(CopyLegacyAnimusForgeModuleData)' == 'true'">
     <Error Text="Direct MSBuild deployment is disabled. Use the repository single-module deploy script so Bootstrap and both version implementations stay synchronized." />
   </Target>
+  <ItemGroup>
+    <!-- English editions of runtime text tables (BilingualTextTable). -->
+    <EmbeddedResource Include="content\modules\AF.Module.Knowledge\ModuleData\KnowledgeSourceTexts.en.json">
+      <LogicalName>AnimusForge.Knowledge.SourceTexts.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

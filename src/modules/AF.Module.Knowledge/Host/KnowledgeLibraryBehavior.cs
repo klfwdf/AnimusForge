@@ -1203,12 +1203,16 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			actualPlayerName = "";
 		}
 		const string actualNamePlaceholder = "\uE102AF_PLAYER_PERSONA_ACTUAL_NAME\uE103";
-		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, KnowledgeSourceTexts.Get("KN_Raw_007"), StringComparison.Ordinal))
+		string[] playerWords = KnowledgeSourceTexts.Variants("KN_Raw_007");
+		bool actualNameIsPlayerWord = Array.IndexOf(playerWords, actualPlayerName) >= 0;
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !actualNameIsPlayerWord)
 		{
 			result = result.Replace(actualPlayerName, actualNamePlaceholder);
 		}
-		result = result.Replace(KnowledgeSourceTexts.Get("KN_Raw_007"), PlayerPersonaRawNameBeginMarker + KnowledgeSourceTexts.Get("KN_Raw_007") + PlayerPersonaRawNameEndMarker);
-		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, KnowledgeSourceTexts.Get("KN_Raw_007"), StringComparison.Ordinal))
+		// Worldbooks of either language may refer to the player generically.
+		foreach (string playerWord in playerWords)
+			result = result.Replace(playerWord, PlayerPersonaRawNameBeginMarker + playerWord + PlayerPersonaRawNameEndMarker);
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !actualNameIsPlayerWord)
 		{
 			result = result.Replace(actualNamePlaceholder, PlayerPersonaRawNameBeginMarker + actualPlayerName + PlayerPersonaRawNameEndMarker);
 		}

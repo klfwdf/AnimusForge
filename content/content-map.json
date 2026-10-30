@@ -17706,6 +17706,13 @@
       "localizationRole": "compatibility"
     },
     {
+      "owner": "AF.Module.Knowledge",
+      "source": "content/modules/AF.Module.Knowledge/ModuleData/KnowledgeSourceTexts.en.json",
+      "target": "ModuleData/KnowledgeSourceTexts.en.json",
+      "logicalName": "AnimusForge.Knowledge.SourceTexts.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
       "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/ModuleData/OnboardingPromptTexts.json",
       "target": "ModuleData/OnboardingPromptTexts.json",
