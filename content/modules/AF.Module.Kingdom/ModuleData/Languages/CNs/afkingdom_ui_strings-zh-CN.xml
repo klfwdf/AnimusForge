@@ -22,8 +22,6 @@
     <string id="AF_KINGDOM_CW_Notice_DissolveSentToPlayer" text="解散命令已送达，等待玩家三日内回应。" />
     <string id="AF_KINGDOM_CW_Notice_OfferSentToPlayer" text="补偿提议已送达，等待玩家三日内回应。" />
     <string id="AF_KINGDOM_CW_Notice_Conceded" text="国王完整兑现{A}的诉求：{B}" />
-    <string id="AF_KINGDOM_CW_Notice_SecessionAccepted" text="国王准许{A}和平独立，正在建立新王国。" />
-    <string id="AF_KINGDOM_CW_Notice_SecessionBlocked" text="战争上限或玩家王国免疫阻止派系建国，暂时无法准许独立。" />
     <string id="AF_KINGDOM_CW_Notice_WarEligibilityChanged" text="战争资格已变化，原解散命令失效，派系保留。" />
     <string id="AF_KINGDOM_CW_Notice_DissolveOrderExpired" text="解散令超时，派系保留；玩家领袖须手动决定起兵。" />
     <string id="AF_KINGDOM_CW_Notice_FactionDefied" text="派系抗命，进入起兵流程。" />
@@ -108,7 +106,7 @@
     <string id="AF_KINGDOM_CW_Note_PledgeNoPeace" text="国王承诺 {A} 周内不与{B}议和" />
     <string id="AF_KINGDOM_CW_Note_PolicyRevoked" text="废除政策{A}" />
     <string id="AF_KINGDOM_CW_Note_RedressPaid" text="国王向{A}赔偿 {B} 第纳尔" />
-    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="国王承认{A}等家族的封地特权" />
+    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="{A}等家族携封地脱离王国" />
     <string id="AF_KINGDOM_CW_Note_Abdicated" text="国王退位，{A}继位" />
     <string id="AF_KINGDOM_CW_Note_ThroneSeized" text="{A}夺取王位" />
     <string id="AF_KINGDOM_CW_Note_Seceded" text="{A}获得承认，脱离{B}" />

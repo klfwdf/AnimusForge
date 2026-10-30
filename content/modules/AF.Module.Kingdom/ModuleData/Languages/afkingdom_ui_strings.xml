@@ -22,8 +22,6 @@
     <string id="AF_KINGDOM_CW_Notice_DissolveSentToPlayer" text="The dissolution order has been delivered; the player has three days to respond." />
     <string id="AF_KINGDOM_CW_Notice_OfferSentToPlayer" text="The compensation offer has been delivered; the player has three days to respond." />
     <string id="AF_KINGDOM_CW_Notice_Conceded" text="The king honors the {A} in full: {B}" />
-    <string id="AF_KINGDOM_CW_Notice_SecessionAccepted" text="The king grants the {A} peaceful independence; its new kingdom is being founded." />
-    <string id="AF_KINGDOM_CW_Notice_SecessionBlocked" text="The war cap or player-kingdom immunity blocks the faction from founding its kingdom; independence cannot be granted yet." />
     <string id="AF_KINGDOM_CW_Notice_WarEligibilityChanged" text="War eligibility changed; the original dissolution order is void and the faction is kept." />
     <string id="AF_KINGDOM_CW_Notice_DissolveOrderExpired" text="The dissolution order expired; the faction is kept, and a player leader must decide on rebellion manually." />
     <string id="AF_KINGDOM_CW_Notice_FactionDefied" text="The faction defied the order and enters the rebellion process." />
@@ -108,7 +106,7 @@
     <string id="AF_KINGDOM_CW_Note_PledgeNoPeace" text="The king pledges not to make peace with {B} for {A} weeks." />
     <string id="AF_KINGDOM_CW_Note_PolicyRevoked" text="Policy revoked: {A}." />
     <string id="AF_KINGDOM_CW_Note_RedressPaid" text="The king pays {A} {B} denars in redress." />
-    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="The king recognizes the fief privileges of {A} and its peer clans." />
+    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="{A} and its fellow clans leave the kingdom with their fiefs." />
     <string id="AF_KINGDOM_CW_Note_Abdicated" text="The king abdicates; {A} succeeds." />
     <string id="AF_KINGDOM_CW_Note_ThroneSeized" text="{A} seizes the throne." />
     <string id="AF_KINGDOM_CW_Note_Seceded" text="{A} is recognized and secedes from {B}." />
