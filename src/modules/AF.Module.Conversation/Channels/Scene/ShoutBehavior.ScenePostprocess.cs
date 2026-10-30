@@ -246,7 +246,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							bool independentClanPeaceResident = replyIsDirectPlayerResponse
 								&& DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(speakingHero, npcCharacter);
 							diplomacyRuleInjected = diplomacyRuleInjected || independentClanPeaceResident;
-							bool fieldCampOrdersAvailable = replyIsDirectPlayerResponse && FieldCampMissionLogic.Current != null;
+							bool fieldCampOrdersAvailable = replyIsDirectPlayerResponse && FieldCampOrderTags.CanSpeakerTakeCampOrders(runtimeTargetAgentIndex);
 							if (speechLanguage?.IsForced != true && !fieldCampOrdersAvailable && !HasPreprocessRuleHit(preprocessRuleSnapshot, PublicExecutionOrderPolicy.RuleId) && !duelRuleInjected && !rewardRuleInjected && !loanRuleInjected && !persistentAdpDebtRuleInjected && !kingdomServiceRuleInjected && !kingdomVassalageRuleInjected && !kingdomAnnexationRuleInjected && !lordsHallRuleInjected && !meetingReleaseRuleInjected && !vanillaIssueRuleInjected && !heroJoinPartyRuleInjected && !sceneMechanismRuleInjected && !partyTransferRuleInjected && !voteDealRuleInjected && !customPolicyAgendaRuleInjected && !diplomacyRuleInjected && !worldMapPartyCommandRuleInjected && !nobleGatheringRuleInjected && !proposeAgendaRuleInjected && !marriageRuleInjected && !siegeInterventionRuleInjected && !relayRuleInjected && !npcSurrenderPostprocessSelected && !royalPostprocessSelected)
 							{
 								explicitlyNoRules = true;

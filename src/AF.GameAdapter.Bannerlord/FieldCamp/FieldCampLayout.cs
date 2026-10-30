@@ -77,6 +77,8 @@ internal sealed class FieldCampLayout
 
 	internal Vec2 PlayerStart;
 	internal Vec2 ParadeCenter;
+	/// <summary>Rows between the banner and the back rank of the parade, for extra companions and overflow lords.</summary>
+	internal Vec2 StandbyOrigin;
 	internal float Radius;
 
 	private const float TentSpacing = 9f;
@@ -215,14 +217,15 @@ internal sealed class FieldCampLayout
 		layout.CompanionSlots["scout"] = layout.SentrySlots.Count > 0
 			? new Slot { Kind = SlotKind.Companion, Position = layout.SentrySlots[0].Position - layout.SentrySlots[0].Facing * 2.5f, Facing = layout.SentrySlots[0].Facing }
 			: new Slot { Kind = SlotKind.Companion, Position = new Vec2(0f, frontY), Facing = new Vec2(0f, 1f) };
-		layout.CompanionSlots["engineer"] = new Slot { Kind = SlotKind.Companion, Position = new Vec2(-3f, 3f), Facing = new Vec2(0f, 1f) };
+		layout.CompanionSlots["engineer"] = new Slot { Kind = SlotKind.Companion, Position = new Vec2(-3f, 2f), Facing = new Vec2(0f, 1f) };
 
-		// Lanes between tent columns are the wander targets.
+		// Wander targets sit in the column lanes level with the tents, so they never
+		// coincide with the fires at the lane crossings.
 		for (int c = 0; c < columns - 1; c++)
 		{
-			for (int r = 0; r <= rows; r++)
+			for (int r = 0; r < rows; r++)
 			{
-				layout.WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(-width * 0.5f + (c + 0.5f) * TentSpacing, baseY + TentSpacing * 0.5f - r * TentSpacing) });
+				layout.WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(-width * 0.5f + (c + 0.5f) * TentSpacing, baseY - r * TentSpacing) });
 			}
 		}
 		for (int i = -2; i <= 2; i++)
@@ -231,6 +234,7 @@ internal sealed class FieldCampLayout
 		}
 
 		layout.ParadeCenter = new Vec2(0f, frontY);
+		layout.StandbyOrigin = new Vec2(-9f, 3.2f);
 		layout.PlayerStart = new Vec2(0f, frontY + 8f);
 		layout.BuildGroups(parties, agentCap);
 		return layout;

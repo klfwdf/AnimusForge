@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.AgentOrigins;
@@ -32,20 +33,50 @@ internal static class MainPartyTroopMemory
 			return false;
 		}
 		CharacterObject character = targetCharacter;
-		if (agentIndex >= 0)
+		Agent agent = agentIndex >= 0 ? FindAgent(agentIndex) : null;
+		if (agent != null)
 		{
-			Agent agent = FindAgent(agentIndex);
-			if (agent == null || !IsMainPartySoldierAgent(agent))
+			if (!IsMainPartySoldierAgent(agent))
 			{
 				return false;
 			}
 			character ??= agent.Character as CharacterObject;
 		}
-		else if (character == null || !IsMainPartyRegular(character))
+		else if (agentIndex >= 0)
 		{
-			// Native conversation without an agent: only a troop the main party actually carries.
+			// The agent has despawned (left the scene, died) after the request began:
+			// keep the canonical id only if this soldier was recorded as ours.
+			if (!WasMainPartyAgent(agentIndex, character))
+			{
+				return false;
+			}
+		}
+		else if (!IsMainPartyMapConversation(character))
+		{
+			// No agent: only a map conversation whose party is the main party proves ownership.
+			// A shared troop type alone is not enough (looters in both parties, caravans).
 			return false;
 		}
+		return TryBuild(character, main, out memoryId, out memoryName);
+	}
+
+	/// <summary>Memory id for a troop type of the main party when no conversation is involved (camp facts).</summary>
+	internal static bool TryResolveForTroop(CharacterObject troop, out string memoryId, out string memoryName)
+	{
+		memoryId = "";
+		memoryName = "";
+		MobileParty main = MobileParty.MainParty;
+		if (troop == null || main == null || string.IsNullOrWhiteSpace(main.StringId) || !IsMainPartyRegular(troop))
+		{
+			return false;
+		}
+		return TryBuild(troop, main, out memoryId, out memoryName);
+	}
+
+	private static bool TryBuild(CharacterObject character, MobileParty main, out string memoryId, out string memoryName)
+	{
+		memoryId = "";
+		memoryName = "";
 		if (character == null || character.IsHero)
 		{
 			return false;
@@ -70,6 +101,48 @@ internal static class MainPartyTroopMemory
 		return true;
 	}
 
+	// Agents proven to be ours while active, so a reply that lands after the agent
+	// despawns keeps the same memory id. Cleared when a new mission starts.
+	private static readonly Dictionary<int, string> RecentMainPartyAgents = new Dictionary<int, string>();
+	private static Mission _recentAgentsMission;
+
+	private static void RememberMainPartyAgent(Agent agent)
+	{
+		if (!ReferenceEquals(_recentAgentsMission, Mission.Current))
+		{
+			RecentMainPartyAgents.Clear();
+			_recentAgentsMission = Mission.Current;
+		}
+		if (agent.Character is CharacterObject c)
+		{
+			RecentMainPartyAgents[agent.Index] = c.StringId;
+		}
+	}
+
+	private static bool WasMainPartyAgent(int agentIndex, CharacterObject character)
+	{
+		return character != null
+			&& ReferenceEquals(_recentAgentsMission, Mission.Current)
+			&& RecentMainPartyAgents.TryGetValue(agentIndex, out string troopId)
+			&& string.Equals(troopId, character.StringId, StringComparison.Ordinal);
+	}
+
+	private static bool IsMainPartyMapConversation(CharacterObject character)
+	{
+		try
+		{
+			return character != null
+				&& !character.IsHero
+				&& Mission.Current == null
+				&& MobileParty.ConversationParty == MobileParty.MainParty
+				&& IsMainPartyRegular(character);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	internal static bool IsMainPartySoldierAgent(Agent agent)
 	{
 		try
@@ -83,7 +156,12 @@ internal static class MainPartyTroopMemory
 				return false;
 			}
 			PartyBase party = agent.Origin?.BattleCombatant as PartyBase;
-			return party != null && (ReferenceEquals(party, PartyBase.MainParty) || ReferenceEquals(party.MobileParty, MobileParty.MainParty));
+			bool ours = party != null && (ReferenceEquals(party, PartyBase.MainParty) || ReferenceEquals(party.MobileParty, MobileParty.MainParty));
+			if (ours)
+			{
+				RememberMainPartyAgent(agent);
+			}
+			return ours;
 		}
 		catch
 		{

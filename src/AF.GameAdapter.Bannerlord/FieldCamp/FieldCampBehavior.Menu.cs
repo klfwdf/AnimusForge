@@ -191,6 +191,7 @@ public sealed partial class FieldCampBehavior
 		{
 			// The patrol's time is spent; hand control back to the camp menu.
 			_patrolSettleUntilHours = -1;
+			_phaseEndHours = -1;
 			_resting = false;
 		}
 		if (_state == (int)CampState.Camped && !_resting)

@@ -19,8 +19,11 @@ public sealed partial class FieldCampMissionLogic
 {
 	private const int MaxExtraCompanions = 24;
 	private const int MaxPrisonerLords = 3;
+	private const int AttackersPerPrisoner = 2;
+	private const int MaxAttackers = 16;
 
 	private readonly List<Agent> _prisoners = new List<Agent>();
+	private int _standbyUsed;
 	private TroopInspectionPrisonerSlaughterRuntime _slaughter;
 
 	private bool SlaughterBusy => _slaughter?.IsBusy == true;
@@ -61,7 +64,7 @@ public sealed partial class FieldCampMissionLogic
 			}
 			else if (extra < MaxExtraCompanions)
 			{
-				slot = new FieldCampLayout.Slot { Position = new Vec2(-6f + (extra % 8) * 1.7f, 4.5f + (extra / 8) * 1.7f), Facing = new Vec2(0f, 1f) };
+				slot = StandbySlot(_standbyUsed++);
 				extra++;
 			}
 			else
@@ -74,6 +77,13 @@ public sealed partial class FieldCampMissionLogic
 				Track(agent, activity, slot.Position, slot.Facing, character.DefaultFormationClass);
 			}
 		}
+	}
+
+	/// <summary>Rows of twelve in front of the banner, each 1.4 m further toward the parade ground.</summary>
+	private FieldCampLayout.Slot StandbySlot(int n)
+	{
+		Vec2 origin = _layout.StandbyOrigin;
+		return new FieldCampLayout.Slot { Position = new Vec2(origin.x + (n % 12) * 1.6f, origin.y + (n / 12) * 1.4f), Facing = new Vec2(0f, 1f) };
 	}
 
 	private static void AddPost(Dictionary<Hero, string> posts, MobileParty main, PartyRole role, string post)
@@ -104,8 +114,8 @@ public sealed partial class FieldCampMissionLogic
 			}
 			if (!_layout.LordSlots.TryGetValue(party, out FieldCampLayout.Slot slot))
 			{
-				// More parties than tents: line the rest up along the parade ground's edge.
-				slot = new FieldCampLayout.Slot { Position = new Vec2(8f + (fallback % 4) * 2f, 6f + (fallback / 4) * 2f), Facing = new Vec2(-1f, 0f) };
+				// More parties than tents: they join the standby rows in front of the banner.
+				slot = StandbySlot(_standbyUsed++);
 				fallback++;
 			}
 			Agent agent = SpawnCharacter(lord.CharacterObject, party.Party, slot.Position, slot.Facing, civilian: true);
@@ -239,7 +249,7 @@ public sealed partial class FieldCampMissionLogic
 	internal bool CanOfferPrisonerSlaughter(int speakerAgentIndex, out int regularPrisonerCount, out int attackerCount)
 	{
 		List<Agent> targets = LiveRegularPrisoners();
-		List<Agent> attackers = ArmedSoldiers();
+		List<Agent> attackers = ArmedSoldiers(targets.Count);
 		regularPrisonerCount = targets.Count;
 		attackerCount = attackers.Count;
 		return _spawned && !SlaughterBusy && !Mission.IsMissionEnding && IsCampSoldier(speakerAgentIndex) && targets.Count > 0 && attackers.Count > 0;
@@ -270,7 +280,7 @@ public sealed partial class FieldCampMissionLogic
 			reason = "no_regular_prisoners";
 			return false;
 		}
-		List<Agent> attackers = ArmedSoldiers();
+		List<Agent> attackers = ArmedSoldiers(targets.Count);
 		if (attackers.Count == 0)
 		{
 			reason = "combat_setup_unavailable";
@@ -322,7 +332,8 @@ public sealed partial class FieldCampMissionLogic
 			Agent agent = _agents[i].Agent;
 			if (agent != null && agent.Index == agentIndex)
 			{
-				return agent.IsActive() && _agents[i].Activity != Activity.Post && !(agent.Character is CharacterObject c && c.IsHero);
+				return agent.IsActive() && _agents[i].Activity != Activity.Post && !(agent.Character is CharacterObject c && c.IsHero)
+					&& ReferenceEquals(agent.Origin?.BattleCombatant as PartyBase, PartyBase.MainParty);
 			}
 		}
 		return false;
@@ -343,10 +354,10 @@ public sealed partial class FieldCampMissionLogic
 	}
 
 	/// <summary>
-	/// Healthy regulars carrying a real weapon; if camp clothes left nobody armed,
-	/// every healthy regular joins in.
+	/// The soldiers nearest the pen carry out the order: two per prisoner, at most 16,
+	/// preferring men with a real weapon (camp clothes may leave some unarmed).
 	/// </summary>
-	private List<Agent> ArmedSoldiers()
+	private List<Agent> ArmedSoldiers(int targetCount)
 	{
 		var armed = new List<Agent>();
 		var healthy = new List<Agent>();
@@ -355,7 +366,8 @@ public sealed partial class FieldCampMissionLogic
 			CampAgent entry = _agents[i];
 			Agent agent = entry.Agent;
 			if (agent == null || !agent.IsActive() || entry.Activity == Activity.Wounded || entry.Activity == Activity.Post
-				|| (agent.Character is CharacterObject c && c.IsHero))
+				|| (agent.Character is CharacterObject c && c.IsHero)
+				|| !ReferenceEquals(agent.Origin?.BattleCombatant as PartyBase, PartyBase.MainParty))
 			{
 				continue;
 			}
@@ -365,7 +377,82 @@ public sealed partial class FieldCampMissionLogic
 				armed.Add(agent);
 			}
 		}
-		return armed.Count > 0 ? armed : healthy;
+		List<Agent> pool = armed.Count > 0 ? armed : healthy;
+		int wanted = Math.Max(1, Math.Min(MaxAttackers, targetCount * AttackersPerPrisoner));
+		if (pool.Count <= wanted || _layout.PrisonerSlots.Count == 0)
+		{
+			return pool.Count <= wanted ? pool : pool.GetRange(0, wanted);
+		}
+		Vec2 pen = ToWorld(_layout.PrisonerSlots[_layout.PrisonerSlots.Count / 2].Position).AsVec2;
+		pool.Sort((a, b) => a.Position.AsVec2.DistanceSquared(pen).CompareTo(b.Position.AsVec2.DistanceSquared(pen)));
+		return pool.GetRange(0, wanted);
+	}
+
+	/// <summary>
+	/// The camp mission has no BattleAgentLogic, so a prisoner's death or knock-out is
+	/// written to the prison roster here (captured lords are invulnerable and never targeted).
+	/// </summary>
+	private static void WritePrisonerCasualty(Agent agent, AgentState state)
+	{
+		if (!(agent.Origin is PrisonerAgentOrigin origin) || !(agent.Character is CharacterObject c) || c.IsHero)
+		{
+			return;
+		}
+		try
+		{
+			if (state == AgentState.Killed)
+			{
+				origin.SetKilled();
+			}
+			else if (state == AgentState.Unconscious)
+			{
+				origin.SetWounded();
+			}
+			Logger.Log(LogSource, "prisoner casualty troop=" + c.StringId + " state=" + state);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "prisoner casualty write failed troop=" + c.StringId + " error=" + ex.Message);
+		}
+	}
+
+	/// <summary>
+	/// After a slaughter: the runtime restores the hostility it captured, but the enemy
+	/// team it created starts hostile, so make it peaceful again for the rest of the camp.
+	/// </summary>
+	private void EndSlaughter()
+	{
+		_slaughter = null;
+		try
+		{
+			// The camp team is the attacker; the slaughter's target team is the defender.
+			Team enemy = Mission.DefenderTeam;
+			if (enemy != null && enemy != _team && _team.IsEnemyOf(enemy))
+			{
+				_team.SetIsEnemyOf(enemy, false);
+				enemy.SetIsEnemyOf(_team, false);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "slaughter team reset failed: " + ex.Message);
+		}
+		Logger.Log(LogSource, "prisoner slaughter ended prisonersLeft=" + _prisoners.Count);
+	}
+
+	/// <summary>Soldiers and companions of the main party (not army lords, their men or prisoners).</summary>
+	internal bool IsMainPartyMember(int agentIndex)
+	{
+		for (int i = 0; i < _agents.Count; i++)
+		{
+			Agent agent = _agents[i].Agent;
+			if (agent != null && agent.Index == agentIndex)
+			{
+				PartyBase party = agent.Origin?.BattleCombatant as PartyBase;
+				return agent.IsActive() && party != null && ReferenceEquals(party, PartyBase.MainParty);
+			}
+		}
+		return false;
 	}
 
 	private static bool HasCombatWeapon(Agent agent)

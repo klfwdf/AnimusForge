@@ -13,7 +13,8 @@ public sealed partial class FieldCampMissionLogic
 	private const float ArriveDistanceSquared = 1.2f;
 	private const float RowSpacing = 1.6f;
 	private const float FileSpacing = 1.3f;
-	private const int FilesPerRank = 10;
+	private const int MinFilesPerRank = 10;
+	private const int MaxRanks = 6;
 	private const float BlockGap = 4f;
 
 	private static readonly string[] SitActions = { "act_sit_idle_on_floor_1", "act_sit_idle_on_floor_2", "act_sit_idle_on_floor_3" };
@@ -25,7 +26,7 @@ public sealed partial class FieldCampMissionLogic
 	/// <summary>Idempotent: several speakers may emit the same order in one shout.</summary>
 	internal bool Assemble()
 	{
-		if (!_spawned || _assembled)
+		if (!_spawned || _assembled || SlaughterBusy)
 		{
 			return false;
 		}
@@ -48,7 +49,7 @@ public sealed partial class FieldCampMissionLogic
 
 	internal bool Dismiss()
 	{
-		if (!_spawned || !_assembled)
+		if (!_spawned || !_assembled || SlaughterBusy)
 		{
 			return false;
 		}
@@ -87,16 +88,18 @@ public sealed partial class FieldCampMissionLogic
 			}
 			list.Add(entry);
 		}
+		// Ranks grow back (-y) from the parade line, at most MaxRanks deep (to y ~ 6),
+		// so a large camp widens its blocks instead of reaching the tents and posts behind.
 		float totalWidth = 0f;
 		foreach (List<CampAgent> list in byClass.Values)
 		{
-			totalWidth += Math.Min(FilesPerRank, list.Count) * FileSpacing + BlockGap;
+			totalWidth += FilesFor(list.Count) * FileSpacing + BlockGap;
 		}
 		float x = -totalWidth * 0.5f;
 		Vec2 facing = ToWorldDirection(new Vec2(0f, 1f));
 		foreach (List<CampAgent> list in byClass.Values)
 		{
-			int files = Math.Min(FilesPerRank, list.Count);
+			int files = FilesFor(list.Count);
 			for (int i = 0; i < list.Count; i++)
 			{
 				int file = i % files;
@@ -107,6 +110,11 @@ public sealed partial class FieldCampMissionLogic
 			}
 			x += files * FileSpacing + BlockGap;
 		}
+	}
+
+	private static int FilesFor(int count)
+	{
+		return Math.Max(1, Math.Min(count, Math.Max(MinFilesPerRank, (count + MaxRanks - 1) / MaxRanks)));
 	}
 
 	private static int ClassOrder(FormationClass troopClass)
@@ -257,7 +265,7 @@ public sealed partial class FieldCampMissionLogic
 
 	private Vec3 ToWorld(Vec2 local)
 	{
-		Vec3 world = _campFrame.TransformToParent(new Vec3(local.x, local.y, 0f));
+		Vec3 world = _campFrame.TransformToParent(new Vec3(local.x * _campScale, local.y * _campScale, 0f));
 		world.z = GroundHeight(Mission.Scene, world);
 		return world;
 	}
@@ -288,50 +296,63 @@ public sealed partial class FieldCampMissionLogic
 
 	/// <summary>
 	/// Camp centre = the playable area's centre (hard/soft boundary centroid, else
-	/// bounding box), oriented along world +y. The camp is scaled down if it would
-	/// leave the playable area.
+	/// bounding box), oriented along world +y. <paramref name="fitScale"/> (at most 1)
+	/// shrinks camp-local distances when the layout radius would leave the playable area.
 	/// </summary>
-	private static MatrixFrame ResolveCampFrame(Scene scene, float radius)
+	private static MatrixFrame ResolveCampFrame(Scene scene, float radius, out float fitScale)
 	{
 		MatrixFrame frame = MatrixFrame.Identity;
 		Vec2 center = Vec2.Zero;
-		bool found = false;
+		float inner = float.MaxValue;
+		var points = new List<Vec2>();
 		try
 		{
 			int count = scene.GetHardBoundaryVertexCount();
-			if (count < 3)
+			bool hard = count >= 3;
+			if (!hard)
 			{
 				count = scene.GetSoftBoundaryVertexCount();
-				if (count >= 3)
-				{
-					for (int i = 0; i < count; i++)
-					{
-						center += scene.GetSoftBoundaryVertex(i);
-					}
-					center *= 1f / count;
-					found = true;
-				}
 			}
-			else
+			for (int i = 0; count >= 3 && i < count; i++)
 			{
-				for (int i = 0; i < count; i++)
-				{
-					center += scene.GetHardBoundaryVertex(i);
-				}
-				center *= 1f / count;
-				found = true;
+				points.Add(hard ? scene.GetHardBoundaryVertex(i) : scene.GetSoftBoundaryVertex(i));
 			}
 		}
 		catch
 		{
+			points.Clear();
 		}
-		if (!found)
+		if (points.Count >= 3)
+		{
+			for (int i = 0; i < points.Count; i++)
+			{
+				center += points[i];
+			}
+			center *= 1f / points.Count;
+			// Distance from the centre to the nearest boundary edge.
+			for (int i = 0; i < points.Count; i++)
+			{
+				inner = Math.Min(inner, DistanceToSegment(center, points[i], points[(i + 1) % points.Count]));
+			}
+		}
+		else
 		{
 			scene.GetBoundingBox(out Vec3 min, out Vec3 max);
 			center = new Vec2((min.x + max.x) * 0.5f, (min.y + max.y) * 0.5f);
+			inner = Math.Min(max.x - min.x, max.y - min.y) * 0.5f;
 		}
+		float usable = inner - 5f;
+		fitScale = radius <= 0f || usable >= radius ? 1f : Math.Max(0.45f, usable / radius);
 		frame.origin = new Vec3(center.x, center.y, 0f);
 		frame.origin.z = GroundHeight(scene, frame.origin);
 		return frame;
+	}
+
+	private static float DistanceToSegment(Vec2 p, Vec2 a, Vec2 b)
+	{
+		Vec2 ab = b - a;
+		float lengthSquared = ab.LengthSquared;
+		float t = lengthSquared < 0.0001f ? 0f : Math.Max(0f, Math.Min(1f, Vec2.DotProduct(p - a, ab) / lengthSquared));
+		return (a + ab * t).Distance(p);
 	}
 }

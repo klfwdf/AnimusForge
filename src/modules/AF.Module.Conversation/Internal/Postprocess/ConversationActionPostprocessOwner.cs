@@ -535,7 +535,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 				targetHero ?? targetCharacter?.HeroObject,
 				targetAgentIndex)
 			: new List<PostprocessRuleEntry>();
-		List<PostprocessRuleEntry> fieldCampOrderRules = FieldCampOrderTags.BuildRuntimePostprocessRules(replyIsDirectPlayerResponse);
+		List<PostprocessRuleEntry> fieldCampOrderRules = FieldCampOrderTags.BuildRuntimePostprocessRules(replyIsDirectPlayerResponse, targetAgentIndex);
 		List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> voteDealRules = voteDealRuleInjected ? VoteDealBehavior.BuildAgendaVotePostprocessRulesForExternal() : null;
 		List<PostprocessRuleEntry> customPolicyAgendaRules = customPolicyAgendaRuleInjected ? TeamModuleServices.Policy.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) : null;

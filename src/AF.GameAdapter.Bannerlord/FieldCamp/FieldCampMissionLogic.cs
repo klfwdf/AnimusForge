@@ -51,6 +51,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	private readonly List<CampAgent> _agents = new List<CampAgent>();
 	private FieldCampLayout _layout;
 	private MatrixFrame _campFrame = MatrixFrame.Identity;
+	private float _campScale = 1f;
 	private Team _team;
 	private bool _spawned;
 	private bool _assembled;
@@ -108,6 +109,10 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			// The slaughter runtime owns the agents until it restores them.
 			return;
 		}
+		if (_slaughter != null)
+		{
+			EndSlaughter();
+		}
 		_upkeepTimer -= dt;
 		if (_upkeepTimer <= 0f)
 		{
@@ -124,7 +129,10 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			return;
 		}
 		_slaughter?.OnAgentRemoved(affectedAgent, affectorAgent, agentState);
-		_prisoners.Remove(affectedAgent);
+		if (_prisoners.Remove(affectedAgent))
+		{
+			WritePrisonerCasualty(affectedAgent, agentState);
+		}
 		for (int i = _agents.Count - 1; i >= 0; i--)
 		{
 			if (_agents[i].Agent == affectedAgent)
@@ -141,11 +149,11 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		try
 		{
 			_layout = FieldCampLayout.Build(_parties, FieldCampSettings.AgentCap, FieldCampSettings.TentCap);
-			_campFrame = ResolveCampFrame(Mission.Scene, _layout.Radius);
-			FieldCampProps.Place(Mission.Scene, _layout, _campFrame);
+			_campFrame = ResolveCampFrame(Mission.Scene, _layout.Radius, out _campScale);
+			FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale);
 			SpawnEveryone();
 			AnnounceOpenIssues();
-			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + _layout.Props.Count + " scene=" + (Mission.SceneName ?? ""));
+			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + _layout.Props.Count + " scale=" + _campScale.ToString("0.00") + " scene=" + (Mission.SceneName ?? ""));
 		}
 		catch (Exception ex)
 		{

@@ -35,7 +35,8 @@ internal static class FieldCampProps
 	private static readonly string[] Beds = { "bd_bed_khuzait_lord_d", "_to_carry_bed_convolute_a" };
 	private static readonly string[] Racks = { "weapon_rack_a" };
 
-	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame)
+	/// <param name="scale">Camp-local distances are multiplied by this to fit small scenes; prop sizes are unchanged.</param>
+	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
 	{
 		var resolved = new Dictionary<string, string>(StringComparer.Ordinal);
 		var failed = new HashSet<string>(StringComparer.Ordinal);
@@ -49,7 +50,7 @@ internal static class FieldCampProps
 			{
 				continue;
 			}
-			Vec3 local = new Vec3(prop.Position.x, prop.Position.y, 0f);
+			Vec3 local = new Vec3(prop.Position.x * scale, prop.Position.y * scale, 0f);
 			Vec3 world = campFrame.TransformToParent(in local);
 			world.z = FieldCampMissionLogic.GroundHeight(scene, world);
 			MatrixFrame frame = MatrixFrame.Identity;

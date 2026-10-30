@@ -156,11 +156,11 @@ public sealed partial class FieldCampBehavior
 		}
 		FieldCampIssues.Issue issue = issues[issueIndex];
 		MobileParty main = MobileParty.MainParty;
-		int cost = CostFor(issue, resolution);
-		if (cost > 0 && (Hero.MainHero?.Gold ?? 0) < cost)
+		if (!CanChoose(issue, resolution))
 		{
 			return null;
 		}
+		int cost = CostFor(issue, resolution);
 		if (cost > 0)
 		{
 			GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, cost, false);
@@ -225,6 +225,26 @@ public sealed partial class FieldCampBehavior
 		}
 	}
 
+	/// <summary>
+	/// A resolution is offered only when the player can pay for it, and a paid option
+	/// whose only effect is morale is withheld once the camp's +20 morale gain is used up.
+	/// </summary>
+	internal bool CanChoose(FieldCampIssues.Issue issue, FieldCampIssues.Resolution resolution)
+	{
+		int cost = CostFor(issue, resolution);
+		if (cost <= 0)
+		{
+			return true;
+		}
+		if ((Hero.MainHero?.Gold ?? 0) < cost)
+		{
+			return false;
+		}
+		bool hasOtherEffect = resolution == FieldCampIssues.Resolution.Grant
+			&& (issue.Kind == FieldCampIssues.Kind.UnpaidWages || issue.Kind == FieldCampIssues.Kind.Hunger);
+		return hasOtherEffect || MoraleGainRemaining > 0f;
+	}
+
 	/// <summary>Paid options (Q29): wages paid out, a round for the men, provisions bought.</summary>
 	internal static int CostFor(FieldCampIssues.Issue issue, FieldCampIssues.Resolution resolution)
 	{
@@ -237,6 +257,7 @@ public sealed partial class FieldCampBehavior
 				case FieldCampIssues.Kind.UnpaidWages:
 					return Math.Max(50, main?.TotalWage ?? 0);
 				case FieldCampIssues.Kind.Hunger:
+					return HungerGrainUnits(main) * GrainPrice();
 				case FieldCampIssues.Kind.CompanionFeud:
 					return 0;
 				case FieldCampIssues.Kind.Petition:
@@ -252,11 +273,45 @@ public sealed partial class FieldCampBehavior
 		return 0;
 	}
 
+	/// <summary>Grain bought for the hunger grant: three days of the party's daily food use.</summary>
+	private static int HungerGrainUnits(MobileParty main)
+	{
+		if (main == null)
+		{
+			return 1;
+		}
+		float perDay = Math.Max(main.MemberRoster.TotalManCount / 20f, 0f);
+		try
+		{
+			perDay = Math.Max(perDay, -main.FoodChange);
+		}
+		catch
+		{
+		}
+		return Math.Max(1, (int)Math.Ceiling(perDay * 3f));
+	}
+
+	private static int GrainPrice()
+	{
+		try
+		{
+			return Math.Max(1, DefaultItems.Grain?.Value ?? 10);
+		}
+		catch
+		{
+			return 10;
+		}
+	}
+
 	private static void ApplyGrantEffect(FieldCampIssues.Issue issue, MobileParty main)
 	{
 		if (issue.Kind == FieldCampIssues.Kind.UnpaidWages)
 		{
 			main.HasUnpaidWages = 0f;
+		}
+		else if (issue.Kind == FieldCampIssues.Kind.Hunger)
+		{
+			main.ItemRoster.AddToCounts(DefaultItems.Grain, HungerGrainUnits(main));
 		}
 		else if (issue.Kind == FieldCampIssues.Kind.CompanionFeud)
 		{

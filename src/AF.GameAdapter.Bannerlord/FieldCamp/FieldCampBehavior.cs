@@ -98,6 +98,10 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 			_partiesResolved = _state == (int)CampState.None;
 			_healCarry.Clear();
 			_visuals.Forget();
+			// While camped, _phaseEndHours holds an unspent patrol charge (else -1),
+			// so a save made during the charge resumes it in the wait menu.
+			_patrolSettleUntilHours = _state == (int)CampState.Camped && _phaseEndHours >= 0 ? _phaseEndHours : -1;
+			_resting = _patrolSettleUntilHours >= 0;
 		}
 	}
 
@@ -142,6 +146,12 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (!FieldCampSettings.Enabled)
+		{
+			FinishCamp("disabled");
+			LeaveCampMenusIfOpen();
+			return;
+		}
 		EnsureParties();
 		if (IsActive && FieldCampSettings.MapVisualsEnabled && _state != (int)CampState.Pitching)
 		{
@@ -164,14 +174,14 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 
 	private void RequestCamp(string source)
 	{
-		if (IsActive)
-		{
-			OpenCampMenu();
-			return;
-		}
 		if (!FieldCampSettings.Enabled)
 		{
 			AnimusForgeQuickInfo.Show(FieldCampText.Disabled());
+			return;
+		}
+		if (IsActive)
+		{
+			OpenCampMenu();
 			return;
 		}
 		if (!FieldCampRules.CanPitch(out var reason))
@@ -197,7 +207,11 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		{
 			foreach (MobileParty party in army.Parties)
 			{
-				AddParty(party);
+				// Parties still marching to join the army keep moving and do not camp.
+				if (party == main || party?.AttachedTo == main)
+				{
+					AddParty(party);
+				}
 			}
 		}
 		AddParty(main);
@@ -248,13 +262,18 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 			return;
 		}
 		Logger.Log(LogSource, "camp end reason=" + reason + " hours=" + (NowHours - _startHours).ToString("0.0"));
-		if (_state == (int)CampState.Camped)
+		if (_state == (int)CampState.Camped && reason != "disabled")
 		{
 			SettleIgnoredIssues();
 		}
 		ClearIssueState();
-		_lastRestHours = NowHours;
+		if (_state != (int)CampState.Pitching)
+		{
+			// Only a camp that was actually pitched counts as rest.
+			_lastRestHours = NowHours;
+		}
 		_state = (int)CampState.None;
+		_resting = false;
 		_patrolPending = false;
 		_patrolSettleUntilHours = -1;
 		_partyIds.Clear();
@@ -309,6 +328,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 			if (_state == (int)CampState.Pitching)
 			{
 				_state = (int)CampState.Camped;
+				_phaseEndHours = -1;
 				JudgeIssues();
 				Logger.Log(LogSource, "camp pitched");
 				AnimusForgeQuickInfo.Show(FieldCampText.Pitched());
@@ -377,7 +397,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 	private void ApplyExtraHealing(PartyBase party, float extraFactor)
 	{
 		TroopRoster roster = party.MemberRoster;
-		if (roster == null || roster.TotalWounded <= 0)
+		if (roster == null)
 		{
 			return;
 		}
@@ -463,6 +483,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 			return;
 		}
 		_patrolSettleUntilHours = NowHours + hours;
+		_phaseEndHours = _patrolSettleUntilHours;
 		_resting = true;
 		Logger.Log(LogSource, "patrol time charged hours=" + hours.ToString("0.0"));
 		OpenCampMenu();

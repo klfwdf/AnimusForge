@@ -1,3 +1,17 @@
+# 未部署：大地图就地扎营 审查修复（2026-10-30）
+
+按三路审查结论修复扎营功能（第1–5步）：
+- 俘虏：营地场景没有 `BattleAgentLogic`，屠戮杀死/打晕的普通俘虏现由 `FieldCampMissionLogic.WritePrisonerCasualty` 经 `PrisonerAgentOrigin` 写回俘虏名册；执行者改为离栏最近的主队士兵，每名俘虏2人、最多16人；屠戮结束后营地队伍与敌对队伍恢复和平；屠戮中拒绝集合/解散。
+- 兵种记忆：`MainPartyTroopMemory` 不再凭"主队名册里有这个兵种"认领无场景人物的对话，大地图只认 `ConversationParty == MainParty`；场景人物消失后用本场缓存保持同一记忆键；营中事实写入改用 `TryResolveForTroop` 并在结算前取键（开除到0人也能写入）。
+- 营中对话：集合/解散/结算规则、问题清单与 Consume 只对主队士兵和同伴生效（领主部下、俘虏不行）；prompt 选项与后处理允许值用同一个 `FieldCampBehavior.CanChoose`（钱不够或士气增益已满且无其他效果的付费选项都不出现）；营地场景排除带路/传唤/跟随规则（`AIConfigHandler.ShouldExcludeSceneMoveRuleForMission`）。
+- 问题效果：缺粮应允按三天口粮买粮食入库并付钱；遇敌/结束时清 `_resting`；只有真正搭好的营才算休整；MCM 关闭在暂停地图上也立即结束营地且不罚士气；终端/快捷键关闭时提示已禁用；巡视扣时借用已有存档字段 `_phaseEndHours`，读档后继续扣；英雄额外恢复不再依赖队里有伤兵；军团只带已并入玩家的部队。
+- 布局：闲逛点移到与帐篷同排的通道，不再和篝火重合；集合方阵最多6排，人多时加宽，不再伸进帐篷；多余同伴/领主站旗帜前的待命排；营地按场景边界缩放（最小0.45）。
+- 顺带修正第4步提交 2a8b2c848 的按 blob 暂存错误：`SceneAgentIdentityPromptCaptureAdapter.cs` 的 `"\n"` 在 HEAD 里被写成真换行，HEAD 本身编译不过（工作区文件一直是对的）。
+
+验证：在 HEAD 的干净 worktree 里套用本次改动，1.3/1.4 Release 均 0 错误；终端设置回归 1.3 PASS 1132、1.4 PASS 1188。主工作区因其他会话进行中的改动（场景闲聊、世界书删除）编译/测试不通过，与本次无关。未部署、未实机：屠戮写回、攻击者是否真的动手、缩放后的营地观感均未在游戏中确认。回滚：本提交整体 revert。
+
+---
+
 # TTS 最终口径：按火山同一规则（2026-10-30，未部署）
 
 用户确认“跟火山一样识别”，替代下方额外语义分类待办。当前两者共用原朗读前过滤：跳过单/双星号及括号段，朗读剩余正文；OpenAI兼容网关保留表情过滤。源码 `a57a5bb63` / `7b05436e8`，CN/EN各11项与网关53项离线验证通过；完整构建仍有既有阻塞，未真实服务/游戏验收或部署。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-volc-parity-final-20261030)。

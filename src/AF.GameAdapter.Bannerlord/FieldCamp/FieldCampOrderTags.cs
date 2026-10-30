@@ -31,11 +31,18 @@ internal static class FieldCampOrderTags
 
 	private static bool InCampMission => Mission.Current?.GetMissionBehavior<FieldCampMissionLogic>() != null;
 
-	internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRules(bool replyIsDirectPlayerResponse)
+	/// <summary>Camp orders and issue resolutions are only taken from the player's own soldiers and companions.</summary>
+	internal static bool CanSpeakerTakeCampOrders(int speakerAgentIndex)
+	{
+		FieldCampMissionLogic camp = FieldCampMissionLogic.Current;
+		return camp != null && camp.IsMainPartyMember(speakerAgentIndex);
+	}
+
+	internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRules(bool replyIsDirectPlayerResponse, int speakerAgentIndex)
 	{
 		var rules = new List<PostprocessRuleEntry>();
 		FieldCampMissionLogic camp = replyIsDirectPlayerResponse ? FieldCampMissionLogic.Current : null;
-		if (camp == null)
+		if (camp == null || !camp.IsMainPartyMember(speakerAgentIndex))
 		{
 			return rules;
 		}
@@ -57,7 +64,7 @@ internal static class FieldCampOrderTags
 			{
 				continue;
 			}
-			HashSet<string> allowed = AllowedResolutions(issues[i]);
+			HashSet<string> allowed = AllowedResolutions(FieldCampBehavior.Instance, issues[i]);
 			if (allowed.Count == 0)
 			{
 				continue;
@@ -76,14 +83,13 @@ internal static class FieldCampOrderTags
 		return rules;
 	}
 
-	/// <summary>Resolutions the player can currently afford, as upper-case tag values.</summary>
-	private static HashSet<string> AllowedResolutions(FieldCampIssues.Issue issue)
+	/// <summary>Resolutions the player can choose right now, as upper-case tag values (same filter as the prompt).</summary>
+	private static HashSet<string> AllowedResolutions(FieldCampBehavior behavior, FieldCampIssues.Issue issue)
 	{
 		var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		int gold = Hero.MainHero?.Gold ?? 0;
 		for (int i = 0; i < AllResolutions.Length; i++)
 		{
-			if (FieldCampBehavior.CostFor(issue, AllResolutions[i]) <= gold)
+			if (behavior.CanChoose(issue, AllResolutions[i]))
 			{
 				allowed.Add(AllResolutions[i].ToString().ToUpperInvariant());
 			}
@@ -95,13 +101,15 @@ internal static class FieldCampOrderTags
 	/// Main-prompt block listing the camp's issues (runtime context of a camp speaker).
 	/// Empty outside the camp mission.
 	/// </summary>
-	internal static string BuildIssuePromptBlock()
+	internal static string BuildIssuePromptBlock(int speakerAgentIndex)
 	{
-		if (FieldCampMissionLogic.Current == null || FieldCampBehavior.Instance?.State != FieldCampBehavior.CampState.Camped)
+		FieldCampMissionLogic camp = FieldCampMissionLogic.Current;
+		FieldCampBehavior behavior = FieldCampBehavior.Instance;
+		if (camp == null || behavior?.State != FieldCampBehavior.CampState.Camped || !camp.IsMainPartyMember(speakerAgentIndex))
 		{
 			return "";
 		}
-		IReadOnlyList<FieldCampIssues.Issue> issues = FieldCampBehavior.Instance.Issues;
+		IReadOnlyList<FieldCampIssues.Issue> issues = behavior.Issues;
 		var sb = new StringBuilder();
 		for (int i = 0; i < issues.Count; i++)
 		{
@@ -112,6 +120,10 @@ internal static class FieldCampOrderTags
 			var options = new List<string>();
 			for (int r = 0; r < AllResolutions.Length; r++)
 			{
+				if (!behavior.CanChoose(issues[i], AllResolutions[r]))
+				{
+					continue;
+				}
 				string option = ConversationRuntimeTexts.Prompt("AF_FC_IssueOpt" + AllResolutions[r]);
 				int cost = FieldCampBehavior.CostFor(issues[i], AllResolutions[r]);
 				if (cost > 0)
@@ -119,6 +131,10 @@ internal static class FieldCampOrderTags
 					option += "(" + ConversationRuntimeTexts.FormatPrompt("AF_FC_IssueCost", ("GOLD", cost)) + ")";
 				}
 				options.Add(option);
+			}
+			if (options.Count == 0)
+			{
+				continue;
 			}
 			sb.AppendLine(ConversationRuntimeTexts.FormatPrompt("AF_FC_IssuePromptLine",
 				("INDEX", i + 1),
@@ -178,7 +194,7 @@ internal static class FieldCampOrderTags
 	}
 
 	/// <summary>Strips camp tags from the reply and executes them (main thread, idempotent per issue).</summary>
-	internal static void Consume(bool allowPlayerDirectedActions, ref string content)
+	internal static void Consume(bool allowPlayerDirectedActions, int speakerAgentIndex, ref string content)
 	{
 		if (string.IsNullOrEmpty(content))
 		{
@@ -197,7 +213,7 @@ internal static class FieldCampOrderTags
 		{
 			content = ResolveTagRegex.Replace(content, "");
 		}
-		if (!allowPlayerDirectedActions || !InCampMission)
+		if (!allowPlayerDirectedActions || !InCampMission || !CanSpeakerTakeCampOrders(speakerAgentIndex))
 		{
 			return;
 		}
@@ -225,6 +241,16 @@ internal static class FieldCampOrderTags
 		int index = number - 1;
 		IReadOnlyList<FieldCampIssues.Issue> issues = behavior.Issues;
 		FieldCampIssues.Issue issue = index >= 0 && index < issues.Count ? issues[index] : null;
+		// Resolve memory owners first: discipline may discharge a troop type's last men.
+		string memoryA = null, nameA = null, memoryB = null, nameB = null;
+		if (issue != null && !issue.IsCompanionIssue)
+		{
+			ResolveTroopMemory(issue.Subject, out memoryA, out nameA);
+			if (issue.Kind == FieldCampIssues.Kind.CultureFriction)
+			{
+				ResolveTroopMemory(issue.Subject2, out memoryB, out nameB);
+			}
+		}
 		string fact = behavior.Resolve(index, resolution);
 		Logger.Log("FieldCamp", "resolve tag issue=" + number + " resolution=" + resolution + " executed=" + (fact != null));
 		if (fact == null || issue == null)
@@ -237,11 +263,8 @@ internal static class FieldCampOrderTags
 			RecordHeroFact(issue.Subject2, fact);
 			return;
 		}
-		RecordFact(issue.Subject, fact);
-		if (issue.Kind == FieldCampIssues.Kind.CultureFriction)
-		{
-			RecordFact(issue.Subject2, fact);
-		}
+		RecordFact(memoryA, nameA, fact);
+		RecordFact(memoryB, nameB, fact);
 	}
 
 	/// <summary>AFEF fact into a companion's own hero memory.</summary>
@@ -261,24 +284,39 @@ internal static class FieldCampOrderTags
 		}
 	}
 
-	/// <summary>AFEF fact into the troop-type memory of the main party (same store as all three channels).</summary>
-	private static void RecordFact(string troopId, string fact)
+	private static void ResolveTroopMemory(string troopId, out string memoryId, out string memoryName)
 	{
-		if (string.IsNullOrEmpty(troopId))
+		memoryId = null;
+		memoryName = null;
+		try
+		{
+			CharacterObject troop = string.IsNullOrEmpty(troopId) ? null : CharacterObject.Find(troopId);
+			if (troop == null || !MainPartyTroopMemory.TryResolveForTroop(troop, out memoryId, out memoryName))
+			{
+				memoryId = null;
+			}
+		}
+		catch (Exception ex)
+		{
+			memoryId = null;
+			Logger.Log("FieldCamp", "[WARN] issue memory resolve failed troop=" + troopId + " error=" + ex.Message);
+		}
+	}
+
+	/// <summary>AFEF fact into the troop-type memory of the main party (same store as all three channels).</summary>
+	private static void RecordFact(string memoryId, string memoryName, string fact)
+	{
+		if (string.IsNullOrEmpty(memoryId))
 		{
 			return;
 		}
 		try
 		{
-			CharacterObject troop = CharacterObject.Find(troopId);
-			if (troop != null && MainPartyTroopMemory.TryResolve(null, troop, -1, out string memoryId, out string memoryName))
-			{
-				MyBehavior.AppendExternalNonHeroDialogueHistory(memoryId, memoryName, null, null, fact);
-			}
+			MyBehavior.AppendExternalNonHeroDialogueHistory(memoryId, memoryName, null, null, fact);
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("FieldCamp", "[WARN] issue fact write failed troop=" + troopId + " error=" + ex.Message);
+			Logger.Log("FieldCamp", "[WARN] issue fact write failed memory=" + memoryId + " error=" + ex.Message);
 		}
 	}
 

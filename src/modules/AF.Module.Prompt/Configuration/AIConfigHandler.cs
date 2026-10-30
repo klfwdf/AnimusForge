@@ -379,6 +379,12 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		// The field camp has no LocationCharacters and its camp life re-issues agent moves:
+		// lead/summon/follow would fight it, so camp orders use their own tags instead.
+		if (mission.GetMissionBehavior<FieldCampMissionLogic>() != null)
+		{
+			return true;
+		}
 		bool allowSetsOwnedSettlementSceneCommands = false;
 		try
 		{

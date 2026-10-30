@@ -310,7 +310,7 @@ internal void Publish(SceneSpeechQueueItem item)
 
 								ref content);
 
-						FieldCampOrderTags.Consume(allowPlayerDirectedActions, ref content);
+						FieldCampOrderTags.Consume(allowPlayerDirectedActions, matchedNpc.AgentIndex, ref content);
 
 						if (allowPlayerDirectedActions)
 
