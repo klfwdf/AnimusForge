@@ -95,6 +95,34 @@ internal sealed class BilingualTextTable
         return result;
     }
 
+    /// <summary>Current-language template with {NAME} placeholders replaced literally (values are never re-parsed).</summary>
+    internal string Format(string key, params (string Name, string Value)[] variables) => Fill(Get(key), variables);
+
+    /// <summary>Replaces {NAME} placeholders in <paramref name="template"/>; inserted values are not scanned again.</summary>
+    internal static string Fill(string template, params (string Name, string Value)[] variables)
+    {
+        template = template ?? string.Empty;
+        if (variables == null || variables.Length == 0 || template.IndexOf('{') < 0) return template;
+        var result = new StringBuilder(template.Length + 32);
+        for (int index = 0; index < template.Length;)
+        {
+            if (template[index] == '{')
+            {
+                int end = template.IndexOf('}', index + 1);
+                if (end > index)
+                {
+                    string name = template.Substring(index + 1, end - index - 1);
+                    bool found = false;
+                    foreach (var variable in variables)
+                        if (string.Equals(variable.Name, name, StringComparison.Ordinal)) { result.Append(variable.Value ?? string.Empty); found = true; break; }
+                    if (found) { index = end + 1; continue; }
+                }
+            }
+            result.Append(template[index++]);
+        }
+        return result.ToString();
+    }
+
     /// <summary>All Chinese entries (for building value-to-key indexes over both languages).</summary>
     internal IReadOnlyDictionary<string, string> ChineseEntries => _chinese.Value;
 
