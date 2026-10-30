@@ -149,11 +149,11 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		try
 		{
 			_layout = FieldCampLayout.Build(_parties, FieldCampSettings.AgentCap, FieldCampSettings.TentCap);
-			_campFrame = ResolveCampFrame(Mission.Scene, _layout.Radius, out _campScale);
-			FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale);
+			_campFrame = FieldCampSite.Resolve(Mission, _layout.Radius, out _campScale);
+			int props = FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale);
 			SpawnEveryone();
 			AnnounceOpenIssues();
-			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + _layout.Props.Count + " scale=" + _campScale.ToString("0.00") + " scene=" + (Mission.SceneName ?? ""));
+			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + props + "/" + _layout.Props.Count + " scale=" + _campScale.ToString("0.00") + " scene=" + (Mission.SceneName ?? ""));
 		}
 		catch (Exception ex)
 		{

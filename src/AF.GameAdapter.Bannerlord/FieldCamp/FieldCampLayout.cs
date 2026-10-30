@@ -24,7 +24,22 @@ internal sealed class FieldCampLayout
 		Supply,
 		Fence,
 		Bed,
-		Rack
+		Rack,
+		Bedroll,
+		Spit,
+		Cauldron,
+		Bench,
+		Woodpile,
+		Clutter,
+		Cart,
+		Chest,
+		Torch,
+		Target,
+		TrainingRack,
+		HorseBarrier,
+		Trough,
+		HayCart,
+		Standard
 	}
 
 	internal struct Prop
@@ -135,6 +150,14 @@ internal sealed class FieldCampLayout
 				if (partyIndex > 0 && tentsForParty == 0)
 				{
 					layout.LordSlots[parties[partyIndex]] = new Slot { Kind = SlotKind.Lord, Position = pos + new Vec2(0f, 4.5f), Facing = new Vec2(0f, 1f) };
+					layout.Props.Add(new Prop { Kind = PropKind.Standard, Position = pos + new Vec2(2.6f, 5f) });
+				}
+				// Bedrolls in front of every tent and some gear beside every other one.
+				layout.Props.Add(new Prop { Kind = PropKind.Bedroll, Position = pos + new Vec2(-1.1f, 3.6f), Yaw = 0.08f, Variant = placed * 2 });
+				layout.Props.Add(new Prop { Kind = PropKind.Bedroll, Position = pos + new Vec2(1.1f, 3.6f), Yaw = -0.1f, Variant = placed * 2 + 1 });
+				if (placed % 2 == 0)
+				{
+					layout.Props.Add(new Prop { Kind = PropKind.Clutter, Position = pos + new Vec2(2.9f, -2.6f), Yaw = placed * 0.7f, Variant = placed / 2 });
 				}
 				tentsForParty++;
 				placed++;
@@ -152,6 +175,13 @@ internal sealed class FieldCampLayout
 				pos.y = baseY + TentSpacing * 0.5f;
 			}
 			layout.Props.Add(new Prop { Kind = PropKind.Fire, Position = pos });
+			// Something cooking on every fire and two log benches behind the seats, along the column lane.
+			layout.Props.Add(new Prop { Kind = f % 2 == 0 ? PropKind.Spit : PropKind.Cauldron, Position = pos, Yaw = f * 0.9f, Variant = f });
+			for (int b = 0; b < 2; b++)
+			{
+				float a = MathF.PI * (0.5f + b);
+				layout.Props.Add(new Prop { Kind = PropKind.Bench, Position = pos + new Vec2(MathF.Cos(a), MathF.Sin(a)) * 2.8f, Yaw = a + MathF.PI * 0.5f, Variant = f * 2 + b });
+			}
 			for (int s = 0; s < 5; s++)
 			{
 				float a = s * (2f * MathF.PI / 5f);
@@ -174,6 +204,16 @@ internal sealed class FieldCampLayout
 			layout.Props.Add(new Prop { Kind = PropKind.Supply, Position = supply + new Vec2((i % 3) * 1.8f, -(i / 3) * 1.8f), Yaw = i * 0.6f, Variant = i });
 		}
 		layout.Props.Add(new Prop { Kind = PropKind.Rack, Position = supply + new Vec2(0f, 3.5f), Yaw = MathF.PI * 0.5f });
+		layout.Props.Add(new Prop { Kind = PropKind.Cart, Position = supply + new Vec2(-2.6f, -6.5f), Yaw = MathF.PI * 0.5f, Variant = 0 });
+		layout.Props.Add(new Prop { Kind = PropKind.Cart, Position = supply + new Vec2(-2.6f, -10.5f), Yaw = MathF.PI * 0.45f, Variant = 1 });
+		layout.Props.Add(new Prop { Kind = PropKind.Chest, Position = supply + new Vec2(4.6f, 0.4f), Yaw = MathF.PI * 0.5f });
+		layout.Props.Add(new Prop { Kind = PropKind.Woodpile, Position = supply + new Vec2(-1.8f, 0.8f), Yaw = MathF.PI * 0.5f, Variant = 0 });
+		layout.Props.Add(new Prop { Kind = PropKind.Woodpile, Position = supply + new Vec2(-1.8f, -1.6f), Yaw = MathF.PI * 0.5f, Variant = 1 });
+		// A weapon rack at the left end of every tent row.
+		for (int r = 0; r < rows; r++)
+		{
+			layout.Props.Add(new Prop { Kind = PropKind.Rack, Position = new Vec2(-width * 0.5f - 4.5f, baseY - r * TentSpacing), Yaw = MathF.PI * 0.5f, Variant = r + 1 });
+		}
 		layout.CompanionSlots["quartermaster"] = new Slot { Kind = SlotKind.Companion, Position = supply + new Vec2(2.5f, 3f), Facing = new Vec2(1f, 0f) };
 
 		Vec2 infirmary = new Vec2(halfX - 2f, baseY);
@@ -182,7 +222,7 @@ internal sealed class FieldCampLayout
 		for (int i = 0; i < beds; i++)
 		{
 			Vec2 bed = infirmary + new Vec2(-2.5f + (i % 3) * 2.5f, 1.5f + (i / 3) * 2.5f);
-			layout.Props.Add(new Prop { Kind = PropKind.Bed, Position = bed, Yaw = MathF.PI * 0.5f });
+			layout.Props.Add(new Prop { Kind = PropKind.Bed, Position = bed, Yaw = MathF.PI * 0.5f, Variant = i });
 		}
 		for (int i = 0; i < 12; i++)
 		{
@@ -218,6 +258,27 @@ internal sealed class FieldCampLayout
 			? new Slot { Kind = SlotKind.Companion, Position = layout.SentrySlots[0].Position - layout.SentrySlots[0].Facing * 2.5f, Facing = layout.SentrySlots[0].Facing }
 			: new Slot { Kind = SlotKind.Companion, Position = new Vec2(0f, frontY), Facing = new Vec2(0f, 1f) };
 		layout.CompanionSlots["engineer"] = new Slot { Kind = SlotKind.Companion, Position = new Vec2(-3f, 2f), Facing = new Vec2(0f, 1f) };
+
+		// Torches where the tent lanes open onto the parade ground (a single row has its fires there) and at its corners.
+		for (int c = 0; rows > 1 && c < columns - 1; c++)
+		{
+			layout.Props.Add(new Prop { Kind = PropKind.Torch, Position = new Vec2(-width * 0.5f + (c + 0.5f) * TentSpacing + 1.6f, baseY + 3.6f) });
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			layout.Props.Add(new Prop { Kind = PropKind.Torch, Position = new Vec2((i % 2 == 0 ? -1f : 1f) * (halfX - 3f), i < 2 ? 5f : frontY + 6f) });
+		}
+		// Training ground on the left of the parade: archery butts facing the camp centre and a practice rack.
+		for (int i = 0; i < 3; i++)
+		{
+			layout.Props.Add(new Prop { Kind = PropKind.Target, Position = new Vec2(-halfX + 1f, frontY - 3f + i * 3f), Yaw = -MathF.PI * 0.5f, Variant = i });
+		}
+		layout.Props.Add(new Prop { Kind = PropKind.TrainingRack, Position = new Vec2(-halfX + 5f, frontY + 6f), Yaw = 0f });
+		// Horse lines on the right of the parade.
+		layout.Props.Add(new Prop { Kind = PropKind.HorseBarrier, Position = new Vec2(halfX + 1f, frontY - 2f), Yaw = 0f, Variant = 0 });
+		layout.Props.Add(new Prop { Kind = PropKind.HorseBarrier, Position = new Vec2(halfX + 1f, frontY + 2.5f), Yaw = 0f, Variant = 1 });
+		layout.Props.Add(new Prop { Kind = PropKind.Trough, Position = new Vec2(halfX - 1.2f, frontY + 0.2f), Yaw = MathF.PI * 0.5f });
+		layout.Props.Add(new Prop { Kind = PropKind.HayCart, Position = new Vec2(halfX + 1.5f, frontY + 7f), Yaw = 0.3f });
 
 		// Wander targets sit in the column lanes level with the tents, so they never
 		// coincide with the fires at the lane crossings.

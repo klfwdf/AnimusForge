@@ -7,7 +7,7 @@ namespace AnimusForge;
 
 /// <summary>
 /// Instantiates camp props once per camp mission. Every prop kind has an ordered
-/// candidate list (names verified in the 1.4.8 Native prefabs; 1.3 not live-tested);
+/// candidate list (names verified in the installed Native prefab XML; 1.3 not live-tested);
 /// the first candidate that instantiates is cached for the rest of the mission and a
 /// kind whose candidates all fail is skipped and logged once.
 /// Tents and fences get physics so the player cannot walk through them; small
@@ -30,10 +30,25 @@ internal static class FieldCampProps
 	private static readonly string[] Fires = { "burning_campfire", "campfire", "fire_stones_bonfire" };
 	private static readonly string[] SmallFires = { "campfire", "burning_campfire" };
 	private static readonly string[] Flags = { "flag_pole_big", "flagpole_a" };
-	private static readonly string[] Supplies = { "bd_sack_heap_a", "bd_barrel_heap_a", "crate_a", "bd_cart_a", "crate_b", "bd_barrel_a" };
-	private static readonly string[] Fences = { "fence_old_a1", "fence_a" };
-	private static readonly string[] Beds = { "bd_bed_khuzait_lord_d", "_to_carry_bed_convolute_a" };
-	private static readonly string[] Racks = { "weapon_rack_a" };
+	private static readonly string[] Supplies = { "bd_sack_heap_a", "bd_barrel_heap_a", "crate_a", "bd_sack_heap_b", "crate_b", "bd_barrel_a", "crate_c", "bd_barrel_heap_b", "bd_sack_a" };
+	private static readonly string[] Fences = { "fence_old_a1", "fence_old_b1", "fence_a" };
+	private static readonly string[] Beds = { "bed_straw_a", "bed_straw_b", "bed_straw_c", "bd_bed_khuzait_lord_d" };
+	private static readonly string[] Racks = { "weapon_rack_a", "weapon_rack_vlandia_a", "weapon_rack_sturgia_a", "weapon_heap_sword_a", "weapon_heap_axe_a" };
+	private static readonly string[] Bedrolls = { "bed_ground_a", "bed_ground_b", "bed_ground_c", "bed_ground_d", "bed_ground_e" };
+	private static readonly string[] Spits = { "bd_roasting_spit_a", "bd_roasting_spit_b" };
+	private static readonly string[] Cauldrons = { "bd_cauldron_sturgia", "foods_cauldron_stew", "cooking_pot" };
+	private static readonly string[] Benches = { "log_bench_default_a_unsittable", "log_bench_pine_a_unsittable", "log_bench_beech_a_unsittable" };
+	private static readonly string[] Woodpiles = { "bd_wood_heap_a", "bd_stacked_wood", "bd_log_and_axe" };
+	private static readonly string[] Clutter = { "crate_a", "bd_barrel_a", "bd_sack_a", "bd_bucket_a", "bd_chest_a", "weapon_heap_bow_a" };
+	private static readonly string[] Carts = { "bd_cart_a", "bd_cart_b", "bd_cart_heap_a" };
+	private static readonly string[] Chests = { "bd_chest_a", "chest_empire_a" };
+	private static readonly string[] Torches = { "torch_outdoors_a_burning", "torch_long_a" };
+	private static readonly string[] Targets = { "archery_practice_target", "bd_target_board" };
+	private static readonly string[] TrainingRacks = { "weapon_rack_a", "weapon_heap_sword_a" };
+	private static readonly string[] HorseBarriers = { "horse_barrier_a" };
+	private static readonly string[] Troughs = { "bd_trough_a" };
+	private static readonly string[] HayCarts = { "bd_hay_cart_a", "bd_cart_a" };
+	private static readonly string[] Standards = { "flagpole_a", "flag_pole_big" };
 
 	/// <param name="scale">Camp-local distances are multiplied by this to fit small scenes; prop sizes are unchanged.</param>
 	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
@@ -115,6 +130,39 @@ internal static class FieldCampProps
 				return Fences;
 			case FieldCampLayout.PropKind.Bed:
 				return Beds;
+			case FieldCampLayout.PropKind.Bedroll:
+				return Bedrolls;
+			case FieldCampLayout.PropKind.Spit:
+				return Spits;
+			case FieldCampLayout.PropKind.Cauldron:
+				return Cauldrons;
+			case FieldCampLayout.PropKind.Bench:
+				return Benches;
+			case FieldCampLayout.PropKind.Woodpile:
+				return Woodpiles;
+			case FieldCampLayout.PropKind.Clutter:
+				return Clutter;
+			case FieldCampLayout.PropKind.Cart:
+				physics = true;
+				return Carts;
+			case FieldCampLayout.PropKind.Chest:
+				return Chests;
+			case FieldCampLayout.PropKind.Torch:
+				return Torches;
+			case FieldCampLayout.PropKind.Target:
+				return Targets;
+			case FieldCampLayout.PropKind.TrainingRack:
+				return TrainingRacks;
+			case FieldCampLayout.PropKind.HorseBarrier:
+				physics = true;
+				return HorseBarriers;
+			case FieldCampLayout.PropKind.Trough:
+				return Troughs;
+			case FieldCampLayout.PropKind.HayCart:
+				physics = true;
+				return HayCarts;
+			case FieldCampLayout.PropKind.Standard:
+				return Standards;
 			default:
 				return Racks;
 		}
