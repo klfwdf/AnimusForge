@@ -21,15 +21,16 @@ public static class ReplyToolInstaller
         string[] types = { "AnimusForge.LlmNonStreamingTransport", "AnimusForge.LlmStreamingTransport" };
         var methods = types.Select(t => af.GetType(t, false)?.GetMethod("SendAsync", BindingFlags.Static | BindingFlags.NonPublic)).ToArray();
         if (methods.Any(m => m == null || !Matches(m))) { log?.Invoke("unsupported_transport_shape;patches=0"); return false; }
-        if (methods.All(m => Harmony.GetPatchInfo(m)?.Owners.Contains(Owner) == true)) return true;
+        if (methods.All(m => Harmony.GetPatchInfo(m)?.Owners.Contains(Owner) == true))
+            return ImageTransportPatch.Install(af, prompt, log);
         _prompt = prompt; _log = log;
         try
         {
             foreach (var method in methods)
                 if (Harmony.GetPatchInfo(method)?.Owners.Contains(Owner) != true)
                     Patcher.Patch(method, prefix: new HarmonyMethod(typeof(ReplyToolInstaller), nameof(Prefix)));
-            log?.Invoke("installed;transports=2;mode=gemini_reply_tool;input_wrapper=enabled;version=0.1.1;retries=0");
-            return true;
+            log?.Invoke("installed;transports=2;mode=gemini_reply_tool;input_wrapper=enabled;version=0.1.2;retries=0");
+            return ImageTransportPatch.Install(af, prompt, log);
         }
         catch (Exception error)
         {

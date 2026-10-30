@@ -84,7 +84,8 @@ def main():
                        'reference_game_versions': {api: item['game_version'] for api, item in receipt['references'].items()},
                        'offline_tests': receipt['tests'], 'live_game': 'NOT-RUN',
                        'long_reply_anti_truncation_effect': 'NOT-VERIFIED',
-                       'image_generation_integration': False}
+                       'image_generation_integration': 'Gemini chat input wrapping; native image/base64 consumed by AF',
+                       'image_generation_live_game': 'NOT-RUN'}
         (folder / 'build-info.json').write_text(json.dumps(public_info, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         files = {MODULE + '/' + p.relative_to(folder).as_posix(): p for p in folder.rglob('*') if p.is_file()}
         expected = {MODULE + '/' + p for p in allowed_stage - {'verification.json'} | {'build-info.json'}}

@@ -162,6 +162,7 @@ internal static class Program
         var af = Assembly.LoadFrom(afPath);
         Check(ReplyToolInstaller.Install(af, promptJson, Console.WriteLine), "actual host installation");
         Check(ReplyToolInstaller.Install(af, promptJson, Console.WriteLine), "idempotent install");
+        await ImageTests.Run(af, _root, _prompt, Check);
         foreach (bool streaming in new[] { false, true })
         {
             int sends = 0; var chunks = new StringBuilder();
@@ -214,6 +215,7 @@ internal static class Program
             try { await task; throw new Exception("cancellation not propagated"); } catch (OperationCanceledException) { Check(block.Disposed, "cancelled stream disposed"); }
         }
         ReplyToolInstaller.Uninstall();
+        await ImageTests.CheckUninstalled(af, Check);
         Check(Harmony.GetAllPatchedMethods().All(m => !Harmony.GetPatchInfo(m).Owners.Contains(ReplyToolInstaller.Owner)), "unload removes only own patches");
         bool originalPayload = false;
         await Invoke(af, false, Payload().ToString(), async (request, token) =>

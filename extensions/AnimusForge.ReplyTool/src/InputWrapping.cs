@@ -12,7 +12,7 @@ internal static class InputWrapping
 
     // Only the final user turn in the detached outgoing payload is changed.
     // Earlier turns, system messages, images and AF's stored history stay intact.
-    internal static bool WrapLatest(JArray messages, string instruction)
+    internal static bool WrapLatest(JArray messages, string instruction, bool preserveTextPositions = false)
     {
         int index = messages.Count - 1;
         while (index >= 0 && messages[index]?["role"]?.ToString() != "user") index--;
@@ -25,6 +25,7 @@ internal static class InputWrapping
 
         var user = (JObject)messages[index];
         string text;
+        JArray textParts = null;
         if (user["content"]?.Type == JTokenType.String)
         {
             text = (string)user["content"];
@@ -34,13 +35,22 @@ internal static class InputWrapping
         {
             var originalText = new StringBuilder();
             var replacement = new JArray();
+            if (preserveTextPositions) textParts = new JArray();
             bool found = false;
             foreach (var part in parts)
             {
                 if (part is JObject textPart && textPart["type"]?.ToString() == "text" && textPart["text"]?.Type == JTokenType.String)
                 {
                     originalText.Append((string)textPart["text"]);
-                    if (!found) replacement.Add(new JObject { ["type"] = "text", ["text"] = instruction });
+                    if (preserveTextPositions)
+                    {
+                        int position = replacement.Count;
+                        textParts.Add(new JObject { ["index"] = position, ["text"] = textPart["text"].DeepClone() });
+                        var marker = (JObject)textPart.DeepClone();
+                        marker["text"] = (found ? "" : instruction + "\n") + "[af_image_text_" + position + "]";
+                        replacement.Add(marker);
+                    }
+                    else if (!found) replacement.Add(new JObject { ["type"] = "text", ["text"] = instruction });
                     found = true;
                 }
                 else replacement.Add(part.DeepClone());
@@ -60,10 +70,12 @@ internal static class InputWrapping
                 ["function"] = new JObject { ["name"] = ToolName, ["arguments"] = "{}" }
             })
         };
+        var result = new JObject { ["source"] = "user_input", ["text"] = text };
+        if (textParts != null) result["text_parts"] = textParts;
         var resultMessage = new JObject
         {
             ["role"] = "tool", ["tool_call_id"] = id,
-            ["content"] = new JObject { ["source"] = "user_input", ["text"] = text }.ToString(Formatting.None)
+            ["content"] = result.ToString(Formatting.None)
         };
         messages.Insert(index + 1, callMessage); messages.Insert(index + 2, resultMessage);
         return true;

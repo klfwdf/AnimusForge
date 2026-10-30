@@ -8,13 +8,14 @@ namespace AnimusForge.ReplyTool;
 
 internal sealed class ReplyPrompt
 {
-    internal readonly string Instruction, Description, ContentDescription, InputInstruction, InputDescription;
+    internal readonly string Instruction, Description, ContentDescription, InputInstruction, InputDescription, ImageInputInstruction;
     internal ReplyPrompt(string json)
     {
         var value = JObject.Parse(json);
         Instruction = Required(value, "instruction"); Description = Required(value, "description");
         ContentDescription = Required(value, "contentDescription");
         InputInstruction = Required(value, "inputInstruction"); InputDescription = Required(value, "inputDescription");
+        ImageInputInstruction = Required(value, "imageInputInstruction");
     }
     private static string Required(JObject value, string key)
     {
