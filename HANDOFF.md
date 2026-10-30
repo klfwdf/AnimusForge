@@ -1,3 +1,9 @@
+# 未部署：私下契约不再公开给其他 NPC（2026-10-30）
+
+建债/结算批次保留双方 AFEF 和账本，不再生成公开行动；旧 debt_recorded/debt_payment 结构化行动及素材在公开上下文/证据/摘要候选边界过滤，实际公开领地转移事件保留。双API/Bootstrap构建与原门禁通过，实际DLL的CN/EN四组回放共52项断言通过。未部署/实机；旧无结构摘要或已生成对话中的泄露不自动清除。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#private-contract-visibility-20261030)，证据 artifacts/private-contract-20261030/；回滚只 revert 本修复提交，保留其他 dirty。
+
+---
+
 # 未部署：大地图就地扎营 第5步 同伴、军团领主、俘虏栏（2026-10-30）
 
 新增 `FieldCamp/FieldCampMissionLogic.People.cs`：营地生成时一次性放置同伴（军需官/医生/侦察兵/工程师按 `GetRoleHolder` 站补给区、伤兵帐、首个岗哨、阅兵场侧；负伤同伴进伤兵帐；其余同伴最多 24 人站阅兵场侧）、军团其他领主（`FieldCampLayout.LordSlots` 改为按部队索引，站各自首顶营帐旁；超出则沿阅兵场边排开），二者为 `Activity.Post`，不参与集合列队，可用现有 Hero 对话交谈。俘虏栏：被俘领主最多 3 人，其余按兵种轮流取，填满 9 个栏位，`PrisonerAgentOrigin`、无敌、去武器、受惊姿势。屠戮沿用 `[ACTION:TROOP_INSPECTION_SLAUGHTER_PRISONERS]` 与 `TroopInspectionPrisonerSlaughterRuntime`：`TroopInspectionBehavior` 的 Can/TryStart 两个外部入口在无检阅 mission 时转给营地；只有营中普通士兵说话才提供规则，执行者为健康普通士兵（优先有武器的），只杀普通俘虏，被杀俘虏经 origin 从俘虏名册扣除；屠戮进行中暂停营地生活维护，mission 结束时清理。

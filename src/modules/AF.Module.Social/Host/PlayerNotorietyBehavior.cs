@@ -491,6 +491,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private void RecordPlayerAction(string text, string stableKey, string actionKind, bool isMajor, int day, string gameDate, int sequence, string settlementId, string settlementName, string locationText, string actorCultureId, string targetCultureId, string settlementCultureId, bool? won)
 	{
+		if (ActionHistoryVisibilityPolicy.IsPrivateContract(actionKind, stableKey)) return;
 		_state = NormalizeState(_state);
 		string normalizedText = NormalizeLine(text);
 		if (string.IsNullOrWhiteSpace(normalizedText))
@@ -1021,7 +1022,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private void AddHistoryMaterial(PlayerHistoryMaterial material)
 	{
-		if (material == null || string.IsNullOrWhiteSpace(material.Text))
+		if (material == null || string.IsNullOrWhiteSpace(material.Text)
+			|| ActionHistoryVisibilityPolicy.IsPrivateContract(material.SourceKind, material.StableKey))
 		{
 			return;
 		}
@@ -1119,7 +1121,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private bool HasPendingMajorMaterials()
 	{
-		return _state?.MajorMaterials != null && _state.MajorMaterials.Any(x => x != null && !x.Summarized);
+		return _state?.MajorMaterials != null && _state.MajorMaterials.Any(x => x != null && !x.Summarized
+			&& !ActionHistoryVisibilityPolicy.IsPrivateContract(x.SourceKind, x.StableKey));
 	}
 
 	private async Task ProcessSummaryAsync()
@@ -1129,7 +1132,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			_state = NormalizeState(_state);
 			List<PlayerHistoryMaterial> sourceMaterials = _state.MajorMaterials
-				.Where(x => x != null && !x.Summarized)
+				.Where(x => x != null && !x.Summarized
+					&& !ActionHistoryVisibilityPolicy.IsPrivateContract(x.SourceKind, x.StableKey))
 				.OrderBy(x => x.Day)
 				.ThenBy(x => x.CreatedUtcTicks)
 				.Take(SummaryBatchSize)
@@ -1386,7 +1390,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		PruneRecentActions();
 		List<PlayerActionEntry> recent = (_state.RecentActions ?? new List<PlayerActionEntry>())
-			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text))
+			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text)
+				&& !ActionHistoryVisibilityPolicy.IsPrivateContract(x.ActionKind, x.StableKey))
 			.OrderByDescending(x => x.Day)
 			.ThenByDescending(x => x.Sequence)
 			.Take(16)
@@ -1435,7 +1440,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		int windowDays = Math.Max(1, Math.Min(RecentActionWindowDays, maxAgeDays));
 		int minDay = GetCurrentGameDayIndex() - windowDays + 1;
 		PlayerActionEntry latest = (_state.RecentActions ?? new List<PlayerActionEntry>())
-			.Where(x => x != null && x.Day >= minDay && !string.IsNullOrWhiteSpace(x.Text))
+			.Where(x => x != null && x.Day >= minDay && !string.IsNullOrWhiteSpace(x.Text)
+				&& !ActionHistoryVisibilityPolicy.IsPrivateContract(x.ActionKind, x.StableKey))
 			.OrderByDescending(x => x.Day)
 			.ThenByDescending(x => x.Sequence)
 			.ThenByDescending(x => x.Order)

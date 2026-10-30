@@ -229,6 +229,7 @@ internal static string RenderEntries(Func<string> actorName, List<NpcActionEntry
 		string text = null;
 		foreach (NpcActionEntry item in entries)
 		{
+			if (item == null || ActionHistoryVisibilityPolicy.IsPrivateContract(item.ActionKind, item.StableKey)) continue;
 			if (item == null || string.IsNullOrWhiteSpace(item.Text))
 			{
 				continue;

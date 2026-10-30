@@ -1,3 +1,18 @@
+<a id="private-contract-visibility-20261030"></a>
+## 私下契约公开泄露修复 — 2026-10-30
+
+**LOCAL_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。用户要求修复私下许诺领地换取支持的契约被无关 NPC 获知。工作区 main/F:/AnimusForge-main；意图检查点 `08df08f6a`。保留当前其他作者全部 dirty 内容，本提交只包含本任务差异。
+
+经济 owner `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs:16366-16378`（TryRecordRewardActionHistory）在私有 AFEF/账本写入后，不把含建债/结算的整批事实发布为公开行动（混合批次也可能携带完整条款）；实际领地/王国状态变动仍由原生事件记录。`src/modules/AF.Module.Memory/Records/ActionHistoryVisibilityPolicy.cs:5-18`（IsPrivateContract）按 debt_recorded/debt_payment 和既有 reward_action 稳定键识别；无自然语言关键词猜测，无新保存字段。
+
+玩家公开 owner `src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs:492-496,1023-1029,1122-1137,1384-1400,1439-1450`：新增记录/公共履历素材入口阻止私约，旧结构化记录在公开近期请求、主动搭话证据及摘要候选选择前过滤。`src/modules/AF.Module.Memory/Records/NpcActionRecordOwner.cs:221-239`（RenderEntries）过滤旧 NPC 行动中的私约投影。保留旧结构化源记录、债务账本、双方对话/AFEF；三渠道沿用共享公开 owner，未改渠道私有请求。只增加事件 O(1) 判断与既有有界查询 predicate，不新增 Tick IO/扫描、反射或模型调用。CN/EN 使用同一稳定身份过滤，无新固定文案或资源。
+
+验证：原 `scripts/build/build_single_module.ps1`（不带 Stage/Deploy）双 API + Bootstrap 均 0 错误，原 seam/registration 门禁通过；参考线 1.3.15.110062 / 1.4.6.115628。新增真实候选 DLL 回放 `tests/modules/AF.Module.Social/PrivateContractVisibilityTests/`，每 API × CN/EN 各 13 断言，共52项，通过旧记录过滤、公共实转事件保留、私约素材不触发公共摘要、NPC公开投影与源数据保留。测试使用受控游戏日/观察者资格/资源路径，无原生游戏。命令日志、DLL/源码 hash 在 `artifacts/private-contract-20261030/`。不修改存档键、JSON形状、分块或一键构建流程。
+
+未验/边界：未部署、未实机、未读取修改玩家存档、未调用真实模型、未打包/push；已经混写进无结构旧 MajorSummary/NPC摘要或普通对话/长期记忆的泄露内容无法可靠自动定位，本次不猜删或声称修复。旧混合行动若历史类型已被优先归类为公开动作，也不按自然语言推测删除。已泄露内容不自动失忆。回滚以本修复提交 focused revert，检查点仅为来源；不 hard reset、不回滚其他作者。
+
+---
+
 <a id="deploy-cn-interior-fixes-20261029"></a>
 ## CN部署：内政标题/居中与人物重生音色 — 2026-10-29
 

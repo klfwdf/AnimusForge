@@ -16365,6 +16365,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied)
 	{
+        // Contract batches may mix full private terms with immediate consideration.
+        // Keep participant AFEF/ledger writes, without publishing this batch as history.
+        // Native ownership/kingdom events still record actual public state transitions.
+        if (anyDebtRecorded || anyDebtPaymentApplied) return;
+
 		try
 		{
 			bool economicAction = anyActualGiveToPlayer || anyDebtRecorded || anyDebtPaymentApplied || anySettlementTransferApplied;
