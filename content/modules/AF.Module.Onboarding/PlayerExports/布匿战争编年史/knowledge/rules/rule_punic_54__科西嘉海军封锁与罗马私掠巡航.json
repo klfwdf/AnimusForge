@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_54",
+  "Name": "科西嘉海军封锁与罗马私掠巡航网",
+  "Description": "罗马海军以科西嘉岛阿莱利亚要塞为战略前进基地，设立严密的双向水雷与巡逻战舰封锁线，截击从迦太基与利古里亚驶向意大利南部的偷渡商船与补给战舰。",
+  "Tags": [
+    "科西嘉封锁",
+    "阿莱利亚军港",
+    "私掠巡航",
+    "海上粮道",
+    "第勒尼安海",
+    "封锁战术"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "罗马海军以科西嘉岛阿莱利亚军港为枢纽织密第勒尼安海私掠巡航阻击网。",
+    "派出快速双列桨战船与轻型冲锋艇专门猎杀迦太基向意大利输送的补给船。",
+    "严密的海上绞杀逼迫汉尼拔在亚平宁半岛长期处于粮秣与兵工自筹的死局。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科西嘉岛的阿莱利亚军港是勒死汉尼拔的最紧绞索！我们的快船舰队日夜巡弋于海峡咽喉，任何悬挂迦太基紫旗的货船一旦露头，立刻就会被轻舟撞穿龙骨！十六年间，汉尼拔望眼欲穿的攻城器械、精良铠甲与非洲新兵，十之七八都被我们截杀沉入了科西嘉冰冷的海底！陆地上汉尼拔或许称王，但这片大海，每一滴海水都服从罗马战舰的意志！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马海盗完全撕下了解释法权的伪装！他们在科西嘉岛布设了密密麻麻的拦截快艇，像狼群一样撕咬我们手无寸铁的运粮商船。汉尼拔大人在意大利南部的每一次胜利，都要面对后方连一把像样的短剑、甚至连一口多余铁锅都送不上去的绝境！科西嘉的封锁线比罗马城墙更加残酷地封死了巴卡大军的生路！"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科西嘉海面上的巡逻船黑吃黑最凶！罗马裁判官给水兵发极少的军饷，却许诺凡是截到的迦太基商船，船上的黄金、生铁和奴隶全由抓获者三七分账。那些快船一见到货帆就跟闻见血腥味的鲨鱼一样扑上去，海峡里几乎每天都有烧毁的黑木断木漂上沙滩。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "第二次布匿战争期间，罗马依托科西嘉岛军事基地对西第勒尼安海实施严密封锁。利用快速巡航战舰拦截迦太基前往意大利本土及高卢沿岸的补给货船，有效阻断了汉尼拔远征军从本土获取持续性重武器、兵源与战略物资的补给通道。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "科西嘉海军封锁与罗马私掠巡航网",
+    "rule_punic_54"
+  ]
+}

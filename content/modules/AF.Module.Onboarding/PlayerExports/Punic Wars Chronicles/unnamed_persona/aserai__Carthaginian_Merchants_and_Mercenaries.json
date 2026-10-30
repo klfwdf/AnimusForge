@@ -1,0 +1,32 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "",
+  "CultureId": "aserai",
+  "DisplayName": "Carthaginian Merchants and Mercenaries",
+  "Description": "Maritime merchants, sailors, and Sacred Band guards of the Carthaginian Republic, heirs to ancient Phoenician voyaging traditions and the protection of Melqart. Adept at navigating Mediterranean trade networks and coordinating multi-ethnic mercenary armies, they measure power through silver revenues and naval mastery.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure maritime trade lanes and profit from overseas commercial ventures."
+  ],
+  "Values": [
+    "Honest commercial contracts, divine favor from Tanit, and pragmatic calculation."
+  ],
+  "Fears": [
+    "Punic naval defeat cutting off Mediterranean shipping lanes and bankrupting the state."
+  ],
+  "SpeechStyle": "Polished, urbane, and commercially astute; speaks with smooth maritime eloquence.",
+  "VoiceId": ""
+}

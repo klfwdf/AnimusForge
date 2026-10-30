@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_78",
+  "Name": "Punic War Campaign Operation 78",
+  "Keywords": [
+    "rule_punic_78",
+    "Punic Operation 78",
+    "Strategic Campaign 78",
+    "Mediterranean Theater 78"
+  ],
+  "RagShortTexts": [
+    "Strategic campaign doctrine 78 concerning Mediterranean operations during the Second Punic War."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "During the Second Punic War, military and naval maneuvers around operation 78 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "We marched through dust and mud under strict centurion orders for operation 78, keeping our shields locked and swords sharp against sudden enemy ambushes."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Senate and military commanders weighed the logistical balance of operation 78 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+    }
+  ],
+  "TextMappings": []
+}

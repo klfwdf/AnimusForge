@@ -1,0 +1,108 @@
+{
+  "Id": "rule_punic_49",
+  "Name": "塔兰托青年引狼入室与卫城十年铁血对峙",
+  "Description": "公元前212年，塔兰托青年贵族菲莱梅诺斯与尼孔伪装猎人骗开城门引汉尼拔主力夜入城，夺占整座海港城邦，但罗马残部退守孤峰卫城展开长达数年艰苦对峙。",
+  "Tags": [
+    "塔兰托之战",
+    "汉尼拔夜袭",
+    "菲莱梅诺斯",
+    "德谟克拉底",
+    "卫城对峙",
+    "大希腊倒戈"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前212年塔兰托青年贵族菲莱梅诺斯假借夜猎刺杀城卫放汉尼拔大军入城。",
+    "汉尼拔夺取繁华海港并下令严禁抢劫希腊平民但罗马残军坚守绝壁卫城。",
+    "塔兰托人在海陆交界处开挖巨堑并在街巷修筑横墙展开数年艰苦围困战。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "tarentum"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是塔兰托人洗刷屈辱的伟大复仇之夜！罗马总督不仅盘剥我们的财富，更残忍将我们送去罗马作为质子的贵族青年当众摔死！菲莱梅诺斯假装送野猪肉敲开城门的一刹那，短剑刺穿了罗马恶狗的咽喉，汉尼拔的一万精锐如神兵天降踏入集市！汉尼拔严令不得侵犯任何希腊居民房屋，只在房屋上粉笔画圈作为保护标识。除那座像骨头一样卡在海岬上的顽固卫城外，整座塔兰托终于重获自由！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塔兰托的叛徒们永远洗不清背叛的罪孽！总督布鲁图斯在宿醉中惊醒，残存的军团将士冒着箭雨撤入了依傍深海绝壁的卫城要塞！汉尼拔用尽撞槌、地道与火箭狂攻数月，卫城巍然不动！塔兰托人甚至在街道上筑墙挖壕将卫城同市区隔绝，但只要卫城港口通向外海，罗马的运粮舰队就能源源不断送来补给！这根钉子狠狠扎在汉尼拔的侧翼整整三年！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "拿下塔兰托海港是汉尼拔在南意大利最杰出的地缘大捷！我们终于获得了一个足以停泊百艘战舰并直接连通马其顿腓力五世与迦太基本土的深水军港！汉尼拔甚至组织当地水手用巨型木轱辘将停泊在内港的数十艘希腊战舰从市区街道陆运拉到外海，对罗马卫城展开海陆双重封锁！胜利的果实已然在握！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前212年，塔兰托青年贵族菲莱梅诺斯与尼孔以内应手段刺杀守卫打开城门，引汉尼拔主力入城夺取全城。汉尼拔宣布塔兰托重获自由并免遭劫掠，但罗马守将率残部退守三面临海的卫城要塞。汉尼拔修筑隔离长壕并实施陆上运舰出海封锁，双方在此展开长达三年的艰苦对峙。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "塔兰托青年引狼入室与卫城十年铁血对峙",
+    "rule_punic_49"
+  ]
+}

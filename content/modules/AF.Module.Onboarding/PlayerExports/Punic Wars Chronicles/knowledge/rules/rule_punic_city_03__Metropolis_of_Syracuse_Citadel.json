@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_city_03",
+  "Name": "Metropolis of Syracuse Citadel",
+  "Keywords": [
+    "rule_punic_city_03",
+    "Urban Center Syracuse Citadel",
+    "Citadel of Syracuse Citadel",
+    "Harbor of Syracuse Citadel"
+  ],
+  "RagShortTexts": [
+    "The fortified urban center of Syracuse Citadel served as a vital strategic, naval, and..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ancient metropolis of Syracuse Citadel represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Behind the stone towers of Syracuse Citadel, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possession of Syracuse Citadel anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+    }
+  ],
+  "TextMappings": []
+}

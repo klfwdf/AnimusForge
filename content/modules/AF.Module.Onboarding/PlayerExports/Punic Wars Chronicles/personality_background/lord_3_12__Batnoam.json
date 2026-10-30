@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_3_12",
+  "DisplayName": "Batnoam",
+  "Description": "Batnoam, distinguished influential oligarch and military commander of the Carthaginian Republic, commanding extensive maritime estates and mercenary contracts. Adept in naval logistics, Mediterranean commerce, and diplomatic statecraft, Siwia provides critical financial and operational support to the Barcid expedition in Italy. Devoted to the protective deities Tanit and Baal Hammon, Siwia maneuvers adroitly within the contentious Council of One Hundred and Four, striving to secure western maritime lanes, maintain Iberian silver supply lines, and permanently dismantle Roman hegemony across the Mediterranean.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Expand Carthage's commercial dominion and secure vital silver lines across Hispania.",
+    "Provide unbroken logistical and mercenary reinforcement to Hannibal's Italian campaign.",
+    "Outmaneuver factional rivals within the Council of One Hundred and Four to preserve clan supremacy."
+  ],
+  "Values": [
+    "Commercial wealth and naval mastery are the true lifeblood of republican sovereignty.",
+    "Devotion to Tanit and Baal Hammon safeguards the state through turbulent storms.",
+    "Prudent foresight and calculated risk triumph over blind, reckless battlefield brute force."
+  ],
+  "Fears": [
+    "Roman squadrons cutting off Iberian silver convoys, triggering state bankruptcy.",
+    "Defeat in the field resulting in political disgrace and crucifixion by senatorial rivals."
+  ],
+  "SpeechStyle": "Smooth, eloquent, and incisive; possesses the polished rhetoric of maritime diplomacy and aristocratic prestige.",
+  "VoiceId": ""
+}

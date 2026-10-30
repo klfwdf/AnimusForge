@@ -1,0 +1,42 @@
+{
+  "Id": "rule_micro_craft_02",
+  "Name": "Folk Practice of rule_micro_craft_02",
+  "Keywords": [
+    "rule_micro_craft_02",
+    "rule_micro_craft_02 Practice",
+    "rule_micro_craft_02 Custom",
+    "rule_micro_craft_02 Tradition"
+  ],
+  "RagShortTexts": [
+    "Historical micro-concept rule_micro_craft_02 concerning ancient folkways, tactical..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In ancient Mediterranean daily life, the practice of Folk Practice of rule_micro_craft_02 represented a vital micro-level custom. Governing practical routines, physical tools, or sacred folk taboos, it permeated civilian and military existence, connecting seasonal agricultural rhythms, camp discipline, and streetwise survival across Roman, Punic, and Celtic communities."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "merchant",
+          "artisan"
+        ]
+      },
+      "Content": "In bustling port taverns and market stalls, everyone keeps an eye out for Folk Practice of rule_micro_craft_02. A sharp tradesman or artisan knows that profit, cargo safety, and honest coinage depend on understanding the fine print of these daily practices."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Among common farmers, slaves, and tavern-goers, Folk Practice of rule_micro_craft_02 was a matter of everyday survival and ancient superstition. You watch the omens, mind your bread crumbs, and keep your head down when the magistrates and soldiers march through the street."
+    }
+  ],
+  "TextMappings": []
+}

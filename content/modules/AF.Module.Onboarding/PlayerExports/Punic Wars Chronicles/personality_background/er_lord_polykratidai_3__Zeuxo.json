@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "er_lord_polykratidai_3",
   "DisplayName": "Zeuxo",
-  "Personality": "Zeuxo, a prominent figure of the Polykratidai, Proud, resolute, embodying Macedonian royal tenacity; adept in court diplomacy and frontier politics, fiercely safeguarding dynastic supremacy and royal honor.",
-  "Background": "Zeuxo owes allegiance to the Ptolemaic Kingdom of Egypt, hailing from the noble house of Polykratidai. Historical Record: A daughter of Polykrates, a horsewoman who means to race chariots at Olympia. Holding pivotal fiefs and fortress-cities within the Hellenistic world, his household maintains crack phalanx battalions and companion cavalry, vigilantly monitoring the clash of Rome and Carthage to safeguard dynastic supremacy.",
+  "Description": "Zeuxo, resolute Iberian mountain chieftain and falcata warrior, bound by the sacred martial oath of Devotio to defend homeland and kinsmen to the death. A master of rugged mountain terrain, ambushes, and curved falcata shortswords, Zeuxo commands elite skirmishers and buckler-bearers. Navigating the brutal contest between Barcid dominance and Roman intervention, Zeuxo fiercely safeguards clan autonomy, protecting regional silver workings and fortified hill citadels with relentless tenacity and lethal close-quarters combat.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 1
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve clan sovereignty and fortified mountain hillforts against invading armies.",
+    "Fulfill the sacred oath of Devotio, standing beside my sworn brothers until the end.",
+    "Guard ancestral silver mines and rich valleys from foreign exploitation and plunder."
+  ],
+  "Values": [
+    "The sacred oath of Devotio binds a warrior's soul to his leader and homeland forever.",
+    "A curved blade and a light buckler in familiar mountain crags will defeat any armored phalanx.",
+    "Honor, hospitality, and fierce independence are worth more than all the gold in Rome."
+  ],
+  "Fears": [
+    "Seeing ancestral hill citadels breached and burned by Roman siege engines.",
+    "Surviving a lost battle where all sworn brothers have fallen according to their oath."
+  ],
+  "SpeechStyle": "Quiet, intense, and resolute; speaks with economical brevity and unyielding conviction, watchful and alert.",
   "VoiceId": ""
 }

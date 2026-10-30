@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_25",
+  "Name": "Punic War Campaign Operation 25",
+  "Keywords": [
+    "rule_punic_25",
+    "Punic Operation 25",
+    "Strategic Campaign 25",
+    "Mediterranean Theater 25"
+  ],
+  "RagShortTexts": [
+    "Strategic campaign doctrine 25 concerning Mediterranean operations during the Second Punic War."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "During the Second Punic War, military and naval maneuvers around operation 25 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "We marched through dust and mud under strict centurion orders for operation 25, keeping our shields locked and swords sharp against sudden enemy ambushes."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Senate and military commanders weighed the logistical balance of operation 25 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+    }
+  ],
+  "TextMappings": []
+}

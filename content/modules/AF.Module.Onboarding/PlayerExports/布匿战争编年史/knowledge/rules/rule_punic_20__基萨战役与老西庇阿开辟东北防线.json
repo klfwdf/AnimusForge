@@ -1,0 +1,106 @@
+{
+  "Id": "rule_punic_20",
+  "Name": "基萨战役与格奈乌斯·西庇阿开辟东北防线",
+  "Description": "公元前218年秋，罗马将领格奈乌斯·西庇阿率军在恩波里翁登陆并在基萨大败迦太基留守统帅汉诺，夺取埃布罗河北岸并俘获汉尼拔辎重与伊比利亚人质。",
+  "Tags": [
+    "基萨战役",
+    "格奈乌斯·西庇阿",
+    "恩波里翁",
+    "汉诺",
+    "因迪比利斯",
+    "伊比利亚北方防线"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前218年秋格奈乌斯·西庇阿率军在西班牙东北部基萨击溃汉诺。",
+    "基萨战役切断了汉尼拔由陆路从西班牙获取兵源辎重的后方通道。",
+    "罗马军团在此役俘获留守统帅汉诺与大批伊比利亚部族贵族人质。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "格奈乌斯·西庇阿将军在恩波里翁的登陆是神来之笔！在基萨城下一举荡平汉诺的一万步兵和千名骑兵，不仅将埃布罗河北部尽数纳入罗马控制，更夺获了汉尼拔远征意大利留下的全套重辎重。只要有西庇阿家族扼守比利牛斯山南麓，汉尼拔在意大利就永远是一支得不到后方补给的孤军！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "汉诺大意轻敌，他在汉尼拔主力翻越比利牛斯山后未能固守要塞，贸然在基萨平原与以逸待劳的罗马老兵野战。此败不仅折损了万余兵力，更让罗马人在加泰罗尼亚站稳了脚跟，使哈斯德鲁拔大人陷入了南北两线受敌的被动泥潭。"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "基萨战役不仅败了迦太基人，也连累了我们伊莱尔盖特斯人！国王因迪比利斯在此役中不幸被俘，我们部落的青年在败军溃退中伤亡惨重。从那天起，罗马鹰旗插上了我们的海岸，部族酋长们开始看清，两个强盗之间根本没有正义可言。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年秋，罗马将领格奈乌斯·科尔内利乌斯·西庇阿·卡尔乌斯率军在恩波里翁登陆，在基萨战役中歼灭迦太基留守将领汉诺的大军。此役使罗马牢固控制了埃布罗河北岸，切断了汉尼拔由陆路获得西班牙援兵与辎重的生命线。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "基萨战役与格奈乌斯·西庇阿开辟东北防线",
+    "rule_punic_20"
+  ]
+}

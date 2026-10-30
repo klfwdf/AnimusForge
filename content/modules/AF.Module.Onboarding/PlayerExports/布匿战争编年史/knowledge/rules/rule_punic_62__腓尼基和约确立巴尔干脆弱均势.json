@@ -1,0 +1,108 @@
+{
+  "Id": "rule_punic_62",
+  "Name": "腓尼基和约确立巴尔干东线脆弱均势",
+  "Description": "公元前205年，在各方筋疲力尽之际，马其顿腓力五世与罗马裁判官塞姆普罗尼乌斯于伊庇鲁斯腓尼基城签署和约，正式结束第一次马其顿战争，换取地中海东线短暂均势。",
+  "Tags": [
+    "腓尼基和约",
+    "第一次马其顿战争结束",
+    "腓力五世妥协",
+    "罗马喘息",
+    "巴尔干均势",
+    "暗流涌动"
+  ],
+  "Category": "Political",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前205年罗马与马其顿在伊庇鲁斯腓尼基城正式签署停战和约。",
+    "确认腓力五世在伊利里亚保有微小领土但彻底放弃跨海干涉意大利战争企图。",
+    "和约使罗马成功从东线脱身全力支持大西庇阿开辟决战北非的终局大战场。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "《腓尼基和约》是罗马在东线取得的重大战略喘息大捷！在伊庇鲁斯的谈判桌上，我们没有割让任何核心利益，仅仅承认了腓力五世在山沟里的几处无关紧要的立足点，就换取了整整三十五艘巡航舰队与数万老兵从巴尔干全面解脱！大西庇阿正在西西里操练新军，元老院终于能够把全罗马所有的钢铁、战舰与战粮，全部倾注到大西庇阿远征迦太基本土的灭国圣战之中！等我们解决了汉尼拔，这笔巴尔干旧账，罗马元老院会加倍找腓力清算！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "腓力五世陛下以惊人的坚韧战胜了整个西方给马其顿设置的死局！面对罗马、埃托利亚、斯巴达与帕加马的四方围剿，陛下南征北战打服了埃托利亚同盟逼其单独媾和，更让傲慢的罗马元老院不得不派遣三十五艘战舰与特使赶赴腓尼基城求和签字！马其顿保住了爱琴海霸权与伊利里亚屏障，证明了安提柯王朝依然是地中海东部不可撼动的泰山巨擘！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这纸和约是汉尼拔在意大利收到的又一记无情背叛！腓力五世当年信誓旦旦声称要跨海与汉尼拔共饮台伯河水，可一旦在自己后院受了点挫折，立刻就为了几处边境要塞把当年的盟约撕得粉碎，同罗马单独媾和！迦太基在意大利的孤军再也等不来哪怕一个马其顿长矛兵的支援，汉尼拔彻底沦为了一座被茫茫敌海围困的孤独孤岛！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前205年，经过近十年的消耗拉锯，罗马与马其顿王国在伊庇鲁斯腓尼基城正式缔结《腓尼基和约》，第一次马其顿战争宣告结束。和约正式确认了地中海东岸的既有势力范围。此条约的签订使罗马得以彻底解除东顾之忧，将其全部军事力量集中于大西庇阿筹划的北非决战行动。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "腓尼基和约确立巴尔干东线脆弱均势",
+    "rule_punic_62"
+  ]
+}

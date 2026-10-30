@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_city_06",
+  "Name": "Metropolis of Saguntum Fortress",
+  "Keywords": [
+    "rule_punic_city_06",
+    "Urban Center Saguntum Fortress",
+    "Citadel of Saguntum Fortress",
+    "Harbor of Saguntum Fortress"
+  ],
+  "RagShortTexts": [
+    "The fortified urban center of Saguntum Fortress served as a vital strategic, naval, and..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ancient metropolis of Saguntum Fortress represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Behind the stone towers of Saguntum Fortress, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possession of Saguntum Fortress anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+    }
+  ],
+  "TextMappings": []
+}

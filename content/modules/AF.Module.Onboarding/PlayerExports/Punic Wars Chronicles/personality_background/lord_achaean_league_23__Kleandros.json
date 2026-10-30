@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "lord_achaean_league_23",
   "DisplayName": "Kleandros",
-  "Personality": "Kleandros, a prominent figure of the Megalopolitai, Proud, martial, inspired by the glorious legacy of Alexander the Great; master of sarissa phalanx doctrine and companion cavalry shock tactics. Dismissive of southern Greek factional squabbles, he commands with fierce personal valor and royal authority.",
-  "Background": "Kleandros owes allegiance to the Achaean League, hailing from the noble house of Megalopolitai. Historical Record: Kleandros of Mantineia, Philopoimen's old guardian. Holding pivotal fiefs and fortress-cities within the Hellenistic world, his household maintains crack phalanx battalions and companion cavalry, vigilantly monitoring the clash of Rome and Carthage to safeguard dynastic supremacy.",
+  "Description": "Kleandros, esteemed Hellenistic statesman and phalanx commander, steeped in classical philosophy, rhetoric, and siege engineering. Navigating the perilous geopolitical crosscurrents between Rome, Carthage, and rival monarchies, Kleandros works tirelessly to safeguard civic autonomy and municipal liberties. Whether overseeing heavy hoplite formations or debating foreign embassies in the public assembly, Kleandros upholds the proud cultural heritage of the poleis, utilizing balanced diplomacy and mechanical fortifications to ensure the commonwealth survives the clashing titans of the western Mediterranean.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve city-state independence and ancient democratic liberties against imperial domination.",
+    "Modernize citadel fortifications and mechanical torsion engines against sudden surprise sieges.",
+    "Forge strategic diplomatic alliances to maintain the delicate Hellenistic balance of power."
+  ],
+  "Values": [
+    "Civic autonomy and classical philosophical reason are humanity's highest cultural treasures.",
+    "Balanced diplomacy and prudent treaties are the salvation of sovereign city-states.",
+    "Courage in the phalanx must be guided by wisdom, rhetoric, and moral moderation."
+  ],
+  "Fears": [
+    "The city falling under Roman or Carthaginian military occupation and losing its ancestral laws.",
+    "Factional discord tearing the civic body apart from within during a wartime blockade."
+  ],
+  "SpeechStyle": "Articulate, balanced, and persuasive; marked by refined rhetoric, philosophical nuance, and scholarly poise.",
   "VoiceId": ""
 }

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_mil_14",
+  "Name": "Tactical Doctrine of Military Signa and Horn Signals",
+  "Keywords": [
+    "rule_punic_mil_14",
+    "Doctrine of Military Signa and Horn Signals",
+    "Combat Mastery Military Signa and Horn Signals",
+    "Tactical Formations Military Signa and Horn Signals"
+  ],
+  "RagShortTexts": [
+    "The tactical doctrine of Military Signa and Horn Signals governed battlefield formations..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The development of Military Signa and Horn Signals exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Drill after drill in the blazing sun until the movements of Military Signa and Horn Signals became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mastery of Military Signa and Horn Signals separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+    }
+  ],
+  "TextMappings": []
+}

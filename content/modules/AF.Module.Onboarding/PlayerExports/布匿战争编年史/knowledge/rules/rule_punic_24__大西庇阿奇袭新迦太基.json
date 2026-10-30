@@ -1,0 +1,106 @@
+{
+  "Id": "rule_punic_24",
+  "Name": "大西庇阿奇袭新迦太基与夺取战略枢纽",
+  "Description": "公元前209年，年仅二十五岁的大西庇阿趁迦太基三路大军分散之机，率两万五千人以低潮涉水奇袭攻陷新迦太基，缴获庞大国库、兵工厂与人质。",
+  "Tags": [
+    "新迦太基之战",
+    "大西庇阿",
+    "迦太基首府陷落",
+    "涉水攻城",
+    "战利品",
+    "西庇阿的节制"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 88,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前209年年仅25岁的大西庇阿以神机妙算奇袭并攻占新迦太基。",
+    "利用海潟湖退潮水浅的秘密由五百名敢死军团步兵涉水登梯破城。",
+    "此役夺取迦太基在伊比利亚的最高国库造船厂与数百名部落人质。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这不仅是一场军事胜利，更是海王涅普顿对西庇阿将军的神圣庇佑！当正门激战正酣时，退潮的海水在北侧潟湖降至齐膝深，五百名罗马勇士如幽灵般涉水攀梯登上了毫无防备的卫城！迦太基在西班牙的国库、十八艘五列桨战舰、数万具精良甲胄，以及控制全半岛的部族人质，尽数落入我们手中！西庇阿以这一击彻底扭转了乾坤！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是不可饶恕的渎职与耻辱！新迦太基坚固无比，守备长官马戈竟然相信北侧潟湖是绝对的天堑！三支大军距离首府都只有十天以内的路程，却因彼此猜忌、互不相属而眼睁睁看着帝国在西班牙的心脏被罗马雏儿一举掏空！国库没了，造船厂被烧了，连各部族的人质都被罗马人收买，我们在西班牙的统治根基在这一天彻底崩塌了！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西庇阿不仅赢在剑锋上，更赢在气魄与心术上！新迦太基城破后，那些被迦太基人锁在深宫里充当人质的部族妻女，西庇阿不仅秋毫无犯，更以礼相待亲自送还，甚至把阿卢西乌斯王子的未婚妻与重金如数奉还！面对这样的统帅，谁还会替把部族子弟当奴隶使唤的迦太基人效命？西班牙的大门向罗马敞开了！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前209年，年轻的罗马资深裁判官普布利乌斯·科尔内利乌斯·西庇阿奇袭迦太基在西班牙的首府新迦太基（今卡塔赫纳）。西庇阿利用潟湖低潮派遣敢死队翻越北面未设重防的城墙，配合正面攻城内外夹攻破城。此役夺取了迦太基的大量财富、武器工坊与人质，彻底逆转了伊比利亚战局。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "大西庇阿奇袭新迦太基与夺取战略枢纽",
+    "rule_punic_24"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "",
+  "CultureId": "battania",
+  "DisplayName": "Celtic Warriors and Tribal Elders",
+  "Description": "Insubrian and Boian broadsword warriors and druidic elders of the Po Valley and Alpine foothills. Preserving sacred forest traditions and sworn blood feuds against Roman colonial expansion, they fight bare-chested with towering stature, spiked limed hair, and resonant battle cries that shake civilized ranks.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Repel Roman colonists from sacred ancestral hunting grounds in the Po Valley."
+  ],
+  "Values": [
+    "Courage in the front rank, sacred druidic oaths, and tribal kinship honor."
+  ],
+  "Fears": [
+    "Seeing sacred oak groves desecrated and ancestral burial mounds plundered."
+  ],
+  "SpeechStyle": "Thunderous, passionate, and hearty; peppered with vivid natural metaphors and warrior pride.",
+  "VoiceId": ""
+}

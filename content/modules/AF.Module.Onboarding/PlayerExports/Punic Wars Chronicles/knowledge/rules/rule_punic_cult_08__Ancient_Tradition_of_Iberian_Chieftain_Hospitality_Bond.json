@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_cult_08",
+  "Name": "Ancient Tradition of Iberian Chieftain Hospitality Bond",
+  "Keywords": [
+    "rule_punic_cult_08",
+    "Sacred Code of Iberian Chieftain Hospitality Bond",
+    "Civic Rites Iberian Chieftain Hospitality Bond",
+    "Ancestral Law Iberian Chieftain Hospitality Bond"
+  ],
+  "RagShortTexts": [
+    "The institutional tradition of Iberian Chieftain Hospitality Bond defined social hierarchy,..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The social order of antiquity was rooted in Iberian Chieftain Hospitality Bond. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Without Iberian Chieftain Hospitality Bond, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "From childhood our elders taught us to revere Iberian Chieftain Hospitality Bond. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+    }
+  ],
+  "TextMappings": []
+}

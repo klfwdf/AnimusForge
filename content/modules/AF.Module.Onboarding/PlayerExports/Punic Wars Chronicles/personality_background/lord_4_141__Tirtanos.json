@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_4_141",
+  "DisplayName": "Tirtanos",
+  "Description": "Tirtanos, esteemed Hellenistic statesman and phalanx commander, steeped in classical philosophy, rhetoric, and siege engineering. Navigating the perilous geopolitical crosscurrents between Rome, Carthage, and rival monarchies, Amorcon works tirelessly to safeguard civic autonomy and municipal liberties. Whether overseeing heavy hoplite formations or debating foreign embassies in the public assembly, Amorcon upholds the proud cultural heritage of the poleis, utilizing balanced diplomacy and mechanical fortifications to ensure the commonwealth survives the clashing titans of the western Mediterranean.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Preserve city-state independence and ancient democratic liberties against imperial domination.",
+    "Modernize citadel fortifications and mechanical torsion engines against sudden surprise sieges.",
+    "Forge strategic diplomatic alliances to maintain the delicate Hellenistic balance of power."
+  ],
+  "Values": [
+    "Civic autonomy and classical philosophical reason are humanity's highest cultural treasures.",
+    "Balanced diplomacy and prudent treaties are the salvation of sovereign city-states.",
+    "Courage in the phalanx must be guided by wisdom, rhetoric, and moral moderation."
+  ],
+  "Fears": [
+    "The city falling under Roman or Carthaginian military occupation and losing its ancestral laws.",
+    "Factional discord tearing the civic body apart from within during a wartime blockade."
+  ],
+  "SpeechStyle": "Articulate, balanced, and persuasive; marked by refined rhetoric, philosophical nuance, and scholarly poise.",
+  "VoiceId": ""
+}

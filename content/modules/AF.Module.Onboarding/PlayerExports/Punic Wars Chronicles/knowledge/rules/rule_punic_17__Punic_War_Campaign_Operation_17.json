@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_17",
+  "Name": "Punic War Campaign Operation 17",
+  "Keywords": [
+    "rule_punic_17",
+    "Punic Operation 17",
+    "Strategic Campaign 17",
+    "Mediterranean Theater 17"
+  ],
+  "RagShortTexts": [
+    "Strategic campaign doctrine 17 concerning Mediterranean operations during the Second Punic War."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "During the Second Punic War, military and naval maneuvers around operation 17 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "We marched through dust and mud under strict centurion orders for operation 17, keeping our shields locked and swords sharp against sudden enemy ambushes."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Senate and military commanders weighed the logistical balance of operation 17 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+    }
+  ],
+  "TextMappings": []
+}

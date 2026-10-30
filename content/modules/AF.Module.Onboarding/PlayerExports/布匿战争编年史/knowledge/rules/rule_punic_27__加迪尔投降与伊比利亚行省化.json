@@ -1,0 +1,108 @@
+{
+  "Id": "rule_punic_27",
+  "Name": "加迪尔和平投降与西班牙双行省设立",
+  "Description": "公元前206年底，迦太基在西班牙的最后据点古城加迪尔与罗马海军密约投降，玛戈率残军泛海撤退，罗马元老院设立近西班牙与远西班牙两行省确立殖民统治。",
+  "Tags": [
+    "加迪尔投降",
+    "加的斯",
+    "近西班牙行省",
+    "远西班牙行省",
+    "玛戈撤退",
+    "银矿开采"
+  ],
+  "Category": "Political",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前206年底迦太基在西班牙的最后堡垒加迪尔开城归降罗马。",
+    "玛戈·巴卡统帅搜刮城中财宝后率残部战船泛海撤往巴利阿里群岛。",
+    "罗马元老院随后在半岛设立近西班牙与远西班牙两个长期军事行省。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加迪尔的归降为罗马长达六年的西班牙征战画上了完美句点！元老院已正式裁定，设立近西班牙与远西班牙两个行省，各派资深裁判官统军常驻。卡斯图洛与新迦太基的巨型银矿现在每一磅纯银都将运回罗马国库，不仅充实了军饷，更彻底切断了任何敌对强权在半岛死灰复燃的可能！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加迪尔是我们腓尼基祖先在海外建立的最古老明珠，神庙里燃烧着麦尔卡特的永恒圣火！然而那些贪生怕死的商人元老竟然背叛了祖国，悄悄关闭城门把玛戈统帅拒之门外，向罗马异教徒摇尾乞怜！玛戈大人只能洗劫神庙剩余的金银充作军费，率领孤独的残舰驶向惊涛骇浪，巴卡家族在西班牙的伟大诗篇就此凄凉落幕。"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加迪尔换了旗帜，罗马总督就迫不及待地带着账簿和皮鞭来了！他们把这片祖先的土地划成了什么近西班牙、远西班牙行省，开始强征我们的小麦、强征我们的矿工。部族原以为送走了吃人的豺狼，迎来的却是连骨头都要嚼碎的钢铁恶狼！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前206年末，腓尼基古城加迪尔（今加的斯）的议会秘密与罗马海军将领拉埃利乌斯达成协议，向罗马和平献城。迦太基统帅玛戈·巴卡被迫率舰队撤离西班牙海域。罗马随后将伊比利亚半岛划分为近西班牙和远西班牙两个行省，开启了长期的殖民与行省化统治。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "加迪尔和平投降与西班牙双行省设立",
+    "rule_punic_27"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_mil_12",
+  "Name": "Tactical Doctrine of Carthaginian Naval Oar Coordination",
+  "Keywords": [
+    "rule_punic_mil_12",
+    "Doctrine of Carthaginian Naval Oar Coordination",
+    "Combat Mastery Carthaginian Naval Oar Coordination",
+    "Tactical Formations Carthaginian Naval Oar Coordination"
+  ],
+  "RagShortTexts": [
+    "The tactical doctrine of Carthaginian Naval Oar Coordination governed battlefield..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The development of Carthaginian Naval Oar Coordination exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Drill after drill in the blazing sun until the movements of Carthaginian Naval Oar Coordination became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mastery of Carthaginian Naval Oar Coordination separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+    }
+  ],
+  "TextMappings": []
+}

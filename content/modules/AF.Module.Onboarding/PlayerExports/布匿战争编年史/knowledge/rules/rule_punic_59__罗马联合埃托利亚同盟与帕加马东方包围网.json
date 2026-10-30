@@ -1,0 +1,108 @@
+{
+  "Id": "rule_punic_59",
+  "Name": "罗马联合埃托利亚同盟与帕加马东方包围网",
+  "Description": "公元前211年，罗马以‘以希腊人制希腊人’的离岸平衡外交，联合埃托利亚同盟、帕加马王国与斯巴达，打造密不透风的东方反马其顿战略包围网。",
+  "Tags": [
+    "东方包围网",
+    "埃托利亚同盟",
+    "帕加马盟军",
+    "离岸平衡",
+    "腓力五世受制",
+    "以夷制夷"
+  ],
+  "Category": "Political",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前211年罗马与埃托利亚同盟正式缔结针对马其顿的全面攻守同盟条约。",
+    "协议规定战胜后一切土地要塞归埃托利亚所有而全数人口浮财战利品归罗马。",
+    "拉拢小亚细亚帕加马海军与斯巴达加入将腓力五世牢牢困死在希腊内耗战中。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是罗马元老院最高超的外交杰作！在意大利本土承受汉尼拔疯狂践踏的危难岁月里，我们仅仅用一支二十五艘战船的特遣舰队和一张外交条约，就彻底把马其顿庞大的野心摁死在巴尔干！条约写得明明白白：战胜后土地归希腊蛮子，黄金和奴隶运回罗马！埃托利亚同盟的标枪、帕加马国王阿塔罗斯的精锐舰队在东线四面开花，腓力五世连自家后院起火都扑不灭，还想渡海支援汉尼拔？做梦！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "aetolian_league"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃托利亚人才是希腊自由真正的卫士！马其顿自菲利普二世和亚历山大以来就把希腊人当成王权的家奴，我们要用手中的战斧彻底砸烂这个专制王权！有了罗马舰队在海上的侧翼掩护和帕加马的铁金库，我们在色萨利和阿卡纳尼亚的每一座山头都能痛击马其顿方阵！希腊的土地理当归我们希腊同盟治理！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃托利亚这群山贼强盗完全是引狼入室的民族叛徒！他们竟然引诱嗜血的西方蛮族罗马进入神圣的希腊世界，任由罗马军团劫掠希腊城邦的庙宇、把自由希腊公民贩卖为奴！腓力五世陛下四处奔波扑火，南征斯巴达、西抗埃托利亚、东御帕加马，我们是在为全希腊文明对抗野蛮强盗的侵蚀而苦苦浴血奋战！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前211年，罗马在东线成功构建起针对马其顿王国的强大同盟网络，与埃托利亚同盟、帕加马王国、斯巴达等势力结成同盟。罗马以最小兵力牵制住马其顿主力，使腓力五世深陷希腊本土的多线混战，彻底解除了马其顿从侧翼进军意大利支援汉尼拔的战略威胁。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "罗马联合埃托利亚同盟与帕加马东方包围网",
+    "rule_punic_59"
+  ]
+}

@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "er_lord_masaesyli_2",
   "DisplayName": "Tafsut",
-  "Personality": "Tafsut, a prominent figure of the Masaesyli, Regal, commanding, steeped in classical patrician gravitas; acute in political judgment and steadfast in preserving ancestral lineage. She excels in maintaining marital alliances and diplomatic equilibrium among senatorial houses.",
-  "Background": "Tafsut owes allegiance to the Masaesyli Numidia, hailing from the noble house of Masaesyli. Historical Record: Wife of Syphax, head of the Masaesyli, a Numidian house of the Masaesyli. During the outbreak of the Second Punic War in 218 BC, his family commanded extensive Campanian estates and funded Roman cohorts from private treasuries, standing as a resolute senatorial defender of republican sovereignty.",
+  "Description": "Tafsut, formidable tribal chieftain and light cavalry commander of the North African steppes, master of the bridleless riding tradition and swift desert warfare. Commanding seasoned skirmishers and agile desert ponies, Tafsut excels in fluid hit-and-run tactics, harassment, and scouting. Caught between rival Massylian and Masaesylian royal houses and courted by both Punic and Roman gold, Tafsut maintains fierce loyalty to nomadic independence, guarding vital oasis trade routes and ancestral pasturage with unmatched mobility and spear-throwing prowess.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 1
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend tribal independence and ancestral pastures against encroaching foreign empires.",
+    "Lead the swiftest cavalry wings in North Africa to secure rich war spoils and tribal renown.",
+    "Outmaneuver rival desert chieftains to establish supremacy over the fertile plains."
+  ],
+  "Values": [
+    "The freedom of the nomad and the wind-swift courser are the highest gifts of the sky.",
+    "Blood oaths and kinship loyalties are sacred; debts of honor are settled with the spear.",
+    "Strength, cunning, and endurance on the arid trail define true leadership."
+  ],
+  "Fears": [
+    "Being trapped in fortified cities and reduced to tributary vassalage by foreign kings.",
+    "Sudden drought or enemy raiders poisoning sacred oasis wells and starving tribal herds."
+  ],
+  "SpeechStyle": "Direct, sharp, and spirited; speaks with the unvarnished frankness of the open steppe and fierce independence.",
   "VoiceId": ""
 }

@@ -1,0 +1,43 @@
+{
+  "Id": "rule_punic_06",
+  "Name": "Defection of Capua and Campaign in Campania",
+  "Keywords": [
+    "rule_punic_06",
+    "Defection of Capua",
+    "Campania Campaign",
+    "Pacuvius Calavius",
+    "Capua Circumvallation"
+  ],
+  "RagShortTexts": [
+    "After Cannae, rich Capua defected to Hannibal, triggering years of brutal siege warfare in..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the disaster at Cannae, Capua—the second greatest and wealthiest city of Italy—revolted and opened its gates to Hannibal, hoping to supplant Rome as ruler of Italy. While Hannibal wintered his veterans in the luxurious city, Rome responded with ruthless determination, encircling Capua with double siege lines (circumvallation). Despite Hannibal's diversionary march on Rome's gates, Capua was starved into unconditional surrender in 211 BC, its senators executed, and its territory confiscated."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The punishment of Capua was a necessary lesson to all Italian confederates: Rome's vengeance may be delayed by circumstance, but it is absolute, merciless, and inescapable."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "The Capuan lords thought Hannibal would crown them kings of Italy! Instead they ended up eating boiled grass behind stone walls, and when the legions broke in, the executioner's axe didn't stop until sunset."
+    }
+  ],
+  "TextMappings": []
+}

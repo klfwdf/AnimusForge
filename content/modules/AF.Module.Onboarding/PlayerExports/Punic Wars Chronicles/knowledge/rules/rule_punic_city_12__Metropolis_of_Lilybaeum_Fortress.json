@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_city_12",
+  "Name": "Metropolis of Lilybaeum Fortress",
+  "Keywords": [
+    "rule_punic_city_12",
+    "Urban Center Lilybaeum Fortress",
+    "Citadel of Lilybaeum Fortress",
+    "Harbor of Lilybaeum Fortress"
+  ],
+  "RagShortTexts": [
+    "The fortified urban center of Lilybaeum Fortress served as a vital strategic, naval, and..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ancient metropolis of Lilybaeum Fortress represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Behind the stone towers of Lilybaeum Fortress, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possession of Lilybaeum Fortress anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+    }
+  ],
+  "TextMappings": []
+}

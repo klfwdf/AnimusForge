@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_37",
+  "Name": "诺拉三次反击战与马塞卢斯打破不败神话",
+  "Description": "公元前216至214年，执政官马塞卢斯坐镇坎帕尼亚重镇诺拉，三次成功挫败汉尼拔的强攻与城内内应，斩敌数千，在坎尼绝境中打破汉尼拔不可战胜的心理神话。",
+  "Tags": [
+    "诺拉战役",
+    "马塞卢斯",
+    "罗马之剑",
+    "坎帕尼亚防御",
+    "打破不败神话",
+    "巷战设伏"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前216至214年马塞卢斯三次挫败汉尼拔对重镇诺拉的强攻与夺取企图。",
+    "马塞卢斯严厉肃清城内亲迦太基叛徒并利用城门狭窄地形突然冲杀。",
+    "诺拉反击战在坎尼惨败阴影下打破了汉尼拔在意大利野战不可战胜的神话。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "如果说费边是罗马的坚盾，那马塞卢斯就是罗马永不弯曲的铁剑！在坎尼惨案后全意大利都在颤抖投降的至暗时刻，唯有马塞卢斯在诺拉城屹立如山！他雷厉风行砍掉了城内投敌叛徒的脑袋，趁敌军松懈大开城门发起狂暴反冲锋，当场斩杀两千多名迦太基精锐！诺拉的大捷向整个世界证明：汉尼拔并非不可战胜的神明，只要军团敢于拔剑，迦太基人同样会流血横尸！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马塞卢斯确实是个狡诈狠毒的强敌。诺拉城墙高大坚固，城内的平民原本已经暗中同我们联络献城，但马塞卢斯竟提前将亲迦太基的元老全数斩首，将全城百姓胁迫上城墙守备。汉尼拔不愿在坚城之下虚耗有限的远征精锐，连续三次无功而返，使我们错失了迅速拿下整个坎帕尼亚平原的最佳战机。"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺拉城门前的那场肉搏太可怕了！城门突然打开，罗马兵像疯了一样冲出来，带头的马塞卢斯将军浑身是血地挥舞大剑。街坊邻居都在传说汉尼拔攻无不克，可那天下午，退回营地的迦太基人第一次抬回了无数具军官的尸首。从那一天起，坎帕尼亚的平民知道，这仗还有得打！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前216至214年，罗马名将马库斯·克劳狄·马塞卢斯坐镇坎帕尼亚重镇诺拉，三次成功抵御汉尼拔的围攻与伏击。马塞卢斯平定城内叛乱、适时发起城门反冲击破敌，此系列战役在坎尼会战后的极端绝境中极大振奋了罗马士气，被后世誉为打破汉尼拔不败神话之战。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "诺拉三次反击战与马塞卢斯打破不败神话",
+    "rule_punic_37"
+  ]
+}

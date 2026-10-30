@@ -1,0 +1,106 @@
+{
+  "Id": "rule_punic_44",
+  "Name": "阿基米德起重铁爪与海墙倾覆敌舰",
+  "Description": "公元前214年叙拉古保卫战中，阿基米德利用杠杆与滑轮原理研制伸出海墙的‘阿基米德铁爪’，精准抓取靠近城墙的罗马战舰舰艏并将其吊至半空翻扣倾覆入海。",
+  "Tags": [
+    "阿基米德之爪",
+    "起重机械",
+    "杠杆原理",
+    "罗马战舰倾覆",
+    "叙拉古守城",
+    "古代科技奇迹"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 88,
+  "IsActive": true,
+  "RagShortTexts": [
+    "阿基米德利用杠杆与滑轮原理制造伸出海墙悬崖的巨大铁爪起重吊臂。",
+    "巨爪由重链操纵精准抓扣住贴近城墙的罗马战舰舰艏将其吊向高空。",
+    "吊臂松脱将敌舰倒扣砸入深海或撞碎于岩壁致使罗马水兵陷入极端恐慌。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 95,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "‘给我一个支点，我能撬动整个地球！’阿基米德老人的誓言在海墙上化为了现实！当罗马人的战舰顶着盾牌试图贴上海墙死角时，城垛后缓缓伸出如同巨龙长颈般的铁臂吊桁，前端粗重的钢铁铁爪带着锁链猛扑而下，精准钩住敌舰龙骨！城内重达数十石的配重巨石骤然释放，整艘数万斤重的五列桨战舰竟被生生拎离海面悬空吊起！紧接着锁链脱钩，巨舰在半空中翻滚倒扣重重砸进惊涛，水花夹杂着碎木与水兵的内脏冲天而起！阿基米德一人抵得上十个军团！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那根本不是凡人所能拥有的力量，那是操纵恶灵的巫术！战友们眼睁睁看着我们的巨舰像小木偶一样被城墙里伸出的黑铁铁爪抓住舰头，整艘船立了起来，甲板上的士兵全摔进海里被铁盾砸烂。船只在半空转了半圈然后被摔在悬崖礁石上拍得粉碎！马塞卢斯将军不得不苦涩地下令舰队后撤：‘我们是在同一位百手巨神作战！’"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "码头上的老百姓全在拍手叫好！那些平日里横冲直撞的罗马大船，一靠近悬崖就被吊杆像钓鱼一样提到了半空中，船尾直插在水里，船头伸进云彩里，水兵哇哇大叫着往下掉。等铁爪一松，轰隆一声巨响，大船沉下去连个气泡都没冒出来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前214年叙拉古围城战中，著名科学家阿基米德研制出伸出城墙的重型杠杆滑轮机械‘阿基米德之爪’。该机械能从高墙投下钢铁吊钩抓取罗马战船舰艏，利用配重将其垂直提起倒悬于空中并突然释放，使敌舰倾覆沉没或撞碎于岩壁，给罗马海军造成巨大的心理与战术震撼。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "阿基米德起重铁爪与海墙倾覆敌舰",
+    "rule_punic_44"
+  ]
+}

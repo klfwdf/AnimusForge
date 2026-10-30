@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_46",
+  "Name": "阿基米德聚光镜与烈阳焚帆守城传奇",
+  "Description": "古典文献相传阿基米德利用大批打磨锃亮的六角形青铜凹面镜聚焦烈日阳光，反射于逼近海墙的罗马战船帆蓬上将其瞬间点燃引燃大火，成为古代光学与守城战的千古传奇。",
+  "Tags": [
+    "阿基米德聚光镜",
+    "热力守城",
+    "青铜凹面镜",
+    "战船起火",
+    "光学奇迹",
+    "古代传奇"
+  ],
+  "Category": "History",
+  "DefaultPriority": 78,
+  "IsActive": true,
+  "RagShortTexts": [
+    "后世古典文献流传阿基米德曾利用大批打磨极亮的六角青铜凹面反光镜守城。",
+    "组织城中青年将反射的炽烈地中海阳光集中聚焦于靠近海墙的罗马船帆上。",
+    "干燥涂油的帆布与缆绳在强光聚焦下冒烟燃起大火制造烈日焚船的惊天奇观。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是阿波罗烈日神神威与阿基米德光学神技的完美降临！数百名叙拉古青年在城垛后排成严格的抛物线阵列，手中擦拭得纤尘不染的青铜巨镜同时翻转，将地中海正午最炽烈的阳光汇聚为一道令人无法逼视的光矛，直刺罗马旗舰主帆！不出十数个呼吸，涂满松脂的亚麻船帆冒出滚滚白烟，腾起冲天大火！罗马水兵惊叫着跳海，他们以为阿波罗神亲自降下神火天诛惩戒狂妄的侵略者！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "即便这只是希腊文人夸大其词的神话渲染，甚至可能只是阿基米德用石弩投掷硫磺沥青火罐造成的附会，但叙拉古城头反射出的那道刺目眩光的恐怖压迫感是真实不虚的！水兵们的眼睛被强光灼瞎无法瞄准，桅杆在火箭火球洗礼下熊熊燃烧。在叙拉古海湾，任何关于阿基米德的传言都足以在军团士兵心底烙下深不可测的恐惧。"
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "酒馆里的说书人最爱讲这一段：阿基米德老爷子站在高高的塔楼顶上，手里拿着块亮晶晶的小镜子照了照，海里的大船就呼啦一下自己烧成了火炭！神仙手段不过如此，要是老神仙一直活着，罗马人就算来上一百万大军也休想踏进叙拉古半步！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "后世文献（如卢西安、盖伦等）流传阿基米德曾发明聚光反光镜阵列引燃靠近城墙的罗马战船。现代学术界对其是凹面青铜镜真实聚热着火，亦或是抛射沥青硫磺燃烧罐的文学夸张存在争鸣，但该传说极大增添了阿基米德作为古代机械与科学防御大师的传奇色彩。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "阿基米德聚光镜与烈阳焚帆守城传奇",
+    "rule_punic_46"
+  ]
+}

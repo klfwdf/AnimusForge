@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_61",
+  "Name": "曼提尼亚战役与‘最后的希腊人’菲洛皮门决斗",
+  "Description": "公元前207年，亚该亚同盟统帅菲洛皮门在曼提尼亚战役中以改革后的重装长矛方阵迎战斯巴达僭主马哈尼达斯，阵前单挑一矛刺死马哈尼达斯，挽救南希腊战局。",
+  "Tags": [
+    "曼提尼亚战役",
+    "菲洛皮门",
+    "最后的希腊人",
+    "斯巴达僭主阵亡",
+    "亚该亚军事改革",
+    "阵前决斗"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前207年曼提尼亚战役亚该亚名将菲洛皮门彻底击溃斯巴达大军。",
+    "菲洛皮门推行方阵军制改革以改良长矛与重装盾牌抗衡轻装雇佣军。",
+    "战役高潮菲洛皮门单枪匹马在堑壕边以重矛亲手刺杀斯巴达僭主马哈尼达斯。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 95,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "achaean_league"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是希腊古典英雄史诗的绝唱！菲洛皮门统帅抛弃了过去软弱的轻盾标枪，给全军换上精良的重胸甲与六米萨里沙长矛！在曼提尼亚的深沟前，当暴君马哈尼达斯狂妄策马跃过堑壕企图突刺时，菲洛皮门一步未退，双手紧握重矛借着战马冲势猛力贯穿！暴君的胸甲被长矛硬生生刺穿，惨叫着栽进烂泥！亚该亚全军爆发出惊天动地的呐喊，斩敌四千！希腊人终于用自己的血肉与英雄骨气洗刷了屈辱，波利比乌斯称他为‘希腊最后的勇士’！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "菲洛皮门在曼提尼亚的辉煌斩首挽救了整个伯罗奔尼撒半岛的局势！马哈尼达斯的覆灭彻底摧毁了斯巴达反叛力量的脊梁，也让罗马在东线失去了一根最为凶残的抓手。腓力五世陛下得以腾出手来集中兵力压向埃托利亚首府塞蒙，迫使孤立无援的埃托利亚人向马其顿屈膝求饶！"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "整场大仗看得人血脉贲张！马哈尼达斯以为他的雇佣军天下无敌，一路追着败兵杀红了眼。谁知道菲洛皮门将军稳如泰山地立在深沟对面，就那么单枪匹马迎上去。两匹战马撞在一起的瞬间，菲洛皮门的长矛直接从暴君的脖子扎到底，血喷出三尺高！主帅一死，剩下的几千雇佣兵立马像没头苍蝇一样跪地投降。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前207年，亚该亚同盟著名将领菲洛皮门在曼提尼亚战役中对阵斯巴达军队。菲洛皮门凭借其改革的密集重装方阵遏制了斯巴达攻势，并在战阵决斗中亲手刺杀斯巴达僭主马哈尼达斯，斩俘敌军八千余人。菲洛皮门因其杰出的战略与高洁武德被罗马与希腊史家共同尊称为‘最后的希腊人’。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "曼提尼亚战役与‘最后的希腊人’菲洛皮门决斗",
+    "rule_punic_61"
+  ]
+}

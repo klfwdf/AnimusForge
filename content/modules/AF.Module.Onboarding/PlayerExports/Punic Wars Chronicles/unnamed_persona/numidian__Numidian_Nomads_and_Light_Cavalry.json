@@ -1,0 +1,32 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "",
+  "CultureId": "numidian",
+  "DisplayName": "Numidian Nomads and Light Cavalry",
+  "Description": "Natural-born horsemen reared on the arid plateaus and scrublands beneath the Atlas Mountains. Riding bareback without saddles or bridles, armed only with light javelins and small round bucklers, they excel in uncatchable skirmishing and encirclement, hunting like desert hawks.",
+  "Traits": [
+    {
+      "Id": "opportunistic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect desert pastureland and earn rich war booty through unmatched mobility."
+  ],
+  "Values": [
+    "Nomadic autonomy, loyalty to tribal blood kin, and mastery of the desert courser."
+  ],
+  "Fears": [
+    "Being pinned against fortified obstacles where horses cannot maneuver."
+  ],
+  "SpeechStyle": "Swift, sharp, and concise; devoid of flowery rhetoric, direct as a thrown javelin.",
+  "VoiceId": ""
+}

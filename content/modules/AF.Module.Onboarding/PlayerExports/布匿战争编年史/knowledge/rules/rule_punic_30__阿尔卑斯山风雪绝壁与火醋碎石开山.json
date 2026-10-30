@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_30",
+  "Name": "阿尔卑斯山风雪绝壁与火醋碎石开山奇迹",
+  "Description": "公元前218年深秋，汉尼拔率军历经十五天难以想象的酷寒、雪崩与山民伏击，在悬崖绝壁以巨木焚火泼醋爆碎岩石强行开辟通路，率两万六千残兵突入波河平原。",
+  "Tags": [
+    "阿尔卑斯山行军",
+    "汉尼拔",
+    "火醋开山",
+    "高山伏击",
+    "战象翻山",
+    "波河平原突破"
+  ],
+  "Category": "History",
+  "DefaultPriority": 90,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前218年深秋汉尼拔历时十五天完成翻越阿尔卑斯山的军事奇迹。",
+    "在悬崖断道处砍伐巨木堆火焚烧岩石随后泼醋使其脆化崩解开辟通路。",
+    "全军折损过半后率两万六千名精锐老兵与残存战象突入北意大利平原。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 95,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是人类意志征服自然极限的史诗！十五个日夜，暴风雪冻僵了西班牙老兵，狂暴的高山蛮族从悬崖上推下巨石砸烂了无数战马与骡车。最险要处道路彻底被雪崩斩断，汉尼拔下令伐倒古松堆积在巨岩上燃起熊熊烈火，再将苦醋泼向滚烫的岩面，巨石轰然脆裂炸开！工兵日夜锤击凿出狭道，战象一步一滑地蹭过深渊。当我们站在山口眺望阳光下肥美的波河平原时，统帅高呼：‘看，罗马的大门就在脚下！’"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "即便是最仇恨汉尼拔的罗马元老，也无法不为这惊世骇俗的疯狂举动感到毛骨悚然！阿尔卑斯山自古以来是神明赐予意大利的天然铜墙铁壁，从来没有一支成建制的军队能带着战象从风雪冰峰中活着走出来！当他那群冻得像恶鬼般枯槁的非洲与西班牙老兵突兀出现在波河平原时，全罗马的惊恐无异于见到幽冥军团降临人间！"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老人们说，那年秋天的阿尔卑斯山口飘荡着黑烟与长鼻巨兽凄厉的吼叫。山上的猎户们靠滚木砸死了成百上千掉队的佣兵，但那支队伍就像一条淌着血却斩不断的钢铁巨蟒，硬是在绝壁上用火把石头烧崩出一条路。等他们下山时，冰川上留下了上万具冻僵的尸骨，可活下来走进平原的那些人，每一个人的眼睛都冷得像雪山上的冰锥。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年深秋，汉尼拔率军耗时十五天翻越了被视作不可逾越天堑的阿尔卑斯山。面对风雪严寒、补给断绝、山民袭击以及雪崩断崖，汉尼拔运用火烧泼醋碎石的技术开山破路，最终率领两万步兵、六千骑兵及部分战象突入波河平原，将战火烧至罗马本土。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "阿尔卑斯山风雪绝壁与火醋碎石开山奇迹",
+    "rule_punic_30"
+  ]
+}

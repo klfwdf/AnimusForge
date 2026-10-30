@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_48",
+  "Name": "阿克拉迪纳总攻与阿基米德沙地殉难",
+  "Description": "公元前212年秋，罗马攻破叙拉古核心内城阿克拉迪纳并展开血腥洗劫；七十五岁的天才学者阿基米德因专注于沙盘几何图形遭鲁莽罗马士兵刺杀殉难，成为古典科学界永恒悲歌。",
+  "Tags": [
+    "叙拉古陷落",
+    "阿基米德之死",
+    "不要踩我的圆",
+    "阿克拉迪纳",
+    "马塞卢斯哀恸",
+    "科学殉难"
+  ],
+  "Category": "History",
+  "DefaultPriority": 90,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前212年秋罗马攻破内城阿克拉迪纳展开长达数日的残酷洗劫与屠城。",
+    "七十五岁的阿基米德因专注于沙盘几何圆圈对持剑罗马士兵发出最后抗议。",
+    "鲁莽的军团士兵挥剑刺杀阿基米德致使马塞卢斯统帅闻讯悲痛并厚葬贤哲。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 95,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "‘请不要弄坏我的圆！’（Noli turbare circulos meos！）这是七十五岁的老人留给野蛮世界的最后遗言！当马塞卢斯的豺狼兵团在阿克拉迪纳烧杀奸淫、搬抢黄金雕像时，这位智慧胜过全人类的先哲正静静跪在书房沙盘前推导几何命题。一个满身酒气的粗野罗马士兵持剑闯入，阿基米德甚至连头都没抬，只是用苍老的双手护住地上的圆弧！利剑刺穿了老人的胸膛，鲜血染红了演算几何题的细沙！希腊文明最璀璨的星辰陨落了，罗马用屠刀夺走了全人类最伟大的大脑！"
+    },
+    {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马塞卢斯将军在听到噩耗那一刻痛苦地双手抱头失声痛哭！将军战前三令五申：严禁伤害阿基米德一根汗毛，必须将这位令人敬畏的学者完好无损地护送至帅帐！可在这被鲜血与贪婪冲昏头脑的破城狂欢中，一个该死的士兵竟因老人不理会盘问而下了毒手！将军下令当众将那名凶手严惩军法，亲自为阿基米德举行最高规格的国葬，并在他的墓碑上雕刻了圆柱容球图形。然而无论怎样的悔恨，都无法抹去罗马人身上沾染的这滴万世污血！"
+    },
+    {
+      "Priority": 78,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "城破之后整个阿克拉迪纳都疯了，抢金子、抢银器、抓女人。谁也不知道那个在院子里摆弄沙子怪老头就是把我们的舰队打得鬼哭狼嚎的大机械师。等大家明白过来的时候，老头已经倒在血水里断气了。将军连战利品都顾不上清点，发疯一样冲过去给老头穿衣服办丧事，那一刻所有吵闹的士兵都吓得闭了嘴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前212年秋，罗马攻克叙拉古内城阿克拉迪纳。大军洗劫期间，七十五岁的科学家阿基米德正全神贯注于地上的几何图稿，面对持剑闯入的罗马士兵喊出‘不要踩乱我的圆’。士兵恼怒将其刺杀。执政官马塞卢斯闻讯悲恸，以礼厚葬阿基米德并依照其遗愿在墓碑上刻下球内切于圆柱的数学图徽。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "阿克拉迪纳总攻与阿基米德沙地殉难",
+    "rule_punic_48"
+  ]
+}

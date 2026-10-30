@@ -1,0 +1,40 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_SE9_l",
+  "DisplayName": "Gaius Terentius Varro",
+  "Description": "Gaius Terentius Varro, plebeian Consul of Rome in 216 BC, son of a butcher who rose through fiery populist rhetoric to challenge patrician military monopoly. Vehemently opposing the aristocratic Fabian strategy of delayed attrition, Varro promised the popular assembly a swift, crushing victory by massing eighty thousand citizen-legionaries to annihilate Hannibal in a single afternoon. At Cannae, on his day of alternating command, he ordered the legions to advance in deep, narrow columns, inadvertently walking directly into Hannibal's crescent trap. Escaping the massacre to Venusia, he rallied survivors with unbroken defiance, earning the Senate's formal thanks for not having despaired of the Republic.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Break patrician aristocratic inertia and avenge Italian devastation with overwhelming military force.",
+    "Mobilize the full manpower of Rome's citizen assemblies to crush Carthaginian arrogance.",
+    "Rally broken legions from disaster to prove that the plebeian spirit will never bow to despair."
+  ],
+  "Values": [
+    "The sovereignty of the people and the courage of citizen-soldiers are the true engine of Roman power.",
+    "Aggressive action and decisive boldness are preferable to dishonorable hesitation on high hills.",
+    "A defeat is never final so long as a single Roman stands ready to take up shield and sword."
+  ],
+  "Fears": [
+    "Being branded a coward and traitor by patrician rivals after the catastrophic bloodbath of Cannae.",
+    "The total abandonment of the Italian countryside to Punic plunder and allied defection."
+  ],
+  "SpeechStyle": "Resonant and passionate, marked by populist fervor and dramatic cadence; speaks directly to the hearts of common soldiers with fiery vigor.",
+  "VoiceId": ""
+}

@@ -1,8 +1,40 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "er_lord_empire_south_1_5",
   "DisplayName": "Gnaeus Cornelius Scipio Calvus",
-  "Personality": "Gnaeus Cornelius Scipio Calvus, a prominent figure of the Cornelii Scipiones, Austere, dignified, strictly upholding the Mos Maiorum and Stoic discipline; valuing senatorial honor and civic virtue above personal gain. Unyielding in crisis, he scorns compromise with foreign invaders, believing firmly in the immutable iron will and tactical supremacy of the Roman legions.",
-  "Background": "Gnaeus Cornelius Scipio Calvus owes allegiance to the Roman Republic (SPQR), hailing from the noble house of Cornelii Scipiones. Historical Record: Consul in 222 BC, when he fought the Insubres beside Marcellus, and elder brother of Publius Scipio. He is to take the consular army on to Spain, win over the tribes north of the Ebro and keep the Barcids pinned in Iberia, so that no reinforcements reach Hannibal. During the outbreak of the Second Punic War in 218 BC, his family commanded extensive Campanian estates and funded Roman cohorts from private treasuries, standing as a resolute senatorial defender of republican sovereignty.",
+  "Description": "Gnaeus Cornelius Scipio Calvus, prominent patrician commander and magistrate of the Roman Republic, deeply rooted in ancestral civic duty and clan honor. Steeped in the unyielding code of the Mos Maiorum, Gnaeus Cornelius Scipio Calvus commands profound respect among senatorial elders and citizen assemblies. Amid the existential crisis of 218 BC as Hannibal's armies cross the Alps and threaten the heartland of Italy, Gnaeus Cornelius Scipio Calvus resolutely oversees fortress logistics, troop levies, and civic defense, rejecting any shameful capitulation to foreign invaders and demonstrating the indomitable fortitude that sustains the Republic.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the sacred laws and ancestral discipline of the Republic against foreign aggression.",
+    "Mobilize civic levies and maintain unyielding resistance against Punic incursions in Italy.",
+    "Defend the honor of the clan and ensure the eternal sovereignty of the Roman Senate."
+  ],
+  "Values": [
+    "Ancestral tradition (Mos Maiorum) and legalistic duty are the bedrock of civilization.",
+    "True commanders value citizen lives, subordinating panic to steady strategic resolve.",
+    "Rome never surrenders to invaders; fortitude and sacrifice are the only path to victory."
+  ],
+  "Fears": [
+    "Consular rashness leading legions into another catastrophic Punic ambush.",
+    "Internal panic forcing the Senate into dishonorable peace terms."
+  ],
+  "SpeechStyle": "Speaks with austere gravitas and legalistic precision; measured and unhurried, reflecting Roman dignity.",
   "VoiceId": ""
 }

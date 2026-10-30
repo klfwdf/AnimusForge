@@ -1,0 +1,43 @@
+{
+  "Id": "rule_punic_04",
+  "Name": "Battle of Cannae and Double Envelopment",
+  "Keywords": [
+    "rule_punic_04",
+    "Battle of Cannae",
+    "Cannae Double Envelopment",
+    "Barcid Crescent Formation",
+    "Consul Paullus Martyrdom"
+  ],
+  "RagShortTexts": [
+    "At Cannae (216 BC), Hannibal enveloped and destroyed eighty thousand Romans in the greatest..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On August 2, 216 BC, on the dust-choked plain of Cannae beside the Aufidus River, Hannibal executed the quintessential double envelopment. Placing his weaker Celtic and Iberian infantry in an outward convex crescent while holding veteran African heavy infantry in reserve on the flanks, Hannibal allowed his center to slowly yield under consular pressure. As the Roman mass pushed forward into a concave trap, Hasdrubal's heavy cavalry routed the Roman wings and slammed into the rear, annihilating over 70,000 Romans including Consul Paullus."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "We were squeezed so tight we couldn't even draw our shortswords! Dust blinded our eyes, and from every side came the whistling javelins and slashing Iberian blades. It wasn't a battle; it was a slaughterhouse."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Seventy thousand citizens, eighty senators, and Consul Paullus fallen in a single afternoon. Rome's martial aristocracy was decimated, yet in that darkest hour the Republic resolved to die rather than surrender."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,44 @@
+{
+  "Id": "rule_micro_rite_05",
+  "Name": "罗马传统婚姻右手握手礼Dextrarum_Iunctio",
+  "Keywords": [
+    "右手握手礼",
+    "罗马婚礼",
+    "Dextrarum Iunctio",
+    "朱诺祭猪",
+    "合法的婚约",
+    "纯洁誓盟"
+  ],
+  "RagShortTexts": [
+    "罗马传统婚礼由媒妇牵引新郎新娘右手紧握Dextrarum Iunctio，宰杀母猪献祭婚誓永固。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "古罗马正统庄严婚礼（Confarreatio）由掌管婚姻的天后朱诺见证。仪式高潮由一位一生只结一次婚的德高望重老妇人（Pronuba）担任媒妇，庄严牵起新郎与新娘的右手使其手心紧密相贴紧扣（Dextrarum Iunctio），象征两大家族精神与命运的永恒交织。祭司当场宰杀一头纯白母猪将内脏献祭神明，新娘分食麦饼宣告正式成为夫家灶火守护者。"
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "新娘子头上顶着火红头纱，被媒婆拉着右手搭在新郎粗糙长茧的大手上。两只手握紧那一刻，全村亲戚起哄大喊“塔拉修斯”（Talasio），欢欢喜喜抢喜饼，两口子就算套进同一副牛轭里过一辈子了。"
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "贵族两姓联姻乃地中海地缘战略之锁钥。右手相握不仅是夫妇誓约，更是两大执政官氏族兵马、封地与元老席位的钢铁同盟；在神明面前立下的誓言，纵使日后政局倾覆亦绝不容宵小轻启毁约。"
+    }
+  ],
+  "TextMappings": []
+}

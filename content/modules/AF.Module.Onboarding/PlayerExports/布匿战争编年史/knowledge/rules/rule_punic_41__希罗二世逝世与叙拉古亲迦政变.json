@@ -1,0 +1,108 @@
+{
+  "Id": "rule_punic_41",
+  "Name": "希罗二世逝世与叙拉古亲迦政变",
+  "Description": "公元前215年，统治叙拉古五十四年的贤明君主希罗二世逝世，十五岁的孙子希罗尼穆斯即位，在亲迦太基党人阿德拉诺多罗斯操弄下撕毁与罗马半世纪盟约倒向汉尼拔。",
+  "Tags": [
+    "希罗二世",
+    "希罗尼穆斯",
+    "叙拉古政变",
+    "阿德拉诺多罗斯",
+    "西西里战火",
+    "汉尼拔盟约"
+  ],
+  "Category": "Political",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前215年统治叙拉古半个世纪的希罗二世逝世引发宫廷剧烈权力动荡。",
+    "年仅十五岁的少主希罗尼穆斯在权臣操弄下撕毁与罗马半世纪同盟转投迦太基。",
+    "叙拉古倒戈引爆西西里全岛战火并迫使罗马派重兵海陆合围西西里第一都会。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "希罗老国王用五十年的敬虔与清明为叙拉古换来了无尽的繁荣与金币，但他一闭眼，十五岁的黄口孺子就被阿德拉诺多罗斯的甜言蜜语蒙蔽了双眼！汉尼拔许诺将全西西里岛的王冠赐给叙拉古，可那是用我们的商船和青年的性命去给腓尼基人当马前卒！罗马的军团是绝不会咽下背叛这口恶气的，叙拉古的黄金盛世在这一刻被敲响了丧钟！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "希罗二世曾是罗马最忠贞的朋友，在坎尼惨案后甚至送来重达三百磅的胜利女神金雕像和数万石小麦为罗马续命。然而他尸骨未寒，忘恩负义的叙拉古逆贼就将罗马使节羞辱赶出王宫，投入了杀人魔汉尼拔的怀抱！元老院的旨意绝不容挑衅，马塞卢斯将军将率领舰队踏平奥提伽岛，用鲜血给这些背叛誓约的希腊骗子上一课！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "叙拉古的觉醒是麦尔卡特神明的赐福！五十年来这座希腊大都会一直被罗马的勒索条约所压榨，充当罗马在西西里的粮仓。希罗尼穆斯陛下顺应天命与汉尼拔结盟，迦太基不仅向叙拉古提供两万大军保护其独立，更将协助其收复墨西拿与利利卑姆。西西里重回地中海自由贸易网络的曙光已然破晓！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前215年，与罗马保持五十年坚固同盟的叙拉古老国王希罗二世逝世。继位的十五岁孙子希罗尼穆斯在亲迦太基重臣阿德拉诺多罗斯影响下，撕毁与罗马盟约转投汉尼拔。此举导致西西里地缘格局剧变，罗马迅速派遣执政官马塞卢斯统领大军发动西西里远征。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "希罗二世逝世与叙拉古亲迦政变",
+    "rule_punic_41"
+  ]
+}

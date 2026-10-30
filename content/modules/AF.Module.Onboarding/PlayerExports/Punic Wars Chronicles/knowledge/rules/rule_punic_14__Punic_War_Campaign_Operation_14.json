@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_14",
+  "Name": "Punic War Campaign Operation 14",
+  "Keywords": [
+    "rule_punic_14",
+    "Punic Operation 14",
+    "Strategic Campaign 14",
+    "Mediterranean Theater 14"
+  ],
+  "RagShortTexts": [
+    "Strategic campaign doctrine 14 concerning Mediterranean operations during the Second Punic War."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "During the Second Punic War, military and naval maneuvers around operation 14 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "We marched through dust and mud under strict centurion orders for operation 14, keeping our shields locked and swords sharp against sudden enemy ambushes."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Senate and military commanders weighed the logistical balance of operation 14 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+    }
+  ],
+  "TextMappings": []
+}

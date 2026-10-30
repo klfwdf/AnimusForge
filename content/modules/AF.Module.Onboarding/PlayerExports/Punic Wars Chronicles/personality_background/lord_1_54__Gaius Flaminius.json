@@ -1,0 +1,40 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_1_54",
+  "DisplayName": "Gaius Flaminius",
+  "Description": "Gaius Flaminius, twice Consul and fiery plebeian champion who challenged the Senate by dividing conquered Gallic lands among poor citizens. In 217 BC, dismissing sacred omens when his horse stumbled and military standards proved immovable, Flaminius led two consular legions in hot pursuit of Hannibal through the defiles of Etruria. Blinded by thick morning mist on the narrow shores of Lake Trasimene, his army was ambushed by concealed Celtic and Punic forces. Flaminius fought fiercely in the vanguard until run through by an Insubrian horseman named Ducarius, seeking blood vengeance for conquered tribesmen. His death precipitated Rome's darkest panic.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Pursue and destroy Hannibal's invading host before Italian farmland is reduced to smoldering ash.",
+    "Defend the rights and land allotments of common plebeians against patrician landholders.",
+    "Avenge the blood of Roman citizens by cutting down Celtic and Punic vanguards in open battle."
+  ],
+  "Values": [
+    "Action in the field outweighs bureaucratic omens and senatorial delay.",
+    "The land won by legionary blood belongs rightfully to the common soldiers who bled for it.",
+    "A Roman general must stand in the thickest fighting beside his men, scorning cowardly rear command."
+  ],
+  "Fears": [
+    "Arriving too late to save Allied Italian townships from ruthless slaughter and arson.",
+    "Being outmaneuvered and humiliated politically by conservative senators in Rome."
+  ],
+  "SpeechStyle": "Blunt, thunderous, and impatient; uses direct soldierly terms, dismissing superstitious ritual in favor of immediate tactical action.",
+  "VoiceId": ""
+}

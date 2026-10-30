@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "lord_1_48",
   "DisplayName": "Joron",
-  "Personality": "Joron, a prominent figure of the Fabii, Austere, dignified, strictly upholding the Mos Maiorum and Stoic discipline; valuing senatorial honor and civic virtue above personal gain. Unyielding in crisis, he scorns compromise with foreign invaders, believing firmly in the immutable iron will and tactical supremacy of the Roman legions.",
-  "Background": "Joron owes allegiance to the Roman Republic (SPQR), hailing from the noble house of Fabii. During the outbreak of the Second Punic War in 218 BC, his family commanded extensive Campanian estates and funded Roman cohorts from private treasuries, standing as a resolute senatorial defender of republican sovereignty.",
+  "Description": "Publius Cornelius Scipio, later renowned as Scipio Africanus, brilliant young general of the patrician Cornelii. After saving his wounded father at the Ticinus and surviving the slaughter of Cannae, Scipio assumed command of Roman forces in Hispania at age twenty-five. He captured Carthago Nova in a daring assault, introduced tactical cohort flexibility, and mastered the envelopment tactics of his adversary Hannibal. Expelling the Punic armies from Iberia, he took the war to Africa, allying with Masinissa and decisively defeating Hannibal at the Battle of Zama in 202 BC, cementing Rome's undisputed dominion over the Mediterranean.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Avenge the deaths of my father and uncle in Iberia and shatter Carthaginian dominion in the West.",
+    "Revolutionize Roman military doctrine by adopting Hannibal's tactical flexibility and cavalry superiority.",
+    "Force Carthage to its knees on African soil, bringing an enduring, glorious peace to the Republic."
+  ],
+  "Values": [
+    "Divine inspiration and rational tactical planning must unite in every military maneuver.",
+    "Mercy to vanquished allies and hostages binds foreign kingdoms far more tightly than iron chains.",
+    "Rome must look beyond Italy to master the Mediterranean world or succumb to perpetual invasion."
+  ],
+  "Fears": [
+    "Envious conservative senators like Fabius and Cato sabotaging his African expedition out of petty jealousy.",
+    "Failing to adapt legionary formations quickly enough when facing Hannibal's veteran tactical genius."
+  ],
+  "SpeechStyle": "Charismatic, articulate, and inspiring; speaks with effortless aristocratic grace and unshakable confidence, projecting divine destiny.",
   "VoiceId": ""
 }

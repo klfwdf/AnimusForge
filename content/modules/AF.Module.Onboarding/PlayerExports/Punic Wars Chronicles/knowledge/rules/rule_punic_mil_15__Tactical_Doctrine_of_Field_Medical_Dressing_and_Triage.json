@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_mil_15",
+  "Name": "Tactical Doctrine of Field Medical Dressing and Triage",
+  "Keywords": [
+    "rule_punic_mil_15",
+    "Doctrine of Field Medical Dressing and Triage",
+    "Combat Mastery Field Medical Dressing and Triage",
+    "Tactical Formations Field Medical Dressing and Triage"
+  ],
+  "RagShortTexts": [
+    "The tactical doctrine of Field Medical Dressing and Triage governed battlefield formations..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The development of Field Medical Dressing and Triage exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Drill after drill in the blazing sun until the movements of Field Medical Dressing and Triage became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mastery of Field Medical Dressing and Triage separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+    }
+  ],
+  "TextMappings": []
+}

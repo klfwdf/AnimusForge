@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_city_11",
+  "Name": "Metropolis of Panormus Strategic Haven",
+  "Keywords": [
+    "rule_punic_city_11",
+    "Urban Center Panormus Strategic Haven",
+    "Citadel of Panormus Strategic Haven",
+    "Harbor of Panormus Strategic Haven"
+  ],
+  "RagShortTexts": [
+    "The fortified urban center of Panormus Strategic Haven served as a vital strategic, naval,..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ancient metropolis of Panormus Strategic Haven represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Behind the stone towers of Panormus Strategic Haven, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possession of Panormus Strategic Haven anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+    }
+  ],
+  "TextMappings": []
+}

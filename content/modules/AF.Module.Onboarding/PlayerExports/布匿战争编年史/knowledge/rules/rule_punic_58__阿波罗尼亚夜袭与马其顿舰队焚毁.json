@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_58",
+  "Name": "阿波罗尼亚夜袭战与马其顿舰队焚毁",
+  "Description": "公元前214年，马其顿腓力五世率一百二十艘轻舟战船围攻伊利里亚重镇阿波罗尼亚，罗马副裁判官莱维努斯夜率精锐偷渡登陆奇袭，迫使腓力自焚全军战船仓皇陆路败退。",
+  "Tags": [
+    "阿波罗尼亚战役",
+    "腓力五世败退",
+    "莱维努斯",
+    "焚毁战船",
+    "伊利里亚反击",
+    "夜袭破阵"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前214年腓力五世率一百二十艘轻战船顺奥乌斯河而下围攻阿波罗尼亚。",
+    "罗马将领莱维努斯夜间率三千精兵神不知鬼不觉偷渡入城并发起拂晓夜袭。",
+    "马其顿大军梦中惊醒全线崩溃腓力五世被迫下令焚毁全部百余艘战船逃命。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "莱维努斯副裁判官在阿波罗尼亚打出了一场令马其顿人丧魂落魄的神奇夜袭！三千名罗马军团勇士黑夜登岸，在城民指引下如幽灵般摸入城中。黎明前最深沉的黑暗里，大门轰开，号角与战吼同时响彻河谷！狂妄的马其顿人在睡梦中被短剑挑翻营帐，腓力五世惊惶失措甚至连盔甲都没穿齐便纵马逃命！河面上的一百二十艘战船被他们自己点火焚毁，冲天烈焰将奥乌斯河烧成焦炭！马其顿的海上帝梦在这一夜化作飞灰！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是不可洗刷的夜袭奇耻大辱！守营军官麻痹大意，竟未在河口密林设下多层斥候，被潜入城内的罗马军团内外夹击。河道狭窄无法拔锚起航，为了不让耗费巨资打造的一百二十艘伦巴斯轻型战船落入敌手，国王陛下只能含泪下令亲手放火烧船！全军丢弃重装备，在崎岖山道上徒步翻越崇山峻岭撤回马其顿，西出大海的通路被罗马人死死卡断。"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那天早晨河岸上的火光比朝霞还要刺眼！上百艘好端端的大战船在河里噼里啪啦烧得只剩黑架子，马其顿王爷光着膀子骑着马跑得比兔子还快。罗马兵在后头一边追一边吹喇叭，阿波罗尼亚城里的希腊人敲锣打鼓地出来搬战利品，光是丢在地上的长矛和铜盔就装了上百车。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前214年，马其顿国王腓力五世率庞大舰队围攻阿波罗尼亚。罗马将领马库斯·瓦莱里乌斯·莱维努斯夜率三千精兵偷渡入城，拂晓发起突袭大破马其顿大营。腓力五世仓皇撤退，被迫自行焚毁全部百余艘战舰后从陆路败退回国，彻底丧失了在亚得里亚海跨海进攻意大利的能力。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "阿波罗尼亚夜袭战与马其顿舰队焚毁",
+    "rule_punic_58"
+  ]
+}

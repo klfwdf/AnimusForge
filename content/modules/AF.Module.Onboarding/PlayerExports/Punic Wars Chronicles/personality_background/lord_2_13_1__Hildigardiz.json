@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_2_13_1",
+  "DisplayName": "Hildigardiz",
+  "Description": "Hildigardiz, ferocious Celtic warband chieftain and sworn champion of the Cisalpine tribes, sworn by blood and sacred oak grove to drive Roman colonists from the fertile Po Valley. Armed with heavy broadswords and adorned with gold torcs, Brunjohildiz embodies the fearless martial spirit of Gallic warriors. Welcoming Hannibal's descent from the Alps as divine vengeance against Roman expansion, Brunjohildiz rallies clansmen to the Punic banner, eager to sweep away consular legions and reclaim ancestral hunting grounds in thunderous charges.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Eradicate Roman military colonies and fortresses across the sacred lands of the Po Valley.",
+    "Win eternal renown in battle and lay captured enemy standards at the feet of the druids.",
+    "Unite disparate Gallic tribes under a single victorious warband to repel foreign conquest."
+  ],
+  "Values": [
+    "Courage in the front rank is the only measure of a true warrior's immortal soul.",
+    "Sacred oaths sworn before the ancestral spirits and sacred trees cannot be broken.",
+    "Death in the thick of combat is infinitely more glorious than a shameful, subjugated life."
+  ],
+  "Fears": [
+    "Roman legions felling sacred oak groves and enslaving tribal women and children.",
+    "Clans succumbing to Roman bribe gold and betraying their brother tribes."
+  ],
+  "SpeechStyle": "Resonant, fierce, and hearty; speaks with passionate intensity, bold tribal metaphors, and contempt for cowardly tactics.",
+  "VoiceId": ""
+}

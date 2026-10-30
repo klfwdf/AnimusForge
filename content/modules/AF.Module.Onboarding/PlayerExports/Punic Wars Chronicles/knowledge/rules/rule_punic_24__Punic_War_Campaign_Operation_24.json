@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_24",
+  "Name": "Punic War Campaign Operation 24",
+  "Keywords": [
+    "rule_punic_24",
+    "Punic Operation 24",
+    "Strategic Campaign 24",
+    "Mediterranean Theater 24"
+  ],
+  "RagShortTexts": [
+    "Strategic campaign doctrine 24 concerning Mediterranean operations during the Second Punic War."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "During the Second Punic War, military and naval maneuvers around operation 24 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "We marched through dust and mud under strict centurion orders for operation 24, keeping our shields locked and swords sharp against sudden enemy ambushes."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Senate and military commanders weighed the logistical balance of operation 24 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+    }
+  ],
+  "TextMappings": []
+}

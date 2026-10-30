@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "er_lord_meroe_1",
   "DisplayName": "Arqamani",
-  "Personality": "Arqamani, a prominent figure of the Qore of Meroe, Austere, dignified, strictly upholding the Mos Maiorum and Stoic discipline; valuing senatorial honor and civic virtue above personal gain. Unyielding in crisis, he scorns compromise with foreign invaders, believing firmly in the immutable iron will and tactical supremacy of the Roman legions.",
-  "Background": "Arqamani owes allegiance to the Kingdom of Kush, hailing from the noble house of Qore of Meroe. Historical Record: Arqamani, Arkamani II of the Kushite kings, called Ergamenes by the Greeks. Educated in Greek philosophy, he is said to have put an end to the old custom by which the priests of Amun could order a king to die, by marching on their temple and killing them. He builds temples at Philae and Dakka, and his realm reaches to Egypt's border at the First Cataract. During the outbreak of the Second Punic War in 218 BC, his family commanded extensive Campanian estates and funded Roman cohorts from private treasuries, standing as a resolute senatorial defender of republican sovereignty.",
+  "Description": "Arqamani, resolute Iberian mountain chieftain and falcata warrior, bound by the sacred martial oath of Devotio to defend homeland and kinsmen to the death. A master of rugged mountain terrain, ambushes, and curved falcata shortswords, Arqamani commands elite skirmishers and buckler-bearers. Navigating the brutal contest between Barcid dominance and Roman intervention, Arqamani fiercely safeguards clan autonomy, protecting regional silver workings and fortified hill citadels with relentless tenacity and lethal close-quarters combat.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve clan sovereignty and fortified mountain hillforts against invading armies.",
+    "Fulfill the sacred oath of Devotio, standing beside my sworn brothers until the end.",
+    "Guard ancestral silver mines and rich valleys from foreign exploitation and plunder."
+  ],
+  "Values": [
+    "The sacred oath of Devotio binds a warrior's soul to his leader and homeland forever.",
+    "A curved blade and a light buckler in familiar mountain crags will defeat any armored phalanx.",
+    "Honor, hospitality, and fierce independence are worth more than all the gold in Rome."
+  ],
+  "Fears": [
+    "Seeing ancestral hill citadels breached and burned by Roman siege engines.",
+    "Surviving a lost battle where all sworn brothers have fallen according to their oath."
+  ],
+  "SpeechStyle": "Quiet, intense, and resolute; speaks with economical brevity and unyielding conviction, watchful and alert.",
   "VoiceId": ""
 }

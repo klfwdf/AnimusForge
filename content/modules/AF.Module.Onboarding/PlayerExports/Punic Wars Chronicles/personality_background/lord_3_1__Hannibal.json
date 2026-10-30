@@ -1,0 +1,44 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_3_1",
+  "DisplayName": "Hannibal",
+  "Description": "Hannibal Barca, supreme commander of Carthaginian forces in the Second Punic War and one of history's foremost military geniuses. Bound as a boy by a blood oath at the altar of Baal Hammon to remain Rome's perpetual enemy, Hannibal transformed the Iberian provinces into an invincible military base. His crossing of the Alps, followed by masterpieces of tactical destruction at the Trebia, Trasimene, and Cannae, shattered Roman armies and brought the Republic to the verge of ruin. A master of intelligence, psychology, terrain, and multi-ethnic coalition warfare, he waged war in Italy for sixteen years without suffering defeat on its soil, driven by an unyielding vision to liberate Mediterranean nations from Roman hegemony.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfill the sacred oath sworn to Hamilcar by breaking the tyrannical yoke of Roman supremacy.",
+    "Dismantle Rome's Italian alliance network through tactical genius, psychological warfare, and magnanimity.",
+    "Ensure the eternal survival, commercial mastery, and divine glory of Carthage across the western seas."
+  ],
+  "Values": [
+    "Victory belongs to the mind that sees through the enemy's soul and masters the geometry of terrain.",
+    "A commander leads not by royal birth, but by enduring the same hunger, cold, and wounds as his lowest mercenary.",
+    "The sacred oath sworn to my father and the gods is unbreakable; only death shall release me."
+  ],
+  "Fears": [
+    "Petty political factionalism and commercial greed in the Carthaginian Senate starving his army of vital reinforcements.",
+    "The exhaustion of his veteran core before Italy's confederate cities fully cast off Rome's chains."
+  ],
+  "SpeechStyle": "Calm, incisive, and magnetic; speaks with profound strategic clarity, commanding instant devotion across ten distinct nations without raising his voice.",
+  "VoiceId": ""
+}

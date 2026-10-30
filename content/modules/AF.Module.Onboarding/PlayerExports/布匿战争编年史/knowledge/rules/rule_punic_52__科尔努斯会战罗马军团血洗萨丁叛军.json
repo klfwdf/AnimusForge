@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_52",
+  "Name": "科尔努斯会战罗马军团血洗萨丁联军",
+  "Description": "公元前215年秋，罗马老将曼利乌斯·托尔夸图斯在科尔努斯与迦太基和萨丁尼亚联军决战，四小时斩敌一万二千人，汉普西科拉之子战死、汉普西科拉夜半拔剑自尽。",
+  "Tags": [
+    "科尔努斯会战",
+    "托尔夸图斯",
+    "汉普西科拉自尽",
+    "秃头哈斯德鲁拔被俘",
+    "萨丁平叛",
+    "血染海岛"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前215年秋科尔努斯会战罗马老将托尔夸图斯以严整军阵全歼敌军主力。",
+    "四小时激战斩杀敌军一万二千人并生擒迦太基远征统帅秃头哈斯德鲁拔。",
+    "起义领袖汉普西科拉惊闻爱子战死心碎欲绝遂于夜半在藏身荒林拔剑自刎。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "托尔夸图斯将军证明了罗马古老严厉的武德依然坚不可摧！在科尔努斯的橄榄林与丘陵间，罗马军团的短剑方阵如移动的铜墙铁壁，生生将混乱的岛民与迦太基步兵剁得人仰马翻！敌军大帅‘秃头’哈斯德鲁拔成了阶下囚，斩首一万两千人！汉普西科拉畏罪在树林里自刎谢罪！萨丁尼亚被彻底清洗平定，每年数万吨小麦重新按时装船运回罗马论坛！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "功亏一篑的致命悲剧！哈斯德鲁拔统帅的舰队此前先因暴风雨被吹到了巴利阿里群岛耽误了数月战机，等赶到萨丁尼亚时，汉普西科拉的儿子已经贸然与以逸待劳的罗马军团交手受挫。决战中临时纠集的高卢与萨丁土著步兵一触即溃，把迦太基精锐暴露在罗马标枪下。全军覆没、统帅被俘，我们在第勒尼安海的宏大反击被彻底掐灭了！"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科尔努斯的泥土里到处是插着的折断标枪和发臭的死人。汉普西科拉老爹原本是岛上顶富足的大善人，可为了跟罗马人拼命，儿子死在乱军堆里连尸首都没找全。老头在夜里躲在树林子里，拔出佩剑抹了自己的脖子。罗马人的黑帆战船又靠了岸，税吏手里的鞭子比过去抽得更狠了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前215年秋，罗马将领提图斯·曼利乌斯·托尔夸图斯在萨丁尼亚科尔努斯会战中大败迦太基与萨丁尼亚起义联军。罗马军团斩敌万余人，俘获迦太基主将哈斯德鲁拔等人。起义领袖汉普西科拉闻子阵亡后自尽殉节。此战彻底平定了萨丁尼亚反抗，巩固了罗马在西地中海岛屿的统治。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "科尔努斯会战罗马军团血洗萨丁联军",
+    "rule_punic_52"
+  ]
+}

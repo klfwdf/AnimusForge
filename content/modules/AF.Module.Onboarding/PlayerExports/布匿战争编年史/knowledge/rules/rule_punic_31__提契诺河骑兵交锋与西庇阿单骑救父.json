@@ -1,0 +1,109 @@
+{
+  "Id": "rule_punic_31",
+  "Name": "提契诺河骑兵前哨战与西庇阿单骑救父",
+  "Description": "公元前218年11月，汉尼拔与执政官老西庇阿在波河支流提契诺河爆发全骑兵前哨激战，努米底亚轻骑兵迂回包抄重创罗马军，十七岁的大西庇阿单骑冲阵救出重伤的父亲。",
+  "Tags": [
+    "提契诺河之战",
+    "老西庇阿",
+    "大西庇阿",
+    "努米底亚轻骑兵",
+    "单骑救父",
+    "骑兵包抄"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前218年11月提契诺河前哨战中汉尼拔骑兵重创罗马执政官亲军。",
+    "努米底亚无鞍轻骑兵以两翼大范围穿插打乱了罗马标枪骑兵阵线。",
+    "年仅十七岁的大西庇阿单枪匹马杀入重围救出重伤倒地的执政官父亲。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "提契诺河的初战给轻敌的罗马人上了残酷的一课！执政官普布利乌斯的轻装标枪兵还没来得及投出一轮投枪，就被蛮族战马冲垮践踏。但在惨败的血泊中，十七岁的少主普布利乌斯展现了惊动全军的神勇——当侍从们因畏惧裹足不前时，少年一人一骑冲入层层包围的敌阵，硬是将浑身是血的执政官父亲抢救回营！西庇阿家族的荣耀在那一天璀璨如烈阳！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "提契诺河是汉尼拔在意大利大地上刺出的第一剑！统帅将西班牙与高卢重骑兵排在中路硬碰硬抗住罗马骑士，两侧则放出如同狂风幽灵般的努米底亚无鞍骑兵。那些沙漠骑手在飞驰中投射短矛，迅速包抄了罗马人的后路。执政官负伤溃逃，此役不仅鼓舞了全军士气，更让整个波河流域的高卢部落坚信：罗马的霸权并非不可战胜！"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "empire_w"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "提契诺河的战斗打碎了罗马人在波河平原不可一世的傲慢！因苏布雷人和波伊人的武士看到，罗马执政官被非洲骑兵刺成重伤仓皇逃过大河。我们受够了罗马军团夺走我们的牧场、建立他们的殖民要塞，汉尼拔既然能把罗马人打得满地找牙，山南高卢的万千战刀就愿意追随他的军旗！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年11月，汉尼拔与罗马执政官普布利乌斯·科尔内利乌斯·西庇阿在提契诺河爆发全骑兵前哨战。汉尼拔利用努米底亚轻骑兵的两翼迂回战术大胜罗马军，执政官负重伤，其年仅十七岁的儿子（后来的大西庇阿）单骑杀入重围救出父亲。此役促使波河流域高卢部族大规模倒向迦太基。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "提契诺河骑兵前哨战与西庇阿单骑救父",
+    "rule_punic_31"
+  ]
+}

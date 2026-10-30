@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_39",
+  "Name": "汉尼拔兵临罗马城下与虚张声势撤围",
+  "Description": "公元前211年，汉尼拔为解卡普阿之围率轻骑突袭兵临罗马城下仅三里（Hannibal ad portas），在科利纳门投掷长矛，见罗马全民皆兵防守如铁遂虚晃撤退。",
+  "Tags": [
+    "兵临城下",
+    "汉尼拔在城门前",
+    "科利纳门",
+    "罗马恐慌",
+    "围魏救赵",
+    "地块拍卖"
+  ],
+  "Category": "History",
+  "DefaultPriority": 85,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前211年汉尼拔为解卡普阿之围率轻骑长途奔袭直逼罗马城下仅三里。",
+    "罗马妇孺哭嚎大喊‘汉尼拔在城门前’但元老院沉着动员两个新军团防守。",
+    "汉尼拔扎营的城外地块竟在罗马广场以原价被市民竞拍彰显罗马不屈底蕴。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "‘汉尼拔在城门前！’（Hannibal ad portas！）这句呼号让整个罗马城陷入了窒息般的死寂。妇人们在神庙前用头发擦拭祭坛哭泣诸神，但他休想看到罗马人的屈服！执政官迅速组织起城内青年组建了两个全副武装的新军团，塞维安城墙上的弩炮与巨石昼夜上膛！最令迦太基人绝望的是：汉尼拔安营扎寨的那块城外土地，当天就在罗马论坛被市民以分文不减的原价竞拍成交！这种视强敌如无物的永恒自豪，注定了汉尼拔永远只能在城墙外绝望地徘徊！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "汉尼拔亲自策马来到科利纳门前，甚至将手中的骑兵标枪愤怒地掷向了坚硬的城墙！奔袭罗马本是围魏救赵的绝妙之举，指望迫使围攻卡普阿的军团仓皇回防。然而那些冷血的罗马将领竟然连一兵一卒都不肯从卡普阿撤出！罗马城高池深、防守密不透风，而我们既无粮草又无攻城重机，汉尼拔只能在风雨大作的恶劣天气中咬牙拔营撤围。卡普阿完了，战略主动权开始从我们手中彻底滑落！"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谁也没想到这辈子真能亲眼看到那个独眼恶魔的战旗插在城门外头！台伯河对岸的庄园全被点着了火，城里的钟声当当乱响。可罗马人真是骨头硬，男人抓起短剑上了城垛，老娘们把家里的银器全捐去造弓弩。汉尼拔在城下晃了几天，看了看那些像铁桶一样的城墙，掉转马头灰溜溜地走了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前211年，为解救被围困的卡普阿，汉尼拔实施声东击西之策，率轻装精锐直插罗马城下仅三里处。罗马全城戒备，元老院冷静动员新军守卫塞维安城墙，围攻卡普阿的罗马主力坚不撤围。汉尼拔见罗马城防不可撼动且卡普阿解围无望，遂在虚张声势后撤军南下。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "汉尼拔兵临罗马城下与虚张声势撤围",
+    "rule_punic_39"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_mil_02",
+  "Name": "Tactical Doctrine of Punic Sacred Band and Heavy Phalanx",
+  "Keywords": [
+    "rule_punic_mil_02",
+    "Doctrine of Punic Sacred Band and Heavy Phalanx",
+    "Combat Mastery Punic Sacred Band and Heavy Phalanx",
+    "Tactical Formations Punic Sacred Band and Heavy Phalanx"
+  ],
+  "RagShortTexts": [
+    "The tactical doctrine of Punic Sacred Band and Heavy Phalanx governed battlefield..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The development of Punic Sacred Band and Heavy Phalanx exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Drill after drill in the blazing sun until the movements of Punic Sacred Band and Heavy Phalanx became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mastery of Punic Sacred Band and Heavy Phalanx separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+    }
+  ],
+  "TextMappings": []
+}

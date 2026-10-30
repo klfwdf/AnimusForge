@@ -1,0 +1,42 @@
+{
+  "Id": "rule_micro_food_07",
+  "Name": "Folk Practice of rule_micro_food_07",
+  "Keywords": [
+    "rule_micro_food_07",
+    "rule_micro_food_07 Practice",
+    "rule_micro_food_07 Custom",
+    "rule_micro_food_07 Tradition"
+  ],
+  "RagShortTexts": [
+    "Historical micro-concept rule_micro_food_07 concerning ancient folkways, tactical..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In ancient Mediterranean daily life, the practice of Folk Practice of rule_micro_food_07 represented a vital micro-level custom. Governing practical routines, physical tools, or sacred folk taboos, it permeated civilian and military existence, connecting seasonal agricultural rhythms, camp discipline, and streetwise survival across Roman, Punic, and Celtic communities."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Cultures": [
+          "massylii",
+          "masaesyli"
+        ]
+      },
+      "Content": "Among common farmers, slaves, and tavern-goers, Folk Practice of rule_micro_food_07 was a matter of everyday survival and ancient superstition. You watch the omens, mind your bread crumbs, and keep your head down when the magistrates and soldiers march through the street."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "From the muddy marching trenches to frontline combat, every veteran understood the reality of Folk Practice of rule_micro_food_07. Out here in the field, surviving the cold nights and brutal centurions takes practical cunning and tough leather, not fancy senatorial speeches!"
+    }
+  ],
+  "TextMappings": []
+}

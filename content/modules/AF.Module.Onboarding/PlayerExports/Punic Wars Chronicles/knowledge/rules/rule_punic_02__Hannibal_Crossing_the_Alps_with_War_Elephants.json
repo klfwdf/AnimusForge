@@ -1,0 +1,43 @@
+{
+  "Id": "rule_punic_02",
+  "Name": "Hannibal Crossing the Alps with War Elephants",
+  "Keywords": [
+    "rule_punic_02",
+    "Hannibal Crossing Alps",
+    "Alpine Elephant March",
+    "Rock Blasting with Vinegar",
+    "Surus Elephant"
+  ],
+  "RagShortTexts": [
+    "In autumn 218 BC, Hannibal led thirty-eight thousand men and thirty-seven elephants over..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In autumn 218 BC, Hannibal accomplished one of history's greatest logistical feats by marching an army of 38,000 veteran infantry, 8,000 cavalry, and 37 war elephants across the snowbound Alpine passes. Harassed constantly by mountain tribes, battling treacherous ice and deadly avalanches, Hannibal used fire and sour vinegar to shatter blocking boulders. Though nearly half the army perished, his sudden descent into the Po Valley caught Rome entirely unprepared."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Freezing winds cut through boiled leather like iron daggers! Pack mules and screaming elephants slipped over precipices into the abyss. We burned pine logs and poured vinegar to crack boulders just to carve a goat trail!"
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "By traversing what Rome deemed an insurmountable natural barrier, Hannibal struck at the Republic's very doorstep, demonstrating that neither Alpine blizzards nor barbarian ambushes could stay Barcid vengeance."
+    }
+  ],
+  "TextMappings": []
+}
