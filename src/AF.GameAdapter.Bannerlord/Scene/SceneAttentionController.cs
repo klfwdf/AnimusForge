@@ -492,9 +492,7 @@ internal sealed class SceneAttentionController
 		try
 		{
 			agent.SetLookAgent(ResolveStareLookTarget(agent));
-			agent.SetMaximumSpeedLimit(0f, isMultiplier: false);
-			WorldPosition worldPosition = agent.GetWorldPosition();
-			agent.SetScriptedPosition(ref worldPosition, addHumanLikeDelay: false);
+			HoldAgentInPlaceUnlessSeated(agent);
 		}
 		catch
 		{
@@ -502,6 +500,31 @@ internal sealed class SceneAttentionController
 		if (!_staringAgents.Contains(agent))
 		{
 			_staringAgents.Add(agent);
+		}
+	}
+
+	// A scripted position makes a seated agent leave its chair, so seated (or otherwise
+	// object-using) agents only turn their gaze and keep using the object.
+	private static void HoldAgentInPlaceUnlessSeated(Agent agent)
+	{
+		if (IsAgentUsingSceneObject(agent))
+		{
+			return;
+		}
+		agent.SetMaximumSpeedLimit(0f, isMultiplier: false);
+		WorldPosition worldPosition = agent.GetWorldPosition();
+		agent.SetScriptedPosition(ref worldPosition, addHumanLikeDelay: false);
+	}
+
+	private static bool IsAgentUsingSceneObject(Agent agent)
+	{
+		try
+		{
+			return agent != null && (agent.IsUsingGameObject || agent.CurrentlyUsedGameObject != null);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -1309,7 +1332,10 @@ internal sealed class SceneAttentionController
 					try
 					{
 						staringAgent.SetLookAgent(ResolveStareLookTarget(staringAgent));
-						staringAgent.SetMaximumSpeedLimit(0f, isMultiplier: false);
+						if (!IsAgentUsingSceneObject(staringAgent))
+						{
+							staringAgent.SetMaximumSpeedLimit(0f, isMultiplier: false);
+						}
 					}
 					catch
 					{
@@ -1378,9 +1404,7 @@ internal sealed class SceneAttentionController
 			try
 			{
 				agent.SetLookAgent(ResolveStareLookTarget(agent));
-				agent.SetMaximumSpeedLimit(0f, isMultiplier: false);
-				WorldPosition worldPosition = agent.GetWorldPosition();
-				agent.SetScriptedPosition(ref worldPosition, addHumanLikeDelay: false);
+				HoldAgentInPlaceUnlessSeated(agent);
 			}
 			catch
 			{
