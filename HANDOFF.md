@@ -1,3 +1,9 @@
+# TTS 最新纠正：恢复动作过滤，语义区分尚未实现（2026-10-30，未部署）
+
+用户明确动作跳过、正文照读，且星号数量不能判断语义。`a57a5bb63` 撤回双星号统一保正文的错误改动，保留OpenAI兼容网关表情清理。实际检查火山与OpenAI共用上游TTS清理，火山本身也按星号/括号删除，没有动作语义识别。修正CN/EN回放各11项通过；同标记内动作/正文区分仍待实现，不宣称已完成。此条替代下方双星号修复摘要；[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-symbol-semantics-correction-20261030)。
+
+---
+
 # 未部署：TTS 双星号/表情正文修复（2026-10-30）
 
 产品 `7b05436e8ff5` 保留双星号内正文，并在OpenAI兼容TTS的流式/非流式请求边界过滤 `❤️` 等装饰/组合表情，保留后续正文。中英文清理各17项、真实网关源码离线HTTP回放53项通过；1.3/1.4完整构建均被既有SceneAmbient缺失方法阻塞，Bootstrap/真实服务/游戏播放未验，未部署。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-symbol-speech-20261030)，证据 `artifacts/tts-symbol-20261030/`；仅聚焦逆提交本修复。

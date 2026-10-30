@@ -12766,3 +12766,13 @@ run `33fc0456789abcd0123456789def0123` / PID37308，新EN战役，Lucon原生为
 - 完整构建：官方统一入口使用1.3.15.110062与1.4.6.115628已验证引用；1.3因工作区既有未提交 `ShoutBehavior.SceneAmbient.cs:143` 调用不存在的 `SceneTauntBehavior.TryCaptureScenePeaceConflictFacts`（CS0117）停止。按同一已核实1.4引用/隔离输出单独构建，亦在相同位置失败（两版各1错误）。未修改这项并行工作，Bootstrap未运行。第一次自建测试输出误放work被默认Compile收录，已移入排除的artifacts并保留首次失败日志，复查只剩上述既有错误。
 - 原综合历史fixture还存在与本修改无关的observer角色期望/默认动作parser替身断言失败；保留原断言与日志，新增 `--tts-only` 只验证本次纯文本职责，不将其称为整套历史回归通过。
 - 证据统一在 `artifacts/tts-symbol-20261030/`：`result.json`绑定产品修订及源hash；`cn-final/run.log`、`en-final/run.log`、`gateway.log`、`build-fixed.log`、`build14.log`。回滚仅聚焦逆提交 `7b05436e8ff5`；不回滚其他作者工作。尚未完整双API/Bootstrap通过、真实TTS/游戏播放/部署/正式包；本次不宣称游戏已修复上线。
+
+
+<a id="tts-symbol-semantics-correction-20261030"></a>
+## TTS 星号语义纠正与火山链路对照（2026-10-30）
+
+- 用户进一步明确：双星号和单星号都可能包动作或正文，要求动作跳过、正文照读，并要求检查火山链路。此条替代上方 `tts-symbol-speech-20261030` 中“双星号统一视为正文”的产品结论，不删除历史证据。
+- 已用聚焦逆向提交 `a57a5bb63` 撤回 `ConversationSpeechTextRules` 两处双星号保正文改动，恢复修改前动作过滤；保留 `OpenAiCompatibleTtsGateway.PrepareSpeechText` 的表情/符号兼容清理。没有添加模型语义分类或改变后处理Prompt。
+- 实际对照：自由对话 `NativeConversationSpeechAdapter.cs:182,259` 与场景 `ScenePresentationController.cs:114,135` 先共享 `SanitizeTtsText` 后入同一 `TtsEngine`；`ConversationSpeechTextRules.cs:382–406` 原规则删除双/单星号段及圆括号段，既非火山专属也没有语义分类。`TtsEngine.cs:890–891` 仅在合成调用处分流；火山V1 `LegacyVolcTtsGateway.cs:52` 和V3 `VolcV3TtsGateway.cs:49` 将已清理文本传入服务，未再次识别动作/正文。
+- 验证：CN/EN `--tts-only` 修正fixture各11断言通过（证据 `artifacts/tts-symbol-20261030/{cn-correction,en-correction}/run.log`），确认单/双星号动作仍被排除且后续无标记正文保留。前版gateway53断言的生产源码未变，可复用；前版“17项双星号正文保留”不再代表当前行为。未重跑已被并行SceneAmbient缺失方法挡住的完整构建，未实机或部署。
+- 未完成：同一星号形式内动作与台词的语义区分。现有火山实现本身也无法满足该要求，不将恢复原过滤宣称为语义需求完成。源码回滚用逆提交 `a57a5bb63`；如要撤销表情过滤，需另对 `7b05436e8` 的网关改动做聚焦逆向，不整体恢复其他文件。
