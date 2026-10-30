@@ -1,3 +1,12 @@
+<a id="diplomacy-country-routing-deployed-20261031"></a>
+## 2026-10-31 外交国家分流与说客提示部署完成
+
+用户在本地交付后明确“部署”。实际 main/`0cc39d16d`，产品 `b7cf2db8b`；沿用 CN 包及 Debug 双 API/Bootstrap 候选。源码、全部本次资源和三个验收 DLL 哈希匹配，产品路径无未验修改，因此复用刚完成的双版本构建及 managed gates；不重复构建、不更改脚本或版本。
+
+原旧项目 Stage 完整保留到 `artifacts/country-routing-deploy-20261031/prior-stage`；原 `deploy_module.ps1` 先生成/验证干净 Stage，再执行安装，目标固定为 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。实际更新 13 个文件。覆盖后独立核对 4825 个 Stage 项（其中 4415 项按原配置/PlayerExports 保留规则），39 个配置/自定义提示词哈希未变，418 个清单外文件大小/时间未变，无异常新增文件。单模块 ID、仅 Bootstrap 加载、双实现安装哈希、CN 运行规则及新增 CN/EN UI 文案均匹配已验候选。
+
+**DEPLOYED_VERIFIED / LIVE_NOT_RUN / NO_PACKAGE_NO_PUSH**。本条取代[本地交付](#diplomacy-country-routing-20261031)的未部署状态，不改变[代码范围](architecture/af-framework-code-scope.md#diplomacy-country-routing-20261031)或赞助机制；没有启动游戏、调用模型或验证旧档。未创建部署 Recovery、备份或自动回滚。共享文档原有未提交内容保留。证据：[前置核对](../artifacts/country-routing-deploy-20261031/preflight.json)、[部署输出](../artifacts/country-routing-deploy-20261031/deploy-output.txt)、[安装验证](../artifacts/country-routing-deploy-20261031/verification.json)。
+
 <a id="diplomacy-country-routing-20261031"></a>
 ## 2026-10-31 按实际国家分流外交标签与登记提示 — OFFLINE_VERIFIED
 

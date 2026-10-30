@@ -1,3 +1,10 @@
+<a id="diplomacy-country-routing-deployed-20261031"></a>
+## 2026-10-31 国家分流与说客提示已部署
+
+用户明确“部署”后，使用原脚本将产品 `b7cf2db8b` 覆盖到 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，CN 内容包。安装 DLL、分流规则和双语 UI 已核对；4825 个清单项、39 份受保护配置/提示词和 418 个清单外文件校验通过。
+
+**DEPLOYED_VERIFIED / LIVE_NOT_RUN / NO_PACKAGE_NO_PUSH**。本条替代下方该修复的未部署状态，回归及实机限制保留。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-country-routing-deployed-20261031)。
+
 <a id="diplomacy-country-routing-20261031"></a>
 ## 2026-10-31 外交按国家分流与说客登记提示已本地完成
 
