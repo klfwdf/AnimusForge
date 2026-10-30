@@ -1,3 +1,41 @@
+<a id="persona-editable-example-20261030"></a>
+## 可编辑人物设定示例与扩展人设总开关 — 2026-10-30
+
+**LOCAL_CANDIDATE_VERIFIED / WORKTREE_BUILD_BLOCKED_BY_UNRELATED_SCENE_CHANGE / NOT_DEPLOYED / LIVE_NOT_RUN**。用户先要求把生成示例移入可编辑提示词以定制多段人设，随后要求增加扩展人设开关。实际工作区 main/F:/AnimusForge-main；检查点 `ea1a1e5`，示例迁移 `8a56f0f81`，开关实现 `d7f0c3e65`。保留其他作者 dirty 与并行提交；共享 XML 只暂存本次新增三项，生成 adapter 的既有换行差异未提交。
+
+### 实现与真实代码范围图
+
+| 源码位置（一基行号） | 符号、消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs:247-288` | `BuildNative/BuildPromoted`：CN/EN 内置系统协议移除 JSON 示例和固定400–600篇幅；篇幅/段数/小标题遵循玩家生成要求。开关关闭改用 `AF_PERSONA_PROMPT_BodyOnlySystem`，仅输出 profile，省略 trait catalog；玩家原生成要求原样追加，其中扩展字段要求不覆盖 body-only 协议。 |
+| `content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts.json:3-10,67` 及 `.en.json` | 原生/升格协议与共用 body-only 协议，英文 fallback 与真实 reader 匹配。`PersonaPromptTexts.cs:11-17` 缓存读取原 ModuleData 文件；包选版维持原路径。 |
+| `content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json:3` 及 `.en.json` | 可编辑默认 Text 含400–600建议值、可修改段落/小标题说明和合法双段 JSON 示例；traits 示例三项，符合原3–5项协议。原 content-map 映射接到 `ModuleData/Defaults/CustomPrompts/` 与既有用户目录；已编辑/显式空值保值，哈希清册保留历史并追加两种资产精确SHA。 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.Persona.cs:8-23` | `EnableExpandedNpcPersona` 默认 true、不需重启；原 DuelSettings 是唯一配置/preset owner。setter 复用 `NotifyPersonaEvolutionSettingChanged` 清理待处理及失效在途演变，预览设置对象不能清理 live owner。 |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs:341`；`TerminalSettingsLocalization.cs:145,415,685,955` | 终端“提示词扩展” bool 直接绑定原 setter；MCM 在“AnimusForge终端设置”的同分类投影；两种 UI XML 同步名称/说明/分组，沿原保存 owner。 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs:42,55-69,147-148,186-188,259-276` | 捕获开关到请求工作项，关闭时共享 Prompt context getter 返回空；forUi 仍可查看已有数据。生成回写同时核对捕获值和当前值，关闭时不采纳返回的扩展字段；重生只改正文，原扩展数据/演变状态/原因保留。 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/PromotedPersonaGenerationApplicationAdapter.cs:36-54,78-79`；`Composition/MyBehavior.PersonaGeneration.cs:25-37` | 升格同伴使用相同快照、body-only 协议与回写保护；保留原技能生成。工作项 bool 不写入存档，无新增 SyncData/存档键。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaEvolution.cs:20-27` | 事件演变同时要求扩展人设总开关、原演变开关和快报资格；已有队列/epoch/限速保持，关闭不会删除已应用的扩展设定。 |
+
+频率与性能：只在请求捕获/回写和既有共享 getter 做常数时间设置判断；无新增 Tick IO、反射、扫描或轮询。既有扩展档案只在明确切换边界清理待处理队列，未新增全 Hero 扫描。parser 原本保留 profile 字符串换行与长正文，本次没有截断或变更存档协议。
+
+### 验证及证据
+
+证据根 `artifacts/persona-editable-example-20261030/`；`baseline.json`/`before/` 和 `toggle/before/` 保留任务前快照，`verified-sources.json` 绑定实际文件与候选哈希。
+
+- 最终生产生成/composer/parser/回写回放：`toggle/CN/run.log` **645/0**；`toggle/EN/run.log` **231/0**。覆盖多段+小标题+超过600字、原生/重生/升格开关关闭、在途关闭、关闭后重新开启前的请求不写扩展字段、原扩展数据保留和重新启用注入；游戏/provider/dispatcher边界是 fixture，不冒充真实模型输出。
+- 原分层默认读写回放 CN/EN 各 **15**；默认/用户自定义替换/显式空值/坏文件保留及原子写入。默认资产和这些存储函数此后未变，复用有效结果。资源/清册/消费映射 **26** 项，加开关双语一致性 **13** 项；真实 `Get-AnimusForgeEnglishAsset` 与 `Assert-AnimusForgeEnglishJsonContract` 验两组修改资产，见 `toggle/package-selection.json`。
+- `PersonaEvolutionTests` **70** 项；日志 `toggle/evolution.log` 指向实际回放目录，覆盖总开关丢弃 pending/in-flight、重新开启、保留已应用人设。每语言250000空闲检查无设置读取/模型调用且托管分配0；不是实机性能基准。
+- 原构建入口直接工作区1.3在 `ShoutBehavior.SceneAmbient.cs:143` 缺 `SceneTauntBehavior.TryCaptureScenePeaceConflictFacts` 失败，单独1.4同错；Bootstrap通过。日志 `build.log/build14.log/bootstrap.log`。这是已有其他会话改动，不修改该机制。
+- 验证候选用原 `build_single_module.ps1` 无 Stage/Deploy；`toggle/unrelated-scene-overlay.targets` 仅将 SceneAudio/ShoutBehavior 两个无关源码替为 `8a56f0f81` 的具名快照并排除未完成 SceneAmbient，未改工作文件或原构建入口。**双API+Bootstrap均0错误，原 coup seam与registration smoke通过**，见 `toggle/build-overlay-final.log`；初次overlay路径分隔符导致重复定义的失败日志保留，不当作通过证据。候选固定在 `toggle/candidate/1.3`、`1.4`。
+- 原 `TerminalLiveSettingsTests` 使用以上实际候选，**1.3 PASS 1155，1.4 PASS 1211**（`toggle/settings-final-*/run.log`）。覆盖实际MCM属性、终端真实setter/owner、双语标签、native JSON/磁盘重载、默认开启、false重载、旧JSON缺字段默认开启及preset原归属。资源准备原本被无关布匿世界书缺失文件阻塞；本地 `scoped_settings.py` 仅将 fixture 指向原映射的223个非世界书资产子集，仍用原选择器/路径校验；所有原行为断言保留。新增参数导致的反射计数错误已在 `SupplementalChecks` 同步修复，并增加实际DLL body-only两入口断言。
+- 旧 `PersonaLocalizationContractTests.py` 在本次未改的UI键集合前置断言失败，未宣称该全量历史测试通过，亦未放宽断言。Git差异检查（cr-at-eol）通过。
+
+### 未验与回滚
+
+未实机/真实provider文风、原生UI点击及渲染、玩家sav往返、完整Stage、正式CN/EN包、部署或push。当前整个dirty工作区构建仍有上述SceneAmbient阻塞；隔离候选通过不能替代全工作区通过。旧版已被玩家修改的提示词不会自动替换；可在既有编辑器自行使用新示例。仅聚焦逆提交 `d7f0c3e65` 与 `8a56f0f81`，不要hard reset或回滚其他作者改动；检查点 `ea1a1e5` 和证据目录保留。
+
+---
+
 <a id="horse-quest-turn-in-20261030"></a>
 ## 交马事实接入原版验收与任务描述人物绑定 — 2026-10-30
 

@@ -1,3 +1,9 @@
+# 未部署：可编辑人设示例与扩展人设开关（2026-10-30）
+
+示例/篇幅与分段要求移入CN/EN可编辑默认；新增“提示词扩展 → 扩展人设”总开关（默认开），终端/MCM共用原owner。关闭时只生成/注入正文，暂停演变并保留已有扩展数据及丢弃在途扩展更新；重新开启恢复使用。源码 `8a56f0f81` / `d7f0c3e65`。中文645、英文231、演变70项通过；隔离候选双API/Bootstrap与原门禁通过，实际MCM/终端1.3 PASS1155、1.4 PASS1211。当前dirty工作区仍被已有SceneAmbient缺失方法阻塞；设置测试只投影223个非世界书实际资产，避开无关缺失世界书，未降低行为断言。未部署/实机/provider。详见[唯一台账与代码范围图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-editable-example-20261030)，证据 `artifacts/persona-editable-example-20261030/`；仅逆提交本次两个产品提交。
+
+---
+
 # 未部署：大地图就地扎营 审查修复（2026-10-30）
 
 按三路审查结论修复扎营功能（第1–5步）：
