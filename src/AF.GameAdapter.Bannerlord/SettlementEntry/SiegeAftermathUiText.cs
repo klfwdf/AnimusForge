@@ -71,6 +71,38 @@ internal static class SiegeAftermathUiText
         return Text("AF_SETS_Phase_Lord", "hostile lord troops");
     }
 
+    // Menu option strings stay unresolved so Bannerlord localizes them each time the menu renders.
+    internal const string TownEntryMenuOptionText = "{=AF_SETS_TownEntry_Option}Decide in person at town";
+
+    internal const string OwnedIncidentLeaveOptionText = "{=AF_SETS_OwnedIncident_Leave}Withdraw and leave";
+
+    internal static string TownEntryEnabledTooltip(int troopCount)
+        => Text("AF_SETS_TownEntry_Tooltip", "Do not settle the aftermath immediately; you will enter the town in battle gear with about {COUNT} healthy soldiers while civilians remain scattered in the streets, then decide reassurance, mercy, plunder, or massacre through on-site dialogue or action.",
+            ("COUNT", Number(troopCount)));
+
+    internal static string TownEntryMissingSceneTooltip
+        => Text("AF_SETS_TownEntry_MissingSceneTooltip", "No victorious siege settlement scene is currently available to enter.");
+
+    internal static string TownEntryMissingSceneMessage
+        => Text("AF_SETS_TownEntry_MissingScene", "[Siege aftermath] No captured settlement scene is currently available to enter.");
+
+    internal static string TownEntryFailedMessage
+        => Text("AF_SETS_TownEntry_Failed", "[Siege aftermath] Temporarily unable to enter the captured settlement scene.");
+
+    internal static string TownEntrySelectionFallbackMessage
+        => Text("AF_SETS_TownEntry_SelectionFallback", "[Siege aftermath] No followers selected; healthy regular soldiers will be brought in automatically.");
+
+    internal static string TownEntryBattleEquipmentMessage
+        => Text("AF_SETS_TownEntry_BattleEquipment", "[Siege aftermath] You entered the city armed and armored.");
+
+    internal static string TownEntryNoHealthyTroopsMessage
+        => Text("AF_SETS_TownEntry_NoHealthyTroops", "[Siege aftermath] The main party has no healthy soldiers or companions who can enter.");
+
+    internal static string EntryDecisionPolicyMessage(bool isCastle)
+        => isCastle
+            ? Text("AF_SETS_CastleEntry_DecisionPolicy", "[Castle aftermath] After entering, you may negotiate with defeated garrison soldiers and captive lords, and order prisoners recruited or slaughtered; leaving without a clear decision settles as mercy by default. Town civilian plunder, reassurance, massacre, and resettlement rules do not apply to castles.")
+            : Text("AF_SETS_TownEntry_DecisionPolicy", "[Siege aftermath] You decide the disposition on-site: leaving directly settles as plunder; explicit mercy, reassurance, or pacification settles accordingly; plunder can still be reverted by later mercy or pacification; massacre cannot revert to plunder or a positive outcome but can still escalate to purge and resettlement, which can also be triggered from the start.");
+
     internal static string NoEligibleCivilianMessage
         => Text("AF_SETS_Civilians_None", "[SETS] There are no eligible adult civilians to gather.");
 

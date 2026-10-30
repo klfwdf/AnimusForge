@@ -1,3 +1,9 @@
+# 未部署：GCCZ 城镇入口菜单中文界面仍显示英文（2026-10-30）
+
+原因：checkpoint `e9dbbd3d2` 把 `SiegeInterventionEntryProfile` 的中文常量（`EntryMenuOptionText`、`EnabledTooltip`、`MissingSceneTooltip`、各入城提示、`DecisionPolicyMessage`）和 `SetsOwnedSettlementIncidentProfile.LeaveOptionText` 改成英文，CN/En 两个常量值相同，所以中文界面下“亲自进城决定”等也是英文。修复：这些玩家可见文本改走游戏本地化，`SiegeAftermathUiText` 新增 `AF_SETS_TownEntry_*`、`AF_SETS_CastleEntry_DecisionPolicy`、`AF_SETS_OwnedIncident_Leave` 11 个键（`sets_ui_strings.xml` / `CNs/sets_ui_strings-zh-CN.xml`，中文恢复原文案）；菜单选项用 `{=id}` 文本，每次渲染按当前界面语言解析；`SiegeAiInterventionBehavior` 的调用点改为读取这些文本，城堡 tooltip 仍走原 `Raw` 中文资源。纯 profile 常量未动（测试契约不变）。验证：两份 XML 解析通过、键无重复。未编译、未部署、未实机。回滚：revert 本提交。
+
+---
+
 # 未部署：大地图就地扎营 第4步 营中问题系统（2026-10-30）
 
 新增 `FieldCamp/FieldCampIssues.cs`、`FieldCamp/FieldCampBehavior.Issues.cs`：搭营完成时由 C# 判定一次（欠饷、缺粮、伤员多、近 7 天战败、久未休整、士气低、兵种不睦；全无则一条请战/请赏），按严重度取前 3；同伴不和留到第5步。存档 4 键 `_afFieldCamp_issues_v1`/`_moraleGained_v1`/`_suppressed_v1`/`_lastDefeatHours_v1`，扎营结束清空。进营后每个未处理问题由对应兵种 QuickInfo 说一句双语模板（不调 LLM）；问题清单经 `FieldCampOrderTags.BuildIssuePromptBlock` 接在 `SceneAgentIdentityPromptCaptureAdapter.BuildSceneUserRuntimeContextForSingle` 的运行时段（营外为空）。后处理标签 `[ACTION:SCENE_CAMP_RESOLVE:<序号>:ENCOURAGE|GRANT|REFUSE|DISCIPLINE]` 只为未处理问题注入、按金币过滤付费选项，归一化用 `RuntimeAllowedParameterValues`；`Consume` 调 `FieldCampBehavior.Resolve` 执行（鼓舞 +3~+8 随领导力、应允 +5 并付费/清欠饷、驳回 -2~-5、整肃 -3 并开除≤1% 兵力且同类不再出现；单次扎营士气增益上限 +20；拔营/遭遇时未处理问题每件 -2），并把 AFEF 事实写入该兵种主队记忆（兵种不睦两边都写）。Prompt 键在 `ConversationRuntimePrompts(.en).json`，UI 键 16 条在 `af_ui_strings(-zh-CN).xml`。

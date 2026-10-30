@@ -145,5 +145,16 @@
     <string id="AF_SETS_Coup_HallGuard" text="defender" />
     <string id="AF_SETS_Coup_HallAssault" text="assault squad" />
     <string id="AF_SETS_Coup_HallPointUnreachable" text="No reachable spawn point found in the lord's hall for {SIDE} for 15 consecutive seconds. Deployment has been stopped; victory is not granted, existing casualties retained." />
+    <string id="AF_SETS_TownEntry_Option" text="Decide in person at town" />
+    <string id="AF_SETS_OwnedIncident_Leave" text="Withdraw and leave" />
+    <string id="AF_SETS_TownEntry_Tooltip" text="Do not settle the aftermath immediately; you will enter the town in battle gear with about {COUNT} healthy soldiers while civilians remain scattered in the streets, then decide reassurance, mercy, plunder, or massacre through on-site dialogue or action." />
+    <string id="AF_SETS_TownEntry_MissingSceneTooltip" text="No victorious siege settlement scene is currently available to enter." />
+    <string id="AF_SETS_TownEntry_MissingScene" text="[Siege aftermath] No captured settlement scene is currently available to enter." />
+    <string id="AF_SETS_TownEntry_Failed" text="[Siege aftermath] Temporarily unable to enter the captured settlement scene." />
+    <string id="AF_SETS_TownEntry_SelectionFallback" text="[Siege aftermath] No followers selected; healthy regular soldiers will be brought in automatically." />
+    <string id="AF_SETS_TownEntry_BattleEquipment" text="[Siege aftermath] You entered the city armed and armored." />
+    <string id="AF_SETS_TownEntry_NoHealthyTroops" text="[Siege aftermath] The main party has no healthy soldiers or companions who can enter." />
+    <string id="AF_SETS_TownEntry_DecisionPolicy" text="[Siege aftermath] You decide the disposition on-site: leaving directly settles as plunder; explicit mercy, reassurance, or pacification settles accordingly; plunder can still be reverted by later mercy or pacification; massacre cannot revert to plunder or a positive outcome but can still escalate to purge and resettlement, which can also be triggered from the start." />
+    <string id="AF_SETS_CastleEntry_DecisionPolicy" text="[Castle aftermath] After entering, you may negotiate with defeated garrison soldiers and captive lords, and order prisoners recruited or slaughtered; leaving without a clear decision settles as mercy by default. Town civilian plunder, reassurance, massacre, and resettlement rules do not apply to castles." />
   </strings>
 </base>

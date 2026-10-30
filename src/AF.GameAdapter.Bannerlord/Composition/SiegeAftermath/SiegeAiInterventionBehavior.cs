@@ -709,11 +709,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			starter.AddGameMenuOption(SiegeInterventionCompletionUiProfile.DoneMenuId, SiegeInterventionCompletionUiProfile.DoneContinueOptionId, GetTownActionPresentationText().DoneContinueOptionText, AfSiegeInterventionDoneContinueCondition, AfSiegeInterventionDoneContinueConsequence, isLeave: false, -1);
 			starter.AddGameMenu(SetsOwnedSettlementIncidentProfile.MenuId, "{=!}{AF_SETS_OWNED_TOWN_INCIDENT_TEXT}", SetsOwnedSettlementIncidentOnInit, GameMenu.MenuOverlayType.None, GameMenu.MenuFlags.None, null);
 			starter.AddGameMenuOption(SetsOwnedSettlementIncidentProfile.MenuId, SetsOwnedSettlementIncidentProfile.EntryOptionId, SetsOwnedSettlementIncidentProfile.EntryOptionText, SetsOwnedSettlementIncidentEntryCondition, SetsOwnedSettlementIncidentEntryConsequence, isLeave: false, 0);
-			starter.AddGameMenuOption(SetsOwnedSettlementIncidentProfile.MenuId, SetsOwnedSettlementIncidentProfile.LeaveOptionId, SetsOwnedSettlementIncidentProfile.LeaveOptionText, SetsOwnedSettlementIncidentLeaveCondition, SetsOwnedSettlementIncidentLeaveConsequence, isLeave: true, 1);
+			starter.AddGameMenuOption(SetsOwnedSettlementIncidentProfile.MenuId, SetsOwnedSettlementIncidentProfile.LeaveOptionId, SiegeAftermathUiText.OwnedIncidentLeaveOptionText, SetsOwnedSettlementIncidentLeaveCondition, SetsOwnedSettlementIncidentLeaveConsequence, isLeave: true, 1);
 			foreach (string menuId in SiegeAftermathMenuProfile.EntryMenuIds)
 			{
 				string optionId = SiegeAftermathMenuProfile.BuildEntryMenuOptionId(menuId);
-				starter.AddGameMenuOption(menuId, optionId, SiegeInterventionEntryProfile.EntryMenuOptionText, SiegeInterventionEntryCondition, SiegeInterventionEntryConsequence, isLeave: false, SiegeAftermathMenuProfile.EntryMenuInsertionIndex);
+				starter.AddGameMenuOption(menuId, optionId, SiegeAftermathUiText.TownEntryMenuOptionText, SiegeInterventionEntryCondition, SiegeInterventionEntryConsequence, isLeave: false, SiegeAftermathMenuProfile.EntryMenuInsertionIndex);
 				Logger.Log("SiegeAiIntervention", "Registered entry option. Menu=" + menuId + ", Option=" + optionId + ", Index=" + SiegeAftermathMenuProfile.EntryMenuInsertionIndex);
 			}
 		}
@@ -904,8 +904,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			args.IsEnabled = baseEnabled;
 			args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
 			args.Tooltip = new TextObject(baseEnabled
-				? SiegeInterventionEntryProfile.BuildEnabledTooltip(settlement?.IsCastle == true, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface)
-				: (GcczLocalizedResourceLoader.UseChineseInterface ? SiegeInterventionEntryProfile.MissingSceneTooltip : SiegeInterventionEntryProfile.MissingSceneTooltipEn));
+				? (settlement?.IsCastle == true ? SiegeInterventionEntryProfile.BuildEnabledTooltip(true, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface) : SiegeAftermathUiText.TownEntryEnabledTooltip(SiegeInterventionEntryProfile.DefaultAutoSummonCount))
+				: SiegeAftermathUiText.TownEntryMissingSceneTooltip);
 			return true;
 		}
 		catch
@@ -949,7 +949,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				GcczDiagnosticLog.Log("Entry", "blocked settlement=" + (settlement?.StringId ?? "null")
 					+ " hasLocationEncounter=" + (PlayerEncounter.LocationEncounter != null)
 					+ " location=" + (location?.StringId ?? "null"));
-				InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeInterventionEntryProfile.MissingSceneMessage : SiegeInterventionEntryProfile.MissingSceneMessageEn), Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.TownEntryMissingSceneMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
 				return;
 			}
 			PrepareInterventionEntryRuntime(settlement, SiegeInterventionEntryProfile.SceneEntryCleanupSource);
@@ -968,7 +968,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			if (!usesStagedTownPresentation)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(ResolveSetsSettlementSceneKind(settlement), isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface) : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(ResolveSetsSettlementSceneKind(settlement), isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface) : SiegeAftermathUiText.EntryDecisionPolicyMessage(settlement.IsCastle), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			}
 			bool selectionOpened = settlement.IsCastle
 				? TryOpenCastleInterventionRosterSelection(location)
@@ -976,7 +976,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (!selectionOpened && settlement.IsCastle)
 			{
 				ResetAftermathRuntimeGuards(SiegeCastleRosterSelectionProfile.SelectionFailedSource);
-				InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeInterventionEntryProfile.EntryFailedMessage : SiegeInterventionEntryProfile.EntryFailedMessageEn), Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.TownEntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
 			}
 			else if (!selectionOpened)
 			{
@@ -987,7 +987,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			GcczDiagnosticLog.Log("Entry", "failed error=" + ex);
 			Logger.Log("SiegeAiIntervention", "EnterIntervention failed: " + ex);
-			InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeInterventionEntryProfile.EntryFailedMessage : SiegeInterventionEntryProfile.EntryFailedMessageEn), Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.TownEntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
 		}
 	}
 
@@ -1429,7 +1429,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					}
 					else
 					{
-						InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeInterventionEntryProfile.SelectionFallbackMessage : SiegeInterventionEntryProfile.SelectionFallbackMessageEn), Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
+						InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.TownEntrySelectionFallbackMessage, Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
 					}
 				}
 				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
@@ -2312,7 +2312,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (castleEntryResult == CastleAftermathMissionEntryPumpResult.Failed)
 			{
 				ResetAftermathRuntimeGuards("castle_deferred_mission_entry_failed");
-				InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeInterventionEntryProfile.EntryFailedMessage : SiegeInterventionEntryProfile.EntryFailedMessageEn), Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.TownEntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
 			}
 		}
 		catch (Exception ex)
@@ -9024,7 +9024,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_playerBattleEquipmentApplied = true;
 			if (!UsesStagedTownEntryPresentation())
 			{
-				InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeInterventionEntryProfile.BattleEquipmentAppliedMessage : SiegeInterventionEntryProfile.BattleEquipmentAppliedMessageEn), Color.FromUint(SiegeInterventionEntryProfile.BattleEquipmentAppliedMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.TownEntryBattleEquipmentMessage, Color.FromUint(SiegeInterventionEntryProfile.BattleEquipmentAppliedMessageColor)));
 			}
 		}
 		catch (Exception ex)
@@ -13431,7 +13431,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeInterventionEntryProfile.NoHealthyTroopsMessage : SiegeInterventionEntryProfile.NoHealthyTroopsMessageEn), Color.FromUint(SiegeInterventionEntryProfile.NoHealthyTroopsMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.TownEntryNoHealthyTroopsMessage, Color.FromUint(SiegeInterventionEntryProfile.NoHealthyTroopsMessageColor)));
 			}
 			return false;
 		}
