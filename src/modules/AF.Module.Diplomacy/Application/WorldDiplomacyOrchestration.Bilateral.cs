@@ -171,15 +171,31 @@ internal sealed partial class WorldDiplomacyOrchestration
     private void RecoverDirectResultPublication(WorldDiplomacyDialogueArrangement item)
     {
         if (item.DirectExecutionState != "applied") return;
-        // Same stable fact ID deduplicates the existing durable memory receipt.
-        RecordDialogueArrangementFact(item, "direct_applied", DirectResultContext(item));
-        CompleteDirectResultSource(item);
-        if (string.IsNullOrEmpty(item.RoundId))
+        try
         {
-            var existing = GetLiveRounds().FirstOrDefault(x => x.DialogueArrangementId == item.ArrangementId);
-            item.RoundId = (existing ?? CreateIndependentDialogueRound(item.ActorKingdomId, item.TargetKingdomId, item.ArrangementId)).RoundId;
+            // Same stable fact ID deduplicates the existing durable memory receipt.
+            RecordDialogueArrangementFact(item, "direct_applied", DirectResultContext(item));
+            CompleteDirectResultSource(item);
+            if (string.IsNullOrEmpty(item.RoundId))
+            {
+                var existing = GetLiveRounds().FirstOrDefault(x => x.DialogueArrangementId == item.ArrangementId);
+                item.RoundId = (existing ?? CreateIndependentDialogueRound(item.ActorKingdomId, item.TargetKingdomId, item.ArrangementId)).RoundId;
+            }
+            PublishDialogueArrangement(item);
+            // The legacy publication boundary may contain its own exception or
+            // decline invalid authorship. Back off only if no owner took work.
+            if (item.Status is "accepted" or "deferred" && item.GenerationRetryAfterDay <= _host.CurrentDay()
+                && ResolveDocument(item.DocumentId)?.EventExecutionPending != true
+                && !Storage.Jobs.Any(x => x.DialogueArrangementId == item.ArrangementId && x.DialogueArrangementVersion == item.Version))
+                DeferDirectResultRecovery(item);
         }
-        PublishDialogueArrangement(item);
+        catch { DeferDirectResultRecovery(item); throw; }
+    }
+
+    private void DeferDirectResultRecovery(WorldDiplomacyDialogueArrangement item)
+    {
+        item.GenerationFailureAttempts++;
+        item.GenerationRetryAfterDay = DiplomacyCommitmentRules.RetryDay(_host.CurrentDay(), item.GenerationFailureAttempts);
     }
 
     private void CompleteDirectResultSource(WorldDiplomacyDialogueArrangement item)

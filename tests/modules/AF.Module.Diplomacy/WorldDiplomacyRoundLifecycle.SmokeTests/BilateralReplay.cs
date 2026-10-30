@@ -30,7 +30,7 @@ internal static class BilateralReplay
         o.TryCompleteDiplomacyPipeline(job,new LlmJobResult {Success=true,Content=json.ToString()});
     internal static void Run()
     {
-        ParsingAndReceipts(); SourceBinding(); MissingSourceBinding();
+        ParsingAndReceipts(); SourceBinding(); MissingSourceBinding(); RecoveryQueue();
         foreach(string channel in new[]{"native","scene","courier"})
         {
             var(h,o)=Fixture(); int effects=0; var origin=Origin(channel);
@@ -65,7 +65,7 @@ internal static class BilateralReplay
         {
             var(h,o)=Fixture(); int effects=0; h.FailId=true;
             try{o.ExecuteBilateral("ruler_a","a",DialogueDiplomaticAction.Trade,Origin(),()=>{effects++;return Result();});}catch(InvalidOperationException){}
-            h.FailId=false; Invoke(o,"MaintainDialogueArrangements"); Invoke(o,"MaintainDialogueArrangements");
+            h.FailId=false; h.CurrentDayValue++; Invoke(o,"MaintainDialogueArrangements"); Invoke(o,"MaintainDialogueArrangements");
             Test.True(effects==1 && o.CurrentStorage.ConcurrentRounds.Count==1 && o.CurrentStorage.Jobs.Count==1 && h.Facts.Count==1,"post-effect failure recovers only fact/case/publication once");
         }
         foreach(string legacy in new[]{"third_party","complex","terminated","exact_pending"})
@@ -176,6 +176,27 @@ internal static class BilateralReplay
             }
             if(mode=="partial")Test.True((bool)Invoke(o,"HasUnfinishedEndingObligations",round)!,"unknown partial source cannot conclude as resolved");
             if(mode is "flat" or "action")Test.True(old.Status=="executed"&&o.CurrentStorage.ConcurrentRounds.Count==0,"exact pending source completes in same case without replay");
+        }
+    }
+
+    private static void RecoveryQueue()
+    {
+        foreach(bool failingHead in new[]{false,true})
+        {
+            var(h,o)=Fixture();
+            for(int i=0;i<5;i++)o.CurrentStorage.DialogueArrangements.Add(new(){ArrangementId="backlog-"+i,
+                ActorKingdomId="a",TargetKingdomId="p",RulerId="ruler_a",Action=DialogueDiplomaticAction.Trade,
+                DirectExecutionState="applied",DirectActorKingdomId="a",DirectTargetKingdomId="p",Status="accepted",
+                GenerationRetryAfterDay=i<4&&!failingHead?h.CurrentDayValue+7:h.CurrentDayValue});
+            h.FailId=failingHead;Invoke(o,"MaintainDialogueArrangements");
+            if(failingHead)
+            {
+                Test.True(o.CurrentStorage.DialogueArrangements.Take(4).All(x=>x.GenerationRetryAfterDay>h.CurrentDayValue&&x.GenerationFailureAttempts==1),"post-effect event creation failures back off before retrying");
+                h.FailId=false;Invoke(o,"MaintainDialogueArrangements");
+            }
+            Test.True(o.CurrentStorage.Jobs.Count==1&&o.CurrentStorage.Jobs[0].DialogueArrangementId=="backlog-4",
+                "not-yet-due head records consume no recovery budget and cannot starve due tail "+failingHead);
+            Test.True(h.TradeExecutions==0&&o.CurrentStorage.DialogueArrangements.All(x=>x.DirectExecutionState=="applied"),"recovery never invokes diplomacy effects "+failingHead);
         }
     }
 

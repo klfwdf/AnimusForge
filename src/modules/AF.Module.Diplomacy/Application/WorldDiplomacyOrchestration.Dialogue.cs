@@ -327,7 +327,12 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             if (item.DirectExecutionState == "applied" && item.Status is "accepted" or "deferred")
             {
-                if (directRecovered++ >= 4 || item.GenerationRetryAfterDay > _host.CurrentDay()) continue;
+                if (item.GenerationRetryAfterDay > _host.CurrentDay()
+                    || ResolveDocument(item.DocumentId)?.EventExecutionPending == true
+                    || Storage.Jobs.Any(x => x.DialogueArrangementId == item.ArrangementId
+                        && x.DialogueArrangementVersion == item.Version)) continue;
+                if (directRecovered >= 4) continue;
+                directRecovered++;
                 try { RecoverDirectResultPublication(item); }
                 catch (Exception ex) { _host.Log("direct result publication recovery failed id=" + item.ArrangementId + " error=" + ex.GetType().Name); }
                 continue;
