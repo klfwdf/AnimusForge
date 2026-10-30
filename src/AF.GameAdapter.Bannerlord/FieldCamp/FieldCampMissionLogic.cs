@@ -127,11 +127,32 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			_campFrame = ResolveCampFrame(Mission.Scene, _layout.Radius);
 			FieldCampProps.Place(Mission.Scene, _layout, _campFrame);
 			SpawnEveryone();
+			AnnounceOpenIssues();
 			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " props=" + _layout.Props.Count + " scene=" + (Mission.SceneName ?? ""));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log(LogSource, "camp set-up failed: " + ex);
+		}
+	}
+
+	/// <summary>Once per camp mission: one localized opening line per open issue (Q34, no LLM).</summary>
+	private static void AnnounceOpenIssues()
+	{
+		FieldCampBehavior behavior = FieldCampBehavior.Instance;
+		if (behavior == null || behavior.State != FieldCampBehavior.CampState.Camped)
+		{
+			return;
+		}
+		IReadOnlyList<FieldCampIssues.Issue> issues = behavior.Issues;
+		for (int i = 0; i < issues.Count; i++)
+		{
+			if (!issues[i].IsOpen)
+			{
+				continue;
+			}
+			CharacterObject speaker = issues[i].IsCompanionIssue ? null : CharacterObject.Find(issues[i].Subject);
+			AnimusForgeQuickInfo.Show(FieldCampText.IssueOpening(issues[i]), speaker);
 		}
 	}
 

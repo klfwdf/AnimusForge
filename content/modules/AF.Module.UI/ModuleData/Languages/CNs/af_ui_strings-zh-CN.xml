@@ -3468,5 +3468,21 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_FC_PatrolFailed" text="此处无法打开营地场景。" />
   <string id="AF_FC_Assembled" text="部队按兵种列队完毕。" />
   <string id="AF_FC_Dismissed" text="部队解散，各自回营。" />
+  <string id="AF_FC_Open_UnpaidWages" text="{TROOP}：大人，军饷拖欠了，弟兄们的钱袋都空了。" />
+  <string id="AF_FC_Open_Hunger" text="{TROOP}：口粮快见底了，再这样下去就要饿肚子了。" />
+  <string id="AF_FC_Open_ManyWounded" text="{TROOP}：伤号太多了，可医药实在不够用。" />
+  <string id="AF_FC_Open_RecentDefeat" text="{TROOP}：上回打了败仗，弟兄们围着篝火净在嘀咕。" />
+  <string id="AF_FC_Open_NoRest" text="{TROOP}：连着走了好些天，就没好好歇过一回。" />
+  <string id="AF_FC_Open_LowMorale" text="{TROOP}：弟兄们泄了气，没几个人觉得这仗还能打赢。" />
+  <string id="AF_FC_Open_CultureFriction" text="{TROOP}：我们跟那帮{OTHER}老是吵，迟早要动手。" />
+  <string id="AF_FC_Open_CompanionFeud" text="{TROOP}和{OTHER}又吵起来了。" />
+  <string id="AF_FC_Open_Petition" text="{TROOP}：弟兄们劲头正足！给我们一场像样的仗打，或者分点赏钱吧！" />
+  <string id="AF_FC_IssueResolved_Encourage" text="你安抚了士兵。" />
+  <string id="AF_FC_IssueResolved_Grant" text="你应允了请求。" />
+  <string id="AF_FC_IssueResolved_Refuse" text="你驳回了请求。" />
+  <string id="AF_FC_IssueResolved_Discipline" text="你整肃了军纪。" />
+  <string id="AF_FC_IssueResolved_Dismissed" text="开除了{COUNT}名闹事者。" />
+  <string id="AF_FC_IssueResolved_Spent" text="花费{GOLD}第纳尔。" />
+  <string id="AF_FC_IssueResolved_Morale" text="士气{MORALE}。" />
 </strings>
 </base>

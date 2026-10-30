@@ -74,6 +74,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyed);
 		CampaignEvents.SettlementEntered.AddNonSerializedListener(this, OnSettlementEntered);
 		CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, _ => ResetAll());
+		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEndedForCamp);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -85,6 +86,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		dataStore.SyncData("_afFieldCamp_anchorY_v1", ref _anchorY);
 		dataStore.SyncData("_afFieldCamp_partyIds_v1", ref _partyIds);
 		dataStore.SyncData("_afFieldCamp_lastRestHours_v1", ref _lastRestHours);
+		SyncIssueData(dataStore);
 		if (dataStore.IsLoading)
 		{
 			_partyIds = _partyIds ?? new List<string>();
@@ -234,6 +236,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 			return;
 		}
 		_state = (int)CampState.Striking;
+		SettleIgnoredIssues();
 		_phaseEndHours = NowHours + FieldCampSettings.StrikeHours;
 		Logger.Log(LogSource, "strike start");
 	}
@@ -245,6 +248,11 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 			return;
 		}
 		Logger.Log(LogSource, "camp end reason=" + reason + " hours=" + (NowHours - _startHours).ToString("0.0"));
+		if (_state == (int)CampState.Camped)
+		{
+			SettleIgnoredIssues();
+		}
+		ClearIssueState();
 		_lastRestHours = NowHours;
 		_state = (int)CampState.None;
 		_patrolPending = false;
@@ -264,6 +272,8 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		_partiesResolved = true;
 		_healCarry.Clear();
 		_lastRestHours = -1;
+		_lastDefeatHours = -1;
+		ClearIssueState();
 		_visuals.Forget();
 	}
 
@@ -299,6 +309,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 			if (_state == (int)CampState.Pitching)
 			{
 				_state = (int)CampState.Camped;
+				JudgeIssues();
 				Logger.Log(LogSource, "camp pitched");
 				AnimusForgeQuickInfo.Show(FieldCampText.Pitched());
 			}

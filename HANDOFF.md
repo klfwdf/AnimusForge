@@ -1,3 +1,11 @@
+# 未部署：大地图就地扎营 第4步 营中问题系统（2026-10-30）
+
+新增 `FieldCamp/FieldCampIssues.cs`、`FieldCamp/FieldCampBehavior.Issues.cs`：搭营完成时由 C# 判定一次（欠饷、缺粮、伤员多、近 7 天战败、久未休整、士气低、兵种不睦；全无则一条请战/请赏），按严重度取前 3；同伴不和留到第5步。存档 4 键 `_afFieldCamp_issues_v1`/`_moraleGained_v1`/`_suppressed_v1`/`_lastDefeatHours_v1`，扎营结束清空。进营后每个未处理问题由对应兵种 QuickInfo 说一句双语模板（不调 LLM）；问题清单经 `FieldCampOrderTags.BuildIssuePromptBlock` 接在 `SceneAgentIdentityPromptCaptureAdapter.BuildSceneUserRuntimeContextForSingle` 的运行时段（营外为空）。后处理标签 `[ACTION:SCENE_CAMP_RESOLVE:<序号>:ENCOURAGE|GRANT|REFUSE|DISCIPLINE]` 只为未处理问题注入、按金币过滤付费选项，归一化用 `RuntimeAllowedParameterValues`；`Consume` 调 `FieldCampBehavior.Resolve` 执行（鼓舞 +3~+8 随领导力、应允 +5 并付费/清欠饷、驳回 -2~-5、整肃 -3 并开除≤1% 兵力且同类不再出现；单次扎营士气增益上限 +20；拔营/遭遇时未处理问题每件 -2），并把 AFEF 事实写入该兵种主队记忆（兵种不睦两边都写）。Prompt 键在 `ConversationRuntimePrompts(.en).json`，UI 键 16 条在 `af_ui_strings(-zh-CN).xml`。
+
+验证：1.3/1.4 Release 均 0 错误；终端设置回归 1.3 PASS 1132、1.4 PASS 1188；CN/EN Prompt 28 键与 UI 44 个 `{=AF_FC_*}` 键齐全、占位符一致。未部署、未实机、未跑真实 LLM，未验证模型是否按规则输出结算标签与开场 QuickInfo 观感。回滚：本提交整体 revert。
+
+---
+
 # 未部署：大地图就地扎营 第3步 营中交谈与兵种记忆（2026-10-30）
 
 新增 `FieldCamp/MainPartyTroopMemory.cs`：玩家主队普通士兵（agent origin 为主队且非俘虏、非 Hero；无 agent 时须在主队名册）按兵种取持久记忆 `af_nonhero:troop:<兵种>|party:party_string_id:<主队>`，接在 `SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroMemory` 的 Hero 排除之后，所以场景喊话写入/读取、原生对话历史键、后处理等所有已用该入口的链路同步生效，城内也写；保留规则沿用全体 NPC 通用的 260 行/日结压缩/MCM 注入窗口（用户确认）。`MyBehavior.MainPartyTroopMemory.cs` 每会话每兵种一次把旧的带势力/领主后缀的同主队同兵种记录合并进新键。营地场景的场景描述改为“在某地就地扎营的营地”（列队时说明正在检阅），中英两份 ConversationRuntimePrompts。信使仍只能寄给 Hero，按原设计不变。验证：1.3/1.4 隔离 dotnet build 0 错误，TerminalLiveSettings 1.4 PASS 1188，中英键齐全，键/别名匹配规则脚本回放 PASS；CampaignMemoryPersistence/NativeHistorySnapshot 测试的探针在当前工作区编不过（缺 MemoryFailureUiText 等类型，与本轮无关），未作证据。未部署、未实机。

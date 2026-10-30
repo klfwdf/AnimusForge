@@ -4937,7 +4937,11 @@ internal static string BuildSceneUserRuntimeContextForSingle(RoleIntroCapturePor
 
 	SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var _, out var runtimeIntro);
 
-	return runtimeIntro;
+	// Field camp: the camp's open issues join every camp speaker's runtime context (empty elsewhere).
+	string fieldCampIssues = FieldCampOrderTags.BuildIssuePromptBlock();
+
+	return string.IsNullOrEmpty(fieldCampIssues) ? runtimeIntro : (runtimeIntro + "
+" + fieldCampIssues).Trim();
 
 }
 
