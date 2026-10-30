@@ -33,6 +33,21 @@ internal static class FieldCampText
 		return text;
 	}
 
+	internal static TextObject PatrolTooltip(float hours)
+	{
+		var text = new TextObject("{=AF_FC_PatrolTooltip}Walk among the tents and troops. Leaving the camp scene costs about {HOURS} hours.");
+		text.SetTextVariable("HOURS", hours.ToString("0.#"));
+		return text;
+	}
+
+	internal static TextObject PatrolWounded() => new TextObject("{=AF_FC_PatrolWounded}You are too badly wounded to walk the camp.");
+
+	internal static TextObject PatrolFailed() => new TextObject("{=AF_FC_PatrolFailed}The camp scene could not be opened here.");
+
+	internal static TextObject Assembled() => new TextObject("{=AF_FC_Assembled}The troops fall in by troop type.");
+
+	internal static TextObject Dismissed() => new TextObject("{=AF_FC_Dismissed}The troops are dismissed and return to camp.");
+
 	internal static TextObject InspectionBlocked() => new TextObject("{=AF_FC_InspectionBlocked}Strike camp before using the troop inspection flow.");
 
 	internal static TextObject StrikeTooltip(float hours)

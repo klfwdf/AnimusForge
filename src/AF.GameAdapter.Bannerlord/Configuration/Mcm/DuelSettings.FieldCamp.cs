@@ -48,6 +48,21 @@ public partial class DuelSettings
 		HintText = "{=AF_MCM_FieldCamp_MapVisuals_Hint}Places a tent cluster next to each camped party. Turn off if another mod conflicts with map visuals; camping still works.")]
 	[SettingPropertyGroup(FieldCampGroup, GroupOrder = 190)]
 	public bool FieldCampMapVisualsEnabled { get; set; } = true;
+
+	[SettingPropertyInteger("{=AF_MCM_FieldCamp_AgentCap}Soldiers shown in camp", 20, 400, "0", Order = 8, RequireRestart = false,
+		HintText = "{=AF_MCM_FieldCamp_AgentCap_Hint}Most soldiers spawned when walking the camp, sampled by troop type. Tents and fires still follow the real head count. Default: 150.")]
+	[SettingPropertyGroup(FieldCampGroup, GroupOrder = 190)]
+	public int FieldCampAgentCap { get; set; } = 150;
+
+	[SettingPropertyInteger("{=AF_MCM_FieldCamp_TentCap}Most tents in camp", 4, 80, "0", Order = 9, RequireRestart = false,
+		HintText = "{=AF_MCM_FieldCamp_TentCap_Hint}Upper limit for tents placed in the camp scene. Default: 40.")]
+	[SettingPropertyGroup(FieldCampGroup, GroupOrder = 190)]
+	public int FieldCampTentCap { get; set; } = 40;
+
+	[SettingPropertyFloatingInteger("{=AF_MCM_FieldCamp_PatrolHours}Hours spent walking the camp", 0f, 6f, "0.0", Order = 10, RequireRestart = false,
+		HintText = "{=AF_MCM_FieldCamp_PatrolHours_Hint}Campaign time charged once each time you leave the camp scene. Resting effects still apply during it. Default: 1.")]
+	[SettingPropertyGroup(FieldCampGroup, GroupOrder = 190)]
+	public float FieldCampPatrolHours { get; set; } = 1f;
 }
 
 /// <summary>Clamped, allocation-free reads of the field camp settings.</summary>
@@ -73,4 +88,12 @@ internal static class FieldCampSettings
 	internal static float MoralePerHour => MathF.Clamp(S?.FieldCampMoralePerHour ?? 1f, 0f, 5f);
 
 	internal static float MoraleCap => MathF.Clamp(S?.FieldCampMoraleCap ?? 70, 0, 100);
+
+	internal static int AgentCap => Clamp(S?.FieldCampAgentCap ?? 150, 20, 400);
+
+	internal static int TentCap => Clamp(S?.FieldCampTentCap ?? 40, 4, 80);
+
+	internal static float PatrolHours => MathF.Clamp(S?.FieldCampPatrolHours ?? 1f, 0f, 6f);
+
+	private static int Clamp(int value, int min, int max) => value < min ? min : (value > max ? max : value);
 }

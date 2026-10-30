@@ -1,3 +1,9 @@
+# 未部署：大地图就地扎营 第2步 营地场景（2026-10-30）
+
+营地菜单新增“巡视营地”：按地形开原版野战场景的和平 mission `AnimusForge_FieldCamp`（`FieldCamp/FieldCampMissionLauncher.cs`，自带 `[ViewMethod]` 视图），`FieldCampLayout` 按真实兵力排营帐网格、篝火、旗帜、补给堆（随存粮）、伤兵帐与床、俘虏栏栅栏、外围岗哨；`FieldCampProps` 每类候选预制体逐个尝试，帐篷/栅栏开物理。士兵按兵种比例抽样（默认150），无敌 origin 不回写伤亡；营地生活为围篝火坐、站岗、巷道闲逛，每0.5秒处理≤20人。喊话后处理新增运行时标签 `[ACTION:SCENE_CAMP_ASSEMBLE]`/`[ACTION:SCENE_CAMP_DISMISS]`（只在营地 mission 的直接回复注入；规则文本在 ConversationRuntimePrompts 中英两份），集合按兵种列方阵、解散各回原位。TAB 离开后在等待菜单扣巡视耗时（默认1h）；营地 mission 跳过场景挑衅行为。同伴职务站位、军团领主、俘虏留到第5步。验证：1.3/1.4 隔离 dotnet build 0 错误，TerminalLiveSettings 1.4 PASS 1188 / 1.3 PASS 1132，中英键齐全；ScenePostprocessParity 因工作区他人 TTS 改动编不过，未能作为证据。未部署、未实机。
+
+---
+
 # 未部署：地牢俘虏不再触发场景冲突（2026-10-30）
 
 用户反馈在自家地牢与被关押领主乌尔玻斯聊天后出现 SCENE_TAUNT_FIGHT 并开打（日志 Key=scene_lord:town_es1:prison:lord_1_47）。原因：`prison` 在和平冲突地点白名单内，而 `IsSceneLordTauntTarget` / `IsSceneNotableTauntTarget` 未排除 `Hero.IsPrisoner`，导致俘虏被注入挑衅规则并能发起冲突。修复：两处判定加 `!IsPrisoner`，提示词注入、标签执行、领主冲突后果统一失效；狱卒、地牢其他非俘虏NPC不受影响。未编译、未部署、未实机。

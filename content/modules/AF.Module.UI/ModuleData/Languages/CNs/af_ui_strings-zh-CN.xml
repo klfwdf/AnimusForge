@@ -3456,5 +3456,17 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_FC_Status_Striking" text="部队正在拔营，还需约 {HOURS} 小时。" />
   <string id="AF_FC_Status_Resting" text="营中正在休整。伤员恢复加快，士气缓缓回升。已扎营 {HOURS} 小时，营中共 {PARTIES} 支部队。" />
   <string id="AF_FC_Status_Camped" text="营地一片安静。休整可以加快伤员恢复、缓慢恢复士气，但行军也随之停下。已扎营 {HOURS} 小时，营中共 {PARTIES} 支部队。" />
+  <string id="AF_MCM_FieldCamp_AgentCap" text="营中显示的士兵数" />
+  <string id="AF_MCM_FieldCamp_AgentCap_Hint" text="巡视营地时最多生成的士兵数量，按兵种比例抽样。营帐和篝火数量仍按真实兵力计算。默认：150。" />
+  <string id="AF_MCM_FieldCamp_TentCap" text="营帐数量上限" />
+  <string id="AF_MCM_FieldCamp_TentCap_Hint" text="营地场景中最多摆放的营帐数量。默认：40。" />
+  <string id="AF_MCM_FieldCamp_PatrolHours" text="巡视营地耗时（小时）" />
+  <string id="AF_MCM_FieldCamp_PatrolHours_Hint" text="每次离开营地场景时扣除一次的游戏时间，期间休整效果照常生效。默认：1。" />
+  <string id="AF_FC_Menu_Patrol" text="巡视营地" />
+  <string id="AF_FC_PatrolTooltip" text="在营帐与部队间巡视。离开营地场景时约耗费 {HOURS} 小时。" />
+  <string id="AF_FC_PatrolWounded" text="你伤势太重，无法巡视营地。" />
+  <string id="AF_FC_PatrolFailed" text="此处无法打开营地场景。" />
+  <string id="AF_FC_Assembled" text="部队按兵种列队完毕。" />
+  <string id="AF_FC_Dismissed" text="部队解散，各自回营。" />
 </strings>
 </base>

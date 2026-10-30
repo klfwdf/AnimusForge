@@ -3424,5 +3424,17 @@ Choose how to proceed:" />
   <string id="AF_FC_Status_Striking" text="Your troops are striking camp. About {HOURS} hours remain." />
   <string id="AF_FC_Status_Resting" text="The camp rests. The wounded recover faster and morale slowly returns. Camped for {HOURS} hours; {PARTIES} parties in camp." />
   <string id="AF_FC_Status_Camped" text="The camp is quiet. Resting heals the wounded faster and slowly restores morale, but the march is halted. Camped for {HOURS} hours; {PARTIES} parties in camp." />
+  <string id="AF_MCM_FieldCamp_AgentCap" text="Soldiers shown in camp" />
+  <string id="AF_MCM_FieldCamp_AgentCap_Hint" text="Most soldiers spawned when walking the camp, sampled by troop type. Tents and fires still follow the real head count. Default: 150." />
+  <string id="AF_MCM_FieldCamp_TentCap" text="Most tents in camp" />
+  <string id="AF_MCM_FieldCamp_TentCap_Hint" text="Upper limit for tents placed in the camp scene. Default: 40." />
+  <string id="AF_MCM_FieldCamp_PatrolHours" text="Hours spent walking the camp" />
+  <string id="AF_MCM_FieldCamp_PatrolHours_Hint" text="Campaign time charged once each time you leave the camp scene. Resting effects still apply during it. Default: 1." />
+  <string id="AF_FC_Menu_Patrol" text="Walk the camp" />
+  <string id="AF_FC_PatrolTooltip" text="Walk among the tents and troops. Leaving the camp scene costs about {HOURS} hours." />
+  <string id="AF_FC_PatrolWounded" text="You are too badly wounded to walk the camp." />
+  <string id="AF_FC_PatrolFailed" text="The camp scene could not be opened here." />
+  <string id="AF_FC_Assembled" text="The troops fall in by troop type." />
+  <string id="AF_FC_Dismissed" text="The troops are dismissed and return to camp." />
 </strings>
 </base>

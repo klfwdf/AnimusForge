@@ -310,6 +310,8 @@ internal void Publish(SceneSpeechQueueItem item)
 
 								ref content);
 
+						FieldCampOrderTags.Consume(allowPlayerDirectedActions, ref content);
+
 						if (allowPlayerDirectedActions)
 
 						{

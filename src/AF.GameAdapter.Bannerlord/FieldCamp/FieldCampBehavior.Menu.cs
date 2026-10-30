@@ -20,6 +20,7 @@ public sealed partial class FieldCampBehavior
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
 		starter.AddGameMenu(MenuId, "{=!}{AF_FC_STATUS}", OnCampMenuInit);
+		starter.AddGameMenuOption(MenuId, "af_fc_patrol", "{=AF_FC_Menu_Patrol}Walk the camp", OnPatrolCondition, OnPatrolConsequence);
 		starter.AddGameMenuOption(MenuId, "af_fc_rest", "{=AF_FC_Menu_Rest}Rest and wait", OnRestCondition, OnRestConsequence);
 		starter.AddGameMenuOption(MenuId, "af_fc_strike", "{=AF_FC_Menu_Strike}Strike camp", OnStrikeCondition, OnStrikeConsequence);
 		starter.AddGameMenuOption(MenuId, "af_fc_leave", "{=AF_FC_Menu_Leave}Return to the map", OnLeaveCondition, OnLeaveConsequence, isLeave: true);
@@ -89,6 +90,31 @@ public sealed partial class FieldCampBehavior
 		args.MenuTitle = FieldCampText.MenuTitle();
 		SetBackground(args);
 		RefreshStatusText(args);
+	}
+
+	private bool OnPatrolCondition(MenuCallbackArgs args)
+	{
+		args.optionLeaveType = GameMenuOption.LeaveType.Mission;
+		args.Tooltip = FieldCampText.PatrolTooltip(FieldCampSettings.PatrolHours);
+		if (Hero.MainHero?.IsWounded == true)
+		{
+			args.IsEnabled = false;
+			args.Tooltip = FieldCampText.PatrolWounded();
+		}
+		return _state == (int)CampState.Camped;
+	}
+
+	private void OnPatrolConsequence(MenuCallbackArgs args)
+	{
+		EnsureParties();
+		_resting = false;
+		if (!FieldCampMissionLauncher.TryOpen(_parties, out string failure))
+		{
+			Logger.Log(LogSource, "camp mission open failed: " + failure);
+			AnimusForgeQuickInfo.Show(FieldCampText.PatrolFailed());
+			return;
+		}
+		BeginPatrol();
 	}
 
 	private bool OnRestCondition(MenuCallbackArgs args)
@@ -161,6 +187,12 @@ public sealed partial class FieldCampBehavior
 			GameMenu.ExitToLast();
 			return;
 		}
+		if (_resting && _patrolSettleUntilHours >= 0 && NowHours >= _patrolSettleUntilHours)
+		{
+			// The patrol's time is spent; hand control back to the camp menu.
+			_patrolSettleUntilHours = -1;
+			_resting = false;
+		}
 		if (_state == (int)CampState.Camped && !_resting)
 		{
 			args.MenuContext.GameMenu.EndWait();
@@ -178,6 +210,12 @@ public sealed partial class FieldCampBehavior
 		{
 			float total = _state == (int)CampState.Pitching ? FieldCampSettings.PitchHours : FieldCampSettings.StrikeHours;
 			double remaining = Math.Max(0.0, _phaseEndHours - NowHours);
+			progress = total <= 0f ? 1f : MathF.Clamp(1f - (float)(remaining / total), 0f, 0.999f);
+		}
+		else if (_patrolSettleUntilHours >= 0)
+		{
+			float total = FieldCampSettings.PatrolHours;
+			double remaining = Math.Max(0.0, _patrolSettleUntilHours - NowHours);
 			progress = total <= 0f ? 1f : MathF.Clamp(1f - (float)(remaining / total), 0f, 0.999f);
 		}
 		args.MenuContext.GameMenu.SetProgressOfWaitingInMenu(progress);
@@ -199,9 +237,9 @@ public sealed partial class FieldCampBehavior
 
 	private bool OnStopWaitCondition(MenuCallbackArgs args)
 	{
-		// Striking cannot be interrupted; resting can.
+		// Striking and the patrol's time cost cannot be interrupted; plain resting can.
 		args.optionLeaveType = GameMenuOption.LeaveType.Leave;
-		return _state == (int)CampState.Camped && _resting;
+		return _state == (int)CampState.Camped && _resting && _patrolSettleUntilHours < 0;
 	}
 
 	private void OnStopWaitConsequence(MenuCallbackArgs args)

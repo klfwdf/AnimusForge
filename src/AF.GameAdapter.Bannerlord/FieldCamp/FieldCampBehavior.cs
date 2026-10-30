@@ -44,6 +44,10 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 	private readonly List<MobileParty> _parties = new List<MobileParty>();
 	private bool _partiesResolved = true;
 	private float _nextMoveBlockedHintTime;
+	private bool _patrolPending;
+	private bool _patrolMissionSeen;
+	private float _patrolPendingSince;
+	private double _patrolSettleUntilHours = -1;
 	private readonly FieldCampMapVisuals _visuals = new FieldCampMapVisuals();
 
 	internal static FieldCampBehavior Instance { get; private set; }
@@ -110,11 +114,29 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (Mission.Current != null)
+		{
+			_patrolMissionSeen |= _patrolPending;
+			return;
+		}
+		if (_patrolPending)
+		{
+			if (_patrolMissionSeen)
+			{
+				ConsumePatrolReturn();
+			}
+			else if (TaleWorlds.Engine.Time.ApplicationTime - _patrolPendingSince > 15f)
+			{
+				// The camp mission never started; do not charge time for it.
+				_patrolPending = false;
+				Logger.Log(LogSource, "camp mission did not start; patrol cancelled");
+			}
+		}
 		if (FieldCampHotkey.ConsumePress())
 		{
 			OnHotkeyPressed();
 		}
-		if (!IsActive || Mission.Current != null)
+		if (!IsActive)
 		{
 			return;
 		}
@@ -225,6 +247,8 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		Logger.Log(LogSource, "camp end reason=" + reason + " hours=" + (NowHours - _startHours).ToString("0.0"));
 		_lastRestHours = NowHours;
 		_state = (int)CampState.None;
+		_patrolPending = false;
+		_patrolSettleUntilHours = -1;
 		_partyIds.Clear();
 		_parties.Clear();
 		_partiesResolved = true;
@@ -398,6 +422,39 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		{
 			FinishCamp("main_party_missing");
 		}
+	}
+
+	// ---------- camp mission return ----------
+
+	/// <summary>
+	/// Runs on the engine tick once the camp mission has closed: the walk costs a
+	/// fixed amount of campaign time, spent in the wait menu (rest effects apply).
+	/// </summary>
+	internal void BeginPatrol()
+	{
+		_patrolPending = true;
+		_patrolMissionSeen = false;
+		_patrolPendingSince = TaleWorlds.Engine.Time.ApplicationTime;
+	}
+
+	private void ConsumePatrolReturn()
+	{
+		_patrolPending = false;
+		_patrolMissionSeen = false;
+		float hours = FieldCampSettings.PatrolHours;
+		if (!IsActive || _state != (int)CampState.Camped)
+		{
+			return;
+		}
+		if (hours <= 0f)
+		{
+			OpenCampMenu();
+			return;
+		}
+		_patrolSettleUntilHours = NowHours + hours;
+		_resting = true;
+		Logger.Log(LogSource, "patrol time charged hours=" + hours.ToString("0.0"));
+		OpenCampMenu();
 	}
 
 	// ---------- campaign events ----------

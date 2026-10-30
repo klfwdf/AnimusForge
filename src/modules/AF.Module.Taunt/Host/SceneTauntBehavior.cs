@@ -273,6 +273,11 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 				Logger.Log("SceneTaunt", "Skipped scene-taunt behaviors for an AnimusForge independent duel mission.");
 				return;
 			}
+			if (mission2.GetMissionBehavior<FieldCampMissionLogic>() != null)
+			{
+				Logger.Log("SceneTaunt", "Skipped scene-taunt behaviors for the AnimusForge field camp mission.");
+				return;
+			}
 			if (mission2.GetMissionBehavior<SceneTauntMissionBehavior>() == null)
 			{
 				mission2.AddMissionBehavior(new SceneTauntMissionBehavior());
