@@ -708,8 +708,10 @@ internal static class CountryAdmissionReplay
 
     private static void Entrances()
     {
-        foreach(string mode in new[]{"player","contact","oral"})
+        foreach(string mode in new[]{"player","contact","oral","direct","direct_war","direct_peace"})
         {
+            bool direct=mode.StartsWith("direct",StringComparison.Ordinal);
+            int directApplications=0;
             var h=new Host {PublishEnabled=true,PlayerAwareExecution=true,OralEffectPortsEnabled=true,OralRange=(0,3000),Extra=true};
             var o=new WorldDiplomacyOrchestration(h,new());h.Owner=o;
             WorldDiplomacyRound r;
@@ -731,15 +733,26 @@ internal static class CountryAdmissionReplay
             }
             else
             {
-                o.SubmitOralDiplomaticCommitment("ruler_a","a","action=Trade;move=NewMatter;target=p;days=14",new DialogueInteractionOrigin("native","admission-oral","session","We agree on fourteen days of trade.","I agree to fourteen days."),out bool registered);
-                Test.True(registered,"actual oral entry registers exact confirmed terms");oral=o.CurrentStorage.DialogueArrangements.Single();
+                if(direct)
+                {
+                    var action=mode=="direct_war"?DialogueDiplomaticAction.DeclareWar:mode=="direct_peace"?DialogueDiplomaticAction.Peace:DialogueDiplomaticAction.Trade;
+                    o.ExecuteBilateral("ruler_a","a",action,new("native","admission-direct","session","We agree on all terms.","I agree."),()=>
+                    {directApplications++;h.WorldWar=mode=="direct_war";return new(){State="applied",Actor=mode=="direct_war"?"p":"a",Target=mode=="direct_war"?"a":"p",Terms=new()};});
+                    Test.True(directApplications==1&&h.TradeExecutions==0,"direct action applied before drafting or event opening");
+                }
+                else
+                {
+                    o.SubmitOralDiplomaticCommitment("ruler_a","a","action=Trade;move=NewMatter;target=p;days=14",new DialogueInteractionOrigin("native","admission-oral","session","We agree on fourteen days of trade.","I agree to fourteen days."),out bool registered);
+                    Test.True(registered,"legacy persisted oral entry registers exact confirmed terms");
+                }
+                oral=o.CurrentStorage.DialogueArrangements.Single();
                 var declaration=o.CurrentStorage.Jobs.Single(x=>!string.IsNullOrEmpty(x.DialogueArrangementId));
                 Prepare(o,declaration);Complete(o,declaration,new(){["safe"]=true,["public_context"]="The ruler confirms fourteen days of trade.",["attitude_summary"]="firm"});
                 Prepare(o,declaration);
-                o.CommitGeneratedDocument(declaration,OralDeclarationReplay.Draft(oral,"accept_trade"));
+                o.CommitGeneratedDocument(declaration,OralDeclarationReplay.Draft(oral,direct?"statement":"accept_trade"));
                 Prepare(o,declaration);Complete(o,declaration,new(){["safe"]=true,["agreement_consistent"]=true,["negotiation_consistent"]=true});
                 r=o.ResolveRound(oral.RoundId);
-                Test.True(h.TradeExecutions==0,"confirmed oral execution waits for original public opening");
+                Test.True(h.TradeExecutions==0&&directApplications==(direct?1:0),"only legacy oral execution waits for original public opening");
             }
             Test.True(o.CurrentStorage.Jobs.Any(x=>x.Kind=="event_concept"),mode+": entry queues admission planning: "+JsonConvert.SerializeObject(o.CurrentStorage.Jobs.Select(x=>new{x.Kind,x.SuspendedReason,x.PrivacyRepairFeedback})));
             var j=o.CurrentStorage.Jobs.Single(x=>x.Kind=="event_concept");
@@ -778,14 +791,40 @@ internal static class CountryAdmissionReplay
             Test.True(r.EventPhase=="opening"&&r.Participants.Count==score.TargetCount,mode+": full cast adopted before publication: "+j.SuspendedReason+" / "+j.PrivacySourceMaterial);
             Test.True(r.Participants.Single(x=>x.KingdomId=="p").Agenda=="",mode+": no invented player position");
             if(mode!="player")Test.True(r.Participants.Single(x=>x.KingdomId=="p").State=="observer",mode+": no player consent inferred");
-            if(mode=="oral")
+            if(mode=="oral" || direct)
             {
                 Reviewed(o,o.CurrentStorage.Jobs.Single(x=>x.Kind=="event_boundary"),Boundary());
-                Test.True(oral.Terms.DurationDays==14&&oral.TargetKingdomId=="p"&&oral.ActorKingdomId=="a","admission preserves oral terms and signatories");
-                Test.True(oral.Status=="executed"&&h.TradeExecutions==1&&h.TradeDuration==14,"scored third countries do not add a new veto to confirmed oral execution: "+oral.Status+":"+oral.Reason);
+                Test.True(oral.Terms.DurationDays==(direct?0:14)&&oral.TargetKingdomId=="p"&&oral.ActorKingdomId=="a","admission preserves oral terms and signatories");
+                Test.True(oral.Status=="executed"&&h.TradeExecutions==(direct?0:1),"scored third countries do not add a new veto or replay: "+oral.Status+":"+oral.Reason);
                 Test.True(o.CurrentStorage.Documents.Count(x=>x.DocumentId==oral.DocumentId&&x.IsReadyForPublication)==1,"original oral declaration published once");
                 Call(o,"MaintainDialogueArrangements");Call(o,"MaintainDialogueArrangements");
-                Test.True(h.TradeExecutions==1&&!o.CurrentStorage.Jobs.Any(x=>x.Kind=="generate"&&x.AuthorKingdomId=="a"&&!x.IsResponse),"oral recovery cannot duplicate execution or unconditional opening speech");
+                Test.True(h.TradeExecutions==(direct?0:1)&&!o.CurrentStorage.Jobs.Any(x=>x.Kind=="generate"&&x.AuthorKingdomId=="a"&&!x.IsResponse),"oral recovery cannot duplicate execution or unconditional opening speech");
+                if(direct)
+                {
+                    var resultDocument=o.ResolveDocument(oral.DocumentId);
+                    Test.True(resultDocument.Intent=="statement"&&!resultDocument.RequiresResponse
+                        && !r.PendingOffers.Any(x=>x.Status=="open"&&x.SourceDocumentId==oral.DocumentId)
+                        && !r.PlayerResponses.Any(x=>x.Status=="pending"&&x.SourceDocumentId==oral.DocumentId),"direct opening creates no original-agreement acceptance obligation");
+                    Test.True(j.EventTriggerMaterial.Contains("\"already_executed\":true")&&j.EventTriggerMaterial.Contains("DirectActorKingdomId"),"actual executed source enters event planning");
+                    Test.True(r.EventConvergence.Result==(mode=="direct_war"?"war_executed":"action_executed")
+                        && r.EventConvergence.ActualWar==(mode=="direct_war"),"convergence reads the executed result independently of statement intent "+mode);
+                    var evidence=(JObject)Call(o,"DirectDocumentEvidence",resultDocument);
+                    Test.True((string)evidence["actor"]==(mode=="direct_war"?"p":"a")&&(string)evidence["announcement_author"]=="a","result actor remains separate from NPC author "+mode);
+                    for(int step=0;step<20&&r.EventPhase!="closing";step++)
+                    {
+                        foreach(var speech in o.CurrentStorage.Jobs.Where(x=>x.Kind=="generate").ToList())
+                            EventStructureReplay.PublishDeclaration(o,speech,speech.TargetKingdomId,"statement",false);
+                        h.CurrentDayValue+=8;o.ProcessPropagationArrivals();o.ProcessRoundLifecycle();
+                        foreach(var decision in o.CurrentStorage.Jobs.Where(x=>x.Kind=="player_decision").ToList())
+                            Complete(o,decision,new(){["participate"]=false,["reason"]="No new optional matter."});
+                    }
+                    Test.True(r.EventPhase=="closing","direct result with additional participant reactions reaches closing "+mode);
+                    var ending=o.CurrentStorage.Jobs.Single(x=>x.Kind=="event_boundary");Prepare(o,ending);
+                    Test.True(ending.UserPrompt.Contains("executed_oral_result")&&ending.UserPrompt.Contains(oral.ArrangementId),"actual result reaches ending evidence "+mode);
+                    var conclusion=Boundary();conclusion["confirmed_documents"]=new JArray(oral.DocumentId);
+                    Reviewed(o,ending,conclusion);
+                    Test.True(r.State=="closed"&&r.EventEndingId!=""&&directApplications==1&&h.TradeExecutions==0,"direct result closes with confirmed receipt without replay "+mode);
+                }
             }
         }
     }

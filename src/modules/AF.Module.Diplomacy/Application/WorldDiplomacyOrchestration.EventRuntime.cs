@@ -145,8 +145,8 @@ internal sealed partial class WorldDiplomacyOrchestration
                     x.AppliedTotal > 0 ? DiplomacyEventEffectTone.Beneficial : DiplomacyEventEffectTone.Harmful)).ToList();
             foreach (var removed in notice.RemovedEffectIds.Where(_eventEffects.ContainsKey))
                 effects.Add(new DiplomacyEventEffect(DiplomacyUiLocalization.Format("AF_DIP_UI_EventEffect_Removed", "Ended: {EFFECT}", ("EFFECT", DescribeEventEffect(_eventEffects[removed])))));
-            foreach (var document in notice.ConfirmedDocumentIds.Select(ResolveDocument).Where(x => x?.ChangedDiplomaticState == true))
-                effects.Add(new DiplomacyEventEffect(document.MechanicalResult));
+            foreach (var document in notice.ConfirmedDocumentIds.Select(ResolveDocument).Where(HasConfirmedDocumentResult))
+                effects.Add(new DiplomacyEventEffect(ConfirmedDocumentResultText(document)));
             if (Enum.TryParse(notice.Scene, out DiplomacyEventScene scene) == false) scene = DiplomacyEventScene.Unspecified;
             var snapshot = new DiplomacyEventPresentation(notice.EventId, EventHost.EventGeneration,
                 notice.Stage == "started" ? DiplomacyEventStage.Started : DiplomacyEventStage.Ended,
@@ -427,7 +427,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (docs.Count > 16) failures.Add("confirmed_documents:at_most_16_ids");
             foreach (var id in docs)
                 if (id.Type != JTokenType.String || ResolveDocument((string)id) is not WorldDiplomacyDocument doc
-                    || !doc.IsReadyForPublication || doc.RoundId != round.RoundId || !doc.ChangedDiplomaticState)
+                    || !doc.IsReadyForPublication || doc.RoundId != round.RoundId || !HasConfirmedDocumentResult(doc))
                     failures.Add("confirmed_documents:unexecuted_or_invalid=" + id + ";statements_are_not_mechanical_results;use_empty_array_when_none");
         }
         else if (draft["confirmed_documents"] != null) failures.Add("confirmed_documents:array_required");
@@ -530,7 +530,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         }
         if (effects.Count != rows.Count) return false;
         var confirmed = (draft["confirmed_documents"] as JArray)?.Values<string>().ToList() ?? new();
-        if (confirmed.Count > 16 || confirmed.Any(x => ResolveDocument(x)?.ChangedDiplomaticState != true
+        if (confirmed.Count > 16 || confirmed.Any(x => !HasConfirmedDocumentResult(ResolveDocument(x))
             || ResolveDocument(x).RoundId != round.RoundId || !ResolveDocument(x).IsReadyForPublication)) return false;
         if (stage == "started" && confirmed.Count > 0) return false;
         var evidence = (draft["progress_evidence"] as JArray)?.Values<string>().Distinct().ToList() ?? new();
@@ -709,7 +709,8 @@ internal sealed partial class WorldDiplomacyOrchestration
                 ProcessAnalyzedDocument(document, document.Intent, document.Commitment, document.RequiresResponse, document.EventExecutionTone, document.EventExecutionConfidence);
                 if (arrangement != null)
                 {
-                    arrangement.Status = arrangement.TreatyExecutionState == "uncertain" ? "execution_uncertain"
+                    arrangement.Status = arrangement.DirectExecutionState == "applied" && document.IsReadyForPublication ? "executed"
+                        : arrangement.TreatyExecutionState == "uncertain" ? "execution_uncertain"
                         : document.IsReadyForPublication ? document.ChangedDiplomaticState ? "executed" : "published" : "execution_uncertain";
                     arrangement.Reason = document.MechanicalResult;
                     if (document.IsReadyForPublication) DeliverDialogueDeclarationToCounterparty(document, arrangement.TargetKingdomId);

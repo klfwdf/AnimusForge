@@ -93,6 +93,8 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Contains("--bilateral-direct"))
+        { try { BilateralReplay.Run(); Console.WriteLine("PASS bilateral direct assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--acceptance-terms-repair"))
         { AcceptanceTermsRepairReplay.Run(); Console.WriteLine("PASS acceptance terms repair assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--runtime-maintenance"))

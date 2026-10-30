@@ -25,7 +25,7 @@ internal static class MaterialRecoveryReplay
         o.TryCompleteDiplomacyPipeline(job, new LlmJobResult { Success = true, Content = json.ToString() });
     private static DiplomacySpeechReview Conditional(WorldDiplomacyOrchestration o, string id)
     {
-        o.CaptureSpeechReview("ruler_a", "a", new("scene", id, "session", "Only when c owns the town", "I will propose trade if c owns that town"), "");
+        o.CaptureSpeechReview("ruler_a", "a", new("scene", id, "session", "Only when c owns the town", "I will propose trade if c owns that town"), "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + (""));
         var job = o.CurrentStorage.Jobs.Last(x => x.Kind == "oral_review"); o.PrepareSharedRequest(job);
         Test.True(job.UserPrompt.Contains("current_public_facts") && job.SystemPrompt.Contains(DiplomacyPromptTexts.Get("SpeechReview_Conditions", "missing")), "actual review sends live facts and the selected package condition contract");
         Complete(o, job, JObject.Parse("{\"unresolved\":true,\"condition_watch\":[\"c\"],\"commitments\":[]}"));
@@ -52,7 +52,7 @@ internal static class MaterialRecoveryReplay
         Test.True(held.Attempts == 1 && held.Reason == "condition_evidence_changed_during_review" && saved.DialogueArrangements.Count == 0, "late audit cannot use superseded world evidence");
 
         var (sh, so) = Fixture();
-        so.CaptureSpeechReview("ruler_a", "a", new("courier", "outage", "session", "Hello", "We should discuss this"), "");
+        so.CaptureSpeechReview("ruler_a", "a", new("courier", "outage", "session", "Hello", "We should discuss this"), "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + (""));
         var failure = so.CurrentStorage.Jobs.Single(); var service = so.CurrentStorage.SpeechReviews.Single();
         for (int i = 0; i < 3; i++)
         {

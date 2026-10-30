@@ -118,7 +118,7 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     internal string BuildOralArrangementContext(string rulerId, string actor)
     {
-        if (!DialogueRulerIsCurrent(actor, rulerId) || _host.IsPlayerParty(actor)) return "";
+        if (!_host.WorldDiplomacyEnabled() || !DialogueRulerIsCurrent(actor, rulerId) || _host.IsPlayerParty(actor)) return "";
         var body = new StringBuilder(DiplomacyPromptTexts.Get("OralArrangementHeader", "[Oral diplomacy and formal declarations]\nOnly explicit final assent creates a binding commitment. The declaration expresses the accepted decision; drafting cannot reconsider it. For a decision about a known existing event, append event=event_ID and continue that case; omit event only for a genuinely independent matter. Never guess attribution from recency. Accepted commitments must be fulfilled and cannot be cancelled, postponed or replaced with new terms; reject or clarify conflicting requests before giving another promise. Bilateral terms expressly agreed with the player ruler may execute after your formal declaration; third-party assent and conditions remain required. Only the player publishes player declarations. Keep internal IDs, technical status and receipts out of speech.\n"));
         body.AppendLine(DiplomacyPromptTexts.Get("CommittedDeclaration_AllianceTerms", "This alliance establishes non-aggression and cooperation. Joining a particular war requires separate agreement; aid expressly promised will be fulfilled."));
         body.AppendLine(DiplomacyPromptTexts.Get("Oral_AllianceBeforeAssent", "Before proposing or accepting an ordinary alliance, explain the preceding scope naturally in your actual reply, not only after a future refusal."));
@@ -322,17 +322,25 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         if (!_host.WorldDiplomacyEnabled()) return;
         RecoverLegacyOralDrafts();
+        int directRecovered = 0;
         foreach (var item in Storage.DialogueArrangements ?? Enumerable.Empty<WorldDiplomacyDialogueArrangement>())
         {
+            if (item.DirectExecutionState == "applied" && item.Status is "accepted" or "deferred")
+            {
+                if (directRecovered++ >= 4 || item.GenerationRetryAfterDay > _host.CurrentDay()) continue;
+                try { RecoverDirectResultPublication(item); }
+                catch (Exception ex) { _host.Log("direct result publication recovery failed id=" + item.ArrangementId + " error=" + ex.GetType().Name); }
+                continue;
+            }
             RecoverSkippedOralTreaty(item);
             if (item.Status == "accepted" || item.Status == "deferred") RecoverDialoguePublicationReceipt(item);
         }
         foreach (var item in (Storage.DialogueArrangements ?? new List<WorldDiplomacyDialogueArrangement>())
-            .Where(x => x.Status == "accepted" || x.Status == "deferred").ToList())
+            .Where(x => string.IsNullOrEmpty(x.DirectExecutionState) && (x.Status == "accepted" || x.Status == "deferred")).ToList())
             if (!HasCurrentDiplomaticRulerMemorySnapshot(ResolveDialogueParty(item.ActorKingdomId), item.RulerId))
                 InvalidateImpossibleCommitment(item.ArrangementId, item.Version, "original_ruler_no_longer_authorized");
         foreach (var item in (Storage.DialogueArrangements ?? new List<WorldDiplomacyDialogueArrangement>())
-            .Where(x => (x.Status == "accepted" || (x.Status == "deferred" && !x.ExplicitlyDeferred))
+            .Where(x => string.IsNullOrEmpty(x.DirectExecutionState) && (x.Status == "accepted" || (x.Status == "deferred" && !x.ExplicitlyDeferred))
                 && x.GenerationRetryAfterDay <= _host.CurrentDay()).Take(4).ToList()) PublishDialogueArrangement(item);
         foreach (var item in Storage.DialogueArrangements ?? Enumerable.Empty<WorldDiplomacyDialogueArrangement>())
         {
@@ -347,12 +355,15 @@ internal sealed partial class WorldDiplomacyOrchestration
         // Terminal receipts outlive the document archive. Only old terminal items
         // are pruned; pending work never disappears because of a display limit.
         Storage.DialogueArrangements?.RemoveAll(x => x.CreatedDay < _host.CurrentDay() - 365
+            && string.IsNullOrEmpty(x.DirectExecutionState)
             && x.Status != "accepted" && x.Status != "deferred" && x.Status != "published"
             && !(x.MemoryReceipts?.Any(m => !m.Delivered) ?? false));
     }
 
     private void PublishDialogueArrangement(WorldDiplomacyDialogueArrangement item)
     {
+        if (item.DirectExecutionState == "applied" && string.IsNullOrEmpty(item.RoundId))
+            item.RoundId = CreateIndependentDialogueRound(item.ActorKingdomId, item.TargetKingdomId, item.ArrangementId).RoundId;
         if (RecoverDialoguePublicationReceipt(item)) return;
         if (!IsCurrentDialoguePublicationWork(item)) return;
         try { PublishDialogueArrangementCore(item); }
@@ -371,7 +382,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         var document = ResolveDocument(item.DocumentId);
         if (document?.IsReadyForPublication != true || document.EventExecutionPending
             || item.TreatyExecutionState is "pending" or "started" or "uncertain") return false;
-        item.Status = document.ChangedDiplomaticState ? "executed" : "published";
+        item.Status = document.ChangedDiplomaticState || item.DirectExecutionState == "applied" ? "executed" : "published";
         item.Reason = document.MechanicalResult ?? "publication_receipt_recovered";
         return true;
     }

@@ -7,10 +7,11 @@ internal static class NativeDiplomacyFallbackReplay
         internal bool Formal;
         internal bool ThrowFormal;
         internal bool Reviewing;
+        internal bool ThrowBilateral;
         internal string Result = "";
         internal readonly List<string> Calls = new();
     }
-    private readonly struct Source : IDiplomacyOralTagSource, IDiplomacyCommitmentTagSource, IDiplomacyCommitmentReviewSource
+    private readonly struct Source : IDiplomacyOralTagSource, IDiplomacyCommitmentTagSource, IDiplomacyCommitmentReviewSource, IDiplomacyBilateralTagSource
     {
         private readonly State _state;
         internal Source(State state) => _state=state;
@@ -20,6 +21,11 @@ internal static class NativeDiplomacyFallbackReplay
         public string SpeakerKingdomId => "npc";
         public bool UseFormalCommitments => _state.Formal;
         public bool CaptureCommitmentReview(string hints) => _state.Reviewing;
+        public bool TryProcessBilateral(string action,string payload)
+        {
+            if(_state.ThrowBilateral && action=="MAKE_TRADE")throw new InvalidOperationException("after_effect_failure");
+            return false;
+        }
         private string Call(string action,string payload){_state.Calls.Add(action+":"+payload);return _state.Result;}
         public string SubmitCommitment(string payload){if(_state.ThrowFormal)throw new InvalidOperationException();return Call("formal",payload);}
         public string ControlCommitment(string payload)=>Call("control",payload);
@@ -80,11 +86,15 @@ internal static class NativeDiplomacyFallbackReplay
         Test.True(state.Calls.SequenceEqual(new[] { "war:player:npc" }), "production composition: active commitment review preserves player ruler immediate war executor");
         state.Calls.Clear(); Run("DECLARE_WAR:npc:third");
         Test.True(state.Calls.Count == 0, "NPC war remains owned by speech review and cannot execute twice through its hint");
+        state.Calls.Clear();state.ThrowBilateral=true;
+        body="Visible speech.[ACTION:DIPLOMACY:MAKE_TRADE:player:npc][ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]";
+        DiplomacyOralTagApplication.Process(source,ref body);
+        Test.True(body=="Visible speech."&&state.Calls.SequenceEqual(new[]{"independent:"}),"bilateral post-effect exception hides its tag, never falls back, and preserves later independent actions");
         string root=Directory.GetCurrentDirectory();while(!File.Exists(Path.Combine(root,"AnimusForge.csproj")))root=Directory.GetParent(root)!.FullName;
         var rules=Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Path.Combine(root,"content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json")));
         var rule=rules.Descendants().OfType<Newtonsoft.Json.Linq.JObject>().Single(x=>(string?)x["Id"]=="diplomacy");
         string instruction=(string)rule["Instruction"]!;
-        Test.True(instruction.Contains("AI外交关闭")&&!instruction.Contains("[ACTION:"),"actual main-chain resource describes native mode without directive tags");
+        Test.True(instruction.Replace(" ","").Replace("【","").Replace("】","").Contains("AI外交关闭")&&!instruction.Contains("[ACTION:"),"actual main-chain resource describes native mode without directive tags");
         string nativeTemplate=(string)rule["RuntimeInstructionTemplates"]!["native_action_postprocess"]!;
         foreach(string tag in new[]{"DECLARE_WAR","MAKE_PEACE","FORM_ALLIANCE","BREAK_ALLIANCE","MAKE_TRADE","CANCEL_TRADE"})
             Test.True(nativeTemplate.Contains("DIPLOMACY:"+tag+":")&&rule["PostprocessRules"]!.Any(x=>((string?)x["Tag"]??"").Contains("DIPLOMACY:"+tag+":")),"actual native runtime and topic postprocessing resources expose each supported tag");

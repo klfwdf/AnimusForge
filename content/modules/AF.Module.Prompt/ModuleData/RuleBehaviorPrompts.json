@@ -777,49 +777,53 @@
     "Code": "DIPLOMACY",
     "PreprocessExcludedInstruction": "你不可以代表王国参与宣战、议和、结盟、贸易、贡金或其他国家外交；若玩家提及，应让其寻找国王或国家统治者。（DIPLOMACY）",
     "NonHeroInstruction": "你不是国王或贵族，无法参与国与国之间的外交谈判。如果玩家提及相关话题，请表示你没有这个资格。",
-    "Instruction": "你作为当前国王可以被任何能够与你交谈的人劝说，结合个人记忆、与玩家的交谈和真实局势决定是否答应。讨论、考虑、报价不等于承诺。AI外交启用时，明确答应后由AI依据交谈中答应的条件、理由和结果起草你的完整正式宣言。已与玩家国王明确谈妥的双边协议随你的宣言发布直接兑现，不再要求玩家另发接受宣言；第三国尚未同意的事项仍需正常提案与正式答复。AI拟文不得改变答应的动作、对象和条款。玩家宣言只能玩家亲自发布。玩家不是国王不能代表所属国家签约，但可以劝你回应第三国提案。新事项或改条款开独立新回合；接受或拒绝旧案准确绑定来源宣言和动作，不借新回合绕过歧义；多份同类提案须让玩家指明。原案接受不得改条款。旧国王未发布的私人承诺不由继任者继承。私人理由、秘密不自动公开，玩家自述不是已证实事实。例外：有权限的玩家国王亲自口头宣战，以及独立玩家家族无条件议和，可立即生效。吞并、朝贡、驻军和完全臣属都必须明确角色与条款，走正式宣言。以上正式公文规则仅在运行时AI外交启用时适用。AI外交关闭时，按运行时原版外交规则直接处理宣战、议和、结盟及贸易，不要求回国发文或等待正式宣言；不得声称游戏尚未确认的行动已经生效。原版入口不支持的复杂公文条款不能假装执行。正文自然发言，不写标签，不输出约定登记、正式宣言已发布、外交行动已生效等系统回执或程序状态提示。 玩家作为宗主国当前国王明确决定释放自己的直属臣属国时，宗主单方决定即可解除当前臣属条约，无需臣属国同意，也不要求臣属国拥有独立外交权。普通解盟、结盟不能代替释放；NPC自称独立不能当作已执行事实，真实状态以已经确认的机制结果为准，内部回执不得写入正文。 原口头臣属签约保留：玩家为宗主国当前国王、当前NPC为外国国王，双方本轮明确谈妥让NPC王国成为玩家的朝贡国、卫戍国或附庸国（含原机制改约）时，由臣属机制直接签约，不再登记同一事项的正式发文承诺；不要要求等待宣言或重复确认。明确回应已有正式公文、玩家主动臣属、第三国斡旋及AI之间臣属仍按正式外交处理。",
+    "Instruction": "你作为现任国王可以被任何能与你交谈的人劝说，结合个人记忆、交谈和实际局势决定是否同意。讨论、报价、威胁、试探和未满足条件不是最终同意。AI外交【启用】时逐事项分流：仅玩家和你都是现任君主、事项处理你们两国之间的议和/结盟/贸易/宣战/解盟/终止贸易时，由程序立即校验执行。前三项须双方本轮明确最终同意全部条款；后三项须有权一方明确单方决定。后续NPC宣言只公布已确认结果，原双方不再重复同意，不能代玩家写宣言。在此直接范围，结盟仅支持原版默认期限，任意期限须先澄清而不是答应；贸易指定期限1至252天。贡金明确付款国、收款国、金额及1至252天；无贡金和平期限为0；完整保留现有支持的割地条件。玩家君主劝你处理第三国事项、非君主说客、复杂条约及明确拒绝已有提案均保留原正式机制。正式答复准确绑定原案，不能按最近事件猜测或改写已接受条款。吞并、朝贡、驻军、附庸明确双方角色并保留原能力；让你的王国成为玩家宗主国的朝贡国/卫戍国/附庸国的原口头签约与改约仍走原直接臣属机制，不重复登记发文承诺。明确正式公文答复、玩家主动臣属、第三国斡旋仍走正式臣属外交。玩家宗主按原条约凭证明确释放直属臣属国可单方决定，不能用结盟解盟代替。AI外交【关闭】时保留原版模式运行时规则，不创建AI事件、不要求正式宣言，不把不支持条款说成已执行。独立家族无条件议和规则不变。只有已确认游戏事实才能证明成功。保护私人理由与秘密，玩家自述不是已验证事实；继任者不继承旧君主未公布的私人承诺。正文自然发言，不写动作标签、内部ID或程序回执。 含跨动作先决条件或反向依赖的原案仍属复杂正式事项，保留原条件规则，不可只执行交换的一半。",
     "PostprocessRules": [
-        {
-            "Tag": "[ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=王国ID]",
-            "Description": "仅AI外交启用时使用。仅 latest_reply 中 NPC 当前国王明确最终答应时输出；考虑、报价、犹豫不输出。与玩家国王谈妥的双边新协议仍用NewMatter，发布NPC宣言即兑现，不必虚构玩家原案或要求玩家再发接受宣言。action=Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal。move=NewMatter/AcceptProposal/RejectProposal；接受或拒绝原案附 source_document=原宣言ID;source_action=原动作ID。原案歧义先问玩家，不能选最新或最早。贡金必须明确金额与期限，未明确先澄清；无贡金和平期限为0。和平附 payer/receiver/tribute/days/cession_from/cession_to/settlement，按明确同意的原始条款复制；接受原案省略条款代表完全接受原案，不能更改。吞并/臣属附 receiving=接收国或宗主国ID;joining=并入国或臣属国ID。ID从运行时复制。不能代玩家发文。 本次决定属于已知的现有事件时，附 event=事件ID 并续入原案；只有真正独立的新事项才省略 event。不得按最新或最早事件猜测归属。已明确应允的安排必须履行，不能改口取消、拖延或用新条款替换；冲突要求须在再次答应前拒绝或澄清。 原口头臣属签约保留：玩家为宗主国当前国王、当前NPC为外国国王，双方本轮明确谈妥让NPC王国成为玩家的朝贡国、卫戍国或附庸国（含原机制改约）时，由臣属机制直接签约，不再登记同一事项的正式发文承诺；不要要求等待宣言或重复确认。明确回应已有正式公文、玩家主动臣属、第三国斡旋及AI之间臣属仍按正式外交处理。"
-        },
-        {
-            "Tag": "[ACTION:DIPLOMACY:COMMITMENT:arrangement=约定ID;state=deferred;reason=明确原因]",
-            "Description": "已应允的发文安排不能取消或人为延期。仅恢复技术延期时用 [ACTION:DIPLOMACY:COMMITMENT:arrangement=ARRANGEMENT_ID;state=accepted;reason=EXPLICIT_REASON]；已公开且尚未被接受的自己提案可用 state=cancelled 发正式撤回宣言。ID从运行时清单复制，不撤销已执行行动，不泄露私人内容。"
-        },
-        {
-            "Tag": "[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]",
-            "Description": "玩家国王有权限并明确亲自宣战时，id1=玩家国,id2=NPC国，直接执行。NPC明确最终决定对某国宣战：AI外交启用用COMMIT:DeclareWar；关闭用此标签，id1=NPC国,id2=目标国。考虑、威胁、假设均不得输出，ID从运行时复制。"
-        },
-        {
-            "Tag": "[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]",
-            "Description": "仅当运行时事实表明NPC是敌对王国当前国王，且<latest_reply>中的NPC和玩家都明确同意无条件立即停战、议和或结束敌对时输出。拒绝、犹豫、报价、反问、条件尚未满足或只说会考虑时不得输出。"
-        },
-        {
-            "Tag": "[ACTION:DIPLOMACY:MAKE_PEACE:id1:id2:金额:天数]",
-            "Description": "仅AI外交关闭且双方当前国王明确同意、玩家也是国王时输出。id1=付款国,id2=收款国，必须为玩家国与NPC国。无贡金用0:0；有贡金须明确金额与1至252天期限，缺项先澄清，不用默认金额或期限。不得附割地等无法完整执行的条件。 启用AI外交时改用COMMIT，不输出本标签。"
-        },
-        {
-            "Tag": "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:天数]",
-            "Description": "仅AI外交关闭且玩家与NPC都是当前国王、NPC明确最终同意结盟时输出。两ID为双方国家；期限取已谈妥天数，未约定用default。 启用AI外交时改用COMMIT，不输出本标签。"
-        },
-        {
-            "Tag": "[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]",
-            "Description": "仅AI外交关闭、玩家与NPC都是当前国王、NPC明确最终决定解除双方现有同盟时输出。 启用AI外交时改用COMMIT，不输出本标签。"
-        },
-        {
-            "Tag": "[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:天数]",
-            "Description": "仅AI外交关闭且玩家与NPC都是当前国王、NPC明确最终同意贸易协议时输出。两ID为双方国家；期限取已谈妥天数，未约定用default。 启用AI外交时改用COMMIT，不输出本标签。"
-        },
-        {
-            "Tag": "[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]",
-            "Description": "仅AI外交关闭、玩家与NPC都是当前国王、NPC明确最终决定取消双方现有贸易协议时输出。 启用AI外交时改用COMMIT，不输出本标签。"
-        },
+    {
+        "Tag": "[ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=王国ID]",
+        "Description": "仅AI启用时，用于剩余第三国/复杂事项及RejectProposal；绝不用于六类直接双边动作（含AcceptProposal）。须NPC明确最终同意，考虑/报价不触发。action=Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal；move=NewMatter/AcceptProposal/RejectProposal。答复准确给source_document和source_action（原扁平单动作公文可空action），歧义先澄清；NewMatter不附原案字段。和平payer/receiver/tribute/days/cession_from/cession_to/settlement保留实际同意的全部条款，复杂条约角色receiving/joining。不代第三国同意，保留原直接臣属签约排除。现有事件只按确切来源关联，不按最近猜测。REVIEW_REMAINING可补充剩余未定事项，此合法COMMIT本身也会进入审核。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:COMMITMENT:arrangement=约定ID;state=deferred;reason=明确原因]",
+        "Description": "已应允的发文安排不能取消或人为延期。仅恢复技术延期时用 [ACTION:DIPLOMACY:COMMITMENT:arrangement=ARRANGEMENT_ID;state=accepted;reason=EXPLICIT_REASON]；已公开且尚未被接受的自己提案可用 state=cancelled 发正式撤回宣言。ID从运行时清单复制，不撤销已执行行动，不泄露私人内容。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]",
+        "Description": "AI启用且属于直接双边范围时，遵守统一运行时逐事项规范；范围外保留原资格和正式规则。AI关闭时保留以下原版规则：玩家国王有权限并明确当面宣战时，id1=玩家国,id2=NPC国，直接执行。NPC明确最终决定向某国宣战时用此标签，id1=NPC国,id2=目标国；考虑、威胁、假设均不输出，ID从运行时复制。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]",
+        "Description": "仅当运行时事实表明NPC是敌对王国当前国王，且<latest_reply>中的NPC和玩家都明确同意无条件立即停战、议和或结束敌对时输出。拒绝、犹豫、报价、反问、条件尚未满足或只说会考虑时不得输出。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:MAKE_PEACE:id1:id2:金额:天数]",
+        "Description": "AI启用且属于直接双边范围时，遵守统一运行时逐事项规范；范围外保留原资格和正式规则。AI关闭时保留以下原版规则：仅AI外交关闭且双方当前国王明确同意、玩家也是国王时输出。id1=付款国,id2=收款国，必须为玩家国与NPC国。无贡金用0:0；有贡金须明确金额与1至252天期限，缺项先澄清，不用默认金额或期限。不得附割地等无法完整执行的条件。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:天数]",
+        "Description": "AI启用且属于直接双边范围时，遵守统一运行时逐事项规范；范围外保留原资格和正式规则。AI关闭时保留以下原版规则：仅AI外交关闭且玩家与NPC都是当前国王、NPC明确最终同意结盟时输出。两ID为双方国家；期限取已谈妥天数，未约定用default。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]",
+        "Description": "AI启用且属于直接双边范围时，遵守统一运行时逐事项规范；范围外保留原资格和正式规则。AI关闭时保留以下原版规则：仅AI外交关闭、玩家与NPC都是当前国王、NPC明确最终决定解除双方现有同盟时输出。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:天数]",
+        "Description": "AI启用且属于直接双边范围时，遵守统一运行时逐事项规范；范围外保留原资格和正式规则。AI关闭时保留以下原版规则：仅AI外交关闭且玩家与NPC都是当前国王、NPC明确最终同意贸易协议时输出。两ID为双方国家；期限取已谈妥天数，未约定用default。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]",
+        "Description": "AI启用且属于直接双边范围时，遵守统一运行时逐事项规范；范围外保留原资格和正式规则。AI关闭时保留以下原版规则：仅AI外交关闭、玩家与NPC都是当前国王、NPC明确最终决定取消双方现有贸易协议时输出。"
+    },
     {
         "Tag": "[ACTION:DIPLOMACY:RELEASE_SUBJECT:target=臣属国ID;agreement=本轮条约凭证]",
         "Description": "仅本轮玩家作为宗主国国王明确决定释放当前NPC所在的直属臣属国时输出。target与agreement必须从【宗主主动释放臣属国】事实原样复制；没有此运行时事实就不能输出。无需NPC同意。询问如何解除、假设、否定、条件尚未满足、NPC请求独立、旁听者引用均不能视为玩家决定。不要同时输出COMMIT:BreakAlliance、COMMIT:Alliance或建立臣属标签。系统会验证当前玩家国王、直属方向和本轮条约凭证，实际成功才记录独立事实。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:REVIEW_REMAINING]",
+        "Description": "仅AI启用时。双方现任君主交谈中，仅有剩余第三国/复杂事项（含其明确提案答复或待澄清承诺）时输出。混合轮次可同时输出直接双边标签。不能为六类直接双边事项单独输出，也不能用作漏标签/失败回退。非君主说客仍自动审核。"
     }
-    ],
+],
     "TriggerKeywords": [
         "我代表我国向贵国呈递国书。",
         "我以国王身份向你提出外交交涉。",

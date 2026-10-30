@@ -7,6 +7,11 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyDialogueArrangement
 {
+    // Absent in old saves. Never infer an execution result from a legacy promise.
+    public string DirectExecutionState { get; set; } = "";
+    public string DirectActorKingdomId { get; set; } = "";
+    public string DirectTargetKingdomId { get; set; } = "";
+    public string DirectExecutionDiagnostic { get; set; } = "";
     [JsonProperty("generationFailureAttempts")] public int GenerationFailureAttempts { get; set; }
     // Empty in legacy saves: old public proposals never gain inferred player consent.
     public string ConfirmedPlayerRulerId { get; set; } = "";

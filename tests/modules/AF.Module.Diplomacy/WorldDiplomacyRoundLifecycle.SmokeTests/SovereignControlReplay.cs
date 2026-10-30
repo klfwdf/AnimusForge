@@ -44,8 +44,8 @@ internal static class SovereignControlReplay
             PublishEnabled = true, PlayerAwareExecution = true, OralEffectPortsEnabled = true };
         var o = new WorldDiplomacyOrchestration(h, new WorldDiplomacyRuntimeState()); h.Owner = o;
         var origin = new DialogueInteractionOrigin(channel, identity + action, "session", "Please act toward b.", "I agree to act toward b.");
-        Test.True(!o.CaptureSpeechReview("ordinary_lord", "a", origin, ""), "ordinary nobles cannot authorize national acts");
-        Test.True(o.CaptureSpeechReview("ruler_a", "a", origin, ""), "ruler accepts persuasion capture: " + identity + channel + action);
+        Test.True(!o.CaptureSpeechReview("ordinary_lord", "a", origin, "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + ("")), "ordinary nobles cannot authorize national acts");
+        Test.True(o.CaptureSpeechReview("ruler_a", "a", origin, "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + ("")), "ruler accepts persuasion capture: " + identity + channel + action);
         var job = o.CurrentStorage.Jobs.Single(); Prepare(o, job);
         var request = JObject.Parse(job.UserPrompt);
         Test.True(request["sovereign_speakers"] is JArray, "actual review must state who controls each realm, not just player affiliation");

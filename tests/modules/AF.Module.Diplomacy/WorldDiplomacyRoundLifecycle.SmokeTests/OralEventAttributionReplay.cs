@@ -12,14 +12,14 @@ internal static partial class SpeechReviewReplay
         foreach (string mode in new[] { "related", "unrelated", "missing", "malformed", "unknown", "closed", "changed", "duplicate", "reload", "bad_boolean" })
         {
             var (h, o) = Fixture();
-            var prior = o.EnsureActiveRound("a", "p", false); prior.RoundTopic = "Border trade dispute";
+            var prior = o.EnsureActiveRound("a", "b", false); prior.RoundTopic = "Border trade dispute";
             const string basis = "The two rulers dispute the closing of the border market and seek a trade agreement.";
             o.CurrentStorage.EventAnnouncements.Add(new DiplomacyEventAnnouncement {
                 Id = "public-opening", EventId = prior.RoundId, State = "public", Stage = "started", Body = basis });
             var origin = new DialogueInteractionOrigin(channel, "route-" + mode, "session",
                 "Resolve this border market dispute with trade for fourteen days.",
                 "I agree to trade for fourteen days to settle this border market dispute.");
-            o.CaptureSpeechReview("ruler_a", "a", origin, "event=" + prior.RoundId);
+            o.CaptureSpeechReview("ruler_a", "a", origin, "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + ("event=" + prior.RoundId));
             var job = o.CurrentStorage.Jobs.Single(); o.PrepareSharedRequest(job);
             Test.True(job.SystemPrompt.Contains(DiplomacyPromptTexts.Get("SpeechReview_EventAttribution", "MISSING"))
                 && job.UserPrompt.Contains(basis), "real paired prompt receives public case evidence: " + channel);
@@ -64,15 +64,15 @@ internal static partial class SpeechReviewReplay
             o.PrepareSharedRequest(writing);
             Complete(o, writing, JObject.Parse("{\"safe\":true,\"public_context\":\"The rulers agreed to trade for fourteen days.\"}"));
             o.PrepareSharedRequest(writing);
-            var prose = JObject.Parse(OralDeclarationReplay.Draft(agreement, "accept_trade")); prose["actions"] = new JArray();
+            var prose = JObject.Parse(OralDeclarationReplay.Draft(agreement, "propose_trade")); prose["actions"] = new JArray();
             o.CommitGeneratedDocument(writing, prose.ToString());
             Test.True(writing.Kind == "privacy_audit" && h.TradeExecutions == 0, "normal prose-only declaration still awaits confidentiality review");
             Complete(o, writing, JObject.Parse("{\"safe\":true,\"agreement_consistent\":true}"));
             var document = o.ResolveDocument(agreement.DocumentId);
-            Test.True(h.TradeExecutions == 1 && h.TradeDuration == 14 && document?.IsReadyForPublication == true
-                && document.RoundId == agreement.RoundId, "accepted commitment still publishes and executes once after routing: " + mode);
+            Test.True(h.TradeExecutions == 0 && document?.IsReadyForPublication == true && document.RequiresResponse
+                && document.RoundId == agreement.RoundId, "third-country commitment publishes a proposal without inventing target consent: " + mode);
             o.MaintainDialogueAndMemory();
-            Test.True(h.TradeExecutions == 1, "maintenance never repeats the effect");
+            Test.True(h.TradeExecutions == 0, "maintenance never invents third-party assent");
         }
         ExactProposalAttribution();
         WarAttribution();
@@ -109,7 +109,7 @@ internal static partial class SpeechReviewReplay
             State = "public", Stage = "started", Body = "The northern ruler faces a tax revolt among his own nobles." });
         var origin = new DialogueInteractionOrigin("native", "paid-war", "session", "Declare war on the Southern Empire.",
             "I agree to declare war on the Southern Empire.");
-        o.CaptureSpeechReview("ruler_a", "a", origin, "event=" + north.RoundId);
+        o.CaptureSpeechReview("ruler_a", "a", origin, "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + ("event=" + north.RoundId));
         var job = o.CurrentStorage.Jobs.Single(); o.PrepareSharedRequest(job);
         var extraction = Extraction(origin.FullNpcText, origin.FullPlayerText);
         extraction["commitments"][0]["payload"] = "action=DeclareWar;move=NewMatter;target=empire_s;event=" + north.RoundId;

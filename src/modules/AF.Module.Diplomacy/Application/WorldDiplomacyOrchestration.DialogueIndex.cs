@@ -22,7 +22,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     private bool _dialogueIndexDirty = true;
     private readonly Dictionary<string, WorldDiplomacyRound> _dialogueRoundsById = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, List<KeyValuePair<WorldDiplomacyRound, WorldDiplomacyRoundOffer>>> _dialogueOffersByPair = new(StringComparer.OrdinalIgnoreCase);
-    private void InvalidateDialogueIndex() { _dialogueIndexDirty = true; WorldDiplomacyMemoryApplication.InvalidateRecords(Storage); }
+    private void InvalidateDialogueIndex() { _dialogueIndexDirty = true; _directResultIndexCount = -1; WorldDiplomacyMemoryApplication.InvalidateRecords(Storage); }
     private static string DialogueOfferKey(string responder, string proposer, string intent) => responder + "|" + proposer + "|" + intent;
     private void EnsureDialogueIndex()
     {

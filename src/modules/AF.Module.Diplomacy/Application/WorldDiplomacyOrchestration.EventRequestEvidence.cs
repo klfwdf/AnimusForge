@@ -53,11 +53,13 @@ internal sealed partial class WorldDiplomacyOrchestration
                 body_is_excerpt = x.Body?.Length > bodyLimit,
                 x.Intent, x.Commitment, x.Actions, x.PeaceTerms, x.TreatyTerms, x.RequiresResponse,
                 x.RoundParticipation, x.RoundStatus, x.ChangedDiplomaticState, x.MechanicalResult,
+                executed_oral_result = DirectDocumentEvidence(x),
                 known_by = round.Participants.Where(p => DialogueDocumentKnown(p.KingdomId, x.DocumentId)).Select(p => p.KingdomId)
             }),
             commitments = pending.Concat(completed).Select(x => new {
                 x.ArrangementId, x.Version, x.ActorKingdomId, x.TargetKingdomId, x.Action, x.Move, x.Terms,
                 x.Status, x.Reason, x.DocumentId, x.SourceDocumentId, x.SourceActionId,
+                x.DirectExecutionState, x.DirectActorKingdomId, x.DirectTargetKingdomId,
                 source_is_private = true, source_ruler_id = x.RulerId,
                 x.SupersedesArrangementId, x.SupersededByArrangementId,
                 x.SourcePlayerText,

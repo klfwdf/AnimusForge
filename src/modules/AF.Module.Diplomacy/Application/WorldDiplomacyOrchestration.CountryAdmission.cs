@@ -618,7 +618,9 @@ internal sealed partial class WorldDiplomacyOrchestration
             AuthorKingdomId = oral.ActorKingdomId, CandidateKingdomIds = candidates,
             EventInvestigationKingdoms = new() { oral.ActorKingdomId, oral.TargetKingdomId },
             EventTriggerMaterial = JsonConvert.SerializeObject(new { oral.ActorKingdomId, oral.TargetKingdomId,
-                oral.Action, oral.Terms, oral.SourcePlayerText, oral.SourceNpcText, conditions_are_confirmed = true }),
+                oral.Action, oral.Terms, oral.SourcePlayerText, oral.SourceNpcText, conditions_are_confirmed = true,
+                already_executed = oral.DirectExecutionState == "applied", oral.DirectActorKingdomId, oral.DirectTargetKingdomId,
+                execution_result = oral.DirectExecutionState == "applied" ? DirectResultContext(oral) : "" }),
             EventSelectedCandidate = "{}", EventComparison = "{}", Priority = 110,
             CreatedDay = _host.CurrentDay(), MaxTokens = _host.AnalysisMaxTokens() });
         return false;

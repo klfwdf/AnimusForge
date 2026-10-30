@@ -1050,6 +1050,18 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyDocument document, string intent, string commitment,
         bool requiresResponse, string tone, float confidence)
     {
+        var directResult = Storage.DialogueArrangements.FirstOrDefault(x => x.ArrangementId == document?.DialogueArrangementId
+            && !string.IsNullOrEmpty(x.DirectExecutionState));
+        if (directResult != null)
+        {
+            if (directResult.DirectExecutionState != "applied" || directResult.DocumentId != document.DocumentId
+                || directResult.Version != document.DialogueArrangementVersion || document.IsReadyForPublication) return;
+            // Publication, callbacks and loaded documents have no authority to
+            // execute the recorded action, even if a stale model supplied one.
+            intent = "statement"; commitment = "non_binding"; requiresResponse = false;
+            document.Intent = intent; document.Commitment = commitment; document.RequiresResponse = false;
+            document.Actions?.Clear(); document.PeaceTerms = null; document.TreatyTerms = null;
+        }
         var oralTreaty = BoundOralTreaty(document);
         bool recoveringTreaty = oralTreaty?.TreatyExecutionState == "pending"
             && _oralAgreementExecutionDocumentId == document.DocumentId && IsCurrentDialoguePublicationWork(oralTreaty);

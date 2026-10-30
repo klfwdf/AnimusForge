@@ -25,6 +25,11 @@ internal interface IDiplomacySubjectReleaseTagSource
     string ReleaseSubject(string payload);
 }
 
+internal interface IDiplomacyBilateralTagSource
+{
+    bool TryProcessBilateral(string action, string payload);
+}
+
 internal static class DiplomacyOralTagApplication
 {
     private static readonly Regex TagRegex = new Regex(
@@ -51,6 +56,17 @@ internal static class DiplomacyOralTagApplication
             // The review owns NPC promises. Immediate player actions still pass
             // through their existing authority/consent checks in the executor.
             string action = match.Groups[1].Value;
+            if (source is IDiplomacyBilateralTagSource bilateral)
+            {
+                try { if (bilateral.TryProcessBilateral(action, match.Groups[2].Value)) return ""; }
+                catch (Exception ex)
+                {
+                    // An effect may already have a durable receipt. Never fall
+                    // through to another executor or abandon remaining tags.
+                    source.Log("[Bilateral] action=" + action + " error=" + ex.GetType().Name);
+                    return "";
+                }
+            }
             bool immediate = string.Equals(action, "RELEASE_SUBJECT", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(action, "INDEPENDENT_CLAN_PEACE", StringComparison.OrdinalIgnoreCase)
                 || (string.Equals(action, "DECLARE_WAR", StringComparison.OrdinalIgnoreCase)

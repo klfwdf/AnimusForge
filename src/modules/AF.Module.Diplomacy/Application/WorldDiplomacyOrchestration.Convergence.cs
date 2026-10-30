@@ -71,10 +71,10 @@ internal sealed partial class WorldDiplomacyOrchestration
         state.Version = 1;
         if (!state.Ending)
         {
-            var executed = published.LastOrDefault(x => x.ChangedDiplomaticState || x.Actions?.Any(a => a.ChangedDiplomaticState) == true);
+            var executed = published.LastOrDefault(x => HasConfirmedDocumentResult(x) || x.Actions?.Any(a => a.ChangedDiplomaticState) == true);
             if (executed != null)
             {
-                state.ActualWar = published.Any(x => x.Intent == "declare_war" && x.ChangedDiplomaticState
+                state.ActualWar = published.Any(x => IsDirectWarResult(x) || x.Intent == "declare_war" && x.ChangedDiplomaticState
                     || x.Actions?.Any(a => a.Intent == "declare_war" && a.ChangedDiplomaticState) == true);
                 state.Result = state.ActualWar ? "war_executed" : "action_executed";
             }
@@ -111,9 +111,9 @@ internal sealed partial class WorldDiplomacyOrchestration
             HoldEndingExecution(round, failedWar ? "war_execution_failed:" + document.DocumentId : "agreement_execution_failed:" + document.DocumentId);
             return;
         }
-        if (document.ChangedDiplomaticState || document.Actions?.Any(x => x.ChangedDiplomaticState) == true)
+        if (HasConfirmedDocumentResult(document) || document.Actions?.Any(x => x.ChangedDiplomaticState) == true)
         {
-            bool war = document.Intent == "declare_war" && document.ChangedDiplomaticState
+            bool war = IsDirectWarResult(document) || document.Intent == "declare_war" && document.ChangedDiplomaticState
                 || document.Actions?.Any(x => x.Intent == "declare_war" && x.ChangedDiplomaticState) == true;
             state.ActualWar |= war;
             BeginEventEnding(round, war ? "war_executed" : "action_executed");
@@ -192,7 +192,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         || round.EventConvergence.Receipts.Any(x => x.DocumentId == documentId);
 
     private bool HasUnfinishedEndingObligations(WorldDiplomacyRound round) =>
-        round.PendingOffers.Any(x => x.Status is "open" or "execution_failed" or "partially_executed")
+        round.PendingOffers.Any(x => x.Status is "open" or "execution_failed" or "partially_executed" or "execution_uncertain")
         || Storage.DiplomaticThreats.Any(x => x.StageRoundId == round.RoundId && x.Status == "open")
         || Storage.Documents.Any(x => x.RoundId == round.RoundId && x.EventExecutionPending)
         || Storage.DialogueArrangements.Any(x => x.RoundId == round.RoundId && AnimusForge.DiplomacyDialogue.DiplomacyCommitmentRules.IsPending(x))

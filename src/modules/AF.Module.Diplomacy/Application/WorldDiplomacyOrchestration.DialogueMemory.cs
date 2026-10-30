@@ -22,7 +22,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     private void RecordDialogueArrangementFact(WorldDiplomacyDialogueArrangement item, string phase, string fact)
     {
         item.MemoryReceipts ??= new List<WorldDiplomacyDialogueMemoryReceipt>();
-        if (ResolveRound(item.RoundId)?.EventSystemVersion > 0) return;
+        if (string.IsNullOrEmpty(item.DirectExecutionState) && ResolveRound(item.RoundId)?.EventSystemVersion > 0) return;
         string source = item.ArrangementId + ":v" + item.Version + ":" + phase;
         var receipt = item.MemoryReceipts.FirstOrDefault(x => x.SourceId == source);
         if (receipt == null)
