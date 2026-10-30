@@ -1754,7 +1754,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public int TtsVolcDedicatedSampleRate { get; set; } = 24000;
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_MainVolume}Main voice volume (winmm)", 0f, 1f, "0.00", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Tts_MainVolume_Hint}Used only by the main playback path for normal conversation/test speech (agentIndex<0). Adjust Lip-sync channel volume for scene shouts.")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_MainVolume}Main voice volume (winmm)", 0f, 2f, "0.00", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Tts_MainVolume_Hint}Volume of conversation speech, map meeting speech, test speech and scene speech played through winmm. 1.00 is the original level; above 1.00 amplifies the audio (very loud speech may clip). For scene shouts through the lip-sync channel, adjust Lip-sync channel volume.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public float TtsVolcDedicatedVolume { get; set; } = 1f;
 

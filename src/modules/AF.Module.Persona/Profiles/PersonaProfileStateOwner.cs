@@ -83,7 +83,8 @@ internal sealed class PersonaProfileStateOwner
 		string text = profile?.Description ?? "";
 		string text3 = (profile?.VoiceId ?? "").Trim();
 		string localVoice = (profile?.GptSoVitsVoiceId ?? "").Trim();
-		if (!retainExplicitClear && string.IsNullOrEmpty(text) && string.IsNullOrEmpty(text3) && string.IsNullOrEmpty(localVoice)
+		string openAiVoice = (profile?.OpenAiVoiceId ?? "").Trim();
+		if (!retainExplicitClear && string.IsNullOrEmpty(text) && string.IsNullOrEmpty(text3) && string.IsNullOrEmpty(localVoice) && string.IsNullOrEmpty(openAiVoice)
 			&& (profile?.Traits == null || profile.Traits.Count == 0)
 			&& (profile?.Motivations == null || profile.Motivations.Count == 0)
 			&& (profile?.Values == null || profile.Values.Count == 0)
@@ -101,6 +102,7 @@ internal sealed class PersonaProfileStateOwner
 		profile.Description = text;
 		profile.VoiceId = text3;
 		profile.GptSoVitsVoiceId = localVoice;
+		profile.OpenAiVoiceId = openAiVoice;
 		profile.SpeechStyle = (profile.SpeechStyle ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		profile.RecentChangeReason = (profile.RecentChangeReason ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		Profiles[stringId] = profile;

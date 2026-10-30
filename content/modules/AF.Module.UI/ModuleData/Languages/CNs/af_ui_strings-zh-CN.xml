@@ -2902,7 +2902,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_SampleRate" text="火山专用采样率" />
   <string id="AF_MCM_Tts_SampleRate_Hint" text="建议 8000 / 16000 / 24000；V3 也支持 22050。V3 不接受任意整数采样率。" />
   <string id="AF_MCM_Tts_MainVolume" text="主语音音量（winmm）" />
-  <string id="AF_MCM_Tts_MainVolume_Hint" text="仅用于普通对话/测试语音（agentIndex&lt;0）的主播放链路。场景喊话请调整口型链路音量。" />
+  <string id="AF_MCM_Tts_MainVolume_Hint" text="控制对话语音、大地图会面语音、测试语音以及走 winmm 的场景语音音量。1.00 为原始音量，超过 1.00 会放大音频（过大可能破音）。场景喊话走口型链路时请调整口型链路音量。" />
   <string id="AF_MCM_Tts_SceneWinmm" text="场景发声走 winmm（防回声）" />
   <string id="AF_MCM_Tts_SceneWinmm_Hint" text="开启：场景 NPC 由 winmm 发声，口型链路仅驱动嘴型并静音。关闭：场景 NPC 改由口型链路发声，可调整口型链路音量。" />
   <string id="AF_MCM_Tts_Speed" text="火山专用语速" />
@@ -3347,7 +3347,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_OpenAiModel" text="语音模型" />
   <string id="AF_MCM_Tts_OpenAiModel_Hint" text="该语音端点接受的模型名称，默认 gpt-sovits-v4。" />
   <string id="AF_MCM_Tts_OpenAiVoice" text="语音音色" />
-  <string id="AF_MCM_Tts_OpenAiVoice_Hint" text="默认 zh_default。此服务所有 NPC 共用这里配置的音色；已有 NPC/火山音色映射保留，但不会发送给此服务。" />
+  <string id="AF_MCM_Tts_OpenAiVoice_Hint" text="默认 zh_default，作为兜底音色。服务提供音色列表时（/audio/voices，或 /models 中 male-/female- 开头的模型），每个英雄首次发声会抽取同性别音色并固定，可在百科中修改；列表中有 _happy/_angry 变体的音色会按回复情绪切换。火山音色映射不会发送给此服务。" />
   <string id="AF_MCM_Tts_OpenAiSpeed" text="OpenAI 兼容语速" />
   <string id="AF_MCM_Tts_OpenAiSpeed_Hint" text="请求语速倍率，范围 0.25～4.0，默认 1.0。实际支持情况取决于上游模型。" />
   <string id="AF_MCM_Tts_OpenAiTimeout" text="OpenAI 兼容语音超时（秒）" />

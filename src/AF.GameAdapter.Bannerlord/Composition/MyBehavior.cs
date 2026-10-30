@@ -377,6 +377,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string VoiceId;
 		public string GptSoVitsVoiceId;
+		public string OpenAiVoiceId;
 	}
 
 
@@ -4079,9 +4080,10 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			{
 				return "";
 			}
-			return DuelSettings.GetSettings()?.TtsUseGptSoVits == true
-				? myBehavior.GetOrAssignGptSoVitsVoice(hero)
-				: myBehavior.GetNpcVoiceId(hero);
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings?.TtsUseGptSoVits == true) return myBehavior.GetOrAssignGptSoVitsVoice(hero);
+			if (settings?.UsesOpenAiTts == true) return myBehavior.GetOrAssignOpenAiVoice(hero, settings);
+			return myBehavior.GetNpcVoiceId(hero);
 		}
 		catch
 		{

@@ -102,6 +102,8 @@ internal sealed partial class TtsEngine : IDisposable
         public Task<LocalTtsSpeech> PendingLocalSpeech;
         public LocalTtsSpeech LocalSpeech;
         public bool KeepOriginalSubtitle;
+        // Postprocess MOOD tone; the OpenAI-compatible provider maps it to a listed voice variant.
+        public LocalTtsTone Tone;
 	}
 
 	private static readonly object _instanceLock = new object();
@@ -534,6 +536,21 @@ internal sealed partial class TtsEngine : IDisposable
 		ResetCurrentWaveOut();
 	}
 
+	// Cancels only the given requests; with keepCurrent the one now playing finishes and only queued ones are dropped.
+	internal int CancelRequests(HashSet<long> requestIds, bool keepCurrent)
+	{
+		if (requestIds == null || requestIds.Count == 0) return 0;
+		var jobs = new List<TtsJob>();
+		lock (_requestLock)
+		{
+			foreach (var job in _pendingJobs.Values)
+				if (!job.Cancelled && !job.ReleaseRequested && requestIds.Contains(job.Request.RequestId) && !(keepCurrent && ReferenceEquals(job, _currentJob))) jobs.Add(job);
+		}
+		foreach (var job in jobs) CancelJob(job);
+		if (jobs.Count != 0) ResetCurrentWaveOut();
+		return jobs.Count;
+	}
+
 	private void ResetCurrentWaveOut()
 	{
 		lock (_playbackLock)
@@ -716,7 +733,8 @@ internal sealed partial class TtsEngine : IDisposable
         var language = job.LocalRequest?.Language ?? job.Settings.SpeechLanguage;
         if (!language.IsSupported)
         { NotifyPlaybackFailed(job, "tts_local_language_invalid"); return; }
-        if (!job.BypassEnabledCheck && (job.LocalRequest != null || language.IsForced))
+        // OpenAI-compatible speech also waits (bounded) for the postprocess MOOD to pick a tone variant.
+        if (!job.BypassEnabledCheck && (job.LocalRequest != null || language.IsForced || job.Settings.OpenAi))
         {
             var speech = job.PendingLocalSpeech == null ? job.LocalSpeech ?? LocalTtsSpeech.Neutral
                 : LocalTtsSpeech.AwaitAsync(job.PendingLocalSpeech, job.Request.CancellationToken,
@@ -735,6 +753,7 @@ internal sealed partial class TtsEngine : IDisposable
             }
             if (job.LocalRequest != null)
                 job.LocalRequest = job.LocalRequest.WithTone(speech.Tone).WithText(job.Segments[0]);
+            job.Tone = speech.Tone;
         }
         if (job.Segments == null) { ProcessSentence(job, job.Text, job.LocalRequest); return; }
         for (int i = 0; i < job.Segments.Length; i++)
@@ -774,17 +793,22 @@ internal sealed partial class TtsEngine : IDisposable
 		bool flag = snapshot.SceneWinmm;
 		DuelSettings currentSettings = DuelSettings.GetSettings();
 		bool flag2 = snapshot.Enabled && currentSettings?.IsSelectedTtsEnabled == true && currentSettings.TtsProviderDropdown.SelectedIndex == snapshot.ProviderMode;
-		if (num2 < 0f)
-		{
-			num2 = 0f;
-		}
-		if (num2 > 1f)
-		{
-			num2 = 1f;
-		}
+		// waveOut can only attenuate; volume above 1 is applied to the PCM instead.
+		float mainPcmGain = Math.Max(1f, num2);
+		num2 = Math.Min(1f, num2);
 		if (!openAi && !string.IsNullOrWhiteSpace(job.VoiceIdOverride))
 		{
 			text5 = job.VoiceIdOverride;
+		}
+		if (openAi)
+		{
+			// Only a voice listed by this service is forwarded (saved hero voice or scene transient);
+			// Volcengine or stale ids fall back to the configured voice.
+			if (OpenAiTtsVoiceCatalog.For(text, snapshot.Voice)?.Get(job.VoiceIdOverride) != null)
+			{
+				text5 = job.VoiceIdOverride;
+			}
+			text5 = OpenAiTtsVoiceCatalog.ApplyTone(text, snapshot.Voice, text5, job.Tone);
 		}
 		if (!flag2 && !job.BypassEnabledCheck)
 		{
@@ -848,7 +872,7 @@ internal sealed partial class TtsEngine : IDisposable
 			NotifyPlaybackFailed(job, "Scene speech target became unavailable before synthesis.");
 			return;
 		}
-		if (snapshot.Streaming && openAi) { ProcessStreamingJob(job, sentenceText); return; }
+		if (snapshot.Streaming && openAi) { ProcessStreamingJob(job, sentenceText, text5); return; }
 		byte[] array;
 		string synthesisError = "";
 		if (localRequest != null)
@@ -863,7 +887,7 @@ internal sealed partial class TtsEngine : IDisposable
 			}
 			array = result.AudioBytes;
 		}
-		else if (openAi) array = CallOpenAiApi(snapshot, sentenceText, speed, job.Request.CancellationToken, out synthesisError);
+		else if (openAi) array = CallOpenAiApi(snapshot, text5, sentenceText, speed, job.Request.CancellationToken, out synthesisError);
 		else array = CallVolcApi(text, text2, text3, text4, text5, sentenceText, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken, out synthesisError);
 		if (!IsJobCurrent(job)) { return; }
 		if (array == null || array.Length == 0)
@@ -938,7 +962,8 @@ internal sealed partial class TtsEngine : IDisposable
 							string tempFileStem = $"tts_{(job.AgentIndex >= 0 ? job.AgentIndex.ToString() : "map")}_{Stopwatch.GetTimestamp()}";
 							string text8 = Path.Combine(tempAudioDir, tempFileStem + ".wav");
 							string text9 = Path.Combine(tempAudioDir, tempFileStem + ".xml");
-							float num4 = 1f;
+							// The map conversation tableau plays this file as-is, so it carries the main volume.
+							float num4 = num2 * mainPcmGain;
 							if (flag3)
 							{
 								if (flag4)
@@ -961,9 +986,9 @@ internal sealed partial class TtsEngine : IDisposable
 							{
 								num4 = 0f;
 							}
-							if (num4 > 1f)
+							if (num4 > MaxMainVolume)
 							{
-								num4 = 1f;
+								num4 = MaxMainVolume;
 							}
 							byte[] pcmData2 = ScalePcm16Mono(pcmData, num4);
 							SavePcmAsWav(pcmData2, sampleRate, text8);
@@ -1006,7 +1031,7 @@ internal sealed partial class TtsEngine : IDisposable
 					{
 						if (flag4)
 						{
-							PlayPcmData(job, pcmData, sampleRate, num2, true);
+							PlayPcmData(job, ScalePcm16Mono(pcmData, mainPcmGain), sampleRate, num2, true);
 							return;
 						}
 						int num5 = Math.Max(100, (int)(num3 * 1000f) + 100);
@@ -1059,7 +1084,7 @@ internal sealed partial class TtsEngine : IDisposable
 					}
 					else
 					{
-						PlayPcmData(job, pcmData, sampleRate, num2, false);
+						PlayPcmData(job, ScalePcm16Mono(pcmData, mainPcmGain), sampleRate, num2, false);
 					}
 				}
 				finally
