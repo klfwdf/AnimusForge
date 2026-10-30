@@ -1,3 +1,10 @@
+<a id="diplomacy-country-routing-20261031"></a>
+## 2026-10-31 外交按国家分流与说客登记提示已本地完成
+
+产品 `b7cf2db8b`，检查点 `787aff7dd`。等价外交标签按当前 NPC 国和玩家统治国分流；第三国事项进入同一说客承诺/事件/发文链路，玩家直接外交复用原执行 owner。只有登记成功才经原左下角消息显示君主、国家、承诺事项，重复格式及读档不重复通知；CN/EN 同步。
+
+**OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN / NOT_PUSHED**。CN/EN 七组定向回归各 3,552 项与双 API/Bootstrap/managed gates 通过；实际失败宣战标签已在受控回放完成登记→发文→单方执行。原有未提交文档保留，未改赞助机制。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-country-routing-20261031)与[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-country-routing-20261031)记录证据和限制。本条替代此前“说客 COMMIT 是唯一可识别语法”的交付约定；执行与存档 owner 不变，之前部署仍是旧产品。
+
 <a id="lobbyist-diplomacy-deployed-20261030"></a>
 ## 2026-10-30 说客外交已部署
 

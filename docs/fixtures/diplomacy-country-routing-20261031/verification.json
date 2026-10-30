@@ -1,0 +1,52 @@
+{
+  "status": "OFFLINE_VERIFIED_NOT_DEPLOYED",
+  "checkpoint": "787aff7dd",
+  "sourceRevision": "b7cf2db8b8863a66672e791df225255157b43fee",
+  "builds": {
+    "bootstrap/AnimusForge.Bootstrap.dll": "8ead2c53fc25370723d1a281e9b85a9a90e8bbebfbf11421ebc3d85ed0ab9816",
+    "bootstrap/AnimusForge.Bootstrap.dll metadata": {
+      "BannerlordApi": "1.3-compatible baseline",
+      "ReferenceGameVersion": "v1.3.15.110062",
+      "Sha256": "8EAD2C53FC25370723D1A281E9B85A9A90E8BBEBFBF11421EBC3D85ED0AB9816",
+      "CreatedUtc": "2026-10-30T16:48:22.3079044Z"
+    },
+    "versions/1.3/AnimusForge.dll": "614c63c759b4c7509322fb6263039833a355dd60637ebde976d27c0508f44e84",
+    "versions/1.3/AnimusForge.dll metadata": {
+      "BannerlordApi": "1.3",
+      "ReferenceGameVersion": "v1.3.15.110062",
+      "Sha256": "614C63C759B4C7509322FB6263039833A355DD60637EBDE976D27C0508F44E84",
+      "CreatedUtc": "2026-10-30T16:47:50.7771510Z"
+    },
+    "versions/1.4/AnimusForge.dll": "2639e4d5b32ba50efb8827d1437312b8b9e8261c84f709668ec2f53dcf302d78",
+    "versions/1.4/AnimusForge.dll metadata": {
+      "BannerlordApi": "1.4",
+      "ReferenceGameVersion": "v1.4.6.115628",
+      "Sha256": "2639E4D5B32BA50EFB8827D1437312B8B9E8261C84F709668EC2F53DCF302D78",
+      "CreatedUtc": "2026-10-30T16:48:14.0189579Z"
+    }
+  },
+  "sourceSha256": {
+    "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.en.json": "b2cbac5acb93742e75ed94b28d92959f32958e65b5d901aad9995a02af904afe",
+    "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json": "b9803bed62a45f321e9927a6a1116957efafce7c338ef34ac2a1e63130fb689f",
+    "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml": "b07c48249b289080960197700707dbcee16e719f717ac772e2546087b80831ed",
+    "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml": "a8ee4af9ec52c7015f10e39d4da9f6d0d14e83b5c83523bfe0abcbedd86607b1",
+    "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.en.json": "53dd513b2ee35025dbe557825fd85e67be921d43b84b60edb545979e10d81e9e",
+    "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json": "d4810cb6d5216c86d355793aaf8b0896a663abf319e3021192df85ecc2bc3794",
+    "src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs": "05cc7df6a1c88a3cf8443e5c9d469c01f7f64e937e0464041377f0623e9d3508",
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Bilateral.cs": "5f47b375055143be644b53b140ac58a2c65be1e70d9361f0cc6272d6d36896e0",
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Lobbyist.cs": "3f226f5cfd0b22ef9700f1873ba3ee36bfda8603bed2ea3f2c375d8c27c5c49f",
+    "src/modules/AF.Module.Diplomacy/Domain/DiplomacyBilateralPayload.cs": "66398c465800d3e90841c1ce73025be4e3925dc243a8acc9c8f84f0899996aa0",
+    "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Bilateral.cs": "eb39737ddd7c26b3375b8fa7d53fdf220565b78640cfc28c699704dbef48efba",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/LobbyistReplay.cs": "f39cebfcfd5a643aacbffe0935f7689c589c805ff1f059d27086f5847a24a660",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/Program.cs": "dd21c728ded414195cd157a32b6f85964e677193739e23005c0a3330688d8949",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/CountryRoutingReplay.cs": "cb096aa5b79b02ad44bdae4f06938862357db12a2f30253273edce22e7cf5f65"
+  },
+  "checks": "checks.txt",
+  "scope": "country-based lossless tag normalization and successful lobbyist registration notification",
+  "limits": [
+    "Controlled native/LLM leaves, no live game/provider",
+    "No Stage/Deploy/package/push",
+    "No sponsor mechanism change or new save schema"
+  ],
+  "performance": "Request-boundary bounded tag parsing; existing registration/event/effect owners; no new Tick work."
+}

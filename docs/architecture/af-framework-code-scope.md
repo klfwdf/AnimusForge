@@ -1,3 +1,20 @@
+<a id="diplomacy-country-routing-20261031"></a>
+## 2026-10-31 国家分流与说客登记提示：代码责任证据
+
+修订 `b7cf2db8b`；状态、构建与验收仅见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-country-routing-20261031)。以下为一基行号，未新增公开 API、存档键或独立执行器。
+
+| 源码位置 | 符号 / 责任 | 消费者与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Domain/DiplomacyBilateralPayload.cs:16-102` | `TryLobbyistCommit` / `TryFromCommit`，六动作等价格式转换、国家/方向/完整条款约束 | 复用原 `TryParse`，不执行游戏效果，不丢条件/来源，不授权其他国家发起 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Lobbyist.cs:64-254` | `TryProcessLobbyistTag`、`SameLobbyistPayload`、`NotifyLobbyistRegistered` | 共享分发器先入；同一持久承诺登记与事件 owner；已登记才原生消息，重复/失败不误报；原赞助功能不改 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Bilateral.cs:53-80` | `TryProcessBilateralTag`，直接范围格式规范化及入场 | 仍调用原 `ExecuteBilateral` 的精确来源/条件/效果幂等；复杂正式来源不降级 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Bilateral.cs:12-19` | `TryProcessBilateral` 薄接线 | 替换原 COMMIT 空消费分支，复用原 `ApplyBilateral` 六类原生权限与效果检查 |
+| `src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs:66-100` | `Process`，逐事项路由优先于复杂复核边界 | 入口异常隔离与未接收诊断；没有增加另一轮 LLM；标签不成为 NPC 正文 |
+| `content/modules/AF.Module.Diplomacy/ModuleData/Languages/{afdip_ui_strings.xml,CNs/afdip_ui_strings-zh-CN.xml}:7-18` | `AF_DIP_UI_LobbyistRegistered_*` 12 对模板 | `DiplomacyUiLocalization.Format` → host `Notify` → `InformationManager.DisplayMessage`；随 UI 语言，原语言注册/内容映射不变 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/CountryRoutingReplay.cs:1-184` | 新国家分流/通知专项，真实 owner + controlled leaves | CN/EN 各 481 项；覆盖源失败标签正式发文执行、三渠道、条件/身份/方向、提示与跨日等价重放；不代替实机 |
+
+相关 `DiplomacyPromptTexts.json/.en.json` 的 `Lobbyist_Protocol` / `Bilateral_Postprocess` 和 `RuleBehaviorPrompts.json/.en.json` 的六动作说明同步新规则。生产调用从 Native、Scene、Courier 各自效果阶段经 `DiplomacyConversationBridge` → `DiplomacyConversationModuleAdapter.ProcessDiplomacyTags` 进入同一分发器；没有修改各渠道自有历史、付款、动作或话题执行链。
+
 <a id="lobbyist-diplomacy-20261030"></a>
 ## 2026-10-30 说客外交确定登记代码图
 

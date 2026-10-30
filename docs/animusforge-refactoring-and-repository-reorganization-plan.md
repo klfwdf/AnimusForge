@@ -1,3 +1,18 @@
+<a id="diplomacy-country-routing-20261031"></a>
+## 2026-10-31 按实际国家分流外交标签与登记提示 — OFFLINE_VERIFIED
+
+用户批准按参与国而非标签名称分流，并追加说客登记成功后左下角提示。检查点 `787aff7dd`，基线 `525bb3a53`，产品 `b7cf2db8b`。开工前四份未提交文档、三个未跟踪目录和国家准入设计文档均保留；不部署、打包、push 或调整赞助机制。
+
+实际问题：玩家统治西帝国，当前 NPC 为库塞特可汗；后处理 `DECLARE_WAR:khuzait:empire_s` 被两个入口漏接并清除。现按当前 NPC/玩家实际统治国逐项路由，六类等价位置标签统一登记说客承诺，直接范围的等价 COMMIT 走原直接 owner。已替换 World adapter 内原“直接范围 COMMIT 只消费不执行”的分支；解析/入场统一，不新增复核或第二执行器。来源、贡金方向、割地、条件不能完整表示则明确拒绝或保留待澄清。原复杂正式事项、特殊臣属、独立家族停战及 AI-off 保留；这不是把所有含玩家国的特殊条约降为直接动作。
+
+成功登记才调用原 `InformationManager.DisplayMessage` 通道，通过游戏 UI 语言显示君主、国家和已承诺事项；不宣称已执行，不泄漏私人赞助。既有记录状态与同交互语义比较负责去重，不新增存档字段；字段顺序/default-zero 差异、完成后跨日、读档、重复标签不能重复登记/提示。通知失败独立记录，不回滚承诺或重放外交动作。格式解析最多 1,800 字符，只在标签边界；同交互候选才追加语义比较，无新增 Tick IO/全量扫描或模型复核。
+
+验证：CN/EN 分别 `--country-routing` 481、`--lobbyist` 168、`--bilateral-direct` 194、`--speech-review` 741、`--sovereign-control` 980、`--oral-declaration` 645、`--original-oral-vassalage` 343，通过真实源码/owner 的隔离回放；每包 3,552 项包含共享前置断言，不视为去重覆盖总数。涵盖三渠道、六动作、非君主/仅所属国/当前君主、混合事项、拒绝/条件/来源、通知语言与去重、原失败标签完整登记→正式发文→单方执行。12 组 UI 模板双语键/变量匹配；两套规则资源与真实消费者接线已核对。
+
+原 `build_single_module.ps1` 纯构建 1.3、1.4（引用 v1.4.6.115628）及 Bootstrap 成功，双 managed seam/registration gates 通过；既有编译警告和离线 NU1900 保留。自查已读生产 diff、三渠道真实入口、权限/条款与来源、幂等、通知隔离，无未修复的本次范围问题。没有真实 provider/实机/物理旧档验收，也没有 Stage、安装、发行或全仓测试承诺。初次回放的测试夹具和平端口及隔离 ModuleData 缺失已按原测试环境补齐，未放宽产品校验。
+
+[复跑方法](fixtures/diplomacy-country-routing-20261031/REPRODUCE.md)、[检查结果](fixtures/diplomacy-country-routing-20261031/checks.txt)、[源码与 DLL 哈希](fixtures/diplomacy-country-routing-20261031/verification.json)；职责及一基行号见[代码图](architecture/af-framework-code-scope.md#diplomacy-country-routing-20261031)。回退使用本产品提交的 focused inverse，不 hard reset。本条明确替代 2026-10-30 说客交付中“唯一 COMMIT 语法”的约束；仍只有一个承诺/事件/效果责任链。之前安装尚为 `c6d2b69d8`，本次尚未覆盖游戏。
+
 <a id="lobbyist-diplomacy-deployed-20261030"></a>
 ## 说客外交部署完成 — 2026-10-30
 
