@@ -137,12 +137,17 @@ static class SupplementalChecks
         var prompts = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Path.Combine(root, "ModuleData", "PersonaPromptTexts.json")));
         foreach (string kind in new[] { "Native", "Promoted" })
         {
-            object[] input = kind == "Native" ? new object[] { "facts", "old", true, "", "" }
-                : new object[] { "name", "full", "troop", "id", "culture", "scene", "joined", "history", "equipment", "facts", "" };
+            object[] input = kind == "Native" ? new object[] { "facts", "old", true, "", "", true }
+                : new object[] { "name", "full", "troop", "id", "culture", "scene", "joined", "history", "equipment", "facts", "", true };
             object request = promptRules.GetMethod("Build" + kind, All).Invoke(null, input);
             string system = (string)request.GetType().GetProperty("System", All).GetValue(request);
             string expected = (string)prompts["AF_PERSONA_PROMPT_" + kind + "System"];
             check(system.StartsWith(expected) && (expected.Contains("profile must be a non-empty string") || expected.Contains("profile 必须是非空字符串")), "actual persona request uses selected CN/EN string protocol: " + kind);
+            input[input.Length-1]=false;
+            request=promptRules.GetMethod("Build" + kind, All).Invoke(null,input);
+            system=(string)request.GetType().GetProperty("System", All).GetValue(request);
+            string user=(string)request.GetType().GetProperty("User", All).GetValue(request);
+            check(system.StartsWith((string)prompts["AF_PERSONA_PROMPT_BodyOnlySystem"])&&!user.Contains((string)prompts["AF_PERSONA_PROMPT_TraitCatalog"]),"actual DLL expanded switch selects body-only protocol: "+kind);
         }
         var duel = (DuelSettings)owner;
         var patcher = af.GetType("AnimusForge.DynamicPatcher", true);

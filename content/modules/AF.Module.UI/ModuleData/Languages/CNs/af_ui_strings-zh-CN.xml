@@ -3484,5 +3484,8 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_FC_IssueResolved_Dismissed" text="开除了{COUNT}名闹事者。" />
   <string id="AF_FC_IssueResolved_Spent" text="花费{GOLD}第纳尔。" />
   <string id="AF_FC_IssueResolved_Morale" text="士气{MORALE}。" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Title" text="扩展人设" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="默认开启。生成并使用特质、动机、价值观、弱点与说话风格。关闭后只使用人物正文，并暂停事件驱动的人设演变；保留已有扩展数据，重新开启后恢复使用。" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Group" text="9. 提示词扩展" />
 </strings>
 </base>

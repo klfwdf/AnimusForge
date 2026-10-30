@@ -39,7 +39,7 @@ namespace AnimusForge.Refactor.Adapters
 namespace AnimusForge
 {
     internal static class Logger { public static bool IsModLogicEnabled => false; internal static List<string> Lines=new(); internal static void Log(string tag,string message) => Lines.Add(message); }
-    internal sealed class DuelSettings { internal bool EnableNpcPersonaEventEvolution=true; internal static DuelSettings Current=new(); internal static int Reads; internal static DuelSettings GetSettings(){Reads++;return Current;} }
+    internal sealed class DuelSettings { internal bool EnableExpandedNpcPersona=true, EnableNpcPersonaEventEvolution=true; internal static DuelSettings Current=new(); internal static int Reads; internal static DuelSettings GetSettings(){Reads++;return Current;} }
     internal sealed class WorldBulletinEvent { internal string Kind,Key,GameDate,Sentence,Detail; internal double Hour; internal List<WorldBulletinParticipant> Participants=new(); }
     internal sealed class WorldBulletinParticipant { internal string HeroId; }
     internal static class NpcPersonaTextRules { internal static IReadOnlyCollection<string> AllowedTraitIdsForPrompt=new[]{"cautious","bold","vengeful"}; }
@@ -76,6 +76,7 @@ namespace AnimusForge
         internal void Tick(bool advanceThrottle=true) {if(advanceThrottle)_personaEvolutionNextStartUtc=DateTime.MinValue;TryStartPersonaEvolution();}
         internal int Queued=>_personaEvolutionQueue.Count;
         internal void Setting(bool enabled) {DuelSettings.Current.EnableNpcPersonaEventEvolution=enabled;NotifyPersonaEvolutionSettingChanged(DuelSettings.Current);}
+        internal void ExpandedSetting(bool enabled) {DuelSettings.Current.EnableExpandedNpcPersona=enabled;NotifyPersonaEvolutionSettingChanged(DuelSettings.Current);}
         internal void Reload() {RestorePersonaEvolutionQueue();}
         internal async Task Finish(string json,bool success=true)
         {

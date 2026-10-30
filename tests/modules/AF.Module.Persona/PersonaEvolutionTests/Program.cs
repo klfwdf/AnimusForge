@@ -53,6 +53,12 @@ foreach(string lang in new[]{"",".en"})
     host.Capture(Event("four","b"));host.Tick();host.Setting(false);host.Setting(true);
     await host.Finish("{\"changed\":true,\"motivations\":[\"disabled overwrite\"],\"change_reason\":\"old\"}");
     Check(p.Motivations.Single()=="player edit"&&p.Evolution.Pending.Count==0&&host.Queued==0,"off/on retires in-flight epoch");
+    host.ExpandedSetting(false);int expandedOffCalls=ConfiguredChatApplicationAdapter.Calls;
+    host.Capture(Event("expanded_off","b"));host.Tick();
+    Check(host.Queued==0&&ConfiguredChatApplicationAdapter.Calls==expandedOffCalls&&p.Motivations.Single()=="player edit","expanded persona master switch stops evolution capture and requests without deleting extras");
+    host.ExpandedSetting(true);host.Capture(Event("expanded_inflight","b"));host.Tick();host.ExpandedSetting(false);host.ExpandedSetting(true);
+    await host.Finish("{\"changed\":true,\"motivations\":[\"disabled master overwrite\"],\"change_reason\":\"old\"}");
+    Check(p.Motivations.Single()=="player edit"&&p.Evolution.Pending.Count==0&&host.Queued==0,"expanded persona off/on invalidates pending and in-flight evolution");
     host.Capture(Event("five","b"));host.Tick();SaveRuntimeGuard.Generation++;
     await host.Finish("{\"changed\":true,\"motivations\":[\"wrong save\"],\"change_reason\":\"old\"}");
     Check(p.Motivations.Single()=="player edit","old save callback discarded");

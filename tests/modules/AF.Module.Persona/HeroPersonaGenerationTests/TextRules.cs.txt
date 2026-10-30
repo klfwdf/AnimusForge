@@ -73,6 +73,30 @@ static void TextRuleCases()
   var customPromoted=AnimusForge.NpcPersonaTextRules.BuildPromoted("n","f","t","id","c","s","join","history","eq","facts",customLayout);
   foreach(var prompt in new[]{customNative,customPromoted})
    Check(prompt.System.EndsWith(customLayout)&&!prompt.System.Contains("400")&&!prompt.System.Contains("600")&&!prompt.System.Contains("\"profile\":"),"custom layout replaces editable default without hidden example or default length");
+  string bodyOnly=AnimusForge.PersonaPromptTexts.Get("AF_PERSONA_PROMPT_BodyOnlySystem","");
+  string catalog=AnimusForge.PersonaPromptTexts.Get("AF_PERSONA_PROMPT_TraitCatalog","");
+  foreach(var prompt in new[]{AnimusForge.NpcPersonaTextRules.BuildNative("facts","old",true,customLayout,expandedPersonaEnabled:false),AnimusForge.NpcPersonaTextRules.BuildPromoted("n","f","t","id","c","s","join","history","eq","facts",customLayout,false)})
+   Check(prompt.System.StartsWith(bodyOnly)&&prompt.System.EndsWith(customLayout)&&!prompt.User.Contains(catalog),"expanded toggle off selects profile-only protocol and retains custom prose layout without trait catalog");
+  foreach(string mode in new[]{"native_off","reroll_off","native_disable_inflight","native_started_off_then_on","promoted_off","promoted_disable_inflight"})
+  {
+   bool promoting=mode.StartsWith("promoted");bool disableInflight=mode.EndsWith("disable_inflight");
+   AnimusForge.DuelSettings.ExpandedEnabled=disableInflight;AnimusForge.KnowledgeLibraryBehavior.Reset();AnimusForge.SaveRuntimeGuard.Generation=1;
+   var hero=new TaleWorlds.CampaignSystem.Hero("hero");var owner=new AnimusForge.MyBehavior();AnimusForge.MyBehavior.Instance=owner;AnimusForge.MyBehavior.RegisteredHero=hero;
+   owner.Seed(mode=="reroll_off"?"old":"","");var oldProfile=owner.ProfileForTest;
+   oldProfile.Motivations=new(){"existing motivation"};oldProfile.Values=new(){"existing value"};oldProfile.Fears=new(){"existing fear"};oldProfile.SpeechStyle="existing style";oldProfile.RecentChangeReason="existing reason";oldProfile.Evolution=new();
+   Task pending=promoting?Task.Run(()=>owner.Promote(hero)):Task.Run(()=>owner.Generate(hero,mode=="reroll_off"));
+   Pump(owner,()=>owner.Calls>0||pending.IsCompleted);
+   Check(owner.Calls==1&&(disableInflight||owner.SentSystem.StartsWith(bodyOnly)),mode+" request captures toggle on main thread");
+   AnimusForge.DuelSettings.ExpandedEnabled=mode=="native_started_off_then_on";
+   owner.Release("{\"profile\":\"First paragraph.\\n\\nSecond paragraph.\",\"traits\":[{\"id\":\"bold\",\"strength\":3}],\"motivations\":[\"unwanted new\"],\"values\":[\"unwanted\"],\"fears\":[\"unwanted\"],\"speech_style\":\"unwanted\"}");
+   if(promoting){Pump(owner,()=>owner.SkillCalls>0||pending.IsCompleted);if(owner.SkillCalls>0)owner.ReleaseSkills();}
+   Pump(owner,()=>pending.IsCompleted);pending.GetAwaiter().GetResult();var kept=owner.ProfileForTest;
+   Check(kept.Description=="First paragraph.\n\nSecond paragraph."&&kept.Traits.Count==0&&kept.Motivations[0]=="existing motivation"&&kept.Values[0]=="existing value"&&kept.Fears[0]=="existing fear"&&kept.SpeechStyle=="existing style"&&kept.RecentChangeReason=="existing reason"&&ReferenceEquals(kept.Evolution,oldProfile.Evolution),mode+" saves prose and preserves existing expanded data despite extra response fields");
+   AnimusForge.DuelSettings.ExpandedEnabled=false;
+   Check(owner.ContextForTest(hero)==""&&owner.ContextForTest(hero,true).Contains("existing motivation"),mode+" prompt injection stops but UI can inspect stored extras");
+   AnimusForge.DuelSettings.ExpandedEnabled=true;
+   Check(owner.ContextForTest(hero).Contains("existing motivation"),mode+" re-enable restores stored context");
+  }
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackPersonality(new string('n',600),"t","j","f","s","h").Length==420,"promoted personality fallback 420");
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackBackground("n","t","j","f","s",new string('h',400)).EndsWith(new string('h',240)),"promoted fallback history 240");
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackBackground("n","t",new string('j',600),"f","s","h").Length==520,"promoted background fallback 520");

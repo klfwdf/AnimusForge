@@ -17,7 +17,8 @@ public partial class MyBehavior
     private Task _personaEvolutionRequest;
     private DateTime _personaEvolutionNextStartUtc;
     private int _personaEvolutionEpoch;
-    private bool PersonaEvolutionEnabled => DuelSettings.GetSettings()?.EnableNpcPersonaEventEvolution == true && IsWorldBulletinEnabled();
+    private bool PersonaEvolutionEnabled => DuelSettings.GetSettings() is DuelSettings settings && settings.EnableExpandedNpcPersona
+        && settings.EnableNpcPersonaEventEvolution && IsWorldBulletinEnabled();
 
     internal static void NotifyPersonaEvolutionSettingChanged(DuelSettings settings)
     {

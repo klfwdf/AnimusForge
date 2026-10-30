@@ -3452,5 +3452,8 @@ Choose how to proceed:" />
   <string id="AF_FC_IssueResolved_Dismissed" text="{COUNT} troublemakers were discharged." />
   <string id="AF_FC_IssueResolved_Spent" text="Spent {GOLD} denars." />
   <string id="AF_FC_IssueResolved_Morale" text="Morale {MORALE}." />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Title" text="Expanded NPC personas" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="Default: on. Generates and uses traits, motivations, values, fears, and speech style. Turning off uses only persona prose and pauses event-driven evolution. Stored expanded data is kept and becomes active again when re-enabled." />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Group" text="9. Prompt extensions" />
 </strings>
 </base>

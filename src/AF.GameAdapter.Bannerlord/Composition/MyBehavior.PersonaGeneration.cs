@@ -30,6 +30,7 @@ public partial class MyBehavior
         internal List<string> OriginalMotivations, OriginalValues, OriginalFears;
         internal string OriginalSpeechStyle;
         internal string Facts, Requirements, RecentExperiences;
+        internal bool ExpandedPersonaEnabled = true;
         internal MentionedWorldEntities Mentions;
         internal PromptLoreSettings LoreSettings;
         internal long LoreRuleVersion;
