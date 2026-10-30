@@ -3488,3 +3488,5 @@ Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 
 - 本地产品 `57cf6c15c` + 队列修补 `22ad71b9e`：AI 开启时现任双君主六类双边事项直接校验执行，真实回执先入原 owner，后续 NPC 声明只公告结果；无重复承诺提取/重签/重执行。第三国、复杂/耦合条款、非君主、拒绝/控制及关闭模式保留原能力；精确原案只结算所选事项。
 - 目标回放 194、剩余审核 715、CountryAdmission 5937（含贸易/和平/玩家宣战完整事件结案）、主权 1088、臣属 343、结案 214、声明 645、阻塞回归 138、事件结构 482、受影响双语与持久化门禁通过；最终 1.3/1.4/Bootstrap 与原双 seam/registration 通过。四项宽范围既存失败已用原码复现，未宣称全仓测试绿色；实机/provider/旧玩家档/Stage/打包/部署/push 均 NOT_RUN。
 - [唯一主台账与命令/风险](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af-bilateral-direct-20261030) / [准确代码范围](docs/architecture/af-framework-code-scope.md#af-bilateral-direct-20261030)。源/DLL SHA 与日志在 `artifacts/bilateral-direct-20261030/verification.json`。父会话已完成独立审查，无本次剩余须修问题；下一步仍需新任务授权；保留原有 dirty 文档，仅选择性提交本项追加段落，无新发布授权。
+
+- 2026-10-30 后续部署已完成，更新本项此前“部署 NOT_RUN”：原统一 Debug 双 API/Bootstrap 与门禁通过，目标为 Steam 的 `Modules/AnimusForge`，更新 11 文件；4825 项安装核对通过（4822 同 SHA、3 项保留自定义），39 个既有配置/提示词 SHA 不变。详见主台账同节“部署补记”和 `artifacts/bilateral-direct-20261030-deploy/deployment-verification.json`。实机/真实模型/旧档、打包、push 仍未验或未执行。

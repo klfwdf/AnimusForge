@@ -12746,3 +12746,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_m
 NOT_RUN：真实 provider 语义、两版游戏内交互、实际战和平/条约/割地、真实玩家存档往返、Stage、正式 CN/EN ZIP、部署与 push。运行时读回口由现有生产端口复用，离线效果回执为受控测试，不能称为实机通过。父会话已完成独立审查，后续按新任务授权决定下一步，不自动启动游戏或调用模型。
 
 本任务自审已检查路由、单一执行权、异常/去重、精确来源/条件、真实行为身份、只读公告、事件结案证据、双语和持久化/性能边界。只用聚焦 inverse commit 按依赖先撤回 `22ad71b9e`、再撤回 `57cf6c15c`，不 hard reset/改写历史；维护原有 dirty 文档与其他作者内容。所有产物仅本地，历史包含本地交接资料，不代表 push 授权。
+
+### 部署补记（2026-10-30）
+
+用户随后明确要求部署；本节更新上文部署 NOT_RUN，实机、真实模型、旧玩家存档、打包与 push 仍未执行。源修订为 `6367dce80`（产品 `57cf6c15c` + `22ad71b9e`），未修改产品代码或部署脚本。
+
+使用原 `scripts/build/build_single_module.ps1 -ProjectRoot . -BannerlordRoot "E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord13ReferenceDir .tmp/build_check/1.3 -WorkshopContentDir "E:/SteamLibrary/steamapps/workshop/content/261550" -Configuration Debug -Deploy` 完成双 API、Bootstrap、双 seam、registration、干净 Stage 与部署。实际引用仍为 1.3.15.110062 / 1.4.6.115628；游戏安装库识别为 1.4.8.119303。原 Debug Stage 因旧 DiplomacyPromptTexts 与当前源不一致被门禁拒绝，已在工作区内保留到 `artifacts/bilateral-direct-20261030-deploy/previous-debug-stage/`，随后原脚本生成新 Stage，没有放宽校验。
+
+目标为 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新 11 个受管文件，脚本退出 0。部署后逐项核对 Stage 的 4825 个文件：4822 个 SHA 一致，3 个自定义提示词按保护规则保留；部署前记录的 39 个配置/自定义提示词文件全部 SHA 不变，缺失/异常差异为 0。三个已安装 DLL 与 Stage 一致，SHA 和引用版本记录在 `artifacts/bilateral-direct-20261030-deploy/deployment-verification.json`，完整日志为同目录 `build-deploy.log`。仅部署原中文内容包，未启动游戏、未创建发行包或推送；未创建部署 Recovery/自动回滚，其他未列入 Stage 的安装文件由原脚本保留。
