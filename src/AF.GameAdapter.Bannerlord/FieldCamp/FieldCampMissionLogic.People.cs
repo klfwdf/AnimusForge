@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.ObjectSystem;
 
 namespace AnimusForge;
 
@@ -74,7 +75,7 @@ public sealed partial class FieldCampMissionLogic
 			Agent agent = SpawnCharacter(character, PartyBase.MainParty, slot.Position, slot.Facing, civilian: true);
 			if (agent != null)
 			{
-				Track(agent, activity, slot.Position, slot.Facing, character.DefaultFormationClass);
+				Track(agent, activity, slot.Position, slot.Facing, character.DefaultFormationClass, slot.Work);
 			}
 		}
 	}
@@ -124,6 +125,96 @@ public sealed partial class FieldCampMissionLogic
 				Track(agent, Activity.Post, slot.Position, slot.Facing, lord.CharacterObject.DefaultFormationClass);
 			}
 		}
+	}
+
+	// ---------- horse lines ----------
+
+	private static readonly string[] FallbackHorses = { "sumpter_horse", "saddle_horse", "old_horse" };
+
+	/// <summary>
+	/// Real horse agents tied along the barriers (never wander), taken from the main party's
+	/// own horses when it has any; at most one per tether slot. Spawned once with the camp.
+	/// </summary>
+	private int SpawnHorses()
+	{
+		if (_layout.HorseSlots.Count == 0)
+		{
+			return 0;
+		}
+		var kinds = new List<ItemObject>();
+		int owned = 0;
+		try
+		{
+			ItemRoster items = MobileParty.MainParty?.ItemRoster;
+			for (int i = 0; items != null && i < items.Count; i++)
+			{
+				ItemRosterElement e = items.GetElementCopyAtIndex(i);
+				ItemObject item = e.EquipmentElement.Item;
+				if (item != null && e.Amount > 0 && item.HasHorseComponent && item.HorseComponent.IsMount)
+				{
+					kinds.Add(item);
+					owned += e.Amount;
+				}
+			}
+			owned += MobileParty.MainParty?.MemberRoster?.TotalManCount > 0 ? CountMounted(MobileParty.MainParty.MemberRoster) : 0;
+			if (kinds.Count == 0)
+			{
+				for (int i = 0; i < FallbackHorses.Length && kinds.Count == 0; i++)
+				{
+					ItemObject item = MBObjectManager.Instance.GetObject<ItemObject>(FallbackHorses[i]);
+					if (item != null && item.HasHorseComponent)
+					{
+						kinds.Add(item);
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "horse pick failed: " + ex.Message);
+		}
+		if (kinds.Count == 0)
+		{
+			return 0;
+		}
+		int wanted = Math.Min(_layout.HorseSlots.Count, Math.Max(2, owned));
+		int spawned = 0;
+		for (int i = 0; i < wanted; i++)
+		{
+			FieldCampLayout.Slot slot = _layout.HorseSlots[i];
+			try
+			{
+				Vec3 pos = ToWorld(slot.Position);
+				Vec2 dir = ToWorldDirection(slot.Facing);
+				var element = new ItemRosterElement(kinds[i % kinds.Count], 1);
+				Agent horse = Mission.SpawnMonster(element, default(ItemRosterElement), in pos, in dir);
+				if (horse != null)
+				{
+					horse.SetAgentFlags(horse.GetAgentFlags() & ~AgentFlag.CanWander);
+					spawned++;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log(LogSource, "horse spawn failed error=" + ex.Message);
+				break;
+			}
+		}
+		return spawned;
+	}
+
+	private static int CountMounted(TroopRoster roster)
+	{
+		int mounted = 0;
+		for (int i = 0; i < roster.Count; i++)
+		{
+			TroopRosterElement e = roster.GetElementCopyAtIndex(i);
+			if (e.Character != null && e.Character.IsMounted)
+			{
+				mounted += e.Number;
+			}
+		}
+		return mounted;
 	}
 
 	// ---------- prisoner pen ----------

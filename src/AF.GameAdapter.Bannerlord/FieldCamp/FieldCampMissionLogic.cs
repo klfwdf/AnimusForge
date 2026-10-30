@@ -31,7 +31,9 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		Wander,
 		Wounded,
 		/// <summary>Companion at a party-role post or army lord at his tent: stays put, never joins the ranks.</summary>
-		Post
+		Post,
+		/// <summary>At a bench or a work spot (cooking, smithing, archery, grooming, leaning, talking).</summary>
+		Work
 	}
 
 	private sealed class CampAgent
@@ -45,6 +47,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal bool Seated;
 		internal FormationClass TroopClass;
 		internal float NextWanderTime;
+		internal FieldCampLayout.WorkKind Work;
 	}
 
 	private readonly List<MobileParty> _parties;
@@ -149,11 +152,13 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		try
 		{
 			_layout = FieldCampLayout.Build(_parties, FieldCampSettings.AgentCap, FieldCampSettings.TentCap);
-			_campFrame = FieldCampSite.Resolve(Mission, _layout.Radius, out _campScale);
+			_campFrame = FieldCampSite.Resolve(Mission, _layout, out _campScale);
+			int cleared = FieldCampSite.ClearClutter(Mission.Scene, _campFrame, _layout, _campScale);
 			int props = FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale);
 			SpawnEveryone();
+			int horses = SpawnHorses();
 			AnnounceOpenIssues();
-			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + props + "/" + _layout.Props.Count + " scale=" + _campScale.ToString("0.00") + " scene=" + (Mission.SceneName ?? ""));
+			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + props + "/" + _layout.Props.Count + " horses=" + horses + " cleared=" + cleared + " scale=" + _campScale.ToString("0.00") + " scene=" + (Mission.SceneName ?? ""));
 		}
 		catch (Exception ex)
 		{
@@ -204,7 +209,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			return;
 		}
 		Vec3 pos = ToWorld(_layout.PlayerStart);
-		Vec2 dir = ToWorldDirection(new Vec2(0f, -1f));
+		Vec2 dir = ToWorldDirection(_layout.PlayerFacing);
 		AgentBuildData data = new AgentBuildData(hero)
 			.Team(_team)
 			.TroopOrigin(new PartyAgentOrigin(PartyBase.MainParty, hero, -1, default(UniqueTroopDescriptor), false, true))
@@ -222,12 +227,20 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 	}
 
+	/// <summary>
+	/// Healthy men are dealt out in a fixed rotation so every part of the camp is busy:
+	/// sentries first (one in six), then work spots, bench seats, fire seats and patrols.
+	/// Wounded men take the infirmary beds and seats.
+	/// </summary>
 	private void SpawnTroops()
 	{
-		int fire = 0;
 		int sentry = 0;
+		int work = 0;
+		int bench = 0;
+		int fire = 0;
 		int wander = 0;
 		int wounded = 0;
+		int dealt = 0;
 		for (int g = 0; g < _layout.Groups.Count; g++)
 		{
 			FieldCampLayout.TroopGroup group = _layout.Groups[g];
@@ -238,38 +251,78 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 				Agent agent = SpawnCharacter(group.Character, group.Party.Party, s.Position, s.Facing, civilian: true);
 				if (agent != null)
 				{
-					Track(agent, Activity.Wounded, s.Position, s.Facing, troopClass);
+					Track(agent, Activity.Wounded, s.Position, s.Facing, troopClass, s.Work);
 				}
 			}
 			_woundedSlotsUsed = wounded;
-			for (int i = 0; i < group.SpawnHealthy; i++)
+			for (int i = 0; i < group.SpawnHealthy; i++, dealt++)
 			{
-				FieldCampLayout.Slot s;
-				Activity activity;
-				if (sentry < _layout.SentrySlots.Count && (i % 6 == 5 || _layout.Groups.Count == 1 && i == 0))
+				FieldCampLayout.Slot s = default(FieldCampLayout.Slot);
+				Activity activity = Activity.Wander;
+				bool found = false;
+				for (int attempt = 0; attempt < 5 && !found; attempt++)
 				{
-					s = _layout.SentrySlots[sentry++];
-					activity = Activity.Sentry;
+					switch ((dealt + attempt) % 6)
+					{
+						case 0:
+							found = sentry < _layout.SentrySlots.Count;
+							if (found)
+							{
+								s = _layout.SentrySlots[sentry++];
+								activity = Activity.Sentry;
+							}
+							break;
+						case 1:
+						case 4:
+							found = work < _layout.WorkSlots.Count;
+							if (found)
+							{
+								s = _layout.WorkSlots[work++];
+								activity = Activity.Work;
+							}
+							break;
+						case 2:
+							found = bench < _layout.BenchSlots.Count;
+							if (found)
+							{
+								s = _layout.BenchSlots[bench++];
+								activity = Activity.Work;
+							}
+							break;
+						case 3:
+							found = fire < _layout.FireSlots.Count;
+							if (found)
+							{
+								s = _layout.FireSlots[fire++];
+								activity = Activity.Fire;
+							}
+							break;
+					}
 				}
-				else if (fire < _layout.FireSlots.Count && (i % 3 != 2 || _layout.WanderSlots.Count == 0))
+				if (!found)
 				{
-					s = _layout.FireSlots[fire++];
-					activity = Activity.Fire;
+					if (bench < _layout.BenchSlots.Count)
+					{
+						s = _layout.BenchSlots[bench++];
+						activity = Activity.Work;
+					}
+					else if (_layout.WanderSlots.Count > 0)
+					{
+						s = _layout.WanderSlots[wander++ % _layout.WanderSlots.Count];
+						s.Position += new Vec2(MBRandom.RandomFloatRanged(-1.2f, 1.2f), MBRandom.RandomFloatRanged(-1.2f, 1.2f));
+						activity = Activity.Wander;
+					}
+					else
+					{
+						break;
+					}
 				}
-				else if (_layout.WanderSlots.Count > 0)
-				{
-					s = _layout.WanderSlots[wander++ % _layout.WanderSlots.Count];
-					s.Position += new Vec2(MBRandom.RandomFloatRanged(-1.2f, 1.2f), MBRandom.RandomFloatRanged(-1.2f, 1.2f));
-					activity = Activity.Wander;
-				}
-				else
-				{
-					break;
-				}
-				Agent agent = SpawnCharacter(group.Character, group.Party.Party, s.Position, s.Facing, civilian: activity != Activity.Sentry);
+				// Archers keep their bow; sentries keep their arms; everyone else is in camp clothes.
+				bool armed = activity == Activity.Sentry || s.Work == FieldCampLayout.WorkKind.Archer;
+				Agent agent = SpawnCharacter(group.Character, group.Party.Party, s.Position, s.Facing, civilian: !armed);
 				if (agent != null)
 				{
-					Track(agent, activity, s.Position, s.Facing, troopClass);
+					Track(agent, activity, s.Position, s.Facing, troopClass, s.Work);
 				}
 			}
 		}
@@ -310,7 +363,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 	}
 
-	private void Track(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass)
+	private void Track(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass, FieldCampLayout.WorkKind work = FieldCampLayout.WorkKind.None)
 	{
 		Vec3 home = ToWorld(local);
 		var entry = new CampAgent
@@ -321,6 +374,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			HomeFacing = ToWorldDirection(facing.LengthSquared < 0.01f ? new Vec2(0f, 1f) : facing),
 			Target = home,
 			TroopClass = troopClass,
+			Work = work,
 			NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(4f, 14f)
 		};
 		entry.TargetFacing = entry.HomeFacing;

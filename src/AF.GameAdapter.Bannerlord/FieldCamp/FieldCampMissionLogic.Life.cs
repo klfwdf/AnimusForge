@@ -18,7 +18,18 @@ public sealed partial class FieldCampMissionLogic
 	private const float BlockGap = 4f;
 
 	private static readonly string[] SitActions = { "act_sit_idle_on_floor_1", "act_sit_idle_on_floor_2", "act_sit_idle_on_floor_3" };
-	private static readonly string[] SentryActions = { "act_guard_cautious_look_around_1", "act_stand_1" };
+	private static readonly string[] SentryActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_guard_stand_1" };
+	private static readonly string[] BenchActions = { "act_sit_1", "act_sit_2", "act_sit_3", "act_sit_4", "act_sit_talk_to_1", "act_sit_and_drink_idle" };
+	private static readonly string[] EatActions = { "act_sit_eating_1", "act_sit_eating_2", "act_sit_and_drink_idle" };
+	private static readonly string[] CookActions = { "act_bartender_meat", "act_citizen_cleanup_idle" };
+	private static readonly string[] SmithActions = { "act_smithing_machine_anvil_part_2" };
+	private static readonly string[] RepairActions = { "act_repair", "act_repair_upside" };
+	private static readonly string[] ArcherActions = { "act_idle_bow_1", "act_idle_bow_2" };
+	private static readonly string[] LeanActions = { "act_lean_fence_loop", "act_lean_fence_loop2" };
+	private static readonly string[] GossipActions = { "act_gossip", "act_gossip_2" };
+	private static readonly string[] LieActions = { "act_dungeon_prisoner_sleep_cycle" };
+	private static readonly string[] GroomActions = { "act_stand_1", "act_stand_2" };
+	private static readonly string[] StandActions = { "act_guard_stand_1", "act_stand_1" };
 	private readonly Dictionary<string, ActionIndexCache> _actionCache = new Dictionary<string, ActionIndexCache>(StringComparer.Ordinal);
 
 	// ---------- orders (called from the scene-shout postprocess tag) ----------
@@ -88,18 +99,28 @@ public sealed partial class FieldCampMissionLogic
 			}
 			list.Add(entry);
 		}
-		// Ranks grow back (-y) from the parade line, at most MaxRanks deep (to y ~ 6),
-		// so a large camp widens its blocks instead of reaching the tents and posts behind.
-		float totalWidth = 0f;
-		foreach (List<CampAgent> list in byClass.Values)
+		// Ranks grow back (-y) from the parade line, normally at most MaxRanks deep. When the
+		// blocks would be wider than the parade ground (between the training ground and the
+		// horse lines), the gaps shrink first and then every block takes more ranks.
+		float limit = Math.Max(10f, _layout.ParadeHalfWidth * 2f);
+		float gap = BlockGap;
+		float fileScale = 1f;
+		float totalWidth = BlockWidth(byClass, gap, fileScale);
+		if (totalWidth > limit)
 		{
-			totalWidth += FilesFor(list.Count) * FileSpacing + BlockGap;
+			gap = 1.5f;
+			totalWidth = BlockWidth(byClass, gap, fileScale);
+		}
+		for (int pass = 0; pass < 6 && totalWidth > limit; pass++)
+		{
+			fileScale *= Math.Max(0.5f, limit / totalWidth);
+			totalWidth = BlockWidth(byClass, gap, fileScale);
 		}
 		float x = -totalWidth * 0.5f;
 		Vec2 facing = ToWorldDirection(new Vec2(0f, 1f));
 		foreach (List<CampAgent> list in byClass.Values)
 		{
-			int files = FilesFor(list.Count);
+			int files = FilesFor(list.Count, fileScale);
 			for (int i = 0; i < list.Count; i++)
 			{
 				int file = i % files;
@@ -108,13 +129,24 @@ public sealed partial class FieldCampMissionLogic
 				list[i].Target = ToWorld(local);
 				list[i].TargetFacing = facing;
 			}
-			x += files * FileSpacing + BlockGap;
+			x += files * FileSpacing + gap;
 		}
 	}
 
-	private static int FilesFor(int count)
+	private static int FilesFor(int count, float fileScale)
 	{
-		return Math.Max(1, Math.Min(count, Math.Max(MinFilesPerRank, (count + MaxRanks - 1) / MaxRanks)));
+		int files = Math.Max(1, Math.Min(count, Math.Max(MinFilesPerRank, (count + MaxRanks - 1) / MaxRanks)));
+		return Math.Max(1, (int)(files * fileScale));
+	}
+
+	private static float BlockWidth(SortedDictionary<int, List<CampAgent>> byClass, float gap, float fileScale)
+	{
+		float width = 0f;
+		foreach (List<CampAgent> list in byClass.Values)
+		{
+			width += FilesFor(list.Count, fileScale) * FileSpacing + gap;
+		}
+		return width - gap;
 	}
 
 	private static int ClassOrder(FormationClass troopClass)
@@ -206,9 +238,7 @@ public sealed partial class FieldCampMissionLogic
 
 	private void ApplyPose(CampAgent entry)
 	{
-		string[] pool = entry.Activity == Activity.Fire || entry.Activity == Activity.Wounded
-			? SitActions
-			: entry.Activity == Activity.Sentry ? SentryActions : null;
+		string[] pool = PoseFor(entry);
 		if (pool == null)
 		{
 			return;
@@ -224,6 +254,69 @@ public sealed partial class FieldCampMissionLogic
 			{
 			}
 		}
+	}
+
+	private static string[] PoseFor(CampAgent entry)
+	{
+		switch (entry.Work)
+		{
+			case FieldCampLayout.WorkKind.Sit:
+				return entry.Activity == Activity.Wounded ? SitActions : BenchActions;
+			case FieldCampLayout.WorkKind.Eat:
+				return EatActions;
+			case FieldCampLayout.WorkKind.Cook:
+				return CookActions;
+			case FieldCampLayout.WorkKind.Smith:
+				return SmithActions;
+			case FieldCampLayout.WorkKind.Repair:
+				return RepairActions;
+			case FieldCampLayout.WorkKind.Archer:
+				return WieldBow(entry.Agent) ? ArcherActions : StandActions;
+			case FieldCampLayout.WorkKind.Groom:
+				return GroomActions;
+			case FieldCampLayout.WorkKind.Lean:
+				return LeanActions;
+			case FieldCampLayout.WorkKind.Gossip:
+				return GossipActions;
+			case FieldCampLayout.WorkKind.Lie:
+				return LieActions;
+		}
+		switch (entry.Activity)
+		{
+			case Activity.Fire:
+			case Activity.Wounded:
+				return SitActions;
+			case Activity.Sentry:
+				return SentryActions;
+			default:
+				return null;
+		}
+	}
+
+	/// <summary>An archer at the butts takes his bow in hand; men without one just stand and watch.</summary>
+	private static bool WieldBow(Agent agent)
+	{
+		try
+		{
+			for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot; slot < EquipmentIndex.NumAllWeaponSlots; slot++)
+			{
+				MissionWeapon weapon = agent.Equipment[slot];
+				if (weapon.IsEmpty || weapon.CurrentUsageItem == null)
+				{
+					continue;
+				}
+				WeaponClass weaponClass = weapon.CurrentUsageItem.WeaponClass;
+				if (weaponClass == WeaponClass.Bow || weaponClass == WeaponClass.Crossbow)
+				{
+					agent.TryToWieldWeaponInSlot(slot, Agent.WeaponWieldActionType.Instant, false);
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	private static void ReleasePose(CampAgent entry)

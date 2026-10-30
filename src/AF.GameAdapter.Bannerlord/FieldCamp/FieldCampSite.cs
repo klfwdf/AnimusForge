@@ -7,13 +7,15 @@ using TaleWorlds.MountAndBlade;
 namespace AnimusForge;
 
 /// <summary>
-/// Picks the camp site once per camp mission (never per frame): dry, walkable and
-/// fairly flat ground inside the mission boundary. Candidates come from the scene's
-/// own spawn paths (where vanilla field battles deploy, always on land) ordered by
-/// distance to the map-patch encounter point, with a coarse grid only when a scene
-/// has too few paths. A coastal patch scene therefore never puts the camp in the sea.
-/// Cost, once: at most MaxCandidates x 13 cheap probes per scale step, then
-/// Finalists x 37 probes including a navmesh lookup.
+/// Picks the camp site once per camp mission (never per frame): dry, walkable, fairly
+/// flat ground clear of trees and rocks, inside the mission boundary. Candidates come
+/// from the scene's own spawn paths (where vanilla field battles deploy, always on land)
+/// ordered by distance to the map-patch encounter point, with a coarse grid only when a
+/// scene has too few paths. A coastal patch scene therefore never puts the camp in the sea.
+/// Every candidate is probed over the camp's real rectangle (palisade extents).
+/// Cost, once: at most MaxCandidates x 25 cheap probes per scale step, then
+/// Finalists x 81 probes, each with a navmesh lookup and one downward raycast.
+/// Afterwards small rocks and bushes left inside the palisade are hidden (one entity scan).
 /// </summary>
 internal static class FieldCampSite
 {
@@ -23,7 +25,12 @@ internal static class FieldCampSite
 	private const int MaxCandidates = 600;
 	private const int Finalists = 12;
 	private const float WetMargin = 0.3f;
-	private static readonly float[] Scales = { 1f, 0.8f, 0.62f, 0.45f };
+	/// <summary>A raycast hit this far above the terrain means a tree, rock or building stands there.</summary>
+	private const float ObstacleHeight = 0.9f;
+	private const float ClutterMaxExtent = 9f;
+	private static readonly string[] ClutterNames = { "rock", "stone", "boulder", "bush", "shrub", "tree", "plant", "branch", "stump" };
+	/// <summary>Only distances shrink, not the props, so below 0.8 tents and benches would overlap.</summary>
+	private static readonly float[] Scales = { 1f, 0.9f, 0.8f };
 
 	private struct Candidate
 	{
@@ -33,8 +40,8 @@ internal static class FieldCampSite
 		internal int Bad;
 	}
 
-	/// <param name="fitScale">Camp-local distances are multiplied by this (0.45..1) when no site fits the full layout.</param>
-	internal static MatrixFrame Resolve(Mission mission, float radius, out float fitScale)
+	/// <param name="fitScale">Camp-local distances are multiplied by this (0.8..1) when no site fits the full layout.</param>
+	internal static MatrixFrame Resolve(Mission mission, FieldCampLayout layout, out float fitScale)
 	{
 		Scene scene = mission.Scene;
 		bool hasEncounter = TryEncounterPoint(mission, out Vec2 encounter);
@@ -50,11 +57,11 @@ internal static class FieldCampSite
 		float fallbackScale = Scales[Scales.Length - 1];
 		for (int s = 0; s < Scales.Length; s++)
 		{
-			float r = Math.Max(4f, radius * Scales[s]);
+			float k = Scales[s];
 			for (int i = 0; i < candidates.Count; i++)
 			{
 				Candidate c = candidates[i];
-				c.Score = Evaluate(mission, scene, c, r, rings: 1, navMesh: false, out c.Bad) + Proximity(c.Position, hasEncounter, encounter);
+				c.Score = Evaluate(mission, scene, c, layout, k, grid: 5, fine: false, out c.Bad) + Proximity(c.Position, hasEncounter, encounter);
 				candidates[i] = c;
 			}
 			candidates.Sort((a, b) => a.Score.CompareTo(b.Score));
@@ -63,7 +70,7 @@ internal static class FieldCampSite
 			for (int i = 0; i < candidates.Count && i < Finalists; i++)
 			{
 				Candidate c = candidates[i];
-				c.Score = Evaluate(mission, scene, c, r, rings: 3, navMesh: true, out c.Bad) + Proximity(c.Position, hasEncounter, encounter);
+				c.Score = Evaluate(mission, scene, c, layout, k, grid: 9, fine: true, out c.Bad) + Proximity(c.Position, hasEncounter, encounter);
 				if (c.Bad == 0 && (!found || c.Score < best.Score))
 				{
 					best = c;
@@ -192,38 +199,47 @@ internal static class FieldCampSite
 		}
 	}
 
-	/// <summary>Bad probes (wet, outside the boundary, off the navmesh) dominate; then height spread.</summary>
-	private static float Evaluate(Mission mission, Scene scene, Candidate c, float radius, int rings, bool navMesh, out int bad)
+	/// <summary>
+	/// Probes a grid x grid lattice over the palisade rectangle. Wet, out-of-bounds and
+	/// off-navmesh points count as bad (they veto the site); trees and rocks cost less,
+	/// since small ones are cleared afterwards; then height spread.
+	/// </summary>
+	private static float Evaluate(Mission mission, Scene scene, Candidate c, FieldCampLayout layout, float scale, int grid, bool fine, out int bad)
 	{
 		bad = 0;
+		int blocked = 0;
 		float low = float.MaxValue;
 		float high = float.MinValue;
 		Vec2 f = c.Forward;
 		Vec2 side = new Vec2(f.y, -f.x);
-		for (int ring = 0; ring <= rings; ring++)
+		for (int gx = 0; gx < grid; gx++)
 		{
-			int count = ring == 0 ? 1 : 12;
-			float r = ring == 0 ? 0f : radius * ring / rings;
-			for (int k = 0; k < count; k++)
+			float lx = (-layout.HalfX + 2f * layout.HalfX * gx / (grid - 1)) * scale;
+			for (int gy = 0; gy < grid; gy++)
 			{
-				float a = k * (2f * MathF.PI / count);
-				Vec2 p = c.Position + side * (MathF.Cos(a) * r) + f * (MathF.Sin(a) * r);
-				if (!Probe(mission, scene, p, navMesh, out float height))
+				float ly = (layout.Back + (layout.Front - layout.Back) * gy / (grid - 1)) * scale;
+				Vec2 p = c.Position + side * lx + f * ly;
+				if (!Probe(mission, scene, p, fine, out float height, out bool obstacle))
 				{
 					bad++;
 					continue;
+				}
+				if (obstacle)
+				{
+					blocked++;
 				}
 				low = Math.Min(low, height);
 				high = Math.Max(high, height);
 			}
 		}
 		float spread = high >= low ? high - low : 0f;
-		return bad * 100f + spread * 2f;
+		return bad * 100f + blocked * 12f + spread * 2f;
 	}
 
-	private static bool Probe(Mission mission, Scene scene, Vec2 p, bool navMesh, out float height)
+	private static bool Probe(Mission mission, Scene scene, Vec2 p, bool fine, out float height, out bool obstacle)
 	{
 		height = 0f;
+		obstacle = false;
 		try
 		{
 			if (!mission.IsPositionInsideBoundaries(p))
@@ -235,14 +251,21 @@ internal static class FieldCampSite
 			{
 				return false;
 			}
-			if (navMesh)
+			if (!fine)
 			{
-				PathFaceRecord record = PathFaceRecord.NullFaceRecord;
-				scene.GetNavMeshFaceIndex(ref record, new Vec3(p.x, p.y, height), false);
-				if (!record.IsValid())
-				{
-					return false;
-				}
+				return true;
+			}
+			PathFaceRecord record = PathFaceRecord.NullFaceRecord;
+			scene.GetNavMeshFaceIndex(ref record, new Vec3(p.x, p.y, height), false);
+			if (!record.IsValid())
+			{
+				return false;
+			}
+			Vec3 top = new Vec3(p.x, p.y, height + 40f);
+			Vec3 bottom = new Vec3(p.x, p.y, height - 1f);
+			if (scene.RayCastForClosestEntityOrTerrain(top, bottom, out float _, out Vec3 hit, 0.3f) && hit.z > height + ObstacleHeight)
+			{
+				obstacle = true;
 			}
 			return true;
 		}
@@ -250,6 +273,74 @@ internal static class FieldCampSite
 		{
 			return false;
 		}
+	}
+
+	/// <summary>
+	/// Hides small scene rocks, bushes and stray trees standing inside the palisade and
+	/// switches off their collision, so tents and lanes are not blocked. Large pieces
+	/// (cliffs, outer meshes) are left alone. Runs once, before the camp props exist.
+	/// </summary>
+	internal static int ClearClutter(Scene scene, MatrixFrame campFrame, FieldCampLayout layout, float scale)
+	{
+		var entities = new List<GameEntity>();
+		try
+		{
+			scene.GetEntities(ref entities);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "clutter scan failed: " + ex.Message);
+			return 0;
+		}
+		float halfX = layout.HalfX * scale + 1f;
+		float front = layout.Front * scale + 1f;
+		float back = layout.Back * scale - 1f;
+		int hidden = 0;
+		for (int i = 0; i < entities.Count; i++)
+		{
+			GameEntity entity = entities[i];
+			try
+			{
+				if (entity == null || entity.Parent != null || !IsClutterName(entity.Name))
+				{
+					continue;
+				}
+				Vec3 local = campFrame.TransformToLocal(entity.GlobalPosition);
+				if (local.x < -halfX || local.x > halfX || local.y < back || local.y > front)
+				{
+					continue;
+				}
+				Vec3 min = entity.GlobalBoxMin;
+				Vec3 max = entity.GlobalBoxMax;
+				if (max.x - min.x > ClutterMaxExtent || max.y - min.y > ClutterMaxExtent)
+				{
+					continue;
+				}
+				entity.SetVisibilityExcludeParents(false);
+				entity.SetBodyFlags(entity.BodyFlag | BodyFlags.Disabled);
+				hidden++;
+			}
+			catch
+			{
+			}
+		}
+		return hidden;
+	}
+
+	private static bool IsClutterName(string name)
+	{
+		if (string.IsNullOrEmpty(name))
+		{
+			return false;
+		}
+		for (int i = 0; i < ClutterNames.Length; i++)
+		{
+			if (name.IndexOf(ClutterNames[i], StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/// <summary>Mild pull toward the encounter point: 100 m costs as much as 2 m of height spread.</summary>
