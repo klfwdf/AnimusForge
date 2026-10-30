@@ -15,7 +15,7 @@ internal static class PolicyHistoryRetrievalService
 	internal const int CurrentHistoryLimit = 2;
 	internal const int HistoricalHistoryLimit = 1;
 	internal const int DocumentVectorCacheCapacity = 512;
-	internal const float MinimumSimilarity = 0.52f;
+	internal const float MinimumSimilarity = 0.40f;
 
 	private const int EnemySummarySoftBudget = 960;
 	private const int DialogueMentionQueryLimit = 4;

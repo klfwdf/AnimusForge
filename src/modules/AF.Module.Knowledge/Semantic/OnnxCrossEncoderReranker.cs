@@ -542,6 +542,18 @@ public sealed class OnnxCrossEncoderReranker
 		}
 	}
 
+	private static bool IsMultilingualEmbeddingInstalled()
+	{
+		try
+		{
+			return string.Equals(AnimusForgeModelStore.ResolveEmbedding().Pooling, "mean_all", StringComparison.Ordinal);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private void EnsureInitialized()
 	{
 		if (_initialized)
@@ -556,6 +568,15 @@ public sealed class OnnxCrossEncoderReranker
 			}
 			try
 			{
+				// The multilingual bekko embedding ranks well enough on its own; skip the cross-encoder so retrieval
+				// uses the embedding scores (the existing recall_fallback path) and the 266MB model is never loaded.
+				if (IsMultilingualEmbeddingInstalled())
+				{
+					_available = false;
+					_lastError = "Skipped: multilingual embedding (ONNX/bekko) is active.";
+					Logger.Log("OnnxReranker", "Initialization skipped: multilingual embedding (ONNX/bekko) is active.");
+					return;
+				}
 				AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveReranker();
 				string text = files.ModelPath;
 				string text2 = files.TokenizerPath;

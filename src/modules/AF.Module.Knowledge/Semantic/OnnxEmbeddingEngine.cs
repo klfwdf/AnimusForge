@@ -330,6 +330,9 @@ public sealed class OnnxEmbeddingEngine
 
 	private BertTokenizerLite _tokenizer;
 
+	// Set instead of _tokenizer for BPE (bekko) models.
+	private BpeTokenizerLite _bpeTokenizer;
+
 	private string _inputIdsName = "input_ids";
 
 	private string _inputMaskName = "attention_mask";
@@ -342,6 +345,9 @@ public sealed class OnnxEmbeddingEngine
 
 	// True for bge-small-en: the sentence vector is the first ([CLS]) token, not the inner-token mean.
 	private bool _poolCls;
+
+	// True for bekko: mean over every attended token, including <bos>/<eos>.
+	private bool _poolMeanAll;
 
 	private int _maxLength = 512;
 
@@ -494,12 +500,20 @@ public sealed class OnnxEmbeddingEngine
 				string text6 = files.TokenizerPath;
 					string text7 = files.ConfigPath;
 					_poolCls = string.Equals(files.Pooling, "cls", StringComparison.Ordinal);
+					_poolMeanAll = string.Equals(files.Pooling, "mean_all", StringComparison.Ordinal);
 					if (!string.IsNullOrEmpty(text7))
 				{
 					TryReadMaxPosition(text7, out _maxLength);
 				}
-				_tokenizer = BertTokenizerLite.Load(text6);
-				if (_tokenizer == null)
+				if (_poolMeanAll)
+				{
+					_bpeTokenizer = BpeTokenizerLite.TryLoad(text6);
+				}
+				else
+				{
+					_tokenizer = BertTokenizerLite.Load(text6);
+				}
+				if (_tokenizer == null && _bpeTokenizer == null)
 				{
 					_available = false;
 					_lastError = "Failed to parse the tokenizer.";
@@ -510,7 +524,9 @@ public sealed class OnnxEmbeddingEngine
 				_session = new InferenceSession(text5, sessionOptions);
 				_inputIdsName = GuessInputName(_session.InputMetadata, "input_ids", "input_ids");
 				_inputMaskName = GuessInputName(_session.InputMetadata, "attention_mask", "attention_mask");
-				_inputTypeName = GuessInputName(_session.InputMetadata, "token_type_ids", "token_type");
+				// GuessInputName falls back to the first input; only feed token types when the graph really has them.
+				_inputTypeName = _session.InputMetadata.Keys.Any((string k) => k != null && k.IndexOf("token_type", StringComparison.OrdinalIgnoreCase) >= 0)
+					? GuessInputName(_session.InputMetadata, "token_type_ids", "token_type") : "";
 				_outputName = GuessOutputName(_session.OutputMetadata);
 				_useInt64Input = true;
 				try
@@ -528,7 +544,7 @@ public sealed class OnnxEmbeddingEngine
 				_lastError = "";
 				try
 				{
-					Logger.Log("OnnxEmbedding", string.Format("Initialized model={0} tokenizer={1} inputType={2} maxLen={3} pooling={4} dir={5}", System.IO.Path.GetFileName(text5), System.IO.Path.GetFileName(text6), _useInt64Input ? "int64" : "int32", _maxLength, _poolCls ? "cls" : "mean", System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(text5) ?? "")));
+					Logger.Log("OnnxEmbedding", string.Format("Initialized model={0} tokenizer={1} inputType={2} maxLen={3} pooling={4} dir={5}", System.IO.Path.GetFileName(text5), System.IO.Path.GetFileName(text6), _useInt64Input ? "int64" : "int32", _maxLength, _poolCls ? "cls" : (_poolMeanAll ? "mean_all" : "mean"), System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(text5) ?? "")));
 				}
 				catch
 				{
@@ -563,7 +579,7 @@ public sealed class OnnxEmbeddingEngine
 			return false;
 		}
 		EnsureInitialized();
-		if (!_available || _session == null || _tokenizer == null)
+		if (!_available || _session == null || (_tokenizer == null && _bpeTokenizer == null))
 		{
 			return false;
 		}
@@ -591,7 +607,7 @@ public sealed class OnnxEmbeddingEngine
 				num = 512;
 			}
 			int[] attentionMask;
-			List<long> list = _tokenizer.Encode(text2, num, out attentionMask);
+			List<long> list = _bpeTokenizer != null ? _bpeTokenizer.Encode(text2, num, out attentionMask) : _tokenizer.Encode(text2, num, out attentionMask);
 			if (list == null || list.Count <= 0 || attentionMask == null || attentionMask.Length != list.Count)
 			{
 				return false;
@@ -701,7 +717,7 @@ public sealed class OnnxEmbeddingEngine
 					{
 						num7 = count;
 					}
-					bool flag = num7 >= 3;
+					bool flag = num7 >= 3 && !_poolMeanAll;
 					for (int num8 = 0; num8 < num7; num8++)
 					{
 						if (attentionMask[num8] > 0 && (!flag || (num8 != 0 && num8 != num7 - 1)))

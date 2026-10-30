@@ -12,6 +12,7 @@ internal static class AnimusForgeModelStore
         internal string TokenizerPath { get; }
         internal string ConfigPath { get; }
         // "mean": mean pool over inner tokens (bge-small-zh). "cls": first-token pool (bge-small-en).
+        // "mean_all": mean pool over every attended token including <bos>/<eos> (bekko).
         internal string Pooling { get; }
 
         internal ModelFiles(string modelPath, string tokenizerPath, string configPath, string pooling = "mean")
@@ -33,6 +34,11 @@ internal static class AnimusForgeModelStore
     internal static ModelFiles ResolveEmbedding(string moduleRoot)
     {
         string onnx = GetOnnxDirectory(moduleRoot);
+        // Multilingual bekko (ModernBERT, BPE tokenizer, mean pooling over all tokens) serves both editions when installed.
+        // An incomplete bekko directory falls back to the per-language bge models below.
+        ModelFiles multilingual = TryResolveMultilingualEmbedding(onnx);
+        if (multilingual != null)
+            return multilingual;
         // English edition: use ONNX/en (bge-small-en, CLS pooling) when it is installed.
         // A missing/incomplete en directory falls back to the Chinese model below so EN players keep working.
         ModelFiles english = TryResolveEnglishEmbedding(moduleRoot, onnx);
@@ -68,6 +74,23 @@ internal static class AnimusForgeModelStore
         if (config != null)
             ValidateConfig(config);
         return new ModelFiles(model, tokenizer, config);
+    }
+
+    private static ModelFiles TryResolveMultilingualEmbedding(string onnx)
+    {
+        string dir = Path.Combine(onnx, "bekko");
+        if (!Directory.Exists(dir))
+            return null;
+        RejectRedirectedSubdirectory(dir);
+        string model = FirstReadableFile(Path.Combine(dir, "model.onnx"));
+        string tokenizer = FirstReadableFile(Path.Combine(dir, "tokenizer.json"));
+        if (model == null || tokenizer == null)
+            return null;
+        RequireReferencedExternalData(model);
+        string config = FirstReadableFile(Path.Combine(dir, "config.json"));
+        if (config != null)
+            ValidateConfig(config);
+        return new ModelFiles(model, tokenizer, config, "mean_all");
     }
 
     private static ModelFiles TryResolveEnglishEmbedding(string moduleRoot, string onnx)
