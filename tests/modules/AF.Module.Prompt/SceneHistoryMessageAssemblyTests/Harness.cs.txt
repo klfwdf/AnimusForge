@@ -23,15 +23,10 @@ internal static class Program
         Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(null)=="","TTS null empty");
         foreach (var spoken in new[]{"你好，欢迎回来！", "Hello, welcome back!"})
         {
-            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**"+spoken+"**")==spoken,"TTS keeps fully bold reply");
-            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("Before **"+spoken+"** After")=="Before "+spoken+" After","TTS keeps speech around bold");
-            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**"+spoken)==spoken,"TTS keeps unfinished bold reply");
-            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("*waves* **"+spoken+"** (thinks)")==spoken,"TTS still strips single-star and parenthesized narration");
-            foreach (var options in new[]{new ConversationSpeechTextOptions(false,false),new ConversationSpeechTextOptions(false,true),new ConversationSpeechTextOptions(true,false)})
-                Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(ConversationSpeechTextRules.SanitizeSceneSpeechText("**"+spoken+"**",options))==spoken,"UI to TTS keeps bold speech for each presentation mode");
+            foreach (var action in new[]{"*waves*", "**bows**", "* 挥手 *", "** 鞠躬 **"})
+                Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(action+" "+spoken)==spoken,"TTS preserves existing action exclusion and following speech");
+            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**bows**")=="","Double-star action alone is not speech");
         }
-        Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**First**\n**Second**")=="First\nSecond","TTS multiple bold paragraphs");
-        Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**")=="","TTS markers alone stay empty");
     }
     static void Main()
     {

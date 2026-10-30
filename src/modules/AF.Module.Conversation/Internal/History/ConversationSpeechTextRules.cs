@@ -261,8 +261,7 @@ internal static string StripStageDirectionsForPassiveShout(string text, Conversa
 		text2 = Regex.Replace(text2, "\\(.*?\\)", "", RegexOptions.Singleline);
 		if (!options.PreserveAsterisk)
 		{
-			// Bold markers are formatting; keep the enclosed speech, including unfinished bold.
-			text2 = text2.Replace("**", "");
+			text2 = Regex.Replace(text2, "\\*\\*.*?\\*\\*", "", RegexOptions.Singleline);
 			text2 = Regex.Replace(text2, "\\*.*?\\*", "", RegexOptions.Singleline);
 		}
 		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
@@ -395,8 +394,7 @@ internal static string SanitizeSceneSpeechTextForTts(string text)
 		text2 = Regex.Replace(text2, "\\[RELAY\\s*:[^\\]\\r\\n]+\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\（.*?\\）", "", RegexOptions.Singleline);
 		text2 = Regex.Replace(text2, "\\(.*?\\)", "", RegexOptions.Singleline);
-		// Do not erase an entire reply merely because the model emphasized it.
-		text2 = text2.Replace("**", "");
+		text2 = Regex.Replace(text2, "\\*\\*.*?\\*\\*", "", RegexOptions.Singleline);
 		text2 = Regex.Replace(text2, "\\*.*?\\*", "", RegexOptions.Singleline);
 		text2 = Regex.Replace(text2, "(^|\\n)\\s*【[^】\\r\\n]{1,40}】", "$1");
 		text2 = StripTtsNarrationLines(text2);
