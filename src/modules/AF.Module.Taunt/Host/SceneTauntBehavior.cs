@@ -1627,14 +1627,15 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	internal static bool IsSceneLordTauntTarget(Hero targetHero)
 	{
-		return targetHero != null && targetHero.IsLord && !IsPlayerProtectedSceneAttackTarget(targetHero) && !IsMeetingTauntContext(targetHero);
+		// 被关押的俘虏（含地牢里的领主）不是定居点在场势力，不能发起或成为场景冲突目标。
+		return targetHero != null && targetHero.IsLord && !targetHero.IsPrisoner && !IsPlayerProtectedSceneAttackTarget(targetHero) && !IsMeetingTauntContext(targetHero);
 	}
 
 	internal static bool IsSceneNotableTauntTarget(Hero targetHero)
 	{
 		try
 		{
-			if (targetHero == null || IsMeetingTauntContext(targetHero) || IsSceneLordTauntTarget(targetHero))
+			if (targetHero == null || targetHero.IsPrisoner || IsMeetingTauntContext(targetHero) || IsSceneLordTauntTarget(targetHero))
 			{
 				return false;
 			}

@@ -1,3 +1,9 @@
+# 未部署：地牢俘虏不再触发场景冲突（2026-10-30）
+
+用户反馈在自家地牢与被关押领主乌尔玻斯聊天后出现 SCENE_TAUNT_FIGHT 并开打（日志 Key=scene_lord:town_es1:prison:lord_1_47）。原因：`prison` 在和平冲突地点白名单内，而 `IsSceneLordTauntTarget` / `IsSceneNotableTauntTarget` 未排除 `Hero.IsPrisoner`，导致俘虏被注入挑衅规则并能发起冲突。修复：两处判定加 `!IsPrisoner`，提示词注入、标签执行、领主冲突后果统一失效；狱卒、地牢其他非俘虏NPC不受影响。未编译、未部署、未实机。
+
+---
+
 # 未部署：大地图就地扎营 第1步（2026-10-30）
 
 按 `docs/designs/field-camp-v1.md` 第1步落地：新增 `src/AF.GameAdapter.Bannerlord/FieldCamp/`（FieldCampBehavior 状态机+存档键 `_afFieldCamp_*_v1` 7个、营地菜单与等待菜单、规则、快捷键 Z、每部队独立大地图营帐实体）、`DuelSettings.FieldCamp.cs`（MCM 组“19. 就地扎营”8项）；终端新增“就地扎营”节点；旧检阅在扎营期间互斥；中英各41条字符串。休整收益：伤员按原版恢复速率额外 (倍率-1)×、士气每小时+1至70，覆盖整个军团；遭遇/进城立即结束营地。频率：HourlyTick 结算，帧 tick 仅 O(1) 检查与场景引用比较。验证：1.3/1.4 隔离目录 dotnet build 均 0 错误（FieldCamp 无警告），TerminalLiveSettings 1.4 PASS 1185 / 1.3 PASS 1129。未部署、未实机；大地图营帐缩放与预制体在 1.3 上未实测。
