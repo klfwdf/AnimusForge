@@ -1,3 +1,15 @@
+<a id="merge-push-20261031"></a>
+## 2026-10-31 远端/本地正常合并证据
+
+源码修订 `fb9d38d1561d5872532d6123dbd0925c0201f253`，父修订为本地检查点 `99622baf6` 和远端 `134365229`。本轮没有新写业务算法；远端改动完整保留，本地外交责任沿用既有对应条目。
+
+| 核对位置（一基行号） | 符号/责任 | 本次证据与边界 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:248-253` | `EncyclopediaDataOnTickPrefix`，外交弹窗期间拦百科按键 | 本地新增判断保留；真实prefix及popup/input lease回放261通过；非实机 |
+| `src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:2193-2199` | 音色按钮点击回调，按当前TTS provider选择编辑入口 | 远端分流保留；双API编译与TTS104行为检查；百科实际点击未验 |
+
+其余远端变化文件与 `134365229` Git对象一致，其余本地独有变化文件与 `cdc855d40` Git对象一致；详见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#merge-push-20261031)。原生会话退出21、CN/EN外交各3552及双API/Bootstrap/seam/注册通过；远端既有静态测试格式失配、真实游戏/服务/旧档未验边界不变。
+
 <a id="diplomacy-country-routing-20261031"></a>
 ## 2026-10-31 国家分流与说客登记提示：代码责任证据
 

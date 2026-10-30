@@ -1,3 +1,10 @@
+<a id="merge-push-20261031"></a>
+## 2026-10-31 远端语音改动与本地外交改动已合并推送
+
+按用户确认，正常合并远端 `134365229` 与本地 `cdc855d40`，检查点 `99622baf6`，合并产品 `fb9d38d15` 已普通推送并经远端回读确认。唯一交叉文件保留远端音色入口及本地外交弹窗按键保护；远端其他改动与本地外交改动逐文件核对未丢失。
+
+**PUSH_VERIFIED / OFFLINE_VERIFIED / LIVE_NOT_RUN**。双 API、Bootstrap、seam/注册通过；CN/EN 外交各 3552、TTS 104、弹窗 261、原生会话退出 21 项通过。一项远端既有静态检查格式失配保留并单独核对真实回调。原 8 份未提交资料保留且未上传；本次未部署或打包。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-push-20261031)与[代码范围](docs/architecture/af-framework-code-scope.md#merge-push-20261031)记录完整边界。此条仅替代已纳入历史的未推送状态，不更改历史实机/安装结论。
+
 <a id="diplomacy-country-routing-deployed-20261031"></a>
 ## 2026-10-31 国家分流与说客提示已部署
 

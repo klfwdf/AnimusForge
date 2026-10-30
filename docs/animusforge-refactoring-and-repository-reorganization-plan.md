@@ -1,3 +1,16 @@
+<a id="merge-push-20261031"></a>
+## 2026-10-31 正常合并远端并推送源码（PUSH_VERIFIED / LIVE_NOT_RUN）
+
+用户确认“先拉取合并再推送”，远端修改优先，同时保留不冲突的本地外交改动。实际工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`；原本地 `cdc855d40` 独有 35 提交，远端 `134365229` 独有 3 提交。创建空检查点 `99622baf6` 后正常合并为 `fb9d38d1561d5872532d6123dbd0925c0201f253`，无冲突、无强推或历史改写。普通推送 `origin/main` 成功，`ls-remote` 已确认产品合并 SHA；本条交付记录随后单独普通推送，最终远端 SHA 见本地 receipt。
+
+合并保真：远端 27 个变化文件中，26 个与远端对象一致；唯一交叉文件 `EncyclopediaHeroPersonaPatch.cs` 同时保留远端 OpenAI/GPT-SoVITS 音色入口与本地外交事件开启时的百科快捷键保护。本地独有其他文件与合并前对象一致。8 份原有未提交文件完成备份与 SHA 核对，不加入提交；本次台账/交接只提交新增段落。待推送 37 提交、210 新 blob 的有界路径/凭据/大对象检查通过；明确排除的本地专用 handoff 未出现在这批历史，未推送旧本地标签、附件、Microsoft/NuGet 缓存或新方案草稿。
+
+验证：使用原 `scripts/build/build_single_module.ps1` 纯构建；1.3 引用 `v1.3.15.110062`、1.4 引用 `v1.4.6.115628`、Bootstrap、双 coup seam 与 registration smoke 全部通过。CN/EN 各七组外交回归 3552 项（含国家分流481、说客168、双边194、speech review741、主权980、口头宣言645、原臣属343）；真实弹窗/输入保护261、TTS完整行为104、原生会话退出21通过。远端变动的 Llm/UI 双语 XML 分别204/3347同名资源键成对；CRLF感知差异检查通过。
+
+验证限制：TTS runner 默认SDK路径不存在，显式选择本机SDK后构建通过；受限环境不支持 HttpListener，外部环境只对本机模拟接口重跑同一候选，104/104通过，无真实服务。TTS静态检查7/8通过，一项按旧 `});` 结尾切片的检查在远端 `134365229` 同样报错；实际调用现为 `}, localSpeech);`，真实接受回调内的等待登记/打字显示及单次登记检查通过，未修改产品或放宽已提交测试。已有编译与NU1900漏洞源警告保留，不宣称全仓全绿。
+
+证据：本地 `artifacts/merge-push-20261031/` 的 before/merge-check/publication-check/verification/receipt JSON、构建及回归日志。新生成测试树与重复备份收尾清理，保留精简证据及原构建产物。无Stage、游戏部署、正式CN/EN包、真实模型、实机或玩家存档操作；既有安装仍为此前部署版本。本条仅替代本批已发布提交的NOT_PUSHED状态。代码坐标与责任见[代码图](architecture/af-framework-code-scope.md#merge-push-20261031)。如需撤回，按具体功能作聚焦inverse；不重置或改写已发布历史。
+
 <a id="diplomacy-country-routing-deployed-20261031"></a>
 ## 2026-10-31 外交国家分流与说客提示部署完成
 
