@@ -13,11 +13,11 @@ metadata:
 
 凡是新增或修改 AF 运行内容，必须在开始修改前读取本文件；涉及玩家文案、MCM/终端、Prompt、模型上下文、事实投影、世界书、默认资产或其真实消费者时，未读取本 skill 不得开始产品修改。双语不是收尾翻译步骤，而是本次功能或修复的完成条件。
 
-Prompt/世界书语言由安装的 CN/EN 内容包决定，UI 语言仍由游戏界面语言决定。EN 包可以在中文 UI 下运行英文固定 Prompt；CN 包可以在英文 UI 下运行中文固定 Prompt。运行时不根据 UI 语言临时改写 Prompt 包语言。
+语言来源（2026-10-31 用户决定，取代旧的“Prompt 随内容包”规则）：固定 Prompt、模型上下文、C# 组装的事实/历史/标签和运行时文本表随**游戏语言**——简体或繁体中文用中文，其他所有语言用英文（`PromptLanguage.IsChinese`）。两套固定正文都随每个包发布，运行时按游戏语言取用，切换游戏语言后下一次请求即生效。CN/EN 包只区分**玩家可改的提示词**：`ModuleData/Defaults/CustomPrompts/` 与种子 `CustomPrompts/`、`McmPromptDefaults.json`（含 `ContentEdition` 标记，嵌入模型据此选择）、世界书 `PlayerExports`。UI 仍随游戏界面语言。
 
 内容包选择固定语料语言，不锁定模型回复语言。禁止自动追加“必须用中文/英文输出”之类规则，禁止按汉字/英文检测清空生成标题或正文。玩家自定义的语言要求与动态原文保持；结构、协议、事实和权限校验照常执行。
 
-事实和历史的长期方向是稳定 `FactKind`/ID/参数加 CN/EN 模板。存档键、协议、AFEF、动态姓名、玩家输入、引用原文和未知旧记录保留原身份；已知旧字符串只在读取/请求边界按可信模板解析并投影，不能全局 Replace、猜译或静默改写存档。
+事实和历史在**写入时**按当时的游戏语言生成；切换语言后新旧记录允许中英混排，不改写旧存档。长期方向仍是稳定 `FactKind`/ID/参数加 CN/EN 模板。存档键、协议、AFEF、动态姓名、玩家输入、引用原文和未知旧记录保留原身份；已知旧中文字符串在读取/请求边界按可信模板投影，不能全局 Replace、猜译或静默改写存档。匹配旧文本、模型回复或原版名称的代码必须同时接受中英两版（`Variants`/`Is`/`RawSource`），不能只比较当前语言值。
 
 最终 messages 的固定 system Prompt 可以做语言审计；运行时审计用于记录未投影固定文本和动态原文来源，不因玩家中文输入或旧历史阻断请求。阻断只属于 CN/EN Stage、打包或发布资源门禁。
 
@@ -35,11 +35,14 @@ Prompt/世界书语言由安装的 CN/EN 内容包决定，UI 语言仍由游戏
 | --- | --- |
 | 新内部标识、资源键、技术诊断 | 英文；诊断保留异常、对象 ID、数量、阶段和失败信息 |
 | 玩家可见 UI、MCM/终端说明、物品名 | 当前游戏界面语言；原生英文 fallback 和注册中文资源同步维护 |
-| Prompt、模型上下文和世界书固定正文 | CN/EN 发行包选版；运行时文件名和路径保持稳定 |
+| 固定 Prompt、模型上下文、C# 组装的事实/历史/标签 | 游戏语言（简繁中文→中文，其余→英文）；`X.json`/`X.en.json` 两版同包，`PromptLanguageFile`/`BilingualTextTable` 读取 |
+| 可改提示词默认值、MCM 提示词默认值、世界书 | CN/EN 发行包选版；运行时文件名和路径保持稳定 |
 | 既有存档键、类型、枚举值、JSON 字段、协议/动作标签、AFEF、匹配别名 | 原身份和原值不变；在真正 UI/Prompt 消费边界投影 |
 | 动态实体名、玩家输入、模型原回复、未知旧记录 | 保留原始内容与身份；不通过猜译或批量改存档制造清零 |
 
-两包共享代码和双语界面；EN 包可以显示中文 UI，CN 包可以显示英文 UI。切换界面语言不能改变 Prompt/世界书版别。CN/EN 不是游戏模块分裂：保持一套源码、1.3/1.4 两实现、Bootstrap 单模块加载。
+两包共享代码、双语界面和两套固定 Prompt；差别只在可改提示词默认值、MCM 提示词默认值和世界书。CN/EN 不是游戏模块分裂：保持一套源码、1.3/1.4 两实现、Bootstrap 单模块加载。
+
+实现约定：固定 Prompt 文件用 `PromptLanguageFile<T>`（每语言各加载一次）；C# 组装用的文本表用 `BilingualTextTable`（`X.en.json` 同键，值为 `"="` 表示语言无关原值，例如原版中文名或旧存档值）；由 Prompt 文本派生的静态缓存用 `PromptLanguageValue<T>`，不得在静态 `readonly` 字段里冻结某一语言。在 `content-map.json` 中固定 Prompt 两版标 `bilingual-prompt`，文本表两版标 `compatibility`（嵌入表 LogicalName 加 `.en.json`）。
 
 涉及混合 catalog、动态模板、旧事实、MCM/prefab 或模型请求时，读取[文本与消费契约](references/text-contracts.md)。涉及全量审查、他人交付或发行验收时，读取[验证与接管](references/validation-and-migration.md)。修改构建/打包时先读仓库[单模块双实现案例](../../../docs/bannerlord_dual_module_output.md)和[双版本兼容说明](../../../docs/bannerlord_1_3_to_1_4_5_compatibility_diff.md)。
 
@@ -48,7 +51,7 @@ Prompt/世界书语言由安装的 CN/EN 内容包决定，UI 语言仍由游戏
 1. 核实实际 Git 根、分支、HEAD、dirty 和最新要求；读取生产入口、文本所有者、资源及最终消费者。旧报告和 Agent 自报只用于定位。
 2. 给受影响文本确认用途及语言来源。UI、Prompt、兼容原值分开访问，复用现有 TextObject、文本类和资源；必要时加同模块轻量 reader。
 3. 同步维护中英正文、键、变量与语义。保持 actor、target、否定、条件、权限、金额、单位、次数和因果；失败/取消/未确认不能写成成功。
-4. 接通完整链路：资源 → reader/原生本地化 → 真实消费者 → 内容映射或嵌入 → 包选版 → 显示或请求。检查 `content/content-map.json`、真实 `EmbeddedResource/LogicalName`、两套 `language_data.xml` 和包选择器；只有资源文件或编译通过不算接线完成。
+4. 接通完整链路：资源 → reader/原生本地化 → 真实消费者 → 内容映射或嵌入 → 游戏语言选择（固定 Prompt/文本表）或包选版（可改提示词/世界书） → 显示或请求。检查 `content/content-map.json`、真实 `EmbeddedResource/LogicalName`、两套 `language_data.xml`；运行 `python tools/localization/l10n_gate.py` 与 `check_bilingual_tables.py`。只有资源文件或编译通过不算接线完成。
 5. 核对最终 UI 的 DataSource 属性与 prefab 绑定，包含间接标签、按钮、错误、拼接片段、缓存值、MCM 属性/构造器和终端 fallback。模型路径同时核对 legacy 字符串和真实 messages/provider 请求。
 6. 按风险验证后继续修实际失败，再记录变更、有效证据、未验证与 focused 回滚点。保护其他作者内容，不整文件恢复旧版本，不为了门禁删业务断言或改权限。
 
@@ -57,7 +60,7 @@ Prompt/世界书语言由安装的 CN/EN 内容包决定，UI 语言仍由游戏
 ## 发行与完成边界
 
 - 正式打包必须同时产出 CN、EN：`AnimusForge_v1.X.X_CN_MMdd_HHmm.zip`、`AnimusForge_v1.X.X_EN_MMdd_HHmm.zip`。两包同版本、同本机时间戳；同分钟重名时使用一致递增尾号，不覆盖已有包。`1007_0802` 表示 10 月 7 日 08:02，不是固定字符串。
-- 每包只有 `AnimusForge/` 根，包含 Bootstrap 和两 API 实现；两包 UI 都保持双语，Prompt/世界书按包选正文并保留原文件名。自定义 PackageLabel 不得改变规范名称。
+- 每包只有 `AnimusForge/` 根，包含 Bootstrap 和两 API 实现；两包 UI 与固定 Prompt 都保持双语，可改提示词默认值和世界书按包选正文并保留原文件名。自定义 PackageLabel 不得改变规范名称。
 - 发行验收使用完整 Stage 的 CN/EN 内容投影，覆盖 GUI、物品 XML、ModuleData、CustomPrompts、全部世界书及真实 DLL 闭包。小样本 ZIP、局部 ModuleData、源代码无汉字和 DLL 门禁不能代替完整投影或逐条语义审校。
 - C#/嵌入/兼容性变更按既有统一入口验证双 API 与 Bootstrap；纯说明不启动游戏构建。纯非嵌入资源可以在源码/项目/嵌入闭包和实际 DLL 哈希未变的明确证据下复用有效构建，仍须验证资源及完整相关投影。
 - 分别报告源码迁移、真实接线、词法门禁、语义审校、构建、完整投影、正式双包、部署、实机及旧档。请求范围内必要验证完成才可交付；没有实机/真实 provider 证据不能声称实际对话语言已通过。

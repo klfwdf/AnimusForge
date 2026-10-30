@@ -5,7 +5,8 @@
 | 变更面 | 必要验证 |
 | --- | --- |
 | UI/设置/prefab | 两语言真实 consumer/native 解析、英文 fallback、变量字面性；核对 DataSource 作用域、宽度和最终可见按钮/行 |
-| Prompt/世界书 | 实际包 selector/loader，源资产未改写，旧默认/用户覆盖优先级、真实发送 messages；UI 切换不改变包语料 |
+| 固定 Prompt/文本表 | 两版同包、`PromptLanguage` 判定（简繁中文/其他）、切换游戏语言后下一次真实请求换语言、匹配旧中文仍生效；`l10n_gate.py` 通过 |
+| 可改提示词/世界书 | 实际包 selector/loader，源资产未改写，旧默认/用户覆盖优先级、真实发送 messages |
 | 兼容词/事实/历史 | 旧值、顺序、字段与失败状态守恒；UI/Prompt 投影执行，保存对象及协议身份不变 |
 | C#/嵌入/API/构建闭包 | 原统一入口的两 API 与 Bootstrap、实际引用来源/marker/DLL hashes；编译符号不证明引用版本 |
 | 纯非嵌入 XML/资产 | 解析、键/变量、原 ID/非文本结构与实际 consumer；只有未变编译闭包和 DLL 的哈希证据才可复用旧构建 |
