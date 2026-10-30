@@ -16,6 +16,9 @@ internal static class PersonaIntroTextRules {
   StringBuilder text=new StringBuilder();text.Append(context).Append(PromptComposerTexts.Get("equipment_colon")).Append(worn.Count>0?string.Join(PromptComposerTexts.Get("equipment_separator"),worn):PromptComposerTexts.Get("equipment_naked"));
   if(weapons.Count>0)text.Append(PromptComposerTexts.Get("equipment_weapons")).Append(string.Join(PromptComposerTexts.Get("equipment_separator"),weapons));return text.ToString();
  }
+// Anonymous public label: culture + age bracket + explicit gender noun, so the model cannot infer gender from "青年".
+internal static string BuildAnonymousPersonLabel(string culture, string ageLabel, bool isFemale)
+	=> culture + ageLabel + PromptComposerTexts.Get(isFemale ? "public_person_female" : "public_person_male");
 internal static string BuildAgeBracketLabel(float age)
 	{
 		if (age >= 60f)

@@ -270,6 +270,8 @@
   "age_young_adult": "young adult",
   "age_youth": "youth",
   "age_unknown": "unknown",
+  "public_person_female": " woman",
+  "public_person_male": " man",
   "reputation_humble": "of humble standing",
   "reputation_known": "somewhat known",
   "reputation_rising": "a rising newcomer",
