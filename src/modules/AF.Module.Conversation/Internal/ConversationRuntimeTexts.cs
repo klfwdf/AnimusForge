@@ -8,12 +8,8 @@ namespace AnimusForge;
 
 internal static class ConversationRuntimeTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> RawValues = new Lazy<Dictionary<string, string>>(() =>
-    {
-        using (var stream = typeof(ConversationRuntimeTexts).Assembly.GetManifestResourceStream("AnimusForge.Conversation.RuntimeCompatibility.json"))
-        using (var reader = new StreamReader(stream, Encoding.UTF8))
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-    });
+    private static readonly BilingualTextTable RawValues =
+        BilingualTextTable.FromEmbedded(typeof(ConversationRuntimeTexts).Assembly, "AnimusForge.Conversation.RuntimeCompatibility.json");
     private static readonly PromptLanguageFile<Dictionary<string, string>> PromptValues = new PromptLanguageFile<Dictionary<string, string>>("ConversationRuntimePrompts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
             path, Encoding.UTF8)));
@@ -29,6 +25,10 @@ internal static class ConversationRuntimeTexts
             return match.Value;
         });
 
-    internal static string Raw(string key) => RawValues.Value[key];
+    internal static string Raw(string key) => RawValues.Get(key);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string RawSource(string key) => RawValues.Chinese(key);
+    internal static string[] RawVariants(string key) => RawValues.Variants(key);
+    internal static bool IsRaw(string value, string key) => RawValues.Is(value, key);
     internal static string Prompt(string key) => PromptValues.Value[key];
 }

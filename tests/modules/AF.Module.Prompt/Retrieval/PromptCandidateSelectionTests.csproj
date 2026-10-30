@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalTexts.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Prompt/AdapterPromptCaptureTexts.cs" />
     <Compile Include="PackagePaths.cs" />

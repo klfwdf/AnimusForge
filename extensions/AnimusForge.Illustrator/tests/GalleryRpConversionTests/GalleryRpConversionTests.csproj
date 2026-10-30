@@ -9,6 +9,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="PackagePaths.cs" />
     <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../src/Core/IllustratorText.cs" Link="IllustratorText.cs" />
     <Compile Include="../../src/UI/IllustratorUiText.cs" Link="IllustratorUiText.cs" />
     <Compile Include="../../src/UI/IllustrationFailureUiText.cs" Link="IllustrationFailureUiText.cs" />

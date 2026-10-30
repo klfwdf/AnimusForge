@@ -10,6 +10,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs" Link="WeeklyPromptMaterialOwner.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyAggregateEventLineOwner.cs" Link="WeeklyAggregateEventLineOwner.cs" />
     <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyMaterialTexts.cs" Link="WeeklyMaterialTexts.cs" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialCompatibility.json" LogicalName="AnimusForge.Weekly.MaterialCompatibility.json" />

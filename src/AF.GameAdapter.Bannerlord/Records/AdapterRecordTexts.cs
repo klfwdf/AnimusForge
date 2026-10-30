@@ -10,17 +10,9 @@ namespace AnimusForge;
 
 internal static class AdapterRecordTexts
 {
-    private static class Cache
-    {
-        internal static readonly Dictionary<string, string> Values = Load();
-
-        private static Dictionary<string, string> Load()
-        {
-            using (Stream stream = typeof(AdapterRecordTexts).Assembly.GetManifestResourceStream("AnimusForge.Adapter.RecordCompatibility.json"))
-            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-        }
-    }
+    // Runtime record text in Chinese and English; Raw follows the game language at write time.
+    private static readonly BilingualTextTable Table =
+        BilingualTextTable.FromEmbedded(typeof(AdapterRecordTexts).Assembly, "AnimusForge.Adapter.RecordCompatibility.json");
 
     // Content language is selected by the package, independently of the UI.
     // Load only when transient material grammar is requested, never during raw capture.
@@ -53,7 +45,11 @@ internal static class AdapterRecordTexts
             return match.Value;
         });
 
-    internal static string Raw(string id) => Cache.Values[id];
+    internal static string Raw(string key) => Table.Get(key);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string RawSource(string key) => Table.Chinese(key);
+    internal static string[] RawVariants(string key) => Table.Variants(key);
+    internal static bool IsRaw(string value, string key) => Table.Is(value, key);
 
     internal static string T(string id, string fallback)
         => new TextObject("{=" + id + "}" + fallback).ToString();

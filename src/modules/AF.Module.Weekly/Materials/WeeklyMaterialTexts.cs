@@ -10,17 +10,17 @@ namespace AnimusForge;
 // Each resource is loaded once; material loops only perform dictionary lookups.
 internal static class WeeklyMaterialTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> RawValues = new Lazy<Dictionary<string, string>>(() =>
-    {
-        using (var stream = typeof(WeeklyMaterialTexts).Assembly.GetManifestResourceStream("AnimusForge.Weekly.MaterialCompatibility.json"))
-        using (var reader = new StreamReader(stream, Encoding.UTF8))
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-    });
+    private static readonly BilingualTextTable RawValues =
+        BilingualTextTable.FromEmbedded(typeof(WeeklyMaterialTexts).Assembly, "AnimusForge.Weekly.MaterialCompatibility.json");
     private static readonly PromptLanguageFile<Dictionary<string, string>> PromptValues = new PromptLanguageFile<Dictionary<string, string>>("WeeklyMaterialPrompts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
             path, Encoding.UTF8)));
 
-    internal static string Raw(string key) => RawValues.Value[key];
+    internal static string Raw(string key) => RawValues.Get(key);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string RawSource(string key) => RawValues.Chinese(key);
+    internal static string[] RawVariants(string key) => RawValues.Variants(key);
+    internal static bool IsRaw(string value, string key) => RawValues.Is(value, key);
     internal static string Prompt(string key) => PromptValues.Value[key];
 
     // Whole-sentence templates keep each language's own word order. Values are inserted literally,
@@ -53,7 +53,7 @@ internal static class WeeklyMaterialTexts
     {
         var projection = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var entry in PromptValues.Value)
-            if (RawValues.Value.TryGetValue(entry.Key, out string source)) projection[source] = entry.Value;
+            if (RawValues.ContainsKey(entry.Key)) projection[RawValues.Chinese(entry.Key)] = entry.Value;
         return projection;
     });
 

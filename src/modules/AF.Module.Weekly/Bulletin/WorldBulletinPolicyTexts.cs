@@ -6,18 +6,18 @@ namespace AnimusForge;
 
 internal static class WorldBulletinPolicyTexts
 {
-	private static readonly Lazy<Dictionary<string, string>> RawValues = new Lazy<Dictionary<string, string>>(() =>
-	{
-		using (var stream = typeof(WorldBulletinPolicyTexts).Assembly.GetManifestResourceStream("AnimusForge.Weekly.WorldBulletinCompatibility.json"))
-		using (var reader = new System.IO.StreamReader(stream, Encoding.UTF8))
-			return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-	});
+	private static readonly BilingualTextTable RawValues =
+		BilingualTextTable.FromEmbedded(typeof(WorldBulletinPolicyTexts).Assembly, "AnimusForge.Weekly.WorldBulletinCompatibility.json");
 
 	private static readonly PromptLanguageFile<Dictionary<string, string>> PromptValues = new PromptLanguageFile<Dictionary<string, string>>("WorldBulletinPromptTexts.json", path =>
 		Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(System.IO.File.ReadAllText(
 			path, Encoding.UTF8)));
 
-	internal static string Raw(string key) => RawValues.Value[key];
+	internal static string Raw(string key) => RawValues.Get(key);
+	/// <summary>Chinese source value, for matching text written before the language switch.</summary>
+	internal static string RawSource(string key) => RawValues.Chinese(key);
+	internal static string[] RawVariants(string key) => RawValues.Variants(key);
+	internal static bool IsRaw(string value, string key) => RawValues.Is(value, key);
 
 	internal static string Prompt(string id) => PromptValues.Value[id];
 

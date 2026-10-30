@@ -25,6 +25,7 @@
     <Compile Include="../../../Vengeance/Source/Core/ExecutionEnums.cs" Link="Production/ExecutionEnums.cs" />
     <Compile Include="../../../Vengeance/Source/Core/ExecutionMethodRules.cs" Link="Production/ExecutionMethodRules.cs" />
     <Compile Include="../../../Vengeance/Source/Scene/Speech/*.cs" Link="Production/%(Filename)%(Extension)" />
+    <Compile Include="../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" Link="Production/LlmSourceTexts.cs" />
     <EmbeddedResource Include="../../../content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" WithCulture="false" />
     <Reference Include="Newtonsoft.Json"><HintPath>../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>

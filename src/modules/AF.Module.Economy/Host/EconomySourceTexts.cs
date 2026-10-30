@@ -9,18 +9,19 @@ namespace AnimusForge;
 // The corpus is read once; callers retain the original values and formatting.
 internal static class EconomySourceTexts
 {
-    private static class Cache
+    private static readonly BilingualTextTable Table =
+        BilingualTextTable.FromEmbedded(typeof(EconomySourceTexts).Assembly, "AnimusForge.Defaults.EconomySourceTexts.json");
+
+    internal static string Get(string id) => Table.Get(id);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string Source(string id) => Table.Chinese(id);
+    internal static string[] Variants(string id) => Table.Variants(id);
+    internal static bool Is(string value, string id) => Table.Is(value, id);
+    internal static bool TryGet(string id, out string text) => Table.TryGet(id, out text);
+    /// <summary>Chinese source lookup; projections that map stored source values use this.</summary>
+    internal static bool TryGetSource(string id, out string text)
     {
-        internal static readonly Dictionary<string, string> Values = Load();
-
-        private static Dictionary<string, string> Load()
-        {
-            using (Stream stream = typeof(EconomySourceTexts).Assembly.GetManifestResourceStream("AnimusForge.Defaults.EconomySourceTexts.json"))
-            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-        }
+        text = Table.ContainsKey(id) ? Table.Chinese(id) : null;
+        return text != null;
     }
-
-    internal static string Get(string id) => Cache.Values[id];
-    internal static bool TryGet(string id, out string text) => Cache.Values.TryGetValue(id, out text);
 }

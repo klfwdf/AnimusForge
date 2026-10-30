@@ -12,23 +12,26 @@ namespace AnimusForge;
 
 internal static class PolicyCoreManagementTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> RawValues = new Lazy<Dictionary<string, string>>(
-        () => Load("PolicyCoreManagementCompatibility.json"));
+    private static readonly BilingualTextTable RawValues = BilingualTextTable.FromModuleData("PolicyCoreManagementCompatibility.json");
     private static readonly PromptLanguageFile<Dictionary<string, string>> PromptValues = new PromptLanguageFile<Dictionary<string, string>>(
         "PolicyCoreManagementPromptTexts.json", path => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path, Encoding.UTF8)));
     private static readonly Lazy<DiagnosticProjection> Diagnostics = new Lazy<DiagnosticProjection>(
-        () => new DiagnosticProjection(RawValues.Value));
+        () => new DiagnosticProjection(new Dictionary<string, string>(RawValues.ChineseEntries.ToDictionary(x => x.Key, x => x.Value), StringComparer.Ordinal)));
     private static readonly Lazy<Dictionary<string, TemplateRule>> TargetRules = new Lazy<Dictionary<string, TemplateRule>>(
         () => new[] { "target_source_wrapper", "target_source_prefix", "target_named_ruler_wrapper" }
-            .ToDictionary(id => id, id => new TemplateRule(id, Raw(id)), StringComparer.Ordinal));
+            .ToDictionary(id => id, id => new TemplateRule(id, RawSource(id)), StringComparer.Ordinal));
     private static readonly Lazy<Regex> TargetCountRule = new Lazy<Regex>(() => new Regex(
-        "\\A(?<LABEL>.*)" + Regex.Escape(Raw("target_count_suffix")).Replace(
+        "\\A(?<LABEL>.*)" + Regex.Escape(RawSource("target_count_suffix")).Replace(
             Regex.Escape("{COUNT}"), "(?<COUNT>[0-9]+)")
         + "(?<DESCRIPTOR>；descriptor=.*)?\\z", RegexOptions.CultureInvariant | RegexOptions.Singleline));
 
     internal static bool IsEnglishPrompt => string.Equals(Prompt("package_language"), "en", StringComparison.Ordinal);
 
-    internal static string Raw(string id) => RawValues.Value[id];
+    internal static string Raw(string key) => RawValues.Get(key);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string RawSource(string key) => RawValues.Chinese(key);
+    internal static string[] RawVariants(string key) => RawValues.Variants(key);
+    internal static bool IsRaw(string value, string key) => RawValues.Is(value, key);
     internal static string Prompt(string id) => PromptValues.Value[id];
 
     internal static string FormatPrompt(string id, params string[] variables)

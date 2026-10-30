@@ -10,6 +10,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs" Link="Production/WeeklyReportArchivePolicy.cs"/>
     <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs" Link="Production/WorldBulletinPolicy.cs"/>
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicyTexts.cs" Link="Production/WorldBulletinPolicyTexts.cs"/>
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Records/AdapterRecordTexts.cs" Link="Production/AdapterRecordTexts.cs"/>
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="Production/PromptComposerTexts.cs"/>

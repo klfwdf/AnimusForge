@@ -19,7 +19,7 @@ internal static class EconomyPromptTexts
     {
         var result = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var entry in Values.Value)
-            if (EconomySourceTexts.TryGet(entry.Key, out string source))
+            if (EconomySourceTexts.TryGetSource(entry.Key, out string source))
                 result[source] = entry.Value;
         return result;
     });

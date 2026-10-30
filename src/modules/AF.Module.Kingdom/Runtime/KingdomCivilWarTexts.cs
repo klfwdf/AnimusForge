@@ -10,12 +10,8 @@ internal static class KingdomCivilWarTexts
 {
     private static readonly PromptLanguageFile<Dictionary<string, string>> Prompts = new PromptLanguageFile<Dictionary<string, string>>(
         "KingdomCivilWarPromptTexts.json", path => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path, Encoding.UTF8)));
-    private static readonly Lazy<Dictionary<string, string>> Compatibility = new Lazy<Dictionary<string, string>>(
-        () => Load("KingdomCivilWarCompatibility.json"));
-
-    private static Dictionary<string, string> Load(string file)
-        => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath(file), Encoding.UTF8));
+    private static readonly BilingualTextTable Compatibility =
+        BilingualTextTable.FromModuleData("KingdomCivilWarCompatibility.json");
 
     internal static string Date(int day)
     {
@@ -28,5 +24,9 @@ internal static class KingdomCivilWarTexts
     }
 
     internal static string Prompt(string id) => Prompts.Value[id];
-    internal static string Raw(string id) => Compatibility.Value[id];
+    internal static string Raw(string key) => Compatibility.Get(key);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string RawSource(string key) => Compatibility.Chinese(key);
+    internal static string[] RawVariants(string key) => Compatibility.Variants(key);
+    internal static bool IsRaw(string value, string key) => Compatibility.Is(value, key);
 }

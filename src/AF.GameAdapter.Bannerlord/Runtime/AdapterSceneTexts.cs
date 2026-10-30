@@ -13,12 +13,8 @@ internal static class AdapterSceneTexts
     private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("AdapterSceneTexts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
             path, Encoding.UTF8)));
-    private static readonly Lazy<Dictionary<string, string>> Compatibility = new Lazy<Dictionary<string, string>>(() =>
-    {
-        using (var stream = typeof(AdapterSceneTexts).Assembly.GetManifestResourceStream("AnimusForge.Adapter.SceneCompatibility.json"))
-        using (var reader = new StreamReader(stream, Encoding.UTF8))
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-    });
+    private static readonly BilingualTextTable Compatibility =
+        BilingualTextTable.FromEmbedded(typeof(AdapterSceneTexts).Assembly, "AnimusForge.Adapter.SceneCompatibility.json");
     private static readonly Regex Placeholder = new Regex(@"\{([A-Z_]+)\}", RegexOptions.Compiled);
     private static readonly (string Key, string English)[] SceneLabels =
     {
@@ -37,19 +33,24 @@ internal static class AdapterSceneTexts
     private static readonly Lazy<Dictionary<string, string>> LabelKeys = new Lazy<Dictionary<string, string>>(() =>
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var label in SceneLabels) result[Raw(label.Key)] = label.Key;
+        foreach (var label in SceneLabels)
+            foreach (string variant in RawVariants(label.Key)) result[variant] = label.Key;
         return result;
     });
     private static readonly Lazy<Dictionary<string, string>> LabelAliases = new Lazy<Dictionary<string, string>>(() =>
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var label in SceneLabels) result[label.English] = Raw(label.Key);
+        foreach (var label in SceneLabels) result[label.English] = RawSource(label.Key);
         return result;
     });
 
     internal static string Get(string key, string englishFallback = "")
         => Values.Value.TryGetValue(key, out string text) ? text : englishFallback;
-    internal static string Raw(string key) => Compatibility.Value[key];
+    internal static string Raw(string key) => Compatibility.Get(key);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string RawSource(string key) => Compatibility.Chinese(key);
+    internal static string[] RawVariants(string key) => Compatibility.Variants(key);
+    internal static bool IsRaw(string value, string key) => Compatibility.Is(value, key);
     internal static string ProjectLabelForPrompt(string value)
         => value != null && LabelKeys.Value.TryGetValue(value.Trim(), out string key) ? Get(key) : value;
     internal static string ResolveRawLabel(string value)

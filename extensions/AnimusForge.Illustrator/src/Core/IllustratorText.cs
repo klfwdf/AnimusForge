@@ -11,8 +11,8 @@ namespace AnimusForge.Illustrator
     {
         private static readonly PromptLanguageFile<Dictionary<string, string>> Prompts =
             new PromptLanguageFile<Dictionary<string, string>>("IllustratorPromptTexts.json", LoadPrompts);
-        private static readonly Lazy<Dictionary<string, string>> Compatibility =
-            new Lazy<Dictionary<string, string>>(() => Load("IllustratorCompatibilityTexts.json"));
+        private static readonly BilingualTextTable Compatibility =
+            BilingualTextTable.FromModuleData("IllustratorCompatibilityTexts.json");
         private static readonly Regex ProtocolMarker = new Regex(@"\[\[(AFI_PROTOCOL_[A-Z_]+)\]\]", RegexOptions.Compiled);
 
         private static Dictionary<string, string> LoadPrompts(string path)
@@ -217,7 +217,11 @@ namespace AnimusForge.Illustrator
 
         internal static string Get(string key) => Prompts.Value[key];
         internal static string Format(string key, params object[] values) => string.Format(Get(key), values);
-        internal static string Raw(string key) => Compatibility.Value[key];
+        internal static string Raw(string key) => Compatibility.Get(key);
+        /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+        internal static string RawSource(string key) => Compatibility.Chinese(key);
+        internal static string[] RawVariants(string key) => Compatibility.Variants(key);
+        internal static bool IsRaw(string value, string key) => Compatibility.Is(value, key);
         internal static string FormatRaw(string key, params object[] values) => string.Format(Raw(key), values);
     }
 }

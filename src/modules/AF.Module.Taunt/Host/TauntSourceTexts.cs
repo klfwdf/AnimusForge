@@ -9,9 +9,14 @@ namespace AnimusForge;
 internal static class TauntSourceTexts
 {
     private const string ResourceName = "AnimusForge.Taunt.RuntimeSources.json";
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(Load, true);
+    private static readonly BilingualTextTable Table =
+        BilingualTextTable.FromEmbedded(typeof(TauntSourceTexts).Assembly, ResourceName);
 
-    internal static string Get(string id) => Values.Value[id];
+    internal static string Get(string id) => Table.Get(id);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string Source(string id) => Table.Chinese(id);
+    internal static string[] Variants(string id) => Table.Variants(id);
+    internal static bool Is(string value, string id) => Table.Is(value, id);
 
     internal static string Format(string id, params (string Name, string Value)[] variables)
     {
@@ -37,10 +42,4 @@ internal static class TauntSourceTexts
         return result.ToString();
     }
 
-    private static Dictionary<string, string> Load()
-    {
-        using (Stream stream = typeof(TauntSourceTexts).Assembly.GetManifestResourceStream(ResourceName))
-        using (StreamReader reader = new StreamReader(stream, new UTF8Encoding(false, true)))
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-    }
 }

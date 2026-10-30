@@ -6,23 +6,23 @@ namespace AnimusForge;
 
 internal static class SiegeAftermathCompatibilityTexts
 {
-    private static readonly Lazy<IReadOnlyDictionary<string, string>> Values =
-        new Lazy<IReadOnlyDictionary<string, string>>(Load, true);
+    private static readonly BilingualTextTable Table = BilingualTextTable.FromLoaders(() => Load(""), () => Load(".en"));
 
     internal static string Raw(string key, string fallback = "")
-    {
-        return Values.Value.TryGetValue(key, out string value) ? value : fallback;
-    }
+        => Table.TryGet(key, out string value) ? value : fallback;
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string RawSource(string key, string fallback = "")
+        => Table.ContainsKey(key) ? Table.Chinese(key) : fallback;
+    internal static string[] RawVariants(string key) => Table.ContainsKey(key) ? Table.Variants(key) : Array.Empty<string>();
+    internal static bool IsRaw(string value, string key) => Table.ContainsKey(key) && Table.Is(value, key);
 
-    private static IReadOnlyDictionary<string, string> Load()
+    private static Dictionary<string, string> Load(string edition)
     {
         return GcczLocalizedResourceLoader.Load(
-            "SiegeAftermathCompatibility.json",
-            "AnimusForge.Defaults.SiegeAftermathCompatibility.json",
+            "SiegeAftermathCompatibility" + edition + ".json",
+            "AnimusForge.Defaults.SiegeAftermathCompatibility" + edition + ".json",
             "SiegeAftermathCompatibility",
-            json => (IReadOnlyDictionary<string, string>)
-                (JsonConvert.DeserializeObject<Dictionary<string, string>>(json ?? string.Empty)
-                 ?? new Dictionary<string, string>(StringComparer.Ordinal)),
-            () => new Dictionary<string, string>(StringComparer.Ordinal));
+            json => JsonConvert.DeserializeObject<Dictionary<string, string>>(json ?? string.Empty),
+            () => edition.Length == 0 ? new Dictionary<string, string>(StringComparer.Ordinal) : null);
     }
 }
