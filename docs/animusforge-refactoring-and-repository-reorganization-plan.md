@@ -3,6 +3,8 @@
 
 **LOCAL_VERIFIED / LIVE_NOT_RUN / NO_DEPLOY_NO_PUSH**。已完成用户批准的本轮说客外交改造与本地自查。基线 `main@fb4e1b1d3`，意图检查点 `61750a208`，产品主体 `5ddc8a0b5`，最终修正与回归提交 `c6d2b69d8c67403d76c5f2392444af79a506f29d`。本节取代本任务先前 ACTIVE 条目；不取代其他作者的未提交文档。代码范围见[本轮代码图](architecture/af-framework-code-scope.md#lobbyist-diplomacy-20261030)，机器验证证据见[verification.json](fixtures/lobbyist-diplomacy-20261030/verification.json)。
 
+**独立验收已完成（2026-10-30）**：监督对话在全新 CN/EN 目录分别重新编译 333 个当前真实源码/测试文件，六组回归各 168 / 980 / 194 / 741 / 645 / 343 项全部通过。最终源码及交付的三个 DLL 哈希吻合；原双边执行器、Effects 和构建脚本相对基线未变。最终源码及基线差异复查未发现未修复的本次范围内新增问题；按原文件 CRLF 约定的 cr-at-eol 检查通过，未格式化源码。结论为 **INDEPENDENT_REVIEW_PASSED_LOCAL_ONLY**；实机、真实模型与原有外围失败等限制仍按本节登记。独立证据：[supervisor-review.json](fixtures/lobbyist-diplomacy-20261030/supervisor-review.json)、[supervisor-replays.txt](fixtures/lobbyist-diplomacy-20261030/supervisor-replays.txt)。
+
 ### 最终行为与保留边界
 
 - 非君主玩家，以及玩家君主劝 NPC 处理 NPC/第三国事项，均由共用三渠道后处理 COMMIT 逐项进入确定登记。实际交谈的现任 NPC 君主决定 actor，玩家无需主权；目标、条款、正式源文书/动作、已知事件、版本、条件和去重仍由程序校验。缺标签不补做全文提取，不把讨论当承诺，不由玩家替目标国接受。单次混合输出中的直接本国事项、说客事项、复杂本国事项分别归原责任方处理。

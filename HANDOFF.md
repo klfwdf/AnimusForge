@@ -5,6 +5,8 @@
 
 **LOCAL_VERIFIED / LIVE_NOT_RUN**。双 API、Bootstrap、两实现 managed gates、CN/EN 六组定向回归和分块验证通过；两个外围 smoke 在改动前检查点同样失败，未扩大修复。未实机、部署、打包或 push。
 
+**独立验收已通过（2026-10-30，LOCAL_ONLY）**：CN/EN 各重新编译 333 个源码/测试文件，六组回归全通过，源码与三个交付 DLL 哈希匹配，未发现未修复的本次范围内新增问题。[独立审查](docs/fixtures/lobbyist-diplomacy-20261030/supervisor-review.json)及[回放记录](docs/fixtures/lobbyist-diplomacy-20261030/supervisor-replays.txt)已保存；实机等未验边界不变。
+
 完整状态、测试与限制：[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#lobbyist-diplomacy-20261030)；[已核对代码图](docs/architecture/af-framework-code-scope.md#lobbyist-diplomacy-20261030)。开工前未提交文档保持未提交；不要把该交付记录视为推送授权。
 
 <a id="diplomacy-acceptance-deployed-20261030"></a>
