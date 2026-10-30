@@ -13,6 +13,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!DialogueRulerIsCurrent(actorId, rulerId)) return "";
         string target = parts[0] == actorId ? parts[1] : parts[1] == actorId ? parts[0] : "";
         if (string.IsNullOrWhiteSpace(target)) return "";
+        if (string.IsNullOrEmpty(CurrentPlayerAuthority()) || target != CurrentPlayerAuthority())
+        { _host.Log("legacy oral rejected: lobbyist_requires_commit_tag"); return ""; }
         string request = "action=" + action + ";move=NewMatter;target=" + target;
         if (action == "Peace")
         {

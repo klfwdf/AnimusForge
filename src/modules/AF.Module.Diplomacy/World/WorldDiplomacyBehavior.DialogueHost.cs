@@ -6,8 +6,24 @@ namespace AnimusForge;
 
 public sealed partial class WorldDiplomacyBehavior
 {
-    private sealed partial class OrchestrationHost : IWorldDiplomacyDialogueHost, IWorldDiplomacyPersonalRecall
+    private sealed partial class OrchestrationHost : IWorldDiplomacyDialogueHost, IWorldDiplomacyPersonalRecall, IWorldDiplomacyLobbyistEvidence
     {
+        public System.Collections.Generic.IReadOnlyList<DiplomacySponsorReceipt> PlayerGoldReceipts(string ruler)
+        {
+            var result = new System.Collections.Generic.List<DiplomacySponsorReceipt>();
+            var hero = Hero.Find(ruler);
+            if (hero == null) return result;
+            string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(), rulerName = hero.Name?.ToString();
+            // Request/work-item boundary, bounded to the existing history window.
+            // Kind is assigned from persisted AFEF; user and assistant lines never qualify.
+            foreach (var entry in MyBehavior.GetDialogueHistoryEntriesForExternal(hero, 260))
+            {
+                var receipt = DiplomacySponsorReceiptRules.Read(entry.Kind, entry.Text,
+                    playerName, rulerName, ruler, entry.GameDayIndex);
+                if (receipt != null) result.Add(receipt);
+            }
+            return result;
+        }
         public bool RulerAlive(string id) => !string.IsNullOrEmpty(id) && Hero.Find(id)?.IsAlive == true;
         public bool IsPlayerRuler(string id) => Hero.MainHero?.StringId == id;
         public string RulerName(string id) => Hero.Find(id)?.Name?.ToString() ?? DiplomacyMiscPromptTexts.Get("Prompt_RulerFallback", "Ruler");

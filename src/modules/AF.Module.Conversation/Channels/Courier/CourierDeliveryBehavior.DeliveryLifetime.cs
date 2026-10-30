@@ -250,7 +250,10 @@ public sealed partial class CourierDeliveryBehavior
 				int amount = Math.Min(Math.Max(0, session.EscrowGold), entry.Amount);
 				if (amount > 0)
 				{
-					GiveGoldAction.ApplyBetweenCharacters(null, recipient, amount, true);
+                    int sponsorGoldBefore = recipient.Gold;
+                    GiveGoldAction.ApplyBetweenCharacters(null, recipient, amount, true);
+                    WorldDiplomacyBehavior.ObserveSponsorPayment("courier_gold_" + session.Id, recipient.StringId,
+                        Math.Min(amount, Math.Max(0, recipient.Gold - sponsorGoldBefore)));
 					session.EscrowGold -= amount;
 					entry.Amount = amount;
 					entry.Delivered = true;

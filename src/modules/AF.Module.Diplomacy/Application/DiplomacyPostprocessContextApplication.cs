@@ -79,17 +79,22 @@ internal static class DiplomacyPostprocessContextApplication
         try
         {
             if (!source.HasSpeaker) return "";
+            string independentFacts = "";
             if (source.TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot independent))
-                return BuildIndependent(independent);
+            {
+                independentFacts = BuildIndependent(independent);
+                if (!(source is IDiplomacyOralPostprocessSource independentMode) || !independentMode.UseFormalCommitments)
+                    return independentFacts;
+            }
             DiplomacyConversationEligibilitySnapshot eligibility = source.CaptureEligibility();
             bool allowFullDiplomacy = DiplomacyConversationEligibilityApplication.CanUseFull(eligibility);
             bool allowNpcDeclareWar = DiplomacyConversationEligibilityApplication.CanUseNpcDeclareWar(eligibility);
-            if (!allowFullDiplomacy && !allowNpcDeclareWar) return "";
+            if (!allowFullDiplomacy && !allowNpcDeclareWar) return independentFacts;
             DiplomacyPostprocessKingdomSnapshot kingdoms = source.CaptureKingdoms();
-            if (!kingdoms.NpcKingdomExists) return "";
-            string royal = BuildRoyal(ref source, kingdoms, allowFullDiplomacy);
+            if (!kingdoms.NpcKingdomExists) return independentFacts;
+            string royal = independentFacts + BuildRoyal(ref source, kingdoms, allowFullDiplomacy);
             if (source is IDiplomacyOralPostprocessSource oral && oral.UseFormalCommitments)
-                royal += "\n" + oral.OralArrangementContext();
+                royal += "\n" + oral.OralArrangementContext() + "\n" + DiplomacyPromptTexts.Get("Lobbyist_Protocol", "");
             if (source is IDiplomacySubjectReleaseContextSource release) royal += "\n" + release.ReleaseSubjectContext();
             return royal;
         }
@@ -145,6 +150,7 @@ internal static class DiplomacyPostprocessContextApplication
         if (allowFullDiplomacy && value.PlayerIsRuler && value.PlayerKingdomExists && value.KingdomsDiffer)
         {
             sb.AppendLine(DiplomacyPromptTexts.Get("Bilateral_Postprocess", ""));
+            sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_CommitInstruction", ""));
             return sb.ToString().TrimEnd();
         }
         sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_CommitInstruction", "Use [ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=KINGDOM_ID] only when the NPC explicitly gives final agreement; action may be Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal. Do not output it for consideration, quotes, or hypotheticals. For move=AcceptProposal or RejectProposal, include source_document=ORIGINAL_DOCUMENT_ID;source_action=ORIGINAL_ACTION_ID (the action ID may be empty for a single-action document without one). If the original proposal is ambiguous, first ask the player to choose. Tribute requires an explicit amount and duration; clarify missing terms first. Peace without tribute has duration 0. Peace may include payer/receiver/tribute/days/cession_from/cession_to/settlement; copy the original terms explicitly agreed to and do not modify accepted proposal terms. Annexation or vassalage requires receiving=RECEIVING_KINGDOM_OR_SUZERAIN_ID;joining=JOINING_KINGDOM_OR_VASSAL_ID. Acceptance may omit terms to mean full acceptance of the original proposal, but must not omit its source. New terms require NewMatter, not a false acceptance. A player who is not a contracting party may still persuade you to respond to a third kingdom's proposal. Do not publish declarations on the player's behalf. For an NPC's oral agreement to declare war, use COMMIT; war begins only after the NPC formally publishes the declaration."));

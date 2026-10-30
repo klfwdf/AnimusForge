@@ -5,6 +5,21 @@ namespace AnimusForge;
 
 public sealed partial class WorldDiplomacyBehavior
 {
+    internal static void ObserveSponsorPayment(string receiptId, string recipientHeroId, int deliveredGold)
+    {
+        try
+        {
+            var owner = Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
+            if (owner?.IsLiveCampaign == true) owner._orchestration.ObserveSponsorPayment(receiptId, recipientHeroId, deliveredGold);
+        }
+        catch (System.Exception ex) { Logger.Log("DiplomacyBehavior", "sponsor receipt unavailable: " + ex.GetType().Name); }
+    }
+    internal static bool TryProcessLobbyist(Hero npc, string action, string payload)
+    {
+        var owner = Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
+        return owner?.IsLiveCampaign == true && owner._orchestration.TryProcessLobbyistTag(
+            npc?.StringId, npc?.Clan?.Kingdom?.StringId, action, payload, DiplomacyDialogueSourceScope.Current);
+    }
     internal static bool CaptureConversationCommitmentReview(Hero npc, string tags)
     {
         var owner = Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();

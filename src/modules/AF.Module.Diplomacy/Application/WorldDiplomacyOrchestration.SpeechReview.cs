@@ -9,7 +9,7 @@ namespace AnimusForge;
 
 internal sealed partial class WorldDiplomacyOrchestration
 {
-    private const int CurrentSpeechExtractionContractVersion = 4;
+    private const int CurrentSpeechExtractionContractVersion = 5;
     private const string SpeechConsentAuthorityFailure = "speech_player_consent_without_authority";
     private const string SpeechPayloadFailure = "speech_payload_invalid";
     private WorldDiplomacyStorage _speechReviewStorage;
@@ -24,27 +24,55 @@ internal sealed partial class WorldDiplomacyOrchestration
         Storage.SpeechReviews ??= new(); Storage.ReviewedSpeechSources ??= new();
         foreach (var item in Storage.SpeechReviews.Where(x => x != null))
         {
-            // Legacy review inputs retain the original captured sovereignty.
-            // Retire only the six bilateral extraction capabilities; never mark
-            // old work executed and never discard third-country/complex rows.
+            // Preserve captured sovereignty and evidence. Only the retained
+            // self-country complex scope can keep an extraction job.
             if (!string.IsNullOrEmpty(item.PlayerRuler) && !string.IsNullOrEmpty(item.PlayerKingdom)
                 && item.Actor != item.PlayerKingdom) item.ExcludeDirectBilateral = true;
             item.AppliedPayloadKeys ??= new(); item.WatchedKingdoms ??= new();
             if (item.Status == "applying") item.Status = "execution_uncertain";
+            // No inference from old tag hints or approved drafts. Already
+            // registered arrangements retain their independent authority.
+            if ((string.IsNullOrEmpty(item.PlayerRuler)
+                || item.ExtractionContractVersion < CurrentSpeechExtractionContractVersion && !LegacyReviewHasRetainedMatter(item))
+                && item.Status is "pending" or "technical_hold" or "conditional" or "authority_unavailable")
+            { item.Status = "legacy_lobbyist_evidence"; item.Reason = string.IsNullOrEmpty(item.PlayerRuler)
+                ? "fresh_commit_tag_required" : "legacy_scope_requires_clarification"; }
             _speechReviews[item.Id] = item;
         }
         foreach (string key in Storage.ReviewedSpeechSources) _reviewedSpeech.Add(key);
         _speechReviewHour = -1; _speechReviewCursor = 0;
+    }
+    private bool LegacyReviewHasRetainedMatter(DiplomacySpeechReview item)
+    {
+        // Only explicit old references establish a retained self-country scope.
+        // Unknown/untagged old speech stays evidence requiring fresh clarification.
+        if (string.IsNullOrEmpty(item.PlayerRuler) || string.IsNullOrEmpty(item.PlayerKingdom)) return false;
+        foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(item.TagHints ?? "",
+            @"\[ACTION:DIPLOMACY:COMMIT:([^\]]+)\]", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            if (DialogueTagPayload.TryParse(match.Groups[1].Value, out var parsed)
+                && !IsLobbyistMatter(parsed, item.Actor, item.PlayerKingdom)
+                && !OwnsDirectBilateralMatter(parsed, item.Actor, item.PlayerKingdom)
+                && !DialogueRoutingRules.UsesLegacyOralVassalage(parsed, item.Actor, item.PlayerKingdom)) return true;
+        if (AnimusForge.Refactor.Domain.WorldDiplomacyEnvelopeJsonRules.TryParseJsonObject(item.Approved, out var approved)
+            && approved["commitments"] is JArray rows)
+            foreach (var row in rows.OfType<JObject>())
+                if (row["payload"]?.Type == JTokenType.String && DialogueTagPayload.TryParse((string)row["payload"], out var parsed)
+                    && !IsLobbyistMatter(parsed, item.Actor, item.PlayerKingdom)
+                    && !OwnsDirectBilateralMatter(parsed, item.Actor, item.PlayerKingdom)
+                    && !DialogueRoutingRules.UsesLegacyOralVassalage(parsed, item.Actor, item.PlayerKingdom)) return true;
+        return false;
     }
     internal bool CaptureSpeechReview(string ruler, string actor, DialogueInteractionOrigin origin, string tagHints)
     {
         if (!_persistenceHealthy || !_host.WorldDiplomacyEnabled() || origin == null || string.IsNullOrWhiteSpace(origin.FullNpcText)
             || !DialogueRulerIsCurrent(actor, ruler) || _host.IsPlayerParty(actor) || !_host.HasIndependentAuthority(actor)) return false;
         bool directBilateral = IsBilateralConversation(ruler, actor);
+        if (!directBilateral) { EnsureSpeechReviewIndex(); return false; }
         // The shared postprocessor selects remaining matters. A missing direct
         // tag must never trigger a second full extraction of bilateral speech.
         if (directBilateral && !DiplomacyBilateralRouting.NeedsRemainingReview(tagHints, actor, CurrentPlayerAuthority(),
-            parsed => OwnsDirectBilateralMatter(parsed, actor, CurrentPlayerAuthority())))
+            parsed => OwnsDirectBilateralMatter(parsed, actor, CurrentPlayerAuthority())
+                || IsLobbyistMatter(parsed, actor, CurrentPlayerAuthority())))
             return true;
         EnsureSpeechReviewIndex();
         string key = ruler + "|" + origin.InteractionId;
@@ -81,6 +109,11 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             if (_speechReviewCursor >= Storage.SpeechReviews.Count) _speechReviewCursor = 0;
             var item = Storage.SpeechReviews[_speechReviewCursor++];
+            if (item.Status is "legacy_lobbyist_evidence" or "execution_uncertain" or "continued_by_tag")
+            {
+                foreach (var obsolete in Storage.Jobs.Where(x => IsSpeechReviewJob(x) && x.DocumentId == item.Id).ToList()) RemoveJob(obsolete.JobId);
+                continue;
+            }
             if (!DialogueRulerIsCurrent(item.Actor, item.Ruler) || _host.IsEliminatedParty(item.Actor))
             {
                 item.Status = "authority_unavailable"; item.Reason = "original_ruler_no_longer_authorized";
@@ -102,6 +135,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         EnsureSpeechReviewIndex();
         return _speechReviews.TryGetValue(job.DocumentId, out var item) && item.Status == "pending"
+            && Storage.Jobs.Contains(job)
             && DialogueRulerIsCurrent(item.Actor, item.Ruler) && !_host.IsEliminatedParty(item.Actor);
     }
     private IEnumerable<WorldDiplomacyDialogueArrangement> RecentRegisteredSpeechCommitments(DiplomacySpeechReview item)
@@ -134,6 +168,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         bool correctingPayload = job.Kind == "oral_review" && correction == SpeechPayloadFailure;
         if (correctingPayload) job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SpeechReview_RepairPayload", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SpeechReview_EventAttribution", "");
+        job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("Lobbyist_ReviewExclusion", "");
         if (item.ExcludeDirectBilateral) job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("Bilateral_ReviewExclusion", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignControlContract", "");
         job.UserPrompt = JsonConvert.SerializeObject(new {
@@ -189,6 +224,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             if (row["payload"]?.Type != JTokenType.String || !DialogueTagPayload.TryParse((string)row["payload"], out var parsed))
             { reason = SpeechPayloadFailure; return false; }
+            if (IsLobbyistMatter(parsed, item.Actor, item.PlayerRuler == "" ? "" : item.PlayerKingdom)) continue;
+            if (parsed.HasLobbyistFields) return false;
             if (item.ExcludeDirectBilateral && OwnsDirectBilateralMatter(parsed, item.Actor, item.PlayerKingdom)) continue;
             if (parsed.Move == DialogueDiplomaticMove.Discussion || row["player_agreed"]?.Type != JTokenType.Boolean
                 || row["npc_quote"]?.Type != JTokenType.String || row["player_quote"]?.Type != JTokenType.String) return false;
@@ -206,11 +243,11 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!IsCurrentSpeechReview(job)) { RemoveJob(job.JobId); return; }
         var item = _speechReviews[job.DocumentId];
         if (item.ExcludeDirectBilateral && job.Kind == "oral_review_audit"
-            && item.ExtractionContractVersion < 4)
+            && item.ExtractionContractVersion < CurrentSpeechExtractionContractVersion)
         {
             // A saved pre-routing draft cannot be audited under a new contract.
             // Re-extract remaining matters once; no action has been inferred.
-            item.ExtractionContractVersion = 4; job.Kind = "oral_review";
+            item.ExtractionContractVersion = CurrentSpeechExtractionContractVersion; job.Kind = "oral_review";
             job.PrivacyDraft = ""; job.PrivacyRewrites = 0; job.IsRunning = false; job.LlmMessages?.Clear(); return;
         }
         if (job.Kind == "oral_review")
@@ -251,6 +288,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             {
                 var row = (JObject)entries[entryIndex];
                 DialogueTagPayload.TryParse((string)row["payload"], out var parsed);
+                if (IsLobbyistMatter(parsed, item.Actor, item.PlayerRuler == "" ? "" : item.PlayerKingdom)) continue;
                 if (item.ExcludeDirectBilateral && OwnsDirectBilateralMatter(parsed, item.Actor, item.PlayerKingdom))
                     continue;
                 // The reward owner applies the original tag independently of this async review.

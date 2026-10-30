@@ -13,3 +13,8 @@ internal interface IDiplomacyCommitmentReviewSource
 {
     bool CaptureCommitmentReview(string tagHints);
 }
+
+internal interface IDiplomacyLobbyistTagSource
+{
+    bool TryProcessLobbyist(string action, string payload);
+}

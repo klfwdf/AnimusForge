@@ -12,7 +12,7 @@ internal static partial class SpeechReviewReplay
         foreach (string mode in new[] { "related", "unrelated", "missing", "malformed", "unknown", "closed", "changed", "duplicate", "reload", "bad_boolean" })
         {
             var (h, o) = Fixture();
-            var prior = o.EnsureActiveRound("a", "b", false); prior.RoundTopic = "Border trade dispute";
+            var prior = o.EnsureActiveRound("a", "p", false); prior.RoundTopic = "Border trade dispute";
             const string basis = "The two rulers dispute the closing of the border market and seek a trade agreement.";
             o.CurrentStorage.EventAnnouncements.Add(new DiplomacyEventAnnouncement {
                 Id = "public-opening", EventId = prior.RoundId, State = "public", Stage = "started", Body = basis });
@@ -23,7 +23,7 @@ internal static partial class SpeechReviewReplay
             var job = o.CurrentStorage.Jobs.Single(); o.PrepareSharedRequest(job);
             Test.True(job.SystemPrompt.Contains(DiplomacyPromptTexts.Get("SpeechReview_EventAttribution", "MISSING"))
                 && job.UserPrompt.Contains(basis), "real paired prompt receives public case evidence: " + channel);
-            var extraction = Extraction(origin.FullNpcText, origin.FullPlayerText);
+            var extraction = Extraction(origin.FullNpcText, origin.FullPlayerText, false);
             var entry = (JObject)extraction["commitments"][0];
             entry["payload"] = (string)entry["payload"] + ";event=" + prior.RoundId;
             entry["event_link"] = new JObject { ["event_id"] = prior.RoundId, ["source_id"] = "public-opening",
@@ -49,7 +49,7 @@ internal static partial class SpeechReviewReplay
             var agreement = o.CurrentStorage.DialogueArrangements.Single();
             bool linked = mode is "related" or "reload";
             Test.True((agreement.RoundId == prior.RoundId) == linked && agreement.Status == "accepted"
-                && o.CurrentStorage.SpeechReviews.Count == 0 && agreement.Terms.DurationDays == 14,
+                && o.CurrentStorage.SpeechReviews.Count == 0 && agreement.Terms.ReceivingKingdomId == "a" && agreement.Terms.JoiningKingdomId == "p",
                 "valid promise survives optional attribution and chooses the correct case: " + channel + ":" + mode);
             Test.True(linked || o.ResolveRound(agreement.RoundId).BirthLane == "oral", "fallback creates an independent oral event");
             // Repeated completion and a second direct submission after reload cannot
@@ -64,18 +64,18 @@ internal static partial class SpeechReviewReplay
             o.PrepareSharedRequest(writing);
             Complete(o, writing, JObject.Parse("{\"safe\":true,\"public_context\":\"The rulers agreed to trade for fourteen days.\"}"));
             o.PrepareSharedRequest(writing);
-            var prose = JObject.Parse(OralDeclarationReplay.Draft(agreement, "propose_trade")); prose["actions"] = new JArray();
+            var prose = JObject.Parse(OralDeclarationReplay.Draft(agreement, "propose_annexation")); prose["actions"] = new JArray();
             o.CommitGeneratedDocument(writing, prose.ToString());
             Test.True(writing.Kind == "privacy_audit" && h.TradeExecutions == 0, "normal prose-only declaration still awaits confidentiality review");
             Complete(o, writing, JObject.Parse("{\"safe\":true,\"agreement_consistent\":true}"));
             var document = o.ResolveDocument(agreement.DocumentId);
             Test.True(h.TradeExecutions == 0 && document?.IsReadyForPublication == true && document.RequiresResponse
-                && document.RoundId == agreement.RoundId, "third-country commitment publishes a proposal without inventing target consent: " + mode);
+                && document.RoundId == agreement.RoundId, "retained complex self-country commitment publishes a proposal without inventing target consent: " + mode);
             o.MaintainDialogueAndMemory();
             Test.True(h.TradeExecutions == 0, "maintenance never invents third-party assent");
         }
         ExactProposalAttribution();
-        WarAttribution();
+        LobbyistReplay.EventAndPublication();
     }
 
     private static void ExactProposalAttribution()
@@ -100,30 +100,4 @@ internal static partial class SpeechReviewReplay
         }
     }
 
-    private static void WarAttribution()
-    {
-        // Reproduce the incident's accepted war + unrelated known event + bare
-        // approved:true audit. Review semantics and game effect ports are controlled.
-        var (h, o) = Fixture(); var north = o.EnsureActiveRound("b", "c", false); north.RoundTopic = "Northern internal unrest";
-        o.CurrentStorage.EventAnnouncements.Add(new DiplomacyEventAnnouncement { Id = "north-opening", EventId = north.RoundId,
-            State = "public", Stage = "started", Body = "The northern ruler faces a tax revolt among his own nobles." });
-        var origin = new DialogueInteractionOrigin("native", "paid-war", "session", "Declare war on the Southern Empire.",
-            "I agree to declare war on the Southern Empire.");
-        o.CaptureSpeechReview("ruler_a", "a", origin, "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + ("event=" + north.RoundId));
-        var job = o.CurrentStorage.Jobs.Single(); o.PrepareSharedRequest(job);
-        var extraction = Extraction(origin.FullNpcText, origin.FullPlayerText);
-        extraction["commitments"][0]["payload"] = "action=DeclareWar;move=NewMatter;target=empire_s;event=" + north.RoundId;
-        Complete(o, job, extraction); o.PrepareSharedRequest(job); Complete(o, job, JObject.Parse("{\"approved\":true}"));
-        var agreement = o.CurrentStorage.DialogueArrangements.Single();
-        Test.True(agreement.RoundId != north.RoundId && o.ResolveRound(agreement.RoundId).BirthLane == "oral",
-            "actual wrong-event pattern creates independent oral event without losing accepted war");
-        var writing = o.CurrentStorage.Jobs.Single(); o.PrepareSharedRequest(writing);
-        Complete(o, writing, JObject.Parse("{\"safe\":true,\"public_context\":\"The ruler agreed to declare war on the Southern Empire.\"}"));
-        o.PrepareSharedRequest(writing);
-        var prose = JObject.Parse(OralDeclarationReplay.Draft(agreement, "declare_war", "The ruler of a formally declares war on the Southern Empire. Our armies will prepare for this war."));
-        prose["actions"] = new JArray(); o.CommitGeneratedDocument(writing, prose.ToString());
-        Complete(o, writing, JObject.Parse("{\"safe\":true,\"agreement_consistent\":true}"));
-        Test.True(h.Effects == 1 && o.ResolveDocument(agreement.DocumentId)?.IsReadyForPublication == true
-            && o.ResolveDocument(agreement.DocumentId).RoundId != north.RoundId, "independent war reaches the original real effect owner and publication");
-    }
 }

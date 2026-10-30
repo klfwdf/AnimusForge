@@ -5,8 +5,23 @@ using AnimusForge.DiplomacyDialogue;
 using Newtonsoft.Json;
 namespace AnimusForge;
 
+public sealed class DiplomacySponsorReceipt
+{
+    public string Id { get; set; } = "";
+    public string Ruler { get; set; } = "";
+    public int Gold { get; set; }
+    public int Day { get; set; }
+    public string UsedBy { get; set; } = "";
+}
+
 public sealed class WorldDiplomacyDialogueArrangement
 {
+    // Same save owner; private pending tag evidence is never public treaty terms.
+    public bool IsLobbyistCommitment { get; set; }
+    public string LobbyistPayload { get; set; } = "";
+    public string LobbyistCondition { get; set; } = "";
+    public int SponsorGold { get; set; }
+    public string SponsorReceipt { get; set; } = "";
     // Absent in old saves. Never infer an execution result from a legacy promise.
     public string DirectExecutionState { get; set; } = "";
     public string DirectActorKingdomId { get; set; } = "";

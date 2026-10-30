@@ -41,8 +41,19 @@ internal static class DiplomacyOralTagApplication
     internal static void Process<TSource>(TSource source, ref string responseText, List<string> receipts = null)
         where TSource : struct, IDiplomacyOralTagSource
     {
-        bool reviewing = source.HasSpeaker && source.IsAvailable && source is IDiplomacyCommitmentReviewSource review
-            && review.CaptureCommitmentReview(responseText);
+        bool reviewing = false;
+        try
+        {
+            reviewing = source.HasSpeaker && source.IsAvailable && source is IDiplomacyCommitmentReviewSource review
+                && review.CaptureCommitmentReview(responseText);
+        }
+        catch (Exception ex)
+        {
+            // Isolate the retained complex review owner; its failure must not
+            // suppress independent lobbyist/direct items or enable its fallback.
+            reviewing = true;
+            source.Log("[SpeechReview] capture error=" + ex.GetType().Name);
+        }
         if (string.IsNullOrEmpty(responseText) || responseText.IndexOf("DIPLOMACY", StringComparison.OrdinalIgnoreCase) < 0) return;
         if (!source.HasSpeaker || !source.IsAvailable)
         {
@@ -53,9 +64,17 @@ internal static class DiplomacyOralTagApplication
 
         responseText = TagRegex.Replace(responseText, match =>
         {
-            // The review owns NPC promises. Immediate player actions still pass
+            // The review owns remaining complex self-country matters. Immediate actions pass
             // through their existing authority/consent checks in the executor.
             string action = match.Groups[1].Value;
+            // Per-matter ownership precedes the legacy review suppression. The
+            // lobbyist path never turns a player-only native tag into NPC assent.
+            if (source is IDiplomacyLobbyistTagSource lobbyist)
+            {
+                try { if (lobbyist.TryProcessLobbyist(action, match.Groups[2].Value)) return ""; }
+                catch (Exception ex)
+                { source.Log("[Lobbyist] action=" + action + " error=" + ex.GetType().Name); return ""; }
+            }
             if (source is IDiplomacyBilateralTagSource bilateral)
             {
                 try { if (bilateral.TryProcessBilateral(action, match.Groups[2].Value)) return ""; }

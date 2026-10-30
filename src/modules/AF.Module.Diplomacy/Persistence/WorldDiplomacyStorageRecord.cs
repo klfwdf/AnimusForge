@@ -6,6 +6,7 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyStorage
 {
+    public List<DiplomacySponsorReceipt> SponsorReceipts { get; set; } = new();
     [JsonProperty("materialCountrySchemaVersion")] public int MaterialCountrySchemaVersion { get; set; }
     [JsonProperty("lastNpcPlayerContactDay")] public int LastNpcPlayerContactDay { get; set; } = -1;
     [JsonProperty("npcPlayerContactCount")] public int NpcPlayerContactCount { get; set; }

@@ -83,7 +83,7 @@ internal static class BilateralReplay
             Test.True(effects==0 && o.CurrentStorage.ConcurrentRounds.Count==0,"AI off adds no event or direct AI work");
             h.Enabled=true;h.PlayerSovereign="";
             Test.True(!o.IsBilateralConversation("ruler_a","a"),"non-ruler retains persuasion");
-            Test.True(o.CaptureSpeechReview("ruler_a","a",Origin(),"") && o.CurrentStorage.Jobs.Count==1,"non-ruler untagged review retained");
+            Test.True(!o.CaptureSpeechReview("ruler_a","a",Origin(),"") && o.CurrentStorage.Jobs.Count==0,"non-ruler untagged review retired; no invented action");
         }
         foreach(string move in new[]{"NewMatter","AcceptProposal","RejectProposal"})
         {
@@ -100,15 +100,24 @@ internal static class BilateralReplay
         {
             var(h,o)=Fixture();o.CaptureSpeechReview("ruler_a","a",Origin(),Marker);
             var item=o.CurrentStorage.SpeechReviews.Single();
-            if(legacy){ item.ExcludeDirectBilateral=false;item.ExtractionContractVersion=3; o.ReplaceStorage(JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(o.CurrentStorage))!); }
-            var job=o.CurrentStorage.Jobs.Single();o.PrepareSharedRequest(job);
-            Test.True(job.SystemPrompt.Contains(DiplomacyPromptTexts.Get("Bilateral_ReviewExclusion","MISSING")),"mixed extraction gets scope exclusion "+legacy);
-            var extraction=new JObject { ["unresolved"]=false,["commitments"]=new JArray(
-                new JObject{["payload"]="action=Trade;move=NewMatter;target=p;days=14",["npc_quote"]="I agree",["player_quote"]="I agree",["player_agreed"]=true},
-                new JObject{["payload"]="action=Trade;move=NewMatter;target=b;days=14",["npc_quote"]="I agree",["player_quote"]="",["player_agreed"]=false})};
-            Complete(o,job,extraction);Complete(o,job,new JObject{["approved"]=true});
-            if(job.Kind=="oral_review"){Complete(o,job,extraction);Complete(o,job,new JObject{["approved"]=true});}
-            Test.True(o.CurrentStorage.DialogueArrangements.Count==1 && o.CurrentStorage.DialogueArrangements[0].TargetKingdomId=="b","mixed/legacy excludes bilateral but retains third party "+legacy);
+            if(legacy)
+            {
+                item.ExtractionContractVersion=3;
+                o.ReplaceStorage(JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(o.CurrentStorage))!);
+                Invoke(o,"MaintainSpeechReviews");
+                Test.True(o.CurrentStorage.SpeechReviews.Single().Status=="legacy_lobbyist_evidence","unscoped legacy mixed speech retained for clarification");
+            }
+            else
+            {
+                var job=o.CurrentStorage.Jobs.Single();o.PrepareSharedRequest(job);
+                var extraction=new JObject { ["unresolved"]=false,["commitments"]=new JArray(
+                    new JObject{["payload"]="action=Trade;move=NewMatter;target=p;days=14",["npc_quote"]="I agree",["player_quote"]="I agree",["player_agreed"]=true},
+                    new JObject{["payload"]="action=Trade;move=NewMatter;target=b;days=14",["npc_quote"]="I agree",["player_quote"]="",["player_agreed"]=false})};
+                Complete(o,job,extraction);Complete(o,job,new JObject{["approved"]=true});
+                Test.True(o.CurrentStorage.DialogueArrangements.Count==0,"old review creates neither direct nor third-party matter");
+            }
+            o.TryProcessLobbyistTag("ruler_a","a","COMMIT","action=Trade;move=NewMatter;target=b;days=14",Origin());
+            Test.True(o.CurrentStorage.DialogueArrangements.Count==1 && o.CurrentStorage.DialogueArrangements[0].TargetKingdomId=="b","third-party matter belongs to tag owner "+legacy);
         }
     }
 

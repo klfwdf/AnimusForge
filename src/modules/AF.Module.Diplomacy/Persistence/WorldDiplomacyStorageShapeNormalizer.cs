@@ -18,6 +18,7 @@ internal static class WorldDiplomacyStorageShapeNormalizer
         storage.CanonicalHistory ??= new WorldDiplomacyCanonicalHistoryState();
         storage.ConcurrentRounds ??= new List<WorldDiplomacyRound>();
         storage.DialogueArrangements ??= new List<WorldDiplomacyDialogueArrangement>();
+        storage.SponsorReceipts ??= new List<DiplomacySponsorReceipt>();
         storage.RequestBudget ??= new DiplomacyRequestBudget();
         storage.CompletedRounds ??= new List<WorldDiplomacyRound>();
         storage.PropagationArrivals ??= new List<WorldDiplomacyPropagationArrival>();

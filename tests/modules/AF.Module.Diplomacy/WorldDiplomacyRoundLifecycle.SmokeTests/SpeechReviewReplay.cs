@@ -29,7 +29,7 @@ internal static partial class SpeechReviewReplay
         var o = new WorldDiplomacyOrchestration(h, new WorldDiplomacyRuntimeState()); h.Owner = o; return (h, o);
     }
     private static JObject Extraction(string npc, string player = "", bool assent = true) => new() {
-        ["unresolved"] = false, ["commitments"] = new JArray(new JObject { ["payload"] = "action=Trade;move=NewMatter;target=b;days=14",
+        ["unresolved"] = false, ["commitments"] = new JArray(new JObject { ["payload"] = "action=Annexation;move=NewMatter;target=p;receiving=a;joining=p",
             ["npc_quote"] = npc, ["player_agreed"] = assent, ["player_quote"] = player }) };
     private static void Complete(WorldDiplomacyOrchestration o, WorldDiplomacyJob job, JObject json) =>
         o.TryCompleteDiplomacyPipeline(job, new LlmJobResult { Success = true, Content = json.ToString() });
@@ -38,7 +38,7 @@ internal static partial class SpeechReviewReplay
         EventAttribution();
         BilateralReplay.Run(); // Replaces superseded omitted-tag bilateral execution assertions.
         var (nh, no) = Fixture();
-        var initiative = new DialogueInteractionOrigin("scene", "offer", "session", "How is your realm?", "I will propose trade for fourteen days");
+        var initiative = new DialogueInteractionOrigin("scene", "offer", "session", "How is your realm?", "I will propose annexation with a receiving p");
         no.CaptureSpeechReview("ruler_a", "a", initiative, "[ACTION:DIPLOMACY:REVIEW_REMAINING]"); var review = no.CurrentStorage.Jobs.Single();
         Complete(no, review, Extraction(initiative.FullNpcText, "", false)); Complete(no, review, JObject.Parse("{\"approved\":true}"));
         Test.True(no.CurrentStorage.DialogueArrangements.Single().ConfirmedPlayerRulerId == "", "NPC offer with unrelated player words never fabricates reciprocal consent");
@@ -49,8 +49,8 @@ internal static partial class SpeechReviewReplay
         for (int i = 1; i < 3; i++) { eh.CurrentDayValue++; Invoke(eo, "QueueSpeechReview", eo.CurrentStorage.SpeechReviews.Single()); var retry = eo.CurrentStorage.Jobs.FirstOrDefault(); if (retry == null) { eh.CurrentDayValue++; Invoke(eo, "QueueSpeechReview", eo.CurrentStorage.SpeechReviews.Single()); retry = eo.CurrentStorage.Jobs.Single(); } Invoke(eo, "FailSpeechReview", retry!, "offline_failure", false); }
         Test.True(eo.CurrentStorage.SpeechReviews.Single().Status == "technical_hold" && eo.CurrentStorage.Jobs.Count == 0, "three failures preserve evidence without unbounded timer retries");
         var (ch, co) = Fixture();
-        string longNpc = new string('x', 900) + " I agree to trade for fourteen days";
-        co.CaptureSpeechReview("ruler_a", "a", new("courier", "long", "session", "Trade fourteen days", longNpc), "[ACTION:DIPLOMACY:REVIEW_REMAINING]");
+        string longNpc = new string('x', 900) + " I agree to annexation with a receiving p";
+        co.CaptureSpeechReview("ruler_a", "a", new("courier", "long", "session", "Discuss annexation", longNpc), "[ACTION:DIPLOMACY:REVIEW_REMAINING]");
         Test.True(co.CurrentStorage.SpeechReviews.Single().NpcText == longNpc, "source beyond old 600-character excerpt remains available to extraction");
         var saved = JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(co.CurrentStorage))!;
         co.ReplaceStorage(saved); var held = saved.Jobs.Single();

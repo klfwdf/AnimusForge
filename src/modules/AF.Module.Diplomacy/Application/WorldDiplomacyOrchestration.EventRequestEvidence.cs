@@ -62,8 +62,8 @@ internal sealed partial class WorldDiplomacyOrchestration
                 x.DirectExecutionState, x.DirectActorKingdomId, x.DirectTargetKingdomId,
                 source_is_private = true, source_ruler_id = x.RulerId,
                 x.SupersedesArrangementId, x.SupersededByArrangementId,
-                x.SourcePlayerText,
-                x.SourceNpcText,
+                SourcePlayerText = x.IsLobbyistCommitment ? "" : x.SourcePlayerText,
+                SourceNpcText = x.IsLobbyistCommitment ? "" : x.SourceNpcText,
                 source_is_excerpt = false
             }),
             pending_offers = offers,

@@ -45,20 +45,11 @@ internal static class SovereignControlReplay
         var o = new WorldDiplomacyOrchestration(h, new WorldDiplomacyRuntimeState()); h.Owner = o;
         var origin = new DialogueInteractionOrigin(channel, identity + action, "session", "Please act toward b.", "I agree to act toward b.");
         Test.True(!o.CaptureSpeechReview("ordinary_lord", "a", origin, "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + ("")), "ordinary nobles cannot authorize national acts");
-        Test.True(o.CaptureSpeechReview("ruler_a", "a", origin, "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + ("")), "ruler accepts persuasion capture: " + identity + channel + action);
-        var job = o.CurrentStorage.Jobs.Single(); Prepare(o, job);
-        var request = JObject.Parse(job.UserPrompt);
-        Test.True(request["sovereign_speakers"] is JArray, "actual review must state who controls each realm, not just player affiliation");
-        var actor = ((JArray)request["sovereign_speakers"]!).OfType<JObject>().Single(x => (string)x["kingdom"] == "a");
-        Test.True(!(bool)actor["human_controlled"]! && (bool)actor["player_affiliated"]! == (affiliation == "a")
-            && (string)request["player_controlled_kingdom"]! == sovereign, "affiliation is distinct from control in actual review request");
-        string contract = DiplomacyPromptTexts.Get("SovereignControlContract", "");
-        Test.True(contract.Length > 100 && job.SystemPrompt.Contains(contract), "selected package control contract reaches actual extractor");
         string payload = "action=" + action + ";move=NewMatter;target=b" + (action == "Trade" ? ";days=14" : "");
-        Complete(o, job, new() { ["unresolved"] = false, ["commitments"] = new JArray(new JObject {
-            ["payload"] = payload, ["npc_quote"] = origin.FullNpcText, ["player_agreed"] = false, ["player_quote"] = "" }) });
-        Prepare(o, job); Test.True(job.SystemPrompt.Contains(contract) && job.Kind == "oral_review_audit", "auditor receives same control contract");
-        Complete(o, job, JObject.Parse("{\"approved\":true}"));
+        Test.True(o.TryProcessLobbyistTag("ruler_a", "a", "COMMIT", payload, origin), "ruler persuasion enters sole tag owner: " + identity + channel + action);
+        Test.True(!o.CurrentStorage.Jobs.Any(x => x.Kind is "oral_review" or "oral_review_audit"), "lobbyist never re-enters extraction/audit");
+        string context = o.BuildOralArrangementContext("ruler_a", "a");
+        Test.True(context.Contains(DiplomacyPromptTexts.Get("Lobbyist_Conversation", "missing")), "selected package lobbyist contract reaches actual conversation consumer");
         var item = o.CurrentStorage.DialogueArrangements.Single();
         Test.True(item.ConfirmedPlayerRulerId == "" && item.ActorKingdomId == "a" && item.TargetKingdomId == "b", "NPC promise is not player or third-country consent");
         Test.True(o.CurrentStorage.Jobs.Count == 1, "publication job: " + identity + "/" + action + " status=" + item.Status + " reason=" + item.Reason);
@@ -89,7 +80,7 @@ internal static class SovereignControlReplay
     {
         var h = new EventStructureReplay.Host { PlayerAffiliation = "a", PlayerSovereign = "", PublishEnabled = true };
         var o = new WorldDiplomacyOrchestration(h, new WorldDiplomacyRuntimeState()); h.Owner = o;
-        o.SubmitOralDiplomaticCommitment("ruler_a", "a", "action=DeclareWar;move=NewMatter;target=b",
+        o.TryProcessLobbyistTag("ruler_a", "a", "COMMIT", "action=DeclareWar;move=NewMatter;target=b",
             new("native", "confirmed-war", "session", "Please declare war.", "I will formally declare war on b."));
         var item = o.CurrentStorage.DialogueArrangements.Single();
         var declaration = o.CurrentStorage.Jobs.Single(); Prepare(o, declaration);
@@ -112,7 +103,9 @@ internal static class SovereignControlReplay
         Test.True(job.MaterialRepairFeedback.Contains("human_controlled=false") && job.MaterialRepairFeedback.Contains("ruler_hero_id=ruler_a"), "incident's empty NPC positions receive explicit authority correction: " + job.SuspendedReason + " / " + job.MaterialRepairFeedback);
         Test.True(o.CurrentStorage.DialogueArrangements.Single().ArrangementId == item.ArrangementId && h.Effects == 0, "repair preserves original promise without premature execution");
         job.NextRecoveryProbeUtcTicks = 0; Call(o, "TryResumeTechnicalRequest", job, false); Prepare(o, job);
-        Test.True(job.UserPrompt.Contains("player_affiliation_is_not_sovereignty") && job.UserPrompt.Contains("I will formally declare war on b."), "actual retry contains correction and original NPC promise");
+        Test.True(job.UserPrompt.Contains("player_affiliation_is_not_sovereignty") && !job.UserPrompt.Contains("I will formally declare war on b.")
+            && (int)JObject.Parse(job.EventTriggerMaterial)["Action"] == (int)DialogueDiplomaticAction.DeclareWar,
+            "actual retry contains correction and fixed action without private conversation");
         var repaired = (JObject)draft.DeepClone();
         repaired["participants"] = new JArray(countries.Select(c => Position(c)));
         Complete(o, job, repaired);

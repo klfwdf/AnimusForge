@@ -258,6 +258,20 @@
         ],
         "migration": "missing real display time -> one real notification before 72-hour waiting; preserved public replies suppress silence",
         "newSyncDataKeys": []
+      },
+      "lobbyist-diplomacy-20261030": {
+        "containerKey": "_af_world_diplomacy_v1",
+        "identity": "Existing WorldDiplomacyStorage and DialogueArrangements; no new sav key/type rename",
+        "state": [
+          "SponsorReceipts: actual successful gold witnesses and durable UsedBy claim; never debit/refund. Claim survives old arrangement archival.",
+          "IsLobbyistCommitment/LobbyistPayload/LobbyistCondition/SponsorGold/SponsorReceipt: private pending and receipt provenance in existing arrangements",
+          "waiting_condition/waiting_clarification retained by maintenance and annual pruning",
+          "legacy_lobbyist_evidence retains old speech; known self-country complex scopes remain review-owned; already registered arrangements unchanged",
+          "continued_by_tag: exact single old evidence links the new arrangement; terminal across reload, excluded from pending context."
+        ],
+        "migration": "Missing fields retain legacy defaults. Unscoped legacy reviews preserve evidence and require clarification; no inference of execution. Late removed jobs cannot apply.",
+        "newSyncDataKeys": [],
+        "receiptProjection": "Observed-transfer hook imports pre-existing exact AFEF before the new receipt and before its own AFEF is written. Later matching renderings are not additional payments; newly observed transfers remain distinct."
       }
     }
   },
@@ -501,9 +515,17 @@
     "ownerKey": "_af_proactive_npc_request_state_v1",
     "ownerSource": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
     "stateField": "ExperienceContacts",
-    "fields": ["DiscussedUntil", "SourceFatigueUntil", "Pending"],
+    "fields": [
+      "DiscussedUntil",
+      "SourceFatigueUntil",
+      "Pending"
+    ],
     "sessionField": "Experience",
-    "channelSessionOwners": ["ProactiveNpcRequestSession", "CompanionChatSession", "CourierSession"],
+    "channelSessionOwners": [
+      "ProactiveNpcRequestSession",
+      "CompanionChatSession",
+      "CourierSession"
+    ],
     "policy": "Existing chunked wrappers and legacy keys remain. Optional detached evidence and bounded receipts; expired reservations are not successful discussions. No full biography copy or Tick serialization."
   },
   "chunkGuardCoverage": "registered bindings + conventional Json-named SyncData arguments in selected production roots; source heuristic, not complete C# dataflow or game acceptance"
