@@ -1,3 +1,14 @@
+<a id="lobbyist-diplomacy-deployed-20261030"></a>
+## 说客外交部署完成 — 2026-10-30
+
+**DEPLOYED_VERIFIED / LIVE_NOT_RUN / NO_PACKAGE_NO_PUSH**。用户在独立验收交付后明确要求“部署”。当前工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main`、分支 `main`，部署前 HEAD `30b15d363`，产品候选仍为 `c6d2b69d8`。本条更新下方[说客交付](#lobbyist-diplomacy-20261030)的部署状态，保留其源码范围、自查、独立审查及实机未验边界；不授权其他任务推送或部署。
+
+使用原 `scripts/build/deploy_module.ps1`，目标为 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，沿用 CN 内容包与 Debug 双实现/Bootstrap 验收产物。部署前核对全部本次改动源码及三个 DLL 哈希，且产品路径相对已验候选无变化，因此复用已有双 API/Bootstrap 构建证据。原 Stage 的旧外交提示词被锁定源码校验拒绝，游戏未写入；将原项目 Stage 完整保留至 `artifacts/lobbyist-deploy-20261030/prior-stage` 后，使用原脚本生成并通过干净 Stage。没有改写脚本、绕过门禁或删除旧输出。
+
+实际更新 10 个文件：外交提示词、Bootstrap 和两 API DLL/PDB/构建信息。安装后独立核对 4,825 个 Stage 清单项目，其中 4,415 项按配置保留或 PlayerExports 较新优先规则核对原值；39 个现有配置/自定义提示词 SHA256 未变；418 个清单外文件大小与修改时间未变，无异常新增文件。单模块 ID 与仅加载 Bootstrap 的 XML 校验通过，三个安装 DLL 哈希逐一匹配独立验收产物，实际 CN 外交资源匹配当前源码。
+
+完整命令输出与机器证据：[安装校验](../artifacts/lobbyist-deploy-20261030/verification.json)、[部署输出](../artifacts/lobbyist-deploy-20261030/deploy-output.txt)、[干净 Stage](../artifacts/lobbyist-deploy-20261030/stage-clean-output.txt)、[前置核对](../artifacts/lobbyist-deploy-20261030/preflight.json)。未创建部署 Recovery 或自动回滚。未启动游戏、调用真实模型或验证旧 sav；不把文件覆盖成功视为实机外交验收。本轮仅增加部署证据与交接记录，原有未提交文档及其他工作保持原样。
+
 <a id="lobbyist-diplomacy-20261030"></a>
 ## 说客外交确定登记改造 — 2026-10-30
 

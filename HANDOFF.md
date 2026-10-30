@@ -1,3 +1,10 @@
+<a id="lobbyist-diplomacy-deployed-20261030"></a>
+## 2026-10-30 说客外交已部署
+
+用户明确“部署”授权后，已通过原部署脚本将已独立验收的 `c6d2b69d8` 产品覆盖到 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`（CN 内容包）。更新 10 个文件，双 API/Bootstrap 安装哈希与验收产物一致；4,825 个清单项目、39 个受保护配置/提示词及 418 个清单外文件元数据复核通过。
+
+此记录将下方说客交付状态更新为 **DEPLOYED_VERIFIED / LIVE_NOT_RUN**。未打包或推送。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#lobbyist-diplomacy-deployed-20261030)，代码范围及原有验证限制不变。
+
 <a id="lobbyist-diplomacy-20261030"></a>
 ## 2026-10-30 说客外交确定登记交付
 
