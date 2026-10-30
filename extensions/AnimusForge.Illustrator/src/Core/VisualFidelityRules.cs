@@ -71,24 +71,24 @@
                 IllustratorText.Get("SharedProfileRules") + "\n" + shared.ToString().TrimEnd();
         }
 
-        internal static readonly string PlayerRedrawDirectorPriority =
-            IllustratorText.Get("Fidelity_0") +
+        private static readonly PromptLanguageValue<string> PlayerRedrawDirectorPriorityByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_0") +
             IllustratorText.Get("Fidelity_1") +
             IllustratorText.Get("Fidelity_2") +
             IllustratorText.Get("Fidelity_3") +
             IllustratorText.Get("Fidelity_4") +
-            IllustratorText.Get("Fidelity_5");
+            IllustratorText.Get("Fidelity_5"));
+        internal static string PlayerRedrawDirectorPriority => PlayerRedrawDirectorPriorityByLanguage.Value;
 
-        internal static readonly string PlayerRedrawImagePriority =
-            IllustratorText.Get("Fidelity_6") +
+        private static readonly PromptLanguageValue<string> PlayerRedrawImagePriorityByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_6") +
             IllustratorText.Get("Fidelity_7") +
-            IllustratorText.Get("Fidelity_8");
+            IllustratorText.Get("Fidelity_8"));
+        internal static string PlayerRedrawImagePriority => PlayerRedrawImagePriorityByLanguage.Value;
 
-        internal static readonly string PlayerRedrawReferenceException =
-            IllustratorText.Get("Fidelity_9");
+        private static readonly PromptLanguageValue<string> PlayerRedrawReferenceExceptionByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_9"));
+        internal static string PlayerRedrawReferenceException => PlayerRedrawReferenceExceptionByLanguage.Value;
 
-        internal static readonly string DirectedRedrawRepaint =
-            IllustratorText.Get("Fidelity_10");
+        private static readonly PromptLanguageValue<string> DirectedRedrawRepaintByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_10"));
+        internal static string DirectedRedrawRepaint => DirectedRedrawRepaintByLanguage.Value;
 
         internal static string DirectedReferenceLabel(IllustrationReferenceImage reference)
         {
@@ -111,11 +111,11 @@
                 IllustratorText.Get("Fidelity_17");
         }
 
-        internal static readonly string ClothingStatePriority =
-            IllustratorText.Get("Fidelity_18");
+        private static readonly PromptLanguageValue<string> ClothingStatePriorityByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_18"));
+        internal static string ClothingStatePriority => ClothingStatePriorityByLanguage.Value;
 
-        internal static readonly string FreeEquipmentRule =
-            IllustratorText.Get("Fidelity_19");
+        private static readonly PromptLanguageValue<string> FreeEquipmentRuleByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_19"));
+        internal static string FreeEquipmentRule => FreeEquipmentRuleByLanguage.Value;
 
         internal static string WithoutEquipmentFacts(string facts)
         {
@@ -129,8 +129,7 @@
             return cleaned;
         }
 
-        private static readonly System.Text.RegularExpressions.Regex LocalizedEquipmentFactLines =
-            new System.Text.RegularExpressions.Regex("(?m)^(?:" + string.Join("|", new[]
+        private static readonly PromptLanguageValue<System.Text.RegularExpressions.Regex> LocalizedEquipmentFactLinesByLanguage = new PromptLanguageValue<System.Text.RegularExpressions.Regex>(() => new System.Text.RegularExpressions.Regex("(?m)^(?:" + string.Join("|", new[]
             {
                 System.Text.RegularExpressions.Regex.Escape(IllustratorText.Get("Hero_310")),
                 System.Text.RegularExpressions.Regex.Escape(IllustratorText.Get("Hero_311")),
@@ -138,7 +137,8 @@
                 System.Text.RegularExpressions.Regex.Escape(IllustratorText.Get("Hero_313")),
                 System.Text.RegularExpressions.Regex.Escape(IllustratorText.Get("Hero_314")),
                 System.Text.RegularExpressions.Regex.Escape(IllustratorText.Get("Hero_307"))
-            }) + ")[^\\r\\n]*(?:\\r?\\n)?", System.Text.RegularExpressions.RegexOptions.Compiled);
+            }) + ")[^\\r\\n]*(?:\\r?\\n)?", System.Text.RegularExpressions.RegexOptions.Compiled));
+        private static System.Text.RegularExpressions.Regex LocalizedEquipmentFactLines => LocalizedEquipmentFactLinesByLanguage.Value;
 
         // Only fixed rules are filtered; never apply this to model prose or user rules.
         internal static string WithoutEquipmentRules(string rules)
@@ -153,60 +153,60 @@
             return result.ToString() + "\n" + FreeEquipmentRule;
         }
 
-        internal static readonly string EnvironmentGeometryPriority =
-            IllustratorText.Get("Fidelity_24") +
+        private static readonly PromptLanguageValue<string> EnvironmentGeometryPriorityByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_24") +
             IllustratorText.Get("Fidelity_25") +
             IllustratorText.Get("Fidelity_26") +
             IllustratorText.Get("Fidelity_27") +
             IllustratorText.Get("Fidelity_28") +
-            IllustratorText.Get("Fidelity_29");
+            IllustratorText.Get("Fidelity_29"));
+        internal static string EnvironmentGeometryPriority => EnvironmentGeometryPriorityByLanguage.Value;
 
-        internal static readonly string ConversationLocationGrounding =
-            IllustratorText.Get("Fidelity_30") +
+        private static readonly PromptLanguageValue<string> ConversationLocationGroundingByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_30") +
             IllustratorText.Get("Fidelity_31") +
             IllustratorText.Get("Fidelity_32") +
-            IllustratorText.Get("Fidelity_33");
+            IllustratorText.Get("Fidelity_33"));
+        internal static string ConversationLocationGrounding => ConversationLocationGroundingByLanguage.Value;
 
-        internal static readonly string ConversationCrowdCountPriority =
-            IllustratorText.Get("Fidelity_34") +
+        private static readonly PromptLanguageValue<string> ConversationCrowdCountPriorityByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_34") +
             IllustratorText.Get("Fidelity_35") +
             IllustratorText.Get("Fidelity_36") +
             IllustratorText.Get("Fidelity_37") +
-            IllustratorText.Get("Fidelity_38");
+            IllustratorText.Get("Fidelity_38"));
+        internal static string ConversationCrowdCountPriority => ConversationCrowdCountPriorityByLanguage.Value;
 
-        internal static readonly string ConversationActionPriority =
-            IllustratorText.Get("Fidelity_39") +
+        private static readonly PromptLanguageValue<string> ConversationActionPriorityByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_39") +
             IllustratorText.Get("Fidelity_40") +
             IllustratorText.Get("Fidelity_41") +
-            IllustratorText.Get("Fidelity_42");
+            IllustratorText.Get("Fidelity_42"));
+        internal static string ConversationActionPriority => ConversationActionPriorityByLanguage.Value;
 
-        internal static readonly string DirectorAppearanceFidelity =
-            IllustratorText.Get("Fidelity_43") +
+        private static readonly PromptLanguageValue<string> DirectorAppearanceFidelityByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_43") +
             IllustratorText.Get("Fidelity_44") +
             IllustratorText.Get("Fidelity_45") +
             IllustratorText.Get("Fidelity_46") +
             IllustratorText.Get("Fidelity_47") +
             IllustratorText.Get("Fidelity_48") +
-            IllustratorText.Get("Fidelity_49");
+            IllustratorText.Get("Fidelity_49"));
+        internal static string DirectorAppearanceFidelity => DirectorAppearanceFidelityByLanguage.Value;
 
-        internal static readonly string CharacterAppearancePriority =
-            IllustratorText.Get("Fidelity_50") +
-            IllustratorText.Get("Fidelity_51");
+        private static readonly PromptLanguageValue<string> CharacterAppearancePriorityByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_50") +
+            IllustratorText.Get("Fidelity_51"));
+        internal static string CharacterAppearancePriority => CharacterAppearancePriorityByLanguage.Value;
 
-        internal static readonly string DirectorQualityFloor =
-            IllustratorText.Get("Fidelity_52") +
+        private static readonly PromptLanguageValue<string> DirectorQualityFloorByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_52") +
             IllustratorText.Get("Fidelity_53") +
             IllustratorText.Get("Fidelity_54") +
             IllustratorText.Get("Fidelity_55") +
             IllustratorText.Get("Fidelity_56") +
-            IllustratorText.Get("Fidelity_57");
+            IllustratorText.Get("Fidelity_57"));
+        internal static string DirectorQualityFloor => DirectorQualityFloorByLanguage.Value;
 
-        internal static readonly string ReferenceRepaint =
-            IllustratorText.Get("Fidelity_58") +
+        private static readonly PromptLanguageValue<string> ReferenceRepaintByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_58") +
             IllustratorText.Get("Fidelity_59") +
             IllustratorText.Get("Fidelity_60") +
             IllustratorText.Get("Fidelity_61") +
-            IllustratorText.Get("Fidelity_62");
+            IllustratorText.Get("Fidelity_62"));
+        internal static string ReferenceRepaint => ReferenceRepaintByLanguage.Value;
 
         internal static string ReferenceRoleInstruction(IllustrationReferenceKind kind)
         {

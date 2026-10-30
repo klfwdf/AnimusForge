@@ -14,6 +14,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Lore/LoreCandidateRetriever.cs" Link="LoreCandidateRetriever.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs" Link="KnowledgeImportSupport.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Import/KnowledgeImportValidationOwner.cs" Link="KnowledgeImportValidationOwner.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Host/KnowledgePromptTexts.cs" Link="KnowledgePromptTexts.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>@@NEWTONSOFT@@</HintPath></Reference>
   </ItemGroup>

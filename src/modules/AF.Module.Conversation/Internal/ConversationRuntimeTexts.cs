@@ -14,9 +14,9 @@ internal static class ConversationRuntimeTexts
         using (var reader = new StreamReader(stream, Encoding.UTF8))
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
     });
-    private static readonly Lazy<Dictionary<string, string>> PromptValues = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageFile<Dictionary<string, string>> PromptValues = new PromptLanguageFile<Dictionary<string, string>>("ConversationRuntimePrompts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("ConversationRuntimePrompts.json"), Encoding.UTF8)));
+            path, Encoding.UTF8)));
 
     private static readonly System.Text.RegularExpressions.Regex Placeholder =
         new System.Text.RegularExpressions.Regex(@"\{([A-Z_]+)\}", System.Text.RegularExpressions.RegexOptions.Compiled);

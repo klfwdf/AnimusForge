@@ -111,16 +111,17 @@ internal static class AnimusForgeModelStore
         return new ModelFiles(model, tokenizer, config, "cls");
     }
 
-    // The content edition is a deployment-time property: the module ships either the CN or EN LlmPromptTexts.json.
-    // Read the same file LlmPromptTexts uses, once, during engine initialization (never on a hot path).
+    // The embedding model follows the installed CN/EN package, like the worldbooks it indexes; fixed prompt
+    // text follows the game language instead. McmPromptDefaults.json is the package-selected file that carries
+    // the edition marker. Read once during engine initialization (never on a hot path).
     private static bool IsEnglishContent(string moduleRoot)
     {
         try
         {
-            string path = Path.Combine(moduleRoot, "ModuleData", "LlmPromptTexts.json");
+            string path = Path.Combine(moduleRoot, "ModuleData", "McmPromptDefaults.json");
             if (!File.Exists(path))
                 return false;
-            string value = JObject.Parse(File.ReadAllText(path))["AF_LLM_PROMPT_ContentLanguage"]?.ToString();
+            string value = JObject.Parse(File.ReadAllText(path))["ContentEdition"]?.ToString();
             return string.Equals(value, "en", StringComparison.Ordinal);
         }
         catch

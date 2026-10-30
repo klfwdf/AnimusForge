@@ -8,7 +8,7 @@ internal sealed class HearthPerDayPayload : NumericPolicyEffectPayload
 
 internal sealed class HearthPerDayEffectModule : NumericPolicyEffectModuleBase<HearthPerDayPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "hearthPerDay",
 		order: 30,
 		legacyIds: new[] { "hearthDailyDeltaPerVillage" },
@@ -32,7 +32,8 @@ internal sealed class HearthPerDayEffectModule : NumericPolicyEffectModuleBase<H
 		playerDisplayName: PolicyCompatibilityTexts.Get("Module_hearthPerDay_playerDisplayName"),
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_hearthPerDay_editableUnderstandingPrompt", "Village hearths represent population and labor. They are mainly affected by labor availability, safety, corvée, resettlement, migration, flight, land reclamation, slaughter and disasters. When policies continuously change population in villages attached to the relevant towns or castles through these mechanisms, hearths are a direct consequence."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_hearthPerDay_editableEvaluationPrompt", "Judge daily changes per affected village. Mild impact: ±0.1 to ±0.5; regular corvée, resettlement, labor recovery or migration: ±0.5 to ±1.5; strong immigration, wartime flight, oppressive taxes or large-scale forced labor: ±2 to ±4; nationwide population support, slaughter, disasters or forced migration: ±4 to ±7; extreme population changes or catastrophes: ±7 to ±10."),
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

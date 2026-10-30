@@ -8,7 +8,7 @@ internal sealed class ProsperityPerDayPayload : NumericPolicyEffectPayload
 
 internal sealed class ProsperityPerDayEffectModule : NumericPolicyEffectModuleBase<ProsperityPerDayPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "prosperityPerDay",
 		order: 10,
 		legacyIds: new[] { "prosperityDailyDeltaPerTown" },
@@ -32,7 +32,8 @@ internal sealed class ProsperityPerDayEffectModule : NumericPolicyEffectModuleBa
 		playerDisplayName: PolicyCompatibilityTexts.Get("Module_prosperityPerDay_playerDisplayName"),
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_prosperityPerDay_editableUnderstandingPrompt", "Prosperity is mainly affected by trade, tax burdens, industry and commerce, market confidence, development investment and war damage. When policies continuously change the scale of towns' economies through these mechanisms, prosperity is a direct consequence."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_prosperityPerDay_editableEvaluationPrompt", "Judge daily changes per affected town. Mild impact: ±0.5 to ±2; regular policies: ±2 to ±5; clear economic policies, trade stimulus, damage from tax burdens or war damage: ±5 to ±10; major nationwide investment or disasters: ±12 to ±24; extreme prosperity projects, severe plunder, blockades, famine or national economic catastrophes: ±24 to ±36."),
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

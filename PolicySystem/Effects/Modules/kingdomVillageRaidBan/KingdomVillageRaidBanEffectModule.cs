@@ -13,7 +13,7 @@ internal sealed class KingdomVillageRaidBanPayload : PolicyEffectPayload
 internal sealed class KingdomVillageRaidBanEffectModule
 	: PolicyEffectModuleBase<KingdomVillageRaidBanPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "kingdomVillageRaidBan",
 		order: 160,
 		legacyIds: Array.Empty<string>(),
@@ -39,7 +39,8 @@ internal sealed class KingdomVillageRaidBanEffectModule
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_kingdomVillageRaidBan_editableEvaluationPrompt", "Judge only whether the policy explicitly establishes a continuing rule against village raids by lords of the publisher's own kingdom. When matched, activate the complete prohibition without intensity or probability assessment. Multiple active policies still produce only one prohibition. General care for the population, improved security, protected agriculture, punishment of enemies or defense of certain villages does not qualify without prohibiting one's own lords from burning villages."),
 		targetRefresh: PolicyEffectTargetRefreshKind.FrozenCanonicalIds,
 		targetBinding: PolicyEffectTargetBindingKind.IssuerKingdom,
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

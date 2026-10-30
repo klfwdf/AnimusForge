@@ -42,7 +42,7 @@ internal sealed class SoldierTroopXpEffectModule
 		"soldierTroopXpPerDay"
 	};
 
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "soldierTroopXp",
 		order: 140,
 		legacyIds: Array.Empty<string>(),
@@ -77,7 +77,8 @@ internal sealed class SoldierTroopXpEffectModule
 		targetProjection: PolicyEffectTargetProjectionKind.None,
 		targetRefresh: PolicyEffectTargetRefreshKind.FrozenCanonicalIds,
 		allowIndependentClanTargets: true,
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

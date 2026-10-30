@@ -38,7 +38,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	private const int MarriageCandidateMaxAgeGap = 25;
 
-	private static readonly string[] LoveLevelTexts = new string[10] { SocialPromptTexts.Get("P047"), SocialPromptTexts.Get("P048"), SocialPromptTexts.Get("P049"), SocialPromptTexts.Get("P050"), SocialPromptTexts.Get("P051"), SocialPromptTexts.Get("P052"), SocialPromptTexts.Get("P053"), SocialPromptTexts.Get("P054"), SocialPromptTexts.Get("P055"), SocialPromptTexts.Get("P056") };
+	private static readonly PromptLanguageValue<string[]> LoveLevelTextsByLanguage = new PromptLanguageValue<string[]>(() => new string[10] { SocialPromptTexts.Get("P047"), SocialPromptTexts.Get("P048"), SocialPromptTexts.Get("P049"), SocialPromptTexts.Get("P050"), SocialPromptTexts.Get("P051"), SocialPromptTexts.Get("P052"), SocialPromptTexts.Get("P053"), SocialPromptTexts.Get("P054"), SocialPromptTexts.Get("P055"), SocialPromptTexts.Get("P056") });
+	private static string[] LoveLevelTexts => LoveLevelTextsByLanguage.Value;
 
 	private static readonly Regex LoveDeltaRegex = new Regex("\\[ACTION:LOVE_DELTA:([^\\]:]+):([+\\-]?\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 

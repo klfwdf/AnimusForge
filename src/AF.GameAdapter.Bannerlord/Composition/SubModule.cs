@@ -41,6 +41,7 @@ public class SubModule : MBSubModuleBase
 	protected override void OnSubModuleLoad()
 	{
 		base.OnSubModuleLoad();
+		GamePromptLanguageSource.Install();
 		McmSettingsStorage.EnsureReady();
 		if (FeatureBridgeRuntime.Initialize(out string featureBridgeReason))
 		{

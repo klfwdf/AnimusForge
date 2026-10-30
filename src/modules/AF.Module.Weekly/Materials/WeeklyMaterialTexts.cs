@@ -16,9 +16,9 @@ internal static class WeeklyMaterialTexts
         using (var reader = new StreamReader(stream, Encoding.UTF8))
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
     });
-    private static readonly Lazy<Dictionary<string, string>> PromptValues = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageFile<Dictionary<string, string>> PromptValues = new PromptLanguageFile<Dictionary<string, string>>("WeeklyMaterialPrompts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("WeeklyMaterialPrompts.json"), Encoding.UTF8)));
+            path, Encoding.UTF8)));
 
     internal static string Raw(string key) => RawValues.Value[key];
     internal static string Prompt(string key) => PromptValues.Value[key];
@@ -49,7 +49,7 @@ internal static class WeeklyMaterialTexts
         return text.ToString();
     }
 
-    private static readonly Lazy<Dictionary<string, string>> SourceProjection = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageValue<Dictionary<string, string>> SourceProjection = new PromptLanguageValue<Dictionary<string, string>>(() =>
     {
         var projection = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var entry in PromptValues.Value)

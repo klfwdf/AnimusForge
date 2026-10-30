@@ -14,8 +14,8 @@ internal static class PolicyCoreManagementTexts
 {
     private static readonly Lazy<Dictionary<string, string>> RawValues = new Lazy<Dictionary<string, string>>(
         () => Load("PolicyCoreManagementCompatibility.json"));
-    private static readonly Lazy<Dictionary<string, string>> PromptValues = new Lazy<Dictionary<string, string>>(
-        () => Load("PolicyCoreManagementPromptTexts.json"));
+    private static readonly PromptLanguageFile<Dictionary<string, string>> PromptValues = new PromptLanguageFile<Dictionary<string, string>>(
+        "PolicyCoreManagementPromptTexts.json", path => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path, Encoding.UTF8)));
     private static readonly Lazy<DiagnosticProjection> Diagnostics = new Lazy<DiagnosticProjection>(
         () => new DiagnosticProjection(RawValues.Value));
     private static readonly Lazy<Dictionary<string, TemplateRule>> TargetRules = new Lazy<Dictionary<string, TemplateRule>>(

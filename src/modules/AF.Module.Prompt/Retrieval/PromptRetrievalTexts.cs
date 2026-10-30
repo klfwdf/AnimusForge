@@ -14,9 +14,9 @@ internal static class PromptRetrievalTexts
         using (StreamReader reader = new StreamReader(stream, new UTF8Encoding(false, true)))
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
     }, true);
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("PromptRetrievalTexts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("PromptRetrievalTexts.json"), new UTF8Encoding(false, true))), true);
+            path, new UTF8Encoding(false, true))));
 
     internal static string OptionalHeader(string rawTitle)
     {

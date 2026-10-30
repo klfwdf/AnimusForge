@@ -8,9 +8,9 @@ namespace AnimusForge;
 
 internal static class WorldEntityPromptTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(
-        () => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("WorldEntityPromptTexts.json"), Encoding.UTF8)));
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("WorldEntityPromptTexts.json",
+        path => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
+            path, Encoding.UTF8)));
 
     internal static string Get(string id, string englishFallback)
         => Values.Value.TryGetValue(id ?? "", out string text) ? text : englishFallback;

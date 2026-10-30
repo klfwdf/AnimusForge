@@ -12,6 +12,7 @@
     <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Memory/ExecutionWitnessObservationController.cs" Link="Production/ExecutionWitnessObservationController.cs" />
     <Compile Include="../../../src/bridges/Vengeance/Host/PublicExecutionOrderPolicy.cs" Link="Production/PublicExecutionOrderPolicy.cs" />
     <Compile Include="../../../src/bridges/Vengeance/Host/PublicExecutionOrderRuntime.cs" Link="Production/PublicExecutionOrderRuntime.cs" />
+    <Compile Include="../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/ExecutionPromptConfiguration.cs" Link="Production/ExecutionPromptConfiguration.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/GuardrailRulePromptConfig.cs" Link="Production/GuardrailRulePromptConfig.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/PostprocessRuleEntry.cs" Link="Production/PostprocessRuleEntry.cs" />

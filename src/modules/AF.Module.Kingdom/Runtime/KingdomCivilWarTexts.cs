@@ -8,8 +8,8 @@ namespace AnimusForge;
 
 internal static class KingdomCivilWarTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Prompts = new Lazy<Dictionary<string, string>>(
-        () => Load("KingdomCivilWarPromptTexts.json"));
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Prompts = new PromptLanguageFile<Dictionary<string, string>>(
+        "KingdomCivilWarPromptTexts.json", path => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path, Encoding.UTF8)));
     private static readonly Lazy<Dictionary<string, string>> Compatibility = new Lazy<Dictionary<string, string>>(
         () => Load("KingdomCivilWarCompatibility.json"));
 

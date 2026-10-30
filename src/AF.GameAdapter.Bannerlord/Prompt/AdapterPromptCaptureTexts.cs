@@ -10,9 +10,9 @@ namespace AnimusForge;
 
 internal static class AdapterPromptCaptureTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("AdapterPromptCapture.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("AdapterPromptCapture.json"), Encoding.UTF8)));
+            path, Encoding.UTF8)));
     private static readonly Lazy<Dictionary<string, string>> Compatibility = new Lazy<Dictionary<string, string>>(() =>
     {
         using (var stream = typeof(AdapterPromptCaptureTexts).Assembly.GetManifestResourceStream("AnimusForge.AdapterPromptCapture.Compatibility.json"))

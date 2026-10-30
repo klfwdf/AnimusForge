@@ -91,12 +91,26 @@
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/PreprocessPrompts.json",
-      "target": "ModuleData/PreprocessPrompts.json"
+      "target": "ModuleData/PreprocessPrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PreprocessPrompts.en.json",
+      "target": "ModuleData/PreprocessPrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Economy",
       "source": "content/modules/AF.Module.Economy/ModuleData/RpItemIntroductionPrompts.json",
-      "target": "ModuleData/RpItemIntroductionPrompts.json"
+      "target": "ModuleData/RpItemIntroductionPrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/RpItemIntroductionPrompts.en.json",
+      "target": "ModuleData/RpItemIntroductionPrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Economy",
@@ -516,7 +530,14 @@
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/ActionPostprocessPrompts.json",
-      "target": "ModuleData/ActionPostprocessPrompts.json"
+      "target": "ModuleData/ActionPostprocessPrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/ActionPostprocessPrompts.en.json",
+      "target": "ModuleData/ActionPostprocessPrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.WarStats",
@@ -581,12 +602,26 @@
     {
       "owner": "AF.Module.Social",
       "source": "content/modules/AF.Module.Social/ModuleData/ProactiveNpcRequestPrompts.json",
-      "target": "ModuleData/ProactiveNpcRequestPrompts.json"
+      "target": "ModuleData/ProactiveNpcRequestPrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/ModuleData/ProactiveNpcRequestPrompts.en.json",
+      "target": "ModuleData/ProactiveNpcRequestPrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json",
-      "target": "ModuleData/RuleBehaviorPrompts.json"
+      "target": "ModuleData/RuleBehaviorPrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.en.json",
+      "target": "ModuleData/RuleBehaviorPrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AnimusForge.XihaiAction",
@@ -17136,12 +17171,26 @@
     {
       "owner": "AF.Module.Diplomacy",
       "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json",
-      "target": "ModuleData/DiplomacyPromptTexts.json"
+      "target": "ModuleData/DiplomacyPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.en.json",
+      "target": "ModuleData/DiplomacyPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AnimusForge.XihaiAction",
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActionPromptTexts.xml",
-      "target": "ModuleData/SceneActionPromptTexts.xml"
+      "target": "ModuleData/SceneActionPromptTexts.xml",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActionPromptTexts.en.xml",
+      "target": "ModuleData/SceneActionPromptTexts.en.xml",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Diplomacy",
@@ -17160,7 +17209,14 @@
     {
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialPrompts.json",
-      "target": "ModuleData/WeeklyMaterialPrompts.json"
+      "target": "ModuleData/WeeklyMaterialPrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialPrompts.en.json",
+      "target": "ModuleData/WeeklyMaterialPrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Social",
@@ -17172,7 +17228,14 @@
     {
       "owner": "AF.Module.Social",
       "source": "content/modules/AF.Module.Social/ModuleData/SocialPromptTexts.json",
-      "target": "ModuleData/SocialPromptTexts.json"
+      "target": "ModuleData/SocialPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/ModuleData/SocialPromptTexts.en.json",
+      "target": "ModuleData/SocialPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Conversation",
@@ -17191,12 +17254,26 @@
     {
       "owner": "AF.Module.Conversation",
       "source": "content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimePrompts.json",
-      "target": "ModuleData/ConversationRuntimePrompts.json"
+      "target": "ModuleData/ConversationRuntimePrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimePrompts.en.json",
+      "target": "ModuleData/ConversationRuntimePrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Economy",
       "source": "content/modules/AF.Module.Economy/ModuleData/EconomyPromptTexts.json",
-      "target": "ModuleData/EconomyPromptTexts.json"
+      "target": "ModuleData/EconomyPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/EconomyPromptTexts.en.json",
+      "target": "ModuleData/EconomyPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Issue",
@@ -17231,7 +17308,14 @@
     {
       "owner": "AF.Foundation.Localization",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterSceneTexts.zh-CN.json",
-      "target": "ModuleData/AdapterSceneTexts.json"
+      "target": "ModuleData/AdapterSceneTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterSceneTexts.en.json",
+      "target": "ModuleData/AdapterSceneTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Weekly",
@@ -17246,12 +17330,26 @@
     {
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/ModuleData/WorldBulletinPromptTexts.json",
-      "target": "ModuleData/WorldBulletinPromptTexts.json"
+      "target": "ModuleData/WorldBulletinPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/WorldBulletinPromptTexts.en.json",
+      "target": "ModuleData/WorldBulletinPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/ModuleData/PolicyMiscPromptTexts.json",
-      "target": "ModuleData/PolicyMiscPromptTexts.json"
+      "target": "ModuleData/PolicyMiscPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyMiscPromptTexts.en.json",
+      "target": "ModuleData/PolicyMiscPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "PolicySystem",
@@ -17276,12 +17374,26 @@
     {
       "owner": "AF.Module.Diplomacy",
       "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.json",
-      "target": "ModuleData/DiplomacyMiscPromptTexts.json"
+      "target": "ModuleData/DiplomacyMiscPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.en.json",
+      "target": "ModuleData/DiplomacyMiscPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.zh-CN.json",
-      "target": "ModuleData/PromptComposerTexts.json"
+      "target": "ModuleData/PromptComposerTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.en.json",
+      "target": "ModuleData/PromptComposerTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Duel",
@@ -17306,17 +17418,38 @@
     {
       "owner": "AF.Module.WorldMap",
       "source": "content/modules/AF.Module.WorldMap/ModuleData/WorldMapCommandPromptTexts.json",
-      "target": "ModuleData/WorldMapCommandPromptTexts.json"
+      "target": "ModuleData/WorldMapCommandPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.WorldMap",
+      "source": "content/modules/AF.Module.WorldMap/ModuleData/WorldMapCommandPromptTexts.en.json",
+      "target": "ModuleData/WorldMapCommandPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Knowledge",
       "source": "content/modules/AF.Module.Knowledge/ModuleData/KnowledgeRagPromptTexts.json",
-      "target": "ModuleData/KnowledgeRagPromptTexts.json"
+      "target": "ModuleData/KnowledgeRagPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Knowledge",
+      "source": "content/modules/AF.Module.Knowledge/ModuleData/KnowledgeRagPromptTexts.en.json",
+      "target": "ModuleData/KnowledgeRagPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Persona",
       "source": "content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts.json",
-      "target": "ModuleData/PersonaPromptTexts.json"
+      "target": "ModuleData/PersonaPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Persona",
+      "source": "content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts.en.json",
+      "target": "ModuleData/PersonaPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Persona",
@@ -17331,12 +17464,26 @@
     {
       "owner": "AF.Module.Knowledge",
       "source": "content/modules/AF.Module.Knowledge/ModuleData/WorldEntityPromptTexts.json",
-      "target": "ModuleData/WorldEntityPromptTexts.json"
+      "target": "ModuleData/WorldEntityPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Knowledge",
+      "source": "content/modules/AF.Module.Knowledge/ModuleData/WorldEntityPromptTexts.en.json",
+      "target": "ModuleData/WorldEntityPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AnimusForge.Illustrator",
       "source": "content/modules/AnimusForge.Illustrator/ModuleData/IllustratorPromptTexts.json",
-      "target": "ModuleData/IllustratorPromptTexts.json"
+      "target": "ModuleData/IllustratorPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AnimusForge.Illustrator",
+      "source": "content/modules/AnimusForge.Illustrator/ModuleData/IllustratorPromptTexts.en.json",
+      "target": "ModuleData/IllustratorPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AnimusForge.Illustrator",
@@ -17347,7 +17494,14 @@
     {
       "owner": "AF.GameAdapter.Bannerlord",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordPromptTexts.json",
-      "target": "ModuleData/AdapterRecordPromptTexts.json"
+      "target": "ModuleData/AdapterRecordPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordPromptTexts.en.json",
+      "target": "ModuleData/AdapterRecordPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.GameAdapter.Bannerlord",
@@ -17359,7 +17513,14 @@
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/ModuleData/PolicyGenerationPromptTexts.json",
-      "target": "ModuleData/PolicyGenerationPromptTexts.json"
+      "target": "ModuleData/PolicyGenerationPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyGenerationPromptTexts.en.json",
+      "target": "ModuleData/PolicyGenerationPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.GameAdapter.Bannerlord",
@@ -17378,7 +17539,14 @@
     {
       "owner": "AF.GameAdapter.Bannerlord",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCapture.zh-CN.json",
-      "target": "ModuleData/AdapterPromptCapture.json"
+      "target": "ModuleData/AdapterPromptCapture.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCapture.en.json",
+      "target": "ModuleData/AdapterPromptCapture.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AnimusForge.SiegeAftermathIntervention",
@@ -17430,14 +17598,16 @@
       "localizationRole": "compatibility"
     },
     {
-      "owner": "AnimusForge.SiegeAftermathIntervention",
-      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json",
-      "target": "ModuleData/GcczTownPrompt.json"
+      "owner": "AF.Module.Kingdom",
+      "source": "content/modules/AF.Module.Kingdom/ModuleData/KingdomCivilWarPromptTexts.json",
+      "target": "ModuleData/KingdomCivilWarPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Kingdom",
-      "source": "content/modules/AF.Module.Kingdom/ModuleData/KingdomCivilWarPromptTexts.json",
-      "target": "ModuleData/KingdomCivilWarPromptTexts.json"
+      "source": "content/modules/AF.Module.Kingdom/ModuleData/KingdomCivilWarPromptTexts.en.json",
+      "target": "ModuleData/KingdomCivilWarPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Kingdom",
@@ -17467,7 +17637,14 @@
     {
       "owner": "AF.Module.Llm",
       "source": "content/modules/AF.Module.Llm/ModuleData/LlmPromptTexts.json",
-      "target": "ModuleData/LlmPromptTexts.json"
+      "target": "ModuleData/LlmPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Llm",
+      "source": "content/modules/AF.Module.Llm/ModuleData/LlmPromptTexts.en.json",
+      "target": "ModuleData/LlmPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Llm",
@@ -17479,7 +17656,14 @@
     {
       "owner": "AF.Module.Issue",
       "source": "content/modules/AF.Module.Issue/ModuleData/IssuePromptTexts.json",
-      "target": "ModuleData/IssuePromptTexts.json"
+      "target": "ModuleData/IssuePromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Issue",
+      "source": "content/modules/AF.Module.Issue/ModuleData/IssuePromptTexts.en.json",
+      "target": "ModuleData/IssuePromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Issue",
@@ -17498,7 +17682,14 @@
     {
       "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/ModuleData/MemoryPromptTexts.json",
-      "target": "ModuleData/MemoryPromptTexts.json"
+      "target": "ModuleData/MemoryPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/ModuleData/MemoryPromptTexts.en.json",
+      "target": "ModuleData/MemoryPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Prompt",
@@ -17517,12 +17708,26 @@
     {
       "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/ModuleData/OnboardingPromptTexts.json",
-      "target": "ModuleData/OnboardingPromptTexts.json"
+      "target": "ModuleData/OnboardingPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/ModuleData/OnboardingPromptTexts.en.json",
+      "target": "ModuleData/OnboardingPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/ExecutionRulePrompts.json",
-      "target": "ModuleData/ExecutionRulePrompts.json"
+      "target": "ModuleData/ExecutionRulePrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/ExecutionRulePrompts.en.json",
+      "target": "ModuleData/ExecutionRulePrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Taunt",
@@ -17534,32 +17739,74 @@
     {
       "owner": "AF.Module.Taunt",
       "source": "content/modules/AF.Module.Taunt/ModuleData/TauntPromptTexts.json",
-      "target": "ModuleData/TauntPromptTexts.json"
+      "target": "ModuleData/TauntPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Taunt",
+      "source": "content/modules/AF.Module.Taunt/ModuleData/TauntPromptTexts.en.json",
+      "target": "ModuleData/TauntPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/Defaults/PreprocessPrompts.json",
-      "target": "ModuleData/Defaults/PreprocessPrompts.json"
+      "target": "ModuleData/Defaults/PreprocessPrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/Defaults/PreprocessPrompts.en.json",
+      "target": "ModuleData/Defaults/PreprocessPrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/Defaults/RpItemIntroductionPrompts.json",
-      "target": "ModuleData/Defaults/RpItemIntroductionPrompts.json"
+      "target": "ModuleData/Defaults/RpItemIntroductionPrompts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/Defaults/RpItemIntroductionPrompts.en.json",
+      "target": "ModuleData/Defaults/RpItemIntroductionPrompts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Duel",
       "source": "content/modules/AF.Module.Duel/ModuleData/DuelPromptTexts.json",
-      "target": "ModuleData/DuelPromptTexts.json"
+      "target": "ModuleData/DuelPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Duel",
+      "source": "content/modules/AF.Module.Duel/ModuleData/DuelPromptTexts.en.json",
+      "target": "ModuleData/DuelPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Module.Encounter",
       "source": "content/modules/AF.Module.Encounter/ModuleData/EncounterPromptTexts.json",
-      "target": "ModuleData/EncounterPromptTexts.json"
+      "target": "ModuleData/EncounterPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Encounter",
+      "source": "content/modules/AF.Module.Encounter/ModuleData/EncounterPromptTexts.en.json",
+      "target": "ModuleData/EncounterPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AnimusForge.Coup",
       "source": "content/modules/AnimusForge.Coup/ModuleData/CoupPromptTexts.json",
-      "target": "ModuleData/CoupPromptTexts.json"
+      "target": "ModuleData/CoupPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AnimusForge.Coup",
+      "source": "content/modules/AnimusForge.Coup/ModuleData/CoupPromptTexts.en.json",
+      "target": "ModuleData/CoupPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AnimusForge.Coup",
@@ -17608,7 +17855,14 @@
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalTexts.json",
-      "target": "ModuleData/PromptRetrievalTexts.json"
+      "target": "ModuleData/PromptRetrievalTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalTexts.en.json",
+      "target": "ModuleData/PromptRetrievalTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "PolicySystem",
@@ -17625,7 +17879,14 @@
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/ModuleData/PolicyCoreManagementPromptTexts.json",
-      "target": "ModuleData/PolicyCoreManagementPromptTexts.json"
+      "target": "ModuleData/PolicyCoreManagementPromptTexts.json",
+      "localizationRole": "bilingual-prompt"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyCoreManagementPromptTexts.en.json",
+      "target": "ModuleData/PolicyCoreManagementPromptTexts.en.json",
+      "localizationRole": "bilingual-prompt"
     },
     {
       "owner": "AF.Foundation.Localization",
@@ -17637,29 +17898,121 @@
       "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_icon_rewrite.png",
       "target": "GUI/SpriteParts/afdui_icon_rewrite.png"
     },
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/Prefabs/DiplomacyEventPopup.xml", "target": "GUI/Prefabs/DiplomacyEventPopup.xml"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/Brushes/AFDiplomacyEventBrushes.xml", "target": "GUI/Brushes/AFDiplomacyEventBrushes.xml"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_event_ui_strings.xml", "target": "ModuleData/Languages/afdip_event_ui_strings.xml"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_event_ui_strings-zh-CN.xml", "target": "ModuleData/Languages/CNs/afdip_event_ui_strings-zh-CN.xml"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/00-approved-armistice.png", "target": "GUI/SpriteParts/af_diplomacy_event/00-approved-armistice.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/01-alliance.png", "target": "GUI/SpriteParts/af_diplomacy_event/01-alliance.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/03-broken-alliance.png", "target": "GUI/SpriteParts/af_diplomacy_event/03-broken-alliance.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/05-contested-crown.png", "target": "GUI/SpriteParts/af_diplomacy_event/05-contested-crown.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/06-diplomatic-banquet.png", "target": "GUI/SpriteParts/af_diplomacy_event/06-diplomatic-banquet.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/07-aserai-grand-muster.png", "target": "GUI/SpriteParts/af_diplomacy_event/07-aserai-grand-muster.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/08-sturgia-snow-muster.png", "target": "GUI/SpriteParts/af_diplomacy_event/08-sturgia-snow-muster.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/09-vlandia-castle-review.png", "target": "GUI/SpriteParts/af_diplomacy_event/09-vlandia-castle-review.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/10-khuzait-steppe-muster.png", "target": "GUI/SpriteParts/af_diplomacy_event/10-khuzait-steppe-muster.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/11-battania-forest-muster.png", "target": "GUI/SpriteParts/af_diplomacy_event/11-battania-forest-muster.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/12-imperial-plaza-review.png", "target": "GUI/SpriteParts/af_diplomacy_event/12-imperial-plaza-review.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/13-imperial-city-procession.png", "target": "GUI/SpriteParts/af_diplomacy_event/13-imperial-city-procession.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/14-army-departure.png", "target": "GUI/SpriteParts/af_diplomacy_event/14-army-departure.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/15-armies-clash.png", "target": "GUI/SpriteParts/af_diplomacy_event/15-armies-clash.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/16-siege-encampment.png", "target": "GUI/SpriteParts/af_diplomacy_event/16-siege-encampment.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/17-holding-the-walls.png", "target": "GUI/SpriteParts/af_diplomacy_event/17-holding-the-walls.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/18-war-aftermath.png", "target": "GUI/SpriteParts/af_diplomacy_event/18-war-aftermath.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/19-army-retreat.png", "target": "GUI/SpriteParts/af_diplomacy_event/19-army-retreat.png"},
-    {"owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/event-chrome.png", "target": "GUI/SpriteParts/af_diplomacy_event/event-chrome.png"},
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/Prefabs/DiplomacyEventPopup.xml",
+      "target": "GUI/Prefabs/DiplomacyEventPopup.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/Brushes/AFDiplomacyEventBrushes.xml",
+      "target": "GUI/Brushes/AFDiplomacyEventBrushes.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_event_ui_strings.xml",
+      "target": "ModuleData/Languages/afdip_event_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_event_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afdip_event_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/00-approved-armistice.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/00-approved-armistice.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/01-alliance.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/01-alliance.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/03-broken-alliance.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/03-broken-alliance.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/05-contested-crown.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/05-contested-crown.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/06-diplomatic-banquet.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/06-diplomatic-banquet.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/07-aserai-grand-muster.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/07-aserai-grand-muster.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/08-sturgia-snow-muster.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/08-sturgia-snow-muster.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/09-vlandia-castle-review.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/09-vlandia-castle-review.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/10-khuzait-steppe-muster.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/10-khuzait-steppe-muster.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/11-battania-forest-muster.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/11-battania-forest-muster.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/12-imperial-plaza-review.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/12-imperial-plaza-review.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/13-imperial-city-procession.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/13-imperial-city-procession.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/14-army-departure.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/14-army-departure.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/15-armies-clash.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/15-armies-clash.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/16-siege-encampment.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/16-siege-encampment.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/17-holding-the-walls.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/17-holding-the-walls.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/18-war-aftermath.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/18-war-aftermath.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/19-army-retreat.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/19-army-retreat.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/event-chrome.png",
+      "target": "GUI/SpriteParts/af_diplomacy_event/event-chrome.png"
+    },
     {
       "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/ModuleData/NpcBuiltinNameAliases.json",

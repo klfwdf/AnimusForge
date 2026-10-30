@@ -267,17 +267,17 @@ internal static class Program
         // E1-E5: English edition embedding directory (ONNX/en, CLS pooling) with Chinese fallback.
         string moduleData = Path.Combine(module, "ModuleData");
         Directory.CreateDirectory(moduleData);
-        string llmTexts = Path.Combine(moduleData, "LlmPromptTexts.json");
+        string llmTexts = Path.Combine(moduleData, "McmPromptDefaults.json");
         string en = Path.Combine(onnx, "en");
         Directory.CreateDirectory(en);
         string enModel = Path.Combine(en, "model_quantized.onnx");
         File.WriteAllText(enModel, "en-quantized-single-file");
         File.WriteAllText(Path.Combine(en, "tokenizer.json"), "{}");
         File.WriteAllText(Path.Combine(en, "config.json"), "{}");
-        File.WriteAllText(llmTexts, "{\"AF_LLM_PROMPT_ContentLanguage\":\"zh-CN\"}");
+        File.WriteAllText(llmTexts, "{\"ContentEdition\":\"zh-CN\"}");
         var zhPick = AnimusForgeModelStore.ResolveEmbedding(module);
         Check(zhPick.ModelPath == rootModel && zhPick.Pooling == "mean", "E1 CN content ignores ONNX/en");
-        File.WriteAllText(llmTexts, "{\"AF_LLM_PROMPT_ContentLanguage\":\"en\"}");
+        File.WriteAllText(llmTexts, "{\"ContentEdition\":\"en\"}");
         var enPick = AnimusForgeModelStore.ResolveEmbedding(module);
         Check(enPick.ModelPath == enModel && enPick.Pooling == "cls", "E2 EN content selects ONNX/en with CLS pooling");
         File.Delete(Path.Combine(en, "tokenizer.json"));
@@ -285,8 +285,8 @@ internal static class Program
         Check(enFallback.ModelPath == rootModel && enFallback.Pooling == "mean", "E3 incomplete ONNX/en falls back to the Chinese model");
         File.WriteAllText(Path.Combine(en, "tokenizer.json"), "{}");
         File.Delete(llmTexts);
-        Check(AnimusForgeModelStore.ResolveEmbedding(module).ModelPath == rootModel, "E4 missing LlmPromptTexts.json is treated as non-English");
-        File.WriteAllText(llmTexts, "{\"AF_LLM_PROMPT_ContentLanguage\":\"en\"}");
+        Check(AnimusForgeModelStore.ResolveEmbedding(module).ModelPath == rootModel, "E4 missing McmPromptDefaults.json is treated as non-English");
+        File.WriteAllText(llmTexts, "{\"ContentEdition\":\"en\"}");
         File.WriteAllText(enModel, "graph names model_quantized.onnx_data as its sidecar");
         Reject(() => AnimusForgeModelStore.ResolveEmbedding(module), "E5 quantized graph that names a missing sidecar is rejected");
         File.WriteAllText(enModel + "_data", "external-data");

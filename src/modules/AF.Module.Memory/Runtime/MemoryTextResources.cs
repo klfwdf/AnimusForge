@@ -8,9 +8,9 @@ namespace AnimusForge;
 
 internal static class MemoryTextResources
 {
-    private static readonly Lazy<Dictionary<string, string>> Prompts = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Prompts = new PromptLanguageFile<Dictionary<string, string>>("MemoryPromptTexts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("MemoryPromptTexts.json"), Encoding.UTF8)));
+            path, Encoding.UTF8)));
     private static readonly Lazy<Dictionary<string, string>> Sources = new Lazy<Dictionary<string, string>>(() =>
     {
         using (Stream stream = typeof(MemoryTextResources).Assembly.GetManifestResourceStream("AnimusForge.Memory.SourceTexts.json"))

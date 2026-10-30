@@ -782,7 +782,8 @@ internal static class WorldBulletinPolicy
             .Where(part => !CapturedBattleCountPrefix.IsMatch(part) && !ContainsBattleNumericRecital(part)));
     }
 
-    internal static readonly string BattleWritingRequirements = WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysBattle");
+    private static readonly PromptLanguageValue<string> BattleWritingRequirementsByLanguage = new PromptLanguageValue<string>(() => WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysBattle"));
+    internal static string BattleWritingRequirements => BattleWritingRequirementsByLanguage.Value;
 
     internal static readonly string LegacyDefaultWritingRequirements = WorldBulletinPolicyTexts.Raw("LegacyDefaultWritingRequirements");
     internal static readonly string LegacyNarrativeWritingRequirements = WorldBulletinPolicyTexts.Raw("LegacyNarrativeWritingRequirements");
@@ -790,7 +791,8 @@ internal static class WorldBulletinPolicy
 	internal static readonly string LegacyConciseWritingRequirementsEn = WorldBulletinPolicyTexts.Raw("LegacyConciseWritingRequirementsEn");
 
     internal static readonly string LegacyCurrentWritingRequirements = WorldBulletinPolicyTexts.Raw("LegacyCurrentWritingRequirements");
-    internal static readonly string DefaultWritingRequirements = WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_DefaultWritingRequirements");
+    private static readonly PromptLanguageValue<string> DefaultWritingRequirementsByLanguage = new PromptLanguageValue<string>(() => WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_DefaultWritingRequirements"));
+    internal static string DefaultWritingRequirements => DefaultWritingRequirementsByLanguage.Value;
 
     internal static string NormalizeBulletinAnecdote(string text)
     {

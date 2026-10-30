@@ -45,9 +45,10 @@ $entries = @(
     @{ owner='Fixture'; source='content/zh.xml'; target='ModuleData/Languages/CNs/zh.xml' },
     @{ owner='Fixture'; source='content/zh_language.xml'; target='ModuleData/Languages/CNs/language_data.xml' },
     @{ owner='Fixture'; source="content/modules/AF.Module.Onboarding/PlayerExports/$book/personality_background/lord_1__original.json"; target="PlayerExports/$book/personality_background/lord_1__original.json" },
-    @{ owner='Fixture'; source='content/SceneActionPromptTexts.xml'; target='ModuleData/SceneActionPromptTexts.xml' },
+    @{ owner='Fixture'; source='content/SceneActionPromptTexts.xml'; target='ModuleData/SceneActionPromptTexts.xml'; localizationRole='bilingual-prompt' },
     @{ owner='Fixture'; source="content/modules/AF.Module.Onboarding/PlayerExports/$han/knowledge/rules/original.json"; target="PlayerExports/$han/knowledge/rules/original.json" },
-    @{ owner='Fixture'; source='content/SharedRaw.json'; target='ModuleData/SharedRaw.json'; logicalName='SharedRaw.json'; localizationRole='compatibility' }
+    @{ owner='Fixture'; source='content/SharedRaw.json'; target='ModuleData/SharedRaw.json'; logicalName='SharedRaw.json'; localizationRole='compatibility' },
+    @{ owner='Fixture'; source='content/SceneActionPromptTexts.en.xml'; target='ModuleData/SceneActionPromptTexts.en.xml'; localizationRole='bilingual-prompt' }
 )
 $entries += @(
     @{ owner='Fixture'; source='content/Prompt.json'; target='ModuleData/Defaults/CustomPrompts/Example.json' },
@@ -112,9 +113,15 @@ Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $st
 FixtureText $mappedEnglishPath $mappedEnglish
 Check (-not (Test-AnimusForgeChineseJsonProse -Text $mappedOriginal.Replace($han + ' [AFEF:', 'English [AFEF:').Replace('"' + $han + '"', '"English"'))) 'Stable identity and matching protocol labels may remain Chinese.'
 Check (Test-AnimusForgeChineseJsonProse -Text ('{"Id":"' + $han + '","Text":"' + $han + '"}')) 'Stable identities do not exempt Chinese natural-language values.'
-Check (@($en | Where-Object Target -eq 'ModuleData/SceneActionPromptTexts.xml')[0].SourcePath.EndsWith('SceneActionPromptTexts.en.xml')) 'Scene prompt XML selects the EN body under the same target.'
+# Fixed prompts ship in both languages in every package; the game language selects one at runtime.
+foreach ($plan in @(@{Language='CN'; Rows=$cn}, @{Language='EN'; Rows=$en})) {
+    Check (@($plan.Rows | Where-Object Target -eq 'ModuleData/SceneActionPromptTexts.xml')[0].SourcePath.EndsWith('SceneActionPromptTexts.xml')) "$($plan.Language) keeps the Chinese fixed scene prompt."
+    Check (@($plan.Rows | Where-Object Target -eq 'ModuleData/SceneActionPromptTexts.en.xml')[0].SourcePath.EndsWith('SceneActionPromptTexts.en.xml')) "$($plan.Language) ships the English fixed scene prompt."
+}
 FixtureText (Join-Path $root 'content/SceneActionPromptTexts.en.xml') ($sceneEnglish.Replace('{NAME}', '{WRONG}'))
-Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'Scene XML variable drift must be rejected.' 'Prompt XML variable/protocol changed:'
+Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language CN -PackageVersion v1.5.6 } 'Scene XML variable drift must be rejected for both editions.' 'Prompt XML variable/protocol changed:'
+FixtureText (Join-Path $root 'content/SceneActionPromptTexts.en.xml') ($sceneEnglish.Replace('English', $han))
+Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language CN -PackageVersion v1.5.6 } 'English fixed prompt must not contain Chinese prose.' 'English fixed prompt still contains Chinese prose:'
 FixtureText (Join-Path $root 'content/SceneActionPromptTexts.en.xml') $sceneEnglish
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt", "LostContract":true}'
 Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'English schema drift must fail closed.' 'JSON field set changed:'
@@ -124,7 +131,7 @@ Check (@($en | Where-Object Target -eq 'ModuleData/SharedRaw.json')[0].Hash -ceq
 foreach ($target in @('ModuleData/Languages/CNs/zh.xml', 'ModuleData/Languages/CNs/language_data.xml')) {
     Check (@($en | Where-Object Target -eq $target)[0].Hash -eq @($cn | Where-Object Target -eq $target)[0].Hash) "Both editions retain identical UI bytes: $target"
 }
-Check (@($en | Where-Object { $_.Target -match '\.en(?:-US)?\.json$' }).Count -eq 0) 'Parallel English filenames must not leak into the package.'
+Check (@($en | Where-Object { $_.Target -match '\.en(?:-US)?\.json$' -and $_.Target -notmatch '^ModuleData/' }).Count -eq 0) 'Parallel English filenames outside ModuleData must not leak into the package.'
 Check (@($en | Where-Object { $_.Target -match '^PlayerExports/' -and (Test-AnimusForgeChineseText -Text $_.Target) }).Count -eq 0) 'EN worldbook directories and filenames must be English.'
 Check (@($cn | Where-Object Target -eq $entries[5].target).Count -eq 1) 'CN worldbook paths remain intact.'
 Check (@($en | Where-Object { $_.Target -eq 'ModuleData/Prompt.json' })[0].SourcePath.EndsWith('Prompt.en.json')) 'English body must replace the original JSON filename.'

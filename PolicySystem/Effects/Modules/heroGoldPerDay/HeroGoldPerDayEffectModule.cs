@@ -10,7 +10,7 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 	ICompensatingDailyPolicyEffectModule,
 	IAtomicHeroGoldPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "heroGoldPerDay",
 		order: 132,
 		legacyIds: Array.Empty<string>(),
@@ -37,7 +37,8 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 		promptVisible: false,
 		displayGroup: "heroGold",
 		targetProjection: PolicyEffectTargetProjectionKind.SettlementOwnerClanLeader,
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

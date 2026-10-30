@@ -42,11 +42,16 @@ namespace AnimusForge.SceneActions.Core
             // The embedded contract is inspected before the package is loaded.
             // An explicit constructor prevents beforefieldinit from poisoning this cache early.
             static PackageCache() { }
-            internal static readonly Catalog Value = Build(SceneActionPromptPackage.ReadSection("AF_SCENE_CATALOG_"));
+            internal static readonly Catalog Value = Build(SceneActionPromptPackage.ReadSection("AF_SCENE_CATALOG_", true));
+        }
+        private static class PackageCacheEnglish
+        {
+            static PackageCacheEnglish() { }
+            internal static readonly Catalog Value = Build(SceneActionPromptPackage.ReadSection("AF_SCENE_CATALOG_", false));
         }
 
-        private static Catalog For(bool useChinese) => SceneActionPromptPackage.IsLoaded && useChinese == SceneActionPromptPackage.UseChinese
-            ? PackageCache.Value : useChinese ? ChineseCache.Value : EnglishCache.Value;
+        private static Catalog For(bool useChinese) => SceneActionPromptPackage.IsLoaded && SceneActionPromptPackage.HasCorpus(useChinese)
+            ? (useChinese ? PackageCache.Value : PackageCacheEnglish.Value) : useChinese ? ChineseCache.Value : EnglishCache.Value;
         internal static Entry Get(string key, bool useChinese) => For(useChinese).Entries[key];
         internal static string Prompt(string key, bool useChinese) => For(useChinese).Strings["Prompt_" + key];
 

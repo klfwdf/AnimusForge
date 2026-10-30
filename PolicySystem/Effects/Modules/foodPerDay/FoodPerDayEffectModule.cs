@@ -8,7 +8,7 @@ internal sealed class FoodPerDayPayload : NumericPolicyEffectPayload
 
 internal sealed class FoodPerDayEffectModule : NumericPolicyEffectModuleBase<FoodPerDayPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "foodPerDay",
 		order: 20,
 		legacyIds: new[] { "foodDailyDeltaPerTown" },
@@ -32,7 +32,8 @@ internal sealed class FoodPerDayEffectModule : NumericPolicyEffectModuleBase<Foo
 		playerDisplayName: PolicyCompatibilityTexts.Get("Module_foodPerDay_playerDisplayName"),
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_foodPerDay_editableUnderstandingPrompt", "Food stocks are mainly affected by production, procurement, storage, transport, requisition, relief, army-ration consumption, blockades and destruction. When policies continuously change town food supplies through these mechanisms, food is a direct consequence. Procurement, subsidies and economic development do not themselves imply stock depletion. Only direct requisition, consumption or destruction of local stocks produces negative changes."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_foodPerDay_editableEvaluationPrompt", "Judge daily stock changes per affected town. Mild impact: ±1 to ±3; regular food policies, transport, requisition or storage adjustments: ±3 to ±8; large-scale relief, forced requisitions or army-ration allocation: ±8 to ±15; major nationwide supplies, famine, blockades or comprehensive grain requisition: ±18 to ±30; extreme disasters or nationwide food operations: ±30 to ±45."),
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

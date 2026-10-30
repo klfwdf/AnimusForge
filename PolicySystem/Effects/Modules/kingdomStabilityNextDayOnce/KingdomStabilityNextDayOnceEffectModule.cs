@@ -27,7 +27,7 @@ internal sealed class KingdomStabilityNextDayOnceEffectModule : NumericPolicyEff
 		internal int ActualDelta => AfterValue - BeforeValue;
 	}
 
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "kingdomStabilityNextDayOnce",
 		order: 121,
 		legacyIds: Array.Empty<string>(),
@@ -53,7 +53,8 @@ internal sealed class KingdomStabilityNextDayOnceEffectModule : NumericPolicyEff
 		supportsIdempotency: true,
 		promptVisible: false,
 		displayGroup: "kingdomStability",
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

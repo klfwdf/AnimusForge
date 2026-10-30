@@ -13,6 +13,7 @@
     <Compile Remove="CoupUiText.cs" />
     <Compile Include="../../src/CoupSystem/CoupUiText.cs" Link="CoupUiText.cs" />
     <Compile Include="../../src/CoupSystem/CoupSourceTexts.cs" Link="CoupSourceTexts.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../src/CoupSystem/CoupPromptTexts.cs" Link="CoupPromptTexts.cs" />
     <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupSourceTexts.json" Link="ModuleData/CoupSourceTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupPromptTexts.json" Link="ModuleData/CoupPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />

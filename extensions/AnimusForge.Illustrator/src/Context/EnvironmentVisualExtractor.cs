@@ -179,7 +179,8 @@ namespace AnimusForge.Illustrator.Context
     {
         // Field default. It must not assume a pre-battle parley: the same field can be a party-screen talk,
         // a post-battle prisoner scene or a friendly meeting. The conversation entry fact says which.
-        internal static readonly string NeutralWildDetails = IllustratorText.Get("Environment_138");
+        private static readonly PromptLanguageValue<string> NeutralWildDetailsByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Environment_138"));
+        internal static string NeutralWildDetails => NeutralWildDetailsByLanguage.Value;
 
         /// <param name="eventAnchored">为 true 时跳过对当前 Mission/菜单位置的实时探测（用于周报等回顾性场景——环境由事件主题决定，而非玩家当前所在位置）。</param>
         public static EnvironmentVisualProfile Extract(Settlement settlement = null, bool eventAnchored = false, string eventDateLabel = null)

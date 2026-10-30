@@ -96,9 +96,9 @@ namespace AnimusForge.Illustrator.Core
     public static class VisualDirectorEngine
     {
         private static readonly TimeSpan DirectorRequestTimeout = TimeSpan.FromSeconds(240);
-        private static readonly string EncyclopediaSystemPrompt = IllustratorText.Get("EncyclopediaDirectorSystem");
-        private static readonly string SystemPrompt =
-            IllustratorText.Get("Director_940") +
+        private static readonly PromptLanguageValue<string> EncyclopediaSystemPromptByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("EncyclopediaDirectorSystem"));
+        private static string EncyclopediaSystemPrompt => EncyclopediaSystemPromptByLanguage.Value;
+        private static readonly PromptLanguageValue<string> SystemPromptByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Director_940") +
             IllustratorText.Get("Director_941") +
             IllustratorText.Get("Director_942") +
             IllustratorText.Get("Director_943") +
@@ -114,10 +114,10 @@ namespace AnimusForge.Illustrator.Core
             IllustratorText.Get("Director_951") +
             IllustratorText.Get("Director_952") +
             IllustratorText.Get("Director_953") +
-            IllustratorText.Get("Director_954");
+            IllustratorText.Get("Director_954"));
+        private static string SystemPrompt => SystemPromptByLanguage.Value;
 
-        private static readonly string ConversationSystemPrompt =
-            IllustratorText.Get("Director_955") +
+        private static readonly PromptLanguageValue<string> ConversationSystemPromptByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Director_955") +
             IllustratorText.Get("Director_956") +
             VisualFidelityRules.ConversationActionPriority + "\n" +
             VisualFidelityRules.EnvironmentGeometryPriority + "\n" +
@@ -133,12 +133,12 @@ namespace AnimusForge.Illustrator.Core
             IllustratorText.Get("Director_962") +
             IllustratorText.Get("Director_963") +
             IllustratorText.Get("Director_964") +
-            IllustratorText.Get("Director_965");
+            IllustratorText.Get("Director_965"));
+        private static string ConversationSystemPrompt => ConversationSystemPromptByLanguage.Value;
 
         // Weekly reports have their own event-led director contract. They never receive
         // the portrait/set-design or current-conversation restrictions above.
-        private static readonly string WeeklyReportSystemPrompt =
-            IllustratorText.Get("Director_966") +
+        private static readonly PromptLanguageValue<string> WeeklyReportSystemPromptByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Director_966") +
             IllustratorText.Get("Director_967") +
             IllustratorText.Get("Director_968") +
             IllustratorText.Get("Director_969") +
@@ -152,7 +152,8 @@ namespace AnimusForge.Illustrator.Core
             IllustratorText.Get("Director_975") +
             IllustratorText.Get("Director_976") +
             IllustratorText.Get("Director_977") +
-            IllustratorText.Get("Director_978");
+            IllustratorText.Get("Director_978"));
+        private static string WeeklyReportSystemPrompt => WeeklyReportSystemPromptByLanguage.Value;
 
         public static Task<string> ExpandToDetailedPromptAsync(string gameContext, string base64ImageData = null, CancellationToken cancellationToken = default)
         {

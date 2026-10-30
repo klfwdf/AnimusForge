@@ -1,3 +1,28 @@
+# 未部署：固定提示词改为随游戏语言选择，CN/EN 包只区分可改提示词（2026-10-31，四步中的第 1 步）
+
+用户决定（2026-10-31）：游戏语言为简体或繁体中文时，固定提示词、事实和历史用中文，其他语言一律用英文；事实和历史按写入时的游戏语言生成；授权修改 `package_localization.ps1` 和 skill/AGENTS 的语言来源规则（规则文本在第 4 步更新）。
+- 新增 `src/AF.Foundation.Runtime/Localization/PromptLanguage.cs`。`PromptLanguage.IsChinese` 读宿主注入的游戏语言，只在语言 id 变化时重新判定。`PromptLanguageFile<T>` 和 `PromptLanguageValue<T>` 让每种语言各加载一次。英文读取 `X.en.json`，缺少时退回 `X.json`。
+- 宿主 `GamePromptLanguageSource`（在 `OnSubModuleLoad` 最先安装）：通过 `LocalizedTextManager.GetSubtitleExtensionOfLanguage` 判断，zh-HANS/zh-HANT 为中文。监听 `ManagedOptions.OnManagedOptionChanged(Language)`，切换后重新发布 `AIConfigHandler.ReloadConfig()`。
+- 改为双语加载的读取器共 31 个：25 个 `XxxPromptTexts`/`PromptComposerTexts`/`AdapterPromptCapture` 等，外加 Duel、Encounter、KingdomCivilWar、Illustrator、PolicyCoreManagement 和 `PromptConfigurationLoader`（RuleBehavior、ActionPostprocess、Preprocess、Proactive、RpItem、ExecutionRule）。
+- 启动时把提示词缓存进静态字段的地方共 67 处，都改为按语言缓存：Policy 效果模块描述符和目录快照、Illustrator 导演/风格提示词、经济信任等级、恋爱/耐心等级、快报写作要求。
+- 场景动作提示词包（Core）同时加载两份 XML，由宿主注入语言选择器。GCCZ 城镇提示词按游戏语言选 zh-CN/en。
+- `content-map.json`：38 对固定提示词标为 `bilingual-prompt`，新增 `.en` 目标，两包都携带。删除不再读取的 `ModuleData/GcczTownPrompt.json`。
+- `package_localization.ps1`：`bilingual-prompt` 两包共享，并对每一对执行变量/协议契约检查和英文无中文检查。只有 CustomPrompts、`McmPromptDefaults`、世界书仍按包替换。
+- 嵌入模型仍跟包（世界书）走：`McmPromptDefaults.json` 新增 `ContentEdition`，`AnimusForgeModelStore` 改读它。
+- 测试：新增 `tests/AF.Foundation.Runtime/PromptLanguageContractTests`（18 项），25 个测试 csproj 补链接 `PromptLanguage.cs`，`LocalizedPackageContractTests` 和 `ScenePromptPackageContractTests` 的断言更新为新契约。
+
+验证：
+- 在隔离 worktree（`artifacts/l10n-step1-build`）编译主工程 1.3、1.4 各通过（Debug，未用一键脚本，未产出 Bootstrap）。
+- 测试通过：PromptLanguage 契约 18 项、PromptConfiguration 39 项、CivilWar 406 项、ConversationCache 164 项、IntradayContext 26 项、LocalizedPackage 95 项、ContentLayout、StageWhitelist、ScenePromptPackage 271 项。
+- 真实仓库 38 对固定提示词契约全部通过。
+- 以下测试在 HEAD 上同样失败，与本次无关：Composition、ResidualLocalization、Retrieval、Economy PromptProjection、DataPaths、BattleSpeechBilingual、DiplomacyCommon、DiplomacyPackaged、LocalizationResource。
+
+未完成：第 2 步。C# 用中文兼容表 `Raw`/`PcapCompat` 拼句的地方（约 5900 处）仍输出中文，英文游戏下事实和历史仍会混入中文。
+未打包、未部署、未实机（需看：切换游戏语言后下一次请求的固定提示词语言、MCM/终端默认值、场景动作目录）。
+回滚：逆提交本条对应提交。
+
+---
+
 # 未部署：SceneActions 桥接签名恢复（2026-10-31）
 
 `SceneActions.log` 自 10-29 起每次启动 `initialization failed closed: NPC queued-reply publication signature drifted`，自然动作/手势/战场喊话桥全部关闭。原因：AF `b8164a72e`（10-18）给 `EnqueueSpeechLineWithOptions`（16→17）和 `ShowNpcSpeechOutput`（6→8）追加了可选本地 TTS 参数，桥接 `AfCompatV130` 的 `IsExpectedQueuedReplyMethod`/`IsExpectedShownReplyMethod` 未同步；两处反射调用 `ShowNpcSpeechOutput` 同步补两个 null。StaticVerifier 的同名契约同步，`--bridge-only` 可用 `AF_SCENE_PROMPT_CORPUS` 指向 `SceneActionPromptTexts.xml` 以离线安装桥。验证：在 HEAD 干净 worktree 套用本次改动，Release 双API+Bootstrap、Coup 门禁、注册冒烟 PASS；新 1.3/1.4 DLL `--bridge-only` 各 4/4 PASS（含真实 Harmony 安装/卸载），已部署旧 DLL 同测仍报原错误。主工作区当前被他人未跟踪的 `scratch/decomp/ChangeKingdomAction.cs` 编译阻塞（未处理）。未部署、未实机。证据 `artifacts/fix-sceneactions-bridge-20261031/`。回滚：逆提交本条对应提交。

@@ -14,7 +14,7 @@ internal sealed class ClanInfluenceNextDayOncePayload : NumericPolicyEffectPaylo
 
 internal sealed class ClanInfluenceNextDayOnceEffectModule : NumericPolicyEffectModuleBase<ClanInfluenceNextDayOncePayload>, IScheduledOncePolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "clanInfluenceNextDayOnce",
 		order: 101,
 		legacyIds: Array.Empty<string>(),
@@ -40,7 +40,8 @@ internal sealed class ClanInfluenceNextDayOnceEffectModule : NumericPolicyEffect
 		supportsIdempotency: true,
 		promptVisible: false,
 		displayGroup: "clanInfluence",
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

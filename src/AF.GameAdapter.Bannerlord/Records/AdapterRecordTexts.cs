@@ -24,9 +24,9 @@ internal static class AdapterRecordTexts
 
     // Content language is selected by the package, independently of the UI.
     // Load only when transient material grammar is requested, never during raw capture.
-    private static readonly Lazy<Dictionary<string, string>> PromptValues = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageFile<Dictionary<string, string>> PromptValues = new PromptLanguageFile<Dictionary<string, string>>("AdapterRecordPromptTexts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("AdapterRecordPromptTexts.json"), Encoding.UTF8)));
+            path, Encoding.UTF8)));
     private static readonly Regex Placeholder = new Regex(@"\{([A-Z_]+)\}", RegexOptions.Compiled);
 
     internal static string Prompt(string id) => PromptValues.Value[id];

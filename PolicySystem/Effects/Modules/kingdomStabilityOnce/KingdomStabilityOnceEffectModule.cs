@@ -14,7 +14,7 @@ internal sealed class KingdomStabilityOncePayload : NumericPolicyEffectPayload
 
 internal sealed class KingdomStabilityOnceEffectModule : NumericPolicyEffectModuleBase<KingdomStabilityOncePayload>, IOneShotPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "kingdomStabilityOnce",
 		order: 90,
 		legacyIds: new[] { "kingdomStabilityDailyDelta" },
@@ -40,7 +40,8 @@ internal sealed class KingdomStabilityOnceEffectModule : NumericPolicyEffectModu
 		supportsIdempotency: true,
 		promptVisible: false,
 		displayGroup: "kingdomStability",
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

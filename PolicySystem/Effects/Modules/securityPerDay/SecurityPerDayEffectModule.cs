@@ -8,7 +8,7 @@ internal sealed class SecurityPerDayPayload : NumericPolicyEffectPayload
 
 internal sealed class SecurityPerDayEffectModule : NumericPolicyEffectModuleBase<SecurityPerDayPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "securityPerDay",
 		order: 50,
 		legacyIds: new[] { "securityDailyDeltaPerTown" },
@@ -32,7 +32,8 @@ internal sealed class SecurityPerDayEffectModule : NumericPolicyEffectModuleBase
 		playerDisplayName: PolicyCompatibilityTexts.Get("Module_securityPerDay_playerDisplayName"),
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_securityPerDay_editableUnderstandingPrompt", "Security is mainly affected by banditry, patrols, law enforcement, justice, corruption, military rule, suppression and local order. When policies continuously change local safety through these mechanisms, security is a direct consequence."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_securityPerDay_editableEvaluationPrompt", "Judge daily changes per affected town. Mild impact: ±0.1 to ±0.3; regular patrols, law enforcement, anti-corruption or banditry changes: ±0.3 to ±0.7; strong security campaigns, military rule, border disorder or banditry outbreaks: ±0.8 to ±1.5; severe disorder or high-pressure suppression: ±1.5 to ±2.5. More than ±2.5 is reserved for brief extreme internal unrest, bloody suppression or large-scale banditry."),
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

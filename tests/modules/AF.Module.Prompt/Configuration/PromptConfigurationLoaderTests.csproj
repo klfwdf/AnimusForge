@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Stubs.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptConfigurationLoader.cs" Link="PromptConfigurationLoader.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptConfigurationSnapshot.cs" Link="PromptConfigurationSnapshot.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/RevisionedPromptConfigurationStore.cs" Link="RevisionedPromptConfigurationStore.cs" />

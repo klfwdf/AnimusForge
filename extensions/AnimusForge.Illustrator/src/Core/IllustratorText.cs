@@ -9,15 +9,15 @@ namespace AnimusForge.Illustrator
 {
     internal static class IllustratorText
     {
-        private static readonly Lazy<Dictionary<string, string>> Prompts =
-            new Lazy<Dictionary<string, string>>(LoadPrompts);
+        private static readonly PromptLanguageFile<Dictionary<string, string>> Prompts =
+            new PromptLanguageFile<Dictionary<string, string>>("IllustratorPromptTexts.json", LoadPrompts);
         private static readonly Lazy<Dictionary<string, string>> Compatibility =
             new Lazy<Dictionary<string, string>>(() => Load("IllustratorCompatibilityTexts.json"));
         private static readonly Regex ProtocolMarker = new Regex(@"\[\[(AFI_PROTOCOL_[A-Z_]+)\]\]", RegexOptions.Compiled);
 
-        private static Dictionary<string, string> LoadPrompts()
+        private static Dictionary<string, string> LoadPrompts(string path)
         {
-            Dictionary<string, string> values = Load("IllustratorPromptTexts.json");
+            Dictionary<string, string> values = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path, Encoding.UTF8));
             // Keep protocol placeholders in the selected package language. The parser
             // accepts both the legacy Chinese labels and the English marker form.
             return values;

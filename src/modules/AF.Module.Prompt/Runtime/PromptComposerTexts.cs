@@ -10,9 +10,9 @@ namespace AnimusForge;
 
 internal static class PromptComposerTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("PromptComposerTexts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("PromptComposerTexts.json"), Encoding.UTF8)));
+            path, Encoding.UTF8)));
     private static readonly Lazy<Dictionary<string, string>> Compatibility = new Lazy<Dictionary<string, string>>(() =>
     {
         using (var stream = typeof(PromptComposerTexts).Assembly.GetManifestResourceStream("AnimusForge.Prompt.Compatibility.json"))

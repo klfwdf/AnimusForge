@@ -48,13 +48,16 @@ check(packs['zh-CN']['AF_SCENE_PACKAGE_NativeConversationActionInstruction'] == 
 
 package = read('CoreProject/SceneActionPromptPackage.cs')
 check('TaleWorlds' not in package and 'TextObject' not in package, 'Core no engine language dependency')
-check('private static volatile Corpus _corpus' in package and package.count('if (_corpus != null) return;') == 2,
-      'published once, subsequent loads perform no IO')
+check('private static volatile Corpus _chinese' in package and 'private static volatile Corpus _english' in package
+      and package.count('if (_loaded) return;') == 2, 'both editions published once, subsequent loads perform no IO')
+check('SetLanguageSelector(Func<bool> preferChinese)' in package and '_preferChinese()' in package,
+      'host-supplied selector picks the edition; Core reads no game state')
 check('XmlReader.Create(filePath' in package and 'DtdProcessing.Prohibit' in package, 'actual package file read')
 for name, prefix in [('SceneActionCatalogText', 'AF_SCENE_CATALOG_'), ('BattleSpeechText', 'AF_SCENE_SPEECH_')]:
     source = read('CoreProject/' + name + '.cs')
-    check('SceneActionPromptPackage.ReadSection("' + prefix + '")' in source and
-          'useChinese == SceneActionPromptPackage.UseChinese' in source, name + ' selected corpus consumer')
+    check('SceneActionPromptPackage.ReadSection("' + prefix + '", true)' in source and
+          'SceneActionPromptPackage.ReadSection("' + prefix + '", false)' in source and
+          'SceneActionPromptPackage.HasCorpus(useChinese)' in source, name + ' per-language corpus consumer')
 for host in ('SceneActionsRuntimeHost', 'BattleSpeechRuntimeHost'):
     source = read('Runtime/' + host + '.cs')
     check('SceneActionPromptPackage.Load(' in source and '"SceneActionPromptTexts.xml"' in source, host + ' initialize package')

@@ -13,9 +13,9 @@ internal static class WorldBulletinPolicyTexts
 			return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
 	});
 
-	private static readonly Lazy<Dictionary<string, string>> PromptValues = new Lazy<Dictionary<string, string>>(() =>
+	private static readonly PromptLanguageFile<Dictionary<string, string>> PromptValues = new PromptLanguageFile<Dictionary<string, string>>("WorldBulletinPromptTexts.json", path =>
 		Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(System.IO.File.ReadAllText(
-			AnimusForgeModulePaths.GetModuleDataFilePath("WorldBulletinPromptTexts.json"), Encoding.UTF8)));
+			path, Encoding.UTF8)));
 
 	internal static string Raw(string key) => RawValues.Value[key];
 

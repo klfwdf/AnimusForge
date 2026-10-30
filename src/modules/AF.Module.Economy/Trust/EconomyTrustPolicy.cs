@@ -8,14 +8,13 @@ namespace AnimusForge.Modules.Economy;
 /// </summary>
 internal static class EconomyTrustPolicy
 {
-    private static readonly string[] LevelTexts =
-    {
+    private static readonly PromptLanguageValue<string[]> LevelTextsByLanguage = new PromptLanguageValue<string[]>(() => new string[] {
         EconomyPromptTexts.Get("S694"), EconomyPromptTexts.Get("S695"), EconomyPromptTexts.Get("S696"), EconomyPromptTexts.Get("S697"), EconomyPromptTexts.Get("S698"),
         EconomyPromptTexts.Get("S699"), EconomyPromptTexts.Get("S700"), EconomyPromptTexts.Get("S701"), EconomyPromptTexts.Get("S702"), EconomyPromptTexts.Get("S703")
-    };
+    });
+    private static string[] LevelTexts => LevelTextsByLanguage.Value;
 
-    private static readonly string[] BehaviorTexts =
-    {
+    private static readonly PromptLanguageValue<string[]> BehaviorTextsByLanguage = new PromptLanguageValue<string[]>(() => new string[] {
         EconomyPromptTexts.Get("S704"),
         EconomyPromptTexts.Get("S705"),
         EconomyPromptTexts.Get("S706"),
@@ -26,10 +25,10 @@ internal static class EconomyTrustPolicy
         EconomyPromptTexts.Get("S711"),
         EconomyPromptTexts.Get("S712"),
         EconomyPromptTexts.Get("S713")
-    };
+    });
+    private static string[] BehaviorTexts => BehaviorTextsByLanguage.Value;
 
-    private static readonly string[] ActionGuideTexts =
-    {
+    private static readonly PromptLanguageValue<string[]> ActionGuideTextsByLanguage = new PromptLanguageValue<string[]>(() => new string[] {
         EconomyPromptTexts.Get("S714"),
         EconomyPromptTexts.Get("S715"),
         EconomyPromptTexts.Get("S716"),
@@ -40,7 +39,8 @@ internal static class EconomyTrustPolicy
         EconomyPromptTexts.Get("S721"),
         EconomyPromptTexts.Get("S722"),
         EconomyPromptTexts.Get("S723")
-    };
+    });
+    private static string[] ActionGuideTexts => ActionGuideTextsByLanguage.Value;
 
     internal static int Clamp(int value)
     {
