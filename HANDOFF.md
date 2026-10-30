@@ -3481,3 +3481,10 @@ Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 
 - 按用户追加要求，最终字符/token/输出预留目标仅诊断，不再旁路或重置缓存；保留当日压缩/近期窗口/召回及既有150000字符缓存容量与TTL。此条覆盖前一切片的“超标回退”说明；不删已选历史继续有效。CN/EN说明与原双入口同步。
 - 缓存CN/EN各68、长聊20、协议13组、实际双DLL各76项通过，旧实现负控确认绕缓存。native/scene/courier连续两轮完整前缀一致、system一份、旧回复保留、未变状态不重发、变更/移除/当前输入保留；双构建/Bootstrap/Coup/注册通过。未实机/真实provider命中/旧档，未部署/打包/push。
 - [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#conversation-cache-no-budget-bypass-20261022)；代码范围、提交、候选哈希和focused回滚见 `artifacts/conversation-no-budget-drop-20261022/cache-prefix/receipt.json`、`code-map.json`、`before/`。本地 `codex/conversation-no-budget-drop-20261022`，独立索引保留共享main/index及其他作者改动。
+
+
+## AF-BILATERAL-DIRECT-20261030
+
+- 本地产品 `57cf6c15c` + 队列修补 `22ad71b9e`：AI 开启时现任双君主六类双边事项直接校验执行，真实回执先入原 owner，后续 NPC 声明只公告结果；无重复承诺提取/重签/重执行。第三国、复杂/耦合条款、非君主、拒绝/控制及关闭模式保留原能力；精确原案只结算所选事项。
+- 目标回放 194、剩余审核 715、CountryAdmission 5937（含贸易/和平/玩家宣战完整事件结案）、主权 1088、臣属 343、结案 214、声明 645、阻塞回归 138、事件结构 482、受影响双语与持久化门禁通过；最终 1.3/1.4/Bootstrap 与原双 seam/registration 通过。四项宽范围既存失败已用原码复现，未宣称全仓测试绿色；实机/provider/旧玩家档/Stage/打包/部署/push 均 NOT_RUN。
+- [唯一主台账与命令/风险](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af-bilateral-direct-20261030) / [准确代码范围](docs/architecture/af-framework-code-scope.md#af-bilateral-direct-20261030)。源/DLL SHA 与日志在 `artifacts/bilateral-direct-20261030/verification.json`。父会话已完成独立审查，无本次剩余须修问题；下一步仍需新任务授权；保留原有 dirty 文档，仅选择性提交本项追加段落，无新发布授权。

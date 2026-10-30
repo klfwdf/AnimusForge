@@ -12683,3 +12683,66 @@ run `33fc0456789abcd0123456789def0123` / PID37308，新EN战役，Lucon原生为
 - 用户明确授权部署 EN；使用产品提交 fff988bff 及当前工作区既有改动的已验证 Debug 1.3/1.4/Bootstrap 构建。部署到 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，沿用此前用户要求的布匿世界书部署排除，不改共享内容清单或玩家世界书。
 - 原内容投影、干净 Stage、EN 候选、路径/reparse/FeatureBridges/构建标记及目标保护检查通过；原 Invoke-ManagedStageDeployment 成功，3521 候选文件，更新 11 文件，9189 保护文件及部署结果逐项核验通过。已有 1.5 文件保留；没有部署备份或自动回滚。旧项目 Stage 保存在 artifacts/deploy-en-oral-threat-20261027/previous-stage，候选、日志及 receipt.json 在同目录。
 - 真实游戏、旧档、API provider 未验证；此前完整外交套件归档路由断言失败未消除。未打包或推送。恢复需检查现场，选择已验证版本重建并另行授权部署。
+
+
+## AF-BILATERAL-DIRECT-20261030
+
+状态：本次批准范围的源码实现与目标离线验证完成；父会话独立审查完成，本轮无剩余须修问题。实机、真实模型语义、旧玩家档及发布均未验。工作树为 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main`，实际分支 `main`；基线 `dc8bc6143fc74de7130e09fb488419dd1b290929`，本地意图检查点 `00a9deb41`，产品与测试修订 `57cf6c15cd719fb62c1eaeb2b10cc4919afec964`，公告队列修补 `22ad71b9ebe44f03dec7fb2e6b898b57b27d5c89`。
+
+本项在限定范围内替代“六类双边事项也先提取承诺、发文后执行”的旧行为；不替代其余外交事项。授权仅为本地实现、验证、检查点与交接，无 push/部署/打包/玩家存档操作。开始时已有 HANDOFF、主台账、代码图、design-discussion 及 COUNTRY-SCORE-ADMISSION-PLAN 等用户/其他会话改动；保留原内容，本项产品提交不含这些改动，文档提交只追加本节对应内容。
+
+### 目标与实际结果
+
+- AI 外交开启、玩家与当前 NPC 都是不同国家的现任合法君主时，按事项分流 Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade。原后处理直接标签经原解析规则与原机械端口执行，读取真实回执；没有新增全量语义提取或把缺失/失败标签回落为 COMMIT 的权力。
+- 议和、结盟、贸易要求本轮双方对全部条款最终同意；宣战、解盟、取消贸易按有权行为方单方决定。后续 NPC 公告只有 `statement`，不包含可执行动作，不向原双方再索取同意。真实行为国独立于公告作者，尤其玩家宣战不会写成 NPC 发起。
+- 第三国事项、非君主说客、复杂条约、RejectProposal 与未执行承诺控制保留原能力。旧 SpeechReview 按原捕获身份退役六类直接执行能力，保留剩余事项；合法剩余 COMMIT 不依赖额外 marker。已登记旧承诺不批量删改。AI 关闭的六标签条件/格式及原运行时模板保留，新增“本轮双方”约束只适用开启后的直接范围。
+- 条款完整校验：直接结盟只支持原版默认期限；贸易指定 1–252 天；和平贡金与现有割地条款完整保留，不自动降格。和平成功而割地失败/未知记录 partial，不宣告整包成功，不盲重试。未知/部分执行还会阻止换 interaction ID 重跑同类不确定效果。
+- 可选精确关联为 `|document=DOCUMENT_ID;action=ACTION_ID`，保留文书/动作 ID 自带冒号；按原案完整条款和实际知识校验。复用 `DiplomacyConditionalExecutionRules.DeferredActions` 拒绝正向、反向及外部先决条件耦合源的单边执行，保留原复杂正式能力。无来源时只对已知、活动、开放、同双方同动作的提案澄清；精确选中一份合法备选案可执行，不批量结算其他备选案。
+- 真实回执先入原 WorldDiplomacy arrangement/chunk owner，再写同一 AFEF 记忆与原事件队列。按 channel/session/interaction/ruler/pair/action 去重；应用成功后建案/排队异常只恢复记忆、事件和公告。每标签异常隔离，不残留内部标签、不打断剩余事项、不走第二个执行口。已有完整结果不可用私下承诺控制撤回。
+- 原 CountryAdmission、结构审核、开场、第三国反应、结案管线继续消费只读执行结果；`confirmed_documents` 可引用实际完成的公告而不把公告重新作为执行来源。贸易、和平、玩家宣战已在真实事件 host 的离线管线走到结案，效果次数均为 1。
+
+### 责任、性能与持久化
+
+准确的 owner、源码一基行号、覆盖与未覆盖范围见 [代码范围图](architecture/af-framework-code-scope.md#af-bilateral-direct-20261030)。源/产物 SHA、验证摘要和完整输出保存在 `artifacts/bilateral-direct-20261030/verification.json` 及同目录日志；本地日志不提交为另一份台账。
+
+新增检查仅在后处理标签、请求或提交边界执行；正则编译缓存，结果证据索引按 storage 身份/集合变化缓存并随既有索引失效。既有维护点一次最多恢复 4 个到期且尚未被 job/event owner 接手的直接结果；未到期项不计预算，记忆/建案异常或下游未接手时复用原字段退避 1–7 天；没有新增 Tick IO、反射、序列化、全量世界扫描或忙轮询。直接回执不被旧承诺的过期清理抹掉，以保留读档去重。新增可选 DTO 字段仍由原 WorldDiplomacy JSON/chunk owner 保存，无新增 save key、设置 owner、MCM/终端选项或外部 API。
+
+### 实际验证
+
+以下均为离线/受控回执验证，不能替代实机机械效果或模型语义：
+
+| 验证 | 结果 | 主要证据 |
+| --- | --- | --- |
+| `--bilateral-direct` | PASS 194 | 三渠道、不输出标签/无重复提取、六能力矩阵、旧审核、重复/重载、异常恢复、真实 ID 格式、条款/割地回执、原案条件与备选案隔离 |
+| `--speech-review` | PASS 715 | 剩余事项、审核与事件归属；含新增直接能力回放 |
+| `--country-admission` | PASS 5937 | 原入场及新直接贸易/和平/玩家宣战的规划、审核、额外国反应、closing、结构化结果结案 |
+| `--sovereign-control` | PASS 1088 | 原主权、非君主及混合能力、原版关闭模式、正确身份和控制边界 |
+| `--original-oral-vassalage` | PASS 343 | 原臣属签约链与混合事项无重复六类承诺 |
+| `--event-convergence` / `--oral-declaration` | PASS 214 / 645 | 原结案与声明链、标签异常隔离 |
+| `--live-blockers` / `--event-structure` | PASS 138 / 482 | 旧审核契约迁移与原事件结构 |
+| `DiplomacyBilateralContractTests.py` | PASS | 7 个成对新 key、受影响变量/标签、真实包 reader、六标签关闭模式隔离 |
+| `validate_persistence_profile_config.py --chunk-contract-only` | PASS | 22 chunked string keys / 47 flattened dictionary keys，未新增 key |
+| `PersistenceChunkReplayTests` | PASS | UTF-8 边界、旧值、坏块、校验、字典与 civil-war 回归 |
+| 原统一 Debug 双 API + Bootstrap | PASS | 实际引用检测 1.3.15.110062 / 1.4.6.115628；双 coup seam + registration 通过；产物 SHA 已冻结 |
+| 本项源码/资源/测试 `git diff --check` | PASS | 产品提交无空白错误 |
+
+复现主要命令（项目根执行）：
+
+```powershell
+dotnet run --no-restore --project tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests '-p:BannerlordBin=E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/bin/Win64_Shipping_Client' -- --bilateral-direct
+# 同一已构建 harness 使用 --no-build，分别运行上表其余 flag。
+python tests/content/J15ContentContractTests/DiplomacyBilateralContractTests.py
+python tests/AF.Persistence/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py --chunk-contract-only
+dotnet run --project tests/AF.Persistence/PersistenceChunkReplayTests
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot . -BannerlordRoot .tmp/stage_game_root -Bannerlord13ReferenceDir .tmp/build_check/1.3 -Bannerlord14ReferenceDir .tmp/build_check/1.4 -RuntimeDependencyDir bin/Release/single_module_stage/AnimusForge/bin/Win64_Shipping_Client -HarmonyCorePath .tmp/stage_game_root/Modules/Bannerlord.MBOptionScreen/bin/Win64_Shipping_Client/0Harmony.dll -Configuration Debug
+```
+
+未将全仓测试称为通过。以下失败分别用改动前 `00a9deb41`（与产品基线相同）的隔离 archive 复现，未修改其无关产品逻辑：默认全回放停在 `MaterialCountryRepairReplay.cs:244` 的真实 UI 语言切换断言（原码 `--material-country` 同失败）；`--concurrent-oral-migration` 在 `ConcurrentOralMigrationReplay.cs:209` 的玩家发言合并断言失败；PackageDLocalizationContractTests 缺既有 Kingdom CW RebellionNaming key；DiplomacyPackagedPromptContractTests 第 28 行历史语料恒等断言失败。对照分别见 `baseline-ui.log`、`baseline-concurrent.log`、`baseline-localization.log`、`baseline-prompt.log`。原全门禁仍未绿，受影响双语链以新专项验证。构建有离线 NuGet 漏洞索引与既有编译 warning，无编译 error。
+
+监督复审：父会话 `01a1894d-905b-7782-adc7-c24f0683c939` 独立检查主提交范围/链路，亲自重跑 CN bilateral189/country5937/speech710/sovereign1088/vassal343，以及实际 EN 内容映射的 bilateral189/country5937/speech710，并通过双语专项；随后逐项复审队列修补、亲自重跑最终 bilateral194 和 diff-check，确认本轮无剩余须修问题。以上为监督复审回报；实现方最终本地结果见上表，不混作实机证据。
+
+### 未验与恢复
+
+NOT_RUN：真实 provider 语义、两版游戏内交互、实际战和平/条约/割地、真实玩家存档往返、Stage、正式 CN/EN ZIP、部署与 push。运行时读回口由现有生产端口复用，离线效果回执为受控测试，不能称为实机通过。父会话已完成独立审查，后续按新任务授权决定下一步，不自动启动游戏或调用模型。
+
+本任务自审已检查路由、单一执行权、异常/去重、精确来源/条件、真实行为身份、只读公告、事件结案证据、双语和持久化/性能边界。只用聚焦 inverse commit 按依赖先撤回 `22ad71b9e`、再撤回 `57cf6c15c`，不 hard reset/改写历史；维护原有 dirty 文档与其他作者内容。所有产物仅本地，历史包含本地交接资料，不代表 push 授权。

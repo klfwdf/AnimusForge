@@ -2398,3 +2398,30 @@ Product/source `530e8813f`; [single ledger](../animusforge-refactoring-and-repos
 | `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/TtsLiteGuideChecks.cs` / `Run` | 11–48 | Actual DLL/MCM metadata, native Inquiry data, original-owner terminal callback, four-provider visibility, bilingual contents and no settings mutation. No native rendering/audio acceptance. |
 
 Player docs live under `docs/tts/`; `.agents/skills/af-gptsovits-guides/` maintains stable release workflow and separate future U guide requirements. Synthesis/runtime/voice identity and all unrelated gameplay are outside this product delta.
+
+
+## AF-BILATERAL-DIRECT-20261030
+
+核实最终产品修订 `22ad71b9ebe44f03dec7fb2e6b898b57b27d5c89`（含主实现 `57cf6c15c`）；[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#af-bilateral-direct-20261030)记录状态、命令、既存失败及未验项。本表只描述本次批准的六类双边职责；不宣布全外交框架或实机完成。
+
+| 源码路径 / 符号 | 核实一基行号 | 本次职责与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Domain/DiplomacyBilateralRouting.cs` / NeedsRemainingReview、OwnsMatter | 11–40 | 按事项能力分流，六类双边与拒绝/第三国/复杂事项分开；owner 注入精确来源条件判定 |
+| 同模块 `Domain/DiplomacyBilateralPayload.cs` / TryParse | 13–59 | 原标签格式的严格前置校验、当前国家稳定 ID、完整贡金/割地与精确文书/动作关联；不推断语义同意 |
+| 同模块 `World/WorldDiplomacyBehavior.Bilateral.cs` / TryProcessBilateral、ApplyBilateral | 12–115 | live host/当前双君主入口、原 native 规则和效果端口、主线程、真实回执；实际游戏端口本次只编译，未实机 |
+| 同模块 `Application/DiplomacyOralTagApplication.cs` / Process | 27–83 | 可选双边 port 优先于旧审核抑制，逐事项异常消隐/隔离，不 fallback 重执行；其余旧标签入口保留 |
+| 同模块 `Application/DiplomacyBilateralEffects.cs` / Peace | 8–35 | 原和平 receipt + 割地回执组合，partial/unknown 不冒充整包 applied |
+| 同模块 `Application/WorldDiplomacyOrchestration.Bilateral.cs` / ExecuteBilateral、RequiresFormalBilateralSource | 45–149 | 当前权限、interaction 去重、未知结果防重试、精确来源/条件、无来源冲突检查、真实回执入原 owner |
+| 同文件 / DirectDocumentResult、RecoverDirectResultPublication、CompleteDirectResultSource | 17–43、171–235 | 缓存只读结果证据、实际行为国、只恢复 AFEF/事件/公告、只结算确切原案；不改其他备选提案 |
+| 同模块 `Application/WorldDiplomacyOrchestration.SpeechReview.cs` / EnsureSpeechReviewIndex、CaptureSpeechReview、CompleteSpeechReview | 20–65、203–272 | 契约 v4，旧捕获的双君主六能力退役；剩余事项、耦合源、无 marker 合法 COMMIT、非君主原审核保留 |
+| 同模块 `Application/WorldDiplomacyOrchestration.OralGeneration.cs` / OralIntent、RebuildOralDeclarationRequest、CommitOralDeclaration、RecoverSkippedOralTreaty | 33–57、134–151、247、310、365–367 | 已执行结果只能 statement/无重签；原作者与实际行为方分离；禁止旧 treaty 恢复路径重执行 |
+| 同模块 `Application/WorldDiplomacyOrchestration.cs` / ProcessAnalyzedDocument | 1053–1064 | 已执行声明强制 non_binding、无 actions/执行 terms，真实文书/version 校验 |
+| 同模块 `Application/WorldDiplomacyOrchestration.CountryAdmission.cs` / EnsureOralAdmissionPlan | 622–623 | 已执行结果进入原评分/入场，保留原权重与额外参与国 |
+| 同模块 `Application/WorldDiplomacyOrchestration.EventRequestEvidence.cs` / 事件资料投影 | 56–62 | `executed_oral_result` 及实际 actor/target/terms 原样供后续事件消费 |
+| 同模块 `Application/WorldDiplomacyOrchestration.EventRuntime.cs` / 结案校验与通知；`Convergence.cs` / EnsureConvergence、RecordConvergencePublication | 148、430、533；74–79、114–118、194–199 | confirmed_documents 认识实际结果；玩家实际宣战不因公告 intent=statement 而丢失；不确定源不作已解决结案 |
+| 同模块 `Application/WorldDiplomacyOrchestration.Dialogue.cs` / MaintainDialogueArrangements；DialogueControl、DialogueIndex、DialogueMemory | 325–359；各本次差异 | 既有维护点限额恢复/保留回执，实际结果不可私下撤回；索引随原失效；原事件关联不跳过 AFEF |
+| 同模块 `Persistence/WorldDiplomacyDialogueRecords.cs` / DirectExecution*；DiplomacySpeechReview / ExcludeDirectBilateral | 11–14；新增字段 | 原 JSON/chunk owner 内可选字段；旧缺失字段不生成成功回执，无新增 save key |
+| `src/modules/AF.Module.Conversation/Actions/ConversationActionExecutorComposition.cs` / 原生/场景来源 scope | 170、301 | 复用 captured trace 身份；信使原 session 身份保留，不跨 await 持有 scope |
+| `content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts{,.en}.json` / Bilateral_*、OralArrangementHeader、CountryAdmissionOral；Prompt/RuleBehaviorPrompts{,.en}.json / diplomacy | 955–961、519、10；对应 diplomacy 段 | 原真实 lazy reader/内容映射，CN/EN 成对资源与实际消费者；关闭模式六标签原条件保留，不强制模型输出语言 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/BilateralReplay.cs`；CountryAdmissionReplay / Entrances；NativeDiplomacyFallbackReplay；PromptMemoryReplay | 1–245；对应新增分支；本次差异 | 执行/异常/原案/重载/legacy 与完整事件 host 离线验证；机械回执受控，非实机证明 |
+| `tests/content/J15ContentContractTests/DiplomacyBilateralContractTests.py` | 全文件 | 7 key 配对、协议/变量、真实 reader、native 模式隔离；不冒充全历史语料门禁 |
