@@ -6,34 +6,34 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeMissionExitOutcomeProfile
 {
-    public const string RepopulationExitTriggerSource = "Scene exit colonization";
+    public static readonly string RepopulationExitTriggerSource = SiegeAftermathCompatibilityTexts.Raw("exit_repopulation_source");
     public const string RepopulationExitTriggerSourceEn = "mission_exit_colonization";
 
-    public const string RepopulationExitTriggerDetail = "Colonization was triggered; scene departure commits the highest irreversible disposition.";
+    public static readonly string RepopulationExitTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("exit_repopulation_detail");
     public const string RepopulationExitTriggerDetailEn = "Player triggered colonization disposition; departure settles as highest irreversible outcome.";
 
-    public const string MassacreExitTriggerSource = "Scene exit massacre";
+    public static readonly string MassacreExitTriggerSource = SiegeAftermathCompatibilityTexts.Raw("exit_massacre_source");
     public const string MassacreExitTriggerSourceEn = "mission_exit_massacre";
 
-    public const string MassacreExitTriggerDetail = "Massacre was triggered; scene departure commits devastation/massacre.";
+    public static readonly string MassacreExitTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("exit_massacre_detail");
     public const string MassacreExitTriggerDetailEn = "Player triggered massacre; departure settles as devastation/massacre.";
 
-    public const string PlunderExitTriggerSource = "Scene exit plunder";
+    public static readonly string PlunderExitTriggerSource = SiegeAftermathCompatibilityTexts.Raw("exit_plunder_source");
     public const string PlunderExitTriggerSourceEn = "mission_exit_pillage";
 
-    public const string PlunderExitTriggerDetail = "Plunder was triggered; scene departure commits plunder.";
+    public static readonly string PlunderExitTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("exit_plunder_detail");
     public const string PlunderExitTriggerDetailEn = "Player triggered pillage; departure settles as plunder.";
 
-    public const string NoDecisionExitTriggerSource = "Scene exit without decision";
+    public static readonly string NoDecisionExitTriggerSource = SiegeAftermathCompatibilityTexts.Raw("exit_no_decision_source");
     public const string NoDecisionExitTriggerSourceEn = "mission_exit_default_no_decision";
 
-    public const string DefaultPlunderExitTriggerDetail = "The player left without an explicit constructive or escalated disposition; commits default plunder.";
+    public static readonly string DefaultPlunderExitTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("exit_default_plunder_detail");
     public const string DefaultPlunderExitTriggerDetailEn = "Player entered siege aftermath scene and departed without explicit mercy or escalation; settles as default pillage.";
 
-    public const string CastleNoDecisionExitTriggerSource = "Castle scene exit without decision";
+    public static readonly string CastleNoDecisionExitTriggerSource = SiegeAftermathCompatibilityTexts.Raw("exit_castle_no_decision_source");
     public const string CastleNoDecisionExitTriggerSourceEn = "castle_mission_exit_default_no_decision";
 
-    public const string CastleDefaultMercyExitTriggerDetail = "Castle scenes have no town plunder targets; departure without other orders commits mercy.";
+    public static readonly string CastleDefaultMercyExitTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("exit_castle_default_mercy_detail");
     public const string CastleDefaultMercyExitTriggerDetailEn = "Castle scene has no civilian livelihood targets to pillage; leaving without other disposition settles as mercy.";
 
     public static SiegeMissionExitOutcomeDecision Resolve(

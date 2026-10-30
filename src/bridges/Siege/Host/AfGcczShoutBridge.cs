@@ -1326,7 +1326,7 @@ internal static class AfGcczShoutBridge
 
 
 
-				? VillageAftermathRuntimePromptProfile.InjectedRuleBlockMarker
+				? (GcczTownPromptResourceProvider.UseEnglishPrompt ? VillageAftermathRuntimePromptProfile.InjectedRuleBlockMarkerEn : VillageAftermathRuntimePromptProfile.InjectedRuleBlockMarker)
 
 
 

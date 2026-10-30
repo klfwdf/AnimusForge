@@ -13,10 +13,10 @@ public static class SiegeSharedReliefPoolFormatter
 
     public const uint CapturedTransferMessageColor = 0xFFB6F7A8u;
 
-    public const string ReturnedToPlayerMemoryTitle = "Returned";
+    public static readonly string ReturnedToPlayerMemoryTitle = SiegeAftermathCompatibilityTexts.Raw("relief_returned_memory_title");
     public const string ReturnedToPlayerMemoryTitleEn = "Returned";
 
-    public const string UnavailableStatsDescription = "Shared relief stats unavailable";
+    public static readonly string UnavailableStatsDescription = SiegeAftermathCompatibilityTexts.Raw("relief_stats_unavailable");
     public const string UnavailableStatsDescriptionEn = "Shared relief stats unavailable";
 
     public const string ReturnedGoldSourcePrefix = "shared_relief_refund_";

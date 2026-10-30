@@ -18,11 +18,11 @@ public static class SiegeCastleSoldierReactionProfile
     public const uint NeedMessageColor = 0xFFFFD27Fu;
     public const uint AppeasedMessageColor = 0xFFB6F7A8u;
 
-    public const string NeedMemoryTitle = "Castle prisoner disposition morale discontent";
+    public static readonly string NeedMemoryTitle = CastleAftermathCompatibilityTexts.Raw("soldier_reaction_need_memory");
     public const string NeedMemoryTitleEn = "Castle prisoner disposition morale concern";
-    public const string AppeasementMemoryTitle = "Castle soldier appeasement";
+    public static readonly string AppeasementMemoryTitle = CastleAftermathCompatibilityTexts.Raw("soldier_reaction_appease_memory");
     public const string AppeasementMemoryTitleEn = "Castle soldier appeasement";
-    public const string PenaltyMemoryTitle = "Castle prisoner disposition morale penalty";
+    public static readonly string PenaltyMemoryTitle = CastleAftermathCompatibilityTexts.Raw("soldier_reaction_penalty_memory");
     public const string PenaltyMemoryTitleEn = "Castle prisoner disposition morale penalty";
 
     public static string GetNeedMemoryTitle(bool isEnglish) => isEnglish ? NeedMemoryTitleEn : NeedMemoryTitle;

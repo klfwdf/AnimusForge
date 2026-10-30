@@ -8,28 +8,28 @@ public static class SiegeCivilianGatherUiProfile
 {
     public const uint MessageColor = 0xFFB6F7A8u;
 
-    public const string GatherMemoryTitle = "Gather";
+    public static readonly string GatherMemoryTitle = SiegeAftermathCompatibilityTexts.Raw("gather_memory_title");
     public const string GatherMemoryTitleEn = "Assemble";
 
-    public const string AssemblyMemoryTitle = "Assembly";
+    public static readonly string AssemblyMemoryTitle = SiegeAftermathCompatibilityTexts.Raw("assembly_memory_title");
     public const string AssemblyMemoryTitleEn = "Gather";
 
-    public const string MessengerFallbackName = "Messenger";
+    public static readonly string MessengerFallbackName = SiegeAftermathCompatibilityTexts.Raw("messenger_fallback");
     public const string MessengerFallbackNameEn = "messenger";
 
-    public const string CivilianFallbackName = "Civilians";
+    public static readonly string CivilianFallbackName = SiegeAftermathCompatibilityTexts.Raw("civilian_fallback");
     public const string CivilianFallbackNameEn = "civilians";
 
-    public const string PropagationStartedMessage = "[Siege aftermath] The order was issued; civilians will gather gradually and await further commands.";
+    public static readonly string PropagationStartedMessage = SiegeAftermathCompatibilityTexts.Raw("gather_propagation_started");
     public const string PropagationStartedMessageEn = "[Siege aftermath] The order has been sent; civilians will assemble and await your further commands.";
 
-    public const string MessengerAddedMessage = "[Siege aftermath] Additional messengers joined the gathering.";
+    public static readonly string MessengerAddedMessage = SiegeAftermathCompatibilityTexts.Raw("gather_messenger_added");
     public const string MessengerAddedMessageEn = "[Siege aftermath] A new messenger has joined the assembly order.";
 
-    public const string FormationReadyMessage = "[Siege aftermath] Civilians have gathered to receive orders and joined formation 3; you may command them as a standard unit.";
+    public static readonly string FormationReadyMessage = SiegeAftermathCompatibilityTexts.Raw("gather_formation_ready");
     public const string FormationReadyMessageEn = "[Siege aftermath] Civilians have assembled into command group 3; you can now direct their formation like troops on the field.";
 
-    public const string FormationCompleteMemory = "Civilians have assembled and joined the player-commanded unit; subsequent NPCs should acknowledge they are present.";
+    public static readonly string FormationCompleteMemory = SiegeAftermathCompatibilityTexts.Raw("gather_formation_complete");
     public const string FormationCompleteMemoryEn = "Civilians have assembled and joined the controllable formation; subsequent NPCs should acknowledge that civilians are present.";
 
     public static string BuildPropagationStartedMemory(bool seedIsSoldier)

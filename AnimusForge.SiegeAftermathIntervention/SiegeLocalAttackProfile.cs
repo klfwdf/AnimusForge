@@ -22,7 +22,7 @@ public static class SiegeLocalAttackProfile
 
     public const string LocalDefiantSource = "local_player_attack_defiant";
 
-    public const string MemoryTitle = "Local skirmish";
+    public static readonly string MemoryTitle = SiegeAftermathCompatibilityTexts.Raw("attack_memory_title");
     public const string MemoryTitleEn = "Local Conflict";
 
     public static string GetMemoryTitle(bool isEnglish) => isEnglish ? MemoryTitleEn : MemoryTitle;

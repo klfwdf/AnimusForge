@@ -1,3 +1,9 @@
+# 未部署：GCCZ 其余被 checkpoint 改成英文的中文常量恢复（2026-10-30）
+
+续 `ae5ce775f`：`e9dbbd3d2` 还把 `AnimusForge.SiegeAftermathIntervention` 里约 90 个中文常量改成英文（中文版与 En 版常量值相同或只有英文），导致中文界面/CN 包下召集民众、抢钱、安兵、搜掠/血洗结算、离场结算、宽恕/安抚触发来源、记忆标题、兜底名、MCM 组名“14.”等显示英文，后处理上下文的默认定居点/说话者身份也成英文。修复：这些字段改为 `static readonly` 读取 `SiegeAftermathCompatibility.json`（新增 60 个键，中文为 `e9dbbd3d2^` 原值）或已有的 `CastleAftermathCompatibility.json` 键，En 常量不变；88 个字段逐个与原中文比对一致。宿主侧：搜掠/血洗/抢钱结算理由和直接毁坏动作名按界面语言选 CN/En；后处理说话者身份与默认名按 Prompt 包语言选；村庄规则标记 EN 包用 En 版；MCM 组名改 `{=AF_MCM_GcczSiege_Group}`，在 `gccz_town_manual_strings.xml` 中英补条目。验证：JSON/XML 解析通过，所有 `Raw` 键存在，无 const 语境引用被破坏（attribute/default 参数/case 扫描为空）。`CastleAftermathDynamicLocalizationContractTests.py` 在本轮之前已失败（基线 c8b6c652e 过旧），未作证据。未编译、未部署、未实机；`G:\AFMOD\GCCZ` 不存在，未镜像。回滚：revert 本提交。
+
+---
+
 # 未部署：私下契约不再公开给其他 NPC（2026-10-30）
 
 建债/结算批次保留双方 AFEF 和账本，不再生成公开行动；旧 debt_recorded/debt_payment 结构化行动及素材在公开上下文/证据/摘要候选边界过滤，实际公开领地转移事件保留。双API/Bootstrap构建与原门禁通过，实际DLL的CN/EN四组回放共52项断言通过。未部署/实机；旧无结构摘要或已生成对话中的泄露不自动清除。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#private-contract-visibility-20261030)，证据 artifacts/private-contract-20261030/；回滚只 revert 本修复提交，保留其他 dirty。

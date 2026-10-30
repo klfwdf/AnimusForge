@@ -25,7 +25,7 @@ public static class SetsSettlementCivilianGatherProfile
 
     public const string AiActionTagSource = "sets_settlement_civilian_gather_action_tag";
 
-    public const string NoEligibleCivilianMessage = "[SETS] There are no eligible adult civilians to gather.";
+    public static readonly string NoEligibleCivilianMessage = SiegeAftermathCompatibilityTexts.Raw("sets_no_eligible_civilian");
     public const string NoEligibleCivilianMessageEn = "[SETS] There are no eligible adult civilians to gather.";
 
 

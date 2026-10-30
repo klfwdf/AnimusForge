@@ -377,8 +377,8 @@ public partial class SiegeAiInterventionBehavior
 			if (kind == TownDirectAftermathKind.Massacre)
 			{
 				string action = IsCulturalRepopulationOutcome
-					? SiegeLootAccountingProfile.CulturalRepopulationActionName
-					: SiegeLootAccountingProfile.MassacreActionName;
+					? (GcczLocalizedResourceLoader.UseChineseInterface ? SiegeLootAccountingProfile.CulturalRepopulationActionName : SiegeLootAccountingProfile.CulturalRepopulationActionNameEn)
+					: (GcczLocalizedResourceLoader.UseChineseInterface ? SiegeLootAccountingProfile.MassacreActionName : SiegeLootAccountingProfile.MassacreActionNameEn);
 				InformationManager.DisplayMessage(new InformationMessage(
 					SiegeLootAccountingProfile.BuildDirectDevastateSettlementMessage(action, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SiegeLootAccountingProfile.DirectDevastateSettlementMessageColor)));

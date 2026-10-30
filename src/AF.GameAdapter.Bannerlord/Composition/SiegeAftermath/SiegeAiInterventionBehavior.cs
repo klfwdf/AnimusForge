@@ -3755,7 +3755,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				currentOutcome: currentOutcome,
 				destructiveAllowed: destructiveAllowed,
 				speakerName: agent?.Name?.ToString() ?? character?.Name?.ToString() ?? SiegePostprocessContextBuilder.DefaultSpeakerName,
-				speakerIdentity: SiegePostprocessContextBuilder.SelectSpeakerIdentity(ordinaryAlliedSoldier, civilian),
+				speakerIdentity: SiegePostprocessContextBuilder.SelectSpeakerIdentity(ordinaryAlliedSoldier, civilian, GcczTownPromptResourceProvider.UseEnglishPrompt),
 				dialogueRole: dialogueRole,
 				targetAgentIndex: targetAgentIndex,
 				replyIsDirectPlayerResponse: replyIsDirectPlayerResponse,
@@ -8264,7 +8264,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		LootSettlementMarketInventory(
 			SiegeCivilianRobberyProfile.MarketInventoryMinRatio,
 			SiegeCivilianRobberyProfile.MarketInventoryMaxRatio,
-			SiegeCivilianRobberyProfile.MarketInventoryLootReason,
+			(GcczLocalizedResourceLoader.UseChineseInterface ? SiegeCivilianRobberyProfile.MarketInventoryLootReason : SiegeCivilianRobberyProfile.MarketInventoryLootReasonEn),
 			showMessage: true,
 			recordPlunderOperation: false);
 		return _lastLootItemTotal > itemTotalBefore;
@@ -14660,12 +14660,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				if (!_marketGoldLootApplied)
 				{
 					_marketGoldLootApplied = true;
-					LootSettlementMarketGold(SiegeLootAccountingProfile.PlunderSettlementLootReason);
+					LootSettlementMarketGold((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeLootAccountingProfile.PlunderSettlementLootReason : SiegeLootAccountingProfile.PlunderSettlementLootReasonEn));
 				}
 				if (!_marketGoodsLootAppliedForPlunder)
 				{
 					_marketGoodsLootAppliedForPlunder = true;
-					LootSettlementMarketInventory(SiegeLootAccountingProfile.PlunderMarketInventoryMinRatio, SiegeLootAccountingProfile.PlunderMarketInventoryMaxRatio, SiegeLootAccountingProfile.PlunderSettlementLootReason);
+					LootSettlementMarketInventory(SiegeLootAccountingProfile.PlunderMarketInventoryMinRatio, SiegeLootAccountingProfile.PlunderMarketInventoryMaxRatio, (GcczLocalizedResourceLoader.UseChineseInterface ? SiegeLootAccountingProfile.PlunderSettlementLootReason : SiegeLootAccountingProfile.PlunderSettlementLootReasonEn));
 				}
 			}
 			else if (aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
@@ -14673,12 +14673,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				if (!_marketGoldLootApplied)
 				{
 					_marketGoldLootApplied = true;
-					LootSettlementMarketGold(SiegeLootAccountingProfile.MassacreSettlementLootReason);
+					LootSettlementMarketGold((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeLootAccountingProfile.MassacreSettlementLootReason : SiegeLootAccountingProfile.MassacreSettlementLootReasonEn));
 				}
 				if (!_marketGoodsLootAppliedForMassacre)
 				{
 					_marketGoodsLootAppliedForMassacre = true;
-					LootSettlementMarketInventory(SiegeLootAccountingProfile.MassacreMarketInventoryMinRatio, SiegeLootAccountingProfile.MassacreMarketInventoryMaxRatio, SiegeLootAccountingProfile.MassacreSettlementLootReason);
+					LootSettlementMarketInventory(SiegeLootAccountingProfile.MassacreMarketInventoryMinRatio, SiegeLootAccountingProfile.MassacreMarketInventoryMaxRatio, (GcczLocalizedResourceLoader.UseChineseInterface ? SiegeLootAccountingProfile.MassacreSettlementLootReason : SiegeLootAccountingProfile.MassacreSettlementLootReasonEn));
 				}
 			}
 		}

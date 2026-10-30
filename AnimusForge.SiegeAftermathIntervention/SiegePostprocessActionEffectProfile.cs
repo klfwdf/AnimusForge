@@ -10,51 +10,51 @@ public static class SiegePostprocessActionEffectProfile
 
     public const string GatherCiviliansSource = "ai_tag";
 
-    public const string MercyTriggerSource = "Scene dialogue mercy";
+    public static readonly string MercyTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_mercy_source");
 
-    public const string MercyTriggerDetail = "The player chose mercy toward civilians in scene dialogue.";
+    public static readonly string MercyTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_mercy_detail");
 
-    public const string SoldierMaterialReliefTriggerSource = "Soldier distribution reassurance";
+    public static readonly string SoldierMaterialReliefTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_soldier_relief_source");
 
-    public const string SoldierMaterialReliefTriggerDetail = "The player ordered allied soldiers to distribute shared supplies to civilians.";
+    public static readonly string SoldierMaterialReliefTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_soldier_relief_detail");
 
-    public const string CivilianVerbalReliefTriggerSource = "Civilian dialogue reassurance";
+    public static readonly string CivilianVerbalReliefTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_civilian_relief_source");
 
-    public const string CivilianVerbalReliefTriggerDetail = "The player verbally reassured defeated civilians to accept mercy and order.";
+    public static readonly string CivilianVerbalReliefTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_civilian_relief_detail");
 
-    public const string ConversationReliefTriggerSource = "Scene dialogue relief";
+    public static readonly string ConversationReliefTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_conversation_relief_source");
 
-    public const string ConversationReliefTriggerDetail = "The player chose relief and reassurance in scene dialogue.";
+    public static readonly string ConversationReliefTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_conversation_relief_detail");
 
-    public const string InspirationTriggerSource = "Scene dialogue public reassurance";
+    public static readonly string InspirationTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_inspiration_source");
 
-    public const string InspirationTriggerDetail = "The player gathered civilians to declare a new civic order.";
+    public static readonly string InspirationTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_inspiration_detail");
 
-    public const string RallyOathTriggerSource = "Scene dialogue public oath";
+    public static readonly string RallyOathTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_rally_oath_source");
 
-    public const string RallyOathTriggerDetail = "The player organized a public oath of allegiance.";
+    public static readonly string RallyOathTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_rally_oath_detail");
 
-    public const string CivilianRobberyTriggerSource = "Scene dialogue extortion";
+    public static readonly string CivilianRobberyTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_robbery_source");
 
-    public const string CivilianRobberyGoldTriggerDetail = "The player demanded denars from a civilian, merchant, or notable without vanilla plunder.";
+    public static readonly string CivilianRobberyGoldTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_robbery_gold_detail");
 
-    public const string CivilianRobberyGoodsTriggerDetail = "The player demanded supplies from a civilian, merchant, or notable without vanilla plunder.";
+    public static readonly string CivilianRobberyGoodsTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_robbery_goods_detail");
 
-    public const string PlunderTriggerSource = "Scene dialogue plunder";
+    public static readonly string PlunderTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_plunder_source");
 
-    public const string PlunderTriggerDetail = "The player ordered full-town plunder through allied soldiers.";
+    public static readonly string PlunderTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_plunder_detail");
 
-    public const string MassacreTriggerSource = "Scene dialogue massacre";
+    public static readonly string MassacreTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_massacre_source");
 
-    public const string MassacreTriggerDetail = "Negotiations collapsed or the player ordered massacre; escalated to massacre.";
+    public static readonly string MassacreTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_massacre_detail");
 
     public const string MassacreStopTriggerSource = "ai_tag_massacre_stop";
 
     public const string MassacreStopTriggerDetail = "player_ordered_massacre_stop";
 
-    public const string CulturalRepopulationTriggerSource = "Scene dialogue colonization";
+    public static readonly string CulturalRepopulationTriggerSource = SiegeAftermathCompatibilityTexts.Raw("trigger_repopulation_source");
 
-    public const string CulturalRepopulationTriggerDetail = "The player ordered eradicating native inhabitants and converting town culture.";
+    public static readonly string CulturalRepopulationTriggerDetail = SiegeAftermathCompatibilityTexts.Raw("trigger_repopulation_detail");
 
     public static string GetReliefTriggerSource(bool targetIsCivilian)
     {

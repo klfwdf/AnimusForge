@@ -6,7 +6,7 @@ public static class VillageAftermathRuntimePromptProfile
 {
     public const string RuleId = "gccz_village_administration";
 
-    public const string InjectedRuleBlockMarker = "[RULE:village_aftermath]";
+    public static readonly string InjectedRuleBlockMarker = SiegeAftermathCompatibilityTexts.Raw("village_rule_block_marker");
     public const string InjectedRuleBlockMarkerEn = "[RULE:village_aftermath]";
 
     public static string BuildPrompt(string villageName, string boundSettlementName, VillageAftermathAuthorityKind authorityKind)
