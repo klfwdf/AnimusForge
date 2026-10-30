@@ -325,5 +325,12 @@ internal static class LobbyistReplay
         Test.True(s.Owner.CurrentStorage.SponsorReceipts.Count==0,"receipt observer stays inactive for AI-off and non-ruler gifts");
         s=Fixture();s.Host.CaptureThrows=true;Dispatch(s,Tag(Peace));
         Test.True(s.Owner.CurrentStorage.DialogueArrangements.Single().Status=="accepted","failed legacy capture cannot suppress independent lobbyist item");
+        s=Fixture();Dispatch(s,Tag(Peace+";DAYS=14"));pending=s.Owner.CurrentStorage.DialogueArrangements.Single();
+        Dispatch(s,Tag(Peace+";days=0;Continuation="+pending.ArrangementId));
+        Test.True(pending.Status=="accepted","mixed-case rejected field name can be corrected in the same pending item");
+        s=Fixture();Dispatch(s,Tag(Peace+";Condition=clarify"));pending=s.Owner.CurrentStorage.DialogueArrangements.Single();s.Owner.ObserveSponsorPayment("case_payment","ruler_a",100000);
+        Dispatch(s,Tag(Peace+";condition=player_gold;sponsor_gold=100000;continuation="+pending.ArrangementId));
+        Test.True(pending.Status=="accepted","mixed-case condition key follows the same supported-evidence continuation rules");
+        Test.True(!DialogueTagPayload.TryParse(Peace+";condition=Clarify",out _),"condition values retain the existing strict lower-case enum contract");
     }
 }

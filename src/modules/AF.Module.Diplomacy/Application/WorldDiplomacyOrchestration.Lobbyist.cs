@@ -210,7 +210,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         foreach (var part in item.LobbyistPayload.Split(';'))
         {
             var pair = part.Split(new[] { '=' }, 2);
-            string key = pair[0].Trim(), value = pair[1].Trim();
+            string key = pair[0].Trim().ToLowerInvariant(), value = pair[1].Trim();
             if (key == "continuation" || key == "sponsor_receipt" || value == "" || key == "condition" && value == "clarify") continue;
             // Only program-rejected fields may be explicitly corrected. All
             // determined terms and payment obligations remain immutable.
