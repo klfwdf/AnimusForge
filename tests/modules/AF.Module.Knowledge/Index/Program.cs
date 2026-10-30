@@ -329,6 +329,35 @@ internal static class Program
         var lower = r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "berry" } }, 1, 10, 4, 3, out mode);
         Check(lower.Count == 2 && logs.Last(l => l.StartsWith("entity_allocation")).Contains("allowLowerRanks=True") && logs.Last(l => l.StartsWith("entity_allocation")).Contains("secondary=1"), "limit > entity count allows rank-2 sweep");
         Check(r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = " ", Weight = 1f }, new WeightedKnowledgeInput { Text = "x", Weight = 0f } }, 2, 10, 4, 3, out mode).Count == 0 && mode == "none", "blank/zero-weight inputs ignored");
+        NameQueryGate();
+    }
+
+    private static void NameQueryGate()
+    {
+        Check(LoreCandidateRetriever.IsNameQuery("德泰尔") && LoreCandidateRetriever.IsNameQuery("Lucon of Calradia")
+            && !LoreCandidateRetriever.IsNameQuery("斯特吉亚 国家历史 外交承诺 继承争议") && !LoreCandidateRetriever.IsNameQuery("")
+            && !LoreCandidateRetriever.IsNameQuery(new string('x', LoreCandidateRetriever.NameQueryMaxChars + 1)), "name query shape");
+        // "near*" sits at cosine 0.5 from the apple rule: below the name gate, above the generic 0.21 floor.
+        Func<string, float[]> embed = text => (text ?? "").Contains("apple") ? new[] { 1f, 0f, 0f }
+            : (text ?? "").StartsWith("near") ? new[] { 0.5f, 0.8660254f, 0f } : new[] { 0f, 0f, 1f };
+        var rules = new List<LoreRule> { Rule("apple", "apple") };
+        var logs = new List<string>();
+        var plain = new KnowledgeRuleIndex(new FakePorts { Embed = embed, SemanticMinScore = 0.21f }, () => rules);
+        plain.EnsureOnnxIndex();
+        var retriever = new LoreCandidateRetriever(plain, (c, m) => logs.Add(m));
+        var name = retriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "nearname" } }, 1, 10, 4, 4, out _);
+        Check(name.Count == 0 && logs.Any(l => l.Contains("noun=\"nearname\" candidates=0") && l.Contains("nameGate=0.55")),
+            "embedding-only name query below the name gate injects nothing: " + string.Join(" | ", logs.Where(l => l.StartsWith("entity_query"))));
+        var exact = retriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "apple" } }, 1, 10, 4, 4, out _);
+        Check(exact.Count == 1 && exact[0].Id == "apple", "exact name above the gate is kept");
+        var theme = retriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "near history old grievance" } }, 1, 10, 4, 4, out _);
+        Check(theme.Count == 1 && theme[0].Id == "apple", "themed multi-term query keeps the generic floor");
+        var reranked = new KnowledgeRuleIndex(new FakePorts { Embed = embed, SemanticMinScore = 0.21f, RerankerAvailable = true,
+            Score = (q, docs) => docs.Select(_ => 0.3f).ToList() }, () => rules);
+        reranked.EnsureOnnxIndex();
+        var withReranker = new LoreCandidateRetriever(reranked, (c, m) => { })
+            .SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "nearname" } }, 1, 10, 4, 4, out string rerankMode);
+        Check(rerankMode == "rerank_per_entity" && withReranker.Count == 1, "cross-encoder scores are not held to the embedding name gate");
     }
 
     private static void DiplomaticThemeRecall()

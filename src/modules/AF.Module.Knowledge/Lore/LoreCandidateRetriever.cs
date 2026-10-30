@@ -31,6 +31,11 @@ internal sealed class LoreCandidateRetriever
 {
 	internal const int MentionTermHardCap = 32;
 	internal const int MentionQueryMaxChars = 80;
+	// Without a cross-encoder, a bare name query must clear this embedding cosine; below it the nearest rule is
+	// usually a different person/place with a similar-sounding name (offline: 8 world books, bekko-a25m).
+	internal const float NameQueryMinScore = 0.55f;
+	internal const int NameQueryMaxParts = 3;
+	internal const int NameQueryMaxChars = 24;
 
 	private readonly KnowledgeRuleIndex _index;
 	private readonly Action<string, string> _log;
@@ -50,6 +55,25 @@ internal sealed class LoreCandidateRetriever
 		catch
 		{
 		}
+	}
+
+	/// <summary>A bare entity mention (name, place, short noun) rather than a themed multi-term query.</summary>
+	internal static bool IsNameQuery(string text)
+	{
+		string normalized = NormalizeKeywordForCompare(text);
+		if (normalized.Length == 0 || normalized.Length > NameQueryMaxChars)
+		{
+			return false;
+		}
+		int parts = 1;
+		foreach (char c in normalized)
+		{
+			if (c == ' ' && ++parts > NameQueryMaxParts)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/// <summary>Collapses runs of whitespace (incl. newlines) to one space and trims.</summary>
@@ -280,9 +304,15 @@ internal sealed class LoreCandidateRetriever
 					Log("LoreMatch", $"entity_query priority={num + 1} noun={QuoteJson(weightedKnowledgeInput.Text)} candidates=0");
 					continue;
 				}
-				rankedCandidates.Add(list3.Where((KnowledgeRuleScore x) => x?.Rule != null).ToList());
-				KnowledgeRuleScore best = rankedCandidates[num].FirstOrDefault();
-				Log("LoreMatch", $"entity_query priority={num + 1} noun={QuoteJson(weightedKnowledgeInput.Text)} candidates={rankedCandidates[num].Count} best={(best?.Rule?.Id ?? "(none)")} score={(best?.RawScore ?? 0f):0.000}");
+				List<KnowledgeRuleScore> candidates = list3.Where((KnowledgeRuleScore x) => x?.Rule != null).ToList();
+				KnowledgeRuleScore best = candidates.FirstOrDefault();
+				bool nameGated = !flag && IsNameQuery(weightedKnowledgeInput.Text);
+				if (nameGated)
+				{
+					candidates = candidates.Where((KnowledgeRuleScore x) => x.RawScore >= NameQueryMinScore).ToList();
+				}
+				rankedCandidates.Add(candidates);
+				Log("LoreMatch", $"entity_query priority={num + 1} noun={QuoteJson(weightedKnowledgeInput.Text)} candidates={candidates.Count} best={(best?.Rule?.Id ?? "(none)")} score={(best?.RawScore ?? 0f):0.000}" + (nameGated ? $" nameGate={NameQueryMinScore:0.00}" : ""));
 			}
 			int limit = KnowledgeRuleIndex.GetLoreInjectLimit(injectLimit);
 			HashSet<LoreRule> selectedRules = new HashSet<LoreRule>();
