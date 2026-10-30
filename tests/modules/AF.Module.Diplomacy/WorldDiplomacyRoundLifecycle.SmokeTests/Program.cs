@@ -93,6 +93,7 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Contains("--country-routing")) { CountryRoutingReplay.Run(); Console.WriteLine("PASS country routing assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--lobbyist")) { LobbyistReplay.FullRun(); Console.WriteLine("PASS lobbyist assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--bilateral-direct"))
         { try { BilateralReplay.Run(); Console.WriteLine("PASS bilateral direct assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }

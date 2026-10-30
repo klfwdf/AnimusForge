@@ -50,6 +50,35 @@ internal sealed partial class WorldDiplomacyOrchestration
         DiplomacyBilateralRouting.OwnsMatter(parsed, actor, player)
         && !RequiresFormalBilateralSource(parsed.SourceDocumentId, parsed.SourceActionId);
 
+    internal bool TryProcessBilateralTag(string ruler, string actor, string tag, string payload,
+        DialogueInteractionOrigin origin, Func<DiplomacyBilateralPayload, DiplomacyBilateralResult> apply)
+    {
+        if (!IsBilateralConversation(ruler, actor)) return false;
+        string player = CurrentPlayerAuthority();
+        if (string.Equals(tag, "COMMITMENT", StringComparison.OrdinalIgnoreCase))
+        { ControlOralDiplomaticCommitment(ruler, actor, payload, origin); return true; }
+        DiplomacyBilateralPayload request;
+        if (string.Equals(tag, "COMMIT", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!DialogueTagPayload.TryParse(payload, out var parsed) || !OwnsDirectBilateralMatter(parsed, actor, player)) return false;
+            if (origin?.PlayerConsentConfirmed == false && parsed.Action is DialogueDiplomaticAction.Peace or DialogueDiplomaticAction.Alliance or DialogueDiplomaticAction.Trade)
+            { _host.Log("bilateral routing rejected: player_consent_not_confirmed"); return true; }
+            if (!DiplomacyBilateralPayload.TryFromCommit(parsed, player, actor, out request))
+            { _host.Log("bilateral routing rejected: incomplete_or_non_equivalent_commit"); return true; }
+            _host.Log("diplomacy route=bilateral normalized=COMMIT action=" + request.Action);
+        }
+        else
+        {
+            if (!DiplomacyBilateralRouting.TryAction(tag, out _)) return false;
+            string[] p = (payload ?? "").Split('|')[0].Split(':');
+            if (p.Length < 2 || !DiplomacyBilateralRouting.IsPair(p[0].Trim(), p[1].Trim(), player, actor)) return false;
+            if (!DiplomacyBilateralPayload.TryParse(tag, payload, player, actor, out request))
+            { _host.Log("bilateral payload rejected action=" + tag); return true; }
+        }
+        ExecuteBilateral(ruler, actor, request.Action, origin, () => apply(request), request);
+        return true;
+    }
+
     private bool RequiresFormalBilateralSource(string documentId, string actionId)
     {
         if (string.IsNullOrEmpty(documentId)) return false;

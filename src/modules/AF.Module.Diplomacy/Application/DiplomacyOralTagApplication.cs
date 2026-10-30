@@ -67,8 +67,8 @@ internal static class DiplomacyOralTagApplication
             // The review owns remaining complex self-country matters. Immediate actions pass
             // through their existing authority/consent checks in the executor.
             string action = match.Groups[1].Value;
-            // Per-matter ownership precedes the legacy review suppression. The
-            // lobbyist path never turns a player-only native tag into NPC assent.
+            // Country-based ownership and lossless format normalization precede
+            // suppression by the retained complex-matter review.
             if (source is IDiplomacyLobbyistTagSource lobbyist)
             {
                 try { if (lobbyist.TryProcessLobbyist(action, match.Groups[2].Value)) return ""; }
@@ -91,7 +91,8 @@ internal static class DiplomacyOralTagApplication
                 || (string.Equals(action, "DECLARE_WAR", StringComparison.OrdinalIgnoreCase)
                     && source is IDiplomacyCommitmentTagSource actor
                     && !string.Equals(match.Groups[2].Value.Split(':')[0].Trim(), actor.SpeakerKingdomId, StringComparison.OrdinalIgnoreCase));
-            if (reviewing && !immediate) return "";
+            if (reviewing && !immediate)
+            { source.Log("[Dispatch] not executed by immediate owners; retained review boundary action=" + action); return ""; }
             string status = ProcessSingle(source, match.Groups[1].Value, match.Groups[2].Value);
             if (!string.IsNullOrWhiteSpace(status)) source.Log("[Outcome] " + status);
             // All modes keep outcomes in diagnostics/owned facts and notifications.

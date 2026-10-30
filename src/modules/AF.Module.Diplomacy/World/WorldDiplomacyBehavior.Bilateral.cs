@@ -14,24 +14,8 @@ public sealed partial class WorldDiplomacyBehavior
         var owner = Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
         if (!IsWorldDiplomacyEnabled() || owner?.IsLiveCampaign != true
             || !owner._orchestration.IsBilateralConversation(npc?.StringId, npc?.Clan?.Kingdom?.StringId)) return false;
-        string player = Clan.PlayerClan.Kingdom.StringId, actor = npc.Clan.Kingdom.StringId;
-        if (string.Equals(tag, "COMMITMENT", StringComparison.OrdinalIgnoreCase))
-        {
-            owner._orchestration.ControlOralDiplomaticCommitment(npc.StringId, actor, payload, DiplomacyDialogueSourceScope.Current);
-            return true;
-        }
-        // Late/custom COMMIT tags for a direct matter are consumed, not reinterpreted
-        // as assent and not sent to the old execution authority.
-        if (string.Equals(tag, "COMMIT", StringComparison.OrdinalIgnoreCase))
-            return DialogueTagPayload.TryParse(payload, out var parsed) && owner._orchestration.OwnsDirectBilateralMatter(parsed, actor, player);
-        if (!DiplomacyBilateralRouting.TryAction(tag, out var action)) return false;
-        string[] p = (payload ?? "").Split('|')[0].Split(':');
-        if (p.Length < 2 || !DiplomacyBilateralRouting.IsPair(p[0].Trim(), p[1].Trim(), player, actor)) return false;
-        if (!DiplomacyBilateralPayload.TryParse(tag, payload, player, actor, out var request))
-        { Log("bilateral payload rejected action=" + tag); return true; }
-        owner._orchestration.ExecuteBilateral(npc.StringId, actor, action, DiplomacyDialogueSourceScope.Current,
-            () => owner.ApplyBilateral(npc, request.Tag, request.Payload, request.Parts), request);
-        return true;
+        return owner._orchestration.TryProcessBilateralTag(npc.StringId, npc.Clan.Kingdom.StringId, tag, payload,
+            DiplomacyDialogueSourceScope.Current, request => owner.ApplyBilateral(npc, request.Tag, request.Payload, request.Parts));
     }
 
     private DiplomacyBilateralResult ApplyBilateral(Hero npc, string tag, string payload, string[] p)

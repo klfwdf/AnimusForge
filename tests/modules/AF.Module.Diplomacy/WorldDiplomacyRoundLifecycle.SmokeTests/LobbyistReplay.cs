@@ -149,7 +149,7 @@ internal static class LobbyistReplay
         s=Fixture();s.Host.Enabled=false; Dispatch(s,Tag(Peace+";condition=player_gold;sponsor_gold=100000"));
         Test.True(s.Native==0&&s.Owner.CurrentStorage.DialogueArrangements.Count==0,"AI-off never ignores new conditions");
         Dispatch(s,Tag(Peace));Test.True(s.Native==1,"AI-off legacy native fallback retained");
-        s=Fixture();Dispatch(s,"[ACTION:DIPLOMACY:MAKE_PEACE:a:b:0:0]");Test.True(s.Owner.CurrentStorage.DialogueArrangements.Count==0,"native player tag never creates lobbyist commitment");
+        s=Fixture();Dispatch(s,"[ACTION:DIPLOMACY:MAKE_PEACE:a:b:0:0]");Test.True(s.Owner.CurrentStorage.DialogueArrangements.Single().IsLobbyistCommitment,"equivalent NPC positional tag uses the same lobbyist owner");
     }
     static void RecoveryAndFairness()
     {

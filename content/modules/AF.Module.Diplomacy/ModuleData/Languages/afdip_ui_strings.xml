@@ -4,6 +4,18 @@
     <tag language="English" />
   </tags>
   <strings>
+    <string id="AF_DIP_UI_LobbyistRegistered_DeclareWar" text="{RULER}, ruler of {KINGDOM}, has committed to declaring war on {TARGET}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_Peace" text="{RULER}, ruler of {KINGDOM}, has committed to proposing peace to {TARGET}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_Alliance" text="{RULER}, ruler of {KINGDOM}, has committed to proposing an alliance to {TARGET}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_Trade" text="{RULER}, ruler of {KINGDOM}, has committed to proposing a trade agreement to {TARGET}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_BreakAlliance" text="{RULER}, ruler of {KINGDOM}, has committed to ending the alliance with {TARGET}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_CancelTrade" text="{RULER}, ruler of {KINGDOM}, has committed to cancelling the trade agreement with {TARGET}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_Annexation" text="{RULER}, ruler of {KINGDOM}, has committed to proposing the annexation of {JOINING} by {RECEIVING}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_Tributary" text="{RULER}, ruler of {KINGDOM}, has committed to proposing that {JOINING} become a tributary of {RECEIVING}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_Garrison" text="{RULER}, ruler of {KINGDOM}, has committed to proposing that {JOINING} host a garrison from {RECEIVING}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_Vassal" text="{RULER}, ruler of {KINGDOM}, has committed to proposing that {JOINING} become a vassal of {RECEIVING}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_AcceptProposal" text="{RULER}, ruler of {KINGDOM}, has committed to formally accepting the diplomatic proposal from {TARGET}." />
+    <string id="AF_DIP_UI_LobbyistRegistered_RejectProposal" text="{RULER}, ruler of {KINGDOM}, has committed to formally rejecting the diplomatic proposal from {TARGET}." />
     <string id="AF_DIP_UI_Aid_RequestTitle" text="Request allied aid" />
     <string id="AF_DIP_UI_Aid_RequestBody" text="Ask {ALLY} to join the war against {ENEMY}? Your ally will decide separately. This request does not declare war for them or pay the native automatic call-to-war fee." />
     <string id="AF_DIP_UI_Aid_Send" text="Send request" />

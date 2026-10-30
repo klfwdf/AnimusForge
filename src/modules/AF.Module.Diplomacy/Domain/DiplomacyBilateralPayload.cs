@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using AnimusForge.DiplomacyDialogue;
 
 namespace AnimusForge;
@@ -9,6 +10,96 @@ internal sealed class DiplomacyBilateralPayload
     internal string[] Parts;
     internal DialogueDiplomaticAction Action;
     internal WorldDiplomacyDialogueTerms Terms = new();
+
+    // Only syntax is normalized here. Current rulers, source offers, conditions,
+    // idempotency and effects remain owned by the existing application paths.
+    internal static bool TryLobbyistCommit(string tag, string payload, string npc, string playerAuthority,
+        out string commitment, out string error)
+    {
+        commitment = null; error = "";
+        if (!DiplomacyBilateralRouting.TryAction(tag, out var action)) return false;
+        if (string.IsNullOrWhiteSpace(payload) || payload.Length > 1800)
+        { error = "invalid_payload"; return true; }
+        string[] pair = payload.Split('|')[0].Split(':');
+        if (pair.Length >= 2 && DiplomacyBilateralRouting.IsPair(pair[0].Trim(), pair[1].Trim(), playerAuthority, npc))
+            return false;
+        if (pair.Length < 2 || !SafeAtom(pair[0].Trim()) || !SafeAtom(pair[1].Trim())
+            || string.Equals(pair[0].Trim(), pair[1].Trim(), StringComparison.OrdinalIgnoreCase))
+        { error = "invalid_participants"; return true; }
+        bool firstNpc = string.Equals(pair[0].Trim(), npc, StringComparison.OrdinalIgnoreCase);
+        bool secondNpc = string.Equals(pair[1].Trim(), npc, StringComparison.OrdinalIgnoreCase);
+        bool unilateral = action is DialogueDiplomaticAction.DeclareWar or DialogueDiplomaticAction.BreakAlliance or DialogueDiplomaticAction.CancelTrade;
+        if ((!firstNpc && !secondNpc) || unilateral && !firstNpc)
+        { error = "speaker_is_not_actor"; return true; }
+        string target = (firstNpc ? pair[1] : pair[0]).Trim();
+        if (!TryParse(tag, payload, target, npc, out var request)
+            || !SafeAtom(request.SourceDocument, true) || !SafeAtom(request.SourceAction, true)
+            || !SafeAtom(request.Terms.CessionSettlementId, true))
+        { error = "invalid_or_incomplete_terms"; return true; }
+        string Num(int value) => value.ToString(CultureInfo.InvariantCulture);
+        var t = request.Terms;
+        commitment = "action=" + action + ";move=" + (request.SourceDocument == "" ? "NewMatter" : "AcceptProposal") + ";target=" + target;
+        if (action == DialogueDiplomaticAction.Peace)
+        {
+            commitment += ";tribute=" + Num(t.DailyTribute) + ";days=" + Num(t.DurationDays);
+            if (t.DailyTribute > 0) commitment += ";payer=" + t.TributePayerKingdomId + ";receiver=" + t.TributeReceiverKingdomId;
+            if (!string.IsNullOrEmpty(t.CessionSettlementId)) commitment += ";cession_from=" + t.CessionFromKingdomId
+                + ";cession_to=" + t.CessionToKingdomId + ";settlement=" + t.CessionSettlementId;
+        }
+        else if (t.DurationDays > 0) commitment += ";days=" + Num(t.DurationDays);
+        if (request.SourceDocument != "") commitment += ";source_document=" + request.SourceDocument + ";source_action=" + request.SourceAction;
+        if (!DialogueTagPayload.TryParse(commitment, out _))
+        { commitment = null; error = "unrepresentable_terms"; }
+        return true;
+    }
+
+    internal static bool TryFromCommit(DialogueTagPayload parsed, string player, string npc, out DiplomacyBilateralPayload value)
+    {
+        value = null;
+        if (!DiplomacyBilateralRouting.OwnsMatter(parsed, npc, player)
+            || !string.IsNullOrEmpty(parsed.Condition) && parsed.Condition != "none"
+            || parsed.SponsorGold != 0 || !string.IsNullOrEmpty(parsed.Continuation)
+            || !string.IsNullOrEmpty(parsed.EventRoundId) || !string.IsNullOrEmpty(parsed.SupersedesArrangementId)) return false;
+        var t = parsed.Terms;
+        if (!string.IsNullOrEmpty(t.ReceivingKingdomId) || !string.IsNullOrEmpty(t.JoiningKingdomId)) return false;
+        string pair = npc + ":" + player, tag, payload;
+        string Num(int number) => number.ToString(CultureInfo.InvariantCulture);
+        bool cession = !string.IsNullOrEmpty(t.CessionFromKingdomId) || !string.IsNullOrEmpty(t.CessionToKingdomId) || !string.IsNullOrEmpty(t.CessionSettlementId);
+        bool tribute = t.DailyTribute != 0 || !string.IsNullOrEmpty(t.TributePayerKingdomId) || !string.IsNullOrEmpty(t.TributeReceiverKingdomId);
+        if (parsed.Action != DialogueDiplomaticAction.Peace && (cession || tribute)) return false;
+        switch (parsed.Action)
+        {
+            case DialogueDiplomaticAction.Peace:
+                tag = "MAKE_PEACE";
+                if (t.DailyTribute == 0 && !tribute) payload = pair + ":0:" + Num(t.DurationDays);
+                else payload = t.TributePayerKingdomId + ":" + t.TributeReceiverKingdomId + ":" + Num(t.DailyTribute) + ":" + Num(t.DurationDays);
+                if (cession) payload += ":" + t.CessionFromKingdomId + ":" + t.CessionToKingdomId + ":" + t.CessionSettlementId;
+                break;
+            case DialogueDiplomaticAction.Alliance:
+                if (t.DurationDays != 0) return false;
+                tag = "FORM_ALLIANCE"; payload = pair + ":default"; break;
+            case DialogueDiplomaticAction.Trade:
+                tag = "MAKE_TRADE"; payload = pair + ":" + (t.DurationDays == 0 ? "default" : Num(t.DurationDays)); break;
+            default:
+                if (t.DurationDays != 0) return false;
+                tag = parsed.Action == DialogueDiplomaticAction.DeclareWar ? "DECLARE_WAR"
+                    : parsed.Action == DialogueDiplomaticAction.BreakAlliance ? "BREAK_ALLIANCE" : "CANCEL_TRADE";
+                payload = pair; break;
+        }
+        if (parsed.Move == DialogueDiplomaticMove.AcceptProposal)
+        {
+            if (!SafeAtom(parsed.SourceDocumentId) || !SafeAtom(parsed.SourceActionId, true)) return false;
+            payload += "|document=" + parsed.SourceDocumentId + ";action=" + parsed.SourceActionId;
+        }
+        return TryParse(tag, payload, player, npc, out value);
+    }
+
+    private static bool SafeAtom(string value, bool allowEmpty = false)
+    {
+        if (string.IsNullOrEmpty(value)) return allowEmpty;
+        foreach (char c in value) if (char.IsWhiteSpace(c) || ":;=|[]".IndexOf(c) >= 0) return false;
+        return true;
+    }
 
     internal static bool TryParse(string tag, string payload, string player, string npc, out DiplomacyBilateralPayload value)
     {

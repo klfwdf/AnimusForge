@@ -59,12 +59,19 @@ internal sealed partial class WorldDiplomacyOrchestration
             || !string.Equals(parsed.TargetKingdomId, playerAuthority, StringComparison.OrdinalIgnoreCase))
         && !DialogueRoutingRules.UsesLegacyOralVassalage(parsed, actor, playerAuthority);
 
-    // Called from the shared tag dispatcher on the campaign thread. No native
-    // player tag is promoted to a promise, and no text extraction can supply one.
+    // Called by all three channels. Equivalent positional tags enter the same
+    // commitment owner; only the current NPC may originate a third-party action.
     internal bool TryProcessLobbyistTag(string ruler, string actor, string action, string payload, DialogueInteractionOrigin origin)
     {
         if (!_host.WorldDiplomacyEnabled()) return false;
-        if (!string.Equals(action, "COMMIT", StringComparison.OrdinalIgnoreCase)) return false;
+        if (!string.Equals(action, "COMMIT", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!DiplomacyBilateralPayload.TryLobbyistCommit(action, payload, actor, CurrentPlayerAuthority(), out var normalized, out var routingError)) return false;
+            if (normalized == null)
+            { _host.Log("lobbyist routing rejected: action=" + action + " reason=" + routingError); return true; }
+            _host.Log("diplomacy route=lobbyist normalized=" + action + " actor=" + actor);
+            payload = normalized;
+        }
         if (!DialogueTagPayload.TryParse(payload, out var parsed))
         { _host.Log("lobbyist rejected: invalid_payload"); return true; }
         if (!IsLobbyistMatter(parsed, actor, CurrentPlayerAuthority())) return false;
@@ -77,7 +84,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         Storage.DialogueArrangements ??= new();
         var sameTurn = Storage.DialogueArrangements.FirstOrDefault(x => x.IsLobbyistCommitment
             && x.RulerId == ruler && x.SourceChannel == origin.Channel && x.SourceSessionId == origin.SessionId
-            && x.SourceInteractionId == origin.InteractionId && x.LobbyistPayload == payload);
+            && x.SourceInteractionId == origin.InteractionId && SameLobbyistPayload(x.LobbyistPayload, parsed));
         if (sameTurn != null && sameTurn.Status != "waiting_condition" && sameTurn.Status != "waiting_clarification") return true;
         var item = sameTurn;
         if (!string.IsNullOrEmpty(parsed.Continuation))
@@ -130,18 +137,24 @@ internal sealed partial class WorldDiplomacyOrchestration
         item.Status = "waiting_clarification";
         item.SourcePlayerText = origin.PlayerText; item.SourceNpcText = origin.NpcText;
         item.Reason = "terms_or_condition_require_clarification";
+        bool Pending(string reason)
+        {
+            item.Reason = reason;
+            _host.Log("lobbyist pending id=" + item.ArrangementId + " reason=" + reason);
+            return true;
+        }
         if (!DialogueTermsValidation.Validate(parsed.Action, parsed.Terms, actor, parsed.TargetKingdomId, out var error)
             && parsed.Move == DialogueDiplomaticMove.NewMatter)
-        { item.Reason = error; return true; }
-        if (parsed.Condition == "clarify") return true;
+            return Pending(error);
+        if (parsed.Condition == "clarify") return Pending(item.Reason);
         if (parsed.Move != DialogueDiplomaticMove.NewMatter && string.IsNullOrEmpty(parsed.SourceDocumentId))
-        { item.Reason = "exact_source_proposal_required"; return true; }
+            return Pending("exact_source_proposal_required");
         if (parsed.Move != DialogueDiplomaticMove.NewMatter && QueryAnswerableProposals(ruler, actor, parsed.TargetKingdomId,
             parsed.Action, new DialogueProposalReference("", parsed.SourceDocumentId, parsed.SourceActionId)).Proposals
             .Count(x => x.IsOpen && x.IsKnownByRuler && x.IsCurrentlyExecutable) != 1)
-        { item.Reason = "exact_source_proposal_invalid"; return true; }
+            return Pending("exact_source_proposal_invalid");
         if (parsed.Move == DialogueDiplomaticMove.NewMatter && !string.IsNullOrEmpty(parsed.EventRoundId) && !ValidLobbyistEvent(parsed.EventRoundId, actor, parsed.TargetKingdomId))
-        { item.Reason = "event_not_known_live_or_matching_participants"; return true; }
+            return Pending("event_not_known_live_or_matching_participants");
         if (parsed.Condition == "player_gold")
         {
             item.SponsorGold = parsed.SponsorGold;
@@ -172,7 +185,11 @@ internal sealed partial class WorldDiplomacyOrchestration
                 origin.FullPlayerText, origin.FullNpcText, false);
             string result = SubmitReviewedOralCommitment(ruler, actor, payload, detached, out bool registered, parsed.EventRoundId);
             if (!registered && item.Reason == "terms_or_condition_require_clarification") item.Reason = "registration_validation_pending";
-            if (registered) LinkLegacyLobbyistEvidence(item, parsed);
+            if (registered)
+            {
+                NotifyLobbyistRegistered(item);
+                LinkLegacyLobbyistEvidence(item, parsed);
+            }
             _host.Log("lobbyist commitment id=" + item.ArrangementId + " registered=" + registered + " reason=" + item.Reason);
         }
         catch (Exception ex)
@@ -185,6 +202,55 @@ internal sealed partial class WorldDiplomacyOrchestration
         }
         finally { _lobbyistSubmission = previous; }
         return true;
+    }
+
+    private static bool SameLobbyistPayload(string original, DialogueTagPayload next)
+    {
+        // Compare meaning within this exact interaction, including after the
+        // action executed or a save was loaded. Field order/default-zero syntax
+        // must not create another promise or another registration notification.
+        return DialogueTagPayload.TryParse(original, out var prior)
+            && prior.Action == next.Action && prior.Move == next.Move && prior.TargetKingdomId == next.TargetKingdomId
+            && prior.Terms.Equals(next.Terms) && prior.SourceDocumentId == next.SourceDocumentId && prior.SourceActionId == next.SourceActionId
+            && prior.EventRoundId == next.EventRoundId && prior.SupersedesArrangementId == next.SupersedesArrangementId
+            && prior.SupersedesVersion == next.SupersedesVersion && prior.RevisionReason == next.RevisionReason
+            && (prior.Condition == "none" ? "" : prior.Condition) == (next.Condition == "none" ? "" : next.Condition)
+            && prior.SponsorGold == next.SponsorGold && prior.SponsorReceipt == next.SponsorReceipt && prior.Continuation == next.Continuation;
+    }
+
+    private void NotifyLobbyistRegistered(WorldDiplomacyDialogueArrangement item)
+    {
+        // Only a newly successful registration reaches here. Existing accepted
+        // records (including loaded saves and equivalent tags) return earlier.
+        // Notification failures must not reclassify or retry diplomatic work.
+        try
+        {
+            string kind = item.Move == DialogueDiplomaticMove.AcceptProposal ? "AcceptProposal"
+                : item.Move == DialogueDiplomaticMove.RejectProposal ? "RejectProposal" : item.Action.ToString();
+            string fallback = kind switch
+            {
+                "DeclareWar" => "{RULER}, ruler of {KINGDOM}, has committed to declaring war on {TARGET}.",
+                "Peace" => "{RULER}, ruler of {KINGDOM}, has committed to proposing peace to {TARGET}.",
+                "Alliance" => "{RULER}, ruler of {KINGDOM}, has committed to proposing an alliance to {TARGET}.",
+                "Trade" => "{RULER}, ruler of {KINGDOM}, has committed to proposing a trade agreement to {TARGET}.",
+                "BreakAlliance" => "{RULER}, ruler of {KINGDOM}, has committed to ending the alliance with {TARGET}.",
+                "CancelTrade" => "{RULER}, ruler of {KINGDOM}, has committed to cancelling the trade agreement with {TARGET}.",
+                "Annexation" => "{RULER}, ruler of {KINGDOM}, has committed to proposing the annexation of {JOINING} by {RECEIVING}.",
+                "Tributary" => "{RULER}, ruler of {KINGDOM}, has committed to proposing that {JOINING} become a tributary of {RECEIVING}.",
+                "Garrison" => "{RULER}, ruler of {KINGDOM}, has committed to proposing that {JOINING} host a garrison from {RECEIVING}.",
+                "Vassal" => "{RULER}, ruler of {KINGDOM}, has committed to proposing that {JOINING} become a vassal of {RECEIVING}.",
+                "AcceptProposal" => "{RULER}, ruler of {KINGDOM}, has committed to formally accepting the diplomatic proposal from {TARGET}.",
+                "RejectProposal" => "{RULER}, ruler of {KINGDOM}, has committed to formally rejecting the diplomatic proposal from {TARGET}.",
+                _ => null
+            };
+            if (fallback == null) return;
+            _host.Notify(DiplomacyUiLocalization.Format("AF_DIP_UI_LobbyistRegistered_" + kind, fallback,
+                ("KINGDOM", _host.PartyNameOrEmpty(item.ActorKingdomId)), ("RULER", _host.PartyRulerName(item.ActorKingdomId)),
+                ("TARGET", _host.PartyNameOrEmpty(item.TargetKingdomId)),
+                ("RECEIVING", _host.PartyNameOrEmpty(item.Terms.ReceivingKingdomId)),
+                ("JOINING", _host.PartyNameOrEmpty(item.Terms.JoiningKingdomId))));
+        }
+        catch (Exception ex) { _host.Log("lobbyist registration notification failed id=" + item.ArrangementId + " error=" + ex.GetType().Name); }
     }
 
     private void LinkLegacyLobbyistEvidence(WorldDiplomacyDialogueArrangement item, DialogueTagPayload parsed)
