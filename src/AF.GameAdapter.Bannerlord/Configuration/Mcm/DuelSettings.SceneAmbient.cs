@@ -19,7 +19,7 @@ public partial class DuelSettings
     public bool ShoutRelayPrefetch { get; set; } = false;
 
     [SettingPropertyBool("{=AF_MCM_Ambient_Enabled}Enable ambient scene interaction", Order = 30, RequireRestart = false,
-        HintText = "{=AF_MCM_Ambient_Enabled_Hint}While you stay idle in a peaceful tavern, lord's hall, town or village scene, nearby named characters may talk to each other or come over to speak to you. Each line uses a model request. Default: off.")]
+        HintText = "{=AF_MCM_Ambient_Enabled_Hint}While you stay idle in a peaceful tavern, lord's hall, town or village scene, nearby characters, named or not, may talk to each other or come over to speak to you. Seated characters speak from their seat when close enough. Each line uses a model request. Default: off.")]
     [SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
     public bool AmbientSceneEnabled { get; set; } = false;
 

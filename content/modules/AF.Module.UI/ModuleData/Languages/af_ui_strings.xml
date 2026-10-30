@@ -3349,7 +3349,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Shout_RelayPrefetch" text="Prepare the next relay speaker early" />
   <string id="AF_MCM_Shout_RelayPrefetch_Hint" text="When a relay will continue and at most two characters may answer next, their memory is loaded while the current line is still being spoken. The line itself is still generated only when it is that character's turn. Shortens pauses but may load memory that is not used. Default: off." />
   <string id="AF_MCM_Ambient_Enabled" text="Enable ambient scene interaction" />
-  <string id="AF_MCM_Ambient_Enabled_Hint" text="While you stay idle in a peaceful tavern, lord's hall, town or village scene, nearby named characters may talk to each other or come over to speak to you. Each line uses a model request. Default: off." />
+  <string id="AF_MCM_Ambient_Enabled_Hint" text="While you stay idle in a peaceful tavern, lord's hall, town or village scene, nearby characters, named or not, may talk to each other or come over to speak to you. Seated characters speak from their seat when close enough. Each line uses a model request. Default: off." />
   <string id="AF_MCM_Ambient_IdleSeconds" text="Player idle time before ambient interaction (s)" />
   <string id="AF_MCM_Ambient_IdleSeconds_Hint" text="You must not have shouted, talked or opened a menu for this long. Default: 20." />
   <string id="AF_MCM_Ambient_Cooldown" text="Interval between ambient interactions (s)" />

@@ -19,6 +19,8 @@ namespace AnimusForge;
 //   checks pass (<=1 scan/5 s).
 // - One session at a time. A player shout advances the conversation epoch, which every async
 //   stage of the chat checks; the approach state machine is ticked only while a session exists.
+// - Named and unnamed characters may take part; seated ones stay seated (the standing side walks
+//   over, or a fully seated pair must already be close).
 // - No postprocess or action tags: chat cannot change game state. Persistence is one local
 //   summary line per named participant (no extra model call, no AFEF).
 public partial class ShoutBehavior
@@ -28,6 +30,7 @@ public partial class ShoutBehavior
     private const float AmbientApproachTimeoutSeconds = 15f;
     private const float AmbientPlayerReplyWindowSeconds = 10f;
     private const float AmbientNpcPairMaxDistance = 12f;
+    private const float AmbientSeatedTalkDistance = 5f;     // seated speakers stay put and talk only this close
     private const int AmbientMaxCandidates = 8;
 
     private enum AmbientStage { None, Approaching, Talking, AwaitPlayer }
@@ -38,6 +41,8 @@ public partial class ShoutBehavior
         internal bool TargetsPlayer;
         internal Agent Initiator;
         internal Agent Partner;                 // null when the initiator approaches the player
+        internal Agent Mover;                   // agent that walks over; null when everyone stays seated
+        internal Agent MoveTarget;
         internal float StageDeadline;
         internal string Topic;
         internal int Epoch;
@@ -190,9 +195,10 @@ public partial class ShoutBehavior
             if (agent == null || agent == main || !CanAgentParticipateInSceneSpeech(agent)) continue;
             float distanceSquared = agent.Position.DistanceSquared(playerPosition);
             if (distanceSquared > radiusSquared) continue;
-            if (!(agent.Character is CharacterObject character) || character.HeroObject == null) continue;
+            if (!(agent.Character is CharacterObject character)) continue;
             Hero hero = character.HeroObject;
-            if (hero == Hero.MainHero || hero.IsChild || hero.IsPrisoner || IsAgentHostileToMainAgent(agent)
+            if (hero == Hero.MainHero || hero?.IsChild == true || hero?.IsPrisoner == true || (hero == null && IsAmbientUnnamedChild(agent, character))
+                || IsAgentHostileToMainAgent(agent)
                 || RichExecutions.Core.VengeanceIntegration.IsExecutedVictim(agent)
                 || BattleSpeechRuntimeHost.IsClaimedSpeechSpeaker(agent)
                 || _sceneMovement.IsAgentBusyWithSceneSummonErrand(agent.Index) || _sceneMovement.IsAgentBusyWithSceneGuideErrand(agent.Index)
@@ -209,13 +215,33 @@ public partial class ShoutBehavior
 
     private bool IsStaringAgentIndex(int index) => _j17SceneAttentionController.IsStaringAgentIndex(index);
 
+    // Unnamed agents carry no Hero; a reported age in (0, 18) marks a child.
+    private static bool IsAmbientUnnamedChild(Agent agent, CharacterObject character)
+    {
+        try
+        {
+            float age = agent.Age;
+            if (age > 0f && age < 18f) return true;
+            age = character.Age;
+            return age > 0f && age < 18f;
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
+    private static string AmbientIdentityKey(AmbientCandidate candidate)
+        => candidate.Hero != null ? "hero:" + candidate.Hero.StringId : "agent:" + candidate.Agent.Index;
+
     private static bool IsAgentUsingObject(Agent agent)
     {
         try { return agent.IsUsingGameObject || agent.CurrentlyUsedGameObject != null; }
         catch { return true; }
     }
 
-    // Relationship > same faction > distance; the initiator must not be using an object.
+    // Relationship > same faction > named > distance. A standing participant walks over; two seated
+    // participants talk in place only when already close.
     private bool TryStartAmbientNpcPair(List<AmbientCandidate> candidates, DuelSettings settings, float now)
     {
         if (candidates.Count < 2) return false;
@@ -225,18 +251,21 @@ public partial class ShoutBehavior
         for (int i = 0; i < candidates.Count; i++)
         {
             AmbientCandidate initiator = candidates[i];
-            if (IsAgentUsingObject(initiator.Agent)) continue;
+            bool initiatorSeated = IsAgentUsingObject(initiator.Agent);
             for (int j = 0; j < candidates.Count; j++)
             {
                 if (i == j) continue;
                 AmbientCandidate partner = candidates[j];
                 float pairDistance = initiator.Agent.Position.Distance(partner.Agent.Position);
                 if (pairDistance > AmbientNpcPairMaxDistance) continue;
-                if (_ambientPairCooldownUntil.TryGetValue(AmbientPairKey(initiator.Hero, partner.Hero), out DateTime until) && until > realNow) continue;
+                if (initiatorSeated && IsAgentUsingObject(partner.Agent) && pairDistance > AmbientSeatedTalkDistance) continue;
+                if (_ambientPairCooldownUntil.TryGetValue(AmbientPairKey(initiator, partner), out DateTime until) && until > realNow) continue;
+                bool bothNamed = initiator.Hero != null && partner.Hero != null;
                 int relation = 0;
-                try { relation = initiator.Hero.GetRelation(partner.Hero); } catch { relation = 0; }
-                bool sameFaction = initiator.Hero.MapFaction != null && initiator.Hero.MapFaction == partner.Hero.MapFaction;
-                int score = Math.Abs(relation) * 4 + (sameFaction ? 40 : 0) + (IsAmbientKin(initiator.Hero, partner.Hero) ? 80 : 0) - (int)pairDistance;
+                if (bothNamed) { try { relation = initiator.Hero.GetRelation(partner.Hero); } catch { relation = 0; } }
+                bool sameFaction = bothNamed && initiator.Hero.MapFaction != null && initiator.Hero.MapFaction == partner.Hero.MapFaction;
+                int named = (initiator.Hero != null ? 15 : 0) + (partner.Hero != null ? 10 : 0);
+                int score = Math.Abs(relation) * 4 + (sameFaction ? 40 : 0) + (bothNamed && IsAmbientKin(initiator.Hero, partner.Hero) ? 80 : 0) + named - (int)pairDistance;
                 if (score > bestScore) { bestScore = score; bestInitiator = initiator; bestPartner = partner; }
             }
         }
@@ -247,8 +276,11 @@ public partial class ShoutBehavior
             foreach (string expired in _ambientPairCooldownUntil.Where(pair => pair.Value <= realNow).Select(pair => pair.Key).ToList())
                 _ambientPairCooldownUntil.Remove(expired);
         }
-        _ambientPairCooldownUntil[AmbientPairKey(bestInitiator.Hero, bestPartner.Hero)] = realNow.AddMinutes(settings.AmbientScenePairCooldownMinutes);
-        BeginAmbientSession(bestInitiator.Agent, bestPartner.Agent, topic, now, targetsPlayer: false);
+        _ambientPairCooldownUntil[AmbientPairKey(bestInitiator, bestPartner)] = realNow.AddMinutes(settings.AmbientScenePairCooldownMinutes);
+        Agent mover = null, moveTarget = null;
+        if (!IsAgentUsingObject(bestInitiator.Agent)) { mover = bestInitiator.Agent; moveTarget = bestPartner.Agent; }
+        else if (!IsAgentUsingObject(bestPartner.Agent)) { mover = bestPartner.Agent; moveTarget = bestInitiator.Agent; }
+        BeginAmbientSession(bestInitiator.Agent, bestPartner.Agent, topic, now, targetsPlayer: false, mover, moveTarget);
         return true;
     }
 
@@ -259,24 +291,31 @@ public partial class ShoutBehavior
         for (int i = 0; i < candidates.Count; i++)
         {
             AmbientCandidate candidate = candidates[i];
-            if (_ambientApproachedHeroAgentIndices.Contains(candidate.Agent.Index) || IsAgentUsingObject(candidate.Agent) || !IsCooldownReady(candidate.Agent)) continue;
+            if (_ambientApproachedHeroAgentIndices.Contains(candidate.Agent.Index) || !IsCooldownReady(candidate.Agent)) continue;
+            // Seated characters speak from their seat, so they must already be close.
+            if (IsAgentUsingObject(candidate.Agent) && candidate.PlayerDistance > AmbientSeatedTalkDistance) continue;
             int relation = 0;
-            try { relation = (int)candidate.Hero.GetRelationWithPlayer(); } catch { relation = 0; }
-            bool sameFaction = candidate.Hero.MapFaction != null && candidate.Hero.MapFaction == Hero.MainHero?.MapFaction;
+            bool sameFaction = false;
+            if (candidate.Hero != null)
+            {
+                try { relation = (int)candidate.Hero.GetRelationWithPlayer(); } catch { relation = 0; }
+                sameFaction = candidate.Hero.MapFaction != null && candidate.Hero.MapFaction == Hero.MainHero?.MapFaction;
+            }
             // A non-zero relation stands in for "has history with the player" (no API-line-specific member).
-            int score = (relation != 0 ? 60 : 0) + Math.Abs(relation) * 3 + (sameFaction ? 30 : 0) - (int)candidate.PlayerDistance;
+            int score = (relation != 0 ? 60 : 0) + Math.Abs(relation) * 3 + (sameFaction ? 30 : 0) + (candidate.Hero != null ? 20 : 0) - (int)candidate.PlayerDistance;
             if (score > bestScore) { bestScore = score; best = candidate; }
         }
         if (best.Agent == null) return false;
         _ambientApproachedHeroAgentIndices.Add(best.Agent.Index);
         string topic = BuildAmbientTopic(best.Hero, null, settings, aboutPlayer: true);
-        BeginAmbientSession(best.Agent, null, topic, now, targetsPlayer: true);
+        bool seated = IsAgentUsingObject(best.Agent);
+        BeginAmbientSession(best.Agent, null, topic, now, targetsPlayer: true, seated ? null : best.Agent, seated ? null : Agent.Main);
         return true;
     }
 
-    private static string AmbientPairKey(Hero a, Hero b)
+    private static string AmbientPairKey(AmbientCandidate a, AmbientCandidate b)
     {
-        string x = a?.StringId ?? "", y = b?.StringId ?? "";
+        string x = AmbientIdentityKey(a), y = AmbientIdentityKey(b);
         return string.CompareOrdinal(x, y) <= 0 ? x + "|" + y : y + "|" + x;
     }
 
@@ -299,7 +338,7 @@ public partial class ShoutBehavior
         var seeds = new List<string>(4);
         try
         {
-            if (settings.AmbientSceneTopicRelation && partner != null)
+            if (settings.AmbientSceneTopicRelation && speaker != null && partner != null)
             {
                 int relation = speaker.GetRelation(partner);
                 if (IsAmbientKin(speaker, partner)) seeds.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Ambient_Topic_Kin"));
@@ -308,7 +347,7 @@ public partial class ShoutBehavior
                 else if (speaker.MapFaction != null && speaker.MapFaction == partner.MapFaction)
                     seeds.Add(ConversationRuntimeTexts.FormatPrompt("AF_CONV_Ambient_Topic_SameFaction", ("FACTION", speaker.MapFaction.Name?.ToString() ?? "")));
             }
-            if (settings.AmbientSceneTopicWorld && speaker.MapFaction is Kingdom kingdom)
+            if (settings.AmbientSceneTopicWorld && speaker?.MapFaction is Kingdom kingdom)
             {
                 string enemies = string.Join(", ", Kingdom.All.Where(k => k != null && k != kingdom && !k.IsEliminated && kingdom.IsAtWarWith(k))
                     .Take(2).Select(k => k.Name?.ToString() ?? ""));
@@ -329,7 +368,7 @@ public partial class ShoutBehavior
         return seeds.Count == 0 ? ConversationRuntimeTexts.Prompt("AF_CONV_Ambient_Topic_Open") : seeds[MBRandom.RandomInt(seeds.Count)];
     }
 
-    private void BeginAmbientSession(Agent initiator, Agent partner, string topic, float now, bool targetsPlayer)
+    private void BeginAmbientSession(Agent initiator, Agent partner, string topic, float now, bool targetsPlayer, Agent mover, Agent moveTarget)
     {
         _ambientSession = new AmbientSession
         {
@@ -337,11 +376,14 @@ public partial class ShoutBehavior
             TargetsPlayer = targetsPlayer,
             Initiator = initiator,
             Partner = partner,
+            Mover = mover,
+            MoveTarget = moveTarget,
             Topic = topic,
             Epoch = _sceneConversationEpoch,
             StageDeadline = now + AmbientApproachTimeoutSeconds,
         };
-        Logger.Log("ShoutBehavior", "[Ambient] start initiator=" + initiator.Index + " partner=" + (partner?.Index ?? -1) + " player=" + targetsPlayer);
+        Logger.Log("ShoutBehavior", "[Ambient] start initiator=" + initiator.Index + " partner=" + (partner?.Index ?? -1) + " player=" + targetsPlayer
+            + " mover=" + (mover?.Index ?? -1));
     }
 
     private void TickAmbientSession(float now)
@@ -391,10 +433,13 @@ public partial class ShoutBehavior
             && (session.Partner == null || session.Partner.Position.Distance(player) <= limit);
     }
 
+    // The standing participant walks to the other; when everyone is seated nobody moves and the chat
+    // starts in place (selection already required them to be close).
     private void TickAmbientApproach(AmbientSession session, Agent target, float now, DuelSettings settings)
     {
-        float distance = session.Initiator.Position.Distance(target.Position);
-        if (distance <= AmbientApproachStopDistance)
+        Agent mover = session.Mover;
+        Agent moveTarget = session.MoveTarget ?? target;
+        if (mover == null || mover.Position.Distance(moveTarget.Position) <= AmbientApproachStopDistance)
         {
             StopAmbientApproachMovement(session);
             if (session.TargetsPlayer) StartAmbientPlayerOpening(session, now);
@@ -410,15 +455,15 @@ public partial class ShoutBehavior
         {
             try
             {
-                _sceneMovement.PrepareAgentForSceneSummonMovement(session.Initiator);
-                ScriptBehavior.AddAgentTarget(session.Initiator, target);
-                _sceneMovement.TrackSceneSummonScriptedAgent(session.Initiator);
+                _sceneMovement.PrepareAgentForSceneSummonMovement(mover);
+                ScriptBehavior.AddAgentTarget(mover, moveTarget);
+                _sceneMovement.TrackSceneSummonScriptedAgent(mover);
                 session.MovementScripted = true;
                 if (!session.TargetsPlayer)
                 {
-                    // Hold the partner in place, facing the initiator, without interrupting what it uses.
-                    _j17SceneAttentionController.AddAgentToStareList(session.Partner, interruptCurrentUse: false);
-                    _j17SceneAttentionController.ApplyRelaySpeechGaze(session.Partner, session.Initiator, null);
+                    // Hold the waiting participant in place, facing the walker, without interrupting what it uses.
+                    _j17SceneAttentionController.AddAgentToStareList(moveTarget, interruptCurrentUse: false);
+                    _j17SceneAttentionController.ApplyRelaySpeechGaze(moveTarget, mover, null);
                 }
             }
             catch (Exception ex)
@@ -433,14 +478,13 @@ public partial class ShoutBehavior
     {
         if (!session.MovementScripted) return;
         session.MovementScripted = false;
-        _sceneMovement.ClearSceneSummonScriptedBehavior(session.Initiator);
+        if (session.Mover != null) _sceneMovement.ClearSceneSummonScriptedBehavior(session.Mover);
     }
 
     private void StartAmbientPlayerOpening(AmbientSession session, float now)
     {
         session.Stage = AmbientStage.AwaitPlayer;
         session.StageDeadline = now + AmbientPlayerReplyWindowSeconds;
-        Hero hero = (session.Initiator.Character as CharacterObject)?.HeroObject;
         InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Ambient_Approach",
             "{NAME} comes over to talk to you.", "NAME", session.Initiator.Name?.ToString() ?? ""), new Color(0.75f, 0.75f, 0.75f)));
         string fact = BuildProactiveSceneOpeningFactText("", ConversationRuntimeTexts.FormatPrompt("AF_CONV_Ambient_OpenPlayer",
@@ -448,10 +492,7 @@ public partial class ShoutBehavior
         // The opening line reuses the immediate-reaction pipeline (NPC-initiated fact, player-directed).
         bool started = TriggerImmediateSceneBehaviorReaction(fact, session.Initiator.Index, persistHeroPrivateHistory: false,
             suppressStare: false, postSpeechLeaveSeconds: AmbientPlayerReplyWindowSeconds, skipSceneFactRecord: true);
-        if (hero != null)
-        {
-            ApplyInteractionGraceAndGroupCooldown(0f, ScenePassiveInteractionController.ACTIVE_CHAT_COOLDOWN, new[] { session.Initiator });
-        }
+        ApplyInteractionGraceAndGroupCooldown(0f, ScenePassiveInteractionController.ACTIVE_CHAT_COOLDOWN, new[] { session.Initiator });
         if (!started) EndAmbientSession("opening_failed", applyCooldown: true);
     }
 
