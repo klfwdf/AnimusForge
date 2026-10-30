@@ -231,10 +231,33 @@ internal static class FieldCampOrderTags
 		{
 			return;
 		}
+		if (issue.IsCompanionIssue)
+		{
+			RecordHeroFact(issue.Subject, fact);
+			RecordHeroFact(issue.Subject2, fact);
+			return;
+		}
 		RecordFact(issue.Subject, fact);
 		if (issue.Kind == FieldCampIssues.Kind.CultureFriction)
 		{
 			RecordFact(issue.Subject2, fact);
+		}
+	}
+
+	/// <summary>AFEF fact into a companion's own hero memory.</summary>
+	private static void RecordHeroFact(string heroId, string fact)
+	{
+		try
+		{
+			Hero hero = string.IsNullOrEmpty(heroId) ? null : Hero.Find(heroId);
+			if (hero != null)
+			{
+				MyBehavior.AppendExternalDialogueHistory(hero, null, null, fact);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("FieldCamp", "[WARN] issue fact write failed hero=" + heroId + " error=" + ex.Message);
 		}
 	}
 

@@ -71,7 +71,8 @@ internal sealed class FieldCampLayout
 	internal readonly List<Slot> WoundedSlots = new List<Slot>();
 	internal readonly List<Slot> PrisonerSlots = new List<Slot>();
 	internal readonly Dictionary<string, Slot> CompanionSlots = new Dictionary<string, Slot>(StringComparer.Ordinal);
-	internal readonly List<Slot> LordSlots = new List<Slot>();
+	/// <summary>Army lord posts beside the first tent of each lord's party (keyed by party).</summary>
+	internal readonly Dictionary<MobileParty, Slot> LordSlots = new Dictionary<MobileParty, Slot>();
 	internal readonly List<TroopGroup> Groups = new List<TroopGroup>();
 
 	internal Vec2 PlayerStart;
@@ -131,7 +132,7 @@ internal sealed class FieldCampLayout
 				});
 				if (partyIndex > 0 && tentsForParty == 0)
 				{
-					layout.LordSlots.Add(new Slot { Kind = SlotKind.Lord, Position = pos + new Vec2(0f, 4.5f), Facing = new Vec2(0f, 1f) });
+					layout.LordSlots[parties[partyIndex]] = new Slot { Kind = SlotKind.Lord, Position = pos + new Vec2(0f, 4.5f), Facing = new Vec2(0f, 1f) };
 				}
 				tentsForParty++;
 				placed++;

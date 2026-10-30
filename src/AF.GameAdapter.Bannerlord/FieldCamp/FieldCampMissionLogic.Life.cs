@@ -34,7 +34,7 @@ public sealed partial class FieldCampMissionLogic
 		for (int i = 0; i < _agents.Count; i++)
 		{
 			CampAgent entry = _agents[i];
-			if (entry.Activity == Activity.Wounded)
+			if (entry.Activity == Activity.Wounded || entry.Activity == Activity.Post)
 			{
 				continue;
 			}
@@ -76,7 +76,7 @@ public sealed partial class FieldCampMissionLogic
 		for (int i = 0; i < _agents.Count; i++)
 		{
 			CampAgent entry = _agents[i];
-			if (entry.Activity == Activity.Wounded)
+			if (entry.Activity == Activity.Wounded || entry.Activity == Activity.Post)
 			{
 				continue;
 			}

@@ -29,7 +29,9 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		Fire,
 		Sentry,
 		Wander,
-		Wounded
+		Wounded,
+		/// <summary>Companion at a party-role post or army lord at his tent: stays put, never joins the ranks.</summary>
+		Post
 	}
 
 	private sealed class CampAgent
@@ -55,6 +57,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	private float _elapsed;
 	private float _upkeepTimer;
 	private int _upkeepCursor;
+	private int _woundedSlotsUsed;
 
 	internal static FieldCampMissionLogic Current => Mission.Current?.GetMissionBehavior<FieldCampMissionLogic>();
 
@@ -63,6 +66,12 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	internal FieldCampMissionLogic(List<MobileParty> parties)
 	{
 		_parties = parties ?? new List<MobileParty>();
+	}
+
+	protected override void OnEndMission()
+	{
+		CleanupSlaughter("mission_end");
+		base.OnEndMission();
 	}
 
 	public override InquiryData OnEndMissionRequest(out bool canPlayerLeave)
@@ -93,6 +102,12 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			}
 			return;
 		}
+		_slaughter?.Tick(dt);
+		if (SlaughterBusy)
+		{
+			// The slaughter runtime owns the agents until it restores them.
+			return;
+		}
 		_upkeepTimer -= dt;
 		if (_upkeepTimer <= 0f)
 		{
@@ -108,6 +123,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		{
 			return;
 		}
+		_slaughter?.OnAgentRemoved(affectedAgent, affectorAgent, agentState);
+		_prisoners.Remove(affectedAgent);
 		for (int i = _agents.Count - 1; i >= 0; i--)
 		{
 			if (_agents[i].Agent == affectedAgent)
@@ -128,7 +145,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			FieldCampProps.Place(Mission.Scene, _layout, _campFrame);
 			SpawnEveryone();
 			AnnounceOpenIssues();
-			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " props=" + _layout.Props.Count + " scene=" + (Mission.SceneName ?? ""));
+			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + _layout.Props.Count + " scene=" + (Mission.SceneName ?? ""));
 		}
 		catch (Exception ex)
 		{
@@ -151,7 +168,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			{
 				continue;
 			}
-			CharacterObject speaker = issues[i].IsCompanionIssue ? null : CharacterObject.Find(issues[i].Subject);
+			CharacterObject speaker = issues[i].IsCompanionIssue ? Hero.Find(issues[i].Subject)?.CharacterObject : CharacterObject.Find(issues[i].Subject);
 			AnimusForgeQuickInfo.Show(FieldCampText.IssueOpening(issues[i]), speaker);
 		}
 	}
@@ -165,8 +182,10 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		Mission.PlayerTeam = _team;
 
 		SpawnPlayer();
-		// Companions at their posts, army lords and the prisoner pen arrive in step 5.
 		SpawnTroops();
+		SpawnCompanions();
+		SpawnArmyLords();
+		SpawnPrisoners();
 	}
 
 	private void SpawnPlayer()
@@ -214,6 +233,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 					Track(agent, Activity.Wounded, s.Position, s.Facing, troopClass);
 				}
 			}
+			_woundedSlotsUsed = wounded;
 			for (int i = 0; i < group.SpawnHealthy; i++)
 			{
 				FieldCampLayout.Slot s;

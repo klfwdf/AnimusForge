@@ -1,3 +1,13 @@
+# 未部署：大地图就地扎营 第5步 同伴、军团领主、俘虏栏（2026-10-30）
+
+新增 `FieldCamp/FieldCampMissionLogic.People.cs`：营地生成时一次性放置同伴（军需官/医生/侦察兵/工程师按 `GetRoleHolder` 站补给区、伤兵帐、首个岗哨、阅兵场侧；负伤同伴进伤兵帐；其余同伴最多 24 人站阅兵场侧）、军团其他领主（`FieldCampLayout.LordSlots` 改为按部队索引，站各自首顶营帐旁；超出则沿阅兵场边排开），二者为 `Activity.Post`，不参与集合列队，可用现有 Hero 对话交谈。俘虏栏：被俘领主最多 3 人，其余按兵种轮流取，填满 9 个栏位，`PrisonerAgentOrigin`、无敌、去武器、受惊姿势。屠戮沿用 `[ACTION:TROOP_INSPECTION_SLAUGHTER_PRISONERS]` 与 `TroopInspectionPrisonerSlaughterRuntime`：`TroopInspectionBehavior` 的 Can/TryStart 两个外部入口在无检阅 mission 时转给营地；只有营中普通士兵说话才提供规则，执行者为健康普通士兵（优先有武器的），只杀普通俘虏，被杀俘虏经 origin 从俘虏名册扣除；屠戮进行中暂停营地生活维护，mission 结束时清理。
+
+同伴不和问题：主队同伴两两关系 ≤ -10，或荣誉/仁慈一正一负，取最差一对（严重度 45）；开场白由第一位同伴说。应允 = 当众调解，两人关系 +5，不花钱；整肃另扣两人对玩家关系 5–10（随领导力）；事实写入两位同伴各自的 Hero 记忆。
+
+验证：1.3/1.4 Release 均 0 错误（1.4 首次编译撞上并行会话正在新建的 `ShoutBehavior.SceneRelayPresentation.cs`，重编通过）；终端设置回归 1.3 PASS 1148、1.4 PASS 1204。无新增文本键。未部署、未实机：同伴/领主站位、俘虏姿势、营中屠戮战斗与恢复均未在游戏中看过。回滚：本提交整体 revert。
+
+---
+
 # 未部署：GCCZ 城镇入口菜单中文界面仍显示英文（2026-10-30）
 
 原因：checkpoint `e9dbbd3d2` 把 `SiegeInterventionEntryProfile` 的中文常量（`EntryMenuOptionText`、`EnabledTooltip`、`MissingSceneTooltip`、各入城提示、`DecisionPolicyMessage`）和 `SetsOwnedSettlementIncidentProfile.LeaveOptionText` 改成英文，CN/En 两个常量值相同，所以中文界面下“亲自进城决定”等也是英文。修复：这些玩家可见文本改走游戏本地化，`SiegeAftermathUiText` 新增 `AF_SETS_TownEntry_*`、`AF_SETS_CastleEntry_DecisionPolicy`、`AF_SETS_OwnedIncident_Leave` 11 个键（`sets_ui_strings.xml` / `CNs/sets_ui_strings-zh-CN.xml`，中文恢复原文案）；菜单选项用 `{=id}` 文本，每次渲染按当前界面语言解析；`SiegeAiInterventionBehavior` 的调用点改为读取这些文本，城堡 tooltip 仍走原 `Raw` 中文资源。纯 profile 常量未动（测试契约不变）。验证：两份 XML 解析通过、键无重复。未编译、未部署、未实机。回滚：revert 本提交。

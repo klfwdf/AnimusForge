@@ -167,6 +167,7 @@ public sealed partial class FieldCampBehavior
 		}
 		float morale = 0f;
 		int dismissed = 0;
+		int relationLoss = 0;
 		switch (resolution)
 		{
 			case FieldCampIssues.Resolution.Encourage:
@@ -185,6 +186,10 @@ public sealed partial class FieldCampBehavior
 			case FieldCampIssues.Resolution.Discipline:
 				morale = -3f;
 				dismissed = DismissTroublemakers(issue, main);
+				if (issue.IsCompanionIssue)
+				{
+					relationLoss = ApplyCompanionDiscipline(issue);
+				}
 				if (!_suppressedKinds.Contains(issue.Kind.ToString()))
 				{
 					_suppressedKinds.Add(issue.Kind.ToString());
@@ -203,7 +208,7 @@ public sealed partial class FieldCampBehavior
 		}
 		FlushIssues();
 		AnimusForgeQuickInfo.Show(FieldCampText.IssueResolved(resolution, morale, cost, dismissed));
-		Logger.Log(LogSource, "issue resolved index=" + issueIndex + " kind=" + issue.Kind + " resolution=" + resolution + " morale=" + morale.ToString("0.0") + " cost=" + cost + " dismissed=" + dismissed);
+		Logger.Log(LogSource, "issue resolved index=" + issueIndex + " kind=" + issue.Kind + " resolution=" + resolution + " morale=" + morale.ToString("0.0") + " cost=" + cost + " dismissed=" + dismissed + " relationLoss=" + relationLoss);
 		return FieldCampText.ResolutionFact(issue, resolution, morale, cost, dismissed);
 	}
 
@@ -232,6 +237,7 @@ public sealed partial class FieldCampBehavior
 				case FieldCampIssues.Kind.UnpaidWages:
 					return Math.Max(50, main?.TotalWage ?? 0);
 				case FieldCampIssues.Kind.Hunger:
+				case FieldCampIssues.Kind.CompanionFeud:
 					return 0;
 				case FieldCampIssues.Kind.Petition:
 					return men * 3;
@@ -252,6 +258,32 @@ public sealed partial class FieldCampBehavior
 		{
 			main.HasUnpaidWages = 0f;
 		}
+		else if (issue.Kind == FieldCampIssues.Kind.CompanionFeud)
+		{
+			// Mediated in the open: the two companions make peace a little.
+			Hero a = Hero.Find(issue.Subject);
+			Hero b = Hero.Find(issue.Subject2);
+			if (a != null && b != null && a.IsAlive && b.IsAlive)
+			{
+				ChangeRelationAction.ApplyRelationChangeBetweenHeroes(a, b, 5, false);
+			}
+		}
+	}
+
+	/// <summary>Disciplining feuding companions costs their regard for the player (-5 to -10, by leadership).</summary>
+	private static int ApplyCompanionDiscipline(FieldCampIssues.Issue issue)
+	{
+		int loss = 5 + (int)Math.Round(5f * (1f - LeadershipFactor()));
+		string[] ids = { issue.Subject, issue.Subject2 };
+		for (int i = 0; i < ids.Length; i++)
+		{
+			Hero hero = string.IsNullOrEmpty(ids[i]) ? null : Hero.Find(ids[i]);
+			if (hero != null && hero.IsAlive && hero != Hero.MainHero)
+			{
+				ChangeRelationAction.ApplyPlayerRelation(hero, -loss, false, true);
+			}
+		}
+		return loss;
 	}
 
 	/// <summary>At most 1% of the men (at least 1) of the issue's troop type are discharged.</summary>

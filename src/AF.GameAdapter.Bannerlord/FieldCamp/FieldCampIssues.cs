@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
@@ -130,7 +131,10 @@ internal static class FieldCampIssues
 		{
 			Add(40, Kind.CultureFriction, a.StringId, b.StringId);
 		}
-		// Companion feuds join the judged kinds with the companion posts in step 5.
+		if (TryFindCompanionFeud(roster, out Hero first, out Hero second))
+		{
+			Add(45, Kind.CompanionFeud, first.StringId, second.StringId);
+		}
 		found.Sort((x, y) => y.Severity.CompareTo(x.Severity));
 		var result = new List<Issue>();
 		for (int i = 0; i < found.Count && result.Count < MaxIssues; i++)
@@ -176,6 +180,59 @@ internal static class FieldCampIssues
 		}
 		return best;
 	}
+
+	private const int FeudRelation = -10;
+
+	/// <summary>
+	/// Worst companion pair in the main party: relation at most -10, or opposite Honor/Mercy
+	/// (a trait clash counts as relation -5 when ranking). Pairs of at most ~20 heroes, once per camp.
+	/// </summary>
+	private static bool TryFindCompanionFeud(TroopRoster roster, out Hero first, out Hero second)
+	{
+		first = null;
+		second = null;
+		var heroes = new List<Hero>();
+		for (int i = 0; i < roster.Count; i++)
+		{
+			Hero hero = roster.GetElementCopyAtIndex(i).Character?.HeroObject;
+			if (hero != null && hero != Hero.MainHero && hero.IsAlive && !hero.IsPrisoner)
+			{
+				heroes.Add(hero);
+			}
+		}
+		int worst = 0;
+		for (int a = 0; a < heroes.Count; a++)
+		{
+			for (int b = a + 1; b < heroes.Count; b++)
+			{
+				int score;
+				try
+				{
+					int relation = heroes[a].GetRelation(heroes[b]);
+					score = relation <= FeudRelation ? relation : (TraitsClash(heroes[a], heroes[b]) ? -5 : 0);
+				}
+				catch
+				{
+					continue;
+				}
+				if (score < worst)
+				{
+					worst = score;
+					first = heroes[a];
+					second = heroes[b];
+				}
+			}
+		}
+		return first != null;
+	}
+
+	private static bool TraitsClash(Hero a, Hero b)
+	{
+		return Opposite(a.GetTraitLevel(DefaultTraits.Honor), b.GetTraitLevel(DefaultTraits.Honor))
+			|| Opposite(a.GetTraitLevel(DefaultTraits.Mercy), b.GetTraitLevel(DefaultTraits.Mercy));
+	}
+
+	private static bool Opposite(int x, int y) => (x > 0 && y < 0) || (x < 0 && y > 0);
 
 	/// <summary>Two cultures each holding at least 30% of the regulars (threshold tuned in play).</summary>
 	private static bool TryFindCultureFriction(TroopRoster roster, out CharacterObject first, out CharacterObject second)

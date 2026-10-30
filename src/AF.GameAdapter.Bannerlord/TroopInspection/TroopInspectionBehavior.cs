@@ -437,6 +437,12 @@ public static partial class TroopInspectionBehavior
 		try
 		{
 			TroopInspectionMissionLogic logic = Mission.Current?.GetMissionBehavior<TroopInspectionMissionLogic>();
+			// The field camp's prisoner pen reuses the same tag and slaughter runtime.
+			FieldCampMissionLogic camp = logic == null ? FieldCampMissionLogic.Current : null;
+			if (camp != null)
+			{
+				return camp.CanOfferPrisonerSlaughter(speakerAgentIndex, out regularPrisonerCount, out attackerCount);
+			}
 			return logic != null
 				&& logic.CanOfferPrisonerSlaughterAction(
 					speakerAgentIndex,
@@ -497,12 +503,15 @@ public static partial class TroopInspectionBehavior
 			int attackerCount = 0;
 			int targetCount = 0;
 			string reason = "not_normal_inspection";
-			if (logic == null
-				|| !logic.TryStartPrisonerSlaughter(
+			FieldCampMissionLogic camp = logic == null ? FieldCampMissionLogic.Current : null;
+			bool started = camp != null
+				? camp.TryStartPrisonerSlaughter(speakerAgentIndex, out attackerCount, out targetCount, out reason)
+				: logic != null && logic.TryStartPrisonerSlaughter(
 					speakerAgentIndex,
 					out attackerCount,
 					out targetCount,
-					out reason))
+					out reason);
+			if (!started)
 			{
 				string blockedReason = string.IsNullOrWhiteSpace(reason)
 					? "not_normal_inspection"
