@@ -243,6 +243,12 @@ public static partial class TroopInspectionBehavior
 			Log("selection abandoned: party screen no longer active");
 			ResetPendingSelection("selection_screen_lost");
 		}
+		if (FieldCampBehavior.Instance?.IsActive == true)
+		{
+			Display(FieldCampText.InspectionBlocked().ToString());
+			Log("precheck blocked: field camp active");
+			return;
+		}
 		TryCleanupStaleInspectionStateBeforeOpen("terminal_open_stale_cleanup");
 		EnsureMainHeroReadyForInspection("terminal_open");
 		_sessionOwner.BeginLocalSelection();

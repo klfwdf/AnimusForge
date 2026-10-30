@@ -3415,5 +3415,46 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Persona_PromptedRerollIntro" text="填写本次人物性格与背景的重生方向。要求仅用于本次生成，保留声音；生成失败时保留原人物设定。" />
   <string id="AF_UI_Persona_PromptedRerollHint" text="可填写背景经历、性格方向或需要保留的细节，当前游戏事实仍然有效。" />
   <string id="AF_UI_Persona_PromptedRerollEmpty" text="请先填写本次重生要求。" />
+  <string id="AF_TERMINAL_UI_Root_FieldCamp" text="就地扎营" />
+  <string id="AF_TERMINAL_UI_Root_FieldCamp_Hint" text="在大地图上就地扎营；扎营期间打开营地菜单。" />
+  <string id="AF_MCM_FieldCamp_Group" text="19. 就地扎营" />
+  <string id="AF_MCM_FieldCamp_Enabled" text="启用就地扎营" />
+  <string id="AF_MCM_FieldCamp_Enabled_Hint" text="独自行军或身为军团长时，可在大地图上就地扎营。关闭后会结束当前营地。" />
+  <string id="AF_MCM_FieldCamp_Key" text="扎营快捷键（一个大写字母）" />
+  <string id="AF_MCM_FieldCamp_Key_Hint" text="在大地图上按下即可扎营；扎营期间按下重新打开营地菜单。默认：Z。" />
+  <string id="AF_MCM_FieldCamp_PitchHours" text="搭营耗时（小时）" />
+  <string id="AF_MCM_FieldCamp_PitchHours_Hint" text="搭建营地所需的游戏小时数。默认：1。" />
+  <string id="AF_MCM_FieldCamp_StrikeHours" text="拔营耗时（小时）" />
+  <string id="AF_MCM_FieldCamp_StrikeHours_Hint" text="拔营后才能继续行军，所需的游戏小时数。遭遇敌人被迫拔营时不计。默认：1。" />
+  <string id="AF_MCM_FieldCamp_HealMultiplier" text="伤员恢复倍率" />
+  <string id="AF_MCM_FieldCamp_HealMultiplier_Hint" text="扎营期间，伤兵与英雄的恢复速度是平时的几倍。默认：2。" />
+  <string id="AF_MCM_FieldCamp_MoralePerHour" text="每小时恢复士气" />
+  <string id="AF_MCM_FieldCamp_MoralePerHour_Hint" text="扎营期间每支部队每小时恢复的士气。默认：1。" />
+  <string id="AF_MCM_FieldCamp_MoraleCap" text="士气恢复上限" />
+  <string id="AF_MCM_FieldCamp_MoraleCap_Hint" text="单靠休整，士气不会超过这个值。默认：70。" />
+  <string id="AF_MCM_FieldCamp_MapVisuals" text="在大地图上显示营地" />
+  <string id="AF_MCM_FieldCamp_MapVisuals_Hint" text="在每支扎营部队旁放置一组营帐。若与其他改动大地图视觉的 MOD 冲突可关闭，扎营功能不受影响。" />
+  <string id="AF_FC_Menu_Title" text="野外营地" />
+  <string id="AF_FC_Menu_Rest" text="休整等待" />
+  <string id="AF_FC_Menu_Strike" text="拔营" />
+  <string id="AF_FC_Menu_Leave" text="返回大地图" />
+  <string id="AF_FC_Menu_CancelPitch" text="取消扎营" />
+  <string id="AF_FC_Menu_StopWait" text="停止休整" />
+  <string id="AF_FC_Disabled" text="就地扎营已在设置中关闭。" />
+  <string id="AF_FC_Pitched" text="营地已搭好，部队开始休整。" />
+  <string id="AF_FC_Struck" text="营地已拔起，可以继续行军。" />
+  <string id="AF_FC_MoveBlocked" text="部队正在扎营。请先在营地菜单中拔营，再行军。" />
+  <string id="AF_FC_BlockedState" text="现在无法扎营。" />
+  <string id="AF_FC_BlockedEncounter" text="遭遇或对话中无法扎营。" />
+  <string id="AF_FC_BlockedSiege" text="围城期间无法就地扎营。" />
+  <string id="AF_FC_BlockedArmyMember" text="只有军团长才能下令全军扎营。" />
+  <string id="AF_FC_BlockedSea" text="在海上或水面上无法扎营。" />
+  <string id="AF_FC_BlockedSettlement" text="离{SETTLEMENT}太近，无法就地扎营。" />
+  <string id="AF_FC_InspectionBlocked" text="请先拔营，再使用检阅士兵。" />
+  <string id="AF_FC_StrikeTooltip" text="需要 {HOURS} 小时。休整随即停止，拔营完成后即可行军。" />
+  <string id="AF_FC_Status_Pitching" text="部队正在搭营，还需约 {HOURS} 小时。" />
+  <string id="AF_FC_Status_Striking" text="部队正在拔营，还需约 {HOURS} 小时。" />
+  <string id="AF_FC_Status_Resting" text="营中正在休整。伤员恢复加快，士气缓缓回升。已扎营 {HOURS} 小时，营中共 {PARTIES} 支部队。" />
+  <string id="AF_FC_Status_Camped" text="营地一片安静。休整可以加快伤员恢复、缓慢恢复士气，但行军也随之停下。已扎营 {HOURS} 小时，营中共 {PARTIES} 支部队。" />
 </strings>
 </base>

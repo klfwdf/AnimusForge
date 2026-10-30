@@ -3383,5 +3383,46 @@ Choose how to proceed:" />
   <string id="AF_UI_Persona_PromptedRerollIntro" text="Describe how to regenerate this character&#x27;s personality and background. These requirements apply only to this request. The voice is kept, and a failed request keeps the existing persona." />
   <string id="AF_UI_Persona_PromptedRerollHint" text="Enter a background, personality direction, or details to preserve. Current game facts still apply." />
   <string id="AF_UI_Persona_PromptedRerollEmpty" text="Enter requirements before generating." />
+  <string id="AF_TERMINAL_UI_Root_FieldCamp" text="Field camp" />
+  <string id="AF_TERMINAL_UI_Root_FieldCamp_Hint" text="Pitch camp on the campaign map, or open the camp menu while camped." />
+  <string id="AF_MCM_FieldCamp_Group" text="19. Field camp" />
+  <string id="AF_MCM_FieldCamp_Enabled" text="Enable field camp" />
+  <string id="AF_MCM_FieldCamp_Enabled_Hint" text="Lets you pitch camp on the campaign map while travelling alone or leading an army. Disabling it ends any active camp." />
+  <string id="AF_MCM_FieldCamp_Key" text="Field camp key (one uppercase letter)" />
+  <string id="AF_MCM_FieldCamp_Key_Hint" text="Press on the campaign map to pitch camp, or to reopen the camp menu while camped. Default: Z." />
+  <string id="AF_MCM_FieldCamp_PitchHours" text="Hours to pitch camp" />
+  <string id="AF_MCM_FieldCamp_PitchHours_Hint" text="Campaign hours spent setting up camp. Default: 1." />
+  <string id="AF_MCM_FieldCamp_StrikeHours" text="Hours to strike camp" />
+  <string id="AF_MCM_FieldCamp_StrikeHours_Hint" text="Campaign hours spent breaking camp before marching. Not charged when an encounter breaks the camp. Default: 1." />
+  <string id="AF_MCM_FieldCamp_HealMultiplier" text="Wounded recovery multiplier" />
+  <string id="AF_MCM_FieldCamp_HealMultiplier_Hint" text="Wounded soldiers and heroes recover this many times faster than normal while camped. Default: 2." />
+  <string id="AF_MCM_FieldCamp_MoralePerHour" text="Morale recovered per hour" />
+  <string id="AF_MCM_FieldCamp_MoralePerHour_Hint" text="Morale each camped party regains every hour. Default: 1." />
+  <string id="AF_MCM_FieldCamp_MoraleCap" text="Morale recovery cap" />
+  <string id="AF_MCM_FieldCamp_MoraleCap_Hint" text="Resting alone does not raise morale above this value. Default: 70." />
+  <string id="AF_MCM_FieldCamp_MapVisuals" text="Show camps on the campaign map" />
+  <string id="AF_MCM_FieldCamp_MapVisuals_Hint" text="Places a tent cluster next to each camped party. Turn off if another mod conflicts with map visuals; camping still works." />
+  <string id="AF_FC_Menu_Title" text="Field camp" />
+  <string id="AF_FC_Menu_Rest" text="Rest and wait" />
+  <string id="AF_FC_Menu_Strike" text="Strike camp" />
+  <string id="AF_FC_Menu_Leave" text="Return to the map" />
+  <string id="AF_FC_Menu_CancelPitch" text="Cancel pitching camp" />
+  <string id="AF_FC_Menu_StopWait" text="Stop resting" />
+  <string id="AF_FC_Disabled" text="Field camp is disabled in the settings." />
+  <string id="AF_FC_Pitched" text="Camp is pitched. The troops settle in to rest." />
+  <string id="AF_FC_Struck" text="Camp is struck. The march can resume." />
+  <string id="AF_FC_MoveBlocked" text="You are camped. Strike camp from the camp menu before marching." />
+  <string id="AF_FC_BlockedState" text="You cannot pitch camp right now." />
+  <string id="AF_FC_BlockedEncounter" text="You cannot pitch camp during an encounter or conversation." />
+  <string id="AF_FC_BlockedSiege" text="You cannot pitch a field camp during a siege." />
+  <string id="AF_FC_BlockedArmyMember" text="Only the army leader can order the army to camp." />
+  <string id="AF_FC_BlockedSea" text="You cannot pitch camp at sea or on water." />
+  <string id="AF_FC_BlockedSettlement" text="You are too close to {SETTLEMENT} to pitch a field camp." />
+  <string id="AF_FC_InspectionBlocked" text="Strike camp before using the troop inspection flow." />
+  <string id="AF_FC_StrikeTooltip" text="Takes {HOURS} hours. Resting stops; the march resumes once camp is struck." />
+  <string id="AF_FC_Status_Pitching" text="Your troops are pitching camp. About {HOURS} hours remain." />
+  <string id="AF_FC_Status_Striking" text="Your troops are striking camp. About {HOURS} hours remain." />
+  <string id="AF_FC_Status_Resting" text="The camp rests. The wounded recover faster and morale slowly returns. Camped for {HOURS} hours; {PARTIES} parties in camp." />
+  <string id="AF_FC_Status_Camped" text="The camp is quiet. Resting heals the wounded faster and slowly restores morale, but the march is halted. Camped for {HOURS} hours; {PARTIES} parties in camp." />
 </strings>
 </base>

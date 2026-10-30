@@ -62,7 +62,7 @@ internal static class TerminalSettingsCoverage
         if (group.IndexOf("AF_MCM_CivilWar_Group", StringComparison.Ordinal) >= 0 ||
             property.StartsWith("PolicyVote", StringComparison.Ordinal) || property == "EditSettlementBalance" ||
             property == "DisableProsperityFoodConsumption") return TerminalCategories.Diplomacy;
-        if (property == "SetsOtherSettlementFollowerLimit") return TerminalCategories.Duel;
+        if (property == "SetsOtherSettlementFollowerLimit" || property.StartsWith("FieldCamp", StringComparison.Ordinal)) return TerminalCategories.Duel;
         if (group.IndexOf("SAX_MCM_Group", StringComparison.Ordinal) >= 0 ||
             property == "AutoExcludeUnframedShoutParticipants" || property == "ShoutMaxRelayTurns") return TerminalCategories.Scene;
         return fallback;
