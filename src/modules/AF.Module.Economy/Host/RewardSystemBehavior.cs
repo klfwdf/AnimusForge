@@ -2691,6 +2691,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			HorseQuestDeliveryOwner.RecordGiven(npc, itemId, itemAmount);
 			PendingPlayerTransfer orCreatePendingPlayerTransfer = GetOrCreatePendingPlayerTransfer(npc);
 			if (orCreatePendingPlayerTransfer == null)
 			{
@@ -17053,6 +17054,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			string arg2 = receiver?.Name?.ToString() ?? EconomyUiTexts.UnknownPerson;
 			ShowRewardMessage(EconomyUiTexts.DenarsGiven(arg2, total), receiver);
 		}
+		HorseQuestDeliveryOwner.RecordPayment(giver, receiver, total);
 		return total;
 	}
 

@@ -1,3 +1,28 @@
+<a id="horse-quest-turn-in-20261030"></a>
+## 交马事实接入原版验收与任务描述人物绑定 — 2026-10-30
+
+**LOCAL_CANDIDATE_VERIFIED / WORKTREE_BUILD_BLOCKED_BY_UNRELATED_CHANGES / NOT_DEPLOYED / LIVE_NOT_RUN**。用户要求实施交马已给物、已收钱但任务不结算，以及后处理缺完成标签、静默交付失败、描述串人的修复。main/F:/AnimusForge-main，意图检查点 `b0228d82b`；仅提交本任务差异，保留其他作者 dirty。
+
+生产范围与实际接线：
+- `src/modules/AF.Module.Issue/Completion/HorseQuestDeliveryOwner.cs:16-78`（TryGet/RecordGiven/RecordPayment/Evidence/IsReady/TryComplete）：复用真实给予入口，将匹配当前领主、原版交马任务、确切 ItemObject.StringId 的实际已收数量写入该任务既有 JournalLog；两条有界数值 observation 使用 AF_ISSUE_HorseDelivered/AF_ISSUE_HorsePaymentObserved TaskName ID。无新增 CampaignBehavior/SyncData/JSON/分块键。分批累计，最多任务需求/基础奖励；普通事先送礼、错马种、错领主不计入。付款只是实际观察，后处理确认完成表示确认该观察为任务报酬；只在 AF 任务验收作用域中抵扣，原生 UI 不把未确认的普通收款自动抵扣。
+- `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs:2694,17057` 接入原给予记录与实际 TransferGold 结果；场景 `src/AF.GameAdapter.Bannerlord/Scene/SceneTradeBannerlordAdapter.cs:1263` 改用接收方实际增加数，非玩家侧移除数。信使沿原 RecordPlayerPrepaidTransfer 共享入口；自由对话/喊话共享场景给予事实。
+- `Runtime/IssueRuntimeStateOwner.cs:59-65`（IssueRuntimeStateOwner.TryGetReadyToTurnInIssue）交马专用只读验收=已交数量+当前库存，完全不启动静默原版对话；`Runtime/IssueRuntimePromptOwner.cs:59,190` 提供同一实际品种/数量/收款证据，ready block 经 ExplicitCompletionSummary 消费。
+- `src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs:519,1055` 补充真实 ready 交马任务的规则注入，保留 GCCZ stage admission；更新 vanillaIssueRuleInjected 同时接通 RAW/FINAL 归一化与执行，非只构造规则列表。仍使用已有 QUEST_TURN_IN 标签，不将标签规则加入主回复。
+- `Actions/IssueActionOwner.cs:303-310` 交马走 TryComplete；`Completion/HorseQuestDeliveryOwner.cs:82-110`（HorseQuestSettlementPatch）在原版 OnCompleteWithSuccess 作用域只让原版转移尚欠的马、发尚欠报酬；finally 恢复原需求和 RewardGold，成功日志保留总交马数，基础原版声望/关系/Finalize/事件顺序沿用。已结束任务不再执行。其他任务的原静默流程不冒充已修复。
+- `Presentation/IssueQuestTextBindingPatch.cs:16-53`：任务面板三类原生构造入口按 QuestGiver/IssueOwner/RelatedHero 给缺失的 QUEST_GIVER/ISSUE_GIVER/ISSUE_OWNER 绑定 TextObject 本地属性；已有显式绑定保留。原版 ArmyNeedsSupplies.Description 的全局 QUEST_GIVER 漏绑在返回对象补齐。不是替换全局姓名或改任务发布者。
+
+CN/EN：IssuePromptTexts.json/.en.json 与两份 afissue_prompt_strings XML 同步四个 key，原 content-map/语言注册接通；资源验证通过。观察记录仅给予/收款事件写入；反射字段缓存一次，任务日志扫描局限当前任务、库存判断沿原库存 API，无新增 Tick IO/全仓扫描/模型调用。
+
+验证证据 `artifacts/horse-quest-fix-20261030/`：最终 `build-final-overlay.log` 由原 build_single_module.ps1（无 Stage/Deploy）执行，双API/Bootstrap均0错误，原 coup seam/registration门禁通过。参考线1.3.15.110062、1.4.6.115628。**这不是当前整个dirty工作区构建通过**：直接工作区 `build-current-final.log` 在未完成 SceneAmbient 的 TryCaptureScenePeaceConflictFacts 依赖失败；验证 overlay 仅使用HEAD的 ShoutBehavior.SceneAudio.cs、ShoutBehavior.cs并排除未完成 ShoutBehavior.SceneAmbient.cs，其余源码为当时工作副本；没有改写这些工作文件或构建脚本。早期更广 baseline 尝试失败并保留日志，不作为验收依据。
+
+真实候选 managed 回放 `tests/modules/AF.Module.Issue/HorseQuestDeliveryTests/`：每API×CN/EN各21断言，共84项；检查正确/错误马种及领主、分批交付、已交+库存、实际付款证据、runtime规则生成、RAW标签保留、实际原版 OnCompleteWithSuccess 体只补扣2匹/补发60（需求5、已交3、已付40）、全交全付、重复执行、异常字段恢复、普通原生UI不抵扣未确认收款、局部人名抗全局变量改变、三个Harmony入口admission。外层Finalize/引擎动作/库存/日志事件受控，不能声称真实游戏存档/原生UI/provider通过。CN/EN资源、变量、content-map和语言注册验证通过。旧 IssueLocalizationContractTests 的历史“业务源码逐字等价”断言不支持此次获准业务修改，实跑失败，未放宽或提交其修改，以本次实际DLL行为与资源测试验证受影响链路。
+
+未验证/边界：没有实机、真实模型后处理输出、玩家sav读写、旧坏档修复、打包、部署或push。修复前已经给出的马/钱没有新增JournalLog观察，不能从未知历史字符串可靠自动补记，本次不会猜测旧任务已经交付。保存后重载依靠原JournalLog类型的现有持久化，未跑真实sav验收。原始bug无日志，描述串人的实机具体任务未复现；已修已证实的共享人物变量风险。遇到原版结算异常不声称资产已回滚。
+
+回滚：只 focused revert 本次修复提交；检查点b0228d82b为来源，不hard reset、不覆盖其他作者工作。已写原生日志的观察为已发生交付证据，回滚源码不会自动撤销玩家物品/金币。
+
+---
+
 <a id="private-contract-visibility-20261030"></a>
 ## 私下契约公开泄露修复 — 2026-10-30
 

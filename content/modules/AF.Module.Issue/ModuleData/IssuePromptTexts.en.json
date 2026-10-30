@@ -96,5 +96,9 @@
   "AF_CONV_UI_Issue_UnknownCompanion": "an unknown companion",
   "AF_ISSUE_PROMPT_Progress_0": "Quest progress requirement met: ",
   "AF_ISSUE_PROMPT_Progress_1": " (current progress ",
-  "AF_ISSUE_PROMPT_Progress_3": ", requirement met)"
+  "AF_ISSUE_PROMPT_Progress_3": ", requirement met)",
+  "AF_ISSUE_HorseDelivered": "Mounts already handed over",
+  "AF_ISSUE_HorsePaymentObserved": "Denars received after delivery",
+  "AF_ISSUE_HorseObservation": "Recorded actual handover with {QUEST_GIVER.LINK}.",
+  "AF_ISSUE_HorseEvidence": "Required mount: {ITEM} (id={ID}); required: {REQUIRED}; already handed over to this quest giver: {DELIVERED}; current player stock: {STOCK}; observed payments from the giver after delivery: {PAID} denars. These are actual observations, not player claims. Completion confirms those payments as quest remuneration; ask for clarification if they were unrelated. Native settlement transfers only the remaining mounts and pays only the remaining base reward."
 }

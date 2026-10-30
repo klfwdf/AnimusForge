@@ -56,6 +56,13 @@ internal static partial class VanillaIssueOfferBridge
 			{
 				return false;
 			}
+            if (HorseQuestDeliveryOwner.TryGet(targetHero, out var horseQuest))
+            {
+                if (!HorseQuestDeliveryOwner.IsReady(horseQuest)) return false;
+                probe = new TurnInProbeResult { Issue = issue, Quest = horseQuest, IsConfident = true,
+                    ExplicitCompletionSummary = HorseQuestDeliveryOwner.Evidence(horseQuest) };
+                return true;
+            }
 			string text = "";
 			bool flag = TryGetExplicitTurnInSignal(issue.IssueQuest, out text);
 			if (TryProbeQuestTurnIn(targetHero, issue, execute: false, out probe, out _))

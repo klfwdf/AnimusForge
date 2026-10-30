@@ -96,5 +96,9 @@
   "AF_CONV_UI_Issue_UnknownCompanion": "一位身份不明的同伴",
   "AF_ISSUE_PROMPT_Progress_0": "任务进度已满足：",
   "AF_ISSUE_PROMPT_Progress_1": "（当前进度 ",
-  "AF_ISSUE_PROMPT_Progress_3": "，已满足）"
+  "AF_ISSUE_PROMPT_Progress_3": "，已满足）",
+  "AF_ISSUE_HorseDelivered": "已交付马匹",
+  "AF_ISSUE_HorsePaymentObserved": "交付后已收到的第纳尔",
+  "AF_ISSUE_HorseObservation": "已记录与{QUEST_GIVER.LINK}之间的实际交付。",
+  "AF_ISSUE_HorseEvidence": "任务马匹：{ITEM}（id={ID}）；要求数量：{REQUIRED}；已实际交给本任务领主：{DELIVERED}；玩家当前库存：{STOCK}；交付后从该领主实际收到：{PAID}第纳尔。以上是实际转移记录，不是玩家自述。验收完成表示确认上述收款属于任务报酬；如果款项用途不同，先问清楚。原版结算只补交剩余马匹、补发剩余基础报酬。"
 }

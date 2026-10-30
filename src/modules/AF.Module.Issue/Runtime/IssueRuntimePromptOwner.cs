@@ -56,7 +56,7 @@ internal static partial class VanillaIssueOfferBridge
 						list.Add(new PostprocessRuleEntry
 						{
 							Tag = item.Tag,
-							Description = item.Description
+							Description = item.Description + (HorseQuestDeliveryOwner.TryGet(targetHero, out var horseQuest) ? "\n" + HorseQuestDeliveryOwner.Evidence(horseQuest) : "")
 						});
 					}
 				}
@@ -187,6 +187,7 @@ internal static partial class VanillaIssueOfferBridge
 			catch
 			{
 			}
+            if (HorseQuestDeliveryOwner.TryGet(targetHero, out var horseQuest)) stringBuilder.AppendLine(HorseQuestDeliveryOwner.Evidence(horseQuest));
 			AppendRecentJournalLinesForPrompt(stringBuilder, issueQuest.JournalEntries);
 			stringBuilder.AppendLine(IssuePromptTexts.Text("AF_ISSUE_PROMPT_InProgressDiscussion", "Respond to the player's words about progress, remind them of requirements, and say whether the task appears close to completion; do not reintroduce the question of accepting it."));
 			stringBuilder.AppendLine(IssuePromptTexts.Text("AF_ISSUE_PROMPT_NoActionTags", "Never output [ACTION:ISSUE_ACCEPT_SELF], [ACTION:ISSUE_ACCEPT_ALT:*], or [ACTION:QUEST_TURN_IN] in the body; post-processing alone decides whether to trigger them."));
