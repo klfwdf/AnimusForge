@@ -1,3 +1,38 @@
+<a id="persona-full-regeneration-20261031"></a>
+## 扩展字段生成开关与事件完整人设重生纠正 — 2026-10-31
+
+**LOCAL_CANDIDATE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。用户澄清：扩展人设开关关闭只是不再生成扩展字段；事件驱动人设变化须直接重生完整人设，而不是只修改扩展字段。本条明确替代 [2026-10-30 扩展人设总开关](#persona-editable-example-20261030) 中“关闭后屏蔽已有扩展注入/暂停演变”与“事件只写扩展补丁”的旧结论；可编辑示例迁移仍保留。实际工作区 `F:/AnimusForge-main` / `main`，意图检查点 `06c4d0d8d`；产品与回放提交 `296c34261`，未提交其他作者 dirty。未打包、部署或push。
+
+### 真实实现与代码范围图（提交296c34261）
+
+| 位置（一基行号） | 符号与职责、覆盖范围 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.Persona.cs:8-22` | `EnableExpandedNpcPersona` 保持原字段/默认true/原owner；不再触发事件队列reset。仅控制首次生成/手动重生/事件重生是否生成扩展字段；旧扩展数据继续可读，不清档。 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs:13-19,50,105-127,144-168,184-213` | `NpcPersonaEventRegeneration` 为本地事件请求的资料与主线程guard/completion；原 `GenerateNpcPersonaAsync` 签名保持，新 `RegenerateForEventAsync` 与之共享 `GenerateNpcPersonaCoreAsync`。同一预约owner、事实捕获、世界书检索、旧人设/压缩记忆、玩家可编辑要求、BuildNative、parser和提交保护；关闭扩展开关仍是profile-only协议和扩展字段回写抑制。共享context getter不再因开关关闭屏蔽已有数据。完整重生保存原Evolution队列身份、既有原因和最新音色，事件成功回调写原因并消费对应批次。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaEvolution.cs:20-27,94-190` | `PersonaEvolutionEnabled` 只取原独立事件开关+快报资格。`TryStartPersonaEvolution/StartPersonaEvolution` 由事件队列调用共享完整重生器，无第二次判定API/扩展补丁API。原10游戏小时合并、每批4事件、每NPC64待办/300去重、30秒启动间隔、全局单在途和最多2次尝试保留；目标正被手动生成占用时不花事件尝试。epoch/owner/save/人物身份/正文及扩展字段快照在捕获、发请求前与写回重验；手工改动优先；只关闭扩展开关不取消事件请求。独立事件开关关闭仍丢弃pending/in-flight。 |
+| `src/modules/AF.Module.Persona/Profiles/PersonaEvolutionPolicy.cs:9-61` | 原queue/snapshot/bounded request projection保留，退休无消费者的 `TryParse/Apply` 扩展补丁协议；原存档DTO/字段/键/分块与读取兼容不变。旧provider返回仅changed或traits、没有profile不会冒充完整重生成功。 |
+| `content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts.json:58` 与 `.en.json` | 同一 `AF_PERSONA_PROMPT_EvolutionSystem` 改为完整正文重生指导，要求事实/身份/经历连续性，是否生成扩展字段服从当前生成协议，不再定义changed/patch格式；原 `PromptLanguageFile` 随当前游戏语言选择两套固定正文，同包保留两版。玩家可编辑默认未变，不更改其哈希清册。 |
+| `Configuration/Mcm/DuelSettings.BulletinPrompt.cs:10-23`；`UI/Terminal/TerminalSettingsRegistry.cs:235,341`、`TerminalSettingsLocalization.cs`；两种 `af_ui_strings` | 两个原开关仍由同一个DuelSettings持久化/preset owner保存，终端与MCM共用setter；CN/EN提示同步明确“扩展开关只管新生成”“事件开关管完整重生”。无新设置副本/存档键。路径前缀均为`src/AF.GameAdapter.Bannerlord/`，XML位于`content/modules/AF.Module.UI/ModuleData/Languages/`。 |
+
+性能：没有增加Tick IO、全Hero扫描或轮询。捕获快照/JSON/闭包只在合格事件批次启动时创建；回放曾捕获局部函数导致空闲每Tick48B分配，已将捕获闭包移入独立 `StartPersonaEvolution`；最终两种语言各250000次空闲检查设置读取/请求/分配均0。该数字是托管fixture检查，不是游戏帧率或大型存档性能基准。事件现在使用与手动完整重生同一辅助API配置/输出预算，不再使用旧扩展补丁专用1200token请求。
+
+### 验证证据
+
+证据根 `artifacts/persona-full-regeneration-20261031/`；`before/` 保存实际修改前内容，`task.patch` 是任务基线到最终的聚焦变更，`rollback.patch` 为逆补丁，`verified-sources.json` 绑定实际源码及候选DLL。
+
+- `HeroPersonaGenerationTests` 最终中文 **667/0**（`final-CN/run.log`），英文 **253/0**（`final-EN-game-language/run.log`）。运行实际生成应用/dispatcher/composer/reader/parser/提交。覆盖原生与升格的关闭生成、旧扩展仍可注入、完整事件正文替换、保留音色和演变队列、关闭后不接收模型多给的扩展字段、事件guard失效/手改保护、旧changed-only补丁拒绝；同一进程从同包两资源切换游戏语言获取事件规则。游戏/provider/技能边界为fixture。旧测试按包选版读取期望导致英文3项失败，已改为与实际 `PromptLanguage` 相同的期望路径后全部通过，没有删除断言。
+- `PersonaEvolutionTests` **49项通过**（`evolution-final2.log` 指向实际产物），运行真实event host/queue/snapshot/profile/persistence，完整生成器在该调度测试里是明确控制的叶节点；生成器真实行为由上一组单独验证，不冒充一次集成实机。覆盖扩展开关关闭仍capture/start、合并去重/亲属关联、独立事件开关在途取消、手改消费旧事件、旧save generation排除、重载pending、失败两次退出、完整profile分块往返与旧JSON/导入兼容。
+- 原 `PersistenceChunkReplayTests` 通过；`validate_persistence_profile_config.py --chunk-contract-only` PASS，22分块字符串键/47字典键，12000 UTF8块上限，无新增键。只是契约与托管读写，不证明真实sav或旧坏档修复。
+- 隔离候选 `work/persona-full-regeneration-20261031/candidate` 是检查点06c4d0d8d完整tracked树加11个实际受影响产品文件；全部逐字节等同主工作区最终文件，`candidate-inputs.json` / `verified-sources.json`绑定。原 `build_single_module.ps1` 无Stage/Deploy，**双API+Bootstrap均0错误，原coup seam与registration smoke通过**，见 `build.log`；参考1.3.15.110062、1.4.6.115628。不宣称包含其他dirty/scratch的主工作区全量构建通过。
+- 真实候选 `TerminalLiveSettingsTests`：1.3/CN **1174项通过**，1.4/EN **1230项通过**（`settings-scoped-*/run.log`、`receipt.json`）。实际MCM原属性/JSON与终端setter/save owner、两种UI及重开生命周期检查保留。初始全映射fixture枚举与本任务无关的世界书过慢，已中止；最终本地wrapper仅让原fixture读取原映射中的261个非世界书资产，保留选择器/路径保护和全部行为断言，未改产品映射或构建脚本。
+- 双语资源/消费边界15项通过（`resource-contract.json`）。`check_bilingual_tables.py` 默认检查17表failures0，但报告10张缺英文版；完整 `l10n_gate.py` **失败36项**，均为本次未改的全仓缺失表/映射/嵌入问题，完整报告`l10n-gate.log`保留；未为本次放宽或删断言，不冒充全仓本地化完成。
+
+### 未验证与回滚
+
+未部署、正式双包/完整Stage、实机NPC对话与事件、真实provider生成文风、玩家sav读写及坏档修复。已有扩展数据不会因关闭“扩展人设”而删除或被隐藏；需要停用事件重生须关原“事件驱动的NPC人设演变”。回滚只对产品提交 `296c34261` 做focused inverse/revert，或用证据根`rollback.patch`；不得reset/revert其他作者内容。隔离候选与checkpoint保留本地。
+
+---
+
 <a id="persona-editable-example-20261030"></a>
 ## 可编辑人物设定示例与扩展人设总开关 — 2026-10-30
 
