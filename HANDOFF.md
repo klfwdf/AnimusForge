@@ -1,3 +1,10 @@
+<a id="package-1.7.0-20261031"></a>
+## 2026-10-31 最新本地 1.7.0 CN/EN 玩家包已生成
+
+用户要求以本地最新版打包。基线 `39af2c3cb`，检查点 `4208dc4fa`，发行接线修复 `0dd9ba107`；已通过原脚本生成 `一键编译覆盖推送/packages/AnimusForge_v1.7.0_CN_1031_1730.zip` 与对应 EN 包，安装说明和 SHA256 同目录。原有安装包、未提交资料保留。
+
+**PACKAGED_OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED**。双 API、Bootstrap、seam/注册、完整双语投影和正式 ZIP 校验通过；本次补齐付款凭据兼容资源及内置音色 UI 接线，未改外交权限、金额规则或音色 ID。说客 CN/EN 各 168、音色 187、匹配表达式等价 24 项通过。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#package-1.7.0-20261031)和[代码范围](docs/architecture/af-framework-code-scope.md#package-1.7.0-20261031)。本条替代之前“尚未包含合并后代码的旧 1.7.0 包”状态，不改变历史部署、实机或远端状态。
+
 <a id="merge-push-20261031"></a>
 ## 2026-10-31 远端语音改动与本地外交改动已合并推送
 

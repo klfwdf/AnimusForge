@@ -1,3 +1,15 @@
+<a id="package-1.7.0-20261031"></a>
+## 2026-10-31 1.7.0 打包接线修复范围
+
+产品 `0dd9ba107`，检查点 `4208dc4fa`；[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#package-1.7.0-20261031)记录双包与证据状态。
+
+| 已核对源码 | 符号/责任 | 覆盖与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Domain/DiplomacySponsorReceiptRules.cs:11-28`；`content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json:279` | `Read` / `SponsorReceipt_GoldCnPattern` | 原付款匹配外置；动态姓名仍先 Escape；24 组逐字等价、CN/EN 说客回放覆盖，未改金额或权限 |
+| `src/modules/AF.Module.Llm/Tts/OpenAiTtsVoiceCatalog.cs:14-30,80-103,254-295,323-335,352-397` | `Label` / `BuiltInVoices` / `Parse` / `Build` / `ParseGender` / cache | 固定名称在显示边界随 UI 投影；models fallback 和缓存保留固定来源，动态服务名称保留；网络与音频未实测 |
+| `content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json:266-269`；`content/modules/AF.Module.Llm/ModuleData/Languages/afllm_ui_strings.xml:211-222` 及 CN 同名对照表 | 兼容 reader 与原生 UI 注册 | 原 content-map、嵌入逻辑名、原生 TextObject 真实接线；无 Tick IO/扫描 |
+| `tests/modules/AF.Module.Llm/OpenAiVoiceLocalizationTests/Program.cs:1-99` | 真实 catalog 与原生语言切换回归 | 187 项：12 名称、性别、provider 原文、models、随机池、情绪、缓存；路径/日志/tone enum 为隔离叶 |
+
 <a id="merge-push-20261031"></a>
 ## 2026-10-31 远端/本地正常合并证据
 

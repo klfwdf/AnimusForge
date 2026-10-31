@@ -1,3 +1,20 @@
+<a id="package-1.7.0-20261031"></a>
+## 2026-10-31 本地最新 1.7.0 正式双包
+
+目标为本地最新源码制作玩家安装包；范围包含原统一双版本构建、干净 Stage、CN/EN 全量投影、ZIP 校验与安装说明，不部署、不 push、不调用真实模型、不读取玩家存档。开始基线 `main@39af2c3cb`，检查点 `4208dc4fa`，产品修复 `0dd9ba107`。原四份 dirty 文档与四类 untracked 资料保持，未把它们纳入提交。
+
+首次发行前置检查拒绝两处新增硬编码。对照实际 reader 后，`DiplomacySponsorReceiptRules.Read` 的中文付款回执正则按原值放入既有 `DiplomacyMiscCompatibility.json`，原 p/n 均仍经过 Regex.Escape；英文路径和资格不变。OpenAI 内置 12 个音色名称在 UI 边界使用原生 TextObject 和 CN/EN 表；四个服务端性别别名放入既有嵌入 `LlmSourceTexts.json`。远端动态音色名称原样保留，固定标签来源随缓存保存，旧缓存兼容；ID、随机性别池和情绪变体不变。资源复用原 content-map/嵌入/语言注册；兼容词 Lazy 缓存一次，UI 仅显示时投影，不新增 Tick 工作。未修改构建/打包脚本或绕过门禁。
+
+最终命令沿原入口：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/package_mod.ps1 -ModuleDir bin/Debug/single_module_stage/AnimusForge -BannerlordRoot "E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -WorkshopContentDir "E:/SteamLibrary/steamapps/workshop/content/261550" -Configuration Debug -Build -Version v1.7.0 -ExcludeOnnx`。原一键默认 Debug 配置；显式锁定 1.7.0，不递增为 1.7.1。
+
+验证：实际 1.3 引用 `v1.3.15.110062`、1.4 引用 `v1.4.6.115628`；两实现、Bootstrap、dual coup seam、managed registration 通过。音色新回归使用真实 catalog/嵌入 reader/TaleWorlds TextObject，187 项；磁盘定位、日志及 tone enum 为隔离叶，未连接语音服务。说客生产回放中文和英文各 168 项；24 组动态姓名替换证明旧新中文正则完全等价。原未提交内容、版本源码和旧包 SHA256 保全通过。已有编译警告及 NuGet 漏洞索引不可达 NU1900 保留，不当作零警告。
+
+完整 Stage 4,825 文件通过；原源码/DLL 语言门禁、全部 CN/EN 投影、Bootstrap-only XML、DLL allowlist、双实现 markers/hashes、无 ONNX 和双包事务通过。独立 ZIP CRC、唯一模块根、版本、双包相同 DLL、UI 双表和新增兼容资源核对通过。产物：`一键编译覆盖推送/packages/AnimusForge_v1.7.0_CN_1031_1730.zip`、`AnimusForge_v1.7.0_EN_1031_1730.zip`，旁附安装说明及 SHA256。本包无独立模型和前置 MOD；首次安装按说明准备，升级沿用既有模型。
+
+本地证据 `artifacts/package-1.7.0-20261031/receipt.json` 绑定两包 SHA256、DLL 哈希、产品修订；`package-final.log` 为完整最终构建/打包日志，`preservation.json` 为保全/等价结果，定向日志记录各测试。原旧 Stage 完整保存在本地证据目录 `previous-stage/`，新 Stage 按原规则重新建立；不删除原有输出。源码坐标见[代码范围](architecture/af-framework-code-scope.md#package-1.7.0-20261031)，不重复全表。
+
+状态 **PACKAGED_OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED**。本轮未运行游戏、真实 API/语音、旧档或外部 MOD 组合验收；离线构建和包验证不代替这些边界。此前源码范围有效回归沿用，不宣称历史英文全套断言或 TTS 静态格式检查已修复。本条仅取代当前最新源码“未打包”的状态；旧包及历史部署记录保留。
+
 <a id="merge-push-20261031"></a>
 ## 2026-10-31 正常合并远端并推送源码（PUSH_VERIFIED / LIVE_NOT_RUN）
 
