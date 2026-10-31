@@ -1,3 +1,26 @@
+# 未部署：兼容表瘦身，删除 1148 个未用键（2026-11-01）
+
+在 19 张兼容表中，同时从中文表和对应的 `.en.json` 删除 1148 个未用键，共 2296 行。只删整行，其余字节不变。删除后逐表核对：解析结果必须恰好等于“原数据减去被删的键”。
+
+判定为“仍在使用”、予以保留的键：
+- 键名以标识符或字面量出现在运行时 C#、测试、工具或脚本中。
+- 有拼接或插值字面量是它的前缀或后缀，共约 250 个动态前缀。例如 `AF_DIP_Source_`、`AF_REC_Bulletin_`。
+- 所在表被按前缀枚举：AdapterPromptCapture 的 `Project_`/`Alias_Project_`、PolicyCoreManagement 的 `diagnostic_`、Economy 提示投影用到的键。
+- 元数据键，如 `$schema`、`_comment`。
+
+未瘦身：LegacySettingsPrompts、McmPromptSourceCompatibility、TerminalCategories、EconomyDisplaySources。这些表整体用于识别旧值。
+脚本与备份：`scratch/l10n-slim/`（`scan.py`/`verify.py`/`apply.py`，删除清单 `final.json`，原文件在 `backup/`）。
+
+验证：
+- 校验器与 `l10n_gate.py` 通过。
+- 隔离 worktree 编译 1.4 和 1.3 均通过。
+- 真实 DLL 回放在中英两种模式下均通过：消息/历史 170 项、游戏语言快照 22 项。
+- 435 项模块测试与基线对比无回归，4 项从失败变为通过；所有测试日志中没有缺键异常。
+
+未部署、未实机。CN/EN 双包仍等世界书映射修复。回滚：逆提交本条，或用 `scratch/l10n-slim/backup/` 恢复。
+
+---
+
 # 未部署：l10n 复查修复与第 4 步进度（2026-11-01）
 
 复查了第 2 步的 184 个 `.cs` 文件，找到 3 个缺陷和 1 个性能问题，已全部修复：
