@@ -56,7 +56,7 @@ namespace AnimusForge {
   public sealed class Selection {public int SelectedIndex;}
   public Selection TtsProviderDropdown=>new(){SelectedIndex=TtsUseGptSoVits?2:UsesOpenAiTts?1:0};
   public Action TestTtsGptSoVitsVoice=()=>{};
-  public bool UsesOpenAiTts; public bool TtsStreamingPlaybackEnabled;
+  public bool UsesOpenAiTts; public bool TtsStreamingPlaybackEnabled; public bool TtsWaitForPostprocessEmotion=true;
   public bool IsSelectedTtsEnabled=>EnableTtsSpeech&&(UsesOpenAiTts||TtsUseGptSoVits||TtsVolcDedicatedEnabled);
   public string TtsOpenAiApiUrl="https://openai-fixture.invalid/v1/audio/speech",TtsOpenAiApiKey="openai-fixture-key",TtsOpenAiModel="gpt-sovits-v4",TtsOpenAiVoice="zh_default";
   public float TtsOpenAiSpeed=1f;public int TtsOpenAiTimeoutSeconds=60;
@@ -353,7 +353,8 @@ static class Program {
    Assert(fromModels.Voices.Count==4,"models list kept non-voice models or variants: "+string.Join(",",fromModels.Voices.Select(v=>v.Id)));
    Assert(fromModels.Get("tts-1")==null&&fromModels.Get("gemma-4")==null&&fromModels.Get("gpt-sovits-v4")==null,"chat/tts model listed as voice");
    Assert(fromModels.Get("female-sparkle").Gender==2&&fromModels.Get("female-sparkle").HasAngry&&fromModels.Get("female-sparkle").HasHappy,"female-sparkle variants from models");
-   Assert(fromModels.Get("female-sparkle").Label=="花火·俏皮戏精 (female-sparkle)","built-in label not reused for models list");
+   Assert(fromModels.Get("female-sparkle").Label=="Sparkle · playful performer (female-sparkle)","built-in label not reused for models list");
+   Assert(fromModels.Get("female-sparkle").DisplayName=="Sparkle · playful performer"&&deep.DisplayName=="杰帕德·低沉英雄","built-in names follow UI text; server names stay literal");
    Assert(fromModels.Get("female-clear").Gender==2&&!fromModels.Get("female-clear").HasAngry,"female-clear without listed variants");
    Assert(fromModels.Get("zh_default").Gender==0,"zh_default entered a random pool");
    Assert(fromModels.Endpoint==OpenAiTtsVoiceCatalog.VoicesEndpoint(url),"models catalog not keyed by voices endpoint");

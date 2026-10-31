@@ -13,11 +13,14 @@ namespace AnimusForge;
 
 internal sealed class OpenAiTtsVoice
 {
-    internal OpenAiTtsVoice(string id, string name, int gender) { Id = id; Name = name ?? ""; Gender = gender; }
+    internal OpenAiTtsVoice(string id, string name, int gender, string uiTextId = null) { Id = id; Name = name ?? ""; Gender = gender; _uiTextId = uiTextId; }
+    private readonly string _uiTextId;
     internal string Id { get; }
     /// <summary>Server-provided display name, possibly empty.</summary>
     internal string Name { get; }
-    internal string Label => Name.Length == 0 ? Id : Name + " (" + Id + ")";
+    /// <summary>Name shown in the voice picker; built-in AF names follow the UI language.</summary>
+    internal string DisplayName => _uiTextId == null || Name.Length == 0 ? Name : LlmUiTexts.Text(_uiTextId, Name);
+    internal string Label => Name.Length == 0 ? Id : DisplayName + " (" + Id + ")";
     /// <summary>0 = unknown, 1 = male, 2 = female.</summary>
     internal int Gender { get; }
     internal bool HasHappy { get; private set; }
@@ -75,16 +78,17 @@ internal sealed class OpenAiTtsVoiceCatalog
     }
 
     // AF speech service voices (11 bases with _happy/_angry/_sad, plus zh_default). Used when the
+    // display names are UI text: English fallback here, localized as AF_GPT_UI_OpenAiBuiltInVoice_<id>.
     // server does not expose /audio/voices, but only if the configured fallback voice is one of
     // these names, so other OpenAI-compatible providers never receive AF voice names.
     private static readonly string[][] BuiltInVoices =
     {
-        new[] { "male-clear", "景元·清亮少年", "1" }, new[] { "male-gentle", "丹恒·温和青年", "1" },
-        new[] { "male-steady", "瓦尔特·沉稳长者", "1" }, new[] { "male-deep", "杰帕德·低沉英雄", "1" },
-        new[] { "male-senior", "桑博·油滑大叔", "1" }, new[] { "female-clear", "三月七·明朗少女", "2" },
-        new[] { "female-gentle", "流萤·温柔少女", "2" }, new[] { "female-steady", "姬子·成熟御姐", "2" },
-        new[] { "female-firm", "希露瓦·飒爽大姐", "2" }, new[] { "female-senior", "布洛妮娅·冷静少女", "2" },
-        new[] { "female-sparkle", "花火·俏皮戏精", "2" }, new[] { "zh_default", "默认中文女声", "0" }
+        new[] { "male-clear", "Jing Yuan · bright youth", "1" }, new[] { "male-gentle", "Dan Heng · gentle young man", "1" },
+        new[] { "male-steady", "Welt · steady elder", "1" }, new[] { "male-deep", "Gepard · deep-voiced hero", "1" },
+        new[] { "male-senior", "Sampo · slick uncle", "1" }, new[] { "female-clear", "March 7th · bright girl", "2" },
+        new[] { "female-gentle", "Firefly · gentle girl", "2" }, new[] { "female-steady", "Himeko · mature lady", "2" },
+        new[] { "female-firm", "Serval · dashing elder sister", "2" }, new[] { "female-senior", "Bronya · calm girl", "2" },
+        new[] { "female-sparkle", "Sparkle · playful performer", "2" }, new[] { "zh_default", "Default Chinese female voice", "0" }
     };
     private static readonly Lazy<OpenAiTtsVoiceCatalog> BuiltIn = new Lazy<OpenAiTtsVoiceCatalog>(() =>
     {
@@ -277,11 +281,20 @@ internal sealed class OpenAiTtsVoiceCatalog
             if (byId.ContainsKey(id)) continue;
             string name = CleanLabel(item.Item2);
             int gender = item.Item3 != 0 ? item.Item3 : InferGender(id);
-            var voice = new OpenAiTtsVoice(id, name == id ? "" : name, gender);
+            var voice = new OpenAiTtsVoice(id, name == id ? "" : name, gender, BuiltInUiTextId(id, name));
             voices.Add(voice); byId.Add(id, voice);
         }
         foreach (var variant in variants) if (byId.TryGetValue(variant.Item1, out var voice)) voice.MarkVariant(variant.Item2);
         return new OpenAiTtsVoiceCatalog(endpoint, voices, byId);
+    }
+
+    // Only the exact built-in English name (built-in list, /models reuse, or its cache) is localized;
+    // names supplied by a speech server stay as the server wrote them.
+    private static string BuiltInUiTextId(string id, string name)
+    {
+        foreach (var voice in BuiltInVoices)
+            if (voice[0] == id && voice[1] == name) return "AF_GPT_UI_OpenAiBuiltInVoice_" + id.Replace('-', '_');
+        return null;
     }
 
     private static LocalTtsTone ToneSuffix(string id, out string baseId)
@@ -315,8 +328,8 @@ internal sealed class OpenAiTtsVoiceCatalog
     {
         switch ((value ?? "").Trim().ToLowerInvariant())
         {
-            case "female": case "f": case "woman": case "女": case "女性": return 2;
-            case "male": case "m": case "man": case "男": case "男性": return 1;
+            case "female": case "f": case "woman": case "\u5973": case "\u5973\u6027": return 2; // server gender vocabulary: female
+            case "male": case "m": case "man": case "\u7537": case "\u7537\u6027": return 1; // server gender vocabulary: male
             default: return 0;
         }
     }
