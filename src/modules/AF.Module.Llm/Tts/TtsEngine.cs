@@ -323,7 +323,7 @@ internal sealed partial class TtsEngine : IDisposable
 			};
 			if (settings?.TtsUseGptSoVits == true)
 			{
-				item.LocalRequest = GptSoVitsVoiceRuntime.CaptureRequest(segments[0], item.VoiceIdOverride, speed, settings, pendingLocalSpeech != null ? -1 : (int)(localSpeech?.Tone ?? LocalTtsTone.Neutral));
+				item.LocalRequest = GptSoVitsVoiceRuntime.CaptureRequest(segments[0], item.VoiceIdOverride, speed, settings, !item.Settings.WaitForPostprocessEmotion ? (int)LocalTtsTone.Neutral : pendingLocalSpeech != null ? -1 : (int)(localSpeech?.Tone ?? LocalTtsTone.Neutral));
 
 
 				Logger.Log("TtsEngine", "[LocalTone] agent=" + agentIndex + ";voice=" + item.VoiceIdOverride + ";tone=" + (localSpeech?.Tone ?? LocalTtsTone.Neutral) + ";language=" + item.LocalRequest.Language.Code);
@@ -733,8 +733,8 @@ internal sealed partial class TtsEngine : IDisposable
         var language = job.LocalRequest?.Language ?? job.Settings.SpeechLanguage;
         if (!language.IsSupported)
         { NotifyPlaybackFailed(job, "tts_local_language_invalid"); return; }
-        // OpenAI-compatible speech also waits (bounded) for the postprocess MOOD to pick a tone variant.
-        if (!job.BypassEnabledCheck && (job.LocalRequest != null || language.IsForced || job.Settings.OpenAi))
+        // Capture the wait policy per request. Direct mode keeps the cleaned main text and neutral tone.
+        if (!job.BypassEnabledCheck && job.Settings.WaitForPostprocessEmotion && (job.LocalRequest != null || language.IsForced || job.Settings.OpenAi))
         {
             var speech = job.PendingLocalSpeech == null ? job.LocalSpeech ?? LocalTtsSpeech.Neutral
                 : LocalTtsSpeech.AwaitAsync(job.PendingLocalSpeech, job.Request.CancellationToken,

@@ -3322,6 +3322,8 @@ Choose how to proceed:" />
   <string id="AF_MCM_Tts_OpenAiTimeout_Hint" text="Total request/read deadline for this service. Default: 60 seconds. No automatic retry; failure falls back to text." />
   <string id="AF_MCM_Tts_OpenAiTesting" text="[TTS] Testing the selected OpenAI-compatible speech service; synthesis may incur charges." />
   <string id="AF_MCM_Tts_TestNotQueued" text="[TTS] Test voice was not queued: the queue is full or the engine has stopped. Try again later." />
+  <string id="AF_MCM_Tts_WaitEmotion" text="Wait for postprocess speech emotion" />
+  <string id="AF_MCM_Tts_WaitEmotion_Hint" text="Default: on. Waits for postprocessing to select speech emotion. When off, sends the cleaned main reply directly to TTS in a neutral tone, without postprocess speech translation. Gameplay action postprocessing still runs. Applies to new speech requests." />
   <string id="AF_MCM_Tts_Streaming" text="Stream audio playback with lip-sync" />
   <string id="AF_MCM_Tts_Streaming_Hint" text="Default: on. Sends stream=true to the OpenAI-compatible service and plays incoming WAV segments with lip-sync. Turning off sends stream=false and waits for the complete utterance. Upstream streaming support and first-audio latency depend on the service. Applies only to the OpenAI-compatible service." />
   <string id="AF_TERMINAL_GROUP_TTS_API" text="TTS API" />

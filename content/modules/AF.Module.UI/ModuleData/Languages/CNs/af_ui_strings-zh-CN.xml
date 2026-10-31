@@ -3354,6 +3354,8 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_OpenAiTimeout_Hint" text="此服务请求和读取共用的总时限，默认 60 秒。不自动重试，失败回退文字。" />
   <string id="AF_MCM_Tts_OpenAiTesting" text="[TTS] 正在测试选中的 OpenAI 兼容语音服务；真实合成可能产生费用。" />
   <string id="AF_MCM_Tts_TestNotQueued" text="[TTS] 测试语音未入队：队列已满或引擎已停止，请稍后重试。" />
+  <string id="AF_MCM_Tts_WaitEmotion" text="等待后处理判断语音情绪" />
+  <string id="AF_MCM_Tts_WaitEmotion_Hint" text="默认开启。等待后处理判断情绪后合成语音；关闭后直接以普通语气将清理后的回复正文请求 TTS，不使用后处理生成的朗读译文。游戏动作后处理仍照常执行。对新发起的语音请求生效。" />
   <string id="AF_MCM_Tts_Streaming" text="流式播放并同步口型" />
   <string id="AF_MCM_Tts_Streaming_Hint" text="默认开启。向 OpenAI 兼容服务发送 stream=true，收到 WAV 音频分段后开始播放并驱动口型；关闭时发送 stream=false，等待整句音频。上游是否支持流式及首段等待时间取决于服务，仅对 OpenAI 兼容服务生效。" />
   <string id="AF_TERMINAL_GROUP_TTS_API" text="TTS API" />

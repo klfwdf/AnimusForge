@@ -29,6 +29,10 @@ public partial class DuelSettings
     internal bool IsSelectedTtsEnabled => EnableTtsSpeech &&
         (UsesOpenAiTts || TtsUseGptSoVits || ((TtsProviderDropdown?.SelectedIndex ?? 0) == 0 && TtsVolcDedicatedEnabled));
 
+    [SettingPropertyBool("{=AF_MCM_Tts_WaitEmotion}Wait for postprocess speech emotion", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Tts_WaitEmotion_Hint}Default: on. Waits for postprocessing to select speech emotion. When off, sends the cleaned main reply directly to TTS in a neutral tone, without postprocess speech translation. Gameplay action postprocessing still runs. Applies to new speech requests.")]
+    [SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
+    public bool TtsWaitForPostprocessEmotion { get; set; } = true;
+
     [SettingPropertyBool("{=AF_MCM_Tts_Streaming}Stream audio playback with lip-sync", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Tts_Streaming_Hint}Default: on. Sends stream=true to the OpenAI-compatible service and plays incoming WAV segments with lip-sync. Turning off sends stream=false and waits for the complete utterance. Upstream streaming support and first-audio latency depend on the service. Applies only to the OpenAI-compatible service.")]
     [SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
     public bool TtsStreamingPlaybackEnabled { get; set; } = true;

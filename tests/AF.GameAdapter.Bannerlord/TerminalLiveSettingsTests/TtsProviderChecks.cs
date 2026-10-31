@@ -12,9 +12,10 @@ static class TtsProviderChecks
     internal static void Run(BaseSettings owner, string path, Func<BaseSettings, bool> save, Action<BaseSettings> load, Action<bool, string> check)
     {
         var settings = (DuelSettings)owner;
-        string[] ids = { "TtsProviderDropdown", "TtsOpenAiApiUrl", "TtsOpenAiApiKey", "TtsOpenAiModel", "TtsOpenAiVoice", "TtsOpenAiSpeed", "TtsOpenAiTimeoutSeconds", "TtsStreamingPlaybackEnabled" };
-        object[] values = { 1, "https://tts-fixture.invalid/v1/audio/speech", "fixture-key", "fixture-model", "zh_default", 1.25f, 75, false };
-        object[] original = { settings.TtsProviderDropdown.SelectedIndex, settings.TtsOpenAiApiUrl, settings.TtsOpenAiApiKey, settings.TtsOpenAiModel, settings.TtsOpenAiVoice, settings.TtsOpenAiSpeed, settings.TtsOpenAiTimeoutSeconds, settings.TtsStreamingPlaybackEnabled };
+        check(new DuelSettings().TtsWaitForPostprocessEmotion, "Existing installations default to waiting for postprocess emotion");
+        string[] ids = { "TtsProviderDropdown", "TtsOpenAiApiUrl", "TtsOpenAiApiKey", "TtsOpenAiModel", "TtsOpenAiVoice", "TtsOpenAiSpeed", "TtsOpenAiTimeoutSeconds", "TtsStreamingPlaybackEnabled", "TtsWaitForPostprocessEmotion" };
+        object[] values = { 1, "https://tts-fixture.invalid/v1/audio/speech", "fixture-key", "fixture-model", "zh_default", 1.25f, 75, false, false };
+        object[] original = { settings.TtsProviderDropdown.SelectedIndex, settings.TtsOpenAiApiUrl, settings.TtsOpenAiApiKey, settings.TtsOpenAiModel, settings.TtsOpenAiVoice, settings.TtsOpenAiSpeed, settings.TtsOpenAiTimeoutSeconds, settings.TtsStreamingPlaybackEnabled, settings.TtsWaitForPostprocessEmotion };
         string oldVoice = settings.TtsVolcDedicatedSpeaker;
         string oldLanguage = settings.TtsGptSoVitsOutputLanguage;
         settings.TtsVolcDedicatedSpeaker = "preserved-volc-voice";
@@ -54,6 +55,14 @@ static class TtsProviderChecks
                 TtsLiteGuideChecks.Run(settings, selected, check);
                 string streamHint = TerminalSettingsRegistry.GetById("TtsStreamingPlaybackEnabled").HintText;
                 check(streamHint.Contains("stream=true") && streamHint.Contains("stream=false"), "Actual native streaming hint describes upstream on/off flags " + selected);
+                var waitDefinition = TerminalSettingsRegistry.GetById("TtsWaitForPostprocessEmotion");
+                check(waitDefinition.DisplayName == (selected == "English" ? "Wait for postprocess speech emotion" : "等待后处理判断语音情绪"), "Emotion wait label through actual terminal consumer " + selected);
+                check(waitDefinition.HintText.Contains(selected == "English" ? "Gameplay action postprocessing still runs" : "游戏动作后处理仍照常执行"), "Emotion wait hint preserves gameplay postprocessing " + selected);
+                for (int mode = 0; mode < 4; mode++)
+                {
+                    settings.TtsProviderDropdown.SelectedIndex = mode;
+                    check(TerminalSettingsRegistry.VisibleDefinitions.Any(d => d.Id == "TtsWaitForPostprocessEmotion"), "Emotion wait is common to provider " + mode);
+                }
             }
             language.Invoke(null, new object[] { "English" });
             for (int i = 0; i < ids.Length; i++)
@@ -67,6 +76,12 @@ static class TtsProviderChecks
             check(restored.TtsProviderDropdown.SelectedIndex == 1 && restored.TtsOpenAiApiUrl == (string)values[1] && restored.TtsOpenAiApiKey == "fixture-key" && restored.TtsOpenAiModel == "fixture-model", "TTS provider/address/key/model JSON roundtrip");
             check(restored.TtsOpenAiVoice == "zh_default" && Math.Abs(restored.TtsOpenAiSpeed - 1.25f) < 0.001f && restored.TtsOpenAiTimeoutSeconds == 75, "TTS voice/speed/deadline JSON roundtrip");
             check(!restored.TtsStreamingPlaybackEnabled, "TTS streaming playback switch JSON roundtrip");
+            check(!restored.TtsWaitForPostprocessEmotion, "TTS emotion wait switch saves and reloads through original MCM owner");
+            var snapshotType = typeof(DuelSettings).Assembly.GetType("AnimusForge.TtsEngine+ProviderSnapshot", true);
+            var snapshotFlags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public;
+            object snapshot = Activator.CreateInstance(snapshotType, snapshotFlags, null, new object[] { settings }, null);
+            settings.TtsWaitForPostprocessEmotion = true;
+            check(!(bool)snapshotType.GetField("WaitForPostprocessEmotion", snapshotFlags).GetValue(snapshot), "Queued speech keeps captured wait policy when settings change");
             check(restored.TtsVolcDedicatedSpeaker == "preserved-volc-voice", "TTS switch preserves old voice");
             foreach (int mode in new[] { 2, 3 })
             {
