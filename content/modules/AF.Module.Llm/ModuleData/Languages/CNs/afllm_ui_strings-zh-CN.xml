@@ -208,5 +208,17 @@
     <string id="AF_GPT_UI_LiteGuideLanguageBody" text="“语音输出语言”支持填写中文、粤语、英语、日语或对应英文名；留空/auto 跟随正文。四种服务共用此设置：正文同语言就不翻译，不同才由后处理私下翻译，字幕和历史不变。用中文写“日语”不会被拿去朗读；它会映射成语言代码。后处理失败/译文缺失时仅出文字，不乱读其他语言。&#10;语气来自现有后处理的 MOOD，不把其他动作标签交给 GPT-SoVITS：JOY/DELIGHTED 对应 happy，ANNOYED 对应 angry，其余 neutral；sad 可手动试听。&#10;一个角色一个稳定 ID，把多语气放在 emotion_variants 内，不用把花火拆成四个人。缺少该语气会用基础参考；有生气录音更易表达生气，但不保证表演效果。当前自动标签不支持自造 cute/flirty 等新类别。" />
     <string id="AF_GPT_UI_LiteGuideTroubleshoot" text="L 版教程 8 · 排错与更新" />
     <string id="AF_GPT_UI_LiteGuideTroubleshootBody" text="没声音先看：语音开关、选择的服务、运行包准备状态、主对话对象、百科音色、战斗限制，以及指定语言是否拿到有效后处理译文。参考路径/哈希错误、重复 ID、模型缺文件会拒绝使用，不会自动切到付费 API。&#10;添加包后刷新状态或重启；文件缺失请重新完整解压，不要边运行边替换。语言提示旧包不支持时更新配套 L 包，不要只改 runtime.json 绕过校验。&#10;报错日志在 Logs/TTS，临时缓存在 Cache/TTS。求助可给错误行、AF/包版本、显卡和复现步骤，先遮掉 API Key、令牌和私聊。&#10;更新仅合并对应附加包，保留自定义声音、角色 ID、玩家配置和其他 MOD。网盘下载的可执行环境只用可信来源；本次链接是分享者提供的资源，不代表所有录音都已获公开分发许可。U 发布时必须另写硬件与兼容教程。" />
+    <string id="AF_LLM_UI_OpenAiVoice_male-clear" text="景元·清亮少年" />
+    <string id="AF_LLM_UI_OpenAiVoice_male-gentle" text="丹恒·温和青年" />
+    <string id="AF_LLM_UI_OpenAiVoice_male-steady" text="瓦尔特·沉稳长者" />
+    <string id="AF_LLM_UI_OpenAiVoice_male-deep" text="杰帕德·低沉英雄" />
+    <string id="AF_LLM_UI_OpenAiVoice_male-senior" text="桑博·油滑大叔" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-clear" text="三月七·明朗少女" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-gentle" text="流萤·温柔少女" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-steady" text="姬子·成熟御姐" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-firm" text="希露瓦·飒爽大姐" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-senior" text="布洛妮娅·冷静少女" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-sparkle" text="花火·俏皮戏精" />
+    <string id="AF_LLM_UI_OpenAiVoice_zh_default" text="默认中文女声" />
   </strings>
 </base>

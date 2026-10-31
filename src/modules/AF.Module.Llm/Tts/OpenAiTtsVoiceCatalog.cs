@@ -13,11 +13,14 @@ namespace AnimusForge;
 
 internal sealed class OpenAiTtsVoice
 {
-    internal OpenAiTtsVoice(string id, string name, int gender) { Id = id; Name = name ?? ""; Gender = gender; }
+    internal OpenAiTtsVoice(string id, string name, int gender, bool builtIn = false) { Id = id; Name = name ?? ""; Gender = gender; _builtIn = builtIn; }
+    private readonly bool _builtIn;
+    internal bool UsesBuiltInLabel => _builtIn;
     internal string Id { get; }
     /// <summary>Server-provided display name, possibly empty.</summary>
     internal string Name { get; }
-    internal string Label => Name.Length == 0 ? Id : Name + " (" + Id + ")";
+    internal string Label => Name.Length == 0 ? Id
+        : (_builtIn ? LlmUiTexts.Text("AF_LLM_UI_OpenAiVoice_" + Id, Name) : Name) + " (" + Id + ")";
     /// <summary>0 = unknown, 1 = male, 2 = female.</summary>
     internal int Gender { get; }
     internal bool HasHappy { get; private set; }
@@ -79,12 +82,12 @@ internal sealed class OpenAiTtsVoiceCatalog
     // these names, so other OpenAI-compatible providers never receive AF voice names.
     private static readonly string[][] BuiltInVoices =
     {
-        new[] { "male-clear", "景元·清亮少年", "1" }, new[] { "male-gentle", "丹恒·温和青年", "1" },
-        new[] { "male-steady", "瓦尔特·沉稳长者", "1" }, new[] { "male-deep", "杰帕德·低沉英雄", "1" },
-        new[] { "male-senior", "桑博·油滑大叔", "1" }, new[] { "female-clear", "三月七·明朗少女", "2" },
-        new[] { "female-gentle", "流萤·温柔少女", "2" }, new[] { "female-steady", "姬子·成熟御姐", "2" },
-        new[] { "female-firm", "希露瓦·飒爽大姐", "2" }, new[] { "female-senior", "布洛妮娅·冷静少女", "2" },
-        new[] { "female-sparkle", "花火·俏皮戏精", "2" }, new[] { "zh_default", "默认中文女声", "0" }
+        new[] { "male-clear", "Jing Yuan - Bright young male", "1" }, new[] { "male-gentle", "Dan Heng - Gentle young male", "1" },
+        new[] { "male-steady", "Welt - Steady older male", "1" }, new[] { "male-deep", "Gepard - Deep heroic male", "1" },
+        new[] { "male-senior", "Sampo - Smooth middle-aged male", "1" }, new[] { "female-clear", "March 7th - Bright young female", "2" },
+        new[] { "female-gentle", "Firefly - Gentle young female", "2" }, new[] { "female-steady", "Himeko - Mature female", "2" },
+        new[] { "female-firm", "Serval - Confident female", "2" }, new[] { "female-senior", "Bronya - Composed young female", "2" },
+        new[] { "female-sparkle", "Sparkle - Playful theatrical female", "2" }, new[] { "zh_default", "Default Chinese female voice", "0" }
     };
     private static readonly Lazy<OpenAiTtsVoiceCatalog> BuiltIn = new Lazy<OpenAiTtsVoiceCatalog>(() =>
     {
@@ -248,6 +251,7 @@ internal sealed class OpenAiTtsVoiceCatalog
                     raw.Add(Tuple.Create(property.Name, Str(entry["display_name"]) ?? Str(entry["label"]) ?? Str(entry["name"]) ?? "", ParseGender(Str(entry["gender"]))));
             }
         }
+        var builtInLabels = new HashSet<string>(StringComparer.Ordinal);
         if (fromModels)
         {
             raw.RemoveAll(item => !IsVoiceModelId(item.Item1));
@@ -255,13 +259,17 @@ internal sealed class OpenAiTtsVoiceCatalog
             for (int i = 0; i < raw.Count; i++)
             {
                 var known = BuiltIn.Value.Get(raw[i].Item1?.Trim());
-                if (known != null && known.Name.Length != 0) raw[i] = Tuple.Create(raw[i].Item1, known.Name, raw[i].Item3);
+                if (known != null && known.Name.Length != 0)
+                {
+                    raw[i] = Tuple.Create(raw[i].Item1, known.Name, raw[i].Item3);
+                    builtInLabels.Add(known.Id);
+                }
             }
         }
-        return Build(endpoint, raw);
+        return Build(endpoint, raw, builtInLabels);
     }
 
-    private static OpenAiTtsVoiceCatalog Build(string endpoint, List<Tuple<string, string, int>> raw)
+    private static OpenAiTtsVoiceCatalog Build(string endpoint, List<Tuple<string, string, int>> raw, HashSet<string> builtInLabels = null)
     {
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var item in raw) if (IsSafeId(item.Item1)) ids.Add(item.Item1.Trim());
@@ -277,7 +285,8 @@ internal sealed class OpenAiTtsVoiceCatalog
             if (byId.ContainsKey(id)) continue;
             string name = CleanLabel(item.Item2);
             int gender = item.Item3 != 0 ? item.Item3 : InferGender(id);
-            var voice = new OpenAiTtsVoice(id, name == id ? "" : name, gender);
+            var voice = new OpenAiTtsVoice(id, name == id ? "" : name, gender,
+                endpoint == "builtin" || (builtInLabels?.Contains(id) == true && BuiltIn.Value.Get(id)?.Name == name));
             voices.Add(voice); byId.Add(id, voice);
         }
         foreach (var variant in variants) if (byId.TryGetValue(variant.Item1, out var voice)) voice.MarkVariant(variant.Item2);
@@ -313,11 +322,15 @@ internal sealed class OpenAiTtsVoiceCatalog
 
     private static int ParseGender(string value)
     {
-        switch ((value ?? "").Trim().ToLowerInvariant())
+        string normalized = (value ?? "").Trim().ToLowerInvariant();
+        switch (normalized)
         {
-            case "female": case "f": case "woman": case "女": case "女性": return 2;
-            case "male": case "m": case "man": case "男": case "男性": return 1;
-            default: return 0;
+            case "female": case "f": case "woman": return 2;
+            case "male": case "m": case "man": return 1;
+            default:
+                if (normalized == LlmSourceTexts.Get("OpenAiVoiceGenderFemaleShort") || normalized == LlmSourceTexts.Get("OpenAiVoiceGenderFemale")) return 2;
+                if (normalized == LlmSourceTexts.Get("OpenAiVoiceGenderMaleShort") || normalized == LlmSourceTexts.Get("OpenAiVoiceGenderMale")) return 1;
+                return 0;
         }
     }
 
@@ -349,16 +362,18 @@ internal sealed class OpenAiTtsVoiceCatalog
                 string endpoint = Str(document["endpoint"]);
                 if (endpoint == null || !(document["voices"] is JArray items)) return;
                 var raw = new List<Tuple<string, string, int>>();
+                var builtInLabels = new HashSet<string>(StringComparer.Ordinal);
                 foreach (JToken item in items)
                 {
                     if (raw.Count >= MaxVoices || !(item is JObject entry)) continue;
                     string id = Str(entry["id"]);
                     int gender = entry["gender"]?.Type == JTokenType.Integer ? (int)entry["gender"] : 0;
                     raw.Add(Tuple.Create(id, Str(entry["name"]) ?? "", gender is 1 or 2 ? gender : 0));
+                    if (id != null && entry["builtInLabel"]?.Type == JTokenType.Boolean && (bool)entry["builtInLabel"]) builtInLabels.Add(id);
                     foreach (string suffix in new[] { "happy", "angry", "sad" })
                         if (id != null && entry[suffix]?.Type == JTokenType.Boolean && (bool)entry[suffix]) raw.Add(Tuple.Create(id + "_" + suffix, "", 0));
                 }
-                var catalog = Build(endpoint, raw);
+                var catalog = Build(endpoint, raw, builtInLabels);
                 if (catalog.Voices.Count != 0) Volatile.Write(ref _current, catalog);
             }
             catch (Exception ex) { Logger.Log("TtsVoices", "Voice cache ignored: " + ex.GetType().Name); }
@@ -371,7 +386,7 @@ internal sealed class OpenAiTtsVoiceCatalog
         {
             var items = new JArray();
             foreach (var voice in catalog.Voices)
-                items.Add(new JObject { ["id"] = voice.Id, ["name"] = voice.Name, ["gender"] = voice.Gender, ["happy"] = voice.HasHappy, ["angry"] = voice.HasAngry, ["sad"] = voice.HasSad });
+                items.Add(new JObject { ["id"] = voice.Id, ["name"] = voice.Name, ["builtInLabel"] = voice.UsesBuiltInLabel, ["gender"] = voice.Gender, ["happy"] = voice.HasHappy, ["angry"] = voice.HasAngry, ["sad"] = voice.HasSad });
             var document = new JObject { ["endpoint"] = catalog.Endpoint, ["fetchedUtc"] = DateTime.UtcNow.ToString("o"), ["voices"] = items };
             string path = CachePath();
             Directory.CreateDirectory(Path.GetDirectoryName(path));
