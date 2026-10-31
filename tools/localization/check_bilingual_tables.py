@@ -15,9 +15,12 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 HAN = re.compile('[\u3400-\u9fff\uf900-\ufaff]')
+# Fullwidth/CJK punctuation alone (e.g. a closing '”。') still marks a Chinese-only source fragment.
+CJK = re.compile('[\u3000-\u303f\u3400-\u9fff\uf900-\ufaff\uff00-\uffef\u201c\u201d\u2018\u2019]')
 PLACEHOLDER = re.compile(r'\{[A-Za-z_][A-Za-z0-9_]*\}|\{[0-9]+(?::[^}]*)?\}')
-PROTOCOL = re.compile(r'\[(?:ACTION|RELAY|AD|ADP|AFEF)[: ][^\]\r\n]*\]')
+PROTOCOL = re.compile(r'\[(?:ACTION|RELAY|AD|ADP|AFEF)(?:[: ]|(?=[\u3400-\u9fff]))[^\]\r\n]*\]')
 SAME = '='
+FULLWIDTH_SEPARATORS = '：，；、。！？）」』'
 
 
 def flatten(value, prefix=''):
@@ -32,11 +35,23 @@ def flatten(value, prefix=''):
 AFEF_EQUIVALENT = {
     '[AFEF NPC行为补充]': '[AFEF NPC_ACTION]',
     '[AFEF玩家行为补充]': '[AFEF PLAYER_ACTION]',
+    # PrimaryChatMessagePolicy projects the legacy civil-war marker to plain "[Civil war fact]".
+    '[AFEF内战事实]': None,
+}
+
+
+# Tables whose readers never compose new text from them; their Chinese values are identities only.
+LANGUAGE_INVARIANT = {
+    # Exact previous MCM defaults, used only to recognize and migrate old saved settings (DuelSettings).
+    'LegacySettingsPrompts': 'legacy MCM default identities',
+    'McmPromptSourceCompatibility': 'legacy MCM default identities and persisted option values',
+    # LegacyValue is a routing id; the display text is a localized {=AF_UI_Terminal_*} string.
+    'TerminalCategories': 'terminal routing ids',
 }
 
 
 def tokens(pattern, text):
-    return sorted(set(AFEF_EQUIVALENT.get(t, t) for t in pattern.findall(text)))
+    return sorted(set(AFEF_EQUIVALENT.get(t, t) for t in pattern.findall(text)) - {None})
 
 
 def main(argv):
@@ -52,6 +67,8 @@ def main(argv):
         if source.name.endswith('.en.json'):
             continue
         if only and source.stem not in only:
+            continue
+        if source.stem in LANGUAGE_INVARIANT:
             continue
         english = source.with_name(source.stem + '.en.json')
         chinese_data = json.loads(source.read_text(encoding='utf-8'))
@@ -75,7 +92,7 @@ def main(argv):
             value, source_value = en[key], zh[key]
             if value == SAME:
                 continue
-            if not HAN.search(source_value) and value != source_value:
+            if not CJK.search(source_value) and value != source_value:
                 failures.append(f'{name}: {key} has no Chinese source; keep it "=" (source: {source_value!r})')
                 continue
             if HAN.search(value):
@@ -84,7 +101,10 @@ def main(argv):
                 failures.append(f'{name}: {key} placeholders differ: {tokens(PLACEHOLDER, source_value)} -> {tokens(PLACEHOLDER, value)}')
             if tokens(PROTOCOL, value) != tokens(PROTOCOL, source_value):
                 failures.append(f'{name}: {key} protocol markers differ')
-            if source_value[:1].isspace() != value[:1].isspace() or source_value[-1:].isspace() != value[-1:].isspace():
+            # Fullwidth punctuation carries its own spacing; its English counterpart ("：" -> ": ") may end with a space.
+            trailing_ok = source_value[-1:].isspace() == value[-1:].isspace() or (
+                value[-1:] == ' ' and source_value[-1:] in FULLWIDTH_SEPARATORS)
+            if source_value[:1].isspace() != value[:1].isspace() or not trailing_ok:
                 failures.append(f'{name}: {key} leading/trailing whitespace shape differs: {source_value!r} -> {value!r}')
     for failure in failures[:200]:
         print('FAIL', failure)

@@ -88,7 +88,7 @@ internal static class RuntimeLanguageChecks
         Type personaRules = product.GetType("AnimusForge.NpcPersonaTextRules", true);
         string displayed = (string)Call(personaRules, "BuildPersonaContext", profile, true);
         string prompted = (string)Call(personaRules, "BuildPersonaContext", profile, false);
-        JObject personaPackage = JObject.Parse(File.ReadAllText(Path.Combine(root, "ModuleData", "PersonaPromptTexts.json")));
+        JObject personaPackage = JObject.Parse(File.ReadAllText(GameLanguageRequestChecks.FixedFile(product, root, "PersonaPromptTexts.json")));
         Check(displayed.Contains(rows["AF_PERSONA_UI_TRAIT_cautious"] + "(2)"), "persona trait follows native UI " + language);
         Check(prompted.Contains((string)personaPackage["AF_PERSONA_TRAIT_cautious"] + "(2)"), "persona trait prompt retains package " + language);
         foreach (string field in new[] { "Traits", "Motivations", "Values", "Fears", "SpeechStyle" })
