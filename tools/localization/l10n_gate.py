@@ -22,6 +22,11 @@ HAN = re.compile('[\u3400-\u9fff\uf900-\ufaff]')
 failures = []
 
 
+def decode_escapes(text):
+    text = re.sub(r'\\u([0-9a-fA-F]{4})', lambda m: chr(int(m.group(1), 16)), text)
+    return re.sub(r'\\x([0-9a-fA-F]{1,4})', lambda m: chr(int(m.group(1), 16)), text)
+
+
 def fail(message):
     failures.append(message)
 
@@ -81,7 +86,8 @@ def main():
             if match.group(1) in english_fixed:
                 fail(f'{path.relative_to(ROOT).as_posix()}: {match.group(1)} loaded by a single-language Lazy; use PromptLanguageFile')
         for match in literal.finditer(text):
-            if match.group('lit') and HAN.search(match.group('lit')):
+            # Decode escapes like the packaging gate: escaped Chinese is still a Chinese literal.
+            if match.group('lit') and HAN.search(decode_escapes(match.group('lit'))):
                 literal_hits += 1
                 if literal_hits <= 10:
                     line = text.count('\n', 0, match.start()) + 1

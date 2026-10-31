@@ -263,5 +263,7 @@
   "LegacyAfefPlayerActor": "玩家",
   "LegacyRuleHeaderPattern": "(?m)^【附加规则:([A-Za-z0-9_.-]+)】",
   "LegacyRuleHeaderPrefix": "【附加规则:",
-  "CivilWarFactLabel": "[内战事实]"
+  "CivilWarFactLabel": "[内战事实]",
+  "TtsServerGenderFemale": "女|女性",
+  "TtsServerGenderMale": "男|男性"
 }

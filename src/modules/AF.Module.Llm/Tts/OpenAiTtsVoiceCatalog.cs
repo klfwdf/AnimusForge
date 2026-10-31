@@ -324,14 +324,21 @@ internal sealed class OpenAiTtsVoiceCatalog
         return clean.Length > MaxLabelLength ? clean.Substring(0, MaxLabelLength) : clean;
     }
 
+    private static readonly Lazy<string[]> ServerGenderFemale = new Lazy<string[]>(() => LlmSourceTexts.Source("TtsServerGenderFemale").Split('|'));
+    private static readonly Lazy<string[]> ServerGenderMale = new Lazy<string[]>(() => LlmSourceTexts.Source("TtsServerGenderMale").Split('|'));
+
     private static int ParseGender(string value)
     {
-        switch ((value ?? "").Trim().ToLowerInvariant())
+        string normalized = (value ?? "").Trim().ToLowerInvariant();
+        switch (normalized)
         {
-            case "female": case "f": case "woman": case "\u5973": case "\u5973\u6027": return 2; // server gender vocabulary: female
-            case "male": case "m": case "man": case "\u7537": case "\u7537\u6027": return 1; // server gender vocabulary: male
-            default: return 0;
+            case "female": case "f": case "woman": return 2;
+            case "male": case "m": case "man": return 1;
         }
+        // Chinese gender words some speech servers return; matching vocabulary only, never shown.
+        if (Array.IndexOf(ServerGenderFemale.Value, normalized) >= 0) return 2;
+        if (Array.IndexOf(ServerGenderMale.Value, normalized) >= 0) return 1;
+        return 0;
     }
 
     // Only an explicit gender field or a male-/female- id prefix counts; names such as a

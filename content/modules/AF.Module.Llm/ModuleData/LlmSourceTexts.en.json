@@ -263,5 +263,7 @@
   "LegacyAfefPlayerActor": "=",
   "LegacyRuleHeaderPattern": "=",
   "LegacyRuleHeaderPrefix": "=",
-  "CivilWarFactLabel": "[Civil war fact]"
+  "CivilWarFactLabel": "[Civil war fact]",
+  "TtsServerGenderFemale": "=",
+  "TtsServerGenderMale": "="
 }
