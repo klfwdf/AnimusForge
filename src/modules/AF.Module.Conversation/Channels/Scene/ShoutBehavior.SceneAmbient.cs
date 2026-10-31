@@ -30,7 +30,7 @@ public partial class ShoutBehavior
     private const float AmbientApproachTimeoutSeconds = 15f;
     private const float AmbientPlayerReplyWindowSeconds = 10f;
     private const float AmbientNpcPairMaxDistance = 12f;
-    private const float AmbientSeatedTalkDistance = 5f;     // seated speakers stay put and talk only this close
+    private const float AmbientSeatedTalkDistance = 4f;     // two seated speakers stay put and talk only this close
     private const int AmbientMaxCandidates = 8;
 
     private enum AmbientStage { None, Approaching, Talking, AwaitPlayer }
@@ -258,7 +258,10 @@ public partial class ShoutBehavior
                 AmbientCandidate partner = candidates[j];
                 float pairDistance = initiator.Agent.Position.Distance(partner.Agent.Position);
                 if (pairDistance > AmbientNpcPairMaxDistance) continue;
-                if (initiatorSeated && IsAgentUsingObject(partner.Agent) && pairDistance > AmbientSeatedTalkDistance) continue;
+                bool partnerSeated = IsAgentUsingObject(partner.Agent);
+                if (initiatorSeated && partnerSeated && pairDistance > AmbientSeatedTalkDistance) continue;
+                // Only a standing initiator may open; a seated one would talk across the room.
+                if (initiatorSeated && !partnerSeated) continue;
                 if (_ambientPairCooldownUntil.TryGetValue(AmbientPairKey(initiator, partner), out DateTime until) && until > realNow) continue;
                 bool bothNamed = initiator.Hero != null && partner.Hero != null;
                 int relation = 0;
@@ -277,9 +280,9 @@ public partial class ShoutBehavior
                 _ambientPairCooldownUntil.Remove(expired);
         }
         _ambientPairCooldownUntil[AmbientPairKey(bestInitiator, bestPartner)] = realNow.AddMinutes(settings.AmbientScenePairCooldownMinutes);
+        // The standing initiator walks to the partner; two seated speakers stay in place.
         Agent mover = null, moveTarget = null;
         if (!IsAgentUsingObject(bestInitiator.Agent)) { mover = bestInitiator.Agent; moveTarget = bestPartner.Agent; }
-        else if (!IsAgentUsingObject(bestPartner.Agent)) { mover = bestPartner.Agent; moveTarget = bestInitiator.Agent; }
         BeginAmbientSession(bestInitiator.Agent, bestPartner.Agent, topic, now, targetsPlayer: false, mover, moveTarget);
         return true;
     }
@@ -439,7 +442,10 @@ public partial class ShoutBehavior
     {
         Agent mover = session.Mover;
         Agent moveTarget = session.MoveTarget ?? target;
-        if (mover == null || mover.Position.Distance(moveTarget.Position) <= AmbientApproachStopDistance)
+        bool arrived = mover == null
+            ? session.Initiator.Position.Distance(target.Position) <= AmbientSeatedTalkDistance
+            : mover.Position.Distance(moveTarget.Position) <= AmbientApproachStopDistance;
+        if (arrived)
         {
             StopAmbientApproachMovement(session);
             if (session.TargetsPlayer) StartAmbientPlayerOpening(session, now);
@@ -517,6 +523,8 @@ public partial class ShoutBehavior
         _ambientSpeakingAgentIndices.Clear();
         _ambientSpeakingAgentIndices.Add(initiator.Index);
         _ambientSpeakingAgentIndices.Add(partner.Index);
+        // Seated speakers keep their seat: the stare hold only turns their gaze (see
+        // SceneAttentionController.HoldAgentInPlaceUnlessSeated).
         _j17SceneAttentionController.AddAgentToStareList(initiator, interruptCurrentUse: false);
         _j17SceneAttentionController.AddAgentToStareList(partner, interruptCurrentUse: false);
         _j17SceneAttentionController.ApplyRelaySpeechGaze(initiator, partner, new[] { partner.Index });

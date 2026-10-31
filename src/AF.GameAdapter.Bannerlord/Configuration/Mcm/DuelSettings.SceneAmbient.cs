@@ -9,7 +9,7 @@ namespace AnimusForge;
 public partial class DuelSettings
 {
     [SettingPropertyBool("{=AF_MCM_Shout_RelayMutualGaze}Relay speakers face each other", Order = 17, RequireRestart = false,
-        HintText = "{=AF_MCM_Shout_RelayMutualGaze_Hint}During a scene relay, the speaker looks at the person being answered and the other participants look at the speaker. Only the look direction changes. Default: on.")]
+        HintText = "{=AF_MCM_Shout_RelayMutualGaze_Hint}During a scene relay, the speaker looks at the person being answered, who looks back; other participants split between watching the speaker and watching you. Only the look direction changes. Default: on.")]
     [SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
     public bool ShoutRelayMutualGaze { get; set; } = true;
 

@@ -3347,7 +3347,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Shout_MaxRelayTurns" text="Maximum scene-shout relay turns" />
   <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="Maximum total NPC speaking turns after one player shout, including the first reply. Repeated speakers count again. Set to 1 for only the first reply. Range: 1-8; default: 8. Changes apply to the next shout; characters may end the relay earlier." />
   <string id="AF_MCM_Shout_RelayMutualGaze" text="Relay speakers face each other" />
-  <string id="AF_MCM_Shout_RelayMutualGaze_Hint" text="During a scene relay, the speaker looks at the person being answered and the other participants look at the speaker. Only the look direction changes. Default: on." />
+  <string id="AF_MCM_Shout_RelayMutualGaze_Hint" text="During a scene relay, the speaker looks at the person being answered, who looks back; other participants split between watching the speaker and watching you. Only the look direction changes. Default: on." />
   <string id="AF_MCM_Shout_RelayPrefetch" text="Prepare the next relay speaker early" />
   <string id="AF_MCM_Shout_RelayPrefetch_Hint" text="When a relay will continue and at most two characters may answer next, their memory is loaded while the current line is still being spoken. The line itself is still generated only when it is that character's turn. Shortens pauses but may load memory that is not used. Default: off." />
   <string id="AF_MCM_Ambient_Enabled" text="Enable ambient scene interaction" />

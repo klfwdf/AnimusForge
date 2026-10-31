@@ -95,15 +95,25 @@ internal sealed class SceneAttentionController
 		{
 			return;
 		}
+		Agent main = Agent.Main;
 		foreach (int index in participantAgentIndices)
 		{
 			if (index < 0 || index == speaker.Index) continue;
 			Agent listener = FindStaringAgent(index);
 			if (listener == null) continue;
-			_relayLookTargets[index] = speaker;
-			TrySetLook(listener, speaker);
+			// The addressee always looks back at the speaker; other listeners split between the
+			// speaker and the player (about half each, re-rolled per line) so a relay line does not
+			// snap the whole crowd around at once.
+			bool watchSpeaker = (addressee != null && listener == addressee) || main == null || !main.IsActive()
+				|| MBRandom.RandomFloat < RelayListenerWatchSpeakerChance;
+			Agent lookTarget = watchSpeaker ? speaker : main;
+			if (lookTarget == main) _relayLookTargets.Remove(index);
+			else _relayLookTargets[index] = lookTarget;
+			TrySetLook(listener, lookTarget);
 		}
 	}
+
+	private const float RelayListenerWatchSpeakerChance = 0.5f;
 
 	internal void ClearRelaySpeechGaze()
 	{
@@ -755,7 +765,7 @@ internal sealed class SceneAttentionController
 			return;
 		}
 		ClearAgentSceneConversationFocus(agent);
-		if (ShouldPreserveMeetingSceneAutonomy())
+		if (ShouldPreserveMeetingSceneAutonomy() || IsAgentUsingSceneObject(agent))
 		{
 			return;
 		}
@@ -949,6 +959,12 @@ internal sealed class SceneAttentionController
 		ClearAgentSceneConversationFocus(agent);
 		if (ShouldPreserveMeetingSceneAutonomy())
 		{
+			return;
+		}
+		if (!flag && IsAgentUsingSceneObject(agent))
+		{
+			// A seated (object-using) agent was only held by gaze; clearing its scripted movement
+			// or navigator target would make it stand up and wander to a new usable point.
 			return;
 		}
 		try
@@ -1357,7 +1373,7 @@ internal sealed class SceneAttentionController
 				{
 					staringAgent.SetLookAgent(null);
 					staringAgent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
-					if (!ShouldPreserveMeetingSceneAutonomy())
+					if (!ShouldPreserveMeetingSceneAutonomy() && !IsAgentUsingSceneObject(staringAgent))
 					{
 						staringAgent.DisableScriptedMovement();
 					}

@@ -3379,7 +3379,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Shout_MaxRelayTurns" text="场景喊话最大接力轮数" />
   <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="玩家一次喊话后 NPC 最多发言的总次数，包含首次回复，同一人物再次发言也计一次。设为 1 时仅首次回复，不继续接力。范围 1–8，默认 8；下一次喊话生效，人物仍可提前结束接力。" />
   <string id="AF_MCM_Shout_RelayMutualGaze" text="接力时发言者互相注视" />
-  <string id="AF_MCM_Shout_RelayMutualGaze_Hint" text="场景接力中，发言者看向被回应的人，其他参与者看向发言者。只改变视线方向。默认开启。" />
+  <string id="AF_MCM_Shout_RelayMutualGaze_Hint" text="场景接力中，发言者看向被回应的人，对方也看着发言者；其余参与者大约一半看发言者、一半看你。只改变视线方向。默认开启。" />
   <string id="AF_MCM_Shout_RelayPrefetch" text="提前准备下一位接力者" />
   <string id="AF_MCM_Shout_RelayPrefetch_Hint" text="接力还会继续、且下一位可能接话的人不超过两个时，在当前这句还在播放时就预先读取他们的记忆；台词本身仍在轮到对方时才生成。可缩短停顿，但可能读取了用不上的记忆。默认关闭。" />
   <string id="AF_MCM_Ambient_Enabled" text="启用场景自主互动" />
