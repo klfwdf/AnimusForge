@@ -33,7 +33,7 @@ internal sealed class LoreCandidateRetriever
 	internal const int MentionQueryMaxChars = 80;
 	// Without a cross-encoder, a bare name query must clear this embedding cosine; below it the nearest rule is
 	// usually a different person/place with a similar-sounding name (offline: 8 world books, bekko-a25m).
-	internal const float NameQueryMinScore = 0.55f;
+	internal const float NameQueryMinScore = 0.65f;
 	internal const int NameQueryMaxParts = 3;
 	internal const int NameQueryMaxChars = 24;
 

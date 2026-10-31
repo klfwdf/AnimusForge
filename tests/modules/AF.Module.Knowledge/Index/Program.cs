@@ -346,7 +346,7 @@ internal static class Program
         plain.EnsureOnnxIndex();
         var retriever = new LoreCandidateRetriever(plain, (c, m) => logs.Add(m));
         var name = retriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "nearname" } }, 1, 10, 4, 4, out _);
-        Check(name.Count == 0 && logs.Any(l => l.Contains("noun=\"nearname\" candidates=0") && l.Contains("nameGate=0.55")),
+        Check(name.Count == 0 && logs.Any(l => l.Contains("noun=\"nearname\" candidates=0") && l.Contains($"nameGate={LoreCandidateRetriever.NameQueryMinScore:0.00}")),
             "embedding-only name query below the name gate injects nothing: " + string.Join(" | ", logs.Where(l => l.StartsWith("entity_query"))));
         var exact = retriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "apple" } }, 1, 10, 4, 4, out _);
         Check(exact.Count == 1 && exact[0].Id == "apple", "exact name above the gate is kept");
