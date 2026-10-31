@@ -10,6 +10,8 @@ internal static class WorldNewsRecallPolicy
 {
     internal const int RerankLimit = 12;
     internal const int FinalLimit = 4;
+    // Embedding cosine a fact with no lexical overlap must reach; calibrated for bekko-a25m, whose scores run lower than bge.
+    internal const double SemanticOnlyMinCosine = 0.40;
 
     internal static WorldNewsRecallResult Retrieve(WorldNewsRecallRequest request,
         Func<string, float[]> embed, Func<string, IReadOnlyList<string>, float[]> rerank)
@@ -25,7 +27,7 @@ internal static class WorldNewsRecallPolicy
             double cosine = semantic ? Cosine(query, SafeEmbed(embed, candidate.SearchText)) : -1;
             if (cosine > -1) semanticDocuments++;
             // Missing/failed vectors never expand eligibility or manufacture relevance.
-            if (candidate.LexicalScore < 1 && cosine < 0.45) continue;
+            if (candidate.LexicalScore < 1 && cosine < SemanticOnlyMinCosine) continue;
             double lexical = Math.Min(candidate.LexicalScore, 12) / 12.0;
             ranked.Add((candidate, Math.Max(0, cosine) * 0.75 + lexical * 0.25
                 + (candidate.Participant ? 0.025 : 0)));

@@ -71,6 +71,13 @@ request2.Candidates.ForEach(c=>c.LexicalScore=0);
 Check(WorldNewsRecallPolicy.Retrieve(request2,null,null).Selected.Count==0,"no lexical evidence never fabricates relevance");
 Check(WorldNewsRecallPolicy.Retrieve(request2,_=>new float[]{1,0},(_,d)=>new float[]{float.NaN}).Selected.Count==1,"invalid reranker result uses prior semantic order safely");
 Check(WorldNewsRecallPolicy.Cosine(new[]{float.NaN},new[]{1f})==-1,"invalid vectors rejected");
+// Query [1,0]; "near" sits at cosine 0.42, "far" at 0.38 around the 0.40 semantic-only floor.
+var edge=new WorldNewsRecallRequest {Query="q",Candidates=new List<WorldNewsRecallCandidate>{
+ new WorldNewsRecallCandidate{Fact=Fact("near","near"),SearchText="near",LexicalScore=0},
+ new WorldNewsRecallCandidate{Fact=Fact("far","far"),SearchText="far",LexicalScore=0}}};
+float[] EdgeEmbed(string s)=>s=="near"?new float[]{0.42f,(float)Math.Sqrt(1-0.42*0.42)}:s=="far"?new float[]{0.38f,(float)Math.Sqrt(1-0.38*0.38)}:new float[]{1,0};
+var edgeResult=WorldNewsRecallPolicy.Retrieve(edge,EdgeEmbed,null);
+Check(WorldNewsRecallPolicy.SemanticOnlyMinCosine==0.40&&edgeResult.Selected.Select(c=>c.Fact.Key).SequenceEqual(new[]{"near"}),"semantic-only floor 0.40 keeps 0.42 and drops 0.38");
 Check(WorldNewsFactArchive.Terms("A a the 阿尔戈隆").Contains("尔戈"),"Chinese bigram index supports substring names");
 Check(!WorldNewsFactArchive.Visible(Fact("x","fact"),new WorldNewsObserver{Day=0,KingdomId="A"}),"negative relative date is not current knowledge");
 Console.WriteLine("PASS "+checks+" world news archive and retrieval assertions");
