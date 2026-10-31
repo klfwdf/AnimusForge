@@ -12,6 +12,8 @@ internal static class CountryAdmissionReplay
 {
     internal sealed class Host : EventStructureReplay.Host, IDiplomacyEventMaterialHost, IWorldDiplomacyAnalysisPort, IDiplomacyAdmissionIdentityHost
     {
+        internal readonly List<string> Diagnostics = new();
+        public override void Log(string message) { base.Log(message); Diagnostics.Add(message); }
         internal string IdentityMode = "", ChangedHero = "lord_7_3";
         internal int IdentityReads;
         public DiplomacyAdmissionIdentity ReadAdmissionIdentity(string kind, string id, string expectedCountry)
@@ -248,7 +250,11 @@ internal static class CountryAdmissionReplay
                 ["text"] = "The courts dispute the account of the oath.", ["hero_ids"] = new JArray() }) };
         Complete(o, j, concept);
         Test.True(j.Kind == "event_concept_audit", "obsolete party_review cannot veto program membership");
-        Prepare(o, j); Complete(o, j, MaterialCountryThirdReplay.Approved(j));
+        Prepare(o, j);
+        Test.True(!string.IsNullOrEmpty(j.PrivacyDraft), "audit retains draft: stage=" + j.EventSelectionStage
+            + " reason=" + j.SuspendedReason + " input=" + (h.EstimateTokens(j.SystemPrompt) + h.EstimateTokens(j.UserPrompt))
+            + " diagnostics=" + string.Join(" | ", h.Diagnostics.TakeLast(20)));
+        Complete(o, j, MaterialCountryThirdReplay.Approved(j));
         var round = o.ResolveRound(j.RoundId);
         Test.True(round.EventPhase == "opening" && round.CountryAdmission == frozen && round.Participants.Count == result.Admitted.Count,
             "full reviewed positions and frozen result adopted atomically: " + j.SuspendedReason);

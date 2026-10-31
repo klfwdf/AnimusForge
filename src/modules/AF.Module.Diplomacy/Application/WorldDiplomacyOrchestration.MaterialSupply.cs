@@ -430,6 +430,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                 && WorldDiplomacyEnvelopeJsonRules.TryParseJsonObject((string)request[field], out var structured))
                 request[field] = structured;
         bool boundMatter = IsBoundMatterPlanning(job);
+        job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("ScopedWorldFacts", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get(boundMatter ? "BoundMatterPlanning"
             : CanSelectEventStructure(job) ? "EventStructureSelection" : "EventStoryDiversity", "");
         if (boundMatter) job.StoryReviewVersion = 2;
@@ -454,6 +455,11 @@ internal sealed partial class WorldDiplomacyOrchestration
         // source, a reviewed draft, or actor audit bindings.
         long Size() => (long)_host.EstimateTokens(job.SystemPrompt) + _host.EstimateTokens(request.ToString(Formatting.None)) + 32;
         long size = Size();
+        if (size > 28000 && job.EventSelectionStage == "candidates" && TrimPeripheralWorld(request))
+        {
+            job.EventMaterialSnapshot = request["sources"].ToString(Formatting.None);
+            size = Size();
+        }
         // Human requests/confirmed undertakings need relevant history, not a
         // mandatory novelty comparison against every recent unrelated case.
         if (boundMatter && request["prior_events"] is JArray prior)
@@ -518,6 +524,10 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (!string.IsNullOrEmpty(job.EventExplorationTheme)) fields.Add("theme_review");
             request["required_audit_fields"] = fields;
         }
+        // Lifecycle markers stay in the frozen source, not in model input.
+        if (request["sources"] is JArray outgoingSources)
+            foreach (var source in outgoingSources.OfType<JObject>())
+                foreach (string field in new[] { "query_version", "query_detail", "query_upgrade_attempted", "query_roots", "scope_incomplete", "peripheral_omitted" }) source.Remove(field);
         job.UserPrompt = request.ToString(Formatting.None);
         size = Size();
         AppendStructureObservation(job, size);
@@ -528,6 +538,13 @@ internal sealed partial class WorldDiplomacyOrchestration
             job.RequestPreparationPending = true;
             SuspendDiplomacyJob(job, "event_required_evidence_budget_exceeded:retain_prior_cases_and_selected_sources");
         }
+        _host.Log("diplomacy.input_breakdown job=" + job.JobId + " stage=" + job.EventSelectionStage
+            + " system=" + _host.EstimateTokens(job.SystemPrompt)
+            + " world=" + _host.EstimateTokens((request["sources"] as JArray)?.OfType<JObject>()
+                .FirstOrDefault(x => (string)x["key"] == "world:current")?.ToString(Formatting.None) ?? "")
+            + " sources=" + _host.EstimateTokens(request["sources"]?.ToString(Formatting.None) ?? "")
+            + " history=" + _host.EstimateTokens(request["prior_events"]?.ToString(Formatting.None) ?? "")
+            + " total=" + size);
         _host.Log("diplomacy.material_request job=" + job.JobId + " stage=" + job.EventSelectionStage
             + " pass=" + job.MaterialSearchPass + " estimatedInputTokens=" + size
             + " sourceRecords=" + (request["sources"] as JArray)?.Count);

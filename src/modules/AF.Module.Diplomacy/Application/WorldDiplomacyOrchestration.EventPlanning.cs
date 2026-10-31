@@ -347,9 +347,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             try { captured = JArray.Parse(raw); }
             catch (JsonException) { SuspendDiplomacyJob(job, "event_material_invalid"); return; }
             RecordMaterialInvestigation(job);
-            captured.Add(new JObject { ["key"] = "world:current", ["known_by"] = "public",
-                ["source_kind"] = "current_world", ["text"] = CompactPlanningWorld(EventHost.CaptureEventWorld(candidates), 6000),
-                ["hero_ids"] = new JArray(candidates.Select(_host.PartyRulerId).Where(x => !string.IsNullOrEmpty(x))) });
+            captured.Add(CapturePlanningWorld(capture.Countries, candidates, false));
             if (WorldDiplomacyEnvelopeJsonRules.TryParseJsonObject(job.EventTriggerMaterial, out var trigger)
                 && !string.IsNullOrWhiteSpace((string)trigger["known_public_facts"]))
                 captured.Add(new JObject { ["key"] = "agenda:" + round.RoundId, ["known_by"] = (string)trigger["known_by"],
@@ -414,12 +412,16 @@ internal sealed partial class WorldDiplomacyOrchestration
                 if (material.Count >= 32 || !mandatoryPlayerSource && (recordTokens > budget || lore && recordTokens > loreBudget)) continue;
                 if (!mandatoryPlayerSource) budget -= recordTokens;
                 if (lore) loreBudget -= recordTokens;
-                material.Add(new JObject { ["key"] = key, ["known_by"] = knower,
+                var selectedRow = new JObject { ["key"] = key, ["known_by"] = knower,
                     ["source_kind"] = (string)row["source_kind"] ?? "attributed_account", ["text"] = text,
                     ["excerpt"] = false, ["version"] = MaterialHash(JsonConvert.SerializeObject(new { body, knower,
                         kind = (string)row["source_kind"], heroes = row["hero_ids"] })),
                     ["hero_ids"] = row["hero_ids"]?.DeepClone(),
-                    ["previously_used"] = (bool?)row["previously_used"] == true });
+                    ["previously_used"] = (bool?)row["previously_used"] == true };
+                if (key == "world:current")
+                    foreach (string field in new[] { "query_version", "query_roots", "query_detail", "scope_incomplete" })
+                        if (row[field] != null) selectedRow[field] = row[field].DeepClone();
+                material.Add(selectedRow);
             }
             job.EventMaterialSnapshot = material.ToString(Formatting.None);
             _host.Log("diplomacy.material_composition job=" + job.JobId + " captured_lore="
@@ -434,6 +436,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         catch (JsonException) { SuspendDiplomacyJob(job, "event_material_snapshot_invalid"); return; }
         if (job.EventSelectionStage is "candidates" or "compare")
         {
+            frozenMaterial = RefreshPlanningWorld(job, round, candidates, frozenMaterial, false);
             PrepareMaterialSelection(job, round, candidates, frozenMaterial, ReadPriorEventStories(round));
             return;
         }
@@ -457,6 +460,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             job.EventComparison = comparison.ToString(Formatting.None);
             frozenMaterial = JArray.Parse(job.EventMaterialSnapshot);
         }
+        frozenMaterial = RefreshPlanningWorld(job, round, candidates, frozenMaterial, true);
         // A directed player seed can be identified from the declaration and live
         // world alone. Require lore after every admitted realm has been captured,
         // before writing; an empty initial dossier must not exclude other realms.

@@ -229,10 +229,22 @@ internal sealed partial class WorldDiplomacyOrchestration
                 || job.SuspendedReason.StartsWith("boundary_audit_rejected:", StringComparison.Ordinal)
                     && job.SuspendedReason.Contains("world_book_basis"));
         bool repairedSovereignControl = TryRecoverLegacyOralNpcPosition(job, out string sovereignFeedback);
-        bool changed = repairedSovereignControl || resumedWorldBook || repairedEndingEvidence || repairedBoundMatter || repairedEndingBudget || repairedProgressBudget || repairedEndingAuthor || recoveredAdmissionIdentity || IsLegacyAdmissionProtocolFailure(job, job.SuspendedReason) || repairedWorldBookAudit || repairedOpeningEffects || repairedEmptyPlayerOpening || repairedProgressRoute || repairedDraftContract || repairedFoundationContract || repairedDeclarationContract || repairedEvidenceContract || repairedOptionalTermsContract || repairedAnswerContract || explicitResume || job.RecoveryConfiguration != configuration
+        bool legacyWorldQuery = IsEventPlanningJob(job)
+            && job.SuspendedReason.StartsWith("event_required_evidence_budget_exceeded:", StringComparison.Ordinal)
+            && ClaimLegacyWorldUpgrade(job);
+        bool changed = legacyWorldQuery || repairedSovereignControl || resumedWorldBook || repairedEndingEvidence || repairedBoundMatter || repairedEndingBudget || repairedProgressBudget || repairedEndingAuthor || recoveredAdmissionIdentity || IsLegacyAdmissionProtocolFailure(job, job.SuspendedReason) || repairedWorldBookAudit || repairedOpeningEffects || repairedEmptyPlayerOpening || repairedProgressRoute || repairedDraftContract || repairedFoundationContract || repairedDeclarationContract || repairedEvidenceContract || repairedOptionalTermsContract || repairedAnswerContract || explicitResume || job.RecoveryConfiguration != configuration
             || job.RecoveryRevision != round.ConversationRevision
             || job.RecoveryKnowledgeRevision != DiplomacyEventRules.KnowledgeRevision(round, job.AuthorKingdomId)
             || job.RecoverOnService && job.RecoveryServiceEpoch < Storage.SpeechServiceRecoveryEpoch;
+        if (!changed && IsEventPlanningJob(job) && HasScopedWorldSnapshot(job)
+            && job.SuspendedReason.StartsWith("event_required_evidence_budget_exceeded:", StringComparison.Ordinal))
+        {
+            // Frozen input cannot shrink by replaying it. Move ordinary discovery
+            // to a new bounded batch; preserve human obligations for explicit resume.
+            if (!IsBoundMatterPlanning(job) && string.IsNullOrEmpty(job.DialogueArrangementId) && CanContinueMaterialSearch(round))
+                ContinueMaterialSearch(job, round, false);
+            return;
+        }
         if (!changed && (job.TechnicalRecoveryAttempts >= 3 || HasExhaustedLocalReview(job))) return;
         if (!changed && job.SuspendedReason.StartsWith("event_required_input_budget_exceeded:", StringComparison.Ordinal)) return;
         if (changed) job.TechnicalRecoveryAttempts = 0;
