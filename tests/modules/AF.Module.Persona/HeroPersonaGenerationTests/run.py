@@ -51,7 +51,7 @@ if not a.original:
  new='response.TrySetResult(new ApiCallResult{Content=PersonaFixtureWire(text),Success=success,ErrorMessage="transport failed"})'
  assert code.count(old)==1;code=code.replace(old,new)
  code=code.replace('private Task<bool> UnsafeDirect(', 'private static string PersonaFixtureWire(string text){var parts=(text??"").Split((char)124);return parts.Length==2?Newtonsoft.Json.JsonConvert.SerializeObject(new {personality=parts[0],background=parts[1]}):text;} private Task<bool> UnsafeDirect(')
- glue='private void StampNpcPersonaProfile(string id,NpcPersonaProfile p){Probe.Read();Saves++;} internal NpcPersonaProfile ProfileForTest=>profile; internal string ContextForTest(Hero hero,bool forUi=false)=>NpcPersonaGenerationApplication.GetNpcPersonaContext(hero,forUi);'
+ glue='private void StampNpcPersonaProfile(string id,NpcPersonaProfile p){Probe.Read();Saves++;} internal Task<string> EventForTest(Hero h,AnimusForge.Refactor.Adapters.NpcPersonaEventRegeneration trigger)=>NpcPersonaGenerationApplication.RegenerateForEventAsync(h,trigger); internal NpcPersonaProfile ProfileForTest=>profile; internal string ContextForTest(Hero hero,bool forUi=false)=>NpcPersonaGenerationApplication.GetNpcPersonaContext(hero,forUi);'
  code=code.replace('@@CURRENT_GLUE@@',glue) if '@@CURRENT_GLUE@@' in code else code.replace('internal void Tick()=>dispatcher.Tick();',glue+' internal void Tick()=>dispatcher.Tick();')
  code+='namespace TaleWorlds.CampaignSystem.Settlements {} namespace AnimusForge {internal static class MemoryEntityIdentityBannerlordAdapter {internal static TaleWorlds.CampaignSystem.Hero FindHeroById(string id)=>MyBehavior.FindHeroById(id);} internal static class CampaignCharacterRecordCaptureAdapter {internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>MyBehavior.Instance.BuildPromotedHeroSkillSummary(hero);internal static bool TryApplyPromotedHeroSkillJson(TaleWorlds.CampaignSystem.Hero hero,string json)=>MyBehavior.Instance.TryApplyPromotedHeroSkillJson(hero,json);}} namespace AnimusForge.Refactor.Adapters {internal static class ConfiguredChatApplicationAdapter {internal static Task<MyBehavior.ApiCallResult> CallAuxiliaryGatewayDetailed(string sys,string user,string source,int n,bool forceThinkingDisabled)=>MyBehavior.Instance.CallAuxiliaryGatewayDetailed(sys,user,source,n,forceThinkingDisabled);} internal static class PersonaGenerationFactCaptureAdapter {internal static string BuildHeroFactsForPersonaGeneration(TaleWorlds.CampaignSystem.Hero h)=>MyBehavior.BuildHeroFactsForPersonaGeneration(h);internal static string BuildPromotedNonHeroCompanionFactsForPersonaGeneration(TaleWorlds.CampaignSystem.Hero h,string n,string f,string t,string id,string c,string s,string j,string e)=>MyBehavior.BuildPromotedNonHeroCompanionFactsForPersonaGeneration(h,n,f,t,id,c,s,j,e);}}'
 prompt_dir=ROOT/'content/modules/AF.Module.Persona/ModuleData'
@@ -60,8 +60,9 @@ if a.experience_language:
  original_main=ex.declaration(code,'static int Main(')
  code=code.replace(original_main, 'static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{ExperienceCases();TextRuleCases();Console.WriteLine($"Persona experience and text locale: {checks} checks, {failures} failures");return failures==0?0:1;}catch(Exception e){Console.WriteLine(e);return 1;}}',1)
  prompt_dir=out/'locale-module-data';prompt_dir.mkdir()
- source=ROOT/'content/modules/AF.Module.Persona/ModuleData'/('PersonaPromptTexts.en.json' if a.experience_language=='en' else 'PersonaPromptTexts.json')
- (prompt_dir/'PersonaPromptTexts.json').write_bytes(source.read_bytes())
+ for file in ('PersonaPromptTexts.json','PersonaPromptTexts.en.json'):
+  (prompt_dir/file).write_bytes((ROOT/'content/modules/AF.Module.Persona/ModuleData'/file).read_bytes())
+ code=code.replace('TWParallel.MainId=Environment.CurrentManagedThreadId;', 'TWParallel.MainId=Environment.CurrentManagedThreadId;AnimusForge.PromptLanguage.Install(()=>"'+a.experience_language+'",id=>id=="zh-CN");', 1)
 code=code.replace('@@PROMPT_DIR@@',str(prompt_dir).replace('\\','/'))
 editable_default=ROOT/'content/modules/AF.Module.Persona/CustomPrompts'/('NpcPersonaGenerationRequirements.en.json' if a.experience_language=='en' else 'NpcPersonaGenerationRequirements.json')
 code=code.replace('@@EDITABLE_DEFAULT@@',str(editable_default).replace('\\','/'))
@@ -100,7 +101,7 @@ if not a.original:
  (out/'Policy.cs').write_text(policy,encoding='utf-8');files.append(out/'Policy.cs')
  files += [ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs',ROOT/'src/modules/AF.Module.Llm/Protocol/JsonResponseTextCodec.cs',ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/PersonaFailureUiText.cs',HERE/'LocalizationBoundary.cs.txt', ROOT/'src/modules/AF.Module.Persona/Generation/PersonaPromptTexts.cs']
  files += [ROOT/'src/modules/AF.Module.Persona/Generation/PersonaRegenerationExperienceContext.cs',ROOT/'src/modules/AF.Module.Memory/Records/AnimusForgeDialogueHistoryEntry.cs']
- files += [ROOT/'src/modules/AF.Module.Memory/Records/NpcActionEntry.cs']
+ files += [ROOT/'src/modules/AF.Module.Memory/Records/NpcActionEntry.cs',ROOT/'src/AF.Foundation.Runtime/Localization/PromptLanguage.cs']
 # Bind exact whole application classes, scalar game/network fixtures, and generated mutation bytes.
 import json,hashlib
 physical=['src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs','src/AF.GameAdapter.Bannerlord/Prompt/PromotedPersonaGenerationApplicationAdapter.cs','src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromotedPersonaGeneration.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs']

@@ -17,8 +17,7 @@ public partial class MyBehavior
     private Task _personaEvolutionRequest;
     private DateTime _personaEvolutionNextStartUtc;
     private int _personaEvolutionEpoch;
-    private bool PersonaEvolutionEnabled => DuelSettings.GetSettings() is DuelSettings settings && settings.EnableExpandedNpcPersona
-        && settings.EnableNpcPersonaEventEvolution && IsWorldBulletinEnabled();
+    private bool PersonaEvolutionEnabled => DuelSettings.GetSettings()?.EnableNpcPersonaEventEvolution == true && IsWorldBulletinEnabled();
 
     internal static void NotifyPersonaEvolutionSettingChanged(DuelSettings settings)
     {
@@ -117,64 +116,71 @@ public partial class MyBehavior
                 Logger.Log("NpcPersonaEvolution", "[SKIP] saved attempt limit reached: " + id);
                 return;
             }
-            var snapshot = PersonaEvolutionPolicy.Snapshot(profile);
-            var persona = PersonaEvolutionPolicy.RequestPersona(snapshot);
-            if (string.IsNullOrWhiteSpace((string)persona["description"]))
-                persona["description"] = PersonaEvolutionPolicy.Clip(hero.EncyclopediaText?.ToString(), 1000);
-            var input = new JObject
-            {
-                ["name"] = hero.Name?.ToString() ?? "", ["clan"] = hero.Clan?.Name?.ToString() ?? "",
-                ["persona"] = persona,
-                ["events"] = new JArray(batch.Select(e => new JObject { ["facts"] = e.Facts, ["connection"] = e.Connection }))
-            };
-            string prompt = PersonaPromptTexts.Get("AF_PERSONA_PROMPT_EvolutionSystem", "");
-            if (string.IsNullOrWhiteSpace(prompt)) { state.Pending.Clear(); Logger.Log("NpcPersonaEvolution", "[WARN] missing evolution prompt resource"); return; }
-            _personaEvolutionNextStartUtc = DateTime.UtcNow.AddSeconds(30);
-            state.Attempts++;
-            Task<ApiCallResult> response = ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed(prompt,
-                input.ToString(Formatting.None), "NpcPersonaEvolution", 1200, forceThinkingDisabled: true);
-            _personaEvolutionRequest = CompletePersonaEvolutionAsync(id, profile, snapshot, state, batch, response,
-                _personaEvolutionEpoch, SaveRuntimeGuard.CaptureGeneration());
+            // Share reservations, game facts, lore retrieval, editable requirements, parser and commit guards with manual regeneration.
+            _npcPersonaGeneration.GetState(id, out bool busy, out _);
+            if (busy) return; // Retry the queued owner later without spending an event attempt or starting another request.
+            StartPersonaEvolution(id, hero, profile, state, batch);
         }
     }
-    private async Task CompletePersonaEvolutionAsync(string id, NpcPersonaProfile original, JObject snapshot,
-        PersonaEvolutionState state, PersonaEvolutionFact[] batch, Task<ApiCallResult> request, int epoch, long generation)
+
+    // Keep captured delegates out of the idle Tick method: allocate them only for an eligible batch.
+    private void StartPersonaEvolution(string id, Hero hero, NpcPersonaProfile profile, PersonaEvolutionState state, PersonaEvolutionFact[] batch)
     {
-        JObject patch = null;
-        bool parsed = false;
-        try
+        var snapshot = PersonaEvolutionPolicy.Snapshot(profile);
+        var input = new JObject
         {
-            ApiCallResult response = await request.ConfigureAwait(false);
-            parsed = response.Success && PersonaEvolutionPolicy.TryParse(response.Content, NpcPersonaTextRules.AllowedTraitIdsForPrompt, out patch);
+            ["persona"] = PersonaEvolutionPolicy.RequestPersona(snapshot),
+            ["events"] = new JArray(batch.Select(e => new JObject { ["facts"] = e.Facts, ["connection"] = e.Connection }))
+        };
+        int epoch = _personaEvolutionEpoch;
+        long generation = SaveRuntimeGuard.CaptureGeneration();
+        bool Current()
+        {
+            var current = _personaProfiles.Get(id, false);
+            return epoch == _personaEvolutionEpoch && PersonaEvolutionEnabled && hero.IsAlive
+                && ReferenceEquals(Hero.Find(id), hero) && ReferenceEquals(current, profile)
+                && ReferenceEquals(current?.Evolution, state) && PersonaEvolutionPolicy.IsCurrent(current, snapshot);
         }
-        catch (Exception ex) { Logger.Log("NpcPersonaEvolution", "[WARN] request failed: " + ex.Message); }
+        bool saved = false;
+        var trigger = new NpcPersonaEventRegeneration
+        {
+            Facts = input.ToString(Formatting.None),
+            IsCurrent = Current,
+            OnSaved = updated =>
+            {
+                saved = true;
+                updated.RecentChangeReason = PersonaEvolutionPolicy.Clip(batch[0].Facts, 240);
+                PersonaEvolutionPolicy.Complete(state, batch);
+                EncyclopediaHeroPersonaPatch.QueueRefreshForHero(id);
+                Logger.Log("NpcPersonaEvolution", "[COMPLETE] full regeneration hero=" + id + " facts=" + batch.Length);
+            }
+        };
+        _personaEvolutionNextStartUtc = DateTime.UtcNow.AddSeconds(30);
+        state.Attempts++;
+        _personaEvolutionRequest = CompletePersonaEvolutionAsync(id, profile, snapshot, state, batch,
+            NpcPersonaGenerationApplication.RegenerateForEventAsync(hero, trigger), () => saved, epoch, generation);
+    }
+    private async Task CompletePersonaEvolutionAsync(string id, NpcPersonaProfile original, JObject snapshot,
+        PersonaEvolutionState state, PersonaEvolutionFact[] batch, Task<string> request, Func<bool> wasSaved, int epoch, long generation)
+    {
+        try { await request.ConfigureAwait(false); }
+        catch (Exception ex) { Logger.Log("NpcPersonaEvolution", "[WARN] regeneration failed: " + ex.Message); }
         await RunMemorySummaryCompletionAsync(generation, () =>
         {
-            if (epoch != _personaEvolutionEpoch || !PersonaEvolutionEnabled) return true;
+            if (epoch != _personaEvolutionEpoch || !PersonaEvolutionEnabled || wasSaved()) return true;
             var current = _personaProfiles.Get(id, false);
             var hero = Hero.Find(id);
-            if (!ReferenceEquals(current, original) || !ReferenceEquals(current?.Evolution, state) || hero == null || !hero.IsAlive) return true;
-            if (!PersonaEvolutionPolicy.IsCurrent(current, snapshot))
+            if (hero == null || !hero.IsAlive || !ReferenceEquals(current?.Evolution, state)) return true;
+            if (!ReferenceEquals(current, original) || !PersonaEvolutionPolicy.IsCurrent(current, snapshot))
             {
-                // User edits win; consume these facts so an old event cannot immediately undo the edit.
+                // User edits win; do not reapply the same old event to the edited persona.
                 PersonaEvolutionPolicy.Complete(state, batch);
-                Logger.Log("NpcPersonaEvolution", "[SKIP] profile changed during request: " + id);
+                Logger.Log("NpcPersonaEvolution", "[SKIP] profile changed during regeneration: " + id);
                 return true;
             }
-            if (parsed)
-            {
-                bool changed = PersonaEvolutionPolicy.Apply(current, patch);
-                PersonaEvolutionPolicy.Complete(state, batch);
-                SaveNpcPersonaProfile(hero, current);
-                if (changed) EncyclopediaHeroPersonaPatch.QueueRefreshForHero(id);
-                Logger.Log("NpcPersonaEvolution", "[COMPLETE] hero=" + id + " facts=" + batch.Length + " changed=" + changed);
-            }
-            else
-            {
-                Logger.Log("NpcPersonaEvolution", "[WARN] response rejected hero=" + id + " attempt=" + state.Attempts);
-                if (state.Attempts >= 2) PersonaEvolutionPolicy.Complete(state, batch);
-                _personaEvolutionNextStartUtc = DateTime.UtcNow.AddSeconds(60);
-            }
+            Logger.Log("NpcPersonaEvolution", "[WARN] regeneration not saved hero=" + id + " attempt=" + state.Attempts);
+            if (state.Attempts >= 2) PersonaEvolutionPolicy.Complete(state, batch);
+            _personaEvolutionNextStartUtc = DateTime.UtcNow.AddSeconds(60);
             return true;
         }).ConfigureAwait(false);
     }

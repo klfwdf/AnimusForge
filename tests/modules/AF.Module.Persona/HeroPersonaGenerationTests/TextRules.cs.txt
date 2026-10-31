@@ -93,10 +93,34 @@ static void TextRuleCases()
    Pump(owner,()=>pending.IsCompleted);pending.GetAwaiter().GetResult();var kept=owner.ProfileForTest;
    Check(kept.Description=="First paragraph.\n\nSecond paragraph."&&kept.Traits.Count==0&&kept.Motivations[0]=="existing motivation"&&kept.Values[0]=="existing value"&&kept.Fears[0]=="existing fear"&&kept.SpeechStyle=="existing style"&&kept.RecentChangeReason=="existing reason"&&ReferenceEquals(kept.Evolution,oldProfile.Evolution),mode+" saves prose and preserves existing expanded data despite extra response fields");
    AnimusForge.DuelSettings.ExpandedEnabled=false;
-   Check(owner.ContextForTest(hero)==""&&owner.ContextForTest(hero,true).Contains("existing motivation"),mode+" prompt injection stops but UI can inspect stored extras");
+   Check(owner.ContextForTest(hero).Contains("existing motivation")&&owner.ContextForTest(hero,true).Contains("existing motivation"),mode+" generation switch leaves stored extras usable in prompts and UI");
    AnimusForge.DuelSettings.ExpandedEnabled=true;
    Check(owner.ContextForTest(hero).Contains("existing motivation"),mode+" re-enable restores stored context");
   }
+  // Actual shared generation application, dispatcher, parser and commit path; provider/game leaves are controlled.
+  foreach(string mode in new[]{"event_on","event_off","event_disabled_late","event_guard_late","event_edit","event_patch_only","event_guard_before"})
+  {
+   AnimusForge.DuelSettings.ExpandedEnabled=mode!="event_off";AnimusForge.KnowledgeLibraryBehavior.Reset();AnimusForge.SaveRuntimeGuard.Generation=1;
+   var hero=new TaleWorlds.CampaignSystem.Hero("hero");var owner=new AnimusForge.MyBehavior();AnimusForge.MyBehavior.Instance=owner;AnimusForge.MyBehavior.RegisteredHero=hero;
+   owner.Seed("old biography","", "voice","sovits");var old=owner.ProfileForTest;old.Motivations=new(){"old motive"};old.Evolution=new();old.RecentChangeReason="previous";
+   bool current=mode!="event_guard_before";int applied=0;
+   var trigger=new AnimusForge.Refactor.Adapters.NpcPersonaEventRegeneration {Facts="{\"events\":[{\"facts\":\"CONFIRMED_CASTLE_LOSS\",\"connection\":\"self\"}]}",IsCurrent=()=>{Probe.Read();return current;},OnSaved=p=>{Probe.Read();applied++;}};
+   Task pending=Task.Run(()=>owner.EventForTest(hero,trigger));Pump(owner,()=>owner.Calls>0||pending.IsCompleted);
+   if(mode!="event_guard_before")
+   {
+    Check(owner.SentSystem.Contains(AnimusForge.PersonaPromptTexts.Get("AF_PERSONA_PROMPT_EvolutionSystem",""))&&owner.SentUser.Contains("facts:hero")&&owner.SentUser.Contains("CONFIRMED_CASTLE_LOSS")&&owner.SentUser.Contains("old biography")&&owner.SentSystem.Contains("custom-requirements"),mode+" actual event request shares facts, old biography and editable requirements");
+    if(mode=="event_guard_late")current=false;
+    if(mode=="event_edit")old.Description="manual edit";
+    if(mode=="event_disabled_late")AnimusForge.DuelSettings.ExpandedEnabled=false;
+    owner.Release(mode=="event_patch_only"?"{\"changed\":true,\"motivations\":[\"patch only\"]}":"{\"profile\":\"Regenerated biography.\\n\\nNew present choices.\",\"motivations\":[\"new motive\"]}");
+   }
+   Pump(owner,()=>pending.IsCompleted);pending.GetAwaiter().GetResult();var updated=owner.ProfileForTest;
+   bool success=mode=="event_on"||mode=="event_off"||mode=="event_disabled_late";
+   Check(owner.Saves==(success?1:0)&&applied==(success?1:0),mode+" only committed complete biography invokes event completion");
+   if(success)Check(updated.Description=="Regenerated biography.\n\nNew present choices."&&updated.Motivations[0]==(mode=="event_on"?"new motive":"old motive")&&updated.VoiceId=="voice"&&updated.GptSoVitsVoiceId=="sovits"&&ReferenceEquals(updated.Evolution,old.Evolution),mode+" full body reroll preserves voice and event queue and respects expanded generation switch");
+   else Check(updated.Description==(mode=="event_edit"?"manual edit":"old biography"),mode+" invalidated response or patch-only result cannot overwrite persona");
+  }
+  AnimusForge.DuelSettings.ExpandedEnabled=true;
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackPersonality(new string('n',600),"t","j","f","s","h").Length==420,"promoted personality fallback 420");
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackBackground("n","t","j","f","s",new string('h',400)).EndsWith(new string('h',240)),"promoted fallback history 240");
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackBackground("n","t",new string('j',600),"f","s","h").Length==520,"promoted background fallback 520");
@@ -126,4 +150,12 @@ static void TextRuleCases()
   var clearProfile = new AnimusForge.MyBehavior.NpcPersonaProfile {Description="",SchemaVersion=3,Personality="old",VoiceId="voice"};
   AnimusForge.PersonaImportOwner.ApplyDeveloperText(clearProfile,"edited",p=>profiles.Save("hero",p,(_,_)=>{}));
   Check(profiles.GetDescription("hero")=="edited"&&clearProfile.Personality=="old", "editor writes canonical body without rewriting legacy data");
+  bool originalChinese=AnimusForge.PromptLanguage.IsChinese;
+  foreach(bool chinese in new[]{true,false})
+  {
+   AnimusForge.PromptLanguage.Install(()=>chinese?"zh-CN":"en",id=>id=="zh-CN");
+   string eventRule=AnimusForge.PersonaPromptTexts.Get("AF_PERSONA_PROMPT_EvolutionSystem","");
+   Check(eventRule.Contains(chinese?"完整人物设定正文":"complete persona prose"),"event regeneration rule follows current game language with both resources in one module");
+  }
+  AnimusForge.PromptLanguage.Install(()=>originalChinese?"zh-CN":"en",id=>id=="zh-CN");
  }

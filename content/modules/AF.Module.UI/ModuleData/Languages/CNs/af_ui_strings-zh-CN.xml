@@ -3334,7 +3334,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Persona_TraitLimit" text="已有五项特质，请先移除一项再添加。" />
   <string id="AF_UI_Persona_ExpandedUpdated" text="扩展人设已更新。" />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Title" text="事件驱动的 NPC 人设演变" />
-  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="默认关闭。新的已确认快报事件可改变NPC人设，使用辅助API合并、限速评估。关闭后丢弃待处理及在途更新，保留已有人设变化。需要快报模式，不要求开启自动出版。" />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="默认关闭。新的已确认快报事件触发完整人物设定重生，复用生成规则与玩家可改要求；是否生成扩展字段由扩展人设开关决定。请求合并、限速执行。关闭本事件开关后丢弃待处理及在途更新，保留已有人设变化。需要快报模式，不要求自动出版。" />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Group" text="周报与快报" />
   <string id="AF_MCM_Tts_ProviderVolc" text="火山引擎" />
   <string id="AF_MCM_Tts_ProviderOpenAi" text="OpenAI 兼容" />
@@ -3519,7 +3519,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_FC_IssueResolved_Spent" text="花费{GOLD}第纳尔。" />
   <string id="AF_FC_IssueResolved_Morale" text="士气{MORALE}。" />
   <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Title" text="扩展人设" />
-  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="默认开启。生成并使用特质、动机、价值观、弱点与说话风格。关闭后只使用人物正文，并暂停事件驱动的人设演变；保留已有扩展数据，重新开启后恢复使用。" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="默认开启。首次生成或重生时同时生成特质、动机、价值观、弱点与说话风格。关闭后只生成人物正文；已有扩展数据保留并继续可用。事件驱动的完整人设重生由独立开关控制。" />
   <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Group" text="9. 提示词扩展" />
 </strings>
 </base>

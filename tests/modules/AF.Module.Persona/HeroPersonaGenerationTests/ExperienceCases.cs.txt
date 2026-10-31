@@ -40,7 +40,7 @@
     Check(!owner.SentUser.Contains("I promise to pay later")&&!owner.SentUser.Contains("CONFIRMED_NPC_TRANSFER"),scenario+" no raw recent dialogue or AFEF");
     if(hasSummary)
     {
-     var texts=Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(AnimusForge.AnimusForgeModulePaths.GetModuleDataFilePath("PersonaPromptTexts.json")));
+     var texts=Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(AnimusForge.PromptLanguage.ResolveModuleDataPath("PersonaPromptTexts.json",!AnimusForge.PromptLanguage.IsChinese)));
      Check(!owner.SentUser.Contains("afef_npc")&&owner.SentUser.Contains("date-98")&&owner.SentSystem.Contains((string)texts["AF_PERSONA_PROMPT_RegenerationExperienceRules"])&&owner.SentUser.Contains((string)texts["AF_PERSONA_PROMPT_RecentExperiencesHeading"]),"selected edition's actual resources and fact provenance reach gateway");
      if(scenario=="manual_many_actions")Check(!owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_"),"actual host excludes even significant action logs");
      if(scenario=="manual_filter")Check(!owner.SentUser.Contains("OUTDATED_ACTION")&&!owner.SentUser.Contains("FUTURE_ACTION")&&!owner.SentUser.Contains("ROUTINE_ACTION")&&!owner.SentUser.Contains("IMPORTANT_EXTENSION"),"actual host excludes all action logs");

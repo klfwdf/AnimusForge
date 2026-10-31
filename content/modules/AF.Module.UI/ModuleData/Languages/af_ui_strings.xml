@@ -3302,7 +3302,7 @@ Choose how to proceed:" />
   <string id="AF_UI_Persona_TraitLimit" text="Five traits are already set. Remove one before adding another." />
   <string id="AF_UI_Persona_ExpandedUpdated" text="Expanded persona updated." />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Title" text="Event-driven NPC persona evolution" />
-  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="Default: off. New confirmed bulletin events can change NPC personas. Uses the auxiliary API with merged, rate-limited requests. Turning off discards pending updates but keeps existing changes. Requires bulletin mode; auto-publishing is not required." />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="Default: off. New confirmed bulletin events trigger full NPC persona regeneration using the shared generation rules and editable requirements. The expanded-persona setting controls whether expanded fields are generated. Requests are merged and rate-limited. Turning this event setting off discards pending updates and keeps existing changes. Requires bulletin mode, not auto-publishing." />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Group" text="Weekly reports / bulletins" />
   <string id="AF_MCM_Tts_ProviderVolc" text="Volcengine" />
   <string id="AF_MCM_Tts_ProviderOpenAi" text="OpenAI-compatible" />
@@ -3487,7 +3487,7 @@ Choose how to proceed:" />
   <string id="AF_FC_IssueResolved_Spent" text="Spent {GOLD} denars." />
   <string id="AF_FC_IssueResolved_Morale" text="Morale {MORALE}." />
   <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Title" text="Expanded NPC personas" />
-  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="Default: on. Generates and uses traits, motivations, values, fears, and speech style. Turning off uses only persona prose and pauses event-driven evolution. Stored expanded data is kept and becomes active again when re-enabled." />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="Default: on. Generates traits, motivations, values, fears, and speech style with new or regenerated personas. Turning off generates only persona prose. Existing expanded data is kept and remains usable; event-driven full persona regeneration is controlled separately." />
   <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Group" text="9. Prompt extensions" />
 </strings>
 </base>
