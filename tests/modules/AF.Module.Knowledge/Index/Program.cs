@@ -361,6 +361,24 @@ internal static class Program
         var withReranker = new LoreCandidateRetriever(reranked, (c, m) => { })
             .SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "nearname" } }, 1, 10, 4, 4, out string rerankMode);
         Check(rerankMode == "rerank_per_entity" && withReranker.Count == 1, "cross-encoder scores are not held to the embedding name gate");
+
+        // Literal rescue: a name the book writes only inside a compound keyword scores below the gate but is kept;
+        // a look-alike name that is not literally present stays rejected.
+        Func<string, float[]> compound = text => (text ?? "").Contains("瓦伦斯") || (text ?? "").Contains("东罗马") ? new[] { 1f, 0f, 0f } : new[] { 0f, 0f, 1f };
+        Func<string, float[]> queryEmbed = text => text == "瓦伦斯" || text == "瓦伦提" ? new[] { 0.6f, 0.8f, 0f } : compound(text);
+        var compoundRules = new List<LoreRule> { Rule("valens", "瓦伦斯宗教整肃", "东罗马帝国瓦伦斯王权神授") };
+        var compoundLogs = new List<string>();
+        var compoundIndex = new KnowledgeRuleIndex(new FakePorts { Embed = queryEmbed, SemanticMinScore = 0.21f }, () => compoundRules);
+        compoundIndex.EnsureOnnxIndex();
+        var compoundRetriever = new LoreCandidateRetriever(compoundIndex, (c, m) => compoundLogs.Add(m));
+        var valens = compoundRetriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "瓦伦斯" } }, 1, 10, 4, 4, out _);
+        Check(valens.Count == 1 && valens[0].Id == "valens" && compoundLogs.Any(l => l.Contains("noun=\"瓦伦斯\"") && l.Contains("literalRescued=1")),
+            "name present only inside a compound keyword is rescued below the gate: " + string.Join(" | ", compoundLogs.Where(l => l.StartsWith("entity_query"))));
+        var lookAlike = compoundRetriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "瓦伦提" } }, 1, 10, 4, 4, out _);
+        Check(lookAlike.Count == 0, "a similar-sounding name that is not literally in the rule stays rejected");
+        Check(LoreCandidateRetriever.NormalizeNameLiteral("“铁臂” 奥斯里克") == "铁臂奥斯里克" && LoreCandidateRetriever.NormalizeNameLiteral("an") == ""
+            && LoreCandidateRetriever.NormalizeNameLiteral("丹") == "" && LoreCandidateRetriever.NormalizeNameLiteral("丹人") == "丹人",
+            "literal normalization strips quotes/spaces and refuses fragments too short to be distinctive");
     }
 
     private static void DiplomaticThemeRecall()
