@@ -1,3 +1,13 @@
+# 大地图扎营：搬到逻辑模块 AF.Module.FieldCamp（2026-11-01）
+
+用户确认扎营代码从适配层搬到逻辑模块，纯搬家、行为不变；仍编进同一个 `AnimusForge.dll`，不是独立子模组。
+- `src/AF.GameAdapter.Bannerlord/FieldCamp/` 的 19 个文件原样搬到 `src/modules/AF.Module.FieldCamp/`，内容逐字节与上一提交相同。根目录：`FieldCampLayout*.cs`、`FieldCampRules.cs`、`FieldCampText.cs`、`FieldCampOrderTags.cs`、`FieldCampIssues.cs`、`MainPartyTroopMemory.cs`；`Host/`：`FieldCampBehavior*.cs`、热键、大地图营火、`FieldCampMissionLauncher.cs`、`FieldCampMissionLogic*.cs`、`FieldCampProps.cs`、`FieldCampSite.cs`。
+- 文档：`docs/designs/field-camp-v1.md` 改代码位置；`docs/architecture/af-framework-code-scope.md` 顶部加扎营模块导航。代码地图本来没有扎营锚点，未改。
+
+验证：HEAD 临时 worktree，1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1174、1.4 PASS 1230；`verify_code_map.py` PASS（838 锚点）。未部署、未实机。
+回滚：`git revert` 本提交。
+下一步：营地内自定义刑场与完整处决仪式（改公开处决模块，营地去掉城镇后果、营地士兵围观）。
+
 # 未部署：大地图扎营 实测反馈修复（2026-11-01）
 
 用户实测反馈：摆设无碰撞且浮空、要场景喊话头顶气泡并带上下文、TAB 无法离开、有俘虏时要刑场、决斗要进围栏、士兵傻站。

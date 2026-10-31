@@ -1,3 +1,10 @@
+<a id="field-camp-module-20261101"></a>
+## 大地图扎营逻辑模块 — 2026-11-01
+
+`src/AF.GameAdapter.Bannerlord/FieldCamp/` 的 19 个文件原样搬到 `src/modules/AF.Module.FieldCamp/`，仍编进同一个 `AnimusForge.dll`，命名空间、类型名、存档键、MCM 键和行为都不变。根目录是布局（`FieldCampLayout*.cs`）、规则、文本、指令标签、营地民情和主队部队记忆；`Host/` 是 `FieldCampBehavior`（`Composition/CampaignComposition.cs` 注册）、菜单、热键、大地图营火、`FieldCampMissionLauncher` 与 `FieldCampMissionLogic*`（营地 Mission、士兵生活、决斗围栏与刑场）。外部消费者：`DuelBehavior.cs`（营地内决斗）、`ShoutBehavior.FieldCamp.cs`（营地场景喊话）、`SceneAgentIdentityPromptCaptureAdapter.cs`、`TroopInspectionBehavior.cs`、终端与 MCM `DuelSettings.FieldCamp.cs`。代码地图暂无扎营锚点。
+
+---
+
 <a id="interior-review-20261029"></a>
 ## 内政显示与本轮复核 — 2026-10-29
 

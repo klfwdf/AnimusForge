@@ -7,7 +7,7 @@
 - 旧入口（终端 `troop_inspection`，`UI/Terminal/AnimusForgeTerminalBehavior.cs:780`、`TroopInspection/TroopInspectionBehavior.cs:226`）保留并存，营地版本稳定后再决定是否删除。
 - 扎营期间禁用旧检阅，提示先拔营。旧 `TroopInspection/` 只加这一处互斥判断。
 - 营中不做操练指挥，操练留在旧检阅。
-- 新代码放在 `src/AF.GameAdapter.Bannerlord/FieldCamp/`。
+- 代码放在逻辑模块 `src/modules/AF.Module.FieldCamp/`，仍编进同一个 `AnimusForge.dll`：根目录是布局、规则、文本、标签、民情和部队记忆；`Host/` 是 Campaign 行为、菜单、热键、大地图营火、Mission 启动与营地 Mission 逻辑。2026-11-01 从 `src/AF.GameAdapter.Bannerlord/FieldCamp/` 原样搬入，行为不变。
 
 ## 2. 大地图扎营
 
