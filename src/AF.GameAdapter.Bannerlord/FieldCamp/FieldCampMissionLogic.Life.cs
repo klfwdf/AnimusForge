@@ -18,8 +18,8 @@ public sealed partial class FieldCampMissionLogic
 	private const float BlockGap = 4f;
 
 	private static readonly string[] SitActions = { "act_sit_idle_on_floor_1", "act_sit_idle_on_floor_2", "act_sit_idle_on_floor_3" };
-	private static readonly string[] SentryActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_guard_stand_1" };
-	private static readonly string[] BenchActions = { "act_sit_1", "act_sit_2", "act_sit_3", "act_sit_4", "act_sit_talk_to_1", "act_sit_and_drink_idle" };
+	private static readonly string[] SentryActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_stand_1" };
+	private static readonly string[] BenchActions = { "act_sit_1", "act_sit_2", "act_sit_3", "act_sit_4", "act_sit_and_drink_idle" };
 	private static readonly string[] EatActions = { "act_sit_eating_1", "act_sit_eating_2", "act_sit_and_drink_idle" };
 	private static readonly string[] CookActions = { "act_bartender_meat", "act_citizen_cleanup_idle" };
 	private static readonly string[] SmithActions = { "act_smithing_machine_anvil_part_2" };
@@ -29,7 +29,32 @@ public sealed partial class FieldCampMissionLogic
 	private static readonly string[] GossipActions = { "act_gossip", "act_gossip_2" };
 	private static readonly string[] LieActions = { "act_dungeon_prisoner_sleep_cycle" };
 	private static readonly string[] GroomActions = { "act_stand_1", "act_stand_2" };
-	private static readonly string[] StandActions = { "act_guard_stand_1", "act_stand_1" };
+	private static readonly string[] StandActions = { "act_stand_1", "act_stand_2" };
+	private static readonly string[] CheerActions = { "act_cheer_1", "act_cheer_2" };
+
+	/// <summary>
+	/// Camp soldiers use the hideout action set: it is based on the warrior set (so fighting
+	/// still works) and adds the sitting, eating, cooking, repairing, leaning, talking and
+	/// sleeping clips the camp needs. Applied once per agent at spawn.
+	/// </summary>
+	private static void ApplyCampActionSet(Agent agent)
+	{
+		try
+		{
+			Monster monster = agent?.Monster;
+			if (monster == null)
+			{
+				return;
+			}
+			string code = agent.IsFemale ? "as_human_female_hideout_bandit" : "as_human_hideout_bandit";
+			AnimationSystemData data = monster.FillAnimationSystemData(MBActionSet.GetActionSet(code), agent.Character?.GetStepSize() ?? 1f, false);
+			agent.SetActionSet(ref data);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "camp action set failed agent=" + (agent?.Index ?? -1) + " error=" + ex.Message);
+		}
+	}
 	private readonly Dictionary<string, ActionIndexCache> _actionCache = new Dictionary<string, ActionIndexCache>(StringComparer.Ordinal);
 
 	// ---------- orders (called from the scene-shout postprocess tag) ----------
@@ -37,7 +62,7 @@ public sealed partial class FieldCampMissionLogic
 	/// <summary>Idempotent: several speakers may emit the same order in one shout.</summary>
 	internal bool Assemble()
 	{
-		if (!_spawned || _assembled || SlaughterBusy)
+		if (!_spawned || _assembled || SlaughterBusy || _duelists.Count > 0)
 		{
 			return false;
 		}
@@ -50,6 +75,7 @@ public sealed partial class FieldCampMissionLogic
 			{
 				continue;
 			}
+			entry.Returning = false;
 			ReleasePose(entry);
 			MoveTo(entry, entry.Target, entry.TargetFacing, run: true);
 		}
@@ -60,7 +86,7 @@ public sealed partial class FieldCampMissionLogic
 
 	internal bool Dismiss()
 	{
-		if (!_spawned || !_assembled || SlaughterBusy)
+		if (!_spawned || !_assembled || SlaughterBusy || _duelists.Count > 0)
 		{
 			return false;
 		}
@@ -71,6 +97,7 @@ public sealed partial class FieldCampMissionLogic
 			entry.Target = entry.Home;
 			entry.TargetFacing = entry.HomeFacing;
 			entry.Seated = false;
+			entry.Returning = false;
 			MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
 		}
 		Logger.Log(LogSource, "dismiss agents=" + _agents.Count);
@@ -179,7 +206,7 @@ public sealed partial class FieldCampMissionLogic
 			_upkeepCursor = (_upkeepCursor + 1) % count;
 			CampAgent entry = _agents[_upkeepCursor];
 			Agent agent = entry.Agent;
-			if (agent == null || !agent.IsActive())
+			if (agent == null || !agent.IsActive() || IsDuelist(agent))
 			{
 				continue;
 			}
@@ -192,8 +219,22 @@ public sealed partial class FieldCampMissionLogic
 				MoveTo(entry, entry.Target, entry.TargetFacing, run: false);
 				continue;
 			}
+			if (!_assembled && entry.Seated && _elapsed >= entry.NextWanderTime && entry.Activity != Activity.Wounded && entry.Activity != Activity.Post)
+			{
+				Refresh(entry);
+				continue;
+			}
 			if (entry.Seated || agent.Position.AsVec2.DistanceSquared(entry.Target.AsVec2) > ArriveDistanceSquared)
 			{
+				continue;
+			}
+			if (entry.Returning)
+			{
+				// End of a stroll: walk back to the post.
+				entry.Returning = false;
+				entry.Target = entry.Home;
+				entry.TargetFacing = entry.HomeFacing;
+				MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
 				continue;
 			}
 			// Arrived: settle once. The scripted hold stays set; it is not re-issued (that jitters).
@@ -203,6 +244,91 @@ public sealed partial class FieldCampMissionLogic
 				ApplyPose(entry);
 			}
 			entry.Seated = true;
+		}
+	}
+
+	/// <summary>
+	/// Camp life (every 25-60 s per agent, in the 0.5 s upkeep batch): a seated or working
+	/// man may switch pose, take a short walk to a patrol point and come back, or turn to
+	/// talk with the nearest comrade. Sentries only change their look-around pose.
+	/// </summary>
+	private void Refresh(CampAgent entry)
+	{
+		entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 60f);
+		float roll = MBRandom.RandomFloat;
+		if (entry.Activity == Activity.Sentry || roll < 0.45f)
+		{
+			entry.PoseVariant++;
+			ApplyPose(entry);
+			return;
+		}
+		if (roll < 0.75f && _layout.WanderSlots.Count > 0)
+		{
+			// A short stroll; Wander agents already roam, others return home after it.
+			entry.Returning = entry.Activity != Activity.Wander;
+			ReleasePose(entry);
+			Vec2 local = _layout.WanderSlots[MBRandom.RandomInt(_layout.WanderSlots.Count)].Position;
+			entry.Target = ToWorld(local);
+			MoveTo(entry, entry.Target, entry.TargetFacing, run: false);
+			entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(10f, 18f);
+			return;
+		}
+		CampAgent mate = NearestIdleMate(entry, 9f);
+		if (mate == null)
+		{
+			entry.PoseVariant++;
+			ApplyPose(entry);
+			return;
+		}
+		// Turn to each other and talk for a while.
+		Vec2 between = (mate.Agent.Position.AsVec2 - entry.Agent.Position.AsVec2);
+		if (between.LengthSquared > 0.01f)
+		{
+			between = between.Normalized();
+			entry.Agent.LookDirection = new Vec3(between.x, between.y, 0f);
+			mate.Agent.LookDirection = new Vec3(-between.x, -between.y, 0f);
+		}
+		PlayOnce(entry.Agent, entry.Work == FieldCampLayout.WorkKind.Sit || entry.Work == FieldCampLayout.WorkKind.Eat ? BenchActions : GossipActions, entry.PoseVariant);
+		PlayOnce(mate.Agent, mate.Work == FieldCampLayout.WorkKind.Sit || mate.Work == FieldCampLayout.WorkKind.Eat ? BenchActions : GossipActions, mate.PoseVariant + 1);
+		mate.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 60f);
+	}
+
+	private CampAgent NearestIdleMate(CampAgent entry, float radius)
+	{
+		CampAgent best = null;
+		float bestDistance = radius * radius;
+		Vec2 here = entry.Agent.Position.AsVec2;
+		for (int i = 0; i < _agents.Count; i++)
+		{
+			CampAgent other = _agents[i];
+			if (other == entry || !other.Seated || other.Agent == null || !other.Agent.IsActive()
+				|| other.Activity == Activity.Sentry || other.Activity == Activity.Wounded || other.Activity == Activity.Post)
+			{
+				continue;
+			}
+			float d = other.Agent.Position.AsVec2.DistanceSquared(here);
+			if (d < bestDistance)
+			{
+				bestDistance = d;
+				best = other;
+			}
+		}
+		return best;
+	}
+
+	private void PlayOnce(Agent agent, string[] pool, int variant)
+	{
+		ActionIndexCache action = ResolveAction(pool[Math.Abs(variant) % pool.Length]);
+		if (action == ActionIndexCache.act_none)
+		{
+			return;
+		}
+		try
+		{
+			agent.SetActionChannel(0, in action, true);
+		}
+		catch
+		{
 		}
 	}
 
@@ -243,7 +369,7 @@ public sealed partial class FieldCampMissionLogic
 		{
 			return;
 		}
-		ActionIndexCache action = ResolveAction(pool[entry.Agent.Index % pool.Length]);
+		ActionIndexCache action = ResolveAction(pool[(entry.Agent.Index + entry.PoseVariant) % pool.Length]);
 		if (action != ActionIndexCache.act_none)
 		{
 			try

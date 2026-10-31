@@ -200,6 +200,69 @@ internal sealed partial class FieldCampLayout
 		SentrySlots.Add(new Slot { Kind = SlotKind.Sentry, Position = c + new Vec2(half + 1.2f, half + 1.2f), Facing = new Vec2(-1f, -1f).Normalized() });
 	}
 
+	/// <summary>
+	/// Duel ring: a fenced octagon with a gap toward the road, behind the left tent street,
+	/// between the last tent row and the back wall. Torches at two corners.
+	/// </summary>
+	private void PlaceRing(string home)
+	{
+		RingRadius = 5f;
+		RingCenter = new Vec2(-(FirstColX + ColPitch * 0.5f), _penY);
+		const int sides = 8;
+		for (int i = 0; i < sides; i++)
+		{
+			if (i == 0)
+			{
+				continue; // the entrance faces +x (toward the road)
+			}
+			float a0 = (i - 0.5f) * (2f * MathF.PI / sides);
+			float a1 = (i + 0.5f) * (2f * MathF.PI / sides);
+			AddWall(home, RingCenter + new Vec2(MathF.Cos(a0), MathF.Sin(a0)) * RingRadius, RingCenter + new Vec2(MathF.Cos(a1), MathF.Sin(a1)) * RingRadius);
+		}
+		Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = RingCenter + new Vec2(RingRadius + 1f, 2.5f) });
+		Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = RingCenter + new Vec2(RingRadius + 1f, -2.5f) });
+		Props.Add(new Prop { Kind = PropKind.WeaponHeap, Position = RingCenter + new Vec2(-RingRadius - 1.5f, 0f), Yaw = 0.3f, Variant = 2 });
+		for (int i = 0; i < 4; i++)
+		{
+			// Spectators lean on the ring fence.
+			float a = MathF.PI * (0.35f + i * 0.43f);
+			Work(RingCenter + new Vec2(MathF.Cos(a), MathF.Sin(a)) * (RingRadius + 0.8f), new Vec2(-MathF.Cos(a), -MathF.Sin(a)), WorkKind.Lean);
+		}
+	}
+
+	/// <summary>
+	/// Execution ground behind the right tent street: a block and a gallows post on a
+	/// small fenced square, opening toward the road where soldiers gather to watch.
+	/// Laid out only when the main party holds prisoners; a player-made Vengeance site
+	/// preset, when one exists, replaces these default pieces at the same spot.
+	/// </summary>
+	private void PlaceExecutionGround(string home, bool hasPrisoners)
+	{
+		HasExecutionGround = hasPrisoners;
+		if (!hasPrisoners)
+		{
+			return;
+		}
+		ExecutionCenter = new Vec2(FirstColX + ColPitch * 0.5f, _penY);
+		ExecutionFacing = new Vec2(-1f, 0f);
+		const float half = 4f;
+		Vec2 c = ExecutionCenter;
+		AddWall(home, c + new Vec2(-half, half), c + new Vec2(half, half));
+		AddWall(home, c + new Vec2(-half, -half), c + new Vec2(half, -half));
+		AddWall(home, c + new Vec2(half, -half), c + new Vec2(half, half));
+		Props.Add(new Prop { Kind = PropKind.ExecutionBlock, Position = c, Yaw = YawOf(ExecutionFacing) });
+		Props.Add(new Prop { Kind = PropKind.Gallows, Position = c + new Vec2(2.2f, 0f), Yaw = YawOf(ExecutionFacing) });
+		Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = c + new Vec2(-half - 0.8f, half + 0.8f) });
+		Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = c + new Vec2(-half - 0.8f, -half - 0.8f) });
+		Props.Add(new Prop { Kind = PropKind.Standard, CultureId = home, Position = c + new Vec2(half - 0.8f, half - 0.8f) });
+	}
+
+	private static bool HasPrisoners(IReadOnlyList<MobileParty> parties)
+	{
+		TroopRoster prisoners = parties.Count > 0 ? parties[0]?.PrisonRoster : null;
+		return prisoners != null && prisoners.TotalManCount > 0;
+	}
+
 	/// <summary>Patrol points along the road, the tent lanes and the zone edges (never on a seat or a fire).</summary>
 	private void PlaceWander()
 	{
@@ -216,7 +279,11 @@ internal sealed partial class FieldCampLayout
 			{
 				float lane = side * (FirstColX + s * StreetPitch + ColPitch * 0.5f);
 				WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(lane, FirstRowY + 3.5f) });
-				WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(lane, FirstRowY - RowPitch * (_rows - 1) - 3.5f) });
+				if (s > 0)
+				{
+					// The first street's far end holds the duel ring (left) and execution ground (right).
+					WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(lane, FirstRowY - RowPitch * (_rows - 1) - 3.5f) });
+				}
 			}
 			WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(side * (_zoneInner - 0.5f), MiddleZoneTop + 0.8f) });
 			WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(side * (_zoneInner - 0.5f), BackZoneTop + 1f) });

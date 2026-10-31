@@ -2716,6 +2716,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
+			// Field camp: duels stay in the camp and are fought inside its duel ring.
+			if (FieldCampMissionLogic.Current != null)
+			{
+				return true;
+			}
 			return mission.GetMissionBehavior<MeetingBattleLockMissionBehavior>() != null;
 		}
 		catch
@@ -2931,6 +2936,14 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				{
 					InformationManager.DisplayMessage(new InformationMessage(LocalizeDuelEligibilityReason(blockedReason), Color.FromUint(4294901760u)));
 				}
+				return;
+			}
+			if (FieldCampMissionLogic.Current != null && Instance != null)
+			{
+				// A soldier challenged in camp fights here, in the ring, not in a separate wilderness scene.
+				Logger.Log("DuelBehavior", "[AgentDuel] Field camp duel kept in place.");
+				ShowDuelRiskWarning();
+				Instance.StartDuelViaAI(targetAgent, duelDispatchContext);
 				return;
 			}
 			PrepareDuel(nonHeroCharacter, delaySeconds, duelDispatchContext);
@@ -7192,6 +7205,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			DiscardUnboundDuelArtifacts(_targetHero);
 			return;
 		}
+		FieldCampMissionLogic.Current?.PlaceDuelists(Agent.Main, agent);
 		if (_activeDuelOutcomeStart != null)
 		{
 			MarkDuelOutcomeUnknown(

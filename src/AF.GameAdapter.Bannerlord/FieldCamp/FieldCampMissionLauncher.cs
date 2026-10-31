@@ -53,6 +53,8 @@ internal static class FieldCampMissionLauncher
 			{
 				new MissionOptionsComponent(),
 				new FieldCampMissionLogic(snapshot),
+				// Hold TAB to leave (also ends the mission if the player is knocked out).
+				new BasicLeaveMissionLogic(),
 				new AgentHumanAILogic(),
 				new MissionHardBorderPlacer(),
 				new MissionBoundaryPlacer(),
@@ -100,6 +102,8 @@ public class FieldCampMissionViews
 			ViewCreator.CreateMissionMainAgentEquipmentController(mission),
 			ViewCreator.CreateMissionMainAgentCheerBarkControllerView(mission),
 			ViewCreator.CreateMissionBoundaryCrossingView(),
+			// Hold-TAB progress ring; without it a TAB tap gives no feedback.
+			ViewCreator.CreateMissionLeaveView(),
 			new MissionBoundaryWallView(),
 			new MissionItemContourControllerView(),
 			new MissionAgentContourControllerView(),

@@ -1,3 +1,17 @@
+# 未部署：大地图扎营 实测反馈修复（2026-11-01）
+
+用户实测反馈：摆设无碰撞且浮空、要场景喊话头顶气泡并带上下文、TAB 无法离开、有俘虏时要刑场、决斗要进围栏、士兵傻站。
+- 摆设：改为带最终帧创建（`GameEntity.Instantiate(scene, prefab, frame)`，与原版工坊摆设相同），引擎就地建碰撞；只有地铺/火/火把/烤架/大锅/伤兵床可穿过。高度只取地形，取脚印中心和四角的最低点，不再落在帐篷或树冠上。
+- 头顶气泡与上下文：营地没有 `CampaignMissionComponent`，战役的 mission started/ended 事件不触发，所以场景喊话的气泡视图和本场历史从未挂上。新增 `ShoutBehavior.FieldCamp.cs` 两个入口，由 `FieldCampMissionLogic.OnBehaviorInitialize/OnEndMission` 调用，营地与城镇走同一条场景喊话链路（气泡、历史写入兵种记忆）。
+- TAB：加 `BasicLeaveMissionLogic` 和 `CreateMissionLeaveView`（按住 TAB 0.6 秒离开，有进度圈）。
+- 士兵：营地士兵改用 `as_human_hideout_bandit` 动作集（基于 warrior，可战斗，且有坐凳/吃饭/做饭/修车/靠栅栏/交谈/睡觉动作；原 warrior 集缺这些，所以之前只会站着）。每人 25-60 秒一次：换姿势、出去走一圈再回岗、或和附近的人面对面交谈。
+- 决斗围栏：帐篷街左后方八角围栏。`DuelBehavior` 在营地内一律就地决斗（不再开野外决斗场景），开打前 `FieldCampMissionLogic.PlaceDuelists` 把双方传送到围栏两侧、建敌对队伍；决斗结束后对手回岗、队伍恢复和平。
+- 刑场：有俘虏时在右后方布置刑场（断头木桩、绞架、围栏、火把、旗）；若玩家在 Vengeance 里存过斩首刑场预设，用最新一份替换默认件。屠戮俘虏时先把俘虏押到刑场跪成排。Vengeance 原有公开处决仪式依赖城镇定居点，营地不能直接复用，这里只复用刑场预设数据。
+
+验证：HEAD 临时 worktree，1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1174、1.4 PASS 1230；Python 移植布局 120/400 人无站位落入帐篷/车/火。未部署、未实机：碰撞是否真的生效、气泡与历史、TAB、动作播放、决斗传送与队伍、刑场摆放均未在游戏里确认。回滚：revert 本提交。
+
+---
+
 # 未部署：闲聊不再隔空对话/坐着的人被拉走，接力旁观者视线分散（2026-11-01）
 
 用户截图：闲聊时坐着的一方隔着几张桌和墙边站着的人对话，随后坐着的起身走过去、站着的坐下。原因两处：(1) 坐着的发起者+站着的同伴时让同伴走过来，但同伴走到一半，闲聊仍从第一句开始（`mover==null` 判定混用），且两人可相距 12m；(2) 说完话的“恢复自主”`RestoreAgentAutonomy`/`ReleaseAgentFromSceneConversationLocks`/`ResetStaringBehavior` 对坐着的人也 `DisableScriptedMovement`+清导航目标，椅子被释放，AI 重新找位，于是坐着的起身、站着的抢座。修复：闲聊只允许站着的发起者走向同伴，坐着的发起者只能和 ≤4m 的坐着同伴原地聊；无人移动时须 ≤4m 才开聊；正在使用物体的人在释放/恢复时只清视线不清移动与导航。接力旁观者视线：被回应者看说话者，其余参与者每句约 50% 看说话者、50% 看玩家；MCM 说明 CN/EN 同步。干净 worktree 套用后 Release 双API+Bootstrap、Coup、注册冒烟 PASS。未部署、未实机。回滚：逆提交本条对应提交。

@@ -48,6 +48,9 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal FormationClass TroopClass;
 		internal float NextWanderTime;
 		internal FieldCampLayout.WorkKind Work;
+		internal int PoseVariant;
+		/// <summary>On a short stroll; walks back to Home on arrival.</summary>
+		internal bool Returning;
 	}
 
 	private readonly List<MobileParty> _parties;
@@ -72,9 +75,35 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		_parties = parties ?? new List<MobileParty>();
 	}
 
+	/// <summary>
+	/// Same moment towns fire the campaign mission-started event: scene shout adds its
+	/// bubble view and history session here, so camp replies look and persist like towns.
+	/// </summary>
+	public override void OnBehaviorInitialize()
+	{
+		base.OnBehaviorInitialize();
+		try
+		{
+			ShoutBehavior.NotifyFieldCampMissionStartedForExternal(Mission);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "[WARN] scene shout start hook failed: " + ex.Message);
+		}
+	}
+
 	protected override void OnEndMission()
 	{
 		CleanupSlaughter("mission_end");
+		CleanupExecution("mission_end");
+		try
+		{
+			ShoutBehavior.NotifyFieldCampMissionEndedForExternal(Mission);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "[WARN] scene shout end hook failed: " + ex.Message);
+		}
 		base.OnEndMission();
 	}
 
@@ -107,6 +136,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			return;
 		}
 		_slaughter?.Tick(dt);
+		TickDuelRelease(dt);
 		if (SlaughterBusy)
 		{
 			// The slaughter runtime owns the agents until it restores them.
@@ -132,6 +162,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			return;
 		}
 		_slaughter?.OnAgentRemoved(affectedAgent, affectorAgent, agentState);
+		_duelists.Remove(affectedAgent);
 		if (_prisoners.Remove(affectedAgent))
 		{
 			WritePrisonerCasualty(affectedAgent, agentState);
@@ -154,6 +185,11 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			_layout = FieldCampLayout.Build(_parties, FieldCampSettings.AgentCap, FieldCampSettings.TentCap);
 			_campFrame = FieldCampSite.Resolve(Mission, _layout, out _campScale);
 			int cleared = FieldCampSite.ClearClutter(Mission.Scene, _campFrame, _layout, _campScale);
+			if (TryPlaceExecutionPreset())
+			{
+				// The player's own execution-site design replaces the default block and gallows.
+				_layout.Props.RemoveAll(p => p.Kind == FieldCampLayout.PropKind.ExecutionBlock || p.Kind == FieldCampLayout.PropKind.Gallows);
+			}
 			int props = FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale);
 			SpawnEveryone();
 			int horses = SpawnHorses();
@@ -353,6 +389,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			if (agent != null)
 			{
 				agent.SetWatchState(Agent.WatchState.Patrolling);
+				ApplyCampActionSet(agent);
 			}
 			return agent;
 		}

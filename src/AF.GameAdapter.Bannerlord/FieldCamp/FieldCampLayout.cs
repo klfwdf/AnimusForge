@@ -47,7 +47,9 @@ internal sealed partial class FieldCampLayout
 		Table,
 		Anvil,
 		WeaponHeap,
-		Bed
+		Bed,
+		ExecutionBlock,
+		Gallows
 	}
 
 	internal struct Prop
@@ -137,6 +139,14 @@ internal sealed partial class FieldCampLayout
 	internal float HalfX;
 	internal float Front;
 	internal float Back;
+	/// <summary>Fenced duel ring behind the left tent streets; duelists start on opposite sides.</summary>
+	internal Vec2 RingCenter;
+	internal float RingRadius;
+	/// <summary>Execution ground behind the right tent streets (only laid out when the party has prisoners).</summary>
+	internal bool HasExecutionGround;
+	internal Vec2 ExecutionCenter;
+	/// <summary>Camp-local direction the condemned face (toward the road and the watching soldiers).</summary>
+	internal Vec2 ExecutionFacing;
 
 	private const float FirstColX = 8f;
 	private const float ColPitch = 9f;
@@ -183,6 +193,8 @@ internal sealed partial class FieldCampLayout
 		layout.PlaceSupply(home, SupplyPiles(parties));
 		layout.PlaceInfirmary(home, totalWounded);
 		layout.PlacePen(home);
+		layout.PlaceRing(home);
+		layout.PlaceExecutionGround(home, HasPrisoners(parties));
 		layout.PlaceWander();
 		layout.Radius = Math.Max(layout.HalfX, Math.Max(layout.Front, -layout.Back)) + 3f;
 		layout.BuildGroups(parties, agentCap);
@@ -316,7 +328,7 @@ internal sealed partial class FieldCampLayout
 			// Lookouts leaning on the palisade where the flank zones meet, and on the back wall.
 			WorkSlots.Add(new Slot { Kind = SlotKind.Work, Position = new Vec2(sx * (HalfX - 0.9f), MiddleZoneTop + 0.8f), Facing = new Vec2(sx, 0f), Work = WorkKind.Lean });
 			WorkSlots.Add(new Slot { Kind = SlotKind.Work, Position = new Vec2(sx * (HalfX - 0.9f), MiddleZoneBottom - 1f), Facing = new Vec2(sx, 0f), Work = WorkKind.Lean });
-			WorkSlots.Add(new Slot { Kind = SlotKind.Work, Position = new Vec2(sx * 10f, Back + 0.9f), Facing = new Vec2(0f, -1f), Work = WorkKind.Lean });
+			WorkSlots.Add(new Slot { Kind = SlotKind.Work, Position = new Vec2(sx * (_zoneInner - 2f), Back + 0.9f), Facing = new Vec2(0f, -1f), Work = WorkKind.Lean });
 			Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = new Vec2(sx * 11f, 10.5f) });
 			Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = new Vec2(sx * 4.6f, FirstRowY + 3.2f) });
 		}

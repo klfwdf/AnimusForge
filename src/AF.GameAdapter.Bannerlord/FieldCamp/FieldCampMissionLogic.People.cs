@@ -377,6 +377,7 @@ public sealed partial class FieldCampMissionLogic
 			reason = "combat_setup_unavailable";
 			return false;
 		}
+		MoveToExecutionGround(targets);
 		_slaughter = new TroopInspectionPrisonerSlaughterRuntime(Mission, attackers, targets, RestoreAfterSlaughter);
 		if (!_slaughter.TryStart(out reason))
 		{
@@ -391,6 +392,28 @@ public sealed partial class FieldCampMissionLogic
 		targetCount = targets.Count;
 		Logger.Log(LogSource, "prisoner slaughter started attackers=" + attackerCount + " targets=" + targetCount);
 		return true;
+	}
+
+	/// <summary>With an execution ground, the condemned are led onto it (kneeling rows facing the camp) before the order is carried out.</summary>
+	private void MoveToExecutionGround(List<Agent> targets)
+	{
+		if (!TryGetExecutionSpot(out Vec3 spot, out Vec2 facing))
+		{
+			return;
+		}
+		Vec2 side = new Vec2(facing.y, -facing.x);
+		for (int i = 0; i < targets.Count; i++)
+		{
+			try
+			{
+				Vec2 flat = spot.AsVec2 + side * ((i % 3 - 1) * 1.3f) - facing * ((i / 3) * 1.2f);
+				targets[i].TeleportToPosition(new Vec3(flat.x, flat.y, FieldCampProps.LowestTerrain(Mission.Scene, flat, 0f)));
+				targets[i].LookDirection = new Vec3(facing.x, facing.y, 0f);
+			}
+			catch
+			{
+			}
+		}
 	}
 
 	private void RestoreAfterSlaughter(Agent agent, bool prisoner)

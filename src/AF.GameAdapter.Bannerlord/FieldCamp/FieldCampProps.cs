@@ -10,8 +10,11 @@ namespace AnimusForge;
 /// candidate list, optionally per culture (names verified in the installed Native prefab
 /// XML; 1.3 not live-tested). The first candidate that instantiates is cached for the
 /// rest of the mission and a pool whose candidates all fail is skipped and logged once.
-/// Tents, palisade, carts and horse barriers get physics so nobody walks through them;
-/// small props stay physics-free so they never trap agents.
+/// Every prop is created with its final frame, so the engine builds its collision in
+/// place (setting the frame after a physics-less spawn left props without collision).
+/// Only bedrolls, torches, fires and flat clutter stay walk-through.
+/// Height comes from the terrain only (never from tents or tree canopies), at the lowest
+/// corner of the prop's footprint so nothing floats on a slope.
 /// Cost: one engine instantiate per prop (about 250-450 for a full camp), once.
 /// </summary>
 internal static class FieldCampProps
@@ -52,7 +55,9 @@ internal static class FieldCampProps
 		[FieldCampLayout.PropKind.Trough] = new[] { "bd_trough_a" },
 		[FieldCampLayout.PropKind.HayCart] = new[] { "bd_hay_cart_a", "bd_cart_a" },
 		[FieldCampLayout.PropKind.Table] = new[] { "bd_table_kitchen_a", "bd_table_a", "bd_table_trunk_a" },
-		[FieldCampLayout.PropKind.Anvil] = new[] { "bd_anvil", "bd_smithy_anvil" }
+		[FieldCampLayout.PropKind.Anvil] = new[] { "bd_anvil", "bd_smithy_anvil" },
+		[FieldCampLayout.PropKind.ExecutionBlock] = new[] { "bd_log_and_axe", "bd_wood_heap_a" },
+		[FieldCampLayout.PropKind.Gallows] = new[] { "gallows" }
 	};
 
 	/// <summary>Culture overrides; any kind not listed falls back to <see cref="Neutral"/>.</summary>
@@ -101,14 +106,38 @@ internal static class FieldCampProps
 		}
 	};
 
-	private static readonly HashSet<FieldCampLayout.PropKind> Solid = new HashSet<FieldCampLayout.PropKind>
+	private static readonly HashSet<FieldCampLayout.PropKind> WalkThrough = new HashSet<FieldCampLayout.PropKind>
 	{
-		FieldCampLayout.PropKind.Tent,
-		FieldCampLayout.PropKind.Wall,
-		FieldCampLayout.PropKind.Cart,
-		FieldCampLayout.PropKind.HayCart,
-		FieldCampLayout.PropKind.HorseBarrier
+		FieldCampLayout.PropKind.Bedroll,
+		FieldCampLayout.PropKind.Fire,
+		FieldCampLayout.PropKind.Torch,
+		FieldCampLayout.PropKind.Spit,
+		FieldCampLayout.PropKind.Cauldron,
+		FieldCampLayout.PropKind.Bed
 	};
+
+	/// <summary>Half footprint (m) used to find the lowest ground under a prop.</summary>
+	private static float FootprintHalf(FieldCampLayout.PropKind kind, float scale)
+	{
+		float s = scale > 0f ? scale : 1f;
+		switch (kind)
+		{
+			case FieldCampLayout.PropKind.Tent:
+				return 2.2f * s;
+			case FieldCampLayout.PropKind.Cart:
+			case FieldCampLayout.PropKind.HayCart:
+				return 1.6f;
+			case FieldCampLayout.PropKind.HorseBarrier:
+			case FieldCampLayout.PropKind.Bench:
+			case FieldCampLayout.PropKind.Table:
+			case FieldCampLayout.PropKind.Rack:
+			case FieldCampLayout.PropKind.TrainingRack:
+			case FieldCampLayout.PropKind.Trough:
+				return 1f;
+			default:
+				return 0.5f;
+		}
+	}
 
 	/// <param name="scale">Camp-local distances are multiplied by this to fit small scenes; prop sizes are unchanged.</param>
 	/// <returns>Number of entities created.</returns>
@@ -131,8 +160,8 @@ internal static class FieldCampProps
 				placed += PlaceWall(scene, prop, pool, poolKey, campFrame, scale, resolved, failed, sizes);
 				continue;
 			}
-			MatrixFrame frame = FrameFor(scene, campFrame, prop.Position * scale, prop.Yaw, prop.Scale);
-			if (Spawn(scene, pool, poolKey, prop.Variant, frame, Solid.Contains(prop.Kind), resolved, failed) != null)
+			MatrixFrame frame = FrameFor(scene, campFrame, prop.Position * scale, prop.Yaw, prop.Scale, FootprintHalf(prop.Kind, prop.Scale));
+			if (Spawn(scene, pool, poolKey, prop.Variant, frame, !WalkThrough.Contains(prop.Kind), resolved, failed) != null)
 			{
 				placed++;
 			}
@@ -155,7 +184,7 @@ internal static class FieldCampProps
 			return 0;
 		}
 		Vec2 dir = run * (1f / length);
-		GameEntity first = Spawn(scene, pool, poolKey, 0, FrameFor(scene, campFrame, from, 0f, 0f), true, resolved, failed);
+		GameEntity first = Spawn(scene, pool, poolKey, 0, FrameFor(scene, campFrame, from, 0f, 0f, 0.3f), true, resolved, failed);
 		if (first == null || !resolved.TryGetValue(poolKey, out string prefab))
 		{
 			return 0;
@@ -172,17 +201,16 @@ internal static class FieldCampProps
 		int placed = 0;
 		for (int i = 0; i < pieces; i++)
 		{
-			MatrixFrame frame = FrameFor(scene, campFrame, from + dir * (length * (i + 0.5f) / pieces), yaw, 0f);
-			GameEntity entity = i == 0 ? first : TrySpawn(scene, prefab, frame, true);
-			if (entity == null)
-			{
-				continue;
-			}
+			MatrixFrame frame = FrameFor(scene, campFrame, from + dir * (length * (i + 0.5f) / pieces), yaw, 0f, size.Length * 0.5f);
 			if (i == 0)
 			{
-				entity.SetGlobalFrame(in frame);
+				// The measuring piece was created at the run start; replace it in place so its collision is rebuilt.
+				first.Remove(80);
 			}
-			placed++;
+			if (TrySpawn(scene, prefab, frame, true) != null)
+			{
+				placed++;
+			}
 		}
 		return placed;
 	}
@@ -206,10 +234,10 @@ internal static class FieldCampProps
 		return new PieceSize { Length = FencePiece, AlongY = false };
 	}
 
-	private static MatrixFrame FrameFor(Scene scene, MatrixFrame campFrame, Vec2 local, float yaw, float uniformScale)
+	private static MatrixFrame FrameFor(Scene scene, MatrixFrame campFrame, Vec2 local, float yaw, float uniformScale, float footprintHalf)
 	{
 		Vec3 world = campFrame.TransformToParent(new Vec3(local.x, local.y, 0f));
-		world.z = FieldCampMissionLogic.GroundHeight(scene, world);
+		world.z = LowestTerrain(scene, world.AsVec2, footprintHalf);
 		MatrixFrame frame = MatrixFrame.Identity;
 		frame.rotation = campFrame.rotation;
 		frame.rotation.RotateAboutUp(yaw);
@@ -219,6 +247,27 @@ internal static class FieldCampProps
 		}
 		frame.origin = world;
 		return frame;
+	}
+
+	/// <summary>Terrain height (no props, no trees) at the lowest of the centre and four footprint corners.</summary>
+	internal static float LowestTerrain(Scene scene, Vec2 p, float half)
+	{
+		try
+		{
+			float low = scene.GetTerrainHeight(p, true);
+			if (half > 0.05f)
+			{
+				low = Math.Min(low, scene.GetTerrainHeight(p + new Vec2(half, half), true));
+				low = Math.Min(low, scene.GetTerrainHeight(p + new Vec2(-half, half), true));
+				low = Math.Min(low, scene.GetTerrainHeight(p + new Vec2(half, -half), true));
+				low = Math.Min(low, scene.GetTerrainHeight(p + new Vec2(-half, -half), true));
+			}
+			return low;
+		}
+		catch
+		{
+			return 0f;
+		}
 	}
 
 	private static GameEntity Spawn(Scene scene, string[] pool, string poolKey, int variant, MatrixFrame frame, bool physics, Dictionary<string, string> resolved, HashSet<string> failed)
@@ -274,13 +323,14 @@ internal static class FieldCampProps
 	{
 		try
 		{
-			GameEntity entity = GameEntity.Instantiate(scene, prefab, false, physics);
-			if (entity == null)
+			if (!physics)
 			{
-				return null;
+				GameEntity loose = GameEntity.Instantiate(scene, prefab, false, false);
+				loose?.SetGlobalFrame(in frame);
+				return loose;
 			}
-			entity.SetGlobalFrame(in frame);
-			return entity;
+			// Created at its final frame with physics, as vanilla workshop props are.
+			return GameEntity.Instantiate(scene, prefab, frame, false);
 		}
 		catch
 		{
