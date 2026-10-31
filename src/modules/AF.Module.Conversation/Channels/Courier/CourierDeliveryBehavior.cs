@@ -2342,8 +2342,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		string value = LlmVisibleReplyNormalizer.NormalizeComplete(text).Trim();
 		value = Regex.Replace(value, "<think>.*?</think>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase).Trim();
-		foreach (string pattern in ConversationRuntimeTexts.RawVariants("AF_CONV_Runtime_0422"))
-			value = Regex.Replace(value, pattern, "", RegexOptions.IgnoreCase).Trim();
+		foreach (Regex pattern in ConversationRuntimeTexts.RawRegexes("AF_CONV_Runtime_0422", RegexOptions.IgnoreCase))
+			value = pattern.Replace(value, "").Trim();
 		if (ConversationRuntimeTexts.IsRaw(value, "AF_CONV_Runtime_0423") || ConversationRuntimeTexts.IsRaw(value, "AF_CONV_Runtime_0424") || ConversationRuntimeTexts.IsRaw(value, "AF_CONV_Runtime_0425"))
 		{
 			return "";
@@ -2365,8 +2365,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		string value = LlmVisibleReplyNormalizer.NormalizeComplete(text).Trim();
 		value = Regex.Replace(value, "<think>.*?</think>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase).Trim();
-		foreach (string pattern in ConversationRuntimeTexts.RawVariants("AF_CONV_Runtime_0426"))
-			value = Regex.Replace(value, pattern, "", RegexOptions.IgnoreCase).Trim();
+		foreach (Regex pattern in ConversationRuntimeTexts.RawRegexes("AF_CONV_Runtime_0426", RegexOptions.IgnoreCase))
+			value = pattern.Replace(value, "").Trim();
 		value = StripCourierActionTags(value).Trim();
 		if (!LooksLikeApiError(value))
 		{

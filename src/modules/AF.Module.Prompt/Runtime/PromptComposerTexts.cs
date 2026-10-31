@@ -18,6 +18,23 @@ internal static class PromptComposerTexts
     private static readonly Regex Placeholder = new Regex(@"\{([A-Za-z_]+)\}", RegexOptions.Compiled);
 
     internal static string Get(string key) => Values.Value[key];
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string[]> EditionCache =
+        new System.Collections.Concurrent.ConcurrentDictionary<string, string[]>(StringComparer.Ordinal);
+    /// <summary>Chinese and English fixed-prompt values of one key (distinct, cached; do not mutate). For matching only.</summary>
+    internal static string[] Editions(string key) => EditionCache.GetOrAdd(key, id =>
+    {
+        var editions = new List<string>(2);
+        foreach (var values in BothEditions.Value)
+            if (values != null && values.TryGetValue(id, out string value) && !string.IsNullOrEmpty(value) && !editions.Contains(value))
+                editions.Add(value);
+        return editions.ToArray();
+    });
+    // Both fixed-prompt editions, parsed once when a matcher first needs them.
+    private static readonly Lazy<Dictionary<string, string>[]> BothEditions = new Lazy<Dictionary<string, string>[]>(() => new[]
+    {
+        JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(PromptLanguage.ResolveModuleDataPath("PromptComposerTexts.json", false), Encoding.UTF8)),
+        JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(PromptLanguage.ResolveModuleDataPath("PromptComposerTexts.json", true), Encoding.UTF8))
+    }, true);
     // Kept as a compatibility seam for existing composers. Content edition
     // selects fixed Prompt resources, never the model's response language.
     internal static string ApplyOutputLanguage(string system) => system ?? string.Empty;

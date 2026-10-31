@@ -83,6 +83,14 @@ internal sealed class BilingualTextTable
     /// <summary>The distinct Chinese and English values of an entry, Chinese first. Cached; do not modify.</summary>
     internal string[] Variants(string key) => _variants.Value[key];
 
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<(string Key, System.Text.RegularExpressions.RegexOptions Options), System.Text.RegularExpressions.Regex[]> _regexes =
+        new System.Collections.Concurrent.ConcurrentDictionary<(string, System.Text.RegularExpressions.RegexOptions), System.Text.RegularExpressions.Regex[]>();
+
+    /// <summary>Compiled regexes for every variant of a pattern entry, built once per key and options. Do not modify.</summary>
+    internal System.Text.RegularExpressions.Regex[] Regexes(string key, System.Text.RegularExpressions.RegexOptions options = System.Text.RegularExpressions.RegexOptions.None)
+        => _regexes.GetOrAdd((key, options), entry => Array.ConvertAll(Variants(entry.Key),
+            pattern => new System.Text.RegularExpressions.Regex(pattern, entry.Options | System.Text.RegularExpressions.RegexOptions.Compiled)));
+
     private Dictionary<string, string[]> BuildVariants()
     {
         var result = new Dictionary<string, string[]>(_chinese.Value.Count, StringComparer.Ordinal);

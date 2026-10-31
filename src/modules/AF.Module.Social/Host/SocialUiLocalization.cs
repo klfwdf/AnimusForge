@@ -334,9 +334,9 @@ internal static class SocialUiLocalization
 	private static Match MatchAny(string value, string key)
 	{
 		Match match = Match.Empty;
-		foreach (string pattern in SocialSourceTexts.Variants(key))
+		foreach (Regex pattern in SocialSourceTexts.Regexes(key))
 		{
-			match = Regex.Match(value, pattern);
+			match = pattern.Match(value);
 			if (match.Success)
 				return match;
 		}

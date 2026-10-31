@@ -18,6 +18,8 @@ internal static class SocialSourceTexts
     /// <summary>Chinese source value, for matching text written before the language switch.</summary>
     internal static string Source(string id) => Table.Chinese(id);
     internal static string[] Variants(string id) => Table.Variants(id);
+    /// <summary>Compiled regex per language variant of a pattern entry; cached per key and options.</summary>
+    internal static System.Text.RegularExpressions.Regex[] Regexes(string id, System.Text.RegularExpressions.RegexOptions options = System.Text.RegularExpressions.RegexOptions.None) => Table.Regexes(id, options);
     internal static bool Is(string value, string id) => Table.Is(value, id);
 
     /// <summary>Concatenates sentence fragments in the current language. Chinese joins them unchanged;

@@ -29,6 +29,8 @@ internal static class ConversationRuntimeTexts
     /// <summary>Chinese source value, for matching text written before the language switch.</summary>
     internal static string RawSource(string key) => RawValues.Chinese(key);
     internal static string[] RawVariants(string key) => RawValues.Variants(key);
+    /// <summary>Compiled regex per language variant of a pattern entry; cached per key and options.</summary>
+    internal static System.Text.RegularExpressions.Regex[] RawRegexes(string key, System.Text.RegularExpressions.RegexOptions options = System.Text.RegularExpressions.RegexOptions.None) => RawValues.Regexes(key, options);
     /// <summary>English edition (the Chinese source when the entry is language-invariant).</summary>
     internal static string RawEnglish(string key) => RawValues.English(key);
     internal static bool IsRaw(string value, string key) => RawValues.Is(value, key);
