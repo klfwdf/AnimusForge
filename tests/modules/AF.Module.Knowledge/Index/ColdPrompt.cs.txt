@@ -31,6 +31,7 @@ public partial class KnowledgeLibraryBehavior {
    if(Block){Entered.Set();if(!Continue.Wait(10000))throw new Exception("gate timeout");}
    vector=new[]{1f,0f};return true;
   }
+  public float[][] EmbedDocuments(IReadOnlyList<string> texts)=>texts.Select(t=>TryGetEmbedding(t,out var v)?v:null).ToArray();
   public bool TryScoreBatch(string q,IReadOnlyList<string> docs,out List<float> scores){scores=null;return false;}
   public void Log(string c,string m){}
  }

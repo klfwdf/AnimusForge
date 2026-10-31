@@ -23,6 +23,8 @@ internal static class Program
         public List<string> Logs = new List<string>();
         public int EmbedCalls;
         public bool TryGetEmbedding(string text, out float[] vector) { EmbedCalls++; vector = Embed(text); return vector != null; }
+        public int BatchCalls;
+        public float[][] EmbedDocuments(IReadOnlyList<string> texts) { BatchCalls++; return texts.Select(t => { EmbedCalls++; return Embed(t); }).ToArray(); }
         public bool TryScoreBatch(string query, IReadOnlyList<string> documents, out List<float> scores) { scores = Score(query, documents); return scores != null; }
         public void Log(string channel, string message) => Logs.Add(channel + ":" + message);
     }
@@ -169,6 +171,7 @@ internal static class Program
         var index = new KnowledgeRuleIndex(ports, () => rules);
         index.EnsureOnnxIndex();
         Check(index.OnnxReady && index.OnnxEntryCount == 6 && ports.EmbedCalls == 6, "onnx index embeds every seed once (3 per rule)");
+        Check(ports.BatchCalls == 1, "index build hands all seeds to one batched embedding call");
         int calls = ports.EmbedCalls;
         index.EnsureOnnxIndex();
         Check(ports.EmbedCalls == calls, "ensure is idempotent at same version");

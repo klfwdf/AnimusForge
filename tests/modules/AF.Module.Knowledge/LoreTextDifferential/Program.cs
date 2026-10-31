@@ -113,6 +113,7 @@ namespace AnimusForge
         public int SemanticTopK => 4;
         public float SemanticMinScore => 0.21f;
         public bool TryGetEmbedding(string text, out float[] vector) { vector = null; return false; }
+        public float[][] EmbedDocuments(IReadOnlyList<string> texts) => new float[texts.Count][];
         public bool TryScoreBatch(string query, IReadOnlyList<string> docs, out List<float> scores) { scores = null; return false; }
         public void Log(string category, string message) { }
     }

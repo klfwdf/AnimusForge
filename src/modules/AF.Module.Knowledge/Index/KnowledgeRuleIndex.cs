@@ -13,6 +13,8 @@ internal interface IKnowledgeIndexPorts
 {
 	bool EmbeddingAvailable { get; }
 	bool TryGetEmbedding(string text, out float[] vector);
+	/// <summary>Index-build embedding of many seeds at once; result[i] is null when text i failed.</summary>
+	float[][] EmbedDocuments(IReadOnlyList<string> texts);
 	bool RerankerAvailable { get; }
 	bool TryScoreBatch(string query, IReadOnlyList<string> documents, out List<float> scores);
 	/// <summary>Configured semantic top-K (clamped to 1..12 by the index).</summary>
@@ -758,6 +760,7 @@ internal sealed class KnowledgeRuleIndex
 					rules = detachedRules ?? _rules();
 					if (engineAvailable && rules != null)
 					{
+						var pending = new List<(LoreRule Rule, string Seed, bool IsEvidence)>();
 						for (int i = 0; i < rules.Count; i++)
 						{
 							LoreRule r = rules[i];
@@ -777,12 +780,20 @@ internal sealed class KnowledgeRuleIndex
 									string text = (seed ?? "").Trim();
 									if (!string.IsNullOrWhiteSpace(text))
 									{
-										seedCount++;
-										if (_ports.TryGetEmbedding(text, out var vector) && vector != null && vector.Length != 0)
-										{
-											entries.Add(new OnnxRuleEntry { Rule = r, Seed = text, Vector = vector, IsEvidence = isEvidence });
-										}
+										pending.Add((r, text, isEvidence));
 									}
+								}
+							}
+						}
+						seedCount = pending.Count;
+						if (pending.Count > 0)
+						{
+							float[][] vectors = _ports.EmbedDocuments(pending.Select(p => p.Seed).ToList());
+							for (int i = 0; i < pending.Count && vectors != null && i < vectors.Length; i++)
+							{
+								if (vectors[i] != null && vectors[i].Length != 0)
+								{
+									entries.Add(new OnnxRuleEntry { Rule = pending[i].Rule, Seed = pending[i].Seed, Vector = vectors[i], IsEvidence = pending[i].IsEvidence });
 								}
 							}
 						}

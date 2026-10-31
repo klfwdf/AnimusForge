@@ -498,6 +498,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			vector = null;
 			return engine != null && engine.TryGetEmbedding(text, out vector);
 		}
+		public float[][] EmbedDocuments(IReadOnlyList<string> texts)
+			=> OnnxEmbeddingEngine.Instance?.EmbedDocuments(texts) ?? new float[texts?.Count ?? 0][];
 		public bool RerankerAvailable => OnnxCrossEncoderReranker.Instance?.IsAvailable == true;
 		public bool TryScoreBatch(string query, IReadOnlyList<string> documents, out List<float> scores)
 		{
