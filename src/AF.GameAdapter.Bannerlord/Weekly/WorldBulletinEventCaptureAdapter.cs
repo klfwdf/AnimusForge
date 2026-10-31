@@ -457,7 +457,7 @@ internal void OnWorldBulletinRaidCompleted(BattleSideEnum winnerSide, RaidEventC
 			}
 			string victimId = GetKingdomId(settlement.MapFaction);
 			string sentence = WorldBulletinCampaignMaterialPolicy.RaidSentence(settlement.Name?.ToString(), GetHeroDisplayName(raider), MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(raider.MapFaction, AdapterRecordTexts.Prompt("AF_REC_Bulletin_FactionFallback")));
-			// A realm's raids on one day collapse into a single "等N起" line.
+			// A realm's raids on one day collapse into a single "and N more" line.
 			string owner = settlement.Village?.Bound != null ? GetSettlementDisplayName(settlement.Village.Bound) : "";
 			if (CaptureWorldBulletinEvent("raid", "raid:" + GetSettlementId(settlement) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("raid"), sentence, IsWorldBulletinPlayerHero(raider),
 				"raid:" + GetCurrentGameDayIndexSafe() + ":" + GetKingdomId(raider.MapFaction) + ">" + victimId, WorldBulletinCampaignMaterialPolicy.RaidDetail(owner), BulletinParticipants((raider, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleRaidLeader"))), victimId, GetKingdomId(raider.MapFaction)))
@@ -802,7 +802,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			string sentence = WorldBulletinCampaignMaterialPolicy.DefectionSentence(GetClanDisplayName(clan), fiefs.Count, oldKingdom != null, GetKingdomDisplayName(oldKingdom), GetKingdomDisplayName(newKingdom));
 			// Shares the realm group, so a civil war or rebellion and its defections read as one story.
 			CaptureWorldBulletinEvent("clan_defection", "defection:" + GetClanId(clan) + ":" + GetKingdomId(newKingdom) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("clan_defection"), sentence,
-				clan == Clan.PlayerClan, "realm:" + GetKingdomId(oldKingdom ?? newKingdom), WorldBulletinCampaignMaterialPolicy.DefectionDetail(GetHeroDisplayName(clan.Leader), string.Join("、", fiefs.Take(4)) + (fiefs.Count > 4 ? AdapterRecordTexts.Prompt("AF_REC_Bulletin_FiefEtc") : "")),
+				clan == Clan.PlayerClan, "realm:" + GetKingdomId(oldKingdom ?? newKingdom), WorldBulletinCampaignMaterialPolicy.DefectionDetail(GetHeroDisplayName(clan.Leader), string.Join(AdapterRecordTexts.Prompt("AF_REC_Bulletin_ListSeparator"), fiefs.Take(4)) + (fiefs.Count > 4 ? AdapterRecordTexts.Prompt("AF_REC_Bulletin_FiefEtc") : "")),
 				BulletinParticipants((clan.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleDefectingLeader")), (newKingdom.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleReceivingRuler"))), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
 		}
 		catch (Exception ex)
@@ -857,7 +857,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			string place = CampaignBattleRecordCaptureAdapter.ResolveGatheringPointLabel(gatheringPoint, army.LeaderParty);
 			string kingdomId = GetKingdomId(kingdom);
 			// The player's own muster is not news to the player; it stays a supporting line.
-			string sentence = WorldBulletinCampaignMaterialPolicy.ArmyGatheredSentence(GetKingdomDisplayName(kingdom), IsWorldBulletinRuler(leader) ? AdapterRecordTexts.Prompt("AF_REC_Bulletin_TitleRuler") : AdapterRecordTexts.Prompt("AF_REC_Bulletin_TitleHeir"), GetHeroDisplayName(leader), troops, place == AdapterRecordTexts.Prompt("AF_REC_Bulletin_GatheringPointFallback") || place == AdapterRecordTexts.Raw("AF_REC_Battle_0245") ? "" : place);
+			string sentence = WorldBulletinCampaignMaterialPolicy.ArmyGatheredSentence(GetKingdomDisplayName(kingdom), IsWorldBulletinRuler(leader) ? AdapterRecordTexts.Prompt("AF_REC_Bulletin_TitleRuler") : AdapterRecordTexts.Prompt("AF_REC_Bulletin_TitleHeir"), GetHeroDisplayName(leader), troops, place == AdapterRecordTexts.Prompt("AF_REC_Bulletin_GatheringPointFallback") || AdapterRecordTexts.IsRaw(place, "AF_REC_Battle_0245") ? "" : place);
 			CaptureWorldBulletinEvent("army_gathered", "army:" + GetHeroId(leader) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("army_gathered"), sentence,
 				false, "army:" + kingdomId + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.ArmyGatheredDetail(army.Parties.Count),
 				BulletinParticipants((leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleArmyCommander"))), kingdomId);

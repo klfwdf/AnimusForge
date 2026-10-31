@@ -143,6 +143,14 @@ public static void AppendCanonicalDocumentEvents(
     }
 }
 
+// Title line glue after the weekly heading; follows the language the entry is written in.
+private static string WeeklyTitleLine(string title)
+{
+    if (PromptLanguage.IsChinese)
+        return string.IsNullOrWhiteSpace(title) ? "\uFF1A\n" : "\u300A" + title + "\u300B\uFF1A\n";
+    return string.IsNullOrWhiteSpace(title) ? ":\n" : " \"" + title + "\":\n";
+}
+
 public static void AppendPublishedWorldWeeklyArtifact(
         WorldDiplomacyStorage storage,
         HashSet<string> sourceKeys,
@@ -175,7 +183,7 @@ public static void AppendPublishedWorldWeeklyArtifact(
     }
     bool correction = !string.IsNullOrWhiteSpace(previousHash);
     string heading = correction ? DiplomacyCompatibilityTexts.Get("Render_Prefix_WeeklyCorrection") : DiplomacyCompatibilityTexts.Get("Render_Prefix_Weekly");
-    string text = heading + (string.IsNullOrWhiteSpace(publishedTitle) ? "：\n" : "《" + publishedTitle + "》：\n") + publishedBody;
+    string text = heading + WeeklyTitleLine(publishedTitle) + publishedBody;
     if (AppendCanonicalHistoryEntry(storage, sourceKeys, compressionTriggerTokens, ensureInitialized, newId, formatCampaignDate, estimateTokens, invalidateRenderCache, "world_weekly", sourceKey, sourceId,
         createdDay, createdDate, "", Enumerable.Empty<string>(), "", "", text, verified: true))
     {
@@ -321,7 +329,7 @@ internal static bool AppendPublishedPolicyArtifact(
         return true;
     }
     StringBuilder text = new StringBuilder();
-    text.Append(DiplomacyCompatibilityTexts.Get("Render_PolicyOpening")).Append(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(policy.PolicyName, DiplomacyMiscPromptTexts.Get("History_UnnamedPolicy", "Unnamed policy"))).Append("》");
+    text.Append(DiplomacyCompatibilityTexts.Get("Render_PolicyOpening")).Append(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(policy.PolicyName, DiplomacyMiscPromptTexts.Get("History_UnnamedPolicy", "Unnamed policy"))).Append('\u300B');
     if (!string.IsNullOrWhiteSpace(policy.KingdomName) || !string.IsNullOrWhiteSpace(policy.KingdomId))
     {
         text.Append(DiplomacyCompatibilityTexts.Get("Render_IssuerLabel")).Append(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(policy.KingdomName, policy.KingdomId));

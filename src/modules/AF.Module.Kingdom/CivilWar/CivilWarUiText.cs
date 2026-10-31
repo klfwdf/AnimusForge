@@ -78,16 +78,16 @@ internal static class CivilWarUiText
         });
         fb = fb switch
         {
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_royal_execution"), StringComparison.Ordinal) => "Royal execution",
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_fief_denied"), StringComparison.Ordinal) => "Fief denied",
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_policy_imposed"), StringComparison.Ordinal) => "Policy imposed",
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_war_imposed"), StringComparison.Ordinal) => "War imposed",
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_peace_imposed"), StringComparison.Ordinal) => "Peace imposed",
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_lands_raided"), StringComparison.Ordinal) => "Lands raided",
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_fief_lost"), StringComparison.Ordinal) => "Fief lost",
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_broken_pledge"), StringComparison.Ordinal) => "Royal pledge broken",
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_demand_refused"), StringComparison.Ordinal) => "Demand refused",
-            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_royal_suppression"), StringComparison.Ordinal) => "Royal suppression",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_royal_execution") => "Royal execution",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_fief_denied") => "Fief denied",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_policy_imposed") => "Policy imposed",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_war_imposed") => "War imposed",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_peace_imposed") => "Peace imposed",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_lands_raided") => "Lands raided",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_fief_lost") => "Fief lost",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_broken_pledge") => "Royal pledge broken",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_demand_refused") => "Demand refused",
+            var _ when KingdomCivilWarTexts.IsRaw(fb, "CW_Catalog_Source_royal_suppression") => "Royal suppression",
             _ => fb
         };
         return T("AF_KINGDOM_CW_Source_" + (sourceId ?? "unknown"), fb);

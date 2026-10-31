@@ -246,7 +246,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		SynchronizeArmyObjectiveForCommand(leaderParty, command);
 		if (shouldCharge)
 		{
-			LogFact(state, leader, GetActorName(state, leader, leaderParty) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0006") + influenceCost + WorldMapSourceTexts.Get("raw_literals.wm_lit_0007") + (settlement.IsVillage ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0008") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0009")) + GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0010") + clan.Influence.ToString("0") + "）。");
+			LogFact(state, leader, PromptComposerTexts.Format("memory_worldmap_ArmyMaintained", ("ACTOR", GetActorName(state, leader, leaderParty)), ("COST", influenceCost), ("ACTION", PromptComposerTexts.Get(settlement.IsVillage ? "memory_worldmap_value_raiding" : "memory_worldmap_value_besieging")), ("SETTLEMENT", GetSettlementName(settlement)), ("INFLUENCE", clan.Influence.ToString("0"))));
 			Log("ordered_army_survival_renewed leader=" + (leader.StringId ?? "") + " party=" + (leaderParty.StringId ?? "") + " settlement=" + (settlement.StringId ?? "") + " reason=" + reason + " cost=" + influenceCost + " influence=" + clan.Influence.ToString("0"));
 		}
 		return true;
@@ -1113,7 +1113,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			StartCurrentCommand(hero, party, state);
 		}
 		string convertedText = BuildGoToSettlementConversionSummary(hostileSettlementConvertedCount, besiegedSettlementConvertedCount);
-		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(hero) + (startNew ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0011") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0012")) + safeCommands.Count + WorldMapSourceTexts.Get("raw_literals.wm_lit_0013") + convertedText + "。";
+		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format(startNew ? "memory_worldmap_QueueCreated" : "memory_worldmap_QueueAppended", ("ACTOR", GetHeroName(hero)), ("COUNT", safeCommands.Count), ("CONVERSION", convertedText));
 		message = WorldMapUiText.QueueAccepted(GetHeroName(hero), safeCommands.Count, startNew);
 		if (!string.IsNullOrWhiteSpace(rejectedMergeReason))
 		{
@@ -1186,7 +1186,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			StartCurrentCommand(null, party, state);
 		}
 		string convertedText = BuildGoToSettlementConversionSummary(hostileSettlementConvertedCount, besiegedSettlementConvertedCount);
-		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + actorName + (startNew ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0011") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0012")) + safeCommands.Count + WorldMapSourceTexts.Get("raw_literals.wm_lit_0013") + convertedText + "。";
+		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format(startNew ? "memory_worldmap_QueueCreated" : "memory_worldmap_QueueAppended", ("ACTOR", actorName), ("COUNT", safeCommands.Count), ("CONVERSION", convertedText));
 		message = WorldMapUiText.QueueAccepted(actorName, safeCommands.Count, startNew);
 		return true;
 	}
@@ -1256,7 +1256,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		StartCurrentCommand(hero, party, state);
 		string conversionFact = BuildGoToSettlementConversionSummary(hostileGoToConvertedCount, besiegedGoToConvertedCount);
 		string conversionMessage = WorldMapUiText.ConversionMessage(hostileGoToConvertedCount, besiegedGoToConvertedCount);
-		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0014") + safeCommands.Count + WorldMapSourceTexts.Get("raw_literals.wm_lit_0015") + conversionFact + "。";
+		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format("memory_worldmap_QueueAccepted", ("ACTOR", GetHeroName(hero)), ("COUNT", safeCommands.Count), ("CONVERSION", conversionFact));
 		message = WorldMapUiText.AcceptedQueue(GetHeroName(hero), safeCommands.Count, conversionMessage);
 		return true;
 	}
@@ -1290,7 +1290,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			SetPendingSafeExit(state, PendingSafeExitStop, reason);
 			RequestFollowSiegeRefresh();
-			fact = alreadyPendingStop ? "" : WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0016");
+			fact = alreadyPendingStop ? "" : WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format("memory_worldmap_StopPendingBattle", ("ACTOR", GetHeroName(hero)));
 			Log("stop deferred for active follow siege hero=" + hero.StringId + " reason=" + reason + " removedPendingCreate=" + removedPendingCreate + " removedPendingGovernor=" + removedPendingGovernorExpedition);
 			return;
 		}
@@ -1307,11 +1307,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			if (TryGetGovernorExpeditionForHero(hero.StringId, out GovernorExpeditionRecord returningRecord)
 				&& string.Equals(returningRecord.Phase, GovernorExpeditionPhaseReturning, StringComparison.OrdinalIgnoreCase))
 			{
-				fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0017");
+				fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format("memory_worldmap_StopGovernorReturning", ("ACTOR", GetHeroName(hero)));
 			}
 			else if (returningRecord != null && string.Equals(returningRecord.Phase, GovernorExpeditionPhaseCleanup, StringComparison.OrdinalIgnoreCase))
 			{
-				fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0018");
+				fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format("memory_worldmap_StopGovernorCleanup", ("ACTOR", GetHeroName(hero)));
 			}
 			Log("stop governor expedition hero=" + hero.StringId + " reason=" + reason);
 			return;
@@ -1322,11 +1322,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (removedPendingGovernorExpedition && state == null)
 		{
-			fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0019");
+			fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format("memory_worldmap_StopGovernorRequestCancelled", ("ACTOR", GetHeroName(hero)));
 			Log("stop pending governor expedition hero=" + hero.StringId + " reason=" + reason);
 			return;
 		}
-		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0020");
+		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format("memory_worldmap_StopNative", ("ACTOR", GetHeroName(hero)));
 		Log("stop hero=" + hero.StringId + " reason=" + reason + " removedPendingCreate=" + removedPendingCreate + " removedPendingGovernor=" + removedPendingGovernorExpedition);
 	}
 
@@ -1359,7 +1359,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				SetPendingSafeExit(state, PendingSafeExitStop, reason);
 				RequestFollowSiegeRefresh();
 				string pendingActorName = GetActorName(state, null, party);
-				fact = alreadyPendingStop ? "" : WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + pendingActorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0016");
+				fact = alreadyPendingStop ? "" : WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format("memory_worldmap_StopPendingBattle", ("ACTOR", pendingActorName));
 				Log("stop deferred for active follow siege party_actor=" + actorKey + " reason=" + reason);
 				return;
 			}
@@ -1374,7 +1374,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 		}
 		string actorName = GetActorName(state, null, party);
-		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0020");
+		fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format("memory_worldmap_StopNative", ("ACTOR", actorName));
 		Log("stop party_actor=" + actorKey + " reason=" + reason);
 	}
 
@@ -1424,16 +1424,16 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.ArrivalDay = NowDay();
 			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
-			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0021") + GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0022"));
+			LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_DisplayArrivedSettlementHolding", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement))));
 		}
 		if (state.ArrivalDay >= 0.0 && holdUntilDay > 0.0 && NowDay() >= holdUntilDay)
 		{
-			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0023") + GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0024"));
+			LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_HoldUntilCompleted", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement))));
 			AdvanceCommand(hero, party, state, "go_hold_until_done");
 		}
 		else if (state.ArrivalDay >= 0.0 && holdUntilDay <= 0.0 && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
 		{
-			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0023") + GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0025") + Math.Max(1, command.Days) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0026"));
+			LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_HoldDaysCompleted", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement)), ("DAYS", Math.Max(1, command.Days))));
 			AdvanceCommand(hero, party, state, "go_done");
 		}
 	}
@@ -1496,11 +1496,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.Stage = CommandStage.Active.ToString();
 			state.LastIssuedActionKey = "patrol_active:" + settlement.StringId;
 			ReleasePartyAi(party);
-			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0021") + GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0027"));
+			LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_DisplayArrivedSettlementPatrolling", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement))));
 		}
 		if (state.ArrivalDay >= 0.0 && !isEngaging && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
 		{
-			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0023") + GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0028") + Math.Max(1, command.Days) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0026"));
+			LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_PatrolCompleted", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement)), ("DAYS", Math.Max(1, command.Days))));
 			AdvanceCommand(hero, party, state, "patrol_done");
 		}
 	}
@@ -1572,7 +1572,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.ArrivalDay = NowDay();
 			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
-			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0029") + targetName + "。");
+			LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_DisplayFollowStartedUnderway", ("ACTOR", GetActorName(state, hero, party)), ("TARGET", targetName)));
 		}
 	}
 
@@ -1642,7 +1642,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.TimeoutDay = -1.0;
 		if (becameActive)
 		{
-			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0030") + targetName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0031") + GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0032"));
+			LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_DisplayFollowJoinedSiege", ("ACTOR", GetActorName(state, hero, party)), ("TARGET", targetName), ("SETTLEMENT", GetSettlementName(settlement))));
 			NotifyCommandStatus(state, activeActionKey, WorldMapUiText.Result("AF_WM_StatusFollowSiegeActive", "{ACTOR} has joined the siege of {SETTLEMENT}.", ("ACTOR", GetActorName(state, hero, party)), ("SETTLEMENT", GetSettlementName(settlement))), CommandMessageTone.Success);
 			Log("follow_siege_active actor=" + GetActorLogId(state, hero, party) + " settlement=" + settlementId + " owned=" + state.FollowSiegeJoinedByCommand);
 		}
@@ -1898,7 +1898,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		string targetName = IsKind(command, CommandKind.FollowParty)
 			? GetPartyName(ResolveMobilePartyById(command.TargetId))
 			: GetHeroName(ResolveHeroById(command.TargetId));
-		return GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0033") + targetName + Math.Max(1, command.Days) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0026");
+		return PromptComposerTexts.Format("memory_worldmap_FollowCompleted", ("ACTOR", GetActorName(state, hero, party)), ("TARGET", targetName), ("DAYS", Math.Max(1, command.Days)));
 	}
 
 	private static void SynchronizeArmyObjectiveForFollowSiege(MobileParty party, Settlement settlement)
@@ -2079,7 +2079,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (state.EngageCommitted && IsSettlementAttackComplete(party, settlement))
 		{
-			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, settlement.IsVillage ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0043") : (GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0044")), "attack_settlement_done");
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, settlement.IsVillage ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0043") : PromptComposerTexts.Format("memory_worldmap_SettlementCaptured", ("SETTLEMENT", GetSettlementName(settlement))), "attack_settlement_done");
 			return;
 		}
 		if (!state.EngageCommitted && IsSettlementAttackUnavailableBeforeCommit(settlement))
@@ -2163,7 +2163,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (IsSettlementAttackComplete(party, settlement))
 		{
-			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, settlement.IsVillage ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0043") : (GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0044")), "attack_settlement_done");
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, settlement.IsVillage ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0043") : PromptComposerTexts.Format("memory_worldmap_SettlementCaptured", ("SETTLEMENT", GetSettlementName(settlement))), "attack_settlement_done");
 			return;
 		}
 		if (IsPartyCommittedToSettlementAttack(party, settlement))
@@ -2199,14 +2199,14 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			SetPartyAiActionForRaidingSettlement(party, settlement);
 			state.LastIssuedActionKey = "raid:" + settlement.StringId;
-			LogFact(state, actorHero, GetActorName(state, actorHero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0046") + GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0047"));
+			LogFact(state, actorHero, PromptComposerTexts.Format("memory_worldmap_DisplayRaidStartedUnderway", ("ACTOR", GetActorName(state, actorHero, party)), ("SETTLEMENT", GetSettlementName(settlement))));
 			Log("settlement_attack_commit_raid actor=" + GetActorLogId(state, actorHero, party) + " settlement=" + settlement.StringId + " mode=" + mode);
 		}
 		else
 		{
 			SetPartyAiAction.GetActionForBesiegingSettlement(party, settlement, MobileParty.NavigationType.Default, isFromPort: false);
 			state.LastIssuedActionKey = "besiege:" + settlement.StringId;
-			LogFact(state, actorHero, GetActorName(state, actorHero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0048") + GetSettlementName(settlement) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0047"));
+			LogFact(state, actorHero, PromptComposerTexts.Format("memory_worldmap_DisplaySiegeStartedUnderway", ("ACTOR", GetActorName(state, actorHero, party)), ("SETTLEMENT", GetSettlementName(settlement))));
 			Log("settlement_attack_commit_siege actor=" + GetActorLogId(state, actorHero, party) + " settlement=" + settlement.StringId + " mode=" + mode);
 		}
 		LockPartyAi(party);
@@ -2314,7 +2314,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.LastIssuedActionKey = actionKey;
 		if (actionChanged)
 		{
-			LogFact(state, actorHero, GetHeroName(targetHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0049") + GetSettlementName(shelter) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0050") + GetActorName(state, actorHero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0051"));
+			LogFact(state, actorHero, PromptComposerTexts.Format("memory_worldmap_DisplayWaitingHeroShelter", ("HERO", GetHeroName(targetHero)), ("SHELTER", GetSettlementName(shelter)), ("ACTOR", GetActorName(state, actorHero, party))));
 		}
 		Log("attack_shelter_wait_refresh actor=" + GetActorLogId(state, actorHero, party) + " target=" + targetHero.StringId + " settlement=" + shelter.StringId + " reason=" + reason + " " + DescribePartyAi(party));
 	}
@@ -2370,7 +2370,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.LastIssuedActionKey = actionKey;
 		if (actionChanged)
 		{
-			LogFact(state, actorHero, GetPartyName(targetParty) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0052") + GetSettlementName(shelter) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0050") + GetActorName(state, actorHero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0053"));
+			LogFact(state, actorHero, PromptComposerTexts.Format("memory_worldmap_DisplayWaitingPartyShelter", ("PARTY", GetPartyName(targetParty)), ("SHELTER", GetSettlementName(shelter)), ("ACTOR", GetActorName(state, actorHero, party))));
 		}
 		Log("party_attack_shelter_wait_refresh actor=" + GetActorLogId(state, actorHero, party) + " targetParty=" + (targetParty?.StringId ?? "") + " settlement=" + shelter.StringId + " reason=" + reason + " " + DescribePartyAi(party));
 	}
@@ -2567,9 +2567,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 			}
 			RegisterForeignClanGuests(memberHeroIdentities);
-			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0055") + movedMembers + WorldMapSourceTexts.Get("raw_literals.wm_lit_0056") + movedPrisoners + WorldMapSourceTexts.Get("raw_literals.wm_lit_0057")
-				+ (foreignClanGuestMerge ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0058") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0059"))
-				+ (foreignClanGuestMerge ? (" " + GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0060")) : ""));
+			LogFact(hero, foreignClanGuestMerge
+				? PromptComposerTexts.Format("memory_worldmap_GuestMergeCompleted", ("HERO", GetHeroName(hero)), ("TROOPS", movedMembers), ("PRISONERS", movedPrisoners), ("GUEST", GetHeroName(hero)))
+				: PromptComposerTexts.Format("memory_worldmap_MergeCompleted", ("HERO", GetHeroName(hero)), ("TROOPS", movedMembers), ("PRISONERS", movedPrisoners)));
 		}
 		catch (Exception ex)
 		{
@@ -2602,7 +2602,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();
 		state.LastIssuedActionKey = "engage:" + targetHero.StringId;
-		LogFact(state, actorHero, GetActorName(state, actorHero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0061") + GetHeroName(targetHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0062"));
+		LogFact(state, actorHero, PromptComposerTexts.Format("memory_worldmap_DisplayAttackHeroStartedUnderway", ("ACTOR", GetActorName(state, actorHero, party)), ("TARGET", GetHeroName(targetHero))));
 		Log("attack_commit actor=" + GetActorLogId(state, actorHero, party) + " target=" + targetHero.StringId + " mode=" + mode);
 	}
 
@@ -2621,7 +2621,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();
 		state.LastIssuedActionKey = "engage_party:" + targetParty.StringId;
-		LogFact(state, actorHero, GetActorName(state, actorHero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0061") + GetPartyName(targetParty) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0063"));
+		LogFact(state, actorHero, PromptComposerTexts.Format("memory_worldmap_DisplayAttackPartyStartedUnderway", ("ACTOR", GetActorName(state, actorHero, party)), ("TARGET", GetPartyName(targetParty))));
 		Log("party_attack_commit actor=" + GetActorLogId(state, actorHero, party) + " targetParty=" + targetParty.StringId + " mode=" + mode);
 	}
 
@@ -2844,7 +2844,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		return TryApplyPlayerClanRebellionForWorldMapAttack(actorHero, party, oldKingdom, WorldMapSourceTexts.Get("raw_literals.wm_lit_0065") + GetHeroName(targetHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0066"), out reason);
+		return TryApplyPlayerClanRebellionForWorldMapAttack(actorHero, party, oldKingdom, "memory_worldmap_value_attacking", GetHeroName(targetHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0066"), out reason);
 	}
 
 	private bool TryPreparePlayerClanRebellionForPartyAttack(Hero actorHero, MobileParty party, MobileParty targetParty, bool apply, out string reason)
@@ -2871,7 +2871,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		return TryApplyPlayerClanRebellionForWorldMapAttack(actorHero, party, oldKingdom, WorldMapSourceTexts.Get("raw_literals.wm_lit_0065") + GetPartyName(targetParty), out reason);
+		return TryApplyPlayerClanRebellionForWorldMapAttack(actorHero, party, oldKingdom, "memory_worldmap_value_attacking", GetPartyName(targetParty), out reason);
 	}
 
 	private bool TryPreparePlayerClanRebellionForSettlementAttack(Hero actorHero, MobileParty party, Settlement settlement, bool apply, out string reason)
@@ -2897,8 +2897,8 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		string actionText = settlement?.IsVillage == true ? (WorldMapSourceTexts.Get("raw_literals.wm_lit_0008") + GetSettlementName(settlement)) : (WorldMapSourceTexts.Get("raw_literals.wm_lit_0009") + GetSettlementName(settlement));
-		return TryApplyPlayerClanRebellionForWorldMapAttack(actorHero, party, oldKingdom, actionText, out reason);
+		string actionKey = settlement?.IsVillage == true ? "memory_worldmap_value_raiding" : "memory_worldmap_value_besieging";
+		return TryApplyPlayerClanRebellionForWorldMapAttack(actorHero, party, oldKingdom, actionKey, GetSettlementName(settlement), out reason);
 	}
 
 	private static bool CanPlayerClanRebelForWorldMapAttack(Hero actorHero, MobileParty party, Kingdom oldKingdom, IFaction targetFaction, out string reason)
@@ -2958,7 +2958,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private bool TryApplyPlayerClanRebellionForWorldMapAttack(Hero actorHero, MobileParty party, Kingdom oldKingdom, string actionText, out string reason)
+	private bool TryApplyPlayerClanRebellionForWorldMapAttack(Hero actorHero, MobileParty party, Kingdom oldKingdom, string actionKey, string targetText, out string reason)
 	{
 		reason = "";
 		Clan playerClan = Clan.PlayerClan;
@@ -2978,13 +2978,13 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				Log("player_clan_rebellion_attack_failed_verify actor=" + (actorHero?.StringId ?? "") + " oldKingdom=" + SafeFactionId(oldKingdom) + " left=" + leftOldKingdom + " atWar=" + atWar);
 				return false;
 			}
-			LogFact(actorHero, WorldMapSourceTexts.Get("raw_literals.wm_lit_0080") + oldKingdomName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0081") + GetHeroName(actorHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0082") + (actionText ?? WorldMapSourceTexts.Get("raw_literals.wm_lit_0083")) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0084"));
+			LogFact(actorHero, PromptComposerTexts.Format("memory_worldmap_RebellionStarted", ("KINGDOM", oldKingdomName), ("HERO", GetHeroName(actorHero)), ("ACTION", PromptComposerTexts.Get(actionKey ?? "memory_worldmap_value_attacking")), ("TARGET", targetText ?? "")));
 			Log("player_clan_rebellion_attack_commit actor=" + (actorHero?.StringId ?? "") + " oldKingdom=" + SafeFactionId(oldKingdom) + " mode=" + AttackModeForce + " autoRebellion=True " + DescribePartyAi(party));
 			return true;
 		}
 		catch (Exception ex)
 		{
-			reason = WorldMapSourceTexts.Get("raw_literals.wm_lit_0085") + ex.Message;
+			reason = PromptComposerTexts.Format("memory_worldmap_RebellionException", ("DETAIL", ex.Message));
 			Log("player_clan_rebellion_attack_exception actor=" + (actorHero?.StringId ?? "") + " oldKingdom=" + SafeFactionId(oldKingdom) + " error=" + ex);
 			return false;
 		}
@@ -3199,7 +3199,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				_queues.Remove(queueKey);
 			}
 		}
-		LogFact(state, hero, GetActorName(state, hero, null) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0086") + GetQueueEndReasonText(reason) + "）。");
+		LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_DisplayQueueEnded", ("ACTOR", GetActorName(state, hero, null)), ("REASON", GetQueueEndReasonText(reason))));
 	}
 
 	private bool TryCompleteCurrentAttackResult(PartyCommandQueueState state, CommandResultOutcome outcome, string detail, string reason)
@@ -3231,7 +3231,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (IsKind(command, CommandKind.ClearHideout))
 		{
 			string result = outcome == CommandResultOutcome.Success ? WorldMapSourceTexts.Get("attack_detail_outcomes.success") : outcome == CommandResultOutcome.Failure ? WorldMapSourceTexts.Get("attack_detail_outcomes.failure") : WorldMapSourceTexts.Get("attack_detail_outcomes.incomplete");
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0087") + targetName + result + "：" + safeDetail;
+			return PromptComposerTexts.Format("memory_worldmap_DisplayHideoutOutcome", ("ACTOR", actorName), ("TARGET", targetName), ("OUTCOME", result), ("DETAIL", safeDetail));
 		}
 		if (IsSettlementTarget(command))
 		{
@@ -3240,33 +3240,33 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				if (outcome == CommandResultOutcome.Success)
 				{
-					return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0088") + targetName + "：" + safeDetail;
+					return PromptComposerTexts.Format("memory_worldmap_DisplayRaidSuccess", ("ACTOR", actorName), ("TARGET", targetName), ("DETAIL", safeDetail));
 				}
 				if (outcome == CommandResultOutcome.Failure)
 				{
-					return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0008") + targetName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0089") + safeDetail;
+					return PromptComposerTexts.Format("memory_worldmap_DisplayRaidFailed", ("ACTOR", actorName), ("TARGET", targetName), ("DETAIL", safeDetail));
 				}
-				return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0090") + targetName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0091") + safeDetail;
+				return PromptComposerTexts.Format("memory_worldmap_DisplayRaidIncomplete", ("ACTOR", actorName), ("TARGET", targetName), ("DETAIL", safeDetail));
 			}
 			if (outcome == CommandResultOutcome.Success)
 			{
-				return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0009") + targetName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0092") + safeDetail;
+				return PromptComposerTexts.Format("memory_worldmap_DisplaySiegeSuccess", ("ACTOR", actorName), ("TARGET", targetName), ("DETAIL", safeDetail));
 			}
 			if (outcome == CommandResultOutcome.Failure)
 			{
-				return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0009") + targetName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0089") + safeDetail;
+				return PromptComposerTexts.Format("memory_worldmap_DisplaySiegeFailed", ("ACTOR", actorName), ("TARGET", targetName), ("DETAIL", safeDetail));
 			}
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0090") + targetName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0093") + safeDetail;
+			return PromptComposerTexts.Format("memory_worldmap_DisplaySiegeIncomplete", ("ACTOR", actorName), ("TARGET", targetName), ("DETAIL", safeDetail));
 		}
 		if (outcome == CommandResultOutcome.Success)
 		{
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0090") + targetName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0094") + safeDetail;
+			return PromptComposerTexts.Format("memory_worldmap_DisplayAttackSuccess", ("ACTOR", actorName), ("TARGET", targetName), ("DETAIL", safeDetail));
 		}
 		if (outcome == CommandResultOutcome.Failure)
 		{
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0090") + targetName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0095") + safeDetail;
+			return PromptComposerTexts.Format("memory_worldmap_DisplayAttackFailed", ("ACTOR", actorName), ("TARGET", targetName), ("DETAIL", safeDetail));
 		}
-		return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0090") + targetName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0096") + safeDetail;
+		return PromptComposerTexts.Format("memory_worldmap_DisplayAttackIncomplete", ("ACTOR", actorName), ("TARGET", targetName), ("DETAIL", safeDetail));
 	}
 
 	private static string NormalizeResultDetail(string detail, CommandResultOutcome outcome)
@@ -3276,11 +3276,18 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			text = outcome == CommandResultOutcome.Success ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0097") : (outcome == CommandResultOutcome.Failure ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0098") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0099"));
 		}
-		if (!text.EndsWith("。", StringComparison.Ordinal) && !text.EndsWith("！", StringComparison.Ordinal) && !text.EndsWith("？", StringComparison.Ordinal))
+		if (!EndsWithSentenceTerminator(text))
 		{
-			text += "。";
+			text += PromptLanguage.IsChinese ? PromptComposerTexts.RawSource("memory_worldmap_period_source") : ".";
 		}
 		return text;
+	}
+
+	private static bool EndsWithSentenceTerminator(string text)
+	{
+		if (string.IsNullOrEmpty(text)) return false;
+		char last = text[text.Length - 1];
+		return last == '\u3002' || last == '\uff01' || last == '\uff1f' || last == '.' || last == '!' || last == '?';
 	}
 
 	private static string BuildAttackTimeoutDetail(PartyCommandEntry command, PartyCommandQueueState state)
@@ -3293,7 +3300,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				Settlement shelter = ResolveTargetHeroShelterSettlement(targetHero, targetHero?.PartyBelongedTo);
 				if (shelter != null)
 				{
-					return GetHeroName(targetHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0100") + GetSettlementName(shelter) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0101");
+					return PromptComposerTexts.Format("memory_worldmap_TimeoutTargetInShelter", ("TARGET", GetHeroName(targetHero)), ("SHELTER", GetSettlementName(shelter)));
 				}
 			}
 			if (command != null && IsKind(command, CommandKind.AttackParty) && !string.IsNullOrWhiteSpace(state?.LastIssuedActionKey) && state.LastIssuedActionKey.StartsWith("wait_party_shelter:", StringComparison.OrdinalIgnoreCase))
@@ -3302,7 +3309,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				Settlement shelter = targetParty?.CurrentSettlement;
 				if (shelter != null)
 				{
-					return GetPartyName(targetParty) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0100") + GetSettlementName(shelter) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0101");
+					return PromptComposerTexts.Format("memory_worldmap_TimeoutTargetInShelter", ("TARGET", GetPartyName(targetParty)), ("SHELTER", GetSettlementName(shelter)));
 				}
 			}
 		}
@@ -3317,29 +3324,29 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		string actorName = GetActorName(state, hero, null);
 		if (command == null)
 		{
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0103");
+			return PromptComposerTexts.Format("memory_worldmap_TimeoutCommand", ("ACTOR", actorName));
 		}
 		if (IsKind(command, CommandKind.GoToSettlement))
 		{
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0104") + GetSettlementName(ResolveSettlementById(command.TargetId)) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0105");
+			return PromptComposerTexts.Format("memory_worldmap_TimeoutTravel", ("ACTOR", actorName), ("SETTLEMENT", GetSettlementName(ResolveSettlementById(command.TargetId))));
 		}
 		if (IsKind(command, CommandKind.PatrolSettlement))
 		{
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0104") + GetSettlementName(ResolveSettlementById(command.TargetId)) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0106");
+			return PromptComposerTexts.Format("memory_worldmap_TimeoutPatrol", ("ACTOR", actorName), ("SETTLEMENT", GetSettlementName(ResolveSettlementById(command.TargetId))));
 		}
 		if (IsKind(command, CommandKind.FollowHero))
 		{
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0107") + GetHeroName(ResolveHeroById(command.TargetId)) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0108");
+			return PromptComposerTexts.Format("memory_worldmap_TimeoutFollow", ("ACTOR", actorName), ("TARGET", GetHeroName(ResolveHeroById(command.TargetId))));
 		}
 		if (IsKind(command, CommandKind.FollowParty))
 		{
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0107") + GetPartyName(ResolveMobilePartyById(command.TargetId)) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0108");
+			return PromptComposerTexts.Format("memory_worldmap_TimeoutFollow", ("ACTOR", actorName), ("TARGET", GetPartyName(ResolveMobilePartyById(command.TargetId))));
 		}
 		if (IsKind(command, CommandKind.MergeToPlayer))
 		{
-			return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0109");
+			return PromptComposerTexts.Format("memory_worldmap_TimeoutMerge", ("ACTOR", actorName));
 		}
-		return actorName + WorldMapSourceTexts.Get("raw_literals.wm_lit_0103");
+		return PromptComposerTexts.Format("memory_worldmap_TimeoutCommand", ("ACTOR", actorName));
 	}
 
 	private static string BuildGoToSettlementStartMessage(PartyCommandQueueState state, Hero hero, MobileParty party, Settlement settlement, PartyCommandEntry command)
@@ -3489,7 +3496,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			int actorLosses = Math.Max(0, actorEventSide.TroopCasualties);
 			int targetLosses = Math.Max(0, targetEventSide.TroopCasualties);
-			return WorldMapSourceTexts.Get("raw_literals.wm_lit_0110") + actorLosses + WorldMapSourceTexts.Get("raw_literals.wm_lit_0111") + targetLosses + WorldMapSourceTexts.Get("raw_literals.wm_lit_0112");
+			return PromptComposerTexts.Format("memory_worldmap_BattleLosses", ("DETAIL", ""), ("ACTOR", actorLosses), ("TARGET", targetLosses));
 		}
 		catch
 		{
@@ -3949,16 +3956,15 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private static string BuildGoToSettlementConversionSummary(int hostileSettlementConvertedCount, int besiegedSettlementConvertedCount)
 	{
-		List<string> parts = new List<string>(2);
+		if (besiegedSettlementConvertedCount > 0 && hostileSettlementConvertedCount > 0)
+		{
+			return PromptComposerTexts.Format("memory_worldmap_ConversionBoth", ("BESIEGED", besiegedSettlementConvertedCount), ("HOSTILE", hostileSettlementConvertedCount));
+		}
 		if (besiegedSettlementConvertedCount > 0)
 		{
-			parts.Add(besiegedSettlementConvertedCount + WorldMapSourceTexts.Get("raw_literals.wm_lit_0113"));
+			return PromptComposerTexts.Format("memory_worldmap_ConversionBesieged", ("BESIEGED", besiegedSettlementConvertedCount));
 		}
-		if (hostileSettlementConvertedCount > 0)
-		{
-			parts.Add(hostileSettlementConvertedCount + WorldMapSourceTexts.Get("raw_literals.wm_lit_0114"));
-		}
-		return parts.Count > 0 ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0115") + string.Join("，", parts) : "";
+		return hostileSettlementConvertedCount > 0 ? PromptComposerTexts.Format("memory_worldmap_ConversionHostile", ("HOSTILE", hostileSettlementConvertedCount)) : "";
 	}
 
 	private static string NormalizeTargetType(PartyCommandEntry command)
@@ -5083,14 +5089,14 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
-			string reason = string.Join("、", reasons.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
+			string reason = string.Join(PromptLanguage.IsChinese ? PromptComposerTexts.RawSource("memory_worldmap_preempt_separator") : ", ", reasons.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
 			if (string.IsNullOrWhiteSpace(reason))
 			{
 				reason = WorldMapSourceTexts.Get("preempt_reasons.current_native_action");
 			}
 			string key = "preempt:" + phase + ":" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "");
 			NotifyCommandStatus(state, key, WorldMapUiText.Result("AF_WM_StatusPreemptChanged", "{ACTOR} abandoned {REASON} and switched to the new world-map command.", ("ACTOR", GetActorName(state, hero, party)), ("REASON", LocalizePreemptReason(reason))), CommandMessageTone.Progress);
-			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0116") + reason + WorldMapSourceTexts.Get("raw_literals.wm_lit_0117"));
+			LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_DisplayAbandonedForNewCommand", ("ACTOR", GetActorName(state, hero, party)), ("REASON", reason)));
 			Log("preempt_activity actor=" + GetActorLogId(state, hero, party) + " party=" + (party.StringId ?? "") + " reason=" + reason + " command=" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "") + " phase=" + (phase ?? "") + " " + DescribePartyAi(party));
 			return true;
 		}
@@ -5230,9 +5236,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static string LocalizePreemptReason(string reason)
 	{
 		string normalizedReason = (reason ?? "").Trim();
-		if (normalizedReason == WorldMapSourceTexts.Get("preempt_reasons.current_siege")) return WorldMapUiText.Result("AF_WM_PreemptSiege", "the current siege");
-		if (normalizedReason == WorldMapSourceTexts.Get("preempt_reasons.current_strategic_action")) return WorldMapUiText.Result("AF_WM_PreemptStrategicAction", "the current strategic action");
-		if (normalizedReason == WorldMapSourceTexts.Get("preempt_reasons.current_native_action")) return WorldMapUiText.Result("AF_WM_PreemptNativeAction", "the current native action");
+		if (WorldMapSourceTexts.Is(normalizedReason, "preempt_reasons.current_siege")) return WorldMapUiText.Result("AF_WM_PreemptSiege", "the current siege");
+		if (WorldMapSourceTexts.Is(normalizedReason, "preempt_reasons.current_strategic_action")) return WorldMapUiText.Result("AF_WM_PreemptStrategicAction", "the current strategic action");
+		if (WorldMapSourceTexts.Is(normalizedReason, "preempt_reasons.current_native_action")) return WorldMapUiText.Result("AF_WM_PreemptNativeAction", "the current native action");
 		return reason;
 	}
 
@@ -5552,7 +5558,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		LogFact(hero, GetHeroName(hero) + (settlement.IsVillage ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0118") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0119")) + GetSettlementName(settlement) + (settlement.IsVillage ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0120") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0121")));
+		LogFact(hero, PromptComposerTexts.Format(settlement.IsVillage ? "memory_worldmap_RaidCompleted" : "memory_worldmap_SettlementAttackEnded", ("HERO", GetHeroName(hero)), ("SETTLEMENT", GetSettlementName(settlement))));
 	}
 
 	private static void AbortCurrentCommandIfNeeded(MobileParty party, PartyCommandQueueState state)
@@ -6095,13 +6101,13 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			RegisterGovernorExpedition(hero, createdParty, origin, hero.Clan);
 			if (!TryAppendQueue(hero, safeCommands, out string fact, out string queueMessage, out _))
 			{
-				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0125") + queueMessage);
+				throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_DisplayFollowUpCommandsFailed", ("DETAIL", queueMessage)));
 			}
 			if (!string.IsNullOrWhiteSpace(fact))
 			{
 				MyBehavior.AppendExternalDialogueHistory(hero, null, null, fact);
 			}
-			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0126") + GetSettlementName(origin) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0127") + totalToMove + WorldMapSourceTexts.Get("raw_literals.wm_lit_0128"));
+			LogFact(hero, PromptComposerTexts.Format("memory_worldmap_DisplayGovernorExpeditionDeparted", ("HERO", GetHeroName(hero)), ("SETTLEMENT", GetSettlementName(origin)), ("COUNT", totalToMove)));
 			message = WorldMapUiText.GovernorStarted(GetHeroName(hero), GetSettlementName(origin), totalToMove);
 			return true;
 		}
@@ -6210,7 +6216,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			RosterElementState targetBefore = GetRosterElementState(expedition.MemberRoster, plan.Character);
 			if (sourceBefore.Number - sourceBefore.WoundedNumber < plan.Count || sourceBefore.Xp < plan.Xp)
 			{
-				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0135") + (plan.Character.StringId ?? "unknown"));
+				throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_GovernorTroopChanged", ("TROOP", (plan.Character.StringId ?? "unknown"))));
 			}
 			RosterElementTransferRecord transfer = new RosterElementTransferRecord
 			{
@@ -6233,7 +6239,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				if (sourceAfterCounts.Number != sourceBefore.Number - plan.Count
 					|| sourceAfterCounts.WoundedNumber != sourceBefore.WoundedNumber)
 				{
-					throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0136") + (plan.Character.StringId ?? "unknown"));
+					throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_GovernorTroopDeduction", ("TROOP", (plan.Character.StringId ?? "unknown"))));
 				}
 				step = "remove_source_xp";
 				RosterElementState sourceAfter = sourceAfterCounts;
@@ -6244,7 +6250,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				int actualXpRemoved = sourceBefore.Xp - sourceAfter.Xp;
 				if (actualXpRemoved < plan.Xp || actualXpRemoved < 0)
 				{
-					throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0137") + (plan.Character.StringId ?? "unknown"));
+					throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_GovernorXpDeduction", ("TROOP", (plan.Character.StringId ?? "unknown"))));
 				}
 				if (actualXpRemoved != plan.Xp)
 				{
@@ -6257,7 +6263,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					|| targetAfterCounts.WoundedNumber != targetBefore.WoundedNumber
 					|| targetAfterCounts.Xp != targetBefore.Xp)
 				{
-					throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0138") + (plan.Character.StringId ?? "unknown"));
+					throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_GovernorTroopWrite", ("TROOP", (plan.Character.StringId ?? "unknown"))));
 				}
 				step = "add_target_xp";
 				RosterElementState targetAfter = actualXpRemoved == 0
@@ -6267,7 +6273,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					|| sourceAfter.WoundedNumber + targetAfter.WoundedNumber != sourceBefore.WoundedNumber + targetBefore.WoundedNumber
 					|| sourceAfter.Xp + targetAfter.Xp != sourceBefore.Xp + targetBefore.Xp)
 				{
-					throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0139") + (plan.Character.StringId ?? "unknown"));
+					throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_GovernorConservation", ("TROOP", (plan.Character.StringId ?? "unknown"))));
 				}
 			}
 			catch (Exception ex)
@@ -6281,7 +6287,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					Log("governor troop immediate rollback failed troop=" + (plan.Character.StringId ?? "unknown") + " step=" + step + " error=" + rollbackEx);
 				}
-				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0140") + (plan.Character.StringId ?? "unknown") + " step=" + step, ex);
+				throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_GovernorTransferFailure", ("TROOP", (plan.Character.StringId ?? "unknown")), ("STEP", step)), ex);
 			}
 		}
 	}
@@ -6292,7 +6298,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		long expectedLong = (long)before.Xp + xpDelta;
 		if (roster == null || character == null || before.Number <= 0 || expectedLong < 0 || expectedLong > int.MaxValue)
 		{
-			throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0141") + (character?.StringId ?? "unknown"));
+			throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_TroopXpInputs", ("TROOP", (character?.StringId ?? "unknown"))));
 		}
 		int expected = (int)expectedLong;
 		Exception callbackError = null;
@@ -6311,7 +6317,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			|| (allowDownwardClamp && after.Xp >= 0 && after.Xp < expected);
 		if (!accepted)
 		{
-			throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0142") + (character.StringId ?? "unknown") + " context=" + (context ?? ""), callbackError);
+			throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_TroopXpWrite", ("TROOP", (character.StringId ?? "unknown")), ("CONTEXT", (context ?? ""))), callbackError);
 		}
 		if (callbackError != null)
 		{
@@ -6340,7 +6346,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			: ApplyRosterXpDeltaObserved(roster, character, xpDelta, allowDownwardClamp: false, context: "governor_rollback");
 		if (restored.Number != snapshot.Number || restored.WoundedNumber != snapshot.WoundedNumber || restored.Xp != snapshot.Xp)
 		{
-			throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0144") + (character.StringId ?? "unknown"));
+			throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_GovernorRollbackTroopFailed", ("TROOP", (character.StringId ?? "unknown"))));
 		}
 	}
 
@@ -6439,7 +6445,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					|| targetAfter.WoundedNumber != transfer.TargetBefore.WoundedNumber
 					|| targetAfter.Xp != transfer.TargetBefore.Xp)
 				{
-					throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0147") + (transfer.Character.StringId ?? "unknown"));
+					throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_GarrisonRollbackFailed", ("TROOP", (transfer.Character.StringId ?? "unknown"))));
 				}
 			}
 			if (!RosterMatchesSnapshot(garrison.MemberRoster, originalSnapshot))
@@ -6761,9 +6767,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			string detail = string.Equals(reason, "no_safe_family_settlement", StringComparison.OrdinalIgnoreCase)
 				|| string.Equals(reason, "return_target_lost", StringComparison.OrdinalIgnoreCase)
-				? WorldMapSourceTexts.Get("raw_literals.wm_lit_0149")
-				: WorldMapSourceTexts.Get("raw_literals.wm_lit_0150");
-			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0151") + detail + WorldMapSourceTexts.Get("raw_literals.wm_lit_0152"));
+				? "memory_worldmap_GovernorNoReturnTarget"
+				: "memory_worldmap_GovernorReturnUnsafe";
+			LogFact(hero, PromptComposerTexts.Format(detail, ("HERO", GetHeroName(hero))));
 		}
 	}
 
@@ -6940,9 +6946,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			}
 			bool restored = TryRestoreGovernorAfterReturn(hero, target, record);
-			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0154") + GetSettlementName(target) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0155")
-				+ (returnedShipCount > 0 ? (returnedShipCount + WorldMapSourceTexts.Get("raw_literals.wm_lit_0156")) : "")
-				+ (restored ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0157") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0158")));
+			LogFact(hero, PromptComposerTexts.Format("memory_worldmap_GovernorReturned", ("HERO", GetHeroName(hero)), ("SETTLEMENT", GetSettlementName(target)), ("SHIPS", returnedShipCount > 0 ? PromptComposerTexts.Format("memory_worldmap_value_ships_returned", ("COUNT", returnedShipCount)) : ""), ("RESTORATION", PromptComposerTexts.Get(restored ? "memory_worldmap_value_governor_restored" : "memory_worldmap_value_governor_retained"))));
 		}
 		catch (Exception ex)
 		{
@@ -7037,7 +7041,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			if (memberHero == null || memberHero.Clan != identity.Clan
 				|| memberHero.CompanionOf != identity.CompanionOf || memberHero.Occupation != identity.Occupation)
 			{
-				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0159") + (memberHero?.StringId ?? "unknown"));
+				throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_MergeChangedHeroIdentity", ("HERO", (memberHero?.StringId ?? "unknown"))));
 			}
 		}
 	}
@@ -7170,11 +7174,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				|| sourceAfter.WoundedNumber != sourceBefore.WoundedNumber - element.WoundedNumber
 				|| targetAfter.WoundedNumber != targetBefore.WoundedNumber + element.WoundedNumber)
 			{
-				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0160") + (element.Character.StringId ?? "unknown"));
+				throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_MergeCountConservationFailed", ("TROOP", (element.Character.StringId ?? "unknown"))));
 			}
 			if (transferredXp < 0 || transferredXp > element.Xp)
 			{
-				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0161") + (element.Character.StringId ?? "unknown"));
+				throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_MergeXpBoundaryFailed", ("TROOP", (element.Character.StringId ?? "unknown"))));
 			}
 			if (transferredXp != element.Xp)
 			{
@@ -7192,7 +7196,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				Log("roster element immediate rollback failed troop=" + (element.Character.StringId ?? "unknown") + " step=" + step + " error=" + rollbackEx);
 			}
-			throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0162") + (element.Character.StringId ?? "unknown") + " step=" + step, ex);
+			throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_MergeTransferFailed", ("TROOP", (element.Character.StringId ?? "unknown")), ("STEP", step)), ex);
 		}
 	}
 
@@ -7317,12 +7321,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				if (memberHero.PartyBelongedTo != sourceParty)
 				{
-					throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0164") + (memberHero.StringId ?? "unknown"));
+					throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_MergeHeroPartyChanged", ("HERO", (memberHero.StringId ?? "unknown"))));
 				}
 				AddHeroToPartyAction.Apply(memberHero, targetParty, showNotification: false);
 				if (memberHero.PartyBelongedTo != targetParty)
 				{
-					throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0165") + (memberHero.StringId ?? "unknown"));
+					throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_MergeHeroNotMerged", ("HERO", (memberHero.StringId ?? "unknown"))));
 				}
 				movedHeroes.Add(memberHero);
 			}
@@ -7409,7 +7413,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			if (!RosterElementMatches(sourceAfter, transfer.SourceBefore, transfer.IsPrisonerRoster)
 				|| !RosterElementMatches(targetAfter, transfer.TargetBefore, transfer.IsPrisonerRoster))
 			{
-				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0169") + (transfer.Character.StringId ?? "unknown"));
+				throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_MergeRollbackTroopFailed", ("TROOP", (transfer.Character.StringId ?? "unknown"))));
 			}
 		}
 	}
@@ -7454,7 +7458,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			if (GetRosterElementState(sourceParty.PrisonRoster, desired.Character).Number != desired.Number)
 			{
-				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0170") + (desired.Character.StringId ?? "unknown"));
+				throw new InvalidOperationException(PromptComposerTexts.Format("memory_worldmap_MergeRollbackPrisonerFailed", ("HERO", (desired.Character.StringId ?? "unknown"))));
 			}
 		}
 	}
@@ -8105,6 +8109,22 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return new Color(0.4f, 1f, 0.4f);
 	}
 
+	private static readonly Lazy<string[]> FailureToneNeedles = new Lazy<string[]>(() => BuildToneNeedles(new[] { "attack_detail_outcomes.failure", "raw_literals.wm_lit_0180", "raw_literals.wm_lit_0181", "raw_literals.wm_lit_0182", "raw_literals.wm_lit_0183", "raw_literals.wm_lit_0184", "raw_literals.wm_lit_0185", "raw_literals.wm_lit_0186", "raw_literals.wm_lit_0187", "raw_literals.wm_lit_0188" },
+		"failed", "cannot", "invalid", "incomplete", "error"));
+	private static readonly Lazy<string[]> ProgressToneNeedles = new Lazy<string[]>(() => BuildToneNeedles(new[] { "raw_literals.wm_lit_0189", "raw_literals.wm_lit_0190", "raw_literals.wm_lit_0191", "raw_literals.wm_lit_0192", "raw_literals.wm_lit_0193", "raw_literals.wm_lit_0194", "raw_literals.wm_lit_0195", "raw_literals.wm_lit_0196", "raw_literals.wm_lit_0197" },
+		"heading", "tracking", "patrolling", "underway", "waiting"));
+
+	private static string[] BuildToneNeedles(string[] ids, params string[] extra)
+	{
+		var needles = new List<string>(ids.Length * 2 + extra.Length);
+		foreach (string id in ids)
+			foreach (string variant in WorldMapSourceTexts.Variants(id))
+				if (!needles.Contains(variant)) needles.Add(variant);
+		foreach (string value in extra)
+			if (!needles.Contains(value)) needles.Add(value);
+		return needles.ToArray();
+	}
+
 	private static CommandMessageTone InferCommandMessageTone(string message)
 	{
 		string text = (message ?? "").Trim();
@@ -8112,11 +8132,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return CommandMessageTone.Neutral;
 		}
-		if (ContainsAny(text, WorldMapSourceTexts.Get("attack_detail_outcomes.failure"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0180"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0181"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0182"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0183"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0184"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0185"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0186"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0187"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0188"), "failed", "cannot", "invalid", "incomplete", "error"))
+		if (ContainsAny(text, FailureToneNeedles.Value))
 		{
 			return CommandMessageTone.Failure;
 		}
-		if (ContainsAny(text, WorldMapSourceTexts.Get("raw_literals.wm_lit_0189"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0190"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0191"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0192"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0193"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0194"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0195"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0196"), WorldMapSourceTexts.Get("raw_literals.wm_lit_0197"), "heading", "tracking", "patrolling", "underway", "waiting"))
+		if (ContainsAny(text, ProgressToneNeedles.Value))
 		{
 			return CommandMessageTone.Progress;
 		}
@@ -8203,9 +8223,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (match.Success)
 		{
 			string outcomeStr = match.Groups["outcome"].Value;
-			string localizedOutcome = outcomeStr == WorldMapSourceTexts.Get("attack_detail_outcomes.success")
+			string localizedOutcome = WorldMapSourceTexts.Is(outcomeStr, "attack_detail_outcomes.success")
 				? WorldMapUiText.Result("AF_WM_DisplayOutcomeSucceeded", "succeeded")
-				: outcomeStr == WorldMapSourceTexts.Get("attack_detail_outcomes.failure")
+				: WorldMapSourceTexts.Is(outcomeStr, "attack_detail_outcomes.failure")
 					? WorldMapUiText.Result("AF_WM_DisplayOutcomeFailed", "failed")
 					: WorldMapUiText.Result("AF_WM_DisplayOutcomeIncomplete", "incomplete");
 			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
@@ -8389,64 +8409,64 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					("ACTOR", casualty.Groups["actor"].Value), ("TARGET", casualty.Groups["target"].Value));
 		}
 		if (TryProjectAdditionalWorldMapMessage(d, out string additionalDetail)) return additionalDetail;
-		if (d.EndsWith("。")) d = d.Substring(0, d.Length - 1).Trim();
+		if (d.EndsWith(PromptComposerTexts.RawSource("memory_worldmap_period_source"), StringComparison.Ordinal)) d = d.Substring(0, d.Length - 1).Trim();
 
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.no_player_clan"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.no_player_clan"))
 			return WorldMapUiText.Result("AF_WM_RebellionNoPlayerClan", "Player clan does not exist; cannot execute rebellion attack.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.only_companion"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.only_companion"))
 			return WorldMapUiText.Result("AF_WM_RebellionOnlyPlayerCompanion", "Only independent companion parties of the player clan can execute rebellion attacks on the player's behalf.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.no_controllable_party"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.no_controllable_party"))
 			return WorldMapUiText.Result("AF_WM_RebellionNoControllableParty", "The executor does not currently lead a controllable independent companion party; cannot execute rebellion attack.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.not_player_clan_party"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.not_player_clan_party"))
 			return WorldMapUiText.Result("AF_WM_RebellionNotPlayerClanParty", "The executing party does not belong to the player clan; cannot trigger player clan rebellion.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.not_in_kingdom"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.not_in_kingdom"))
 			return WorldMapUiText.Result("AF_WM_RebellionPlayerNotInKingdom", "The player clan does not belong to any kingdom; kingdom rebellion is unnecessary and cannot be executed.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.target_not_same_kingdom"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.target_not_same_kingdom"))
 			return WorldMapUiText.Result("AF_WM_RebellionTargetNotSameKingdom", "Target does not belong to the player's current kingdom and cannot trigger a rebellion attack.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.kingdom_eliminated"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.kingdom_eliminated"))
 			return WorldMapUiText.Result("AF_WM_RebellionKingdomEliminated", "The player's kingdom has been eliminated; cannot execute kingdom rebellion.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.mercenary_cannot_rebel"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.mercenary_cannot_rebel"))
 			return WorldMapUiText.Result("AF_WM_RebellionMercenaryCannotRebel", "The player clan is currently under mercenary service and cannot execute kingdom rebellion.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.ruling_clan_cannot_rebel"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.ruling_clan_cannot_rebel"))
 			return WorldMapUiText.Result("AF_WM_RebellionRulingClanCannotRebel", "The player clan is the ruling clan and cannot execute rebellion against its own kingdom.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.target_is_player_clan_hero"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.target_is_player_clan_hero"))
 			return WorldMapUiText.Result("AF_WM_RebellionTargetIsPlayerClanHero", "Target belongs to the player clan; cannot attack own clan forces through rebellion.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.target_is_player_clan_party"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.target_is_player_clan_party"))
 			return WorldMapUiText.Result("AF_WM_RebellionTargetIsPlayerClanParty", "Target party belongs to the player clan; cannot attack own clan forces through rebellion.");
-		if (d == WorldMapSourceTexts.Get("rebellion_reasons.target_is_player_settlement"))
+		if (WorldMapSourceTexts.Is(d, "rebellion_reasons.target_is_player_settlement"))
 			return WorldMapUiText.Result("AF_WM_RebellionTargetIsPlayerSettlement", "Target settlement belongs to the player clan; cannot attack own fiefs through rebellion.");
 
-		if (d == WorldMapSourceTexts.Get("attack_reasons.same_party_hero"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.same_party_hero"))
 			return WorldMapUiText.Result("AF_WM_AttackTargetSameParty", "Target and executor are in the same party; cannot initiate attack.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.same_party"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.same_party"))
 			return WorldMapUiText.Result("AF_WM_AttackPartySameParty", "Target party and executor party are the same party; cannot initiate attack.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.target_defeated_dead_captured"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.target_defeated_dead_captured"))
 			return WorldMapUiText.Result("AF_WM_AttackTargetDefeatedDeadOrCaptured", "Target was defeated, killed, or captured.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.target_dead_captured_invalid"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.target_dead_captured_invalid"))
 			return WorldMapUiText.Result("AF_WM_AttackTargetDeadCapturedOrInvalid", "Target is dead, captured, or invalid.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.target_party_defeated_disbanded"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.target_party_defeated_disbanded"))
 			return WorldMapUiText.Result("AF_WM_AttackTargetPartyDefeatedOrDisbanded", "Target party was defeated or disbanded.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.target_no_attackable_party"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.target_no_attackable_party"))
 			return WorldMapUiText.Result("AF_WM_AttackTargetNoAttackableParty", "Target has no attackable party.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.target_party_invalid_missing"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.target_party_invalid_missing"))
 			return WorldMapUiText.Result("AF_WM_AttackTargetPartyInvalidOrMissing", "Target party is invalid or no longer on the world map.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.besieger_no_longer_hostile"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.besieger_no_longer_hostile"))
 			return WorldMapUiText.Result("AF_WM_AttackBesiegerNoLongerHostile", "The besieging party is no longer hostile; attack discontinued.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.settlement_invalid"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.settlement_invalid"))
 			return WorldMapUiText.Result("AF_WM_AttackSettlementInvalid", "Target settlement is invalid or not an attackable target.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.target_unavailable"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.target_unavailable"))
 			return WorldMapUiText.Result("AF_WM_AttackTargetUnavailable", "Target is no longer attackable.");
-		if (d == WorldMapSourceTexts.Get("attack_reasons.actor_lost_party_captured"))
+		if (WorldMapSourceTexts.Is(d, "attack_reasons.actor_lost_party_captured"))
 			return WorldMapUiText.Result("AF_WM_AttackActorLostPartyOrCaptured", "Executor lost controllable party or was captured; command failed.");
-		if (d == WorldMapSourceTexts.Get("attack_detail_fragments.target_achieved"))
+		if (WorldMapSourceTexts.Is(d, "attack_detail_fragments.target_achieved"))
 			return WorldMapUiText.Result("AF_WM_ResultTargetAchieved", "Target objective was achieved.");
-		if (d == WorldMapSourceTexts.Get("attack_detail_fragments.native_failed"))
+		if (WorldMapSourceTexts.Is(d, "attack_detail_fragments.native_failed"))
 			return WorldMapUiText.Result("AF_WM_ResultNativeFailed", "Native event determined failure.");
-		if (d == WorldMapSourceTexts.Get("attack_detail_fragments.no_clear_outcome"))
+		if (WorldMapSourceTexts.Is(d, "attack_detail_fragments.no_clear_outcome"))
 			return WorldMapUiText.Result("AF_WM_ResultNoClearOutcome", "No definitive outcome was reached.");
-		if (d == WorldMapSourceTexts.Get("raw_literals.wm_lit_0229"))
+		if (WorldMapSourceTexts.Is(d, "raw_literals.wm_lit_0229"))
 			return WorldMapUiText.Result("AF_WM_TimeoutTrackExpired", "Time limit expired before tracking target could engage in battle.");
-		if (d == WorldMapSourceTexts.Get("raw_literals.wm_lit_0230"))
+		if (WorldMapSourceTexts.Is(d, "raw_literals.wm_lit_0230"))
 			return WorldMapUiText.Result("AF_WM_TimeoutAttackExpired", "Time limit expired before attack could engage in battle.");
 
 		Match match = Regex.Match(d, WorldMapSourceTexts.Get("raw_literals.wm_lit_0231"));
@@ -8463,7 +8483,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				("SETTLEMENT", match.Groups["settlement"].Value));
 		}
 
-		if (d == WorldMapSourceTexts.Get("attack_detail_fragments.village_raided"))
+		if (WorldMapSourceTexts.Is(d, "attack_detail_fragments.village_raided"))
 			return WorldMapUiText.Result("AF_WM_ResultVillageRaided", "The village was raided.");
 
 		return detail;
@@ -8472,24 +8492,24 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static string LocalizeQueueEndReason(string reason)
 	{
 		string r = (reason ?? "").Trim();
-		if (r == WorldMapSourceTexts.Get("queue_end_reasons.all_done")) return WorldMapUiText.Result("AF_WM_ReasonQueueDone", "all commands completed");
-		if (r == WorldMapSourceTexts.Get("queue_end_reasons.merge_invalid")) return WorldMapUiText.Result("AF_WM_ReasonMergeInvalid", "merge conditions no longer met");
-		if (r == WorldMapSourceTexts.Get("queue_end_reasons.merge_transfer_failed")) return WorldMapUiText.Result("AF_WM_ReasonMergeTransferFailed", "troop transfer failed");
-		if (r == WorldMapSourceTexts.Get("queue_end_reasons.merge_destroy_failed")) return WorldMapUiText.Result("AF_WM_ReasonMergeDestroyFailed", "temporary party could not be safely disbanded");
-		if (r == WorldMapSourceTexts.Get("queue_end_reasons.timeout")) return WorldMapUiText.Result("AF_WM_ReasonTimeout", "time limit expired");
-		if (r == WorldMapSourceTexts.Get("queue_end_reasons.actor_invalid")) return WorldMapUiText.Result("AF_WM_ReasonActorInvalid", "executor invalid");
-		if (r == WorldMapSourceTexts.Get("queue_end_reasons.target_invalid")) return WorldMapUiText.Result("AF_WM_ReasonTargetInvalid", "target invalid or inexecutable");
-		if (r == WorldMapSourceTexts.Get("queue_end_reasons.command_invalid")) return WorldMapUiText.Result("AF_WM_ReasonCommandInvalid", "command invalid");
+		if (WorldMapSourceTexts.Is(r, "queue_end_reasons.all_done")) return WorldMapUiText.Result("AF_WM_ReasonQueueDone", "all commands completed");
+		if (WorldMapSourceTexts.Is(r, "queue_end_reasons.merge_invalid")) return WorldMapUiText.Result("AF_WM_ReasonMergeInvalid", "merge conditions no longer met");
+		if (WorldMapSourceTexts.Is(r, "queue_end_reasons.merge_transfer_failed")) return WorldMapUiText.Result("AF_WM_ReasonMergeTransferFailed", "troop transfer failed");
+		if (WorldMapSourceTexts.Is(r, "queue_end_reasons.merge_destroy_failed")) return WorldMapUiText.Result("AF_WM_ReasonMergeDestroyFailed", "temporary party could not be safely disbanded");
+		if (WorldMapSourceTexts.Is(r, "queue_end_reasons.timeout")) return WorldMapUiText.Result("AF_WM_ReasonTimeout", "time limit expired");
+		if (WorldMapSourceTexts.Is(r, "queue_end_reasons.actor_invalid")) return WorldMapUiText.Result("AF_WM_ReasonActorInvalid", "executor invalid");
+		if (WorldMapSourceTexts.Is(r, "queue_end_reasons.target_invalid")) return WorldMapUiText.Result("AF_WM_ReasonTargetInvalid", "target invalid or inexecutable");
+		if (WorldMapSourceTexts.Is(r, "queue_end_reasons.command_invalid")) return WorldMapUiText.Result("AF_WM_ReasonCommandInvalid", "command invalid");
 		return reason;
 	}
 
 	private static string LocalizeQueueEndTail(string tail)
 	{
 		string t = (tail ?? "").Trim();
-		if (t.EndsWith("。")) t = t.Substring(0, t.Length - 1).Trim();
-		if (t == WorldMapSourceTexts.Get("queue_end_tails.governor_returning")) return WorldMapUiText.Result("AF_WM_TailGovernorReturning", "governor expedition returning to return garrison troops.");
-		if (t == WorldMapSourceTexts.Get("queue_end_tails.governor_ended")) return WorldMapUiText.Result("AF_WM_TailGovernorEnded", "governor expedition ended or returned to native AI.");
-		if (t == WorldMapSourceTexts.Get("queue_end_tails.native_resumed")) return WorldMapUiText.Result("AF_WM_TailNativeResumed", "resuming native behavior.");
+		if (t.EndsWith(PromptComposerTexts.RawSource("memory_worldmap_period_source"), StringComparison.Ordinal)) t = t.Substring(0, t.Length - 1).Trim();
+		if (WorldMapSourceTexts.Is(t, "queue_end_tails.governor_returning")) return WorldMapUiText.Result("AF_WM_TailGovernorReturning", "governor expedition returning to return garrison troops.");
+		if (WorldMapSourceTexts.Is(t, "queue_end_tails.governor_ended")) return WorldMapUiText.Result("AF_WM_TailGovernorEnded", "governor expedition ended or returned to native AI.");
+		if (WorldMapSourceTexts.Is(t, "queue_end_tails.native_resumed")) return WorldMapUiText.Result("AF_WM_TailNativeResumed", "resuming native behavior.");
 		return tail;
 	}
 

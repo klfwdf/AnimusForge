@@ -31,21 +31,21 @@ internal static class MemorySystemFactProjection
     }
     private static readonly Template[] Templates =
     {
-        new Template("memory_fact_intimacy_player_pregnant", PromptComposerTexts.Raw("Template_intimacy_player_pregnant").Split('|')),
-        new Template("memory_fact_intimacy_npc_pregnant", PromptComposerTexts.Raw("Template_intimacy_npc_pregnant").Split('|')),
-        new Template("memory_fact_intimacy", PromptComposerTexts.Raw("Template_intimacy").Split('|')),
-        new Template("memory_fact_captivity_released", PromptComposerTexts.Raw("Template_captivity_released")),
-        new Template("memory_fact_captivity_opening", PromptComposerTexts.Raw("Template_captivity_opening")),
-        new Template("memory_fact_first_known", PromptComposerTexts.Raw("Template_first_known").Split('|')),
-        new Template("memory_fact_first_appearance", PromptComposerTexts.Raw("Template_first_appearance").Split('|')),
-        new Template("memory_fact_first_unknown", PromptComposerTexts.Raw("Template_first_unknown").Split('|')),
-        new Template("memory_fact_revisit_today", PromptComposerTexts.Raw("Template_revisit_today").Split('|')),
-        new Template("memory_fact_revisit_days", PromptComposerTexts.Raw("Template_revisit_days").Split('|')),
-        new Template("memory_fact_execution_last", PromptComposerTexts.Raw("Template_execution_last").Split('|')),
-        new Template("memory_fact_execution_speech", PromptComposerTexts.Raw("Template_execution_speech").Split('|')),
-        new Template("memory_policy_agenda_submission", PromptComposerTexts.Raw("policy_agenda_source_parts").Split('|')),
-        new Template("memory_diplomacy_oral_delayed", PromptComposerTexts.Raw("memory_diplomacy_oral_delayed_source")),
-        new Template("memory_diplomacy_oral_withdrawal", PromptComposerTexts.Raw("memory_diplomacy_oral_withdrawal_source")),
+        new Template("memory_fact_intimacy_player_pregnant", PromptComposerTexts.RawSource("Template_intimacy_player_pregnant").Split('|')),
+        new Template("memory_fact_intimacy_npc_pregnant", PromptComposerTexts.RawSource("Template_intimacy_npc_pregnant").Split('|')),
+        new Template("memory_fact_intimacy", PromptComposerTexts.RawSource("Template_intimacy").Split('|')),
+        new Template("memory_fact_captivity_released", PromptComposerTexts.RawSource("Template_captivity_released")),
+        new Template("memory_fact_captivity_opening", PromptComposerTexts.RawSource("Template_captivity_opening")),
+        new Template("memory_fact_first_known", PromptComposerTexts.RawSource("Template_first_known").Split('|')),
+        new Template("memory_fact_first_appearance", PromptComposerTexts.RawSource("Template_first_appearance").Split('|')),
+        new Template("memory_fact_first_unknown", PromptComposerTexts.RawSource("Template_first_unknown").Split('|')),
+        new Template("memory_fact_revisit_today", PromptComposerTexts.RawSource("Template_revisit_today").Split('|')),
+        new Template("memory_fact_revisit_days", PromptComposerTexts.RawSource("Template_revisit_days").Split('|')),
+        new Template("memory_fact_execution_last", PromptComposerTexts.RawSource("Template_execution_last").Split('|')),
+        new Template("memory_fact_execution_speech", PromptComposerTexts.RawSource("Template_execution_speech").Split('|')),
+        new Template("memory_policy_agenda_submission", PromptComposerTexts.RawSource("policy_agenda_source_parts").Split('|')),
+        new Template("memory_diplomacy_oral_delayed", PromptComposerTexts.RawSource("memory_diplomacy_oral_delayed_source")),
+        new Template("memory_diplomacy_oral_withdrawal", PromptComposerTexts.RawSource("memory_diplomacy_oral_withdrawal_source")),
     };
 
     private static readonly string[] CourierKeys =
@@ -92,7 +92,7 @@ internal static class MemorySystemFactProjection
         var templates = new Template[CourierKeys.Length];
         for (int index = 0; index < CourierKeys.Length; index++)
             templates[index] = new Template(CourierKeys[index], System.Text.RegularExpressions.Regex.Split(
-                PromptComposerTexts.Raw(CourierKeys[index] + "_source"), @"\{[0-9]+\}"));
+                PromptComposerTexts.RawSource(CourierKeys[index] + "_source"), @"\{[0-9]+\}"));
         // Match structured quantity/value variants before a generic dynamic name can absorb their suffix.
         Array.Sort(templates, (left, right) =>
         {
@@ -118,14 +118,14 @@ internal static class MemorySystemFactProjection
             if (kindIndex >= 0)
             {
                 for (int kind = 588; kind <= 591; kind++)
-                    if (values[kindIndex] == PromptComposerTexts.Raw("memory_courier_raw_" + kind))
+                    if (values[kindIndex] == PromptComposerTexts.RawSource("memory_courier_raw_" + kind))
                         values[kindIndex] = PromptComposerTexts.Get("memory_courier_value_" + kind);
             }
             if (template.Key == "memory_courier_player_destroyed_before_delivery"
                 || template.Key == "memory_courier_player_destroyed_after_delivery"
                 || template.Key == "memory_courier_npc_destroyed")
             {
-                if (values[1] == PromptComposerTexts.Raw("memory_courier_unknown_faction_source"))
+                if (values[1] == PromptComposerTexts.RawSource("memory_courier_unknown_faction_source"))
                     values[1] = PromptComposerTexts.Get("memory_courier_value_unknown_faction");
             }
             fact = new PromptFactRecord(template.Key, values, body);
@@ -134,18 +134,18 @@ internal static class MemorySystemFactProjection
         return false;
     }
 
-    private static readonly Lazy<string[]> RevisitMarkers = new Lazy<string[]>(() => PromptComposerTexts.Raw("RevisitMarkers_Cn").Split(','));
+    private static readonly Lazy<string[]> RevisitMarkers = new Lazy<string[]>(() => PromptComposerTexts.RawSource("RevisitMarkers_Cn").Split(','));
     private static readonly Lazy<string[]> FactPrefixes = new Lazy<string[]>(() => new[]
     {
-        PromptComposerTexts.Raw("afef_npc_action"), PromptComposerTexts.Raw("afef_player_action"),
-        PromptComposerTexts.Raw("afef_npc_action_bracket"), PromptComposerTexts.Raw("afef_player_action_bracket"),
+        PromptComposerTexts.RawSource("afef_npc_action"), PromptComposerTexts.RawSource("afef_player_action"),
+        PromptComposerTexts.RawSource("afef_npc_action_bracket"), PromptComposerTexts.RawSource("afef_player_action_bracket"),
         "[AFEF NPC_ACTION]", "[AFEF PLAYER_ACTION]"
     });
     private static readonly Lazy<string[]> FactScopes = new Lazy<string[]>(() => new[]
     {
-        PromptComposerTexts.Raw("main_history_raw_019"),
-        PromptComposerTexts.Raw("history_section_scope_current"),
-        PromptComposerTexts.Raw("history_section_scope_historical"), "[Current action]", "[Past action]"
+        PromptComposerTexts.RawSource("main_history_raw_019"),
+        PromptComposerTexts.RawSource("history_section_scope_current"),
+        PromptComposerTexts.RawSource("history_section_scope_historical"), "[Current action]", "[Past action]"
     });
 
     // Compressed records retain their original scope and captured date/scene/speaker.
@@ -170,7 +170,7 @@ internal static class MemorySystemFactProjection
         foreach (string scope in FactScopes.Value)
             if (text.StartsWith(scope, StringComparison.Ordinal)) { scopeLength = scope.Length; break; }
         string scopePrefix = scopeLength == 0 ? "" : text.Substring(0, scopeLength);
-        if (scopePrefix == PromptComposerTexts.Raw("history_section_scope_current") || scopePrefix == "[Current action]")
+        if (scopePrefix == PromptComposerTexts.RawSource("history_section_scope_current") || scopePrefix == "[Current action]")
             scopePrefix = PromptComposerTexts.Get("history_section_scope_current");
         else if (scopeLength > 0)
             scopePrefix = PromptComposerTexts.Get("history_section_scope_historical");
@@ -226,8 +226,8 @@ internal static class MemorySystemFactProjection
         if (prefix == null) return fact;
         string body = fact.Substring(prefix.Length).TrimStart();
         string projected = ProjectBody(body);
-        string key = prefix == PromptComposerTexts.Raw("afef_player_action")
-            || prefix == PromptComposerTexts.Raw("afef_player_action_bracket") || prefix == "[AFEF PLAYER_ACTION]"
+        string key = prefix == PromptComposerTexts.RawSource("afef_player_action")
+            || prefix == PromptComposerTexts.RawSource("afef_player_action_bracket") || prefix == "[AFEF PLAYER_ACTION]"
             ? "afef_player_action" : "afef_npc_action";
         return PromptComposerTexts.Get(key) + " " + projected;
     }

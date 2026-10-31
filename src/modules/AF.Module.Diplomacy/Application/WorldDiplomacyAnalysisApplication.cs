@@ -531,7 +531,7 @@ internal static class WorldDiplomacyAnalysisApplication
 		string detail = TryMatchRejectedPlayerMechanic(code, out string detailKey, out string detailFallback)
 			? DiplomacyUiLocalization.Text(detailKey, detailFallback)
 			: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState", "The current situation does not support the parsed action.");
-		return string.IsNullOrWhiteSpace(code) ? detail : detail + "（" + code + "）";
+		return string.IsNullOrWhiteSpace(code) ? detail : detail + DiplomacyCompatibilityTexts.Parenthesized(code);
 	}
 
 	// MechanicalResult is persisted ([JsonProperty("mechanicalResult")] on the declaration and on each

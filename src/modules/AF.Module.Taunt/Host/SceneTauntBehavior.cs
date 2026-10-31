@@ -3487,7 +3487,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				locationName = CampaignMission.Current?.Location?.StringId;
 			}
-			string locationSuffix = string.IsNullOrWhiteSpace(locationName) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + locationName.Trim();
+			string locationSuffix = string.IsNullOrWhiteSpace(locationName) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + TauntSourceTexts.Gap + locationName.Trim();
 			string victimName = victimAgent.Name?.ToString();
 			if (string.IsNullOrWhiteSpace(victimName))
 			{
@@ -3497,12 +3497,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			string text = TauntSourceTexts.Format("PlayerSceneRecentAction", ("SETTLEMENT", settlementName), ("LOCATION", locationSuffix), ("VERB", verb), ("VICTIM", victimName));
 			if (crimeAmount > 0f)
 			{
-				text += TauntSourceTexts.Format("PlayerSceneCrimeIncrease", ("AMOUNT", crimeAmount.ToString("0.#")));
+				text += TauntSourceTexts.Gap + TauntSourceTexts.Format("PlayerSceneCrimeIncrease", ("AMOUNT", crimeAmount.ToString("0.#")));
 			}
 			bool criminalTarget = IsSettlementCriminalConflictTarget(victimHero, victimCharacter);
 			if (criminalTarget)
 			{
-				text += TauntSourceTexts.Get("CriminalTargetNote");
+				text += TauntSourceTexts.Gap + TauntSourceTexts.Get("CriminalTargetNote");
 			}
 			bool authorityTarget = IsAuthorityPhysicalAttackTarget(victimHero, victimCharacter);
 			bool ownedSettlementPassiveAttack = (reason ?? "").IndexOf("owned_settlement", StringComparison.OrdinalIgnoreCase) >= 0;
@@ -3589,7 +3589,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				return;
 			}
 			string settlementName = string.IsNullOrWhiteSpace(draft.SettlementName) ? TauntSourceTexts.Get("CurrentSettlementFallback") : draft.SettlementName.Trim();
-			string locationSuffix = string.IsNullOrWhiteSpace(draft.LocationText) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + draft.LocationText.Trim();
+			string locationSuffix = string.IsNullOrWhiteSpace(draft.LocationText) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + TauntSourceTexts.Gap + draft.LocationText.Trim();
 			int victimCount = draft.VictimKeys.Count;
 			string victimSummary = BuildPlayerSceneConflictVictimSummary(draft);
 			string text = TauntSourceTexts.Format("PlayerSceneMajorIntro", ("SETTLEMENT", settlementName), ("LOCATION", locationSuffix));
@@ -3599,7 +3599,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			if (!string.IsNullOrWhiteSpace(victimSummary))
 			{
-				text += TauntSourceTexts.Format("PlayerSceneMajorVictimSummary", ("SUMMARY", victimSummary));
+				text += TauntSourceTexts.Gap + TauntSourceTexts.Format("PlayerSceneMajorVictimSummary", ("SUMMARY", victimSummary));
 			}
 			List<string> consequences = new List<string>();
 			if (draft.KilledCount > 0)

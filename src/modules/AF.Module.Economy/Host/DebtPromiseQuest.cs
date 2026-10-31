@@ -181,11 +181,14 @@ public sealed class DebtPromiseQuest : QuestBase
 		}
 		if (hasPlayerLink)
 		{
-			note = note.Replace(EconomySourceTexts.Get("S068"), "{PLAYER.LINK}");
+			foreach (string playerWord in EconomySourceTexts.Variants("S068"))
+				note = note.Replace(playerWord, "{PLAYER.LINK}");
 		}
 		else
 		{
-			note = note.Replace(EconomySourceTexts.Get("S068"), GetDisplayText(player?.Name?.ToString(), EconomyUiTexts.DebtPromisePlayer));
+			string playerDisplay = GetDisplayText(player?.Name?.ToString(), EconomyUiTexts.DebtPromisePlayer);
+			foreach (string playerWord in EconomySourceTexts.Variants("S068"))
+				note = note.Replace(playerWord, playerDisplay);
 		}
 		// Entity matching runs only while a task log is created or migrated, never in a campaign tick.
 		List<KeyValuePair<string, TextObject>> entityLinks = ReplaceKnownEntityNamesWithLinkTags(ref note);

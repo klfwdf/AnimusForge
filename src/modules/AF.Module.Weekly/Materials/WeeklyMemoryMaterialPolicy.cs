@@ -75,9 +75,12 @@ internal static class WeeklyMemoryMaterialPolicy
 		{
 			reasons.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0348") + ValueThresholdDenars + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0349"));
 		}
-		evaluation.Reason = string.Join("；", reasons.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
+		evaluation.Reason = string.Join(WeeklyMaterialTexts.Semicolon, reasons.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
 		return evaluation;
 	}
+	// Reasons joined in either language: Chinese semicolon or the English "; " separator.
+	private static readonly string[] ReasonSeparators = { "\uFF1B", "; " };
+
 	internal static string BuildPublicDailyMemoryWeeklyMaterialSnapshotText(CompressedMemoryBlock block, string material, string hourRange)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -91,18 +94,18 @@ internal static class WeeklyMemoryMaterialPolicy
 		List<string> scenes = (block?.Scenes ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace((x ?? "").Trim())).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(4).ToList();
 		if (scenes.Count > 0)
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0355")).Append(string.Join("、", scenes)).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0355")).Append(string.Join(WeeklyMaterialTexts.ListSeparator, scenes)).Append(WeeklyMaterialTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(block?.RichTitle))
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0356")).Append(block.RichTitle.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0356")).Append(block.RichTitle.Trim()).Append(WeeklyMaterialTexts.Period);
 		}
-		sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0357")).Append((material ?? "").Trim()).Append("。");
+		sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0357")).Append((material ?? "").Trim()).Append(WeeklyMaterialTexts.Period);
 		if (!string.IsNullOrWhiteSpace(block?.PlayerPublicityReason))
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0358")).Append(block.PlayerPublicityReason.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0358")).Append(block.PlayerPublicityReason.Trim()).Append(WeeklyMaterialTexts.Period);
 		}
-		return sb.ToString().Trim();
+		return WeeklyMaterialTexts.Tidy(sb.ToString()).Trim();
 	}
 
     internal static List<WeeklyDialogueMaterial> BuildDialogueMaterials(CompressedMemoryBlock block,
@@ -139,29 +142,29 @@ internal static class WeeklyMemoryMaterialPolicy
 		sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0360")).Append(npcName).Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0361"));
 		if (!string.IsNullOrWhiteSpace(block?.RichTitle))
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0362")).Append(block.RichTitle.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0362")).Append(block.RichTitle.Trim()).Append(WeeklyMaterialTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(block?.Summary))
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0363")).Append(block.Summary.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0363")).Append(block.Summary.Trim()).Append(WeeklyMaterialTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(block?.PlayerPublicity))
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0364")).Append(block.PlayerPublicity.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0364")).Append(block.PlayerPublicity.Trim()).Append(WeeklyMaterialTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(block?.PlayerPublicityReason))
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0365")).Append(block.PlayerPublicityReason.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0365")).Append(block.PlayerPublicityReason.Trim()).Append(WeeklyMaterialTexts.Period);
 		}
 		List<string> scenes = (block?.Scenes ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace((x ?? "").Trim())).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(4).ToList();
 		if (scenes.Count > 0)
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0366")).Append(string.Join("、", scenes)).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0366")).Append(string.Join(WeeklyMaterialTexts.ListSeparator, scenes)).Append(WeeklyMaterialTexts.Period);
 		}
 		List<string> labels = (triggers ?? new List<WeeklyMemoryMaterialTrigger>()).SelectMany((WeeklyMemoryMaterialTrigger x) => x?.Tags ?? new List<string>()).Select(BuildWeeklyMemoryMaterialTagLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList();
 		if (labels.Count > 0)
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0367")).Append(string.Join("、", labels)).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0367")).Append(string.Join(WeeklyMaterialTexts.ListSeparator, labels)).Append(WeeklyMaterialTexts.Period);
 		}
 		long value = (triggers ?? new List<WeeklyMemoryMaterialTrigger>()).Sum((WeeklyMemoryMaterialTrigger x) => Math.Max(0L, x?.EstimatedValueDenars ?? 0L));
 		if (value > 0L)
@@ -171,9 +174,9 @@ internal static class WeeklyMemoryMaterialPolicy
 		List<string> reasons = (triggers ?? new List<WeeklyMemoryMaterialTrigger>()).Select((WeeklyMemoryMaterialTrigger x) => (x?.TriggerReason ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(6).ToList();
 		if (reasons.Count > 0)
 		{
-			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0370")).Append(string.Join("；", reasons)).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0370")).Append(string.Join(WeeklyMaterialTexts.Semicolon, reasons)).Append(WeeklyMaterialTexts.Period);
 		}
-		return sb.ToString().Trim();
+		return WeeklyMaterialTexts.Tidy(sb.ToString()).Trim();
 	}
 
 	internal static void TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(WeeklyMemoryMaterialEvaluation evaluation, List<string> tags, DailyMemoryDraft draft, string npcName, int sceneSessionId, int nativeDialogueSessionId)
@@ -187,13 +190,13 @@ internal static class WeeklyMemoryMaterialPolicy
 			return;
 		}
 		evaluation.EstimatedValueDenars = AddWeeklyMemoryMaterialValue(evaluation.EstimatedValueDenars, value);
-		List<string> reasons = (evaluation.Reason ?? "").Split(new char[1] { '；' }, StringSplitOptions.RemoveEmptyEntries).Select((string x) => x.Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+		List<string> reasons = (evaluation.Reason ?? "").Split(ReasonSeparators, StringSplitOptions.RemoveEmptyEntries).Select((string x) => x.Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
 		reasons.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0371") + value + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0372"));
 		if (evaluation.EstimatedValueDenars > ValueThresholdDenars)
 		{
 			reasons.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0373") + ValueThresholdDenars + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0374"));
 		}
-		evaluation.Reason = string.Join("；", reasons.Distinct(StringComparer.OrdinalIgnoreCase));
+		evaluation.Reason = string.Join(WeeklyMaterialTexts.Semicolon, reasons.Distinct(StringComparer.OrdinalIgnoreCase));
 	}
 
 	internal static bool ShouldAugmentWeeklyMemoryMaterialWithPlayerTransferredValue(IEnumerable<string> tags)
@@ -263,36 +266,36 @@ internal static class WeeklyMemoryMaterialPolicy
 	internal static bool IsPlayerTransferredValueWeeklyMemoryFact(string text, string npcName)
 	{
 		string value = (text ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(value) || !value.StartsWith(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0375"), StringComparison.Ordinal))
+		if (string.IsNullOrWhiteSpace(value) || !WeeklyMaterialTexts.StartsWithRaw(value, "AF_WEEKLY_Material_0375", StringComparison.Ordinal))
 		{
 			return false;
 		}
-		if (value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0376"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0377"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0378"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0379"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0380"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0381"), StringComparison.Ordinal) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0376", StringComparison.Ordinal) || WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0377", StringComparison.Ordinal) || WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0378", StringComparison.Ordinal) || WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0379", StringComparison.Ordinal) || WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0380", StringComparison.Ordinal) || WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0381", StringComparison.Ordinal))
 		{
 			return false;
 		}
-		if (value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0382"), StringComparison.Ordinal) >= 0 && (value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0383"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0384"), StringComparison.Ordinal) >= 0))
+		if (WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0382", StringComparison.Ordinal) && (WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0383", StringComparison.Ordinal) || WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0384", StringComparison.Ordinal)))
 		{
 			return true;
 		}
-		if (value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0385"), StringComparison.Ordinal) >= 0 && value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0386"), StringComparison.Ordinal) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0385", StringComparison.Ordinal) && WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0386", StringComparison.Ordinal))
 		{
 			return true;
 		}
-		return value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0387"), StringComparison.Ordinal) >= 0 && value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0388"), StringComparison.Ordinal) >= 0;
+		return WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0387", StringComparison.Ordinal) && WeeklyMaterialTexts.ContainsRaw(value, "AF_WEEKLY_Material_0388", StringComparison.Ordinal);
 	}
 
 	internal static long ExtractPlayerTransferredValueFromWeeklyMemoryFact(string text)
 	{
 		long value = 0L;
-		foreach (Match match in Regex.Matches(text ?? "", WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0389"), RegexOptions.IgnoreCase))
+		foreach (Match match in WeeklyMaterialTexts.RawRegexes("AF_WEEKLY_Material_0389").SelectMany(regex => regex.Matches(text ?? "").Cast<Match>()))
 		{
 			if (TryParsePositiveLong(match.Groups[1].Value, out var parsed))
 			{
 				value = Math.Max(value, parsed);
 			}
 		}
-		foreach (Match match in Regex.Matches(text ?? "", WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0390"), RegexOptions.IgnoreCase))
+		foreach (Match match in WeeklyMaterialTexts.RawRegexes("AF_WEEKLY_Material_0390").SelectMany(regex => regex.Matches(text ?? "").Cast<Match>()))
 		{
 			if (TryParsePositiveLong(match.Groups[1].Value, out var parsed))
 			{

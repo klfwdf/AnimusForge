@@ -104,8 +104,8 @@ internal sealed partial class KingdomCivilWarOwner
         // stable Chinese rule string that the receipt, AFEF and weekly material keep consuming.
         displayDemand = CivilWarUiText.DemandDisplayText(newDemand, ResolveDemandTargetDisplay(newDemand, f, k));
         displayRetained = retained.ToString();
-        return KingdomCivilWarTexts.Raw("KW_Raw_153") + FormatDemand(newDemand, f.TargetName) + "；" + retained + KingdomCivilWarTexts.Raw("KW_Raw_154")
-            + departed.Count + KingdomCivilWarTexts.Raw("KW_Raw_155") + (departed.Count == 0 ? "。" : "（" + string.Join("、", departed) + "）。") + KingdomCivilWarTexts.Raw("KW_Raw_156");
+        return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KW_Raw_153") + FormatDemand(newDemand, f.TargetName) + KingdomCivilWarTexts.Semicolon + retained + KingdomCivilWarTexts.Raw("KW_Raw_154")
+            + departed.Count + KingdomCivilWarTexts.Raw("KW_Raw_155") + (departed.Count == 0 ? KingdomCivilWarTexts.Period : KingdomCivilWarTexts.OpenParen + string.Join(KingdomCivilWarTexts.ListSeparator, departed) + KingdomCivilWarTexts.CloseParen + KingdomCivilWarTexts.Period) + KingdomCivilWarTexts.W("KW_Raw_156"));
     }
 
     private void DissolvePlayerFaction(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState faction, Clan actor, int week, CivilWarTuning tuning, ICollection<Hero> affectedParticipants = null)

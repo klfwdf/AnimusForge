@@ -266,13 +266,13 @@ internal sealed partial class KingdomCivilWarOwner
 			if (member.Side == side && (side == KingdomCivilWarSide.Crown || member.FactionId == f?.Id)) { result.Status = CivilWarActionStatus.Rejected; result.Message = KingdomCivilWarTexts.Raw("KW_Raw_081"); Project(result, "AlreadyInCamp"); return result; }
 			member.Side = side; member.FactionId = side == KingdomCivilWarSide.Crown ? "" : f.Id; member.SideSinceWeek = week; member.SideSinceDay = CivilWarWorld.CurrentDay();
 			if (actor == Clan.PlayerClan) s.PlayerSide = side == KingdomCivilWarSide.Crown ? "crown" : "opposition";
-			result.Message = CivilWarWorld.ClanName(actor) + KingdomCivilWarTexts.Raw("KW_Raw_082") + (side == KingdomCivilWarSide.Crown ? KingdomCivilWarTexts.Raw("KW_Raw_083") : FactionName(f, CivilWarCatalog.FindDemand(f.DemandId))) + "。";
+			result.Message = KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(actor) + KingdomCivilWarTexts.W("KW_Raw_082") + (side == KingdomCivilWarSide.Crown ? KingdomCivilWarTexts.W("KW_Raw_083") : FactionName(f, CivilWarCatalog.FindDemand(f.DemandId))) + KingdomCivilWarTexts.Period);
 			Project(result, "Joined", CivilWarWorld.ClanName(actor), side == KingdomCivilWarSide.Crown ? CivilWarUiText.T("AF_KINGDOM_CW_CampCrown", "the crown camp") : CivilWarUiText.DemandTag(CivilWarCatalog.FindDemand(f?.DemandId)));
 		}
 		else if (r.Action == CivilWarAction.Leave)
 		{
 			DetachPoliticalSide(k, s, actor, member, week, day);
-			result.Message = CivilWarWorld.ClanName(actor) + KingdomCivilWarTexts.Raw("KW_Raw_084");
+			result.Message = KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(actor) + KingdomCivilWarTexts.W("KW_Raw_084"));
 			Project(result, "LeftCamp", CivilWarWorld.ClanName(actor));
 		}
 		else if (r.Action == CivilWarAction.Found)
@@ -281,12 +281,12 @@ internal sealed partial class KingdomCivilWarOwner
 			string departure = "";
 			if (previous?.LeaderClanId == actor.StringId && actor == Clan.PlayerClan)
 			{
-				departure = KingdomCivilWarTexts.Raw("KW_Raw_085") + FactionName(previous, CivilWarCatalog.FindDemand(previous.DemandId)) + KingdomCivilWarTexts.Raw("KW_Raw_086");
+				departure = KingdomCivilWarTexts.W("KW_Raw_085") + FactionName(previous, CivilWarCatalog.FindDemand(previous.DemandId)) + KingdomCivilWarTexts.W("KW_Raw_086");
 				DissolvePlayerFaction(k, s, previous, actor, week, tuning, affectedParticipants);
 			}
 			else if (member.Side != KingdomCivilWarSide.Middle)
 			{
-				departure = KingdomCivilWarTexts.Raw("KW_Raw_087") + (previous == null ? KingdomCivilWarTexts.Raw("KW_Raw_083") : FactionName(previous, CivilWarCatalog.FindDemand(previous.DemandId))) + KingdomCivilWarTexts.Raw("KW_Raw_086");
+				departure = KingdomCivilWarTexts.W("KW_Raw_087") + (previous == null ? KingdomCivilWarTexts.W("KW_Raw_083") : FactionName(previous, CivilWarCatalog.FindDemand(previous.DemandId))) + KingdomCivilWarTexts.W("KW_Raw_086");
 				DetachPoliticalSide(k, s, actor, member, week, day, affectedParticipants);
 			}
 			var demand = CivilWarCatalog.FindDemand(r.DemandId);
@@ -297,7 +297,7 @@ internal sealed partial class KingdomCivilWarOwner
 			s.Factions.Add(f); member.Side = KingdomCivilWarSide.Opposition; member.FactionId = f.Id; member.SideSinceWeek = week; member.SideSinceDay = CivilWarWorld.CurrentDay();
 			if (actor == Clan.PlayerClan) s.PlayerSide = "opposition";
 			ApplyFoundingRelationLoss(k, actor);
-			result.FactionId = f.Id; result.Message = CivilWarWorld.ClanName(actor) + departure + KingdomCivilWarTexts.Raw("KW_Raw_088") + FormatDemand(demand, f.TargetName) + "。";
+			result.FactionId = f.Id; result.Message = KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(actor) + departure + KingdomCivilWarTexts.W("KW_Raw_088") + FormatDemand(demand, f.TargetName) + KingdomCivilWarTexts.Period);
 			Project(result, "Founded", CivilWarWorld.ClanName(actor), CivilWarUiText.DemandDisplayText(demand, ResolveDemandTargetDisplay(demand, f, k)));
 		}
 		else if (r.Action == CivilWarAction.ChangeDemand)
@@ -339,7 +339,7 @@ internal sealed partial class KingdomCivilWarOwner
 				BuildFeatures(k, s, f, CivilWarWorld.FindClan(candidate.ClanId), Host.GetStability(k)), CivilWarPoliticalRules.SuppressLeaveMultiplier, tuning, RandomFloat).Passed)
 			{ candidate.Side = KingdomCivilWarSide.Middle; candidate.FactionId = ""; candidate.SideSinceWeek = week; candidate.SideSinceDay = CivilWarWorld.CurrentDay(); }
 			if (!f.SuppressionExtended) { f.SuppressionExtended = true; f.UltimatumDay = Math.Max(day, f.UltimatumDay < 0 ? f.UltimatumWeek * 7 : f.UltimatumDay) + 7; if (f.PlayerAnswerPending) f.AnswerDeadlineDay = Math.Max(day, f.AnswerDeadlineDay < 0 ? f.PlayerAnswerDeadlineWeek * 7 : f.AnswerDeadlineDay) + 7; }
-			result.Message = KingdomCivilWarTexts.Raw("KW_Raw_092") + FactionName(f, CivilWarCatalog.FindDemand(f.DemandId)) + KingdomCivilWarTexts.Raw("KW_Raw_093");
+			result.Message = KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KW_Raw_092") + FactionName(f, CivilWarCatalog.FindDemand(f.DemandId)) + KingdomCivilWarTexts.W("KW_Raw_093"));
 			Project(result, "Suppressed", CivilWarUiText.DemandTag(CivilWarCatalog.FindDemand(f?.DemandId)));
 		}
 		else if (r.Action == CivilWarAction.Respond)
@@ -380,7 +380,7 @@ internal sealed partial class KingdomCivilWarOwner
 				else CivilWarEffects.ReturnRebels(ctx, ctx.WarClans(), 0, true);
 			}
 			if (!CivilWarEffects.TryApply(effect, ctx, out string reason)) { f.ResolutionError = reason; f.ResolutionNeedsReview = !ctx.RetryableFailure; result.Status = CivilWarActionStatus.PartialFailure; result.Message = KingdomCivilWarTexts.Raw("KW_Raw_098") + reason; string failure = CivilWarUiText.FailureText(ctx.FailureCode, ctx.FailureArg, ctx.FailureArg2); if (failure != null) Project(result, "ConcessionPending", failure); return result; }
-			result.Message = KingdomCivilWarTexts.Raw("KW_Raw_099") + FactionName(f, demand) + KingdomCivilWarTexts.Raw("KW_Raw_100") + string.Join("；", ctx.Notes);
+			result.Message = KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KW_Raw_099") + FactionName(f, demand) + KingdomCivilWarTexts.Raw("KW_Raw_100") + string.Join(KingdomCivilWarTexts.Semicolon, ctx.Notes));
 			Project(result, "Conceded", CivilWarUiText.DemandTag(demand), CivilWarUiText.NoteText(ctx.Notes, ctx.NoteProjections));
 			f.PendingConcessionOperationId = "";
 			FinishFaction(k, s, f, week, tuning, HostStability, 4);

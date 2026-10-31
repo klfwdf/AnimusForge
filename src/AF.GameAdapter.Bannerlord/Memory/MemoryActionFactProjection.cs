@@ -60,7 +60,7 @@ internal static class MemoryActionFactProjection
                 return Render("ActionFactPrisonRescueLocation", actor, rescue.Substring(0, prison), rescue.Substring(prison + prisonBoundary.Length));
         }
         if (key == null || !Extract(raw, start, end, out string value)) return null;
-        if (kind == "companion_leave" && value == AdapterRecordTexts.Raw("AF_REC_Character_0006"))
+        if (kind == "companion_leave" && AdapterRecordTexts.IsRaw(value, "AF_REC_Character_0006"))
             value = AdapterRecordTexts.Prompt("ActionFactCompanionFired");
         return Render(key, actor, value);
     }
@@ -69,7 +69,7 @@ internal static class MemoryActionFactProjection
     {
         string id = kind == "quest_success" ? "0001" : kind == "quest_fail" ? "0002"
             : kind == "quest_betrayal" ? "0003" : kind == "quest_timeout" ? "0004" : kind == "quest_cancel" ? "0005" : null;
-        return id != null && value == AdapterRecordTexts.Raw("AF_REC_Character_" + id)
+        return id != null && AdapterRecordTexts.IsRaw(value, "AF_REC_Character_" + id)
             ? AdapterRecordTexts.Prompt("ActionFactQuestResult_" + id) : value;
     }
 

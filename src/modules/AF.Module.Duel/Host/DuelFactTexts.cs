@@ -19,6 +19,10 @@ internal static class DuelFactTexts
     internal static string Source(string id) => Table.Chinese(id);
     internal static string[] Variants(string id) => Table.Variants(id);
     internal static bool Is(string value, string id) => Table.Is(value, id);
+    /// <summary>List/clause separator for composed facts in the current language.</summary>
+    internal static string Comma => PromptLanguage.IsChinese ? "\uFF0C" : ", ";
+    /// <summary>Space between a name and an appended word: none in Chinese, one in English.</summary>
+    internal static string Gap => PromptLanguage.IsChinese ? "" : " ";
     internal static string Format(string key, params (string Name, object Value)[] variables)
         => Placeholder.Replace(Get(key), match =>
         {

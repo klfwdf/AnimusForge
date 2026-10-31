@@ -20,7 +20,9 @@ public partial class MyBehavior
 	internal static void RecordCivilWarMemoryFact(Hero hero, string text)
 	{
 		if (hero == null || hero == Hero.MainHero || string.IsNullOrWhiteSpace(text)) return;
-		AppendExternalDialogueHistory(hero, "", "", AdapterPromptCaptureTexts.PcapCompat("Host_AfefCivilWarPrefix") + text);
+		// The fact describes this NPC, so it carries the NPC envelope; without one the history writer
+		// would tag it as a player action. The civil-war label follows the game language.
+		AppendExternalDialogueHistory(hero, "", "", AdapterPromptCaptureTexts.PcapCompat("Host_AfefNpcPrefix") + AdapterPromptCaptureTexts.PcapCompat("Host_AfefCivilWarPrefix") + text);
 	}
 	// Thin main-thread adapter to the existing report, bulletin and character-fact owners.
 internal static void RecordCivilWarPoliticalResult(Kingdom kingdom, string key, string text, bool bulletin, Hero actor = null, Hero factionLeader = null)

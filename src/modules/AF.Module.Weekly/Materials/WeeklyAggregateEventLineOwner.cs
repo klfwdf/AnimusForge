@@ -65,6 +65,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
+		return WeeklyMaterialTexts.Tidy(RenderCategory(materials));
+	}
+
+	private string RenderCategory(List<EventMaterialReference> materials)
+	{
 		string text = WeeklyMaterialAggregationOwner.ResolveWeeklyPromptAggregateCategory(materials[0]);
 		switch (text)
 		{
@@ -110,21 +115,21 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<EventMaterialReference> winners = list2.Where((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == true).ToList();
 		List<EventMaterialReference> losers = list2.Where((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == false).ToList();
 		List<string> fields = new List<string>();
-		fields.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0000"));
+		fields.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0000"));
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			fields.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0001") + text2);
+			fields.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0001") + text2);
 		}
 		if (winners.Count > 0 || losers.Count > 0)
 		{
-			fields.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0002") + BuildWeeklyPromptBattleOutcomeField(winners, losers));
+			fields.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0002") + BuildWeeklyPromptBattleOutcomeField(winners, losers));
 		}
-		string text3 = BuildWeeklyPromptBattleSideField(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0003"), winners, losers);
+		string text3 = BuildWeeklyPromptBattleSideField(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0003"), winners, losers);
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
 			fields.Add(text3);
 		}
-		string text4 = BuildWeeklyPromptBattleSideField(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0004"), losers, winners);
+		string text4 = BuildWeeklyPromptBattleSideField(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0004"), losers, winners);
 		if (!string.IsNullOrWhiteSpace(text4))
 		{
 			fields.Add(text4);
@@ -156,11 +161,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text = (material.SnapshotText ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0005"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0006"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0007"), StringComparison.OrdinalIgnoreCase) >= 0)
+			if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0005", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0006", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0007", StringComparison.OrdinalIgnoreCase))
 			{
 				return false;
 			}
-			if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0008"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0009"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0010"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0011"), StringComparison.OrdinalIgnoreCase) >= 0)
+			if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0008", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0009", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0010", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0011", StringComparison.OrdinalIgnoreCase))
 			{
 				return true;
 			}
@@ -174,17 +179,17 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text2 = BuildWeeklyPromptBattleSideShortName(losers, winners);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0012") + text2;
+			return text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0012") + text2;
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0013");
+			return text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0013");
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0014");
+			return text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0014");
 		}
-		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0015");
+		return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0015");
 	}
 
 	private string BuildWeeklyPromptBattleSideShortName(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
@@ -192,20 +197,20 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<string> list = BuildWeeklyPromptBattleSideKingdomNames(ownMaterials, oppositeMaterials);
 		if (list.Count > 0)
 		{
-			return string.Join("、", list.Take(2));
+			return string.Join(WeeklyMaterialTexts.ListSeparator, list.Take(2));
 		}
 		List<string> list2 = BuildWeeklyPromptBattleSideClanNames(ownMaterials, oppositeMaterials);
 		if (list2.Count > 0)
 		{
-			return string.Join("、", list2.Take(2));
+			return string.Join(WeeklyMaterialTexts.ListSeparator, list2.Take(2));
 		}
 		List<string> list3 = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
 		if (list3.Count > 0)
 		{
-			return string.Join("、", list3.Take(2));
+			return string.Join(WeeklyMaterialTexts.ListSeparator, list3.Take(2));
 		}
 		List<string> list4 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
-		return (list4.Count > 0) ? string.Join("、", list4.Take(2)) : "";
+		return (list4.Count > 0) ? string.Join(WeeklyMaterialTexts.ListSeparator, list4.Take(2)) : "";
 	}
 
 	private string BuildWeeklyPromptBattleSideField(string label, List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
@@ -214,49 +219,49 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<string> list2 = BuildWeeklyPromptBattleSideKingdomNames(ownMaterials, oppositeMaterials);
 		if (list2.Count > 0)
 		{
-			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0016") + string.Join("、", list2));
+			list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0016") + string.Join(WeeklyMaterialTexts.ListSeparator, list2));
 		}
 		List<string> list3 = BuildWeeklyPromptBattleSideClanNames(ownMaterials, oppositeMaterials);
 		if (list3.Count > 0)
 		{
-			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0017") + string.Join("、", list3));
+			list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0017") + string.Join(WeeklyMaterialTexts.ListSeparator, list3));
 		}
 		List<string> list4 = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
 		if (list4.Count > 0)
 		{
-			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0018") + string.Join("、", list4.Take(8)));
+			list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0018") + string.Join(WeeklyMaterialTexts.ListSeparator, list4.Take(8)));
 		}
 		List<string> list5 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
 		if (list5.Count > 0)
 		{
-			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0019") + string.Join("、", list5.Take(8)));
+			list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0019") + string.Join(WeeklyMaterialTexts.ListSeparator, list5.Take(8)));
 		}
 		if (list.Count == 0)
 		{
 			return "";
 		}
-		return label + "：" + string.Join("；", list);
+		return label + WeeklyMaterialTexts.Colon + string.Join(WeeklyMaterialTexts.Semicolon, list);
 	}
 
 	private string BuildWeeklyPromptBattleStandoutField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
 	{
 		List<string> list = new List<string>();
-		AppendWeeklyPromptBattleStandouts(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0020"), winners);
-		AppendWeeklyPromptBattleStandouts(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0021"), losers);
+		AppendWeeklyPromptBattleStandouts(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0020"), winners);
+		AppendWeeklyPromptBattleStandouts(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0021"), losers);
 		if (list.Count == 0)
 		{
-			string text = BuildWeeklyPromptBattleFallbackStandoutText(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0022"), winners, losers);
+			string text = BuildWeeklyPromptBattleFallbackStandoutText(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0022"), winners, losers);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0023") + text);
+				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0023") + text);
 			}
-			text = BuildWeeklyPromptBattleFallbackStandoutText(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0024"), losers, winners);
+			text = BuildWeeklyPromptBattleFallbackStandoutText(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0024"), losers, winners);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0025") + text);
+				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0025") + text);
 			}
 		}
-		return (list.Count > 0) ? (WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0026") + string.Join("；", list)) : "";
+		return (list.Count > 0) ? (WeeklyMaterialTexts.W("AF_WEEKLY_Material_0026") + string.Join(WeeklyMaterialTexts.Semicolon, list)) : "";
 	}
 
 	private void AppendWeeklyPromptBattleStandouts(List<string> output, string sideLabel, List<EventMaterialReference> materials)
@@ -267,7 +272,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		foreach (string item in ExtractWeeklyPromptBattleStandoutTexts(materials, sideLabel))
 		{
-			WeeklyMaterialAggregationOwner.AddUniqueId(output, sideLabel + "：" + item);
+			WeeklyMaterialAggregationOwner.AddUniqueId(output, sideLabel + WeeklyMaterialTexts.Colon + item);
 		}
 	}
 
@@ -292,7 +297,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		int num = text2.IndexOf(" ：", StringComparison.Ordinal);
+		int num = text2.IndexOf(" \uFF1A", StringComparison.Ordinal);
 		int markerLength = 2;
 		if (num < 0)
 		{
@@ -307,7 +312,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			num++;
 		}
-		int num2 = text2.IndexOf('；', num);
+		int num2 = text2.IndexOf('\uFF1B', num);
 		if (num2 < 0)
 		{
 			num2 = text2.IndexOf(';', num);
@@ -320,7 +325,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		string text3 = text2.Substring(num, num2 - num).Trim(' ', '。', '；', ';');
+		string text3 = text2.Substring(num, num2 - num).Trim(' ', '\u3002', '\uFF1B', ';');
 		if (string.IsNullOrWhiteSpace(text3))
 		{
 			return "";
@@ -352,48 +357,48 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<string> list2 = new List<string>();
 		if (flag3 && flag4 && ownTroops > 0 && oppositeTroops > 0)
 		{
-			list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0028") + ownTroops + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0029") + oppositeTroops + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0030"));
+			list2.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0028") + ownTroops + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0029") + oppositeTroops + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0030"));
 		}
 		else if (flag3 && ownTroops > 0)
 		{
-			list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0031") + ownTroops + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0032"));
+			list2.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0031") + ownTroops + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0032"));
 		}
 		if (flag && flag2)
 		{
-			if (string.Equals((sideLabel ?? "").Trim(), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0033"), StringComparison.OrdinalIgnoreCase))
+			if (WeeklyMaterialTexts.EqualsRaw((sideLabel ?? "").Trim(), "AF_WEEKLY_Material_0033", StringComparison.OrdinalIgnoreCase))
 			{
 				if (ownCasualtyTotal <= 0 && oppositeCasualtyTotal > 0)
 				{
-					list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0034") + oppositeCasualtyTotal + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0035"));
+					list2.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0034") + oppositeCasualtyTotal + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0035"));
 				}
 				else
 				{
-					list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0036") + ownCasualtyTotal + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0037") + oppositeCasualtyTotal + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0038"));
+					list2.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0036") + ownCasualtyTotal + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0037") + oppositeCasualtyTotal + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0038"));
 				}
 			}
 			else if (oppositeCasualtyTotal > 0)
 			{
-				list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0039") + oppositeCasualtyTotal + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0040"));
+				list2.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0039") + oppositeCasualtyTotal + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0040"));
 			}
 		}
 		if (list2.Count == 0)
 		{
 			return "";
 		}
-		return text + string.Join("，", list2);
+		return text + string.Join(WeeklyMaterialTexts.Comma, list2);
 	}
 
 	private string BuildWeeklyPromptBattleStandoutActorText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials, string fallbackLabel)
 	{
 		List<string> list = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
-		string text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x) && x.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0041"), StringComparison.OrdinalIgnoreCase) >= 0);
+		string text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x) && WeeklyMaterialTexts.ContainsRaw(x, "AF_WEEKLY_Material_0041", StringComparison.OrdinalIgnoreCase));
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text.Trim() + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0042");
+			return text.Trim() + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0042");
 		}
 		List<string> list2 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
 		text = list2.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
@@ -404,9 +409,9 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		text = BuildWeeklyPromptBattleSideShortName(ownMaterials, oppositeMaterials);
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text.Trim() + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0043");
+			return text.Trim() + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0043");
 		}
-		return string.IsNullOrWhiteSpace(fallbackLabel) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0044") : (fallbackLabel.Trim() + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0045"));
+		return string.IsNullOrWhiteSpace(fallbackLabel) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0044") : (fallbackLabel.Trim() + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0045"));
 	}
 
 	private string BuildWeeklyPromptBattleSideTroopText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
@@ -436,14 +441,14 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private bool TryParseWeeklyPromptBattleTroopTotal(string text, out int total)
 	{
 		total = 0;
-		Match match = Regex.Match(text ?? "", WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0046"), RegexOptions.IgnoreCase);
+		Match match = WeeklyMaterialTexts.MatchRaw(text ?? "", "AF_WEEKLY_Material_0046");
 		return match.Success && int.TryParse(match.Groups["value"]?.Value ?? "", out total);
 	}
 
 	private bool TryParseWeeklyPromptBattleCasualtyTotal(string text, out int total)
 	{
 		total = 0;
-		Match match = Regex.Match(text ?? "", WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0047"), RegexOptions.IgnoreCase);
+		Match match = WeeklyMaterialTexts.MatchRaw(text ?? "", "AF_WEEKLY_Material_0047");
 		if (!match.Success || !int.TryParse(match.Groups["dead"]?.Value ?? "", out var dead) || !int.TryParse(match.Groups["wounded"]?.Value ?? "", out var wounded))
 		{
 			return false;
@@ -522,7 +527,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				continue;
 			}
-			foreach (string item2 in text.Split(new char[5] { '、', ',', '，', ';', '；' }, StringSplitOptions.RemoveEmptyEntries))
+			foreach (string item2 in text.Split(new char[5] { '\u3001', ',', '\uFF0C', ';', '\uFF1B' }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				string text2 = item2.Trim();
 				if (!string.IsNullOrWhiteSpace(text2))
@@ -544,7 +549,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				continue;
 			}
-			foreach (string item2 in text.Split(new char[5] { '、', ',', '，', ';', '；' }, StringSplitOptions.RemoveEmptyEntries))
+			foreach (string item2 in text.Split(new char[5] { '\u3001', ',', '\uFF0C', ';', '\uFF1B' }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				string text2 = item2.Trim();
 				if (!string.IsNullOrWhiteSpace(text2))
@@ -572,7 +577,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0052") + (string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0053") : text) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0054") + (string.IsNullOrWhiteSpace(text2) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0055") : text2);
+		return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0052") + (string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0053") : text) + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0054") + (string.IsNullOrWhiteSpace(text2) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0055") : text2);
 	}
 
 	private string BuildWeeklyPromptBattleCasualtyField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
@@ -591,7 +596,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0056") + (string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0057") : text) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0058") + (string.IsNullOrWhiteSpace(text2) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0059") : text2);
+		return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0056") + (string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0057") : text) + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0058") + (string.IsNullOrWhiteSpace(text2) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0059") : text2);
 	}
 
 	private string ExtractWeeklyPromptBattleTroopText(List<EventMaterialReference> materials, bool ownSide)
@@ -614,7 +619,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		Match match = Regex.Match(text2, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0060"), RegexOptions.IgnoreCase);
+		Match match = WeeklyMaterialTexts.MatchRaw(text2, "AF_WEEKLY_Material_0060");
 		if (!match.Success)
 		{
 			return "";
@@ -651,12 +656,12 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return "";
 		}
 		num += text3.Length;
-		while (num < text2.Length && (text2[num] == '：' || text2[num] == ':' || text2[num] == ' '))
+		while (num < text2.Length && (text2[num] == '\uFF1A' || text2[num] == ':' || text2[num] == ' '))
 		{
 			num++;
 		}
 		int num2 = text2.Length;
-		foreach (char value in new char[4] { '。', '；', ';', '\n' })
+		foreach (char value in new char[4] { '\u3002', '\uFF1B', ';', '\n' })
 		{
 			int num3 = text2.IndexOf(value, num);
 			if (num3 >= num && num3 < num2)
@@ -679,21 +684,21 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return "";
 		}
 		List<string> list = new List<string>();
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0063"), BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
-		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0064") + BuildWeeklyPromptAggregateActionLabel(materials));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0065"), ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorHeroId, x.TargetHeroId, x.HeroId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0063"), BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
+		list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0064") + BuildWeeklyPromptAggregateActionLabel(materials));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0065"), ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorHeroId, x.TargetHeroId, x.HeroId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedHeroIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0066"), ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId, x.PreviousSettlementOwnerClanId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0066"), ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId, x.PreviousSettlementOwnerClanId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedClanIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0067"), ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[5] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId, x.PreviousSettlementOwnerKingdomId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0067"), ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[5] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId, x.PreviousSettlementOwnerKingdomId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedKingdomIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0068"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0068"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		return string.Join("|", list);
 	}
 
@@ -750,15 +755,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text5 = BuildWeeklyPromptAggregateDeathSubjectText(text2, text3, text4);
 			if (string.IsNullOrWhiteSpace(text5))
 			{
-				text5 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0069");
+				text5 = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0069");
 			}
 			string text6 = BuildWeeklyPromptAggregateDeathRelationText(text2, ResolveWeeklyPromptAggregateDeathRelationHeroId(value2, text2));
 			string text7 = value2.Select((EventMaterialReference x) => ParseWeeklyPromptHeroDeathReason(x?.ActionStableKey)).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
 			if (string.IsNullOrWhiteSpace(text7))
 			{
-				text7 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0070");
+				text7 = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0070");
 			}
-			string text8 = string.IsNullOrWhiteSpace(text6) ? (text5 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0071") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0072")) : (text5 + "，" + text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0073") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0074"));
+			string text8 = string.IsNullOrWhiteSpace(text6) ? (text5 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0071") + text7 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0072")) : (text5 + WeeklyMaterialTexts.Comma + text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0073") + text7 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0074"));
 			if (!list2.Contains(text8))
 			{
 				list2.Add(text8);
@@ -768,7 +773,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return BuildWeeklyPromptAggregateGenericLine(materials);
 		}
-		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0075") + string.Join("；", list2);
+		return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0075") + string.Join(WeeklyMaterialTexts.Semicolon, list2);
 	}
 
 	private string BuildWeeklyPromptAggregateArmyLine(List<EventMaterialReference> materials)
@@ -789,24 +794,24 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			switch (text2)
 			{
 			case "army_disperse":
-				text4 = text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0076");
+				text4 = text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0076");
 				break;
 			case "army_create":
-				text4 = text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0077");
+				text4 = text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0077");
 				break;
 			case "army_gather":
-				text4 = text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0078");
+				text4 = text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0078");
 				break;
 			case "army_join":
-				text4 = ((list3.Count == 1) ? (text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0079") + list3[0] + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0080")) : (text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0081")));
+				text4 = ((list3.Count == 1) ? (text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0079") + list3[0] + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0080")) : (text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0081")));
 				break;
 			case "army_leave":
-				text4 = ((list3.Count == 1) ? (text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0082") + list3[0] + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0083")) : (text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0084")));
+				text4 = ((list3.Count == 1) ? (text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0082") + list3[0] + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0083")) : (text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0084")));
 				break;
 			}
 			if (!string.IsNullOrWhiteSpace(text4))
 			{
-				return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0085") + text + "：" + text4;
+				return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0085") + text + WeeklyMaterialTexts.Colon + text4;
 			}
 		}
 		List<string> list5 = new List<string>();
@@ -817,25 +822,25 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text7 = ResolveHeroDisplay(item.TargetHeroId);
 			if (string.IsNullOrWhiteSpace(text6))
 			{
-				text6 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0086");
+				text6 = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0086");
 			}
 			string text8 = "";
 			switch (text5)
 			{
 			case "army_disperse":
-				text8 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0087");
+				text8 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0087");
 				break;
 			case "army_create":
-				text8 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0088");
+				text8 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0088");
 				break;
 			case "army_gather":
-				text8 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0089");
+				text8 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0089");
 				break;
 			case "army_join":
-				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0090")) : (text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0091") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0092"));
+				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0090")) : (text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0091") + text7 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0092"));
 				break;
 			case "army_leave":
-				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0093")) : (text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0094") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0095"));
+				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0093")) : (text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0094") + text7 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0095"));
 				break;
 			}
 			if (string.IsNullOrWhiteSpace(text8))
@@ -843,7 +848,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 				string text9 = (item.SnapshotText ?? item.Label ?? "").Trim();
 				if (!string.IsNullOrWhiteSpace(text9))
 				{
-					text8 = text6 + "：" + text9;
+					text8 = text6 + WeeklyMaterialTexts.Colon + text9;
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(text8) && !list5.Contains(text8))
@@ -855,7 +860,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return BuildWeeklyPromptAggregateGenericLine(materials);
 		}
-		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0096") + text + "：" + string.Join("；", list5);
+		return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0096") + text + WeeklyMaterialTexts.Colon + string.Join(WeeklyMaterialTexts.Semicolon, list5);
 	}
 
 	private string ResolveWeeklyPromptAggregateDeathVictimHeroId(EventMaterialReference item)
@@ -893,15 +898,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text3 = ResolveKingdomDisplay(kingdomId);
 		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text))
 		{
-			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0097") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0098") + text;
+			return text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0097") + text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0098") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text))
 		{
-			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0099") + text;
+			return text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0099") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text))
 		{
-			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0100") + text;
+			return text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0100") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -909,15 +914,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0101") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0102");
+			return text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0101") + text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0102");
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0103");
+			return text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0103");
 		}
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
-			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0104");
+			return text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0104");
 		}
 		return "";
 	}
@@ -929,11 +934,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		if (victim == null || other == null || string.Equals(victim.Id, other.Id, StringComparison.OrdinalIgnoreCase)) return "";
 		string name = ResolveHeroDisplay(other.Id);
 		if (string.IsNullOrWhiteSpace(name)) return "";
-		if (SameId(victim.SpouseId, other.Id) || SameId(other.SpouseId, victim.Id)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0105") + (victim.IsFemale ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0106") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0107"));
-		if (SameId(victim.FatherId, other.Id) || SameId(victim.MotherId, other.Id)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0108") + (victim.IsFemale ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0109") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0110"));
-		if (SameId(other.FatherId, victim.Id) || SameId(other.MotherId, victim.Id)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0111") + (victim.IsFemale ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0112") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0113"));
-		if (SameId(victim.FatherId, other.FatherId) || SameId(victim.MotherId, other.MotherId)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0114") + (victim.IsFemale ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0115") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0116"));
-		if (SameId(victim.ClanId, other.ClanId)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0117");
+		if (SameId(victim.SpouseId, other.Id) || SameId(other.SpouseId, victim.Id)) return name + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0105") + (victim.IsFemale ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0106") : WeeklyMaterialTexts.W("AF_WEEKLY_Material_0107"));
+		if (SameId(victim.FatherId, other.Id) || SameId(victim.MotherId, other.Id)) return name + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0108") + (victim.IsFemale ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0109") : WeeklyMaterialTexts.W("AF_WEEKLY_Material_0110"));
+		if (SameId(other.FatherId, victim.Id) || SameId(other.MotherId, victim.Id)) return name + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0111") + (victim.IsFemale ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0112") : WeeklyMaterialTexts.W("AF_WEEKLY_Material_0113"));
+		if (SameId(victim.FatherId, other.FatherId) || SameId(victim.MotherId, other.MotherId)) return name + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0114") + (victim.IsFemale ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0115") : WeeklyMaterialTexts.W("AF_WEEKLY_Material_0116"));
+		if (SameId(victim.ClanId, other.ClanId)) return name + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0117");
 		return "";
 	}
 
@@ -967,18 +972,18 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		switch ((detail ?? "").Trim())
 		{
 		case "Murdered":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0118");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0118");
 		case "DiedInLabor":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0119");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0119");
 		case "DiedOfOldAge":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0120");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0120");
 		case "DiedInBattle":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0121");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0121");
 		case "WoundedInBattle":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0122");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0122");
 		case "Executed":
 		case "ExecutionAfterMapEvent":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0123");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0123");
 		default:
 			return string.IsNullOrWhiteSpace(detail) ? "" : detail;
 		}
@@ -987,27 +992,27 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private string BuildWeeklyPromptAggregateMovementLine(List<EventMaterialReference> materials)
 	{
 		List<string> list = new List<string>();
-		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0124"));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0125"), BuildWeeklyPromptAggregateMovementDetailValues(materials));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0126"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+		list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0124"));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0125"), BuildWeeklyPromptAggregateMovementDetailValues(materials));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0126"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		return string.Join("|", list);
 	}
 
 	private string BuildWeeklyPromptAggregateDecisionLine(List<EventMaterialReference> materials)
 	{
 		List<string> list = new List<string>();
-		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0127"));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0128"), BuildWeeklyPromptAggregateDetailValues(materials));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0129"), BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0130"), ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId }, delegate(EventMaterialReference x)
+		list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0127"));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0128"), BuildWeeklyPromptAggregateDetailValues(materials));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0129"), BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0130"), ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedClanIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0131"), ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0131"), ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedKingdomIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0132"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0132"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		return string.Join("|", list);
 	}
 
@@ -1023,29 +1028,29 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text3 = BuildWeeklyPromptAggregateSiegeParticipantsText(list);
 		string text4 = BuildWeeklyPromptAggregateSiegeTargetKingdomText(list);
 		string text5 = BuildWeeklyPromptAggregateSiegeSettlementText(list);
-		string text6 = string.IsNullOrWhiteSpace(text3) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0133") : text3;
-		string text7 = string.IsNullOrWhiteSpace(text5) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0134") : text5;
-		string text8 = string.IsNullOrWhiteSpace(text4) ? text7 : (text4 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0135") + text7);
+		string text6 = string.IsNullOrWhiteSpace(text3) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0133") : text3;
+		string text7 = string.IsNullOrWhiteSpace(text5) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0134") : text5;
+		string text8 = string.IsNullOrWhiteSpace(text4) ? text7 : (text4 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0135") + text7);
 		string text9;
 		switch (text2)
 		{
 		case "siege_join":
-			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0136") + text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0137");
+			text9 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0136") + text8 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0137");
 			break;
 		case "siege_leave":
-			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0138") + text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0139");
+			text9 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0138") + text8 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0139");
 			break;
 		case "siege_start_attack":
-			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0140") + text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0141");
+			text9 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0140") + text8 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0141");
 			break;
 		case "siege_start_defend":
-			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0142") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0143");
+			text9 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0142") + text7 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0143");
 			break;
 		case "siege_end_attack":
-			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0144") + text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0145");
+			text9 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0144") + text8 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0145");
 			break;
 		case "siege_end_defend":
-			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0146") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0147");
+			text9 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0146") + text7 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0147");
 			break;
 		default:
 		{
@@ -1053,26 +1058,26 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				if (!string.IsNullOrWhiteSpace(x.SnapshotText))
 				{
-					if (x.SnapshotText.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0148"), StringComparison.OrdinalIgnoreCase) >= 0)
+					if (WeeklyMaterialTexts.ContainsRaw(x.SnapshotText, "AF_WEEKLY_Material_0148", StringComparison.OrdinalIgnoreCase))
 					{
-						return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0149");
+						return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0149");
 					}
-					if (x.SnapshotText.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0150"), StringComparison.OrdinalIgnoreCase) >= 0)
+					if (WeeklyMaterialTexts.ContainsRaw(x.SnapshotText, "AF_WEEKLY_Material_0150", StringComparison.OrdinalIgnoreCase))
 					{
-						return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0151");
+						return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0151");
 					}
 				}
 				return "";
 			}).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0152") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0153");
+			text9 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0152") + text7 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0153");
 			if (list2.Count > 0)
 			{
-				text9 += WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0154") + string.Join("、", list2);
+				text9 += WeeklyMaterialTexts.W("AF_WEEKLY_Material_0154") + string.Join(WeeklyMaterialTexts.ListSeparator, list2);
 			}
 			break;
 		}
 		}
-		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0155") + text + "：" + text9;
+		return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0155") + text + WeeklyMaterialTexts.Colon + text9;
 	}
 
 	private string BuildWeeklyPromptAggregateSiegeParticipantsText(List<EventMaterialReference> materials)
@@ -1125,11 +1130,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 				string text4 = ResolveClanDisplay(item3);
 				if (!string.IsNullOrWhiteSpace(text4))
 				{
-					list5.Add(text4 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0156") + string.Join("、", list6));
+					list5.Add(text4 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0156") + string.Join(WeeklyMaterialTexts.ListSeparator, list6));
 				}
 				else
 				{
-					list5.Add(string.Join("、", list6));
+					list5.Add(string.Join(WeeklyMaterialTexts.ListSeparator, list6));
 				}
 			}
 			if (list5.Count == 0)
@@ -1139,7 +1144,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text5 = ResolveKingdomDisplay(item2);
 			if (!string.IsNullOrWhiteSpace(text5))
 			{
-				list3.Add(text5 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0157") + JoinWithYiJi(list5));
+				list3.Add(text5 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0157") + JoinWithYiJi(list5));
 			}
 			else
 			{
@@ -1156,7 +1161,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		return string.Join("、", list);
+		return string.Join(WeeklyMaterialTexts.ListSeparator, list);
 	}
 
 	private string BuildWeeklyPromptAggregateSiegeSettlementText(List<EventMaterialReference> materials)
@@ -1178,11 +1183,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (list.Count == 2)
 		{
-			return list[0] + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0158") + list[1];
+			return list[0] + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0158") + list[1];
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(string.Join("、", list.Take(list.Count - 1)));
-		stringBuilder.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0159"));
+		stringBuilder.Append(string.Join(WeeklyMaterialTexts.ListSeparator, list.Take(list.Count - 1)));
+		stringBuilder.Append(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0159"));
 		stringBuilder.Append(list[list.Count - 1]);
 		return stringBuilder.ToString();
 	}
@@ -1191,7 +1196,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private string BuildWeeklyPromptAggregatePrisonerLine(List<EventMaterialReference> materials, bool released)
 	{
 		List<string> list = new List<string>();
-		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0160") + (released ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0161") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0162")));
+		list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0160") + (released ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0161") : WeeklyMaterialTexts.W("AF_WEEKLY_Material_0162")));
 		List<string> pairOrder = new List<string>();
 		Dictionary<string, string> captorHeroByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, string> prisonerHeroByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1316,33 +1321,33 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text7 = prisonerHeroByPair.ContainsKey(item2) ? prisonerHeroByPair[item2] : "";
 			string text8 = BuildWeeklyPromptAggregateHumanAffiliationText(text6, captorClanByPair.ContainsKey(item2) ? captorClanByPair[item2] : "", captorKingdomByPair.ContainsKey(item2) ? captorKingdomByPair[item2] : "");
 			string text9 = BuildWeeklyPromptAggregateHumanAffiliationText(text7, prisonerClanByPair.ContainsKey(item2) ? prisonerClanByPair[item2] : "", prisonerKingdomByPair.ContainsKey(item2) ? prisonerKingdomByPair[item2] : "");
-			string text10 = string.IsNullOrWhiteSpace(text8) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0163") : text8;
-			string text11 = string.IsNullOrWhiteSpace(text9) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0164") : text9;
+			string text10 = string.IsNullOrWhiteSpace(text8) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0163") : text8;
+			string text11 = string.IsNullOrWhiteSpace(text9) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0164") : text9;
 			List<string> list3 = ResolveSettlementNames(settlementIdsByPair.ContainsKey(item2) ? settlementIdsByPair[item2] : new List<string>());
 			List<string> list4 = released ? releaseDetailsByPair[item2].Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>();
 			List<string> list5 = new List<string>();
 			if (list3.Count > 0)
 			{
-				list5.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0165") + string.Join("、", list3));
+				list5.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0165") + string.Join(WeeklyMaterialTexts.ListSeparator, list3));
 			}
 			if (released && list4.Count > 0)
 			{
-				list5.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0166") + string.Join("、", list4));
+				list5.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0166") + string.Join(WeeklyMaterialTexts.ListSeparator, list4));
 			}
-			string text12 = (!released) ? (text11 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0167") + text10 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0168")) : (text11 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0169") + text10 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0170"));
+			string text12 = (!released) ? (text11 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0167") + text10 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0168")) : (text11 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0169") + text10 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0170"));
 			if (list5.Count > 0)
 			{
-				text12 += "（" + string.Join("；", list5) + "）";
+				text12 += WeeklyMaterialTexts.OpenParen + string.Join(WeeklyMaterialTexts.Semicolon, list5) + WeeklyMaterialTexts.CloseParen;
 			}
 			list2.Add(text12);
 		}
 		if (list2.Count > 0)
 		{
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0171") + (released ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0172") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0173")) + "：" + string.Join("；", list2);
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0171") + (released ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0172") : WeeklyMaterialTexts.W("AF_WEEKLY_Material_0173")) + WeeklyMaterialTexts.Colon + string.Join(WeeklyMaterialTexts.Semicolon, list2);
 		}
 		else
 		{
-			AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0174"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+			AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0174"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		}
 		return string.Join("|", list);
 	}
@@ -1372,15 +1377,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text3 = ResolveKingdomDisplay(kingdomId);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 		{
-			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0175") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0176") + text;
+			return text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0175") + text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0176") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0177") + text;
+			return text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0177") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text3))
 		{
-			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0178") + text;
+			return text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0178") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -1388,11 +1393,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 		{
-			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0179") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0180");
+			return text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0179") + text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0180");
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0181");
+			return text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0181");
 		}
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
@@ -1404,8 +1409,8 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private string BuildWeeklyPromptAggregateSettlementOwnerChangeLine(List<EventMaterialReference> materials)
 	{
 		List<string> list = new List<string>();
-		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0182"));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0183"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+		list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0182"));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0183"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		List<string> list2 = new List<string>();
 		List<string> list3 = new List<string>();
 		List<string> list4 = new List<string>();
@@ -1433,15 +1438,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 				WeeklyMaterialAggregationOwner.AddUniqueId(list4, item.ActorHeroId);
 			}
 		}
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0184"), ResolveHeroNames(list2));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0185"), ResolveHeroNames(list3));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0186"), ResolveHeroNames(list4));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0187"), ResolveKingdomNames(list5));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0188"), ResolveKingdomNames(list6));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0184"), ResolveHeroNames(list2));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0185"), ResolveHeroNames(list3));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0186"), ResolveHeroNames(list4));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0187"), ResolveKingdomNames(list5));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0188"), ResolveKingdomNames(list6));
 		List<string> list7 = materials.Select((EventMaterialReference x) => ParseWeeklyPromptSettlementChangeDetail(x?.ActionStableKey)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0189"), list7);
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0189"), list7);
 		List<string> list8 = BuildWeeklyPromptSettlementOwnerChangeNatureLabels(list7);
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0190"), list8);
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0190"), list8);
 		return string.Join("|", list);
 	}
 
@@ -1455,14 +1460,14 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				continue;
 			}
-			if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0191"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0192"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0193"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0194"), StringComparison.OrdinalIgnoreCase) >= 0)
+			if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0191", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0192", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0193", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0194", StringComparison.OrdinalIgnoreCase))
 			{
-				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0195"));
+				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0195"));
 				continue;
 			}
-			if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0196"), StringComparison.OrdinalIgnoreCase) >= 0)
+			if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0196", StringComparison.OrdinalIgnoreCase))
 			{
-				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0197"));
+				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0197"));
 			}
 		}
 		return list;
@@ -1472,24 +1477,24 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	{
 		List<string> list = new List<string>();
 		bool flag = (materials ?? new List<EventMaterialReference>()).Any((EventMaterialReference x) => string.Equals((x?.ActionKind ?? "").Trim(), "clan_rebellion", StringComparison.OrdinalIgnoreCase) || (x?.SourceActionKinds ?? new List<string>()).Any((string y) => string.Equals((y ?? "").Trim(), "clan_rebellion", StringComparison.OrdinalIgnoreCase)));
-		list.Add(flag ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0198") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0199"));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0200"), ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.ActorClanId }, delegate(EventMaterialReference x)
+		list.Add(flag ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0198") : WeeklyMaterialTexts.W("AF_WEEKLY_Material_0199"));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0200"), ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.ActorClanId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedClanIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0201"), ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[2] { x.ActorHeroId, x.HeroId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0201"), ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[2] { x.ActorHeroId, x.HeroId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedHeroIds;
 		})));
 		List<string> list2 = materials.Select((EventMaterialReference x) => WeeklyPromptMaterialOwner.ParseWeeklyPromptClanChangeDetail(x?.ActionStableKey)?.oldKingdomId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		List<string> list3 = materials.Select((EventMaterialReference x) => WeeklyPromptMaterialOwner.ParseWeeklyPromptClanChangeDetail(x?.ActionStableKey)?.newKingdomId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		List<string> list4 = materials.Select((EventMaterialReference x) => WeeklyPromptMaterialOwner.ParseWeeklyPromptClanChangeDetail(x?.ActionStableKey)?.detailLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0202"), ResolveKingdomNames(list2));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0203"), ResolveKingdomNames(list3));
-		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0204"), list4);
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0202"), ResolveKingdomNames(list2));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0203"), ResolveKingdomNames(list3));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0204"), list4);
 		if (flag)
 		{
-			AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0205"), new List<string> { WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0206") });
+			AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.W("AF_WEEKLY_Material_0205"), new List<string> { WeeklyMaterialTexts.W("AF_WEEKLY_Material_0206") });
 		}
 		return string.Join("|", list);
 	}
@@ -1499,10 +1504,10 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<string> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).Select((EventMaterialReference x) => TranslateNpcActionKindForPrompt(x.ActionKind)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		if (list.Count > 0)
 		{
-			return string.Join("、", list);
+			return string.Join(WeeklyMaterialTexts.ListSeparator, list);
 		}
 		string text = (materials?.FirstOrDefault()?.ActionKind ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0207") : text;
+		return string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0207") : text;
 	}
 
 	private void AppendWeeklyPromptAggregateField(List<string> fields, string name, List<string> values)
@@ -1516,7 +1521,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return;
 		}
-		fields.Add(name + "=" + string.Join("、", list));
+		fields.Add(name + "=" + string.Join(WeeklyMaterialTexts.ListSeparator, list));
 	}
 
 	private List<string> BuildWeeklyPromptAggregateHeroAffiliationValues(List<EventMaterialReference> materials)
@@ -1576,11 +1581,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			List<string> list4 = new List<string>();
 			if (list2.Count > 0)
 			{
-				list4.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0208") + string.Join("、", list2));
+				list4.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0208") + string.Join(WeeklyMaterialTexts.ListSeparator, list2));
 			}
 			if (list3.Count > 0)
 			{
-				list4.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0209") + string.Join("、", list3));
+				list4.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0209") + string.Join(WeeklyMaterialTexts.ListSeparator, list3));
 			}
 			return (list4.Count == 0) ? text : (text + "(" + string.Join(";", list4) + ")");
 		}).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -1623,22 +1628,22 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text = BuildWeeklyPromptAggregateSiegeParticipantsText(item2);
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0210");
+				text = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0210");
 			}
 			string text2 = BuildWeeklyPromptAggregateSettlementOwnerFactionText(eventMaterialReference);
 			string text3 = BuildWeeklyPromptAggregateSettlementNameWithType(eventMaterialReference.SettlementId);
 			string text4 = "";
 			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 			{
-				text4 = text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0211") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0212") + text3 + "。";
+				text4 = text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0211") + text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0212") + text3 + WeeklyMaterialTexts.Period;
 			}
 			else if (!string.IsNullOrWhiteSpace(text3))
 			{
-				text4 = text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0213") + text3 + "。";
+				text4 = text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0213") + text3 + WeeklyMaterialTexts.Period;
 			}
 			else
 			{
-				text4 = text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0214");
+				text4 = text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0214");
 			}
 			if (!list.Contains(text4))
 			{
@@ -1693,17 +1698,17 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				continue;
 			}
-			string text8 = BuildWeeklyPromptAggregateSiegeParticipantsText(item7).Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0215"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0216"));
+			string text8 = BuildWeeklyPromptAggregateSiegeParticipantsText(item7).Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0215"), WeeklyMaterialTexts.W("AF_WEEKLY_Material_0216"));
 			if (string.IsNullOrWhiteSpace(text8))
 			{
 				text8 = BuildWeeklyPromptAggregateActorAffiliationText(eventMaterialReference2);
 			}
 			if (string.IsNullOrWhiteSpace(text8))
 			{
-				text8 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0217");
+				text8 = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0217");
 			}
 			string text9 = BuildWeeklyPromptAggregateRaidTargetText(eventMaterialReference2);
-			string text10 = text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0218") + (string.IsNullOrWhiteSpace(text9) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0219") : text9) + "。";
+			string text10 = text8 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0218") + (string.IsNullOrWhiteSpace(text9) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0219") : text9) + WeeklyMaterialTexts.Period;
 			if (!list.Contains(text10))
 			{
 				list.Add(text10);
@@ -1732,8 +1737,8 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				string text12 = BuildWeeklyPromptAggregateActorAffiliationText(item9);
 				string text13 = BuildWeeklyPromptAggregateRaidTargetText(item9);
-				string text14 = string.IsNullOrWhiteSpace(text12) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0220") : text12;
-				string text15 = text14 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0221") + (string.IsNullOrWhiteSpace(text13) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0222") : text13) + "。";
+				string text14 = string.IsNullOrWhiteSpace(text12) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0220") : text12;
+				string text15 = text14 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0221") + (string.IsNullOrWhiteSpace(text13) ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0222") : text13) + WeeklyMaterialTexts.Period;
 				if (!list.Contains(text15))
 				{
 					list.Add(text15);
@@ -1748,14 +1753,14 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			}
 			if (IsMovementArmyLeaderMaterial(item9))
 			{
-				string text18 = string.IsNullOrWhiteSpace(text16) ? text17 : (text16.Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0223"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0224")) + text17);
+				string text18 = string.IsNullOrWhiteSpace(text16) ? text17 : (text16.Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0223"), WeeklyMaterialTexts.W("AF_WEEKLY_Material_0224")) + text17);
 				if (!list.Contains(text18))
 				{
 					list.Add(text18);
 				}
 				continue;
 			}
-			string text19 = string.IsNullOrWhiteSpace(text16) ? text17 : (text16 + "：" + text17);
+			string text19 = string.IsNullOrWhiteSpace(text16) ? text17 : (text16 + WeeklyMaterialTexts.Colon + text17);
 			if (!list.Contains(text19))
 			{
 				list.Add(text19);
@@ -1772,7 +1777,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return true;
 		}
 		string text2 = (item?.SnapshotText ?? item?.Label ?? "").Trim();
-		return text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0225"), StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0226"), StringComparison.OrdinalIgnoreCase) >= 0;
+		return WeeklyMaterialTexts.ContainsRaw(text2, "AF_WEEKLY_Material_0225", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text2, "AF_WEEKLY_Material_0226", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private bool IsMovementRaidMaterial(EventMaterialReference item)
@@ -1791,7 +1796,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return false;
 		}
 		string text2 = (item.SnapshotText ?? item.Label ?? "").Trim();
-		return text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0227"), StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0228"), StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0229"), StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0230"), StringComparison.OrdinalIgnoreCase) >= 0;
+		return WeeklyMaterialTexts.ContainsRaw(text2, "AF_WEEKLY_Material_0227", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text2, "AF_WEEKLY_Material_0228", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text2, "AF_WEEKLY_Material_0229", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text2, "AF_WEEKLY_Material_0230", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private string BuildWeeklyPromptAggregateMovementRaidGroupKey(EventMaterialReference item)
@@ -1817,7 +1822,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		string text2 = (item.ActionStableKey ?? "").Trim();
 		string text3 = (item.SnapshotText ?? item.Label ?? "").Trim();
-		bool flag = text2.IndexOf("daily_behavior:army:", StringComparison.OrdinalIgnoreCase) >= 0 || text3.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0231"), StringComparison.OrdinalIgnoreCase) >= 0;
+		bool flag = text2.IndexOf("daily_behavior:army:", StringComparison.OrdinalIgnoreCase) >= 0 || WeeklyMaterialTexts.ContainsRaw(text3, "AF_WEEKLY_Material_0231", StringComparison.OrdinalIgnoreCase);
 		if (!flag)
 		{
 			return false;
@@ -1826,7 +1831,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return true;
 		}
-		return text3.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0232"), StringComparison.OrdinalIgnoreCase) >= 0 || text3.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0233"), StringComparison.OrdinalIgnoreCase) >= 0;
+		return WeeklyMaterialTexts.ContainsRaw(text3, "AF_WEEKLY_Material_0232", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text3, "AF_WEEKLY_Material_0233", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private string BuildWeeklyPromptAggregateMovementArmySiegeGroupKey(EventMaterialReference item)
@@ -1863,41 +1868,41 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text4 = ExtractMovementArmyNameFromActionText(text2);
 		if (string.IsNullOrWhiteSpace(text4))
 		{
-			text4 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0234");
+			text4 = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0234");
 		}
 		string text5 = BuildWeeklyPromptAggregateMovementArmyTargetText(eventMaterialReference);
 		if (string.IsNullOrWhiteSpace(text5))
 		{
-			text5 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0235");
+			text5 = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0235");
 		}
 		if (flag)
 		{
 			string text6 = BuildWeeklyPromptAggregateActorAffiliationText(eventMaterialReference);
 			if (string.IsNullOrWhiteSpace(text6))
 			{
-				text6 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0236");
+				text6 = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0236");
 			}
-			string text7 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0237") + text4 + text3 + text5 + "。";
+			string text7 = text6 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0237") + text4 + text3 + text5 + WeeklyMaterialTexts.Period;
 			List<EventMaterialReference> list2 = list.Where((EventMaterialReference x) => x != eventMaterialReference).ToList();
 			string text8 = BuildWeeklyPromptAggregateSiegeParticipantsText(list2);
 			if (!string.IsNullOrWhiteSpace(text8))
 			{
-				text7 = TrimTrailingSentencePunctuation(text7) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0238") + text8 + "。";
+				text7 = TrimTrailingSentencePunctuation(text7) + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0238") + text8 + WeeklyMaterialTexts.Period;
 			}
 			return text7;
 		}
 		string text9 = BuildWeeklyPromptAggregateSiegeParticipantsText(list);
 		if (string.IsNullOrWhiteSpace(text9))
 		{
-			text9 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0239");
+			text9 = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0239");
 		}
-		return text9 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0240") + text4 + text3 + text5 + "。";
+		return text9 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0240") + text4 + text3 + text5 + WeeklyMaterialTexts.Period;
 	}
 
 	private bool IsMovementArmyLeaderMaterial(EventMaterialReference item)
 	{
 		string text = BuildWeeklyPromptAggregateMovementActionText(item, (item?.SnapshotText ?? item?.Label ?? "").Trim());
-		return text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0241"), StringComparison.OrdinalIgnoreCase) >= 0;
+		return WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0241", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private string ResolveMovementArmySiegeActionVerb(EventMaterialReference item, string actionText)
@@ -1905,23 +1910,25 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text = (item?.ActionStableKey ?? "").Trim();
 		if (text.IndexOf("BesiegeSettlement", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0242");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0242");
 		}
 		if (text.IndexOf("AssaultSettlement", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0243");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0243");
 		}
 		string text2 = (actionText ?? "").Trim();
-		if (text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0244"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text2, "AF_WEEKLY_Material_0244", StringComparison.OrdinalIgnoreCase))
 		{
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0245");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0245");
 		}
-		if (text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0246"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text2, "AF_WEEKLY_Material_0246", StringComparison.OrdinalIgnoreCase))
 		{
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0247");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0247");
 		}
 		return "";
 	}
+
+	private static readonly string[] ArmyNameTerminatorKeys = { "AF_WEEKLY_Material_0250", "AF_WEEKLY_Material_0251", "AF_WEEKLY_Material_0252", "AF_WEEKLY_Material_0253", "AF_WEEKLY_Material_0254" };
 
 	private string ExtractMovementArmyNameFromActionText(string actionText)
 	{
@@ -1930,12 +1937,10 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		int num = text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0248"), StringComparison.OrdinalIgnoreCase);
-		int num2 = 2;
+		int num = WeeklyMaterialTexts.IndexOfRaw(text, "AF_WEEKLY_Material_0248", out int num2, StringComparison.OrdinalIgnoreCase);
 		if (num < 0)
 		{
-			num = text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0249"), StringComparison.OrdinalIgnoreCase);
-			num2 = 1;
+			num = WeeklyMaterialTexts.IndexOfRaw(text, "AF_WEEKLY_Material_0249", out num2, StringComparison.OrdinalIgnoreCase);
 		}
 		if (num < 0)
 		{
@@ -1947,28 +1952,31 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return "";
 		}
 		int num4 = int.MaxValue;
-		foreach (string item in new string[5] { WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0250"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0251"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0252"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0253"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0254") })
+		foreach (string key in ArmyNameTerminatorKeys)
 		{
-			int num5 = text.IndexOf(item, num3, StringComparison.OrdinalIgnoreCase);
-			if (num5 > num3 && num5 < num4)
+			foreach (string item in WeeklyMaterialTexts.RawVariants(key))
 			{
-				num4 = num5;
+				int num5 = text.IndexOf(item, num3, StringComparison.OrdinalIgnoreCase);
+				if (num5 > num3 && num5 < num4)
+				{
+					num4 = num5;
+				}
 			}
 		}
 		if (num4 == int.MaxValue || num4 <= num3)
 		{
 			return "";
 		}
-		return text.Substring(num3, num4 - num3).Trim().Trim('，', '。', '、', ',', ' ');
+		return text.Substring(num3, num4 - num3).Trim().Trim('\uFF0C', '\u3002', '\u3001', ',', ' ');
 	}
 
 	private string BuildWeeklyPromptAggregateMovementArmyTargetText(EventMaterialReference item)
 	{
-		string text = BuildWeeklyPromptAggregateSettlementOwnerFactionText(item).Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0255"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0256"));
+		string text = BuildWeeklyPromptAggregateSettlementOwnerFactionText(item).Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0255"), WeeklyMaterialTexts.W("AF_WEEKLY_Material_0256"));
 		string text2 = ResolveSettlementDisplay(item?.SettlementId);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0257") + text2;
+			return text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0257") + text2;
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
@@ -1976,7 +1984,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0258");
+			return text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0258");
 		}
 		return "";
 	}
@@ -1984,7 +1992,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private string TrimTrailingSentencePunctuation(string text)
 	{
 		string text2 = (text ?? "").Trim();
-		while (text2.EndsWith("。", StringComparison.Ordinal) || text2.EndsWith("！", StringComparison.Ordinal) || text2.EndsWith("？", StringComparison.Ordinal))
+		while (text2.EndsWith("\u3002", StringComparison.Ordinal) || text2.EndsWith("\uff01", StringComparison.Ordinal) || text2.EndsWith("\uff1f", StringComparison.Ordinal) || text2.EndsWith(".", StringComparison.Ordinal) || text2.EndsWith("!", StringComparison.Ordinal) || text2.EndsWith("?", StringComparison.Ordinal))
 		{
 			text2 = text2.Substring(0, text2.Length - 1).TrimEnd();
 		}
@@ -2009,7 +2017,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		int num = text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0259"), StringComparison.OrdinalIgnoreCase);
+		int num = WeeklyMaterialTexts.IndexOfRaw(text, "AF_WEEKLY_Material_0259", out _, StringComparison.OrdinalIgnoreCase);
 		if (num >= 0)
 		{
 			text = text.Substring(0, num).Trim();
@@ -2017,23 +2025,23 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text2 = ResolveHeroDisplay(!string.IsNullOrWhiteSpace(item?.ActorHeroId) ? item.ActorHeroId : (!string.IsNullOrWhiteSpace(item?.HeroId) ? item.HeroId : item?.TargetHeroId));
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			if (text.StartsWith(text2 + "：", StringComparison.OrdinalIgnoreCase))
+			if (text.StartsWith(text2 + "\uff1a", StringComparison.OrdinalIgnoreCase) || text.StartsWith(text2 + ":", StringComparison.OrdinalIgnoreCase))
 			{
-				text = text.Substring((text2 + "：").Length).Trim();
+				text = text.Substring(text2.Length + 1).Trim();
 			}
 			else if (text.StartsWith(text2, StringComparison.OrdinalIgnoreCase))
 			{
-				text = text.Substring(text2.Length).TrimStart('：', ':', '，', ',', ' ');
+				text = text.Substring(text2.Length).TrimStart('\uFF1A', ':', '\uFF0C', ',', ' ');
 			}
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			string text3 = ResolveSettlementDisplay(item?.SettlementId);
-			text = (!string.IsNullOrWhiteSpace(text3)) ? (WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0260") + text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0261")) : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0262");
+			text = (!string.IsNullOrWhiteSpace(text3)) ? (WeeklyMaterialTexts.W("AF_WEEKLY_Material_0260") + text3 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0261")) : WeeklyMaterialTexts.W("AF_WEEKLY_Material_0262");
 		}
-		if (!(text.EndsWith("。") || text.EndsWith("！") || text.EndsWith("？")))
+		if (!(text.EndsWith("\u3002") || text.EndsWith("\uff01") || text.EndsWith("\uff1f") || text.EndsWith(".") || text.EndsWith("!") || text.EndsWith("?")))
 		{
-			text += "。";
+			text += WeeklyMaterialTexts.Period;
 		}
 		return text;
 	}
@@ -2046,11 +2054,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<string> list = new List<string>();
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0263") + text2);
+			list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0263") + text2);
 		}
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
-			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0264") + text3);
+			list.Add(WeeklyMaterialTexts.W("AF_WEEKLY_Material_0264") + text3);
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -2058,7 +2066,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			return string.IsNullOrWhiteSpace(text3) ? text2 : (text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0265") + text3 + ")");
+			return string.IsNullOrWhiteSpace(text3) ? text2 : (text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0265") + text3 + ")");
 		}
 		return "";
 	}
@@ -2069,7 +2077,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text2 = BuildWeeklyPromptAggregateSettlementNameWithType(item?.SettlementId);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0266") + text2;
+			return text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0266") + text2;
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
@@ -2077,7 +2085,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0267");
+			return text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0267");
 		}
 		return "";
 	}
@@ -2088,11 +2096,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text2 = ResolveKingdomDisplay(item?.SettlementOwnerKingdomId);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0268") + text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0269");
+			return text2 + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0268") + text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0269");
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0270");
+			return text + WeeklyMaterialTexts.W("AF_WEEKLY_Material_0270");
 		}
 		return text2;
 	}
@@ -2122,16 +2130,16 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	{
 		if (item?.Won.HasValue == true)
 		{
-			return item.Won.Value ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0271") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0272");
+			return item.Won.Value ? WeeklyMaterialTexts.W("AF_WEEKLY_Material_0271") : WeeklyMaterialTexts.W("AF_WEEKLY_Material_0272");
 		}
 		string text = (item?.SnapshotText ?? item?.Label ?? "").Trim();
-		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0273"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0274"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0275"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0273", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0274", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0275", StringComparison.OrdinalIgnoreCase))
 		{
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0276");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0276");
 		}
-		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0277"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0278"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0279"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0277", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0278", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0279", StringComparison.OrdinalIgnoreCase))
 		{
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0280");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0280");
 		}
 		return "";
 	}
@@ -2291,19 +2299,19 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		switch ((array[array.Length - 1] ?? "").Trim())
 		{
 		case "BySiege":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0318");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0318");
 		case "ByBarter":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0319");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0319");
 		case "ByLeaveFaction":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0320");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0320");
 		case "ByKingDecision":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0321");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0321");
 		case "ByGift":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0322");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0322");
 		case "ByRebellion":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0323");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0323");
 		case "ByClanDestruction":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0324");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0324");
 		default:
 			return (array[array.Length - 1] ?? "").Trim();
 		}
@@ -2333,19 +2341,19 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		switch ((array[num] ?? "").Trim())
 		{
 		case "Ransom":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0325");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0325");
 		case "ReleasedByChoice":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0326");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0326");
 		case "ReleasedAfterPeace":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0327");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0327");
 		case "ReleasedAfterEscape":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0328");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0328");
 		case "ReleasedAfterBattle":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0329");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0329");
 		case "ReleasedByCompensation":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0330");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0330");
 		case "Death":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0331");
+			return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0331");
 		default:
 			return (array[num] ?? "").Trim();
 		}

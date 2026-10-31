@@ -171,9 +171,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					}
 					bool opened = behavior.TryOpenCreateCompanionParty(targetHero, createCommands, out string createMessage);
 					notifications.Add(createMessage);
-					generatedFacts.Add(WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(targetHero) + (opened
-						? WorldMapSourceTexts.Get("raw_literals.wm_lit_0002")
-						: WorldMapSourceTexts.Get("raw_literals.wm_lit_0003") + createMessage));
+					generatedFacts.Add(WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + (opened
+						? PromptComposerTexts.Format("memory_worldmap_CompanionTaskAccepted", ("ACTOR", GetHeroName(targetHero)))
+						: PromptComposerTexts.Format("memory_worldmap_DisplayCompanionCreateFailed", ("HERO", GetHeroName(targetHero)), ("DETAIL", createMessage))));
 					result.Handled = opened;
 					result.CompanionPartyCreationQueued = opened;
 					result.AddedCommandCount = opened ? createCommands.Count : 0;
@@ -195,9 +195,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				bool accepted = behavior.TryStartGovernorExpeditionRequest(targetHero, expeditionCommands, out string expeditionMessage, out bool queuedForChannelExit);
 				notifications.Add(expeditionMessage);
-				generatedFacts.Add(WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(targetHero) + (accepted
-					? WorldMapSourceTexts.Get("raw_literals.wm_lit_0004")
-					: WorldMapSourceTexts.Get("raw_literals.wm_lit_0005") + expeditionMessage));
+				generatedFacts.Add(WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + (accepted
+					? PromptComposerTexts.Format("memory_worldmap_GovernorTaskAccepted", ("ACTOR", GetHeroName(targetHero)))
+					: PromptComposerTexts.Format("memory_worldmap_DisplayGovernorExpeditionFailed", ("HERO", GetHeroName(targetHero)), ("DETAIL", expeditionMessage))));
 				result.Handled = accepted;
 				result.GovernorExpeditionCreationQueued = accepted && queuedForChannelExit;
 				result.AddedCommandCount = accepted ? expeditionCommands.Count : 0;
@@ -263,7 +263,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			if (!string.IsNullOrWhiteSpace(notification))
 			{
-				bool failure = notification.IndexOf(WorldMapSourceTexts.Get("attack_detail_outcomes.failure"), StringComparison.OrdinalIgnoreCase) >= 0
+				bool failure = notification.IndexOf(WorldMapSourceTexts.Source("attack_detail_outcomes.failure"), StringComparison.OrdinalIgnoreCase) >= 0
 					|| notification.IndexOf("failed", StringComparison.OrdinalIgnoreCase) >= 0
 					|| notification.IndexOf("invalid", StringComparison.OrdinalIgnoreCase) >= 0
 					|| notification.IndexOf("cannot", StringComparison.OrdinalIgnoreCase) >= 0

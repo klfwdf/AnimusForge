@@ -1463,7 +1463,7 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 				orderby g.Any((MyBehavior.PartyTransferPromptEntry x) => x.IsHero) descending, g.Max(GetScenePartyTransferTroopTier) descending, g.Key
 				select g)
 			{
-				string text = string.Join("、",
+				string text = string.Join(ConversationRuntimeTexts.ListSeparator,
 					from x in item
 					orderby x.DisplayName
 					select BuildCompactPartyTransferEntryTextForScene(x, isPrisoner: true) into x
@@ -1471,7 +1471,7 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 					select x);
 				if (!string.IsNullOrWhiteSpace(text))
 				{
-					sb.AppendLine(item.Key + "：" + text);
+					sb.AppendLine(item.Key + ConversationRuntimeTexts.Colon + text);
 				}
 			}
 			return;
@@ -1484,7 +1484,7 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 			orderby g.Max(GetScenePartyTransferTroopTier) descending, g.Key
 			select g)
 		{
-			string text2 = string.Join("、",
+			string text2 = string.Join(ConversationRuntimeTexts.ListSeparator,
 				from x in item2
 				orderby x.DisplayName
 				select BuildCompactPartyTransferEntryTextForScene(x, isPrisoner: false) into x
@@ -1492,7 +1492,7 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 				select x);
 			if (!string.IsNullOrWhiteSpace(text2))
 			{
-				sb.AppendLine(item2.Key + "：" + text2);
+				sb.AppendLine(item2.Key + ConversationRuntimeTexts.Colon + text2);
 			}
 		}
 	}
@@ -1591,7 +1591,7 @@ internal static string BuildCompactPartyTransferEntryTextForScene(MyBehavior.Par
 		if (isPrisoner && entry.IsHero)
 		{
 			string sourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(entry);
-			return entry.PromptIndex + ". " + text + "x1" + (string.IsNullOrWhiteSpace(sourceLabel) ? "" : (ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0347") + sourceLabel + "）"));
+			return entry.PromptIndex + ". " + text + "x1" + (string.IsNullOrWhiteSpace(sourceLabel) ? "" : (ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0347") + sourceLabel + ConversationRuntimeTexts.CloseParen));
 		}
 		string text2 = entry.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0348") : "";
 		return entry.PromptIndex + ". " + text + "x" + num + text2;
@@ -1734,7 +1734,7 @@ internal static List<PostprocessRuleEntry> BuildPersistentAdpDebtPostprocessRule
 			string description = (rule.Description ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(description))
 			{
-				description += "；";
+				description += ConversationRuntimeTexts.Semicolon;
 			}
 			description += ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0362");
 			result.Add(new PostprocessRuleEntry
@@ -1770,7 +1770,7 @@ internal static string BuildPostprocessRuleTextForScene(IEnumerable<PostprocessR
 			stringBuilder.Append(entry.Tag.Trim());
 			if (!string.IsNullOrWhiteSpace(entry.Description))
 			{
-				stringBuilder.Append("：").Append(entry.Description.Trim());
+				stringBuilder.Append(ConversationRuntimeTexts.Colon).Append(entry.Description.Trim());
 			}
 			stringBuilder.AppendLine();
 		}

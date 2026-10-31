@@ -142,12 +142,12 @@ public static class SexualConceptionBehavior
 			}
 		}
 
-		string fact = SocialSourceTexts.Get("S215") + npcName + SocialSourceTexts.Get("S216");
+		string fact = SocialSourceTexts.Join(SocialSourceTexts.Get("S215"), npcName, SocialSourceTexts.Get("S216"));
 		if (becamePregnant)
 		{
-			fact += (mother == Hero.MainHero)
-				? (SocialSourceTexts.Get("S217") + npcName + "。")
-				: (SocialSourceTexts.Get("S218") + npcName + SocialSourceTexts.Get("S219"));
+			fact = SocialSourceTexts.Join(fact, (mother == Hero.MainHero)
+				? (SocialSourceTexts.Join(SocialSourceTexts.Get("S217"), npcName) + SocialSourceTexts.Period)
+				: SocialSourceTexts.Join(SocialSourceTexts.Get("S218"), npcName, SocialSourceTexts.Get("S219")));
 		}
 		MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
 		Logger.Log("SexualConception", "intimacy applied target=" + (targetHero.StringId ?? "") + " mother=" + (mother.StringId ?? "") + " father=" + (father.StringId ?? "") + " chance=" + pregnancyChance.ToString("0.00") + " roll=" + ((pregnancyRoll < 0f) ? "not_rolled" : pregnancyRoll.ToString("0.0000")) + " pregnancy=" + becamePregnant + " result=" + skipReason + " patch=" + _pregnancyFatherPatchStatus);

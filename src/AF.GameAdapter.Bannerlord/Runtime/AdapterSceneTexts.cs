@@ -51,6 +51,21 @@ internal static class AdapterSceneTexts
     internal static string RawSource(string key) => Compatibility.Chinese(key);
     internal static string[] RawVariants(string key) => Compatibility.Variants(key);
     internal static bool IsRaw(string value, string key) => Compatibility.Is(value, key);
+    /// <summary>Current-language value padded for word concatenation; see <see cref="AdapterRecordTexts.Pad"/>.</summary>
+    internal static string W(string key) => AdapterRecordTexts.Pad(Compatibility.Get(key));
+    internal static bool EqualsRaw(string value, string key, StringComparison comparison)
+    {
+        foreach (string variant in Compatibility.Variants(key))
+            if (string.Equals(value, variant, comparison)) return true;
+        return false;
+    }
+    internal static bool ContainsRaw(string text, string key, StringComparison comparison)
+    {
+        if (string.IsNullOrEmpty(text)) return false;
+        foreach (string variant in Compatibility.Variants(key))
+            if (variant.Length > 0 && text.IndexOf(variant, comparison) >= 0) return true;
+        return false;
+    }
     internal static string ProjectLabelForPrompt(string value)
         => value != null && LabelKeys.Value.TryGetValue(value.Trim(), out string key) ? Get(key) : value;
     internal static string ResolveRawLabel(string value)

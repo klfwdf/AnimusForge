@@ -14,13 +14,22 @@ internal static class NobleGatheringTextProjection
     private sealed class Template
     {
         internal readonly string Key, English;
-        internal readonly string[] Names;
-        internal readonly Regex Pattern;
+        private readonly Regex[] _patterns;
+        private readonly string[][] _names;
         internal Template(string key, string english = null)
         {
             Key = key;
             English = english;
-            string source = DiplomacyCompatibilityTexts.Get(key);
+            // Stored text may be in either language, so every variant of the source template is matched.
+            string[] variants = DiplomacyCompatibilityTexts.Variants(key);
+            _patterns = new Regex[variants.Length];
+            _names = new string[variants.Length][];
+            for (int i = 0; i < variants.Length; i++)
+                _patterns[i] = Compile(variants[i], out _names[i]);
+        }
+
+        private static Regex Compile(string source, out string[] slotNames)
+        {
             var names = new List<string>();
             var pattern = new StringBuilder(@"\A");
             int position = 0;
@@ -33,25 +42,31 @@ internal static class NobleGatheringTextProjection
                 position = slot.Index + slot.Length;
             }
             pattern.Append(Regex.Escape(source.Substring(position))).Append(@"\z");
-            Names = names.ToArray();
-            Pattern = new Regex(pattern.ToString(), RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline);
+            slotNames = names.ToArray();
+            return new Regex(pattern.ToString(), RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline);
         }
 
         internal bool TryMatch(string source, out Dictionary<string, string> values)
         {
             values = null;
-            Match match = Pattern.Match(source);
-            if (!match.Success) return false;
-            var captured = new Dictionary<string, string>(StringComparer.Ordinal);
-            foreach (string name in Names)
+            for (int i = 0; i < _patterns.Length; i++)
             {
-                string value = match.Groups[name].Value;
-                if ((name == "DAYS" || name == "COST" || name == "COUNT")
-                    && !double.TryParse(value, NumberStyles.Number, CultureInfo.CurrentCulture, out _)) return false;
-                captured[name] = value;
+                Match match = _patterns[i].Match(source);
+                if (!match.Success) continue;
+                var captured = new Dictionary<string, string>(StringComparer.Ordinal);
+                bool valid = true;
+                foreach (string name in _names[i])
+                {
+                    string value = match.Groups[name].Value;
+                    if ((name == "DAYS" || name == "COST" || name == "COUNT")
+                        && !double.TryParse(value, NumberStyles.Number, CultureInfo.CurrentCulture, out _)) { valid = false; break; }
+                    captured[name] = value;
+                }
+                if (!valid) continue;
+                values = captured;
+                return true;
             }
-            values = captured;
-            return true;
+            return false;
         }
     }
 
@@ -136,7 +151,8 @@ internal static class NobleGatheringTextProjection
         var values = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var alias in new[] { ("Place", "settlement"), ("Hero", "heroes"), ("Clan", "clans"),
             ("Kingdom", "kingdoms"), ("Faction", "kingdoms"), ("Culture", "cultures"), ("Age", "age"), ("Gender", "gender") })
-            values[DiplomacyCompatibilityTexts.Get("Gathering_Selector" + alias.Item1)] = alias.Item2;
+            foreach (string variant in DiplomacyCompatibilityTexts.Variants("Gathering_Selector" + alias.Item1))
+                values[variant] = alias.Item2;
         return values;
     });
 
@@ -218,25 +234,57 @@ internal static class NobleGatheringTextProjection
 
     private static string ProjectRole(string role)
     {
-        foreach (string key in new[] { "Gathering_RoleKing", "Gathering_RoleClanLeader", "Gathering_RoleNoble" })
-            if (role == DiplomacyCompatibilityTexts.Get(key)) return DiplomacyMiscPromptTexts.GetRequired(key);
+        foreach (string key in RoleKeys)
+            if (DiplomacyCompatibilityTexts.Is(role, key)) return DiplomacyMiscPromptTexts.GetRequired(key);
         return role;
     }
 
-    private static readonly Lazy<Regex> NamedGuest = new Lazy<Regex>(() => new Regex(
-        @"\G(?<HERO>.+?)" + Regex.Escape("（") + "(?<ROLE>"
-        + string.Join("|", new[] { "Gathering_RoleKing", "Gathering_RoleClanLeader", "Gathering_RoleNoble" }
-            .Select(key => Regex.Escape(DiplomacyCompatibilityTexts.Get(key)))) + ")"
-        + Regex.Escape("）") + "(?:" + Regex.Escape(DiplomacyCompatibilityTexts.Get("Gathering_ListSeparator")) + @"|\z)",
-        RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline));
+    private static readonly string[] RoleKeys = { "Gathering_RoleKing", "Gathering_RoleClanLeader", "Gathering_RoleNoble" };
+
+    // One guest-list grammar per language; a stored list is written wholly in one language.
+    private static readonly Lazy<Regex[]> NamedGuest = new Lazy<Regex[]>(() =>
+        new[] { BuildNamedGuest(DiplomacyCompatibilityTexts.Source), BuildNamedGuest(EnglishVariant) }
+            .Where(pattern => pattern != null).ToArray());
+
+    private static string EnglishVariant(string key)
+    {
+        string[] variants = DiplomacyCompatibilityTexts.Variants(key);
+        return variants[variants.Length - 1];
+    }
+
+    // Built from the {HERO}{open}{ROLE}{close} name-role template so no punctuation is hard-coded here.
+    private static Regex BuildNamedGuest(Func<string, string> text)
+    {
+        string nameRole = text("Gathering_WeeklyNameRole");
+        int hero = nameRole.IndexOf("{HERO}", StringComparison.Ordinal);
+        int role = nameRole.IndexOf("{ROLE}", StringComparison.Ordinal);
+        if (hero != 0 || role < 6) return null;
+        string open = nameRole.Substring(6, role - 6);
+        string close = nameRole.Substring(role + 6);
+        return new Regex(
+            @"\G(?<HERO>.+?)" + Regex.Escape(open) + "(?<ROLE>"
+            + string.Join("|", RoleKeys.Select(key => Regex.Escape(text(key)))) + ")"
+            + Regex.Escape(close) + "(?:" + Regex.Escape(text("Gathering_ListSeparator")) + @"|\z)",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline);
+    }
 
     private static string ProjectNamedGuestList(string raw, bool forUi = false)
     {
+        foreach (Regex pattern in NamedGuest.Value)
+        {
+            string projected = ProjectNamedGuestList(pattern, raw, forUi);
+            if (projected != null) return projected;
+        }
+        return raw;
+    }
+
+    private static string ProjectNamedGuestList(Regex pattern, string raw, bool forUi)
+    {
         var result = new List<string>();
         int position = 0;
-        foreach (Match guest in NamedGuest.Value.Matches(raw))
+        foreach (Match guest in pattern.Matches(raw))
         {
-            if (guest.Index != position) return raw;
+            if (guest.Index != position) return null;
             position += guest.Length;
             result.Add(forUi
                 ? NobleGatheringUiText.Render("AF_DIP_UI_Gathering_WeeklyNameRole", "{HERO} ({ROLE})",
@@ -245,7 +293,7 @@ internal static class NobleGatheringTextProjection
                     ("HERO", guest.Groups["HERO"].Value), ("ROLE", ProjectRole(guest.Groups["ROLE"].Value))));
         }
         return position == raw.Length && result.Count > 0
-            ? string.Join(forUi ? NobleGatheringUiText.ListSeparator : DiplomacyMiscPromptTexts.GetRequired("Gathering_ListSeparator"), result) : raw;
+            ? string.Join(forUi ? NobleGatheringUiText.ListSeparator : DiplomacyMiscPromptTexts.GetRequired("Gathering_ListSeparator"), result) : null;
     }
 
     private static string ProjectReasonForPrompt(string raw)

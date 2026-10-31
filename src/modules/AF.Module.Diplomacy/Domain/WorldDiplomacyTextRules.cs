@@ -504,13 +504,17 @@ public static string FormatBattleFactForPrompt(WorldDiplomacyBattleFact fact,
 	}
 
     private static readonly string[] BattleTypePromptKeys = { "BattleTypeSiege", "BattleTypeRaid", "BattleTypeField" };
+    // Stored battle types are written with Battle_* in the game language of the time; match either edition.
+    private static readonly string[] BattleTypeStoredKeys = { "Battle_Siege", "Battle_Raid", "Battle_Field" };
 
     private static string ProjectBattleTypeForPrompt(string type, Func<string, string, string> localize)
     {
         if (localize == null) return type;
-        foreach (string key in BattleTypePromptKeys)
+        for (int i = 0; i < BattleTypePromptKeys.Length; i++)
         {
-            if (string.Equals(type, WorldDiplomacyPromptContractRules.ContractText(null, key, ""), StringComparison.Ordinal))
+            string key = BattleTypePromptKeys[i];
+            if (string.Equals(type, WorldDiplomacyPromptContractRules.ContractText(null, key, ""), StringComparison.Ordinal)
+                || DiplomacyCompatibilityTexts.Is(type, BattleTypeStoredKeys[i]))
                 return localize(key, key == "BattleTypeSiege" ? "Siege battle" : key == "BattleTypeRaid" ? "Raid battle" : "Field battle");
         }
         return type;

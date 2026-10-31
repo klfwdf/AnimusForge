@@ -669,17 +669,17 @@ private static string BuildClanFortificationSummaryCore(Clan clan, bool forPromp
 
 		List<string> list2 = list.Select(GetSettlementDisplayName).Take(4).ToList();
 
-		string text = string.Join("、", list2);
+		string text = string.Join(KingdomCivilWarTexts.ListSeparator, list2);
 
 		if (list.Count > list2.Count)
 
 		{
 
-			text += forPrompt ? AdapterPromptCaptureTexts.PcapFormat("kingdom_fiefs_more", " and others, {COUNT} total", ("COUNT", list.Count)) : KingdomCivilWarTexts.Raw("KS_Runtime_93ac7be2bc1f") + list.Count + KingdomCivilWarTexts.Raw("KS_Runtime_59e25af67494");
+			text += forPrompt ? AdapterPromptCaptureTexts.PcapFormat("kingdom_fiefs_more", " and others, {COUNT} total", ("COUNT", list.Count)) : KingdomCivilWarTexts.W("KS_Runtime_93ac7be2bc1f") + list.Count + KingdomCivilWarTexts.W("KS_Runtime_59e25af67494");
 
 		}
 
-		return forPrompt ? AdapterPromptCaptureTexts.PcapFormat("kingdom_clan_fiefs", "The {CLAN} clan currently controls these core fiefs: {FIEFS}.", ("CLAN", GetClanDisplayName(clan)), ("FIEFS", text)) : GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_df999cf1c998") + text + "。";
+		return forPrompt ? AdapterPromptCaptureTexts.PcapFormat("kingdom_clan_fiefs", "The {CLAN} clan currently controls these core fiefs: {FIEFS}.", ("CLAN", GetClanDisplayName(clan)), ("FIEFS", text)) : KingdomCivilWarTexts.Tidy(GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_df999cf1c998") + text + KingdomCivilWarTexts.Period);
 
 	}
 
@@ -1185,7 +1185,7 @@ internal void RecordPlayerClanChangedKingdomActionIfRelevant(Clan clan, Kingdom 
 
 			{
 
-				text = string.IsNullOrWhiteSpace(narrative) ? (KingdomCivilWarTexts.Raw("KS_Runtime_06a360a3fc5e") + clanName + KingdomCivilWarTexts.Raw("KS_Runtime_56e3a3c9f599")) : narrative;
+				text = string.IsNullOrWhiteSpace(narrative) ? KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_06a360a3fc5e") + clanName + KingdomCivilWarTexts.W("KS_Runtime_56e3a3c9f599")) : narrative;
 
 			}
 
@@ -1193,7 +1193,7 @@ internal void RecordPlayerClanChangedKingdomActionIfRelevant(Clan clan, Kingdom 
 
 			{
 
-				text = KingdomCivilWarTexts.Raw("KS_Runtime_cec036ab626e") + GetKingdomDisplayName(playerKingdom, KingdomCivilWarTexts.Raw("KS_Runtime_a9d885b62bdf")) + KingdomCivilWarTexts.Raw("KS_Runtime_4e6371cdbb40") + clanName + KingdomCivilWarTexts.Raw("KS_Runtime_506dada4b77a");
+				text = KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_cec036ab626e") + GetKingdomDisplayName(playerKingdom, KingdomCivilWarTexts.Raw("KS_Runtime_a9d885b62bdf")) + KingdomCivilWarTexts.W("KS_Runtime_4e6371cdbb40") + clanName + KingdomCivilWarTexts.W("KS_Runtime_506dada4b77a"));
 
 				won = true;
 
@@ -1203,7 +1203,7 @@ internal void RecordPlayerClanChangedKingdomActionIfRelevant(Clan clan, Kingdom 
 
 			{
 
-				text = clanName + KingdomCivilWarTexts.Raw("KS_Runtime_9c4130987db2") + GetKingdomDisplayName(playerKingdom, KingdomCivilWarTexts.Raw("KS_Runtime_a9d885b62bdf")) + "。";
+				text = KingdomCivilWarTexts.Tidy(clanName + KingdomCivilWarTexts.W("KS_Runtime_9c4130987db2") + GetKingdomDisplayName(playerKingdom, KingdomCivilWarTexts.Raw("KS_Runtime_a9d885b62bdf")) + KingdomCivilWarTexts.Period);
 
 				won = false;
 
@@ -1237,7 +1237,7 @@ internal void OnClanDefected(Clan clan, Kingdom oldKingdom, Kingdom newKingdom)
 
 			string text = BuildClanChangedKingdomStableKey(clan, oldKingdom, newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail.JoinKingdomByDefection);
 
-			string text2 = KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_1395c42e0d49") + GetKingdomDisplayName(oldKingdom, KingdomCivilWarTexts.Raw("KS_Runtime_1dc2c55dd2bb")) + KingdomCivilWarTexts.Raw("KS_Runtime_8d3fe556497f") + GetKingdomDisplayName(newKingdom, KingdomCivilWarTexts.Raw("KS_Runtime_b3cfb1c673f8")) + "。";
+			string text2 = KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_1395c42e0d49") + GetKingdomDisplayName(oldKingdom, KingdomCivilWarTexts.Raw("KS_Runtime_1dc2c55dd2bb")) + KingdomCivilWarTexts.W("KS_Runtime_8d3fe556497f") + GetKingdomDisplayName(newKingdom, KingdomCivilWarTexts.Raw("KS_Runtime_b3cfb1c673f8")) + KingdomCivilWarTexts.Period);
 
 			foreach (Hero item in GetTrackedLordsForClan(clan))
 
@@ -1293,7 +1293,7 @@ internal void OnRulingClanChanged(Kingdom kingdom, Clan eventRulingClan)
 
 			string text = "ruling_clan_changed:" + GetKingdomId(kingdom) + ":" + GetClanId(rulingClan);
 
-			string text2 = KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(rulingClan) + KingdomCivilWarTexts.Raw("KS_Runtime_0ea04b13152b") + GetKingdomDisplayName(kingdom, KingdomCivilWarTexts.Raw("KS_Runtime_6186cd81a9a5")) + KingdomCivilWarTexts.Raw("KS_Runtime_a6dc5bdd3e76");
+			string text2 = KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(rulingClan) + KingdomCivilWarTexts.W("KS_Runtime_0ea04b13152b") + GetKingdomDisplayName(kingdom, KingdomCivilWarTexts.Raw("KS_Runtime_6186cd81a9a5")) + KingdomCivilWarTexts.W("KS_Runtime_a6dc5bdd3e76"));
 
 			foreach (Hero item in GetTrackedLordsForClan(rulingClan))
 
@@ -1357,7 +1357,7 @@ internal void OnClanLeaderChanged(Hero oldLeader, Hero newLeader)
 
 				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(clan));
 
-				string text2 = string.Equals(GetHeroId(item), GetHeroId(newLeader), StringComparison.OrdinalIgnoreCase) ? (KingdomCivilWarTexts.Raw("KS_Runtime_3f8ab54b1ec5") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_de1ca4a0dd7e")) : (GetHeroDisplayName(newLeader) + KingdomCivilWarTexts.Raw("KS_Runtime_dea7af3bdb2b") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_de1ca4a0dd7e"));
+				string text2 = string.Equals(GetHeroId(item), GetHeroId(newLeader), StringComparison.OrdinalIgnoreCase) ? KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_3f8ab54b1ec5") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_de1ca4a0dd7e")) : KingdomCivilWarTexts.Tidy(GetHeroDisplayName(newLeader) + KingdomCivilWarTexts.W("KS_Runtime_dea7af3bdb2b") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_de1ca4a0dd7e"));
 
 				_events.Record().RecordNpcMajorAction(item, text2, text, npcActionFacts);
 
@@ -1393,7 +1393,7 @@ internal void OnClanDestroyed(Clan destroyedClan)
 
 			string kingdomId = GetKingdomId(destroyedClan?.Kingdom);
 
-			string text = clanDisplayName + KingdomCivilWarTexts.Raw("KS_Runtime_a2137d0bac73");
+			string text = KingdomCivilWarTexts.Tidy(clanDisplayName + KingdomCivilWarTexts.W("KS_Runtime_a2137d0bac73"));
 
 			bool includeInWorld = destroyedClan != null && destroyedClan == destroyedClan.Kingdom?.RulingClan;
 
@@ -1453,43 +1453,43 @@ internal static string BuildClanChangedKingdomNarrative(Clan clan, Kingdom oldKi
 
 		case ChangeKingdomAction.ChangeKingdomActionDetail.JoinAsMercenary:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_534feee7d6a3") + kingdomDisplayName2 + "。";
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_534feee7d6a3") + kingdomDisplayName2 + KingdomCivilWarTexts.Period);
 
 		case ChangeKingdomAction.ChangeKingdomActionDetail.JoinKingdom:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_9e349186f855") + kingdomDisplayName2 + "。";
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_9e349186f855") + kingdomDisplayName2 + KingdomCivilWarTexts.Period);
 
 		case ChangeKingdomAction.ChangeKingdomActionDetail.JoinKingdomByDefection:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_cbe837f36a6f") + kingdomDisplayName + KingdomCivilWarTexts.Raw("KS_Runtime_8addb841431a") + kingdomDisplayName2 + "。";
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_cbe837f36a6f") + kingdomDisplayName + KingdomCivilWarTexts.W("KS_Runtime_8addb841431a") + kingdomDisplayName2 + KingdomCivilWarTexts.Period);
 
 		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveKingdom:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_1395c42e0d49") + kingdomDisplayName + "。";
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_1395c42e0d49") + kingdomDisplayName + KingdomCivilWarTexts.Period);
 
 		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveWithRebellion:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_1395c42e0d49") + kingdomDisplayName + KingdomCivilWarTexts.Raw("KS_Runtime_6b7e8cb35a39");
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_1395c42e0d49") + kingdomDisplayName + KingdomCivilWarTexts.W("KS_Runtime_6b7e8cb35a39"));
 
 		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveAsMercenary:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_f6e5f536d5c0") + kingdomDisplayName + KingdomCivilWarTexts.Raw("KS_Runtime_ca20743125be");
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_f6e5f536d5c0") + kingdomDisplayName + KingdomCivilWarTexts.W("KS_Runtime_ca20743125be"));
 
 		case ChangeKingdomAction.ChangeKingdomActionDetail.CreateKingdom:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_2839ba39f792") + kingdomDisplayName2 + "。";
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_2839ba39f792") + kingdomDisplayName2 + KingdomCivilWarTexts.Period);
 
 		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveByKingdomDestruction:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7ce856c6f6f1") + kingdomDisplayName + KingdomCivilWarTexts.Raw("KS_Runtime_6fc55f1bf8d9") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_619089584b8a");
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7ce856c6f6f1") + kingdomDisplayName + KingdomCivilWarTexts.W("KS_Runtime_6fc55f1bf8d9") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_619089584b8a"));
 
 		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveByClanDestruction:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_7a9f77444c25");
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_7a9f77444c25"));
 
 		default:
 
-			return KingdomCivilWarTexts.Raw("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.Raw("KS_Runtime_4fed956b194a");
+			return KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KS_Runtime_7a2c3fa0b62e") + GetClanDisplayName(clan) + KingdomCivilWarTexts.W("KS_Runtime_4fed956b194a"));
 
 		}
 

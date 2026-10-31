@@ -5,8 +5,18 @@ namespace AnimusForge.Illustrator.UI
     // Display-only projection. Keep worker errors, diagnostic records and provider details intact.
     internal static class IllustrationFailureUiText
     {
-        private static readonly System.Text.RegularExpressions.Regex ImageBudget = new System.Text.RegularExpressions.Regex(
-            IllustratorText.Raw("Error_ImagePromptBudgetRegex"), System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+        // The worker writes the budget error in the language current at failure time; accept both editions.
+        private static readonly Lazy<System.Text.RegularExpressions.Regex[]> ImageBudgetPatterns = new Lazy<System.Text.RegularExpressions.Regex[]>(() =>
+            Array.ConvertAll(IllustratorText.RawVariants("Error_ImagePromptBudgetRegex"),
+                pattern => new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions.CultureInvariant)), true);
+
+        private static System.Text.RegularExpressions.Match MatchImageBudget(string raw)
+        {
+            System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Match.Empty;
+            foreach (var pattern in ImageBudgetPatterns.Value)
+                if ((match = pattern.Match(raw ?? string.Empty)).Success) return match;
+            return match;
+        }
         internal static string Project(string raw)
             => Project(raw, unwrapCommunication: true);
 
@@ -16,7 +26,7 @@ namespace AnimusForge.Illustrator.UI
                 return IllustratorUiText.Resolve("AF_ILL_ERROR_PANORAMA_ROOTS_BUDGET", "The current scene has more than 32768 root entities to traverse. The environment snapshot stopped; a truncated copy must not be marked as a complete panorama.");
             if (raw == IllustratorText.Raw("Error_PanoramaNodesBudget") || raw == "The current environment hierarchy has more than 32768 nodes. The snapshot stopped; an incomplete copy must not be marked as a complete panorama.")
                 return IllustratorUiText.Resolve("AF_ILL_ERROR_PANORAMA_NODES_BUDGET", "The current environment hierarchy has more than 32768 nodes. The snapshot stopped; an incomplete copy must not be marked as a complete panorama.");
-            var imageBudget = ImageBudget.Match(raw ?? string.Empty);
+            var imageBudget = MatchImageBudget(raw);
             if (imageBudget.Success)
                 return IllustratorUiText.Format("AF_ILL_ERROR_IMAGE_PROMPT_BUDGET", "The image prompt exceeds the {LIMIT}-character budget and cannot be shortened while preserving facts, reference-image constraints and complete paragraphs. No request was sent. Shorten custom styles or requirements, or reduce the material for this request.", "LIMIT", imageBudget.Groups[1].Value);
             switch (IllustratorText.NormalizeLegacyCase(raw))

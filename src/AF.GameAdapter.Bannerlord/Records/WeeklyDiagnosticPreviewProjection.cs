@@ -15,7 +15,7 @@ internal static class WeeklyDiagnosticPreviewProjection
 		{
 			return;
 		}
-		stringBuilder.AppendLine(label + "：" + value.Trim());
+		stringBuilder.AppendLine(label + AdapterRecordTexts.Colon + value.Trim());
 	}
 
 	internal static string BuildSingle(WeeklyEditorDisplayPort port, WeeklyEventMaterialPreviewGroup group, string systemPrompt, string userPrompt)
@@ -27,10 +27,10 @@ internal static class WeeklyDiagnosticPreviewProjection
 		port.AppendDevNpcActionField(stringBuilder, AdapterRecordTexts.Raw("AF_REC_Diagnostic_0006"), port.PromptProfileLabel());
 		port.AppendDevNpcActionField(stringBuilder, "MaxTokens", port.GetEventAndRebellionApiMaxTokens().ToString());
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【System Prompt】");
+		stringBuilder.AppendLine("[System Prompt]");
 		stringBuilder.AppendLine(systemPrompt ?? "");
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【User Prompt】");
+		stringBuilder.AppendLine("[User Prompt]");
 		stringBuilder.AppendLine(userPrompt ?? "");
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -47,10 +47,10 @@ internal static class WeeklyDiagnosticPreviewProjection
 		port.AppendDevNpcActionField(stringBuilder, AdapterRecordTexts.Raw("AF_REC_Diagnostic_0005"), string.Join(" | ", list.Select((WeeklyEventMaterialPreviewGroup x) => ((x?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report")));
 		port.AppendDevNpcActionField(stringBuilder, "MaxTokens", port.GetEventAndRebellionApiMaxTokens().ToString());
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【System Prompt】");
+		stringBuilder.AppendLine("[System Prompt]");
 		stringBuilder.AppendLine(systemPrompt ?? "");
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【User Prompt】");
+		stringBuilder.AppendLine("[User Prompt]");
 		stringBuilder.AppendLine(userPrompt ?? "");
 		return stringBuilder.ToString().TrimEnd();
 	}

@@ -2044,8 +2044,10 @@ internal sealed partial class SceneConversationSessionRuntime
 		if (candidateCount < 2) return false;
         if (framedCount > 1) return true;
         if (string.IsNullOrWhiteSpace(playerText)) return false;
-		return Regex.IsMatch(playerText.Trim(), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0728"), RegexOptions.CultureInvariant)
-            || Regex.IsMatch(playerText.Trim(), @"\b(?:you all|all of you|everyone|everybody|folks|brothers|sisters|brethren|comrades|ladies and gentlemen)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		string trimmed = playerText.Trim();
+		foreach (string pattern in ConversationRuntimeTexts.RawVariants("AF_CONV_Runtime_0728"))
+			if (Regex.IsMatch(trimmed, pattern, RegexOptions.CultureInvariant)) return true;
+		return Regex.IsMatch(trimmed, @"\b(?:you all|all of you|everyone|everybody|folks|brothers|sisters|brethren|comrades|ladies and gentlemen)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 	}
 
 	private static bool TrySelectUnansweredSceneGroupRelayTarget(IEnumerable<NpcDataPacket> candidates, HashSet<int> answeredAgentIndices, out int targetAgentIndex)

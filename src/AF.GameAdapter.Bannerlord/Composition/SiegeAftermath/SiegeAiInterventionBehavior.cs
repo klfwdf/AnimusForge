@@ -2611,7 +2611,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_soldierAppeasementApplied = false;
 			_soldierAppeasementMoralePenaltyApplied = false;
 			SiegeSoldierAppeasementProfile soldierProfile = new SiegeSoldierAppeasementProfile();
-			RecordInterventionMemory(soldierProfile.NeedMemoryTitle, soldierProfile.BuildNeedMemoryText(outcomeName));
+			RecordInterventionMemory(GcczTownPromptResourceProvider.UseEnglishPrompt ? soldierProfile.NeedMemoryTitleEn : soldierProfile.NeedMemoryTitle, soldierProfile.BuildNeedMemoryText(outcomeName, GcczTownPromptResourceProvider.UseEnglishPrompt));
 			InformationManager.DisplayMessage(new InformationMessage(GcczLocalizedResourceLoader.UseChineseInterface ? soldierProfile.NeedMessageText : soldierProfile.NeedMessageTextEn, Color.FromUint(soldierProfile.NeedMessageColor)));
 			GcczDiagnosticLog.Log("SoldierAppeasement", "semanticDiscontent outcome=" + (outcomeName ?? "N/A")
 				+ " speakerAgent=" + speakerAgentIndex
@@ -2642,7 +2642,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			SiegeSoldierAppeasementProfile soldierProfile = new SiegeSoldierAppeasementProfile();
 			_soldierAppeasementApplied = true;
-			RecordInterventionMemory(soldierProfile.AppeasementMemoryTitle, soldierProfile.AppeasementMemoryText);
+			RecordInterventionMemory(GcczTownPromptResourceProvider.UseEnglishPrompt ? soldierProfile.AppeasementMemoryTitleEn : soldierProfile.AppeasementMemoryTitle, GcczTownPromptResourceProvider.UseEnglishPrompt ? soldierProfile.AppeasementMemoryTextEn : soldierProfile.AppeasementMemoryText);
 			InformationManager.DisplayMessage(new InformationMessage(GcczLocalizedResourceLoader.UseChineseInterface ? soldierProfile.AppeasementMessageText : soldierProfile.AppeasementMessageTextEn, Color.FromUint(soldierProfile.AppeasementMessageColor)));
 			return true;
 		}
@@ -2669,7 +2669,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			SiegeSoldierAppeasementProfile soldierProfile = new SiegeSoldierAppeasementProfile();
 			_soldierAppeasementMoralePenaltyApplied = true;
 			party.RecentEventsMorale -= soldierProfile.MoralePenalty;
-			RecordInterventionMemory(soldierProfile.PenaltyMemoryTitle, soldierProfile.PenaltyMemoryText);
+			RecordInterventionMemory(GcczTownPromptResourceProvider.UseEnglishPrompt ? soldierProfile.PenaltyMemoryTitleEn : soldierProfile.PenaltyMemoryTitle, GcczTownPromptResourceProvider.UseEnglishPrompt ? soldierProfile.PenaltyMemoryTextEn : soldierProfile.PenaltyMemoryText);
 			InformationManager.DisplayMessage(new InformationMessage(GcczLocalizedResourceLoader.UseChineseInterface ? soldierProfile.PenaltyMessageText : soldierProfile.PenaltyMessageTextEn, Color.FromUint(soldierProfile.PenaltyMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Applied soldier appeasement morale penalty -" + soldierProfile.MoralePenalty + ". MoraleNow=" + party.Morale);
 		}
@@ -2683,7 +2683,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string entry = SiegeInterventionMemoryEventFormatter.FormatEntry(kind, detail);
+			string entry = SiegeInterventionMemoryEventFormatter.FormatEntry(kind, detail, GcczTownPromptResourceProvider.UseEnglishPrompt);
 			if (!InterventionSceneMemory.TryRecord(entry))
 			{
 				return;
@@ -2765,9 +2765,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool soldierLikeNpc = character.IsSoldier
 				|| IsGuardOrSoldier(character)
 				|| string.Equals(rank, "soldier", StringComparison.OrdinalIgnoreCase)
-				|| string.Equals(role, SiegeAftermathCompatibilityTexts.Raw("soldier_role"), StringComparison.Ordinal)
-				|| string.Equals(role, SiegeAftermathCompatibilityTexts.Raw("guard_role"), StringComparison.Ordinal)
-				|| string.Equals(role, SiegeAftermathCompatibilityTexts.Raw("sentinel_role"), StringComparison.Ordinal);
+				|| SiegeAftermathCompatibilityTexts.IsRaw(role, "soldier_role")
+				|| SiegeAftermathCompatibilityTexts.IsRaw(role, "guard_role")
+				|| SiegeAftermathCompatibilityTexts.IsRaw(role, "sentinel_role");
 			return soldierLikeNpc && IsMainPartyOrSelectedInterventionTroop(character);
 		}
 		catch
@@ -3081,7 +3081,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				CultureId = cultureIdOverride ?? resolved?.Culture?.StringId ?? hero?.Culture?.StringId ?? "neutral",
 				Name = agent?.Name?.ToString() ?? hero?.Name?.ToString() ?? resolved?.Name?.ToString() ?? "",
 				TroopId = resolved?.StringId ?? "",
-				RoleDesc = soldierLikeResolved ? SiegeAftermathCompatibilityTexts.Raw("soldier_role") : "",
+				RoleDesc = soldierLikeResolved ? SiegeAftermathCompatibilityTexts.RawSource("soldier_role") : "",
 				UnnamedRank = soldierLikeResolved ? "soldier" : "commoner"
 			};
 			return BuildRuntimePromptForAgent(hero ?? resolved?.HeroObject, packet, agentIndex);
@@ -4753,7 +4753,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
 			RecordInterventionMemory(SiegeAftermathCompatibilityTexts.Raw("auto_fb27452991af"),
 				SiegeAftermathCompatibilityTexts.Raw("auto_e1dda7c188a8") + result.AffectedCount + SiegeAftermathCompatibilityTexts.Raw("auto_a0a94962ace7")
-				+ CastleAftermathPrisonerAllocationRuntimeBridge.DescribeRoster(allocation.Roster) + "）；"
+				+ CastleAftermathPrisonerAllocationRuntimeBridge.DescribeRoster(allocation.Roster) + SiegeAftermathCompatibilityTexts.CloseParenSemicolon
 				+ SiegeAftermathCompatibilityTexts.Raw("auto_1c23eb6d03e4")
 				+ (autoArmamentsApplied
 					? SiegeAftermathCompatibilityTexts.Raw("auto_9fa9bbb0b1dc") + loot.ItemCount + SiegeAftermathCompatibilityTexts.Raw("auto_4d116d0a9982")
@@ -4777,7 +4777,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			SiegeAftermathCompatibilityTexts.Raw("auto_fb27452991af"),
 			SiegeAftermathCompatibilityTexts.Raw("auto_144232f9e9f8") + stagedCount + SiegeAftermathCompatibilityTexts.Raw("auto_a0a94962ace7")
 			+ CastleAftermathPrisonerAllocationRuntimeBridge.DescribeRoster(allocation.Roster) + SiegeAftermathCompatibilityTexts.Raw("auto_03235636c315")
-			+ SiegeCastleRegularDispositionStagingProfile.Describe(action) + SiegeAftermathCompatibilityTexts.Raw("auto_296601297cec")
+			+ SiegeCastleRegularDispositionStagingProfile.Describe(action, GcczTownPromptResourceProvider.UseEnglishPrompt) + SiegeAftermathCompatibilityTexts.Raw("auto_296601297cec")
 			+ CastleAftermathDispositionSessionBridge.BuildRegularPlanSummary() + SiegeAftermathCompatibilityTexts.Raw("auto_69470c8ec913") + unassigned
 			+ SiegeAftermathCompatibilityTexts.Raw("auto_9913944bb790")
 			+ (resetPlan ? SiegeAftermathCompatibilityTexts.Raw("auto_9430a2355aeb") : string.Empty));
@@ -4880,7 +4880,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			RecordInterventionMemory(
 				SiegeAftermathCompatibilityTexts.Raw("auto_8567bc9a4418"),
-				SiegeAftermathCompatibilityTexts.Raw("auto_0101f6489bd8") + SiegeCastleRegularDispositionStagingProfile.Describe(action)
+				SiegeAftermathCompatibilityTexts.Raw("auto_0101f6489bd8") + SiegeCastleRegularDispositionStagingProfile.Describe(action, GcczTownPromptResourceProvider.UseEnglishPrompt)
 				+ SiegeAftermathCompatibilityTexts.Raw("auto_21808212b537") + result.AffectedCount + SiegeAftermathCompatibilityTexts.Raw("auto_3c88f4ee39a3")
 				+ result.RemainingRegularPrisoners + SiegeAftermathCompatibilityTexts.Raw("auto_e048ef793f48"));
 			string outcome = "action=" + action + ", affected=" + result.AffectedCount
@@ -5016,9 +5016,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				SiegeCastlePrisonerTrustProfile.LordRecruitmentAgreementTrustDelta,
 				"lord_recruitment_agreement");
 			string lordName = targetHero.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("auto_902da6139e7b");
-			string conciseOutcome = lordName + "：" + SiegeCastleLordRecruitmentBranchProfile.Describe(branch);
+			string conciseOutcome = lordName + SiegeAftermathCompatibilityTexts.Colon + SiegeCastleLordRecruitmentBranchProfile.Describe(branch, GcczTownPromptResourceProvider.UseEnglishPrompt);
 			CastleAftermathDispositionSessionBridge.RecordLordOutcome(conciseOutcome);
-			RecordInterventionMemory(SiegeAftermathCompatibilityTexts.Raw("auto_2e89d00455e2"), conciseOutcome + "。" + result.StatusText);
+			RecordInterventionMemory(SiegeAftermathCompatibilityTexts.Raw("auto_2e89d00455e2"), conciseOutcome + SiegeAftermathCompatibilityTexts.Period + result.StatusText);
 			InformationManager.DisplayMessage(new InformationMessage(
 				CastleAftermathUiText.LordRecruitment(branch, targetHero.Name?.ToString(), result.StatusText),
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
@@ -5168,11 +5168,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			_castleSoldierConcernAction = action;
 			RecordInterventionMemory(
-				SiegeCastleSoldierReactionProfile.NeedMemoryTitle,
+				SiegeCastleSoldierReactionProfile.GetNeedMemoryTitle(GcczTownPromptResourceProvider.UseEnglishPrompt),
 				SiegeCastleSoldierReactionProfile.BuildNeedMemoryText(
 					action,
 					affectedRegularPrisoners,
-					_castleSoldierPendingMoralePenalty));
+					_castleSoldierPendingMoralePenalty,
+					GcczTownPromptResourceProvider.UseEnglishPrompt));
 			InformationManager.DisplayMessage(new InformationMessage(
 				SiegeCastleSoldierReactionProfile.BuildNeedMessage(
 					action,
@@ -5215,7 +5216,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}),
 				sourceAgentIndex);
 			string playerName = ResolvePlayerCharacterNameForContext();
-			string actionText = SiegeCastleSoldierReactionProfile.DescribeConcernAction(action);
+			string actionText = SiegeCastleSoldierReactionProfile.DescribeConcernAction(action, GcczTownPromptResourceProvider.UseEnglishPrompt);
 			if (prisoner != null)
 			{
 				string prisonerFact = SiegeAftermathCompatibilityTexts.Raw("auto_023324bd4668") + playerName + SiegeAftermathCompatibilityTexts.Raw("auto_c0b423a35380")
@@ -5343,8 +5344,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 		_castleSoldierAppeasementApplied = true;
 		RecordInterventionMemory(
-			SiegeCastleSoldierReactionProfile.AppeasementMemoryTitle,
-			SiegeCastleSoldierReactionProfile.BuildAppeasementMemoryText(_castleSoldierPendingMoralePenalty));
+			SiegeCastleSoldierReactionProfile.GetAppeasementMemoryTitle(GcczTownPromptResourceProvider.UseEnglishPrompt),
+			SiegeCastleSoldierReactionProfile.BuildAppeasementMemoryText(_castleSoldierPendingMoralePenalty, GcczTownPromptResourceProvider.UseEnglishPrompt));
 		InformationManager.DisplayMessage(new InformationMessage(
 			SiegeCastleSoldierReactionProfile.BuildAppeasementMessage(_castleSoldierPendingMoralePenalty, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 			Color.FromUint(SiegeCastleSoldierReactionProfile.AppeasedMessageColor)));
@@ -5379,8 +5380,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			MobileParty.MainParty.RecentEventsMorale -= _castleSoldierAppliedMoralePenalty;
 			RecordInterventionMemory(
-				SiegeCastleSoldierReactionProfile.PenaltyMemoryTitle,
-				SiegeCastleSoldierReactionProfile.BuildPenaltyMemoryText(_castleSoldierAppliedMoralePenalty));
+				SiegeCastleSoldierReactionProfile.GetPenaltyMemoryTitle(GcczTownPromptResourceProvider.UseEnglishPrompt),
+				SiegeCastleSoldierReactionProfile.BuildPenaltyMemoryText(_castleSoldierAppliedMoralePenalty, GcczTownPromptResourceProvider.UseEnglishPrompt));
 		Logger.Log("CastleAftermath", "Applied unappeased castle prisoner-disposition morale penalty -"
 				+ _castleSoldierAppliedMoralePenalty
 				+ ". MoraleNow=" + MobileParty.MainParty.Morale);
@@ -6470,7 +6471,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				TryApplyRegionalConflictTrustPenalty(ResolveCurrentSettlement(), affectedAgent, targetName, victimDown: false, source ?? SiegeLocalAttackProfile.LocalAttackSource);
 				InformationManager.DisplayMessage(new InformationMessage(SiegeLocalAttackProfile.BuildPlayerHitMessage(targetName, targetWillDefy, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface), Color.FromUint(SiegeLocalAttackProfile.MessageColor)));
-				RecordInterventionMemory(SiegeLocalAttackProfile.MemoryTitle, SiegeLocalAttackProfile.BuildPlayerHitMemoryText(targetName, targetWillDefy));
+				RecordInterventionMemory(SiegeLocalAttackProfile.GetMemoryTitle(GcczTownPromptResourceProvider.UseEnglishPrompt), SiegeLocalAttackProfile.BuildPlayerHitMemoryText(targetName, targetWillDefy, GcczTownPromptResourceProvider.UseEnglishPrompt));
 			}
 			NeutralizeCivilianDailyUsableBehavior(affectedAgent, SiegeLocalAttackProfile.LocalAttackSource);
 			affectedAgent.SetMortalityState(Agent.MortalityState.Mortal);
@@ -6934,7 +6935,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (fleeingCount > 0 || defiantCount > 0)
 			{
-				RecordInterventionMemory(SiegeLocalCivilianReactionProfile.WitnessMemoryTitle, SiegeLocalCivilianReactionProfile.BuildWitnessMemoryText(targetName, fleeingCount, defiantCount));
+				RecordInterventionMemory(SiegeLocalCivilianReactionProfile.GetWitnessMemoryTitle(GcczTownPromptResourceProvider.UseEnglishPrompt), SiegeLocalCivilianReactionProfile.BuildWitnessMemoryText(targetName, fleeingCount, defiantCount, GcczTownPromptResourceProvider.UseEnglishPrompt));
 				Logger.Log("SiegeAiIntervention", "Triggered local civilian witness reactions. Victim=" + victim.Index + ", Down=" + victimDown + ", Fleeing=" + fleeingCount + ", Defiant=" + defiantCount + ", Speakers=" + speakerCount);
 			}
 		}
@@ -6990,7 +6991,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string factText = SiegeLocalCivilianReactionProfile.BuildWitnessFact(targetName, victimDown, witnessWillDefy, _activeSettlementName);
+			string factText = SiegeLocalCivilianReactionProfile.BuildWitnessFact(targetName, victimDown, witnessWillDefy, _activeSettlementName, GcczTownPromptResourceProvider.UseEnglishPrompt);
 			return ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, witness.Index, persistHeroPrivateHistory: true, suppressStare: true, postSpeechLeaveSeconds: -1f);
 		}
 		catch (Exception ex)
@@ -7046,12 +7047,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				claimedFallbackSoldier ??= soldier;
 				string soldierPersonaText = ResolveLocalSoldierWitnessPersonaText(soldier);
 				bool soldierIsBloodthirsty = SiegeLocalCivilianReactionProfile.ResolveSoldierWitnessBloodthirstyFromPersona(soldierPersonaText);
-				string factText = SiegeLocalCivilianReactionProfile.BuildSoldierWitnessInquiryFact(targetName, victimDown, _activeSettlementName, soldierIsBloodthirsty, soldierPersonaText);
+				string factText = SiegeLocalCivilianReactionProfile.BuildSoldierWitnessInquiryFact(targetName, victimDown, _activeSettlementName, soldierIsBloodthirsty, soldierPersonaText, GcczTownPromptResourceProvider.UseEnglishPrompt);
 				if (!ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, soldier.Index, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: -1f))
 				{
 					continue;
 				}
-				RecordInterventionMemory(SiegeLocalCivilianReactionProfile.SoldierWitnessMemoryTitle, SiegeLocalCivilianReactionProfile.BuildSoldierWitnessMemoryText(targetName, victimDown, soldier.Name?.ToString(), soldierIsBloodthirsty));
+				RecordInterventionMemory(SiegeLocalCivilianReactionProfile.GetSoldierWitnessMemoryTitle(GcczTownPromptResourceProvider.UseEnglishPrompt), SiegeLocalCivilianReactionProfile.BuildSoldierWitnessMemoryText(targetName, victimDown, soldier.Name?.ToString(), soldierIsBloodthirsty, GcczTownPromptResourceProvider.UseEnglishPrompt));
 				Logger.Log("SiegeAiIntervention", "Triggered local soldier witness inquiry. Source=" + SiegeLocalCivilianReactionProfile.SoldierWitnessInquirySource + ", Soldier=" + soldier.Index + ", Victim=" + victim.Index + ", Down=" + victimDown + ", Bloodthirsty=" + soldierIsBloodthirsty);
 				return true;
 			}
@@ -7065,7 +7066,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			InformationManager.DisplayMessage(new InformationMessage(
 				SiegeLocalCivilianReactionProfile.BuildSoldierWitnessFallbackMessage(fallbackSoldier.Name?.ToString(), targetName, victimDown, fallbackSoldierIsBloodthirsty, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 				Color.FromUint(SiegeLocalCivilianReactionProfile.SoldierWitnessFallbackMessageColor)));
-			RecordInterventionMemory(SiegeLocalCivilianReactionProfile.SoldierWitnessMemoryTitle, SiegeLocalCivilianReactionProfile.BuildSoldierWitnessMemoryText(targetName, victimDown, fallbackSoldier.Name?.ToString(), fallbackSoldierIsBloodthirsty));
+			RecordInterventionMemory(SiegeLocalCivilianReactionProfile.GetSoldierWitnessMemoryTitle(GcczTownPromptResourceProvider.UseEnglishPrompt), SiegeLocalCivilianReactionProfile.BuildSoldierWitnessMemoryText(targetName, victimDown, fallbackSoldier.Name?.ToString(), fallbackSoldierIsBloodthirsty, GcczTownPromptResourceProvider.UseEnglishPrompt));
 			Logger.Log("SiegeAiIntervention", "Displayed fallback local soldier witness inquiry. Source=" + SiegeLocalCivilianReactionProfile.SoldierWitnessInquirySource + ", Soldier=" + fallbackSoldier.Index + ", Victim=" + victim.Index + ", Down=" + victimDown + ", Bloodthirsty=" + fallbackSoldierIsBloodthirsty);
 			return true;
 		}
@@ -7126,7 +7127,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return p;
 		}
-		return p + "；" + b;
+		return p + SiegeAftermathCompatibilityTexts.Semicolon + b;
 	}
 
 	private static void MaintainLocalPlayerAttackReactions(Mission mission)
@@ -7674,7 +7675,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (returnedGold > 0)
 			{
 				AwardGoldToPlayer(returnedGold, SiegeSharedReliefPoolFormatter.BuildReturnedGoldSource(reason));
-				returnedParts.Add(SiegeSharedReliefPoolFormatter.BuildGoldAmountText(returnedGold));
+				returnedParts.Add(SiegeSharedReliefPoolFormatter.BuildGoldAmountText(returnedGold, GcczTownPromptResourceProvider.UseEnglishPrompt));
 				returnedUiParts.Add(SiegeSharedReliefPoolFormatter.BuildGoldAmountText(returnedGold, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface));
 			}
 			MobileParty mainParty = MobileParty.MainParty ?? Hero.MainHero?.PartyBelongedTo;
@@ -7694,7 +7695,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				RestoreItemStackToPlayerParty(itemRoster, item, amount);
 				returnedItems += amount;
-				returnedParts.Add(SiegeSharedReliefPoolFormatter.BuildItemAmountText(amount, item.Name?.ToString() ?? pair.Key));
+				returnedParts.Add(SiegeSharedReliefPoolFormatter.BuildItemAmountText(amount, item.Name?.ToString() ?? pair.Key, GcczTownPromptResourceProvider.UseEnglishPrompt));
 				returnedUiParts.Add(SiegeSharedReliefPoolFormatter.BuildItemAmountText(amount, item.Name?.ToString() ?? pair.Key, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface));
 			}
 			if (returnedGold <= 0 && returnedItems <= 0)
@@ -7711,9 +7712,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_appliedSharedCivilianReliefItemValue = 0L;
 			SharedCivilianReliefItems.Clear();
 			SharedCivilianReliefItemObjects.Clear();
-			string summary = SiegeSharedReliefPoolFormatter.JoinAmountParts(returnedParts.ToArray());
+			string summary = SiegeSharedReliefPoolFormatter.JoinAmountParts(GcczTownPromptResourceProvider.UseEnglishPrompt, returnedParts.ToArray());
 			InformationManager.DisplayMessage(new InformationMessage(SiegeSharedReliefPoolFormatter.BuildReturnedToPlayerMessage(SiegeSharedReliefPoolFormatter.JoinAmountParts(!GcczLocalizedResourceLoader.UseChineseInterface, returnedUiParts.ToArray()), isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface), Color.FromUint(SiegeSharedReliefPoolFormatter.ReturnedToPlayerMessageColor)));
-			RecordInterventionMemory(SiegeSharedReliefPoolFormatter.ReturnedToPlayerMemoryTitle, SiegeSharedReliefPoolFormatter.BuildReturnedToPlayerMemoryText(summary));
+			RecordInterventionMemory(GcczTownPromptResourceProvider.UseEnglishPrompt ? SiegeSharedReliefPoolFormatter.ReturnedToPlayerMemoryTitleEn : SiegeSharedReliefPoolFormatter.ReturnedToPlayerMemoryTitle, SiegeSharedReliefPoolFormatter.BuildReturnedToPlayerMemoryText(summary, GcczTownPromptResourceProvider.UseEnglishPrompt));
 			Logger.Log("SiegeAiIntervention", "Returned shared civilian relief pool to player due to negative outcome. Reason=" + (reason ?? "N/A") + ", Summary=" + summary);
 			return true;
 		}
@@ -8179,8 +8180,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			acquiredItemCount);
 		ApplyPlunderLedgerConsequencesIfNeeded();
 		RecordInterventionMemory(
-			SiegeCivilianRobberyProfile.MemoryTitle,
-			lootedGoods ? SiegeCivilianRobberyProfile.GoodsMemoryText : SiegeCivilianRobberyProfile.GoldMemoryText);
+			SiegeCivilianRobberyProfile.GetMemoryTitle(GcczTownPromptResourceProvider.UseEnglishPrompt),
+			lootedGoods ? SiegeCivilianRobberyProfile.GetGoodsMemoryText(GcczTownPromptResourceProvider.UseEnglishPrompt) : SiegeCivilianRobberyProfile.GetGoldMemoryText(GcczTownPromptResourceProvider.UseEnglishPrompt));
 		TownOperationLedgerSnapshot ledger = ActiveTownOperationLedger.Snapshot();
 		Logger.Log("SiegeAiIntervention", $"Applied target-aware civilian robbery. Target={targetKey}, TargetKind={targetKind}, Gold={acquiredGold}, ItemValue={acquiredItemValue}, DirectTargets={ActiveTownOperationLedger.GetCompletedTargetCount(TownOperationAcquisitionSource.DirectRobbery)}, ProgressBasisPoints={ledger.ProgressBasisPoints}, CommittedProgressBasisPoints={ledger.CommittedProgressBasisPoints}");
 		return true;
@@ -9351,12 +9352,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (firstStart)
 			{
 				InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeCivilianGatherUiProfile.PropagationStartedMessage : SiegeCivilianGatherUiProfile.PropagationStartedMessageEn), Color.FromUint(SiegeCivilianGatherUiProfile.MessageColor)));
-				RecordInterventionMemory(SiegeCivilianGatherUiProfile.GatherMemoryTitle, SiegeCivilianGatherUiProfile.BuildPropagationStartedMemory(seedIsSoldier));
+				RecordInterventionMemory((GcczTownPromptResourceProvider.UseEnglishPrompt ? SiegeCivilianGatherUiProfile.GatherMemoryTitleEn : SiegeCivilianGatherUiProfile.GatherMemoryTitle), SiegeCivilianGatherUiProfile.BuildPropagationStartedMemory(seedIsSoldier, GcczTownPromptResourceProvider.UseEnglishPrompt));
 			}
 			else if (addedMessengers > 0)
 			{
 				InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeCivilianGatherUiProfile.MessengerAddedMessage : SiegeCivilianGatherUiProfile.MessengerAddedMessageEn), Color.FromUint(SiegeCivilianGatherUiProfile.MessageColor)));
-				RecordInterventionMemory(SiegeCivilianGatherUiProfile.GatherMemoryTitle, SiegeCivilianGatherUiProfile.BuildMessengerAddedMemory(CivilianGatherMessengerAgentIndexes.Count));
+				RecordInterventionMemory((GcczTownPromptResourceProvider.UseEnglishPrompt ? SiegeCivilianGatherUiProfile.GatherMemoryTitleEn : SiegeCivilianGatherUiProfile.GatherMemoryTitle), SiegeCivilianGatherUiProfile.BuildMessengerAddedMemory(CivilianGatherMessengerAgentIndexes.Count, GcczTownPromptResourceProvider.UseEnglishPrompt));
 			}
 			Logger.Log("SiegeAiIntervention", "Updated civilian gathering propagation. Source=" + (source ?? "N/A") + ", FirstStart=" + firstStart + ", Seed=" + (seed?.Index.ToString() ?? "none") + ", SeedSoldier=" + seedIsSoldier + ", AddedMessengers=" + addedMessengers + ", Messengers=" + CivilianGatherMessengerAgentIndexes.Count + ", Civilians=" + total);
 			return firstStart || addedMessengers > 0;
@@ -9930,7 +9931,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			string messengerName = messenger.Name?.ToString() ?? SiegeCivilianGatherUiProfile.MessengerFallbackName;
 			string targetName = target.Name?.ToString() ?? SiegeCivilianGatherUiProfile.CivilianFallbackName;
-			string factText = SiegeCivilianGatherUiProfile.BuildMessengerSpeechFactText(targetName);
+			string factText = SiegeCivilianGatherUiProfile.BuildMessengerSpeechFactText(targetName, GcczTownPromptResourceProvider.UseEnglishPrompt);
 			if (!ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, messenger.Index, persistHeroPrivateHistory: true, suppressStare: true, postSpeechLeaveSeconds: -1f))
 			{
 				CivilianGatherMessengerSpeechAgentIndexes.Remove(messenger.Index);
@@ -10092,7 +10093,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			float now = mission?.CurrentTime ?? 0f;
 			if (SceneControl.TryQueueCivilianFormationControl(now, CivilianFormationControlInitialDelaySeconds))
 			{
-				RecordInterventionMemory(SiegeCivilianGatherUiProfile.AssemblyMemoryTitle, SiegeCivilianGatherUiProfile.BuildFormationQueuedMemory(reason));
+				RecordInterventionMemory((GcczTownPromptResourceProvider.UseEnglishPrompt ? SiegeCivilianGatherUiProfile.AssemblyMemoryTitleEn : SiegeCivilianGatherUiProfile.AssemblyMemoryTitle), SiegeCivilianGatherUiProfile.BuildFormationQueuedMemory(reason, GcczTownPromptResourceProvider.UseEnglishPrompt));
 				Logger.Log("SiegeAiIntervention", "Queued civilian formation control. Reason=" + (reason ?? "N/A"));
 			}
 		}
@@ -10315,7 +10316,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			SceneControl.CompleteCivilianFormationControl();
 			ApplyCivilianFormationFollowOrder(mission, SiegeCivilianGatherInteractionProfile.FormationReadyFollowSource);
-			RecordInterventionMemory(SiegeCivilianGatherUiProfile.AssemblyMemoryTitle, SiegeCivilianGatherUiProfile.FormationCompleteMemory);
+			RecordInterventionMemory((GcczTownPromptResourceProvider.UseEnglishPrompt ? SiegeCivilianGatherUiProfile.AssemblyMemoryTitleEn : SiegeCivilianGatherUiProfile.AssemblyMemoryTitle), GcczTownPromptResourceProvider.UseEnglishPrompt ? SiegeCivilianGatherUiProfile.FormationCompleteMemoryEn : SiegeCivilianGatherUiProfile.FormationCompleteMemory);
 			if (SceneControl.TryClaimFormationReadyMessage())
 			{
 				InformationManager.DisplayMessage(new InformationMessage((GcczLocalizedResourceLoader.UseChineseInterface ? SiegeCivilianGatherUiProfile.FormationReadyMessage : SiegeCivilianGatherUiProfile.FormationReadyMessageEn), Color.FromUint(SiegeCivilianGatherUiProfile.MessageColor)));
@@ -13237,7 +13238,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					TryApplyRegionalConflictTrustPenalty(ResolveCurrentSettlement(), affectedAgent, targetName, victimDown: true, SiegeLocalCivilianReactionProfile.PlayerDownSource);
 				}
 				InformationManager.DisplayMessage(new InformationMessage(SiegeLocalCivilianReactionProfile.BuildPlayerDownMessage(targetName, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface), Color.FromUint(SiegeLocalAttackProfile.MessageColor)));
-				RecordInterventionMemory(SiegeLocalAttackProfile.MemoryTitle, SiegeLocalCivilianReactionProfile.BuildPlayerDownMemoryText(targetName));
+				RecordInterventionMemory(SiegeLocalAttackProfile.GetMemoryTitle(GcczTownPromptResourceProvider.UseEnglishPrompt), SiegeLocalCivilianReactionProfile.BuildPlayerDownMemoryText(targetName, GcczTownPromptResourceProvider.UseEnglishPrompt));
 				TriggerLocalCivilianWitnessReactions(mission, affectedAgent, Agent.Main ?? mission.MainAgent, victimDown: true, targetName);
 				Logger.Log("SiegeAiIntervention", "Handled local player civilian down without starting massacre. Source=" + SiegeLocalCivilianReactionProfile.PlayerDownSource + ", Agent=" + affectedAgent.Index + ", State=" + agentState);
 			}

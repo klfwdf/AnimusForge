@@ -4557,13 +4557,28 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		return selector;
 	}
 
+	// Model-written selector lists may use ASCII or full-width separators in either language.
+	private static readonly char[] SelectorValueSeparators = { ',', '\uFF0C', '|', '/', '\u3001' };
+
 	private static List<string> SplitSelectorValues(string value)
 	{
 		return (value ?? "")
-			.Split(new[] { ',', '，', '|', '/', '、' }, StringSplitOptions.RemoveEmptyEntries)
+			.Split(SelectorValueSeparators, StringSplitOptions.RemoveEmptyEntries)
 			.Select(x => x.Trim())
-			.Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, "none", StringComparison.OrdinalIgnoreCase) && !string.Equals(x, DiplomacyCompatibilityTexts.Get("Gathering_SelectorNone"), StringComparison.OrdinalIgnoreCase))
+			.Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, "none", StringComparison.OrdinalIgnoreCase) && !IsSelectorNone(x))
 			.ToList();
+	}
+
+	private static bool IsSelectorNone(string value)
+	{
+		foreach (string none in DiplomacyCompatibilityTexts.Variants("Gathering_SelectorNone"))
+		{
+			if (string.Equals(value, none, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static List<string> NormalizeStringList(IEnumerable<string> values)
@@ -4581,7 +4596,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		{
 			return;
 		}
-		Match match = Regex.Match(value ?? "", DiplomacyCompatibilityTexts.Get("Gathering_AgeRangePattern"));
+		Match match = Regex.Match(value ?? "", DiplomacyCompatibilityTexts.Source("Gathering_AgeRangePattern"));
 		if (match.Success && int.TryParse(match.Groups[1].Value, out int min) && int.TryParse(match.Groups[2].Value, out int max))
 		{
 			selector.MinAge = Math.Min(min, max);
@@ -4598,11 +4613,11 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 	private static string NormalizeGenderToken(string value)
 	{
 		string text = (value ?? "").Trim().ToLowerInvariant();
-		if (text == "female" || text == "woman" || text == "women" || text == "f" || text.Contains(DiplomacyCompatibilityTexts.Get("Gathering_SelectorFemale")))
+		if (text == "female" || text == "woman" || text == "women" || text == "f" || text.Contains(DiplomacyCompatibilityTexts.Source("Gathering_SelectorFemale")))
 		{
 			return "female";
 		}
-		if (text == "male" || text == "man" || text == "men" || text == "m" || text.Contains(DiplomacyCompatibilityTexts.Get("Gathering_SelectorMale")))
+		if (text == "male" || text == "man" || text == "men" || text == "m" || text.Contains(DiplomacyCompatibilityTexts.Source("Gathering_SelectorMale")))
 		{
 			return "male";
 		}

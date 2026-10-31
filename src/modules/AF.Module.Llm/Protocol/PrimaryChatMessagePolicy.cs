@@ -39,7 +39,9 @@ internal static class PrimaryChatMessagePolicy
         if (string.IsNullOrEmpty(text)) return text;
         string projected = text.IndexOf("AFEF", StringComparison.Ordinal) < 0 ? text : LegacyFactMarker.Replace(text, match => match.Groups["actor"].Value == LlmSourceTexts.Get("LegacyAfefPlayerActor")
             ? "[AFEF PLAYER_ACTION]" : match.Groups["actor"].Value == "NPC" ? "[AFEF NPC_ACTION]" : "[AFEF NPC_ACTION] / [AFEF PLAYER_ACTION]");
-        projected = projected.Replace(LegacyCivilWarFactMarker, "[Civil war fact]");
+        if (projected.IndexOf(LegacyCivilWarFactMarker, StringComparison.Ordinal) >= 0)
+            projected = projected.Replace(LegacyCivilWarFactMarker,
+                english ? LlmSourceTexts.English("CivilWarFactLabel") : LlmSourceTexts.Source("CivilWarFactLabel"));
         return english && projected.IndexOf(LlmSourceTexts.Get("LegacyRuleHeaderPrefix"), StringComparison.Ordinal) >= 0 ? LegacyRuleHeader.Replace(projected, match => "[Additional rule:" + match.Groups[1].Value + "]") : projected;
     }
 

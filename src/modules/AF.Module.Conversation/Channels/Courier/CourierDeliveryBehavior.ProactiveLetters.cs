@@ -371,7 +371,7 @@ public sealed partial class CourierDeliveryBehavior
 		Hero sender = candidate.Sender;
 		string npcName = sender.Name?.ToString() ?? "NPC";
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender) ?? Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0492");
-		string bondFact = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0493") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0494") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0495") + DescribeNpcInitiatedLetterBond(candidate);
+		string bondFact = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0493") + ConversationRuntimeTexts.Tidy(npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0494") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0495")) + (PromptLanguage.IsChinese ? "" : " ") + DescribeNpcInitiatedLetterBond(candidate);
 		if (candidate.PrivateLove > 20 && !ProactiveNpcRequestBehavior.IsGreetingUnavailableForExternal())
 		{
 			AddNpcLetterMotive(candidate, settings, nowDays, new NpcInitiatedLetterMotive
@@ -380,7 +380,7 @@ public sealed partial class CourierDeliveryBehavior
 				LetterKind = InboundLetterKindPersonal,
 				NeedType = "Greeting",
 				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0496"),
-				FactText = bondFact + " " + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0497") + playerName + "。",
+				FactText = bondFact + " " + ConversationRuntimeTexts.Tidy(npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0497") + playerName) + ConversationRuntimeTexts.Period.TrimEnd(),
 				FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_greeting", ("PLAYER", playerName))
 			});
 		}
@@ -389,7 +389,7 @@ public sealed partial class CourierDeliveryBehavior
 			MotiveType = LetterMotiveStatus,
 			LetterKind = InboundLetterKindPersonal,
 			IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0499"),
-			FactText = bondFact + " " + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0500") + playerName + "。",
+			FactText = bondFact + " " + ConversationRuntimeTexts.Tidy(npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0500") + playerName) + ConversationRuntimeTexts.Period.TrimEnd(),
 			FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_status", ("PLAYER", playerName))
 		});
 		AddNpcLetterMotive(candidate, settings, nowDays, new NpcInitiatedLetterMotive
@@ -397,7 +397,7 @@ public sealed partial class CourierDeliveryBehavior
 			MotiveType = LetterMotiveEmotion,
 			LetterKind = InboundLetterKindPersonal,
 			IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0502"),
-			FactText = bondFact + " " + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0503"),
+			FactText = bondFact + " " + ConversationRuntimeTexts.Tidy(npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0503")),
 			FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_emotion", ("PLAYER", playerName))
 		});
 		string senderId = SafeHeroId(sender);
@@ -411,7 +411,7 @@ public sealed partial class CourierDeliveryBehavior
 				LetterKind = InboundLetterKindPersonal,
 				EventKey = eventKey,
 				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0505"),
-				FactText = bondFact + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0506") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0507") + eventText,
+				FactText = bondFact + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0506") + ConversationRuntimeTexts.Tidy(npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0507")) + (PromptLanguage.IsChinese ? "" : " ") + eventText,
 				FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_event", ("PLAYER", playerName), ("EVENT", eventText))
 			});
 		}

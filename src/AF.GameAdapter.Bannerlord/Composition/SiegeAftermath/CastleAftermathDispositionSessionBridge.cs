@@ -63,7 +63,7 @@ internal static class CastleAftermathDispositionSessionBridge
 		}
 	}
 
-	internal static string GetLordOutcomeSummary() => string.Join("；", LordOutcomeSummaries);
+	internal static string GetLordOutcomeSummary() => string.Join(CastleAftermathCompatibilityTexts.Raw("list_separator"), LordOutcomeSummaries);
 
 	internal static IReadOnlyCollection<SiegeCastleActionKind> GetAppliedActions(
 		SiegeCastleActionSpeakerRole role,
@@ -309,7 +309,7 @@ internal static class CastleAftermathDispositionSessionBridge
 		{
 			if (RegularDeferredAllocations.TryGetValue(action, out TroopRoster roster) && roster.TotalManCount > 0)
 			{
-				parts.Add(SiegeCastleRegularDispositionStagingProfile.Describe(action) + " " + roster.TotalManCount + CastleAftermathCompatibilityTexts.Raw("count_unit"));
+				parts.Add(SiegeCastleRegularDispositionStagingProfile.Describe(action, GcczTownPromptResourceProvider.UseEnglishPrompt) + " " + roster.TotalManCount + CastleAftermathCompatibilityTexts.Raw("count_unit"));
 			}
 		}
 		if ((_activeSlaughterTargets?.TotalManCount ?? 0) > 0)

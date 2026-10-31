@@ -1165,7 +1165,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 	{
 		string workshopName = workshop?.Name?.ToString() ?? EconomySourceTexts.Get("PartyAsset_Workshop");
 		string settlementName = workshop?.Settlement?.Name?.ToString();
-		return string.IsNullOrWhiteSpace(settlementName) ? workshopName : (workshopName + "（" + settlementName + "）");
+		return string.IsNullOrWhiteSpace(settlementName) ? workshopName : (workshopName + EconomySourceTexts.Get("PartyAsset_OpenName") + settlementName + EconomySourceTexts.Get("PartyAsset_CloseName"));
 	}
 
 	internal static string BuildCaravanDisplayName(CaravanPartyComponent component)
@@ -1179,7 +1179,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 		string leaderName = component?.Leader?.Name?.ToString();
 		if (!string.IsNullOrWhiteSpace(leaderName))
 		{
-			name += "（" + leaderName + "）";
+			name += EconomySourceTexts.Get("PartyAsset_OpenName") + leaderName + EconomySourceTexts.Get("PartyAsset_CloseName");
 		}
 		return name;
 	}

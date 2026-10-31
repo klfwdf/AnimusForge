@@ -23,6 +23,11 @@ internal static class CoupSourceTexts
     internal static bool Is(string value, string id) => Table.Is(value, id);
     internal static string Format(string key, params object[] values) => string.Format(Get(key), values);
 
+    /// <summary>Report grammar for a receipt written now: the Chinese edition, or the English grammar kept
+    /// under the LegacyEnglish_ keys. <see cref="ReportForPrompt"/> parses both.</summary>
+    internal static string Report(string key) => Source((PromptLanguage.IsChinese ? "" : "LegacyEnglish_") + key);
+    internal static string ReportFormat(string key, params object[] values) => string.Format(CultureInfo.InvariantCulture, Report(key), values);
+
     private static readonly Lazy<Dictionary<string, ReportTemplate>> ReportTemplates = new Lazy<Dictionary<string, ReportTemplate>>(() =>
     {
         var result = new Dictionary<string, ReportTemplate>(StringComparer.Ordinal);

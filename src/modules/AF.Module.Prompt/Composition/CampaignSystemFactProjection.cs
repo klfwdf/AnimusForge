@@ -103,12 +103,15 @@ internal static class CampaignSystemFactProjection
         if (kind == "execution_last_words") return ProjectExecution(raw);
         string body=Apply(Civil,raw);
         if (body != raw) return body;
-        string separator=PromptComposerTexts.Raw("campaign_fact_prefix_separator");
-        int colon=raw.IndexOf(separator,StringComparison.Ordinal);
-        // The bulletin producer prefixes one kingdom name. Reject ambiguous separators.
-        if (colon <= 0 || raw.IndexOf(separator,colon+separator.Length,StringComparison.Ordinal)>=0) return raw;
-        string candidate=raw.Substring(colon+separator.Length), projected=Apply(Civil,candidate);
-        return candidate==projected ? raw : raw.Substring(0,colon)+": "+projected;
+        // The bulletin producer prefixes one kingdom name. Civil-war sentences may contain the same
+        // separator themselves, so try each split from the left and accept only a complete template match.
+        string separator=PromptComposerTexts.RawSource("campaign_fact_prefix_separator");
+        for (int colon=raw.IndexOf(separator,StringComparison.Ordinal); colon>0; colon=raw.IndexOf(separator,colon+separator.Length,StringComparison.Ordinal))
+        {
+            string candidate=raw.Substring(colon+separator.Length), projected=Apply(Civil,candidate);
+            if (candidate!=projected) return raw.Substring(0,colon)+": "+projected;
+        }
+        return raw;
     }
     private static readonly Template[] Kill = {
         new Template("campaign_kill_murder",new string[]{"name"}),

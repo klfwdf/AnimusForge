@@ -286,18 +286,19 @@ internal static class CoupUiText
             var map = new System.Collections.Generic.Dictionary<string, (string UiKey, string Fallback)>(System.StringComparer.Ordinal);
             foreach (var def in ReasonDefinitions)
             {
-                string raw = CoupSourceTexts.Get(def.SourceKey);
-                map[raw] = (def.UiKey, def.Fallback);
+                // Stored reasons may be in either language; both editions map to the same UI text.
+                foreach (string raw in CoupSourceTexts.Variants(def.SourceKey))
+                    map[raw] = (def.UiKey, def.Fallback);
                 map[def.Fallback] = (def.UiKey, def.Fallback);
             }
             return map;
         });
 
     private static readonly System.Lazy<string[]> WarRetryHints = new System.Lazy<string[]>(() => new[] {
-            CoupSourceTexts.Get("WarRetryHintCurly"),
-            CoupSourceTexts.Get("WarRetryHintCurlySpaced"),
-            CoupSourceTexts.Get("WarRetryHintAscii"),
-            CoupSourceTexts.Get("WarRetryHintHtml"),
+            CoupSourceTexts.Source("WarRetryHintCurly"),
+            CoupSourceTexts.Source("WarRetryHintCurlySpaced"),
+            CoupSourceTexts.Source("WarRetryHintAscii"),
+            CoupSourceTexts.Source("WarRetryHintHtml"),
             "You can select 'Retry Post-Coup Civil War Registration' from the town menu; the rebel kingdom will not be created again.",
             " You can select 'Retry Post-Coup Civil War Registration' from the town menu; the rebel kingdom will not be created again."
         });
@@ -325,26 +326,26 @@ internal static class CoupUiText
         if (ReasonLookup.Value.TryGetValue(r, out var matched))
             return Text(matched.UiKey, matched.Fallback);
 
-        string pScene = CoupSourceTexts.Get("Prefix_SceneHandlingFailed");
+        string pScene = CoupSourceTexts.Source("Prefix_SceneHandlingFailed");
         if (r.StartsWith(pScene, System.StringComparison.Ordinal))
             return Text("AF_COUPX_SceneHandlingFailed", "Coup scene handling failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pScene.Length))));
         if (r.StartsWith("Coup scene handling failed: ", System.StringComparison.Ordinal))
             return Text("AF_COUPX_SceneHandlingFailed", "Coup scene handling failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(28))));
 
-        string pHall = CoupSourceTexts.Get("Prefix_HallTransitionFailed");
+        string pHall = CoupSourceTexts.Source("Prefix_HallTransitionFailed");
         if (r.StartsWith(pHall, System.StringComparison.Ordinal))
             return Text("AF_COUPX_HallTransitionFailed", "Hall transition failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pHall.Length))));
         if (r.StartsWith("Hall transition failed: ", System.StringComparison.Ordinal))
             return Text("AF_COUPX_HallTransitionFailed", "Hall transition failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(24))));
 
-        string pReg = CoupSourceTexts.Get("Prefix_RegistrationFailed");
+        string pReg = CoupSourceTexts.Source("Prefix_RegistrationFailed");
         if (r.StartsWith(pReg, System.StringComparison.Ordinal))
             return Text("AF_COUPX_RegistrationFailed", "Post-coup rebellion registration failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pReg.Length))));
         if (r.StartsWith("Post-coup rebellion registration failed: ", System.StringComparison.Ordinal))
             return Text("AF_COUPX_RegistrationFailed", "Post-coup rebellion registration failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring("Post-coup rebellion registration failed: ".Length))));
 
-        string pVal = CoupSourceTexts.Get("Prefix_ValidationFailed");
-        string sVal = CoupSourceTexts.Get("Suffix_ValidationFailed");
+        string pVal = CoupSourceTexts.Source("Prefix_ValidationFailed");
+        string sVal = CoupSourceTexts.Source("Suffix_ValidationFailed");
         if (r.StartsWith(pVal, System.StringComparison.Ordinal))
         {
             string sub = r.Substring(pVal.Length);
@@ -360,7 +361,7 @@ internal static class CoupUiText
             return Text("AF_COUPX_ValidationFailed", "Original candidate clan no longer meets AF rules: {REASON}. This session ends.", ("REASON", LocalizeReason(reasonPart)));
         }
 
-        string pWar = CoupSourceTexts.Get("Prefix_WarRegistrationPending");
+        string pWar = CoupSourceTexts.Source("Prefix_WarRegistrationPending");
         if (r.StartsWith(pWar, System.StringComparison.Ordinal))
         {
             string error = StripWarRetryHint(r.Substring(pWar.Length));
@@ -372,37 +373,37 @@ internal static class CoupUiText
             return Text("AF_COUPX_WarRegistrationPending", "Rebel kingdom established; civil war registration awaiting retry: {ERROR}", ("ERROR", LocalizeReason(error)));
         }
 
-        string pReb = CoupSourceTexts.Get("Prefix_RebellionIncomplete");
+        string pReb = CoupSourceTexts.Source("Prefix_RebellionIncomplete");
         if (r.StartsWith(pReb, System.StringComparison.Ordinal))
             return Text("AF_COUPX_RebellionIncomplete", "Rebellion not completed: {MESSAGE}", ("MESSAGE", LocalizeReason(r.Substring(pReb.Length))));
         if (r.StartsWith("Rebellion not completed: ", System.StringComparison.Ordinal))
             return Text("AF_COUPX_RebellionIncomplete", "Rebellion not completed: {MESSAGE}", ("MESSAGE", LocalizeReason(r.Substring(25))));
 
-        string pSet = CoupSourceTexts.Get("Prefix_SettlementException");
+        string pSet = CoupSourceTexts.Source("Prefix_SettlementException");
         if (r.StartsWith(pSet, System.StringComparison.Ordinal))
             return Text("AF_COUPX_SettlementException", "Rebellion settlement exception; changes made were retained and founding will not be repeated: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pSet.Length))));
         if (r.StartsWith("Rebellion settlement exception; changes made were retained and founding will not be repeated: ", System.StringComparison.Ordinal))
             return Text("AF_COUPX_SettlementException", "Rebellion settlement exception; changes made were retained and founding will not be repeated: {ERROR}", ("ERROR", LocalizeReason(r.Substring("Rebellion settlement exception; changes made were retained and founding will not be repeated: ".Length))));
 
-        string pSeam = CoupSourceTexts.Get("Prefix_SeamException");
+        string pSeam = CoupSourceTexts.Source("Prefix_SeamException");
         if (r.StartsWith(pSeam, System.StringComparison.Ordinal))
             return Text("AF_COUPX_SeamException", "Post-coup rebellion seam exception; this session ends: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pSeam.Length))));
         if (r.StartsWith("Post-coup rebellion seam exception; this session ends: ", System.StringComparison.Ordinal))
             return Text("AF_COUPX_SeamException", "Post-coup rebellion seam exception; this session ends: {ERROR}", ("ERROR", LocalizeReason(r.Substring(55))));
 
-        string pMemRej = CoupSourceTexts.Get("Prefix_MemoryRejected");
+        string pMemRej = CoupSourceTexts.Source("Prefix_MemoryRejected");
         if (r.StartsWith(pMemRej, System.StringComparison.Ordinal))
             return Text("AF_COUPX_MemoryRejected", "Coup memory not accepted: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pMemRej.Length))));
         if (r.StartsWith("Coup memory not accepted: ", System.StringComparison.Ordinal))
             return Text("AF_COUPX_MemoryRejected", "Coup memory not accepted: {ERROR}", ("ERROR", LocalizeReason(r.Substring(26))));
 
-        string pMemInc = CoupSourceTexts.Get("Prefix_MemoryIncomplete");
+        string pMemInc = CoupSourceTexts.Source("Prefix_MemoryIncomplete");
         if (r.StartsWith(pMemInc, System.StringComparison.Ordinal))
             return Text("AF_COUPX_MemoryIncomplete", "Coup memory not completed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pMemInc.Length))));
         if (r.StartsWith("Coup memory not completed: ", System.StringComparison.Ordinal))
             return Text("AF_COUPX_MemoryIncomplete", "Coup memory not completed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(27))));
 
-        string pFact = CoupSourceTexts.Get("Prefix_FactRegistrationFailed");
+        string pFact = CoupSourceTexts.Source("Prefix_FactRegistrationFailed");
         if (r.StartsWith(pFact, System.StringComparison.Ordinal))
             return Text("AF_COUPX_FactRegistrationFailed", "Coup fact registration not completed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pFact.Length))));
         if (r.StartsWith("Coup fact registration not completed: ", System.StringComparison.Ordinal))

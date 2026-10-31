@@ -272,8 +272,22 @@ internal static class MainPromptMessageAssemblyOwner
 			chatMessage = CreateMemoryChatMessage("user", metadata + PromptComposerTexts.Get("residual_past_heard") + otherSpeaker + PromptComposerTexts.Get("residual_says") + StripCourierSpeakerPrefix(content, otherSpeaker), lengthSink);
 			return true;
 		}
-		string player = string.IsNullOrWhiteSpace(playerName) ? PromptComposerTexts.Raw("player_fallback") : playerName.Trim();
-		chatMessage = CreateMemoryChatMessage("user", metadata + StripCourierSpeakerPrefix(content, player), lengthSink);
+		string body;
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			// Stored records may carry the fallback label of either language.
+			body = (content ?? "").Trim();
+			foreach (string fallback in PromptComposerTexts.RawVariants("player_fallback"))
+			{
+				string stripped = StripCourierSpeakerPrefix(body, fallback);
+				if (!string.Equals(stripped, body, StringComparison.Ordinal)) { body = stripped; break; }
+			}
+		}
+		else
+		{
+			body = StripCourierSpeakerPrefix(content, playerName.Trim());
+		}
+		chatMessage = CreateMemoryChatMessage("user", metadata + body, lengthSink);
 		return true;
 	}
 
@@ -290,6 +304,14 @@ internal static class MainPromptMessageAssemblyOwner
 		return "[" + date + " " + hour + PromptComposerTexts.Get("residual_hour_separator") + scene + "｜" + speaker + "] ";
 	}
 
+	// Stored scope labels of either language (old Chinese records and new English ones). Built once.
+	private static readonly string[] CourierScopePrefixes =
+	{
+		PromptComposerTexts.RawSource("history_section_scope_current"), PromptComposerTexts.RawSource("main_history_raw_019"),
+		PromptComposerTexts.RawSource("main_history_raw_031"), PromptComposerTexts.RawSource("main_history_raw_032"),
+		"[Current action]", "[Past action]"
+	};
+
 	internal static string StripCourierPromptScopeLabel(string text)
 	{
 		string value = (text ?? "").Trim();
@@ -297,8 +319,7 @@ internal static class MainPromptMessageAssemblyOwner
 		do
 		{
 			changed = false;
-			string[] prefixes = new string[4] { PromptComposerTexts.Raw("history_section_scope_current"), PromptComposerTexts.Raw("main_history_raw_019"), PromptComposerTexts.Raw("main_history_raw_031"), PromptComposerTexts.Raw("main_history_raw_032") };
-			foreach (string prefix in prefixes)
+			foreach (string prefix in CourierScopePrefixes)
 			{
 				if (value.StartsWith(prefix, StringComparison.Ordinal))
 				{

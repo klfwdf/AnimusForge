@@ -35,7 +35,9 @@ internal enum CivilWarDemandTarget
 internal sealed class CivilWarGrievanceSourceDef
 {
 	internal string Id = "";
-	internal string Name = "";
+	// Table key of the display name; Name resolves it in the current game language on each read.
+	internal string NameKey = "";
+	internal string Name => string.IsNullOrEmpty(NameKey) ? "" : KingdomCivilWarTexts.Raw(NameKey);
 	internal float DecayPerWeek = 0.15f;
 	// Cached at catalog initialization; daily processing never recomputes the seventh root.
 	internal double DailyRetention;
@@ -44,8 +46,11 @@ internal sealed class CivilWarGrievanceSourceDef
 internal sealed class CivilWarDemandDef
 {
 	internal string Id = "";
-	internal string FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_default"); // {leader} = clan name
-	internal string Text = "";                               // {target} = resolved target name
+	// Table keys; the text properties resolve in the current game language on each read.
+	internal string FactionNameKey = "CW_Catalog_FactionName_default";
+	internal string TextKey = "";
+	internal string FactionNameFormat => KingdomCivilWarTexts.Raw(FactionNameKey); // {leader} = clan name
+	internal string Text => string.IsNullOrEmpty(TextKey) ? "" : KingdomCivilWarTexts.Raw(TextKey); // {target} = resolved target name
 	internal string Color = "#6B3A78FF";
 	internal float BaseWeight = 0.1f;
 	// grievance source id -> weight per 20 points of that source on the leader clan.
@@ -66,7 +71,8 @@ internal sealed class CivilWarDemandDef
 internal sealed class CivilWarOutcomeDef
 {
 	internal string Id = "";
-	internal string Name = "";
+	internal string NameKey = "";
+	internal string Name => string.IsNullOrEmpty(NameKey) ? "" : KingdomCivilWarTexts.Raw(NameKey);
 	internal CivilWarWarGoal[] Goals = Array.Empty<CivilWarWarGoal>();
 	internal CivilWarChance Weight;
 	internal string EffectId = "";
@@ -147,16 +153,16 @@ internal static class CivilWarCatalog
 	// ---------------------------------------------------------------- sources
 	internal static readonly IReadOnlyList<CivilWarGrievanceSourceDef> Sources = new List<CivilWarGrievanceSourceDef>
 	{
-		new CivilWarGrievanceSourceDef { Id = "royal_execution", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_royal_execution"), DecayPerWeek = 0.08f },
-		new CivilWarGrievanceSourceDef { Id = "fief_denied", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_fief_denied"), DecayPerWeek = 0.12f },
-		new CivilWarGrievanceSourceDef { Id = "policy_imposed", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_policy_imposed"), DecayPerWeek = 0.12f },
-		new CivilWarGrievanceSourceDef { Id = "war_imposed", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_war_imposed"), DecayPerWeek = 0.15f },
-		new CivilWarGrievanceSourceDef { Id = "peace_imposed", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_peace_imposed"), DecayPerWeek = 0.15f },
-		new CivilWarGrievanceSourceDef { Id = "lands_raided", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_lands_raided"), DecayPerWeek = 0.20f },
-		new CivilWarGrievanceSourceDef { Id = "fief_lost", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_fief_lost"), DecayPerWeek = 0.10f },
-		new CivilWarGrievanceSourceDef { Id = "broken_pledge", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_broken_pledge"), DecayPerWeek = 0.06f },
-		new CivilWarGrievanceSourceDef { Id = "demand_refused", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_demand_refused"), DecayPerWeek = 0.10f },
-		new CivilWarGrievanceSourceDef { Id = "royal_suppression", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_royal_suppression"), DecayPerWeek = 0.10f }
+		new CivilWarGrievanceSourceDef { Id = "royal_execution", NameKey = "CW_Catalog_Source_royal_execution", DecayPerWeek = 0.08f },
+		new CivilWarGrievanceSourceDef { Id = "fief_denied", NameKey = "CW_Catalog_Source_fief_denied", DecayPerWeek = 0.12f },
+		new CivilWarGrievanceSourceDef { Id = "policy_imposed", NameKey = "CW_Catalog_Source_policy_imposed", DecayPerWeek = 0.12f },
+		new CivilWarGrievanceSourceDef { Id = "war_imposed", NameKey = "CW_Catalog_Source_war_imposed", DecayPerWeek = 0.15f },
+		new CivilWarGrievanceSourceDef { Id = "peace_imposed", NameKey = "CW_Catalog_Source_peace_imposed", DecayPerWeek = 0.15f },
+		new CivilWarGrievanceSourceDef { Id = "lands_raided", NameKey = "CW_Catalog_Source_lands_raided", DecayPerWeek = 0.20f },
+		new CivilWarGrievanceSourceDef { Id = "fief_lost", NameKey = "CW_Catalog_Source_fief_lost", DecayPerWeek = 0.10f },
+		new CivilWarGrievanceSourceDef { Id = "broken_pledge", NameKey = "CW_Catalog_Source_broken_pledge", DecayPerWeek = 0.06f },
+		new CivilWarGrievanceSourceDef { Id = "demand_refused", NameKey = "CW_Catalog_Source_demand_refused", DecayPerWeek = 0.10f },
+		new CivilWarGrievanceSourceDef { Id = "royal_suppression", NameKey = "CW_Catalog_Source_royal_suppression", DecayPerWeek = 0.10f }
 	};
 
 	// ---------------------------------------------------------------- demands
@@ -164,7 +170,7 @@ internal static class CivilWarCatalog
 	{
 		new CivilWarDemandDef
 		{
-			Id = "make_peace", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_make_peace"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_make_peace"), Color = "#1E6B4AFF",
+			Id = "make_peace", FactionNameKey = "CW_Catalog_FactionName_make_peace", TextKey = "CW_Catalog_Demand_make_peace", Color = "#1E6B4AFF",
 			BaseWeight = 0.05f, Target = CivilWarDemandTarget.EnemyKingdom,
 			Affinity = A(("lands_raided", 0.9f), ("war_imposed", 1.0f), ("fief_lost", 0.6f)),
 			AcceptEffectId = CivilWarEffectIds.MakePeaceWithTarget,
@@ -174,7 +180,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = "continue_war", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_continue_war"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_continue_war"), Color = "#8C4A1EFF",
+			Id = "continue_war", FactionNameKey = "CW_Catalog_FactionName_continue_war", TextKey = "CW_Catalog_Demand_continue_war", Color = "#8C4A1EFF",
 			BaseWeight = 0.05f, Target = CivilWarDemandTarget.EnemyKingdom,
 			Affinity = A(("peace_imposed", 1.2f), ("fief_lost", 0.5f)),
 			AcceptEffectId = CivilWarEffectIds.PledgeWarOnTarget,
@@ -184,7 +190,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = "revoke_policy", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_revoke_policy"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_revoke_policy"), Color = "#6B3A78FF",
+			Id = "revoke_policy", FactionNameKey = "CW_Catalog_FactionName_revoke_policy", TextKey = "CW_Catalog_Demand_revoke_policy", Color = "#6B3A78FF",
 			BaseWeight = 0.02f, Target = CivilWarDemandTarget.ImposedPolicy,
 			Affinity = A(("policy_imposed", 1.3f)),
 			AcceptEffectId = CivilWarEffectIds.RevokeTargetPolicy,
@@ -194,7 +200,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = "redress", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_redress"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_redress"), Color = "#6B1E4AFF",
+			Id = "redress", FactionNameKey = "CW_Catalog_FactionName_redress", TextKey = "CW_Catalog_Demand_redress", Color = "#6B1E4AFF",
 			BaseWeight = 0.03f,
 			Affinity = A(("royal_execution", 1.2f), ("fief_denied", 0.8f), ("broken_pledge", 0.8f), ("fief_lost", 0.4f)),
 			AcceptEffectId = CivilWarEffectIds.PayRedress,
@@ -204,7 +210,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = "autonomy", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_autonomy"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_autonomy"), Color = "#8C5A12FF",
+			Id = "autonomy", FactionNameKey = "CW_Catalog_FactionName_autonomy", TextKey = "CW_Catalog_Demand_autonomy", Color = "#8C5A12FF",
 			BaseWeight = 0.02f, MinFortifications = 1, MaxLeaderRelationToKing = -5,
 			Affinity = A(("royal_suppression", 0.8f), ("fief_denied", 0.6f), ("lands_raided", 0.5f), ("demand_refused", 0.5f), ("broken_pledge", 0.5f)),
 			AcceptEffectId = CivilWarEffectIds.GrantPrivileges,
@@ -214,7 +220,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = UsurpDemandId, FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_usurp"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_usurp"), Color = "#8C1E1EFF",
+			Id = UsurpDemandId, FactionNameKey = "CW_Catalog_FactionName_usurp", TextKey = "CW_Catalog_Demand_usurp", Color = "#8C1E1EFF",
 			BaseWeight = 0.01f, MinFortifications = 1, MaxLeaderRelationToKing = -10,
 			Affinity = A(("royal_suppression", 1f), ("royal_execution", 0.7f), ("broken_pledge", 0.6f), ("demand_refused", 0.8f)),
 			AcceptEffectId = CivilWarEffectIds.Abdicate,
@@ -229,27 +235,27 @@ internal static class CivilWarCatalog
 	{
 		new CivilWarOutcomeDef
 		{
-			Id = "rebels_usurp", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_rebels_usurp"), Goals = G(CivilWarWarGoal.Usurp), EffectId = CivilWarEffectIds.UsurpThrone, RebelsWon = true,
+			Id = "rebels_usurp", NameKey = "CW_Catalog_Outcome_rebels_usurp", Goals = G(CivilWarWarGoal.Usurp), EffectId = CivilWarEffectIds.UsurpThrone, RebelsWon = true,
 			Weight = new CivilWarChance(0.35f, W(CivilWarFeature.WarScore, 0.60f))
 		},
 		new CivilWarOutcomeDef
 		{
-			Id = SecedeOutcomeId, Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_rebels_secede"), Goals = G(CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.Secede, RebelsWon = true,
+			Id = SecedeOutcomeId, NameKey = "CW_Catalog_Outcome_rebels_secede", Goals = G(CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.Secede, RebelsWon = true,
 			Weight = new CivilWarChance(0.35f, W(CivilWarFeature.WarScore, 0.60f))
 		},
 		new CivilWarOutcomeDef
 		{
-			Id = "rebels_coerce", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_rebels_coerce"), Goals = G(CivilWarWarGoal.Coerce), EffectId = CivilWarEffectIds.Concession, RebelsWon = true,
+			Id = "rebels_coerce", NameKey = "CW_Catalog_Outcome_rebels_coerce", Goals = G(CivilWarWarGoal.Coerce), EffectId = CivilWarEffectIds.Concession, RebelsWon = true,
 			Weight = new CivilWarChance(0.35f, W(CivilWarFeature.WarScore, 0.60f))
 		},
 		new CivilWarOutcomeDef
 		{
-			Id = NegotiatedOutcomeId, Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_negotiated"), Goals = G(CivilWarWarGoal.Coerce, CivilWarWarGoal.Usurp, CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.Concession, RebelsWon = false,
+			Id = NegotiatedOutcomeId, NameKey = "CW_Catalog_Outcome_negotiated", Goals = G(CivilWarWarGoal.Coerce, CivilWarWarGoal.Usurp, CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.Concession, RebelsWon = false,
 			Weight = new CivilWarChance(0.25f, W(CivilWarFeature.WarScoreAbs, -0.30f), W(CivilWarFeature.WarProgress, 0.15f))
 		},
 		new CivilWarOutcomeDef
 		{
-			Id = CrownVictoryOutcomeId, Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_crown_victory"), Goals = G(CivilWarWarGoal.Coerce, CivilWarWarGoal.Usurp, CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.CrownVictory, RebelsWon = false,
+			Id = CrownVictoryOutcomeId, NameKey = "CW_Catalog_Outcome_crown_victory", Goals = G(CivilWarWarGoal.Coerce, CivilWarWarGoal.Usurp, CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.CrownVictory, RebelsWon = false,
 			Weight = new CivilWarChance(0.35f, W(CivilWarFeature.WarScore, -0.60f))
 		}
 	};

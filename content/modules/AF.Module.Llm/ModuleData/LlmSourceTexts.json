@@ -262,5 +262,6 @@
   "LegacyCivilWarFactMarker": "[AFEF内战事实]",
   "LegacyAfefPlayerActor": "玩家",
   "LegacyRuleHeaderPattern": "(?m)^【附加规则:([A-Za-z0-9_.-]+)】",
-  "LegacyRuleHeaderPrefix": "【附加规则:"
+  "LegacyRuleHeaderPrefix": "【附加规则:",
+  "CivilWarFactLabel": "[内战事实]"
 }

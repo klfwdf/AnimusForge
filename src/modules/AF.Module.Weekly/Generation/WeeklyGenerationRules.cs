@@ -170,7 +170,7 @@ internal static string BuildFallbackWeeklyReportShortSummary(string report)
 			return text;
 		}
 		string text2 = text.Substring(0, 140).TrimEnd();
-		int num = Math.Max(text2.LastIndexOf('。'), Math.Max(text2.LastIndexOf('；'), Math.Max(text2.LastIndexOf('，'), text2.LastIndexOf(' '))));
+		int num = Math.Max(text2.LastIndexOf('\u3002'), Math.Max(text2.LastIndexOf('\uFF1B'), Math.Max(text2.LastIndexOf('\uFF0C'), text2.LastIndexOf(' '))));
 		if (num >= 40)
 		{
 			text2 = text2.Substring(0, num).TrimEnd();
@@ -251,7 +251,7 @@ internal bool TryParseWeeklyBatchResponse(string rawResponse, WeeklyReportBatchR
 		}
 		if (missingReportIds.Count > 0)
 		{
-			failureReason = (list.Count == 0) ? (WorldBulletinPolicyTexts.Title("AF_WBLT_UI_045", "Missing report_id values in the batch response: ") + string.Join("、", missingReportIds)) : ((list.Count == missingReportIds.Count) ? (WorldBulletinPolicyTexts.Title("AF_WBLT_UI_046", "Could not parse report_id values in the batch response: ") + string.Join("、", list)) : (WorldBulletinPolicyTexts.Title("AF_WBLT_UI_047", "Missing or unparseable report_id values in the batch response: ") + string.Join("、", missingReportIds)));
+			failureReason = (list.Count == 0) ? (WorldBulletinPolicyTexts.Title("AF_WBLT_UI_045", "Missing report_id values in the batch response: ") + string.Join(PromptLanguage.IsChinese ? "\u3001" : ", ", missingReportIds)) : ((list.Count == missingReportIds.Count) ? (WorldBulletinPolicyTexts.Title("AF_WBLT_UI_046", "Could not parse report_id values in the batch response: ") + string.Join(PromptLanguage.IsChinese ? "\u3001" : ", ", list)) : (WorldBulletinPolicyTexts.Title("AF_WBLT_UI_047", "Missing or unparseable report_id values in the batch response: ") + string.Join(PromptLanguage.IsChinese ? "\u3001" : ", ", missingReportIds)));
 		}
 		return blocks.Any((WeeklyReportBatchBlockResult x) => x != null && x.Parsed);
 	}

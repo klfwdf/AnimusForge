@@ -533,7 +533,7 @@ internal static class NoblePrisonerExecutionRuntime
 		{
 			try
 			{
-				string requestedName = NoblePrisonerExecutionPolicy.BuildHeadItemName(prisonerName);
+				string requestedName = NoblePrisonerExecutionPolicy.BuildHeadItemName(prisonerName, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface);
 				int generated = RewardSystemBehavior.GenerateNamedInventoryItemToRosterForExternal(
 					MobileParty.MainParty?.ItemRoster,
 					requestedName,

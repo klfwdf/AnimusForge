@@ -17200,10 +17200,24 @@
       "localizationRole": "compatibility"
     },
     {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptCompatibility.en.json",
+      "target": "ModuleData/DiplomacyPromptCompatibility.en.json",
+      "logicalName": "AnimusForge.Diplomacy.PromptCompatibility.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialCompatibility.json",
       "target": "ModuleData/WeeklyMaterialCompatibility.json",
       "logicalName": "AnimusForge.Weekly.MaterialCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialCompatibility.en.json",
+      "target": "ModuleData/WeeklyMaterialCompatibility.en.json",
+      "logicalName": "AnimusForge.Weekly.MaterialCompatibility.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17227,6 +17241,13 @@
     },
     {
       "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/ModuleData/SocialSourceTexts.en.json",
+      "target": "ModuleData/SocialSourceTexts.en.json",
+      "logicalName": "AnimusForge.Defaults.SocialSourceTexts.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Social",
       "source": "content/modules/AF.Module.Social/ModuleData/SocialPromptTexts.json",
       "target": "ModuleData/SocialPromptTexts.json",
       "localizationRole": "bilingual-prompt"
@@ -17245,10 +17266,24 @@
       "localizationRole": "compatibility"
     },
     {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.en.json",
+      "target": "ModuleData/ConversationRuntimeCompatibility.en.json",
+      "logicalName": "AnimusForge.Conversation.RuntimeCompatibility.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
       "owner": "AF.Module.Economy",
       "source": "content/modules/AF.Module.Economy/ModuleData/EconomySourceTexts.json",
       "target": "ModuleData/EconomySourceTexts.json",
       "logicalName": "AnimusForge.Defaults.EconomySourceTexts.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/EconomySourceTexts.en.json",
+      "target": "ModuleData/EconomySourceTexts.en.json",
+      "logicalName": "AnimusForge.Defaults.EconomySourceTexts.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17492,6 +17527,12 @@
       "localizationRole": "compatibility"
     },
     {
+      "owner": "AnimusForge.Illustrator",
+      "source": "content/modules/AnimusForge.Illustrator/ModuleData/IllustratorCompatibilityTexts.en.json",
+      "target": "ModuleData/IllustratorCompatibilityTexts.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
       "owner": "AF.GameAdapter.Bannerlord",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordPromptTexts.json",
       "target": "ModuleData/AdapterRecordPromptTexts.json",
@@ -17508,6 +17549,13 @@
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordCompatibility.json",
       "target": "ModuleData/AdapterRecordCompatibility.json",
       "logicalName": "AnimusForge.Adapter.RecordCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordCompatibility.en.json",
+      "target": "ModuleData/AdapterRecordCompatibility.en.json",
+      "logicalName": "AnimusForge.Adapter.RecordCompatibility.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17531,9 +17579,23 @@
     },
     {
       "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterSceneCompatibility.en.json",
+      "target": "ModuleData/AdapterSceneCompatibility.en.json",
+      "logicalName": "AnimusForge.Adapter.SceneCompatibility.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCaptureCompatibility.json",
       "target": "ModuleData/AdapterPromptCaptureCompatibility.json",
       "logicalName": "AnimusForge.AdapterPromptCapture.Compatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCaptureCompatibility.en.json",
+      "target": "ModuleData/AdapterPromptCaptureCompatibility.en.json",
+      "logicalName": "AnimusForge.AdapterPromptCapture.Compatibility.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17592,9 +17654,23 @@
     },
     {
       "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/CastleAftermathCompatibility.en.json",
+      "target": "ModuleData/CastleAftermathCompatibility.en.json",
+      "logicalName": "AnimusForge.Defaults.CastleAftermathCompatibility.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
       "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/SiegeAftermathCompatibility.json",
       "target": "ModuleData/SiegeAftermathCompatibility.json",
       "logicalName": "AnimusForge.Defaults.SiegeAftermathCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/SiegeAftermathCompatibility.en.json",
+      "target": "ModuleData/SiegeAftermathCompatibility.en.json",
+      "logicalName": "AnimusForge.Defaults.SiegeAftermathCompatibility.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17616,9 +17692,21 @@
       "localizationRole": "compatibility"
     },
     {
+      "owner": "AF.Module.Kingdom",
+      "source": "content/modules/AF.Module.Kingdom/ModuleData/KingdomCivilWarCompatibility.en.json",
+      "target": "ModuleData/KingdomCivilWarCompatibility.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
       "owner": "AF.Module.Diplomacy",
       "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json",
       "target": "ModuleData/DiplomacyMiscCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.en.json",
+      "target": "ModuleData/DiplomacyMiscCompatibility.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17628,10 +17716,23 @@
       "localizationRole": "compatibility"
     },
     {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyCompatibilityTexts.en.json",
+      "target": "ModuleData/PolicyCompatibilityTexts.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/ModuleData/WorldBulletinCompatibility.json",
       "target": "ModuleData/WorldBulletinCompatibility.json",
       "logicalName": "AnimusForge.Weekly.WorldBulletinCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/WorldBulletinCompatibility.en.json",
+      "target": "ModuleData/WorldBulletinCompatibility.en.json",
+      "logicalName": "AnimusForge.Weekly.WorldBulletinCompatibility.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17651,6 +17752,13 @@
       "source": "content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json",
       "target": "ModuleData/LlmSourceTexts.json",
       "logicalName": "AnimusForge.Llm.RuntimeSources.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Llm",
+      "source": "content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.en.json",
+      "target": "ModuleData/LlmSourceTexts.en.json",
+      "logicalName": "AnimusForge.Llm.RuntimeSources.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17681,6 +17789,13 @@
     },
     {
       "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.en.json",
+      "target": "ModuleData/MemorySourceTexts.en.json",
+      "logicalName": "AnimusForge.Memory.SourceTexts.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/ModuleData/MemoryPromptTexts.json",
       "target": "ModuleData/MemoryPromptTexts.json",
       "localizationRole": "bilingual-prompt"
@@ -17696,6 +17811,13 @@
       "source": "content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json",
       "target": "ModuleData/PromptCompatibility.json",
       "logicalName": "AnimusForge.Prompt.Compatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.en.json",
+      "target": "ModuleData/PromptCompatibility.en.json",
+      "logicalName": "AnimusForge.Prompt.Compatibility.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17741,6 +17863,13 @@
       "source": "content/modules/AF.Module.Taunt/ModuleData/TauntSourceTexts.json",
       "target": "ModuleData/TauntSourceTexts.json",
       "logicalName": "AnimusForge.Taunt.RuntimeSources.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Taunt",
+      "source": "content/modules/AF.Module.Taunt/ModuleData/TauntSourceTexts.en.json",
+      "target": "ModuleData/TauntSourceTexts.en.json",
+      "logicalName": "AnimusForge.Taunt.RuntimeSources.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17822,6 +17951,12 @@
       "localizationRole": "compatibility"
     },
     {
+      "owner": "AnimusForge.Coup",
+      "source": "content/modules/AnimusForge.Coup/ModuleData/CoupSourceTexts.en.json",
+      "target": "ModuleData/CoupSourceTexts.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
       "owner": "AF.Foundation.Localization",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/McmPromptDefaults.zh-CN.json",
       "target": "ModuleData/McmPromptDefaults.json"
@@ -17847,9 +17982,21 @@
       "localizationRole": "compatibility"
     },
     {
+      "owner": "AF.Module.Duel",
+      "source": "content/modules/AF.Module.Duel/ModuleData/DuelFactTexts.en.json",
+      "target": "ModuleData/DuelFactTexts.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
       "owner": "AF.Module.WorldMap",
       "source": "content/modules/AF.Module.WorldMap/ModuleData/WorldMapCompatibility.json",
       "target": "ModuleData/WorldMapCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.WorldMap",
+      "source": "content/modules/AF.Module.WorldMap/ModuleData/WorldMapCompatibility.en.json",
+      "target": "ModuleData/WorldMapCompatibility.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17857,6 +18004,13 @@
       "source": "content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalCompatibility.json",
       "target": "ModuleData/PromptRetrievalCompatibility.json",
       "logicalName": "AnimusForge.Prompt.RetrievalCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalCompatibility.en.json",
+      "target": "ModuleData/PromptRetrievalCompatibility.en.json",
+      "logicalName": "AnimusForge.Prompt.RetrievalCompatibility.en.json",
       "localizationRole": "compatibility"
     },
     {
@@ -17879,8 +18033,20 @@
     },
     {
       "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyNpcCompatibility.en.json",
+      "target": "ModuleData/PolicyNpcCompatibility.en.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/ModuleData/PolicyCoreManagementCompatibility.json",
       "target": "ModuleData/PolicyCoreManagementCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyCoreManagementCompatibility.en.json",
+      "target": "ModuleData/PolicyCoreManagementCompatibility.en.json",
       "localizationRole": "compatibility"
     },
     {

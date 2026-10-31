@@ -101,8 +101,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         // above is authoritative; a second lexical classifier must not veto synonyms.
         if (document.IsPlayerAuthored) return true;
         var receiving = ResolveDialogueParty(terms.ReceivingKingdomId); var joining = ResolveDialogueParty(terms.JoiningKingdomId);
-        string pattern = NormalizeIntent(intent).EndsWith("annexation") ? DiplomacyCompatibilityTexts.Get("Regex_AnnexationKeywords")
-            : DiplomacyCompatibilityTexts.Get("Regex_VassalageKeywords");
+        string pattern = NormalizeIntent(intent).EndsWith("annexation") ? DiplomacyCompatibilityTexts.Alternation("Regex_AnnexationKeywords")
+            : DiplomacyCompatibilityTexts.Alternation("Regex_VassalageKeywords");
         if (!ContainsDirectedPeaceTerm(document.Body, _host.PartyNameOrEmpty(joining), joining == author, joining == target,
             _host.PartyNameOrEmpty(receiving), receiving == author, receiving == target, pattern))
         { reason = "treaty_roles_not_disclosed_in_public_body"; return false; }

@@ -865,7 +865,7 @@ public static class PromptListRetrievalService
 		string type = MyBehavior.GetPartyTransferTroopTypeLabelForExternal(character);
 		AddAlias(aliases, type);
 		AddAlias(aliases, EconomyPromptTexts.ProjectSource(type));
-		if (string.Equals(type, PromptRetrievalTexts.Raw("Raw_ee0c3b2a23bf"), StringComparison.Ordinal))
+		if (PromptRetrievalTexts.IsRaw(type, "Raw_ee0c3b2a23bf") || EconomySourceTexts.Is(type, "PartyAsset_Ranged"))
 		{
 			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_d94e4628ead1"));
 			AddAlias(aliases, "archer");
@@ -874,7 +874,7 @@ public static class PromptListRetrievalService
 			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_7ba00927dde9"));
 			AddAlias(aliases, "ranged");
 		}
-		if (string.Equals(type, PromptRetrievalTexts.Raw("Raw_fc088c205262"), StringComparison.Ordinal))
+		if (PromptRetrievalTexts.IsRaw(type, "Raw_fc088c205262") || EconomySourceTexts.Is(type, "PartyAsset_Cavalry"))
 		{
 			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9a6f752a85a1"));
 			AddAlias(aliases, "cavalry");
@@ -883,7 +883,7 @@ public static class PromptListRetrievalService
 			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_0551caec03ab"));
 			AddAlias(aliases, "knight");
 		}
-		if (string.Equals(type, PromptRetrievalTexts.Raw("Raw_80e617d1ecec"), StringComparison.Ordinal))
+		if (PromptRetrievalTexts.IsRaw(type, "Raw_80e617d1ecec") || EconomySourceTexts.Is(type, "PartyAsset_HorseArcher"))
 		{
 			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_5f34654a09e3"));
 			AddAlias(aliases, "horse archers");
@@ -892,7 +892,7 @@ public static class PromptListRetrievalService
 			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_d4b0a71d03b5"));
 			AddAlias(aliases, "horse archer");
 		}
-		if (string.Equals(type, PromptRetrievalTexts.Raw("Raw_8c69262092a7"), StringComparison.Ordinal))
+		if (PromptRetrievalTexts.IsRaw(type, "Raw_8c69262092a7") || EconomySourceTexts.Is(type, "PartyAsset_Infantry"))
 		{
 			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_78a516f1005d"));
 			AddAlias(aliases, "infantry");

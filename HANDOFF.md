@@ -1,3 +1,41 @@
+# 未部署：C# 组装的事实、历史和标签改为随游戏语言（2026-10-31，四步中的第 2 步）
+
+承接第 1 步（`df5361e91`）。26 张兼容表都有了英文版 `X.en.json`，键完全相同；`"="` 表示语言无关、两种语言都用中文原值，例如匹配词、原版中文名、旧存档值、协议标记。新组装的文本按写入时的游戏语言生成；匹配旧文本、模型回复的地方中英都认。已有存档不改写。
+- 英文版共 26 张：Adapter Record/Scene/PromptCapture、Prompt Compatibility/Retrieval、ConversationRuntime、LlmSourceTexts、MemorySourceTexts、WeeklyMaterial、WorldBulletin、Coup、Economy、Social、Taunt、Duel、WorldMap、KingdomCivilWar、DiplomacyMisc、DiplomacyPrompt、Policy 三张、Siege/Castle、Illustrator、Knowledge。已登记进 `content-map.json`（`compatibility`）；嵌入的表在 `AnimusForge.csproj` 里加了 `<base>.en.json` LogicalName。
+- 不需要英文版的 4 张表已在校验器里登记原因：LegacySettingsPrompts、McmPromptSourceCompatibility（旧 MCM 默认值和已存选项值）、TerminalCategories（路由 id）、EconomyDisplaySources（UI 投影匹配）。
+- 约 190 个 C# 文件改动：
+  - 拼句时写死的中文标点改为跟随语言，读取器新增 `Period/Colon/Comma/...`。
+  - 英文片段两侧补空格，句末统一过 `Tidy`。
+  - 匹配改为 `Is/Variants/Source/EqualsRaw/ContainsRaw`，中英都认。
+  - 会冻结首次语言的静态缓存，改成 `PromptLanguageValue` 或同时持有中英两份。
+  - 英文 AFEF 事实使用 `[AFEF PLAYER_ACTION]`/`[AFEF NPC_ACTION]`，所有读取器本来就认这两种写法。
+  - 旧的 `[AFEF内战事实]` 投影成当前语言的标签（新增 `LlmSourceTexts.CivilWarFactLabel`）。
+  - 外交契约标记 000–006 写入时用当前语言，读取时中英都认。
+- 运行时 C# 中文字面量为 0；只用于匹配的旧中文词表改用 `\u` 转义。
+- 测试代码同步：
+  - 真实 DLL 回放测试改为模拟游戏语言（`AF_TEST_GAME_LANGUAGE`），并接入第 3 步的 `GameLanguageRequestChecks`。
+  - 审计测试改为按游戏语言判断语言；民变标签、外交标记的断言按语言判断。
+  - 反射调用支持可选参数和 `out` 参数。
+  - SettlementStay 的假环境补上 `PromptComposerTexts` 桩；J17 源码契约改为跟随拆出的 `RenderCategory`。
+
+验证：
+- 隔离 worktree（`artifacts/l10n-step1-build`）编译主工程 1.4 和 1.3 均通过（Debug，未产出 Bootstrap）。
+- `tools/localization/l10n_gate.py` 全部通过：26 张表齐全、全部登记，运行时中文字面量 0。
+- 真实 DLL 回放（`run_actual_message_assembly.py`，候选 `artifacts/l10n-candidate/1.4`）zh-CN 和 en 两种模式都通过：消息与历史 170 项、运行时语言/UI 280 项、终端设置 5204 项、请求审计 43 项、游戏语言请求快照 22 项。快照测试在英文/繁體中文/简体中文/Deutsch 之间切换，确认约 17 个真实组装入口在英文下不含汉字，切换后不重启即生效。
+- 模块测试按区域与 HEAD 基线（`artifacts/l10n-baseline`）对比：周报/经济/社交/世界地图/决斗/嘲讽/政变/插画/攻城后续 93 项，Prompt/Memory/GameAdapter/content 137 项，Conversation/Llm/Memory/Vengeance 196 项，Diplomacy/Kingdom 47 项。没有回归；另有 5 项从失败变为通过。其余失败项在 HEAD 上同样失败，原因是缺参数、缺候选 DLL、依赖旧测试框架。
+- `TtsRequestLifetimeRegressionTests` 的 `/audio/voices` 404 回退测试在 HEAD 上同样失败。
+
+已知限制：
+- 英文语序靠逐片段拼接，个别句子较生硬，需要英文实机抽查周报、政策和外交历史。
+- 部分旧中文记录的投影只覆盖已知模板，未知模板原样透传。
+- 外交日期仍按中文语法写入（对应键是 `"="`）。
+- `WorldDiplomacyRoundLifecycle.SmokeTests` 和 `DiplomacyFixedModeContractTests` 有只适用于中文的断言，或引用了不存在的提交，在 HEAD 上同样失败。
+
+未完成：第 4 步（兼容表瘦身、双版本单模块编译、CN/EN 双包、整体审查）。未打包、未部署、未实机。
+回滚：逆提交本条对应提交。
+
+---
+
 # 未部署：纠正扩展开关，事件改为完整人设重生（2026-10-31）
 
 按用户澄清修正此前误解：扩展开关只控制新生成字段，关闭后重生只产正文，旧扩展仍保留/可用；原独立事件开关控制完整人设重生。事件复用手动生成的事实、世界书、玩家要求、协议、parser、预约及写回保护，不再走扩展字段补丁。产品提交`296c34261`，检查点`06c4d0d8d`。中文667、英文253、事件49项通过；隔离候选双API/Bootstrap与原门禁通过，真实MCM/终端1.3/CN1174、1.4/EN1230项通过。完整l10n门禁仍有36项其他表/映射缺口，未放宽。本条替代下方2026-10-30摘要的“关闭后停用注入/演变”结论；可编辑示例迁移保留。未部署/实机/provider；[唯一台账与代码范围图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-full-regeneration-20261031)，证据`artifacts/persona-full-regeneration-20261031/`，仅focused inverse本提交或该目录`rollback.patch`。

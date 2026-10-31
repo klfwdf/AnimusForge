@@ -137,7 +137,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (Storage.Documents.Any(x => x.RoundId == round.RoundId && x.IsReadyForPublication && x.AuthorKingdomId == country)) continue;
             foreach (string name in new[] { _host.PartyNameOrEmpty(country), _host.PartyRulerName(country) }.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct())
             {
-                string pattern = Regex.Escape(name) + @"[^，。！？；,.;!?\r\n]{0,24}(?:" + PublicSpeechPattern + ")";
+                string pattern = Regex.Escape(name) + @"[^\uFF0C\u3002\uFF01\uFF1F\uFF1B,.;!?\r\n]{0,24}(?:" + PublicSpeechPattern + ")";
                 foreach (string field in new[] { "title", "background", "body" })
                 {
                     if (!Regex.IsMatch((string)draft[field] ?? "", pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) continue;

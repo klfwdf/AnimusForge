@@ -643,14 +643,28 @@ public sealed partial class CourierDeliveryBehavior
 			return false;
 		}
 		return IsCourierReplyInventoryDisplayName(text)
-			|| (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0471"), StringComparison.Ordinal)
-				&& (text.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0472")) || GetCourierLetterInventoryFirstLine(text).EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0473"), StringComparison.Ordinal)));
+			|| LooksLikeCourierInboundLetterTitle(text, english: false)
+			|| LooksLikeCourierInboundLetterTitle(text, english: true);
+	}
+
+	// Item names are persisted in the language they were written in; each language's pieces are matched together.
+	private static string LetterTitlePiece(string key, bool english) => english ? ConversationRuntimeTexts.RawEnglish(key) : ConversationRuntimeTexts.RawSource(key);
+
+	private static bool LooksLikeCourierInboundLetterTitle(string text, bool english)
+	{
+		string prefix = LetterTitlePiece("AF_CONV_Runtime_0471", english);
+		return prefix.Length > 0 && text.StartsWith(prefix, StringComparison.Ordinal)
+			&& (text.Contains(LetterTitlePiece("AF_CONV_Runtime_0472", english)) || GetCourierLetterInventoryFirstLine(text).EndsWith(LetterTitlePiece("AF_CONV_Runtime_0473", english), StringComparison.Ordinal));
 	}
 
 	private static bool IsCourierReplyInventoryDisplayName(string displayName)
 	{
 		string text = (displayName ?? "").Trim();
-		return text.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0474")) || GetCourierLetterInventoryFirstLine(text).EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0475"), StringComparison.Ordinal);
+		if (ConversationRuntimeTexts.ContainsRaw(text, "AF_CONV_Runtime_0474")) return true;
+		string firstLine = GetCourierLetterInventoryFirstLine(text);
+		foreach (string suffix in ConversationRuntimeTexts.RawVariants("AF_CONV_Runtime_0475"))
+			if (firstLine.EndsWith(suffix, StringComparison.Ordinal)) return true;
+		return false;
 	}
 
 	public static string GetCourierLetterTransferDisplayTitleForExternal(string displayName)
@@ -710,7 +724,7 @@ public sealed partial class CourierDeliveryBehavior
 			title = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0479");
 		}
 		string factBody = Regex.Replace(detailText, "\\s+", " ");
-		return title.Trim() + "（" + detailLabel + "：" + factBody + "）";
+		return title.Trim() + ConversationRuntimeTexts.OpenParen + detailLabel + ConversationRuntimeTexts.Colon + factBody + ConversationRuntimeTexts.CloseParen;
 	}
 
 	public static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody) =>
@@ -766,29 +780,40 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			return "";
 		}
-		int replyIndex = text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0480"), StringComparison.Ordinal);
+		string sender = ExtractCourierLetterInventorySenderName(text, english: false);
+		return sender.Length > 0 ? sender : ExtractCourierLetterInventorySenderName(text, english: true);
+	}
+
+	private static string ExtractCourierLetterInventorySenderName(string text, bool english)
+	{
+		string replyMarker = LetterTitlePiece("AF_CONV_Runtime_0480", english);
+		int replyIndex = text.IndexOf(replyMarker, StringComparison.Ordinal);
 		if (replyIndex > 0)
 		{
 			return text.Substring(0, replyIndex).Trim();
 		}
-		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0481"), StringComparison.Ordinal))
+		string prefix = LetterTitlePiece("AF_CONV_Runtime_0481", english);
+		if (prefix.Length > 0 && text.StartsWith(prefix, StringComparison.Ordinal))
 		{
-			int senderStart = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0482").Length;
-			int senderEnd = text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0483"), senderStart, StringComparison.Ordinal);
+			int senderStart = LetterTitlePiece("AF_CONV_Runtime_0482", english).Length;
+			string separator = LetterTitlePiece("AF_CONV_Runtime_0483", english);
+			int senderEnd = text.IndexOf(separator, senderStart, StringComparison.Ordinal);
 			if (senderEnd > senderStart)
 			{
 				return text.Substring(senderStart, senderEnd - senderStart).Trim();
 			}
 			string firstLine = GetCourierLetterInventoryFirstLine(text);
-			if (firstLine.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0484"), StringComparison.Ordinal) && firstLine.Length > senderStart + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0485").Length)
+			string suffix = LetterTitlePiece("AF_CONV_Runtime_0484", english);
+			if (firstLine.EndsWith(suffix, StringComparison.Ordinal) && firstLine.Length > senderStart + LetterTitlePiece("AF_CONV_Runtime_0485", english).Length)
 			{
-				return firstLine.Substring(senderStart, firstLine.Length - senderStart - ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0486").Length).Trim();
+				return firstLine.Substring(senderStart, firstLine.Length - senderStart - LetterTitlePiece("AF_CONV_Runtime_0486", english).Length).Trim();
 			}
 		}
 		string replyTitle = GetCourierLetterInventoryFirstLine(text);
-		if (replyTitle.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0487"), StringComparison.Ordinal))
+		string replySuffix = LetterTitlePiece("AF_CONV_Runtime_0487", english);
+		if (replyTitle.EndsWith(replySuffix, StringComparison.Ordinal))
 		{
-			return replyTitle.Substring(0, replyTitle.Length - ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0488").Length).Trim();
+			return replyTitle.Substring(0, replyTitle.Length - LetterTitlePiece("AF_CONV_Runtime_0488", english).Length).Trim();
 		}
 		return "";
 	}
@@ -801,7 +826,7 @@ public sealed partial class CourierDeliveryBehavior
 	private static string BuildCourierLetterInventoryTitle(string senderName, bool isReply)
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
-		return isReply ? name + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0489") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0490") + name + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0491");
+		return ConversationRuntimeTexts.Tidy(isReply ? name + ConversationRuntimeTexts.W("AF_CONV_Runtime_0489") : ConversationRuntimeTexts.W("AF_CONV_Runtime_0490") + name + ConversationRuntimeTexts.W("AF_CONV_Runtime_0491"));
 	}
 
 	private static bool TrySplitCourierLetterInventoryDisplayName(string displayName, out string title, out string body)

@@ -171,7 +171,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return false;
 			}
 			string destinationText = destination == null ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0324") : GetSettlementName(destination);
-			LogFact(guest, GetHeroName(guest) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0326") + destinationText + WorldMapSourceTexts.Get("raw_literals.wm_lit_0327"));
+			LogFact(guest, PromptComposerTexts.Format("memory_worldmap_ForeignGuestWarDeparture", ("HERO", GetHeroName(guest)), ("DESTINATION", destinationText)));
 			DisplayCommandMessage(WorldMapUiText.ForeignGuestDepart(GetHeroName(guest)), CommandMessageTone.Failure);
 			return true;
 		}
@@ -199,7 +199,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			LogFact(guest, GetHeroName(guest) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0328"));
+			LogFact(guest, PromptComposerTexts.Format("memory_worldmap_ForeignGuestPartyReleased", ("HERO", GetHeroName(guest))));
 			DisplayCommandMessage(WorldMapUiText.ForeignGuestDetachmentReleased(GetHeroName(guest)), CommandMessageTone.Failure);
 			return true;
 		}
@@ -431,7 +431,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					continue;
 				}
 				bool won = mapEvent.WinningSide == actorSide;
-				string detail = won ? (GetStoredTargetName(state, command) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0329")) : (GetStoredActorName(state) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0330"));
+				string detail = won ? PromptComposerTexts.Format("memory_worldmap_PartyDefeated", ("PARTY", GetStoredTargetName(state, command))) : PromptComposerTexts.Format("memory_worldmap_PartyRepelled", ("PARTY", GetStoredActorName(state)));
 				detail += BuildMapEventCasualtySummary(mapEvent, actorSide, targetSide);
 				TryCompleteCurrentAttackResult(state, won ? CommandResultOutcome.Success : CommandResultOutcome.Failure, detail, won ? "map_event_attack_success" : "map_event_attack_failure");
 			}

@@ -16,6 +16,8 @@ internal static class LlmSourceTexts
     internal static string Source(string id) => Table.Chinese(id);
     internal static string[] Variants(string id) => Table.Variants(id);
     internal static bool Is(string value, string id) => Table.Is(value, id);
+    /// <summary>English edition (the Chinese source when the entry is language-invariant).</summary>
+    internal static string English(string id) => Table.English(id);
 
 
     internal static string Format(string id, params (string Name, string Value)[] variables)

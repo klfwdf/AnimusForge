@@ -102,11 +102,22 @@ internal static class DialogueHistoryLedger
 		{
 			return true;
 		}
-		if (body.StartsWith(MemoryTextResources.Raw("MEM_Raw_037"), StringComparison.Ordinal) && body.EndsWith(MemoryTextResources.Raw("MEM_Raw_038"), StringComparison.Ordinal))
+		// Revisit facts are stored in the language they were written in; each edition is matched as a whole.
+		return IsRevisitFactBody(body, english: false) || IsRevisitFactBody(body, english: true);
+	}
+
+	private static bool IsRevisitFactBody(string body, bool english)
+	{
+		if (body.StartsWith(RevisitPiece("MEM_Raw_037", english), StringComparison.Ordinal) && body.EndsWith(RevisitPiece("MEM_Raw_038", english), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		return body.StartsWith(MemoryTextResources.Raw("MEM_Raw_039"), StringComparison.Ordinal) && body.Contains(MemoryTextResources.Raw("MEM_Raw_040")) && body.EndsWith(MemoryTextResources.Raw("MEM_Raw_041"), StringComparison.Ordinal);
+		return body.StartsWith(RevisitPiece("MEM_Raw_039", english), StringComparison.Ordinal) && body.Contains(RevisitPiece("MEM_Raw_040", english)) && body.EndsWith(RevisitPiece("MEM_Raw_041", english), StringComparison.Ordinal);
+	}
+
+	private static string RevisitPiece(string key, bool english)
+	{
+		return english ? MemoryTextResources.RawEnglish(key) : MemoryTextResources.RawSource(key);
 	}
 
 	/// <summary>

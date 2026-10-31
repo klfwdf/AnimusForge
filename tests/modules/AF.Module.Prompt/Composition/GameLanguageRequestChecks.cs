@@ -24,6 +24,8 @@ internal static class GameLanguageRequestChecks
         MethodInfo method = named.SingleOrDefault(m => m.GetParameters().Length == args.Length)
             ?? named.Single(m => m.GetParameters().Length > args.Length && m.GetParameters().Skip(args.Length).All(p => p.IsOptional));
         ParameterInfo[] parameters = method.GetParameters();
+        // Same arity: pass the caller array so out/ref results stay visible to the caller.
+        if (parameters.Length == args.Length) return method.Invoke(null, args);
         object[] values = new object[parameters.Length];
         Array.Copy(args, values, args.Length);
         for (int i = args.Length; i < values.Length; i++) values[i] = parameters[i].DefaultValue;

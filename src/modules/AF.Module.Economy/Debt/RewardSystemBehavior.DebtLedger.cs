@@ -152,7 +152,7 @@ public partial class RewardSystemBehavior
 		}
 		if (num >= -0.01f)
 		{
-			return EconomySourceTexts.Get("S006") + text + "）";
+			return EconomySourceTexts.Get("S006") + text + EconomySourceTexts.CloseParen;
 		}
 		int num3 = Math.Max(1, (int)Math.Ceiling(0f - num));
 		return string.Format(EconomySourceTexts.Get("S007"), num3, text);
@@ -283,7 +283,7 @@ public partial class RewardSystemBehavior
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		string value = npc.Name?.ToString() ?? EconomySourceTexts.Get("S010");
-		stringBuilder.Append(EconomySourceTexts.Get("S011")).Append(value).Append(EconomySourceTexts.Get("S012"));
+		stringBuilder.Append(EconomySourceTexts.Post("S011")).Append(value).Append(EconomySourceTexts.Get("S012"));
 		int num = Math.Min(maxLines, list.Count);
 		for (int num2 = 0; num2 < num; num2++)
 		{
@@ -299,7 +299,7 @@ public partial class RewardSystemBehavior
 				.Append(note);
 			if (num2 < num - 1)
 			{
-				stringBuilder.Append("；");
+				stringBuilder.Append(EconomySourceTexts.Semicolon);
 			}
 		}
 		if (list.Count > num)
@@ -332,7 +332,7 @@ public partial class RewardSystemBehavior
 			maxLines = 1;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(EconomySourceTexts.Get("S011")).Append(BuildSettlementMerchantDebtLabel(settlement, kind)).Append(EconomySourceTexts.Get("S012"));
+		stringBuilder.Append(EconomySourceTexts.Post("S011")).Append(BuildSettlementMerchantDebtLabel(settlement, kind)).Append(EconomySourceTexts.Get("S012"));
 		int num = Math.Min(maxLines, list.Count);
 		for (int i = 0; i < num; i++)
 		{
@@ -348,7 +348,7 @@ public partial class RewardSystemBehavior
 				.Append(note);
 			if (i < num - 1)
 			{
-				stringBuilder.Append("；");
+				stringBuilder.Append(EconomySourceTexts.Semicolon);
 			}
 		}
 		if (list.Count > num)

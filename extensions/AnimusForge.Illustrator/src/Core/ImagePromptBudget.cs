@@ -11,8 +11,9 @@ namespace AnimusForge.Illustrator.Core
     internal static class ImagePromptBudget
     {
         internal const int MaximumCharacters = 32000;
-        private static readonly Regex Headers = new Regex(@"(?m:^\[\[(?<protocol>AFI_PROTOCOL_(?:SUBJECT|SCENE|LIGHT|SPATIAL))\]\])|【(?<name>[^】\r\n]{1,100})】|(?m:^\[[^\]\r\n]{1,100}\])",
+        private static readonly Regex Headers = new Regex(@"(?m:^\[\[(?<protocol>AFI_PROTOCOL_(?:SUBJECT|SCENE|LIGHT|SPATIAL))\]\])|【(?<name>[^】\r\n]{1,100})】|(?m:^\[(?<bracket>[^\]\r\n]{1,100})\])",
             RegexOptions.CultureInvariant);
+        // Legacy Chinese director headings; all entries are language-invariant (English output uses protocol markers).
         private static readonly HashSet<string> DirectorSections = new HashSet<string>(StringComparer.Ordinal)
         {
             IllustratorText.Raw("Residual_ImagePromptBudget_9d74adf88df4"), IllustratorText.Raw("Residual_ImagePromptBudget_2a8ae329881c"), IllustratorText.Raw("Residual_ImagePromptBudget_3733c837db22"), IllustratorText.Raw("Residual_ImagePromptBudget_067a21c2cea5"),
@@ -87,7 +88,9 @@ namespace AnimusForge.Illustrator.Core
                     result.Add(new Part { Text = text.Substring(position, header.Index - position) });
                 result.Add(new Part { Text = header.Value });
                 string name = header.Groups["name"].Value;
-                if (name == IllustratorText.Raw("Residual_ImagePromptBudget_5960cf16ee62") || name == IllustratorText.Raw("Residual_ImagePromptBudget_780da068d119")) authoritative = true;
+                // English editions write the fixed facts/presentation headings as line-start [..] headings.
+                string headingName = header.Groups["name"].Success ? name : header.Groups["bracket"].Value;
+                if (IllustratorText.IsRaw(headingName, "Residual_ImagePromptBudget_5960cf16ee62") || IllustratorText.IsRaw(headingName, "Residual_ImagePromptBudget_780da068d119")) authoritative = true;
                 int end = index + 1 < matches.Count ? matches[index + 1].Index : text.Length;
                 result.Add(new Part { Text = text.Substring(header.Index + header.Length, end - header.Index - header.Length),
                     Flexible = !authoritative && (header.Groups["protocol"].Success || DirectorSections.Contains(name)) });

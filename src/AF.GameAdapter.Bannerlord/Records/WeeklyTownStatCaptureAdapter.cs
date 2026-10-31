@@ -77,7 +77,7 @@ internal void TrackTownWeeklyMaterialChanges(Town town)
 			return;
 		}
 		string settlementDisplayName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(town.Settlement);
-		string text = settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Town_0013") + string.Join("；", list) + "。";
+		string text = settlementDisplayName + AdapterRecordTexts.W("AF_REC_Town_0013") + string.Join(AdapterRecordTexts.Semicolon, list) + AdapterRecordTexts.Period;
 		string townStatChangeReasonText = BuildTownStatChangeReasonText(town, changedLabels);
 		if (!string.IsNullOrWhiteSpace(townStatChangeReasonText))
 		{
@@ -87,9 +87,9 @@ internal void TrackTownWeeklyMaterialChanges(Town town)
 		string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(town.Settlement.MapFaction as Kingdom, AdapterRecordTexts.Raw("AF_REC_Town_0014"));
 		if (!string.IsNullOrWhiteSpace(clanDisplayName) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
 		{
-			text = text + AdapterRecordTexts.Raw("AF_REC_Town_0015") + clanDisplayName + AdapterRecordTexts.Raw("AF_REC_Town_0016") + kingdomDisplayName + "。";
+			text = text + AdapterRecordTexts.W("AF_REC_Town_0015") + clanDisplayName + AdapterRecordTexts.W("AF_REC_Town_0016") + kingdomDisplayName + AdapterRecordTexts.Period;
 		}
-		_record().RecordEventSourceMaterial("settlement_stats", AdapterRecordTexts.Raw("AF_REC_Town_0017") + settlementDisplayName, text, "settlement_stats:" + settlementId + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe(), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(town.Settlement.MapFaction), settlementId, includeInWorld: false, includeInKingdom: true);
+		_record().RecordEventSourceMaterial("settlement_stats", AdapterRecordTexts.W("AF_REC_Town_0017") + settlementDisplayName, text, "settlement_stats:" + settlementId + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe(), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(town.Settlement.MapFaction), settlementId, includeInWorld: false, includeInKingdom: true);
 	}
 
 internal static int GetCurrentWeeklyIndexSafe()
@@ -151,7 +151,7 @@ internal static string BuildTownStatChangeReasonText(Town town, HashSet<string> 
 		{
 			return "";
 		}
-		return AdapterRecordTexts.Raw("AF_REC_Town_0030") + string.Join("；", parts.Take(TownStatReasonMaxStats)) + "。";
+		return AdapterRecordTexts.W("AF_REC_Town_0030") + string.Join(AdapterRecordTexts.Semicolon, parts.Take(TownStatReasonMaxStats)) + AdapterRecordTexts.Period;
 	}
 
 internal static void AddTownStatModelReasonPart(List<string> parts, string label, Func<ExplainedNumber> calculator)
@@ -191,7 +191,7 @@ internal static string BuildTownStatExplainedNumberReason(string label, Explaine
 			return "";
 		}
 		List<string> factors = list.OrderByDescending((Tuple<string, float> x) => MathF.Abs(x.Item2)).ThenBy((Tuple<string, float> x) => x.Item1, StringComparer.OrdinalIgnoreCase).Select((Tuple<string, float> x) => x.Item1).Distinct(StringComparer.OrdinalIgnoreCase).Take(TownStatReasonMaxLinesPerStat).ToList();
-		return label + AdapterRecordTexts.Raw("AF_REC_Town_0031") + string.Join("、", factors);
+		return label + AdapterRecordTexts.W("AF_REC_Town_0031") + string.Join(AdapterRecordTexts.ListSeparator, factors);
 	}
 
 internal static string CondenseTownStatReasonLineName(string text)
@@ -266,23 +266,23 @@ internal static bool AppendTownChangeRangeLine(List<string> lines, string label,
 internal static string BuildTownChangeQualitativeLine(string label, float delta, float threshold)
 	{
 		string text = (label ?? "").Trim();
-		string intensity = MathF.Abs(delta) >= Math.Max(threshold * 3f, threshold + 0.001f) ? AdapterRecordTexts.Raw("AF_REC_Town_0032") : AdapterRecordTexts.Raw("AF_REC_Town_0033");
+		string intensity = MathF.Abs(delta) >= Math.Max(threshold * 3f, threshold + 0.001f) ? AdapterRecordTexts.W("AF_REC_Town_0032") : AdapterRecordTexts.W("AF_REC_Town_0033");
 		bool rise = delta > 0f;
 		switch (text)
 		{
-		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0034"):
-			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0035") : AdapterRecordTexts.Raw("AF_REC_Town_0036"));
-		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0037"):
-			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0038") : AdapterRecordTexts.Raw("AF_REC_Town_0039"));
-		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0040"):
-			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0041") : AdapterRecordTexts.Raw("AF_REC_Town_0042"));
-		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0043"):
-			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0044") : AdapterRecordTexts.Raw("AF_REC_Town_0045"));
-		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0046"):
-		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0047"):
-			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0048") : AdapterRecordTexts.Raw("AF_REC_Town_0049"));
+		case var _ when AdapterRecordTexts.IsRaw(text, "AF_REC_Town_0034"):
+			return text + intensity + (rise ? AdapterRecordTexts.W("AF_REC_Town_0035") : AdapterRecordTexts.W("AF_REC_Town_0036"));
+		case var _ when AdapterRecordTexts.IsRaw(text, "AF_REC_Town_0037"):
+			return text + intensity + (rise ? AdapterRecordTexts.W("AF_REC_Town_0038") : AdapterRecordTexts.W("AF_REC_Town_0039"));
+		case var _ when AdapterRecordTexts.IsRaw(text, "AF_REC_Town_0040"):
+			return text + intensity + (rise ? AdapterRecordTexts.W("AF_REC_Town_0041") : AdapterRecordTexts.W("AF_REC_Town_0042"));
+		case var _ when AdapterRecordTexts.IsRaw(text, "AF_REC_Town_0043"):
+			return text + intensity + (rise ? AdapterRecordTexts.W("AF_REC_Town_0044") : AdapterRecordTexts.W("AF_REC_Town_0045"));
+		case var _ when AdapterRecordTexts.IsRaw(text, "AF_REC_Town_0046"):
+		case var _ when AdapterRecordTexts.IsRaw(text, "AF_REC_Town_0047"):
+			return text + intensity + (rise ? AdapterRecordTexts.W("AF_REC_Town_0048") : AdapterRecordTexts.W("AF_REC_Town_0049"));
 		default:
-			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0038") : AdapterRecordTexts.Raw("AF_REC_Town_0039"));
+			return text + intensity + (rise ? AdapterRecordTexts.W("AF_REC_Town_0038") : AdapterRecordTexts.W("AF_REC_Town_0039"));
 		}
 	}
 }

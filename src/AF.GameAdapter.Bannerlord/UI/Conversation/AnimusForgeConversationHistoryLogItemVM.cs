@@ -16,12 +16,12 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 	{
 		string value = string.IsNullOrWhiteSpace(speaker) ? Localize("AF_UI_ConversationHistory_SpeakerFallback", "Record") : speaker.Trim();
 		if (string.Equals(kind, "afef_player", StringComparison.OrdinalIgnoreCase)
-			&& string.Equals(value, PromptComposerTexts.Raw("weekly_memory_compat_d26ab0225ce9"), StringComparison.Ordinal))
+			&& PromptComposerTexts.IsRaw(value, "weekly_memory_compat_d26ab0225ce9"))
 		{
 			return Localize("AF_UI_ConversationHistory_PlayerAction", "Player action");
 		}
 		if (string.Equals(kind, "afef_npc", StringComparison.OrdinalIgnoreCase)
-			&& string.Equals(value, PromptComposerTexts.Raw("weekly_memory_compat_d0d9d4e1d4c0"), StringComparison.Ordinal))
+			&& PromptComposerTexts.IsRaw(value, "weekly_memory_compat_d0d9d4e1d4c0"))
 		{
 			return Localize("AF_UI_ConversationHistory_NpcAction", "NPC action");
 		}

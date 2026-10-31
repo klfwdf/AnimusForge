@@ -377,16 +377,16 @@ public sealed partial class CourierDeliveryBehavior
 			FailModuleCourierSession(session, "courier.transport_destroyed", CoreCourierTransportOutcome.Destroyed);
 			DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_DestroyerDetail", " Destroyer: {NAME}", "NAME", destroyerName));
 			TryMoveHeroLossesToDestroyer(session, destroyerParty);
-			string fact = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0447") + (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0448")) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0449") + destroyerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0450");
+			string fact = ConversationRuntimeTexts.W("AF_CONV_Runtime_0447") + (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0448")) + ConversationRuntimeTexts.W("AF_CONV_Runtime_0449") + destroyerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0450");
 			if (!session.DeliveryApplied)
 			{
-				fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0451");
+				fact += ConversationRuntimeTexts.W("AF_CONV_Runtime_0451");
 			}
 			else
 			{
-				fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0452");
+				fact += ConversationRuntimeTexts.W("AF_CONV_Runtime_0452");
 			}
-			MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+			MyBehavior.AppendExternalDialogueHistory(recipient, null, null, ConversationRuntimeTexts.Tidy(fact));
 			UntrackCourierMapVisual(destroyedParty, "destroyed");
 			DestroyCourierTemporaryShips(session, destroyedParty, "destroyed");
 			session.Stage = CourierStage.Destroyed.ToString();
@@ -512,7 +512,7 @@ public sealed partial class CourierDeliveryBehavior
 			DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_DestroyerDetail", " Destroyer: {NAME}", "NAME", destroyerName ?? ConversationUiLocalization.Text("AF_CONV_UI_Courier_UnknownFaction", "unknown faction")));
 			Hero sender = ResolveSender(session);
 			string senderName = string.IsNullOrWhiteSpace(session?.SenderName) ? (sender?.Name?.ToString() ?? "NPC") : session.SenderName.Trim();
-			MyBehavior.AppendExternalDialogueHistory(sender, null, null, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0454") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0455") + (destroyerName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0456")) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0457") + GetInboundLetterKindDisplayText(session) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0458"));
+			MyBehavior.AppendExternalDialogueHistory(sender, null, null, ConversationRuntimeTexts.Tidy(ConversationRuntimeTexts.W("AF_CONV_Runtime_0454") + senderName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0455") + (destroyerName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0456")) + ConversationRuntimeTexts.W("AF_CONV_Runtime_0457") + GetInboundLetterKindDisplayText(session) + ConversationRuntimeTexts.W("AF_CONV_Runtime_0458")));
 			UntrackCourierMapVisual(destroyedParty, "destroyed_inbound");
 			DestroyCourierTemporaryShips(session, destroyedParty, "destroyed_inbound");
 			session.Stage = CourierStage.Destroyed.ToString();
@@ -539,7 +539,7 @@ public sealed partial class CourierDeliveryBehavior
 		DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_LostDetail", " The courier party disappeared from the campaign map."));
 		Hero sender = ResolveSender(session);
 		string senderName = string.IsNullOrWhiteSpace(session.SenderName) ? (sender?.Name?.ToString() ?? "NPC") : session.SenderName.Trim();
-		MyBehavior.AppendExternalDialogueHistory(sender, null, null, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0459") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0460") + GetInboundLetterKindDisplayText(session) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0461"));
+		MyBehavior.AppendExternalDialogueHistory(sender, null, null, ConversationRuntimeTexts.Tidy(ConversationRuntimeTexts.W("AF_CONV_Runtime_0459") + senderName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0460") + GetInboundLetterKindDisplayText(session) + ConversationRuntimeTexts.W("AF_CONV_Runtime_0461")));
 		session.Stage = CourierStage.Destroyed.ToString();
 		session.TemporaryShipCreated = false;
 		session.TemporaryShipHullId = "";

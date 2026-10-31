@@ -35,7 +35,7 @@ public sealed partial class WorldMapPartyCommandBehavior
 		bool alreadyStopping = IsStopPending(state);
 		SetPendingSafeExit(state, PendingSafeExitStop, reason);
 		if (!alreadyStopping)
-			fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetActorName(state, null, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0331");
+			fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + PromptComposerTexts.Format("memory_worldmap_StopHideoutAfterBattle", ("ACTOR", GetActorName(state, null, party)));
 		return true; // Keep the saved ownership until the battle has safely finalized.
 	}
 

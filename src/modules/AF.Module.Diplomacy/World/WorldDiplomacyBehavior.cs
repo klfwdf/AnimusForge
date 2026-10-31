@@ -1373,7 +1373,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			parts.Add(DiplomacyCompatibilityTexts.Get("RulerScore_CultureClaimsPrefix") + claims.ToString(CultureInfo.InvariantCulture));
 		}
-		return string.Join("；", parts);
+		return string.Join(DiplomacyCompatibilityTexts.Semicolon, parts);
 	}
 	private static AfVassalageType NormalizeWorldDiplomacyVassalageType(AfVassalageType type)
 	{

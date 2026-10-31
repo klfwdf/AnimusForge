@@ -166,7 +166,7 @@ internal static class PolicyTargetPlanRouter
 		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Hearth, PolicyCompatibilityTexts.Get("Targets_Compat_cfab635d1c1b")),
 		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Hearth, PolicyCompatibilityTexts.Get("Targets_Compat_4cfd3da9115f")),
 		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Militia, "militia"),
-		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Militia, PolicyCompatibilityTexts.Get("Module_militiaPerDay_playerDisplayName"))
+		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Militia, PolicyCompatibilityTexts.Source("Module_militiaPerDay_playerDisplayName"))
 	};
 
 	private static readonly KeyValuePair<string, PolicyTargetPlanMetricComparison>[] MetricComparisonCues =
@@ -570,7 +570,7 @@ internal static class PolicyTargetPlanRouter
 			PolicyCompatibilityTexts.Get("Targets_Compat_13217d378272"),
 			PolicyCompatibilityTexts.Get("Targets_Compat_38f20f31dd4f"),
 			PolicyCompatibilityTexts.Get("Targets_Compat_2f78fba165bb"),
-			PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_107"),
+			PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_107"),
 			PolicyCompatibilityTexts.Get("Targets_Compat_8b032bde3294"),
 			PolicyCompatibilityTexts.Get("Targets_Compat_36225a806046"),
 			PolicyCompatibilityTexts.Get("Targets_Compat_39e6e62091a3"),
@@ -948,7 +948,7 @@ internal static class PolicyTargetPlanRouter
 		{
 			explicitAtomIds.Add("exclude_specific_entity");
 		}
-		bool fiefCue = ContainsAny(normalizedQuery, PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_1462a7d8531e"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095"), PolicyCompatibilityTexts.Get("Targets_Compat_2059d7f1e966"), PolicyCompatibilityTexts.Get("Targets_Compat_661b85c39112"), PolicyCompatibilityTexts.Get("Targets_Compat_b28c4dbf4295"), PolicyCompatibilityTexts.Get("Targets_Compat_eaf086f666cf"), PolicyCompatibilityTexts.Get("Targets_Compat_fe5e1225977e"), PolicyCompatibilityTexts.Get("Targets_Compat_4cfd3da9115f"), PolicyCompatibilityTexts.Get("Targets_Compat_cfab635d1c1b"), "hearth", PolicyCompatibilityTexts.Get("Module_militiaPerDay_playerDisplayName"), "militia");
+		bool fiefCue = ContainsAny(normalizedQuery, PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_1462a7d8531e"), PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_095"), PolicyCompatibilityTexts.Get("Targets_Compat_2059d7f1e966"), PolicyCompatibilityTexts.Get("Targets_Compat_661b85c39112"), PolicyCompatibilityTexts.Get("Targets_Compat_b28c4dbf4295"), PolicyCompatibilityTexts.Get("Targets_Compat_eaf086f666cf"), PolicyCompatibilityTexts.Get("Targets_Compat_fe5e1225977e"), PolicyCompatibilityTexts.Get("Targets_Compat_4cfd3da9115f"), PolicyCompatibilityTexts.Get("Targets_Compat_cfab635d1c1b"), "hearth", PolicyCompatibilityTexts.Source("Module_militiaPerDay_playerDisplayName"), "militia");
 		bool clanFiefCue = ContainsAny(normalizedQuery, PolicyCompatibilityTexts.Get("Targets_Compat_88867878def8"), PolicyCompatibilityTexts.Get("Targets_Compat_e98151e2e218"), PolicyCompatibilityTexts.Get("Targets_Compat_7e837cd23ba3"), PolicyCompatibilityTexts.Get("Targets_Compat_a217b3ac878c"), PolicyCompatibilityTexts.Get("Targets_Compat_5d56a2cfbf9c"), PolicyCompatibilityTexts.Get("Targets_Compat_dae9aaeba326"));
 		bool isLocalScope = string.Equals(context.Scope, "local", StringComparison.OrdinalIgnoreCase);
 		NormalizeExplicitTypeCues(explicitAtomIds, clanFiefCue, typeCueQuery);
@@ -1630,9 +1630,9 @@ internal static class PolicyTargetPlanRouter
 	private static int ExtendNamedEntityTypeSuffix(string query, int start, string entityKind)
 	{
 		IReadOnlyList<string> suffixes = string.Equals(entityKind, PolicyTargetEntityKinds.Kingdom, StringComparison.OrdinalIgnoreCase)
-			? new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151"), PolicyCompatibilityTexts.Get("Targets_Compat_24c60e89e082") }
+			? new[] { PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151"), PolicyCompatibilityTexts.Get("Targets_Compat_24c60e89e082") }
 			: string.Equals(entityKind, PolicyTargetEntityKinds.Clan, StringComparison.OrdinalIgnoreCase)
-				? new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_b8003d4ad0d6") }
+				? new[] { PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_b8003d4ad0d6") }
 				: string.Equals(entityKind, PolicyTargetEntityKinds.Settlement, StringComparison.OrdinalIgnoreCase)
 					? new[] { PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_051"), PolicyCompatibilityTexts.Get("Targets_Compat_61a401cf32d4"), PolicyCompatibilityTexts.Get("Targets_Compat_76f47004cc12"), PolicyCompatibilityTexts.Get("Targets_Compat_32bd97013331") }
 					: Array.Empty<string>();
@@ -1666,9 +1666,9 @@ internal static class PolicyTargetPlanRouter
 		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_53667078705b"), PolicyCompatibilityTexts.Get("Targets_Compat_598c015fde8c"), PolicyCompatibilityTexts.Get("Targets_Compat_22d694c339ae"), PolicyCompatibilityTexts.Get("Targets_Compat_3cfde176aac7"))) result.Add("anchor_issuer");
 		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"))) result.Add("type_town");
 		if (typeQuery.Contains(PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"))) result.Add("type_castle");
-		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095"))) result.Add("type_primary_fief");
-		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54"), PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f"))) result.Add("type_clan");
-		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151"))) result.Add("type_kingdom");
+		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_095"))) result.Add("type_primary_fief");
+		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54"), PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f"))) result.Add("type_clan");
+		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151"))) result.Add("type_kingdom");
 		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_2059d7f1e966"), PolicyCompatibilityTexts.Get("Targets_Compat_4f4e7575b174"), PolicyCompatibilityTexts.Get("Targets_Compat_087269aeaf58"))) result.Add("geography_border");
 		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_78e20875d600"), PolicyCompatibilityTexts.Get("Targets_Compat_10aaace7ab59"), PolicyCompatibilityTexts.Get("Targets_Compat_9ec7c9b52e1b"))) result.Add("direction_north");
 		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_551ee9cf1235"), PolicyCompatibilityTexts.Get("Targets_Compat_95261be7958c"), PolicyCompatibilityTexts.Get("Targets_Compat_3a9a886ae29d"))) result.Add("direction_south");
@@ -1794,8 +1794,8 @@ internal static class PolicyTargetPlanRouter
 			&& (HasExplicitRelationCue(atomIds)
 				|| HasHierarchicalContainmentCue(
 					typeCueQuery,
-					new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151") },
-					new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54"), PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f") })))
+					new[] { PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151") },
+					new[] { PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54"), PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f") })))
 		{
 			// The higher-level kingdom phrase constrains clan membership.
 			atomIds.Remove("type_kingdom");
@@ -1808,8 +1808,8 @@ internal static class PolicyTargetPlanRouter
 			&& (HasExplicitRelationCue(atomIds)
 				|| HasHierarchicalContainmentCue(
 					typeCueQuery,
-					new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151") },
-					new[] { PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095") })))
+					new[] { PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151") },
+					new[] { PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_095") })))
 		{
 			// A kingdom is a scope container only when relation or containment syntax
 			// binds a lower-level settlement target. Independent kingdom and settlement
@@ -1820,8 +1820,8 @@ internal static class PolicyTargetPlanRouter
 			&& atomIds.Contains("type_clan")
 			&& HasHierarchicalContainmentCue(
 				typeCueQuery,
-				new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54"), PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f") },
-				new[] { PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095") }))
+				new[] { PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54"), PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f") },
+				new[] { PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Source("Legacy_BuildRawPolicyTargetLabel_095") }))
 		{
 			atomIds.Remove("type_clan");
 		}
@@ -2218,12 +2218,12 @@ internal static class PolicyTargetPlanRouter
 		result.AddRange(MetricAtoms("influence", PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_7"), PolicyCompatibilityTexts.Get("Targets_Compat_afeca66471bc"), PolicyCompatibilityTexts.Get("Targets_Compat_86f70cf134c1")));
 		result.AddRange(MetricAtoms("strength", PolicyCompatibilityTexts.Get("Targets_Compat_3b75cb0169b7"), PolicyCompatibilityTexts.Get("Targets_Compat_b966d70c4e21"), PolicyCompatibilityTexts.Get("Targets_Compat_8a2170491cda")));
 		result.AddRange(MetricAtoms("fiefs", PolicyCompatibilityTexts.Get("Targets_Compat_c7dcae5c6d8e"), PolicyCompatibilityTexts.Get("Targets_Compat_29dd8f5d0c70"), PolicyCompatibilityTexts.Get("Targets_Compat_69aebe97fc87")));
-		result.AddRange(MetricAtoms("food", PolicyCompatibilityTexts.Get("Module_foodPerDay_playerDisplayName"), PolicyCompatibilityTexts.Get("Targets_Compat_5fc1f9f360a9"), PolicyCompatibilityTexts.Get("Targets_Compat_6b78594b10cd")));
+		result.AddRange(MetricAtoms("food", PolicyCompatibilityTexts.Source("Module_foodPerDay_playerDisplayName"), PolicyCompatibilityTexts.Get("Targets_Compat_5fc1f9f360a9"), PolicyCompatibilityTexts.Get("Targets_Compat_6b78594b10cd")));
 		result.AddRange(MetricAtoms("prosperity", PolicyCompatibilityTexts.Get("Targets_Compat_7dbfe9cc7f6b"), PolicyCompatibilityTexts.Get("Targets_Compat_22f308cf5845"), PolicyCompatibilityTexts.Get("Targets_Compat_c5ba611faf9c")));
 		result.AddRange(MetricAtoms("loyalty", PolicyCompatibilityTexts.Get("Targets_Compat_b81e967d8c41"), PolicyCompatibilityTexts.Get("Targets_Compat_debfa4109450"), PolicyCompatibilityTexts.Get("Targets_Compat_0ff1ac94f916")));
 		result.AddRange(MetricAtoms("security", PolicyCompatibilityTexts.Get("Targets_Compat_fe5e1225977e"), PolicyCompatibilityTexts.Get("Targets_Compat_7db09fccb350"), PolicyCompatibilityTexts.Get("Targets_Compat_64199b73d82c")));
 		result.AddRange(MetricAtoms("hearth", PolicyCompatibilityTexts.Get("Targets_Compat_e6692b7928d8"), PolicyCompatibilityTexts.Get("Targets_Compat_f921402d4807"), PolicyCompatibilityTexts.Get("Targets_Compat_61fc5322baef")));
-		result.AddRange(MetricAtoms("militia", PolicyCompatibilityTexts.Get("Module_militiaPerDay_playerDisplayName"), PolicyCompatibilityTexts.Get("Targets_Compat_feb498c95623"), PolicyCompatibilityTexts.Get("Targets_Compat_58f6804bec79")));
+		result.AddRange(MetricAtoms("militia", PolicyCompatibilityTexts.Source("Module_militiaPerDay_playerDisplayName"), PolicyCompatibilityTexts.Get("Targets_Compat_feb498c95623"), PolicyCompatibilityTexts.Get("Targets_Compat_58f6804bec79")));
 		return result;
 	}
 
@@ -2354,7 +2354,7 @@ internal static class PolicyTargetPlanRouter
 				qualifiers.Add(MetricText(branch.Metric)
 					+ (branch.SortDirection == PolicyTargetPlanSortDirection.Ascending ? PolicyGenerationPromptTexts.Get("Targets_Text_aa9e366f68d3", " low") : PolicyGenerationPromptTexts.Get("Targets_Text_b1c27820fec2", " high")));
 			}
-			string exclusion = qualifiers.Count > 0 ? "（" + string.Join("、", qualifiers) + "）" : string.Empty;
+			string exclusion = qualifiers.Count > 0 ? PolicyCompatibilityTexts.OpenParen + string.Join(PolicyCompatibilityTexts.ListSeparator, qualifiers) + PolicyCompatibilityTexts.CloseParen : string.Empty;
 			string count = branch.Cardinality == PolicyTargetPlanCardinality.All ? PolicyGenerationPromptTexts.Get("Targets_Text_5c55a67935af", "all ")
 				: branch.Cardinality == PolicyTargetPlanCardinality.TopN ? PolicyGenerationPromptTexts.Get("Targets_Text_6044e9f095e0", "top ") + branch.Limit.ToString(CultureInfo.InvariantCulture) + PolicyGenerationPromptTexts.Get("Targets_Text_3a116815bc9d", " ")
 				: PolicyGenerationPromptTexts.Get("Targets_Text_60be66d61586", "bottom ") + branch.Limit.ToString(CultureInfo.InvariantCulture) + PolicyGenerationPromptTexts.Get("Targets_Text_3a116815bc9d", " ");

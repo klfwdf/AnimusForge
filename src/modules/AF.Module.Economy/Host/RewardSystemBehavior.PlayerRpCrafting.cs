@@ -21,7 +21,18 @@ public partial class RewardSystemBehavior
 {
 	// Player RP crafting is split from the large reward behavior so the UI, save overlay,
 	// and three-channel AFEF entry points share one small, reviewable implementation.
-	private static readonly string PlayerRpCraftedAfefMarker = EconomySourceTexts.Get("S540");
+	// Written in the current game language; matching accepts both the Chinese and English marker.
+	private static string PlayerRpCraftedAfefMarker => EconomySourceTexts.Get("S540");
+
+	private static bool ContainsPlayerRpCraftedAfefMarker(string text)
+	{
+		if (string.IsNullOrEmpty(text)) return false;
+		foreach (string marker in EconomySourceTexts.Variants("S540"))
+		{
+			if (text.IndexOf(marker, StringComparison.Ordinal) >= 0) return true;
+		}
+		return false;
+	}
 
 	private const string PlayerRpGeneratedItemPrefix = "af_generated_reward_pc_";
 
@@ -560,11 +571,11 @@ public partial class RewardSystemBehavior
 		if (crafterStamina < craftingStaminaCost)
 		{
 			error = (crafter.Name?.ToString() ?? EconomySourceTexts.Get("S555"))
-				+ EconomySourceTexts.Get("S556")
+				+ EconomySourceTexts.Post("S556")
 				+ craftingStaminaCost.ToString(CultureInfo.InvariantCulture)
 				+ EconomySourceTexts.Get("S557")
 				+ crafterStamina.ToString(CultureInfo.InvariantCulture)
-				+ "。";
+				+ EconomySourceTexts.Period;
 			return false;
 		}
 		int craftedItemValue =
@@ -764,11 +775,11 @@ public partial class RewardSystemBehavior
 			if (staminaBeforeDeduction < staminaCost)
 			{
 				error = (staminaCrafter.Name?.ToString() ?? EconomySourceTexts.Get("S555"))
-					+ EconomySourceTexts.Get("S556")
+					+ EconomySourceTexts.Post("S556")
 					+ staminaCost.ToString(CultureInfo.InvariantCulture)
 					+ EconomySourceTexts.Get("S557")
 					+ staminaBeforeDeduction.ToString(CultureInfo.InvariantCulture)
-					+ "。";
+					+ EconomySourceTexts.Period;
 				return false;
 			}
 
@@ -824,7 +835,7 @@ public partial class RewardSystemBehavior
 					out statsSnapshot,
 					out string snapshotError))
 				{
-					error = EconomySourceTexts.Get("S565") + snapshotError;
+					error = EconomySourceTexts.Pre("S565") + snapshotError;
 					return false;
 				}
 			}
@@ -1116,9 +1127,9 @@ public partial class RewardSystemBehavior
 				{
 					error = AppendPlayerRpCraftFailureStatus(
 						error,
-						EconomySourceTexts.Get("S577")
+						EconomySourceTexts.Pre("S577")
 							+ staminaRollbackException.GetType().Name
-							+ "。");
+							+ EconomySourceTexts.Period);
 				}
 			}
 			if (!transactionCommitted && chargeAttempted)
@@ -1181,7 +1192,7 @@ public partial class RewardSystemBehavior
 		string refundStatus = RefundPlayerRpCraftCharge(chargedPlayer, chargedAmount);
 		if (issues.Count > 0)
 		{
-			refundStatus += "\n" + EconomyUiTexts.PlayerRpCraftRollbackIncomplete(string.Join("；", issues));
+			refundStatus += "\n" + EconomyUiTexts.PlayerRpCraftRollbackIncomplete(string.Join(EconomySourceTexts.Semicolon, issues));
 		}
 		else if (hasExactGeneratedKey)
 		{
@@ -1276,10 +1287,10 @@ public partial class RewardSystemBehavior
 			+ expected.ToString(CultureInfo.InvariantCulture)
 			+ EconomySourceTexts.Get("S586")
 			+ actual.ToString(CultureInfo.InvariantCulture)
-			+ EconomySourceTexts.Get("S027")
+			+ EconomySourceTexts.Pre("S027")
 			+ (refundException == null
-				? "。"
-				: "（" + refundException.GetType().Name + "）。");
+				? EconomySourceTexts.Period
+				: EconomySourceTexts.OpenParen + refundException.GetType().Name + EconomySourceTexts.CloseParenPeriod);
 	}
 
 	private static bool IsExactPlayerRpGeneratedTransactionKey(string generatedStringId)
@@ -1506,7 +1517,7 @@ public partial class RewardSystemBehavior
 		{
 			AddPlayerRpRollbackIssue(
 				issues,
-				EconomySourceTexts.Get("S589") + ex.GetType().Name + "）");
+				EconomySourceTexts.Get("S589") + ex.GetType().Name + EconomySourceTexts.CloseParen);
 		}
 	}
 
@@ -1644,7 +1655,7 @@ public partial class RewardSystemBehavior
 		{
 			AddPlayerRpRollbackIssue(
 				issues,
-				EconomySourceTexts.Get("S593") + ex.GetType().Name + "）");
+				EconomySourceTexts.Get("S593") + ex.GetType().Name + EconomySourceTexts.CloseParen);
 		}
 	}
 
@@ -1748,7 +1759,7 @@ public partial class RewardSystemBehavior
 		{
 			AddPlayerRpRollbackIssue(
 				issues,
-				EconomySourceTexts.Get("S599") + ex.GetType().Name + "）");
+				EconomySourceTexts.Get("S599") + ex.GetType().Name + EconomySourceTexts.CloseParen);
 		}
 		finally
 		{
@@ -1811,7 +1822,7 @@ public partial class RewardSystemBehavior
 	{
 		string name = (cleanName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(name)
-			|| name.IndexOf(PlayerRpCraftedAfefMarker, StringComparison.Ordinal) >= 0)
+			|| ContainsPlayerRpCraftedAfefMarker(name))
 		{
 			return name;
 		}
@@ -1978,11 +1989,11 @@ public partial class RewardSystemBehavior
 		if (stamina < staminaCost)
 		{
 			error = (crafter.Name?.ToString() ?? EconomySourceTexts.Get("S555"))
-				+ EconomySourceTexts.Get("S556")
+				+ EconomySourceTexts.Post("S556")
 				+ staminaCost.ToString(CultureInfo.InvariantCulture)
 				+ EconomySourceTexts.Get("S557")
 				+ stamina.ToString(CultureInfo.InvariantCulture)
-				+ "。";
+				+ EconomySourceTexts.Period;
 			return false;
 		}
 		if (!TryBuildPlayerRpCraftTemplateCandidates(
@@ -2088,7 +2099,7 @@ public partial class RewardSystemBehavior
 				eligible
 					.Take(8)
 					.Select(item => item.StringId));
-			error = EconomySourceTexts.Get("S603")
+			error = EconomySourceTexts.Pre("S603")
 				+ ids
 				+ (eligible.Count > 8 ? "……" : "");
 			return false;
@@ -2304,11 +2315,11 @@ public partial class RewardSystemBehavior
 		candidates = new List<PlayerRpCraftTemplateCandidate>();
 		error = "";
 		string name = (requestedName ?? "").Trim();
-		if (name.IndexOf(PlayerRpCraftedAfefMarker, StringComparison.Ordinal) >= 0)
+		if (ContainsPlayerRpCraftedAfefMarker(name))
 		{
 			error = EconomySourceTexts.Get("S605")
 				+ PlayerRpCraftedAfefMarker
-				+ "。";
+				+ EconomySourceTexts.Period;
 			return false;
 		}
 		if (!IsValidGeneratedRpAssetNameForExternal(name))
@@ -2488,11 +2499,11 @@ public partial class RewardSystemBehavior
 		currentStandardPrice = 0;
 		error = "";
 		string name = (requestedName ?? "").Trim();
-		if (name.IndexOf(PlayerRpCraftedAfefMarker, StringComparison.Ordinal) >= 0)
+		if (ContainsPlayerRpCraftedAfefMarker(name))
 		{
 			error = EconomySourceTexts.Get("S605")
 				+ PlayerRpCraftedAfefMarker
-				+ "。";
+				+ EconomySourceTexts.Period;
 			return false;
 		}
 		if (!IsValidGeneratedRpAssetNameForExternal(name))

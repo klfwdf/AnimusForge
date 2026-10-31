@@ -59,17 +59,17 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 	private static string LocalizeDuelEligibilityReason(string reason)
 	{
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityTargetMissing"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityTargetMissing"))
 			return DuelString("AF_UI_Duel_TargetMissing", "Duel failed: the target NPC does not exist.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityTargetUnavailable"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityTargetUnavailable"))
 			return DuelString("AF_UI_Duel_TargetUnavailable", "Duel failed: the target NPC has no usable entity right now.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityTargetIsPlayer"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityTargetIsPlayer"))
 			return DuelString("AF_UI_Duel_TargetIsPlayer", "Duel failed: the player cannot be selected as the duel target.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityTargetInvalid"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityTargetInvalid"))
 			return DuelString("AF_UI_Duel_TargetInvalid", "Duel failed: the target NPC is invalid.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityFourberieSceneBlocked"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityFourberieSceneBlocked"))
 			return DuelString("AF_UI_Duel_FourberieSceneBlocked", "Fourberie is currently controlling this special combat or stealth scene. Leave this scene normally before starting an AnimusForge duel.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityFourberieHandToHandBlocked"), StringComparison.Ordinal) || string.Equals(reason, DuelFactTexts.Get("EligibilityFourberieHandToHandLegacy"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityFourberieHandToHandBlocked") || DuelFactTexts.Is(reason, "EligibilityFourberieHandToHandLegacy"))
 			return DuelString("AF_UI_Duel_FourberieHandToHandBlocked", "Fourberie hand-to-hand combat state has not reset. To avoid crashes during duels, finish or leave Fourberie's arena/underground ring; if this persists, reload your save.");
 		return reason;
 	}
@@ -5731,7 +5731,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				list.Add(DuelFactTexts.Format("AF_DUEL_StakeItems", ("COUNT", item.Value), ("ITEM", item.Key.Trim())));
 			}
 		}
-		return (list.Count > 0) ? string.Join("，", list) : DuelFactTexts.Get("AF_DUEL_StakeNone");
+		return (list.Count > 0) ? string.Join(DuelFactTexts.Comma, list) : DuelFactTexts.Get("AF_DUEL_StakeNone");
 	}
 
 	// Display-only formatting at duel settlement; raw summaries remain authoritative history.
@@ -5847,9 +5847,9 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			string winnerName = (winnerHero?.Name?.ToString() ?? DuelFactTexts.Get("AF_DUEL_DefaultOpponent")).Trim();
 			string clanName = (loserClan.Name?.ToString() ?? DuelFactTexts.Get("AF_DUEL_DefaultLoserClan")).Trim();
 			string clanSuffix = DuelFactTexts.Get("AF_DUEL_ClanSuffix");
-			string clanLabel = clanName.EndsWith(clanSuffix.TrimStart(), StringComparison.Ordinal) ? clanName : (clanName + clanSuffix);
+			string clanLabel = clanName.EndsWith(clanSuffix.TrimStart(), StringComparison.OrdinalIgnoreCase) ? clanName : (clanName + DuelFactTexts.Gap + clanSuffix);
 			string winnerClanName = (winnerClan.Name?.ToString() ?? DuelFactTexts.Get("AF_DUEL_DefaultWinnerClan")).Trim();
-			string winnerClanLabel = winnerClanName.EndsWith(clanSuffix.TrimStart(), StringComparison.Ordinal) ? winnerClanName : (winnerClanName + clanSuffix);
+			string winnerClanLabel = winnerClanName.EndsWith(clanSuffix.TrimStart(), StringComparison.OrdinalIgnoreCase) ? winnerClanName : (winnerClanName + DuelFactTexts.Gap + clanSuffix);
 			string penaltyText = appliedPenalty.ToString("0.##");
 			string afterText = after.ToString("0.##");
 			string winnerAfterText = winnerAfter.ToString("0.##");
@@ -5922,7 +5922,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 					if (RewardSystemBehavior.Instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText, out var dueStatusDisplayText))
 					{
 						outcomeState = DuelOutcomeEffectState.Confirmed;
-						string text3 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
+						string text3 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : (DuelFactTexts.Comma + dueStatusText);
 						string debtIdLabel = string.IsNullOrWhiteSpace(debtId) ? "" : DuelFactTexts.Format("AF_DUEL_StakeDebtIdLabel", ("ID", debtId));
 						string text4 = string.IsNullOrWhiteSpace(note) ? "" : DuelFactTexts.Format("AF_DUEL_StakeNoteLabel", ("NOTE", note));
 						MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, DuelFactTexts.Format("AF_DUEL_StakeDebtNpc", ("PLAYER", playerName2), ("AMOUNT", amount), ("DEBT_ID", debtIdLabel), ("TERM", text3), ("NOTE", text4)));
@@ -6027,7 +6027,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 						: DuelOutcomeEffectState.Partial;
 				if (list.Count > 0)
 				{
-					string text4 = string.Join("，", list);
+					string text4 = string.Join(DuelFactTexts.Comma, list);
 					MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, DuelFactTexts.Format("AF_DUEL_StakeTransferNpcLoss", ("PLAYER", text2), ("ITEMS", text4)));
 					MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, DuelFactTexts.Format("AF_DUEL_StakeTransferPlayerWin", ("NPC", text), ("ITEMS", text4)));
 					if (list2.Count > 0)
@@ -6044,7 +6044,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				if (instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText, out var dueStatusDisplayText))
 				{
 					outcomeState = DuelOutcomeEffectState.Confirmed;
-					string text7 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
+					string text7 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : (DuelFactTexts.Comma + dueStatusText);
 					string debtIdLabel2 = string.IsNullOrWhiteSpace(debtId) ? "" : DuelFactTexts.Format("AF_DUEL_StakeDebtIdLabel", ("ID", debtId));
 					string text10 = string.IsNullOrWhiteSpace(note) ? "" : DuelFactTexts.Format("AF_DUEL_StakeNoteLabel", ("NOTE", note));
 					MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, DuelFactTexts.Format("AF_DUEL_StakeDebtNpc", ("PLAYER", text2), ("AMOUNT", amount), ("DEBT_ID", debtIdLabel2), ("TERM", text7), ("NOTE", text10)));

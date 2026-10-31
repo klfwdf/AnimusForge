@@ -88,7 +88,7 @@ public sealed partial class CourierDeliveryBehavior
 			Settlement currentSettlement = recipient?.CurrentSettlement ?? party?.CurrentSettlement;
 			if (currentSettlement != null)
 			{
-				return ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0532") + FormatCourierSettlementNameWithType(currentSettlement) + "。";
+				return ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0532") + FormatCourierSettlementNameWithType(currentSettlement) + ConversationRuntimeTexts.Period.TrimEnd();
 			}
 			if (party == null)
 			{
@@ -104,7 +104,7 @@ public sealed partial class CourierDeliveryBehavior
 				string shipText = MapSeaContextGuard.BuildMobilePartyShipPromptText(party);
 				if (!string.IsNullOrWhiteSpace(shipText))
 				{
-					locationLine += ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0536") + shipText + "。";
+					locationLine += ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0536") + shipText + ConversationRuntimeTexts.Period.TrimEnd();
 				}
 				return locationLine;
 			}
@@ -116,8 +116,8 @@ public sealed partial class CourierDeliveryBehavior
 			Settlement landNearest = FindNearestSettlementForCourierPrompt(party);
 			string landNearestName = FormatCourierSettlementNameWithType(landNearest);
 			return string.IsNullOrWhiteSpace(landNearestName)
-				? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0538") + terrainLabel + "。"
-				: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0539") + landNearestName + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0540") + terrainLabel + "。";
+				? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0538") + terrainLabel + ConversationRuntimeTexts.Period.TrimEnd()
+				: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0539") + landNearestName + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0540") + terrainLabel + ConversationRuntimeTexts.Period.TrimEnd();
 		}
 		catch
 		{
@@ -191,19 +191,19 @@ public sealed partial class CourierDeliveryBehavior
 		StringBuilder sb = new StringBuilder();
 		if (delivered)
 		{
-			sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0542")).Append(playerName).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0543"));
+			sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0542")).Append(playerName).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0543"));
 		}
 		else
 		{
-			sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0544")).Append(playerName).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0545"));
+			sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0544")).Append(playerName).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0545"));
 		}
 		string crewSummary = BuildCourierCrewSummaryForPrompt(session);
 		if (!string.IsNullOrWhiteSpace(crewSummary))
 		{
-			sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0546")).Append(playerName)
-				.Append(delivered ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0547") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0548"))
+			sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0546")).Append(playerName)
+				.Append(delivered ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0547") : ConversationRuntimeTexts.W("AF_CONV_Runtime_0548"))
 				.Append(crewSummary)
-				.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0549"));
+				.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0549"));
 		}
 		foreach (CourierCargoEntry entry in session.Entries ?? new List<CourierCargoEntry>())
 		{
@@ -211,7 +211,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				continue;
 			}
-			string verb = delivered ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0550") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0551");
+			string verb = delivered ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0550") : ConversationRuntimeTexts.W("AF_CONV_Runtime_0551");
 			string factEntryName = (entry.Kind == "item" || entry.Kind == "show_item")
 				? GetCourierLetterTransferFactDescriptionForExternal(entry.Id, 0u, entry.Name)
 				: entry.Name;
@@ -237,34 +237,34 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			if (entry.Kind == "gold")
 			{
-				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0552")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0553")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0554")).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0552")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0553")).Append(entry.Amount).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0554")).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append(ConversationRuntimeTexts.Period.TrimEnd());
 			}
 			else if (entry.Kind == "item")
 			{
-				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0555")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0556")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0557")).Append(factEntryName).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0555")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0556")).Append(entry.Amount).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0557")).Append(factEntryName).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append(ConversationRuntimeTexts.Period.TrimEnd());
 			}
 			else if (entry.Kind == "show_gold")
 			{
-				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0558")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0559")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0560"));
+				sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0558")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0559")).Append(entry.Amount).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0560"));
 			}
 			else if (entry.Kind == "show_item")
 			{
-				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0561")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0562")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0563")).Append(factEntryName).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0564"));
+				sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0561")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0562")).Append(entry.Amount).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0563")).Append(factEntryName).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0564"));
 			}
 			else if (entry.Kind == "troop")
 			{
-				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0565")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0566")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0567")).Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0565")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0566")).Append(entry.Amount).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0567")).Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append(ConversationRuntimeTexts.Period.TrimEnd());
 			}
 			else if (entry.Kind == "prisoner")
 			{
-				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0568")).Append(playerName).Append(verb).Append(entry.IsHero ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0569") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0570")).Append(entry.IsHero ? entry.Name : (entry.Amount + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0571") + entry.Name)).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0568")).Append(playerName).Append(verb).Append(entry.IsHero ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0569") : ConversationRuntimeTexts.W("AF_CONV_Runtime_0570")).Append(entry.IsHero ? entry.Name : (entry.Amount + ConversationRuntimeTexts.W("AF_CONV_Runtime_0571") + entry.Name)).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append(ConversationRuntimeTexts.Period.TrimEnd());
 			}
 			else if (entry.Kind == "settlement")
 			{
-				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0572")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0573")).Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0572")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.W("AF_CONV_Runtime_0573")).Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append(ConversationRuntimeTexts.Period.TrimEnd());
 			}
 		}
-		return sb.ToString().Trim();
+		return ConversationRuntimeTexts.Tidy(sb.ToString()).Trim();
 	}
 
 	private static string BuildInboundDeliveryFactText(CourierSession session, bool delivered, Hero sender = null)
@@ -281,8 +281,8 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		string letterKind = GetInboundLetterKindDisplayText(session);
 		string fact = delivered
-			? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0575") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0576") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0577") + letterKind + "。"
-			: ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0578") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0579") + letterKind + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0580") + playerName + "。";
+			? ConversationRuntimeTexts.W("AF_CONV_Runtime_0575") + senderName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0576") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0577") + letterKind + ConversationRuntimeTexts.Period.TrimEnd()
+			: ConversationRuntimeTexts.W("AF_CONV_Runtime_0578") + senderName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0579") + letterKind + ConversationRuntimeTexts.W("AF_CONV_Runtime_0580") + playerName + ConversationRuntimeTexts.Period.TrimEnd();
 		if (!string.IsNullOrWhiteSpace(session.InboundIntentFact))
 		{
 			fact += "\n" + session.InboundIntentFact.Trim();
@@ -293,7 +293,7 @@ public sealed partial class CourierDeliveryBehavior
 			IFaction playerFaction = Hero.MainHero?.MapFaction;
 			if (senderFaction != null && playerFaction != null && senderFaction.IsAtWarWith(playerFaction))
 			{
-				fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0581") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0582") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0583");
+				fact += ConversationRuntimeTexts.W("AF_CONV_Runtime_0581") + senderName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0582") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0583");
 			}
 		}
 		catch
@@ -302,9 +302,9 @@ public sealed partial class CourierDeliveryBehavior
 		string crewSummary = BuildCourierCrewSummaryForPrompt(session);
 		if (!string.IsNullOrWhiteSpace(crewSummary))
 		{
-			fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0584") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0585") + crewSummary + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0586") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0587");
+			fact += ConversationRuntimeTexts.W("AF_CONV_Runtime_0584") + senderName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0585") + crewSummary + ConversationRuntimeTexts.W("AF_CONV_Runtime_0586") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0587");
 		}
-		return fact;
+		return ConversationRuntimeTexts.Tidy(fact);
 	}
 
 	private static string GetInboundLetterKindDisplayText(CourierSession session)
@@ -335,15 +335,15 @@ public sealed partial class CourierDeliveryBehavior
 				continue;
 			}
 			string role = entry.IsHero ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0592") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0593");
-			parts.Add(name + "×" + Math.Max(1, entry.Amount) + "（" + role + "）");
+			parts.Add(name + "×" + Math.Max(1, entry.Amount) + ConversationRuntimeTexts.OpenParen + role + ConversationRuntimeTexts.CloseParen);
 		}
-		return parts.Count == 0 ? "" : string.Join("，", parts);
+		return parts.Count == 0 ? "" : string.Join(ConversationRuntimeTexts.Comma, parts);
 	}
 
 	private static string BuildCourierCargoValueSuffix(CourierCargoEntry entry)
 	{
 		long value = EstimateCourierCargoEntryTotalValue(entry);
-		return value > 0L ? (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0594") + value + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0595")) : "";
+		return value > 0L ? (ConversationRuntimeTexts.W("AF_CONV_Runtime_0594") + value + ConversationRuntimeTexts.W("AF_CONV_Runtime_0595")) : "";
 	}
 
 	private static long EstimateCourierCargoEntryTotalValue(CourierCargoEntry entry)

@@ -338,13 +338,13 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return false;
 			}
-			string historyLine = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0462") + reply;
+			string historyLine = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0462") + (PromptLanguage.IsChinese ? "" : " ") + reply;
 			string npcName = (recipient.Name?.ToString() ?? "NPC").Trim();
 			if (string.IsNullOrWhiteSpace(npcName))
 			{
 				npcName = "NPC";
 			}
-			bool accepted = CommitCourierDialogueHistory(recipient, null, historyLine, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0463") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0464"));
+			bool accepted = CommitCourierDialogueHistory(recipient, null, historyLine, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0463") + ConversationRuntimeTexts.Tidy(npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0464")));
 			ShoutBehavior.RecordNativeConversationNpcLineForExternal(recipient, recipient.CharacterObject, npcName, historyLine);
 			PlayerNotorietyBehavior.NoteCourierReplyForExternal(recipient);
 			Log("reply history persisted session=" + session.Id + " recipient=" + SafeHeroId(recipient));

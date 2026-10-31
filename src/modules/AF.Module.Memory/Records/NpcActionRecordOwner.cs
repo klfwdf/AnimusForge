@@ -262,16 +262,29 @@ internal static string RenderText(string actorName, string rawText, Func<string,
 		{
 			text2 = MemoryTextResources.Raw("MEM_Raw_067");
 		}
-		text = RewriteNpcActionSecondPersonPronouns(text, text2);
-		if (text.StartsWith(MemoryTextResources.Raw("MEM_Raw_068"), StringComparison.Ordinal))
+		// Records keep the language they were written in. Chinese pronoun rewriting only applies to
+		// Chinese records; English records are rendered as "Actor: text".
+		bool chineseRecord = ContainsHan(text);
+		if (chineseRecord)
 		{
-			return text2 + text.Substring(1);
+			text = RewriteNpcActionSecondPersonPronouns(text, text2);
+			if (text.StartsWith(MemoryTextResources.RawSource("MEM_Raw_068"), StringComparison.Ordinal))
+			{
+				return text2 + text.Substring(1);
+			}
 		}
 		if (text.StartsWith(text2, StringComparison.Ordinal))
 		{
 			return text;
 		}
-		return text2 + "：" + text;
+		return text2 + (chineseRecord ? "\uFF1A" : ": ") + text;
+	}
+
+	private static bool ContainsHan(string text)
+	{
+		foreach (char c in text)
+			if (c >= '\u3400' && c <= '\u9FFF') return true;
+		return false;
 	}
 
 internal static string RewriteNpcActionSecondPersonPronouns(string rawText, string actorName)
@@ -282,11 +295,15 @@ internal static string RewriteNpcActionSecondPersonPronouns(string rawText, stri
 		{
 			return "";
 		}
+		if (!ContainsHan(text))
+		{
+			return text;
+		}
 		return text
-			.Replace(MemoryTextResources.Raw("MEM_Raw_069"), name + MemoryTextResources.Raw("MEM_Raw_070"))
-			.Replace(MemoryTextResources.Raw("MEM_Raw_071"), name + MemoryTextResources.Raw("MEM_Raw_072"))
-			.Replace(MemoryTextResources.Raw("MEM_Raw_073"), name + MemoryTextResources.Raw("MEM_Raw_074"))
-			.Replace(MemoryTextResources.Raw("MEM_Raw_068"), name);
+			.Replace(MemoryTextResources.RawSource("MEM_Raw_069"), name + MemoryTextResources.RawSource("MEM_Raw_070"))
+			.Replace(MemoryTextResources.RawSource("MEM_Raw_071"), name + MemoryTextResources.RawSource("MEM_Raw_072"))
+			.Replace(MemoryTextResources.RawSource("MEM_Raw_073"), name + MemoryTextResources.RawSource("MEM_Raw_074"))
+			.Replace(MemoryTextResources.RawSource("MEM_Raw_068"), name);
 	}
 
 internal static string BuildMetadata(NpcActionEntry entry, Func<NpcActionEntry,string> settlementName, Func<string,string> heroName, Func<string,string> clanName, Func<string,string> kingdomName, Func<string,string> actionKindName = null)
@@ -361,7 +378,7 @@ internal static string BuildMetadata(NpcActionEntry entry, Func<NpcActionEntry,s
 		{
 			return "";
 		}
-		return " " + string.Join("；", list) + "。";
+		return " " + string.Join(MemoryTextResources.Semicolon, list) + MemoryTextResources.Period.TrimEnd();
 	}
 
 internal static bool DoesNpcActionRelateToKingdom(NpcActionEntry entry, string kingdomId)

@@ -128,7 +128,7 @@ internal static class WeeklyMemoryMaterialValuePolicy
         string resolvedName = string.IsNullOrWhiteSpace(context.NpcName) ? context.SubjectName() : context.NpcName.Trim();
         string originDate = candidate.OriginGameDay == context.CurrentDay() ? context.CurrentDate()
             : "day:" + candidate.OriginGameDay.ToString(CultureInfo.InvariantCulture);
-        string reason = string.Join("；", atoms.Select(atom => WeeklyMemoryMaterialPolicy.BuildWeeklyMemoryMaterialTagLabel(atom.Label)
+        string reason = string.Join(WeeklyMaterialTexts.Semicolon, atoms.Select(atom => WeeklyMemoryMaterialPolicy.BuildWeeklyMemoryMaterialTagLabel(atom.Label)
             + " owner-confirmed " + atom.ValueDenars.ToString(CultureInfo.InvariantCulture) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0409"))
             .Distinct(StringComparer.OrdinalIgnoreCase))
             + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0410") + WeeklyMemoryMaterialPolicy.ValueThresholdDenars.ToString(CultureInfo.InvariantCulture) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0411");

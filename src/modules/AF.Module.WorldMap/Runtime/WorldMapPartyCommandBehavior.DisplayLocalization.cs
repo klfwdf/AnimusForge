@@ -131,14 +131,14 @@ public sealed partial class WorldMapPartyCommandBehavior
 				string key = rule.Variables[i];
 				string value = match.Groups[key].Value;
 				if (key == "PRISONERS" && value.Length == 0) value = "0";
-				if (key == "ACTION") value = value == WorldMapSourceTexts.Get("raw_literals.wm_lit_0008")
+				if (key == "ACTION") value = WorldMapSourceTexts.Is(value, "raw_literals.wm_lit_0008")
 					? WorldMapUiText.Result("AF_WM_Review_Raiding", "raiding")
-					: value == WorldMapSourceTexts.Get("raw_literals.wm_lit_0009") ? WorldMapUiText.Result("AF_WM_Review_Besieging", "besieging")
+					: WorldMapSourceTexts.Is(value, "raw_literals.wm_lit_0009") ? WorldMapUiText.Result("AF_WM_Review_Besieging", "besieging")
 					: WorldMapUiText.Result("AF_WM_Review_Attacking", "attacking");
 				if (key == "DETAIL") value = CommandMessageForDisplay(value);
-				if (key == "DESTINATION" && value == WorldMapSourceTexts.Get("raw_literals.wm_lit_0324"))
+				if (key == "DESTINATION" && WorldMapSourceTexts.Is(value, "raw_literals.wm_lit_0324"))
 					value = WorldMapUiText.Result("AF_WM_Review_ClanTerritory", "the original clan's territory");
-				if (key == "RESTORATION") value = value == WorldMapSourceTexts.Get("raw_literals.wm_lit_0157")
+				if (key == "RESTORATION") value = WorldMapSourceTexts.Is(value, "raw_literals.wm_lit_0157")
 					? WorldMapUiText.Result("AF_WM_Review_GovernorRestored", "The original governorship was restored.")
 					: WorldMapUiText.Result("AF_WM_Review_GovernorRetained", "The current governor was not displaced.");
 				if (key == "SHIPS" && value.Length > 0)

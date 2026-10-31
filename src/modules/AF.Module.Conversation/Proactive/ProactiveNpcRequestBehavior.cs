@@ -981,15 +981,15 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		string npcName = hero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0066");
 		if (string.Equals(_activeSession.TriggerSource, TriggerSourceNotorietyDriven, StringComparison.OrdinalIgnoreCase))
 		{
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0067") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0068") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0069");
+			return ConversationRuntimeTexts.Tidy(ConversationRuntimeTexts.W("AF_CONV_Runtime_0067") + npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0068") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0069"));
 		}
-		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0070") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0071") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0072");
+		return ConversationRuntimeTexts.Tidy(ConversationRuntimeTexts.W("AF_CONV_Runtime_0070") + npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0071") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0072"));
 	}
 
 	private static string BuildNpcInitiatedRequestFact(string npcName, string playerName, string situation)
 	{
 		string normalizedSituation = situation?.Trim() ?? "";
-		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0073") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0074") + playerName + "。" + normalizedSituation + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0075") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0076");
+		return ConversationRuntimeTexts.Tidy(ConversationRuntimeTexts.W("AF_CONV_Runtime_0073") + npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0074") + playerName + ConversationRuntimeTexts.Period + normalizedSituation + ConversationRuntimeTexts.W("AF_CONV_Runtime_0075") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0076"));
 	}
 
 	private bool TryConsumePendingOpening(Hero hero, bool nativeConversation, out string extraFact, out string promptText)
@@ -1636,25 +1636,25 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase))
 		{
 			string firstName = (_activeSession?.LastKnownMarriageFirstUnmarriedName ?? "").Trim();
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0079") + (string.IsNullOrWhiteSpace(firstName) ? "" : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0080") + firstName) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0081") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0082");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0079") + (string.IsNullOrWhiteSpace(firstName) ? "" : ConversationRuntimeTexts.W("AF_CONV_Runtime_0080") + firstName) + ConversationRuntimeTexts.W("AF_CONV_Runtime_0081") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0082");
 		}
 		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase))
 		{
 			string reason = (_activeSession?.LastKnownRevengeReasonText ?? "").Trim();
 			string target = (_activeSession?.LastKnownRevengeTargetName ?? "").Trim();
-			string targetText = string.IsNullOrWhiteSpace(target) ? "" : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0083") + target;
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0084") + (string.IsNullOrWhiteSpace(reason) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0085") : reason) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0086") + targetText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0087") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0088");
+			string targetText = string.IsNullOrWhiteSpace(target) ? "" : ConversationRuntimeTexts.W("AF_CONV_Runtime_0083") + target;
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0084") + (string.IsNullOrWhiteSpace(reason) ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0085") : reason) + ConversationRuntimeTexts.W("AF_CONV_Runtime_0086") + targetText + ConversationRuntimeTexts.W("AF_CONV_Runtime_0087") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0088");
 		}
 		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase))
 		{
 			string fief = (_activeSession?.LastKnownFiefProblemName ?? "").Trim();
 			string issue = (_activeSession?.LastKnownFiefIssueText ?? "").Trim();
-			string fiefText = string.IsNullOrWhiteSpace(fief) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0089") : fief;
-			return fiefText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0090") + (string.IsNullOrWhiteSpace(issue) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0091") : issue) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0092") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0093");
+			string fiefText = string.IsNullOrWhiteSpace(fief) ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0089") : fief;
+			return fiefText + ConversationRuntimeTexts.W("AF_CONV_Runtime_0090") + (string.IsNullOrWhiteSpace(issue) ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0091") : issue) + ConversationRuntimeTexts.W("AF_CONV_Runtime_0092") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0093");
 		}
 		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase))
 		{
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0094") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0095");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0094") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0095");
 		}
 		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
 		{
@@ -1664,24 +1664,24 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			Kingdom kingdom = ResolveHeroKingdom(hero);
 			string kingdomName = ResolveKnownKingdomName(kingdom);
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0096") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0097") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0098") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0099");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0096") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0097") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0098") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0099");
 		}
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			Kingdom kingdom = ResolveHeroKingdom(hero);
 			string kingdomName = ResolveKnownKingdomName(kingdom);
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0100") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0101") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0102");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0100") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0101") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0102");
 		}
 		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			Kingdom kingdom = ResolveHeroKingdom(hero);
 			string kingdomName = ResolveKnownKingdomName(kingdom);
-			string authorityText = IsKingdomLeader(hero, kingdom) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0103") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0104");
-			return authorityText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0105") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0106") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0107");
+			string authorityText = IsKingdomLeader(hero, kingdom) ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0103") : ConversationRuntimeTexts.W("AF_CONV_Runtime_0104");
+			return authorityText + ConversationRuntimeTexts.W("AF_CONV_Runtime_0105") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0106") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0107");
 		}
 		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase))
 		{
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0108") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0109");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0108") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0109");
 		}
 		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase))
 		{
@@ -1690,39 +1690,39 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			{
 				heroPrisonerCount = _activeSession.LastKnownHeroPrisonerCount;
 			}
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0110") + (heroPrisonerCount > 0 ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0111") : "") + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0112") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0113");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0110") + (heroPrisonerCount > 0 ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0111") : "") + ConversationRuntimeTexts.W("AF_CONV_Runtime_0112") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0113");
 		}
 		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
 		{
 			string captiveName = (_activeSession?.LastKnownCaptiveClanHeroName ?? "").Trim();
 			string holderName = (_activeSession?.LastKnownCaptiveClanHeroHolderName ?? "").Trim();
 			bool leaderHeld = _activeSession?.LastKnownCaptiveClanLeaderHeld == true;
-			string captiveText = string.IsNullOrWhiteSpace(captiveName) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0114") : captiveName;
-			string holderText = string.IsNullOrWhiteSpace(holderName) ? "" : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0115") + holderName;
-			string leaderText = leaderHeld ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0116") : "";
-			return captiveText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0117") + holderText + leaderText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0118") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0119");
+			string captiveText = string.IsNullOrWhiteSpace(captiveName) ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0114") : captiveName;
+			string holderText = string.IsNullOrWhiteSpace(holderName) ? "" : ConversationRuntimeTexts.W("AF_CONV_Runtime_0115") + holderName;
+			string leaderText = leaderHeld ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0116") : "";
+			return captiveText + ConversationRuntimeTexts.W("AF_CONV_Runtime_0117") + holderText + leaderText + ConversationRuntimeTexts.W("AF_CONV_Runtime_0118") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0119");
 		}
 		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase))
 		{
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0120") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0121");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0120") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0121");
 		}
 		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
 		{
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0122") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0123");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0122") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0123");
 		}
 		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase))
 		{
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0124") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0125");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0124") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0125");
 		}
 		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase))
 		{
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0126") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0127");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0126") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0127");
 		}
 		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase))
 		{
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0128") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0129");
+			return ConversationRuntimeTexts.W("AF_CONV_Runtime_0128") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0129");
 		}
-		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0130") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0131");
+		return ConversationRuntimeTexts.W("AF_CONV_Runtime_0130") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0131");
 	}
 
 	private string BuildDiplomacyOpeningFact(Hero hero, string playerName, string npcName)
@@ -1732,7 +1732,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return BuildNpcInitiatedRequestFact(npcName, playerName, _activeSession.DiplomacyDiscussionFact);
 		}
 		string kingdomName = ResolveKnownKingdomName(hero?.Clan?.Kingdom);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0132") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0133") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0134"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0132") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0133") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0134"));
 	}
 
 	private string BuildPoliticalAgendaOpeningFact(Hero hero, string playerName, string npcName)
@@ -1740,7 +1740,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		Kingdom kingdom = hero?.Clan?.Kingdom;
 		string kingdomName = ResolveKnownKingdomName(kingdom);
 		string agendaContext = VoteDealBehavior.BuildPendingDecisionsContext(hero);
-		string text = BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0135") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0136") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0137"));
+		string text = BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0135") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0136") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0137"));
 		if (!string.IsNullOrWhiteSpace(agendaContext))
 		{
 			text += "\n" + agendaContext;
@@ -1755,8 +1755,8 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		string description = (_activeSession?.LastKnownPolicySupportDescription ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0140")).Trim();
 		string effects = (_activeSession?.LastKnownPolicySupportEffects ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0141")).Trim();
 		bool hasPendingDecision = _activeSession?.LastKnownPolicySupportHasPendingDecision == true;
-		string decisionState = hasPendingDecision ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0142") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0143");
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0144") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0145") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0146") + policyName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0147") + description + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0148") + effects + "。" + decisionState);
+		string decisionState = hasPendingDecision ? ConversationRuntimeTexts.W("AF_CONV_Runtime_0142") : ConversationRuntimeTexts.W("AF_CONV_Runtime_0143");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0144") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0145") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0146") + policyName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0147") + description + ConversationRuntimeTexts.W("AF_CONV_Runtime_0148") + effects + ConversationRuntimeTexts.Period + decisionState);
 	}
 
 	private string BuildPolicyDiscussionOpeningFact(string playerName, string npcName)
@@ -1773,7 +1773,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private static string BuildDiplomacyOpeningSummary(Hero hero, string playerName, string npcName)
 	{
-		return npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0149") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0150");
+		return npcName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0149") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0150");
 	}
 
 	private string BuildKingdomMercenaryInviteOpeningFact(Hero hero, string playerName, string npcName)
@@ -1781,9 +1781,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		Kingdom kingdom = ResolveHeroKingdom(hero);
 		string kingdomName = ResolveKnownKingdomName(kingdom);
 		string authorityText = IsKingdomLeader(hero, kingdom)
-			? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0151") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0152")
-			: ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0153") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0154");
-		return BuildNpcInitiatedRequestFact(npcName, playerName, authorityText + "。" + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0155") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0156"));
+			? ConversationRuntimeTexts.W("AF_CONV_Runtime_0151") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0152")
+			: ConversationRuntimeTexts.W("AF_CONV_Runtime_0153") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0154");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, authorityText + ConversationRuntimeTexts.Period + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0155") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0156"));
 	}
 
 	private string BuildKingdomVassalInviteOpeningFact(Hero hero, string playerName, string npcName)
@@ -1791,71 +1791,71 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		Kingdom kingdom = ResolveHeroKingdom(hero);
 		string kingdomName = ResolveKnownKingdomName(kingdom);
 		string playerState = IsPlayerMercenaryOfKingdom(kingdom)
-			? playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0157") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0158")
-			: playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0159");
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0160") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0161") + playerState + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0162") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0163") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0164"));
+			? playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0157") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0158")
+			: playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0159");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0160") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0161") + playerState + ConversationRuntimeTexts.W("AF_CONV_Runtime_0162") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0163") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0164"));
 	}
 
 	private string BuildClanCaptiveOpeningFact(string playerName, string npcName)
 	{
 		string summary = BuildOpeningNeedSummary(NeedClanCaptive, null, ResolveActiveParty(), playerName, npcName);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + "。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + ConversationRuntimeTexts.Period + " ");
 	}
 
 	private string BuildLowMoraleOpeningFact(MobileParty party, string playerName, string npcName)
 	{
 		string summary = BuildOpeningNeedSummary(NeedLowMorale, null, party, playerName, npcName);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + "。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + ConversationRuntimeTexts.Period + " ");
 	}
 
 	private string BuildMountShortageOpeningFact(MobileParty party, string playerName, string npcName)
 	{
 		string summary = BuildOpeningNeedSummary(NeedMountShortage, null, party, playerName, npcName);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + "。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + ConversationRuntimeTexts.Period + " ");
 	}
 
 	private string BuildOverburdenedOpeningFact(MobileParty party, string playerName, string npcName)
 	{
 		string summary = BuildOpeningNeedSummary(NeedOverburdened, null, party, playerName, npcName);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + "。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + ConversationRuntimeTexts.Period + " ");
 	}
 
 	private string BuildClanFinanceStrainOpeningFact(string playerName, string npcName)
 	{
 		string summary = BuildOpeningNeedSummary(NeedClanFinanceStrain, null, ResolveActiveParty(), playerName, npcName);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + "。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + ConversationRuntimeTexts.Period + " ");
 	}
 
 	private string BuildClanServiceOpeningFact(string playerName, string npcName)
 	{
 		string clanName = (_activeSession?.LastKnownClanServiceTargetClanName ?? npcName).Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0165") + clanName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0166") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0167"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0165") + clanName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0166") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0167"));
 	}
 
 	private string BuildRomanticInteractionOpeningFact(string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0168") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0169"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0168") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0169"));
 	}
 
 	private string BuildGreetingOpeningFact(string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0170") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0171"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0170") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0171"));
 	}
 
 	private string BuildFriendshipOpeningFact(string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0172") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0173"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0172") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0173"));
 	}
 
 	private string BuildCourtshipOpeningFact(string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0174") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0175"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0174") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0175"));
 	}
 
 	private string BuildBanditSuppressionOpeningFact(string playerName, string npcName)
 	{
 		string settlementName = (_activeSession?.LastKnownBanditSuppressionSettlementName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0176")).Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0177") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0178"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, settlementName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0177") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0178"));
 	}
 
 	private string BuildPoliticalRivalSuppressionOpeningFact(string playerName, string npcName)
@@ -1863,14 +1863,14 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		string kingdomName = (_activeSession?.LastKnownPoliticalRivalSuppressionKingdomName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0179")).Trim();
 		string requesterClanName = (_activeSession?.LastKnownPoliticalRivalSuppressionRequesterClanName ?? npcName).Trim();
 		string rivalClanName = (_activeSession?.LastKnownPoliticalRivalSuppressionRivalClanName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0180")).Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0181") + requesterClanName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0182") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0183") + rivalClanName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0184") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0185"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0181") + requesterClanName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0182") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0183") + rivalClanName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0184") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0185"));
 	}
 
 	private string BuildSettlementPurchaseOpeningFact(string playerName, string npcName)
 	{
 		string kingdomName = (_activeSession?.LastKnownSettlementPurchaseKingdomName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0186")).Trim();
 		string playerFiefsText = (_activeSession?.LastKnownSettlementPurchasePlayerFiefsText ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0187")).Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0188") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0189") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0190") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0191") + playerFiefsText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0192"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0188") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0189") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0190") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0191") + playerFiefsText + ConversationRuntimeTexts.W("AF_CONV_Runtime_0192"));
 	}
 
 	private string BuildSettlementSaleOpeningFact(string playerName, string npcName)
@@ -1880,7 +1880,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		string settlementType = (_activeSession?.LastKnownSettlementSaleTargetSettlementType ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0195")).Trim();
 		string foreignFactionName = (_activeSession?.LastKnownSettlementSaleForeignFactionName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0196")).Trim();
 		string foreignSettlementName = (_activeSession?.LastKnownSettlementSaleForeignSettlementName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0197")).Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0198") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0199") + kingdomName + "。" + settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0200") + settlementType + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0201") + foreignFactionName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0202") + foreignSettlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0203"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0198") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0199") + kingdomName + ConversationRuntimeTexts.Period + settlementName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0200") + settlementType + ConversationRuntimeTexts.W("AF_CONV_Runtime_0201") + foreignFactionName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0202") + foreignSettlementName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0203"));
 	}
 
 	private string BuildTerritorialInterrogationOpeningFact(string playerName, string npcName)
@@ -1888,51 +1888,51 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		string kingdomName = (_activeSession?.LastKnownTerritorialInterrogationKingdomName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0204")).Trim();
 		string settlementName = (_activeSession?.LastKnownTerritorialInterrogationSettlementName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0205")).Trim();
 		string npcCultureName = (_activeSession?.LastKnownTerritorialInterrogationNpcCultureName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0206")).Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0207") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0208") + npcCultureName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0209") + settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0210") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0211"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0207") + kingdomName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0208") + npcCultureName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0209") + settlementName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0210") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0211"));
 	}
 
 	private string BuildMarriageAlliancePressureOpeningFact(string playerName, string npcName)
 	{
 		string summary = BuildOpeningNeedSummary(NeedMarriageAlliancePressure, null, ResolveActiveParty(), playerName, npcName);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + "。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + ConversationRuntimeTexts.Period + " ");
 	}
 
 	private string BuildRevengePressureOpeningFact(string playerName, string npcName)
 	{
 		string summary = BuildOpeningNeedSummary(NeedRevengePressure, null, ResolveActiveParty(), playerName, npcName);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + "。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + ConversationRuntimeTexts.Period + " ");
 	}
 
 	private string BuildFiefGovernanceAnxietyOpeningFact(string playerName, string npcName)
 	{
 		string summary = BuildOpeningNeedSummary(NeedFiefGovernanceAnxiety, null, ResolveActiveParty(), playerName, npcName);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + "。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + ConversationRuntimeTexts.Period + " ");
 	}
 
 	private string BuildAllySupportOpeningFact(string playerName, string npcName)
 	{
 		string summary = BuildOpeningNeedSummary(NeedAllySupport, null, ResolveActiveParty(), playerName, npcName);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + "。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, summary + ConversationRuntimeTexts.Period + " ");
 	}
 
 	private string BuildFoodShortageOpeningFact(MobileParty party, string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0212") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0213"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0212") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0213"));
 	}
 
 	private string BuildMoneyShortageOpeningFact(MobileParty party, string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0214") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0215"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0214") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0215"));
 	}
 
 	private string BuildTroopShortageOpeningFact(MobileParty party, string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0216") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0217"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0216") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0217"));
 	}
 
 	private string BuildPrisonerOverloadOpeningFact(MobileParty party, string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0218") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0219"));
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.W("AF_CONV_Runtime_0218") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0219"));
 	}
 
 	private static string BuildOpeningPrompt(IEnumerable<string> needTypes)
@@ -2879,7 +2879,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 					snapshot.LowestLoyalty = loyalty;
 					snapshot.LowestSecurity = security;
 					snapshot.LowestGarrisonCount = garrison;
-					snapshot.IssueText = string.Join("、", issues);
+					snapshot.IssueText = string.Join(ConversationRuntimeTexts.ListSeparator, issues);
 				}
 			}
 		}
@@ -3210,9 +3210,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		int targetMercenaries = useSession ? _activeSession.KingdomTargetMercenaryClanCount : snapshot.TargetMercenaryClanCount;
 		int targetVassals = useSession ? _activeSession.KingdomTargetVassalClanCount : snapshot.TargetVassalClanCount;
 		string warText = warCount > 0
-			? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0229") + warCount + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0230") + powerRatio.ToString("0.00")
-			: ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0231");
-		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0232") + formalVassals + "/" + targetVassals + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0233") + mercenaries + "/" + targetMercenaries + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0234") + fiefScore + warText + "。";
+			? ConversationRuntimeTexts.W("AF_CONV_Runtime_0229") + warCount + ConversationRuntimeTexts.W("AF_CONV_Runtime_0230") + powerRatio.ToString("0.00")
+			: ConversationRuntimeTexts.W("AF_CONV_Runtime_0231");
+		return ConversationRuntimeTexts.W("AF_CONV_Runtime_0232") + formalVassals + "/" + targetVassals + ConversationRuntimeTexts.W("AF_CONV_Runtime_0233") + mercenaries + "/" + targetMercenaries + ConversationRuntimeTexts.W("AF_CONV_Runtime_0234") + fiefScore + warText + ConversationRuntimeTexts.Period;
 	}
 
 	private static bool IsPlayerMercenaryOfKingdom(Kingdom kingdom)

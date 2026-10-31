@@ -3410,7 +3410,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			string direction = (directionToken ?? "").Trim().ToUpperInvariant();
 			if (direction != "TO_PLAYER" && direction != "TO_NPC")
 			{
-				statusText = EconomySourceTexts.Get("S082") + directionToken + "。";
+				statusText = EconomySourceTexts.Get("S082") + directionToken + EconomySourceTexts.Period;
 				return false;
 			}
 			Hero targetOwner = direction == "TO_PLAYER" ? receiver : giver;
@@ -3441,7 +3441,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			mutationObservation?.MarkUnknown("economy.settlement_transfer_entry_exception");
-			statusText = EconomySourceTexts.Get("S083") + ex.Message;
+			statusText = EconomySourceTexts.Pre("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -3698,7 +3698,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			return "（" + string.Join("；", list) + "）";
+			return EconomySourceTexts.OpenParen + string.Join(EconomySourceTexts.Semicolon, list) + EconomySourceTexts.CloseParen;
 		}
 		catch
 		{
@@ -3710,7 +3710,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		if (memberCount > 0 && prisonerCount > 0)
 		{
-			return memberCount + EconomySourceTexts.Get("S182") + prisonerCount + EconomySourceTexts.Get("S183");
+			return memberCount + EconomySourceTexts.Pre("S182") + prisonerCount + EconomySourceTexts.Get("S183");
 		}
 		if (memberCount > 0)
 		{
@@ -3724,8 +3724,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		string label = string.IsNullOrWhiteSpace(partyName) ? EconomySourceTexts.Get("S185") : partyName.Trim();
 		string countText = BuildWildernessHeroPartyTransferCountText(memberCount, prisonerCount);
 		return string.IsNullOrEmpty(countText)
-			? label + EconomySourceTexts.Get("S186")
-			: label + EconomySourceTexts.Get("S187") + countText + EconomySourceTexts.Get("S188");
+			? label + EconomySourceTexts.Post("S186")
+			: label + EconomySourceTexts.Get("S187") + countText + EconomySourceTexts.Post("S188");
 	}
 
 	private static string BuildClanRecruitmentFiefSummary(IEnumerable<Settlement> carriedSettlements)
@@ -3743,7 +3743,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			return EconomySourceTexts.Get("S189") + string.Join("、", list) + EconomySourceTexts.Get("S190");
+			return EconomySourceTexts.Get("S189") + string.Join(EconomySourceTexts.ListSeparator, list) + EconomySourceTexts.Get("S190");
 		}
 		catch
 		{
@@ -3775,7 +3775,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("Logic", "[Reward] prepare departing ruling clan transition failed: " + ex.Message);
-			transitionNotes?.Add(EconomySourceTexts.Get("S194") + ex.Message);
+			transitionNotes?.Add(EconomySourceTexts.Pre("S194") + ex.Message);
 		}
 	}
 
@@ -3798,7 +3798,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("Logic", "[Reward] finalize departed ruling clan transition failed: " + ex.Message);
-			transitionNotes?.Add(EconomySourceTexts.Get("S196") + ex.Message);
+			transitionNotes?.Add(EconomySourceTexts.Pre("S196") + ex.Message);
 		}
 	}
 
@@ -3838,7 +3838,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("Logic", "[Reward] repair ruling clan after leader recruitment failed: " + ex.Message);
-			transitionNotes?.Add(EconomySourceTexts.Get("S194") + ex.Message);
+			transitionNotes?.Add(EconomySourceTexts.Pre("S194") + ex.Message);
 		}
 	}
 
@@ -3956,7 +3956,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			statusText = EconomySourceTexts.Get("S203") + ex.Message;
+			statusText = EconomySourceTexts.Pre("S203") + ex.Message;
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_cleanup_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
@@ -4030,7 +4030,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			statusText = EconomySourceTexts.Get("S208") + ex.Message;
+			statusText = EconomySourceTexts.Pre("S208") + ex.Message;
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] move_to_player_clan_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
@@ -4084,7 +4084,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			statusText = EconomySourceTexts.Get("S211") + ex.Message;
+			statusText = EconomySourceTexts.Pre("S211") + ex.Message;
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] move_to_player_companion_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
@@ -4113,8 +4113,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				? (preservedPlayerSpouseIdentity ? EconomySourceTexts.Get("S213") : EconomySourceTexts.Get("S214"))
 				: (asCompanion ? EconomySourceTexts.Get("S215") : EconomySourceTexts.Get("S216"));
 			string playerFact = preservedPlayerFamilyIdentity
-				? (preservedPlayerSpouseIdentity ? heroName + EconomySourceTexts.Get("S217") : heroName + EconomySourceTexts.Get("S218"))
-				: (asCompanion ? EconomySourceTexts.Get("S219") + heroName + EconomySourceTexts.Get("S220") : EconomySourceTexts.Get("S219") + heroName + EconomySourceTexts.Get("S221"));
+				? (preservedPlayerSpouseIdentity ? heroName + EconomySourceTexts.Post("S217") : heroName + EconomySourceTexts.Post("S218"))
+				: (asCompanion ? EconomySourceTexts.Pre("S219") + heroName + EconomySourceTexts.Post("S220") : EconomySourceTexts.Pre("S219") + heroName + EconomySourceTexts.Post("S221"));
 			if (joinedWildernessParty)
 			{
 				string countText = BuildWildernessHeroPartyTransferCountText(joinedWildernessMembers, joinedWildernessPrisoners);
@@ -4125,8 +4125,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					npcFact += EconomySourceTexts.Get("S224") + countText + EconomySourceTexts.Get("S225");
-					playerFact += " " + heroName + EconomySourceTexts.Get("S226") + countText + EconomySourceTexts.Get("S227");
+					npcFact += EconomySourceTexts.Get("S224") + countText + EconomySourceTexts.Post("S225");
+					playerFact += " " + heroName + EconomySourceTexts.Get("S226") + countText + EconomySourceTexts.Post("S227");
 				}
 			}
 			MyBehavior.RecordNpcActionForExternal(hero, npcFact, stableKey + ":npc", actionType, isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
@@ -5378,7 +5378,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private static string SanitizeHeroPersonalName(string name)
 	{
 		string text = (name ?? "").Replace("\r", "").Replace("\n", " ").Trim();
-		text = Regex.Replace(text, "^[\\s:：,，;；\\-—_《》“”\"'\\[\\]【】（）()]+|[\\s:：,，;；\\-—_《》“”\"'\\[\\]【】（）()]+$", "");
+		text = Regex.Replace(text, "^[\\s:\uFF1A,\uFF0C;\uFF1B\\-\u2014_\u300A\u300B\u201C\u201D\"'\\[\\]\u3010\u3011\uFF08\uFF09()]+|[\\s:\uFF1A,\uFF0C;\uFF1B\\-\u2014_\u300A\u300B\u201C\u201D\"'\\[\\]\u3010\u3011\uFF08\uFF09()]+$", "");
 		return text.Trim();
 	}
 
@@ -5914,12 +5914,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (targetKingdom.RulingClan == playerClan)
 			{
-				statusText = EconomySourceTexts.Get("S091") + playerClanName + EconomySourceTexts.Get("S253") + kingdomName + EconomySourceTexts.Get("S254");
+				statusText = EconomySourceTexts.Pre("S091") + playerClanName + EconomySourceTexts.Get("S253") + kingdomName + EconomySourceTexts.Get("S254");
 				return false;
 			}
 			if (targetKingdom.Leader != giver && targetKingdom.RulingClan?.Leader != giver)
 			{
-				statusText = EconomySourceTexts.Get("S094") + (giver.Name?.ToString() ?? EconomySourceTexts.Get("S255")) + EconomySourceTexts.Get("S256") + kingdomName + EconomySourceTexts.Get("S257");
+				statusText = EconomySourceTexts.Pre("S094") + (giver.Name?.ToString() ?? EconomySourceTexts.Get("S255")) + EconomySourceTexts.Get("S256") + kingdomName + EconomySourceTexts.Get("S257");
 				return false;
 			}
 			if (giver.Clan == playerClan)
@@ -5947,12 +5947,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			ChangeRulingClanAction.Apply(targetKingdom, playerClan);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			statusText = EconomySourceTexts.Get("S084") + (giver.Name?.ToString() ?? EconomySourceTexts.Get("S260")) + EconomySourceTexts.Get("S261") + kingdomName + EconomySourceTexts.Get("S262") + playerDisplayName + "，" + playerClanName + EconomySourceTexts.Get("S263") + transitionSummary + "。";
+			statusText = EconomySourceTexts.Pre("S084") + (giver.Name?.ToString() ?? EconomySourceTexts.Get("S260")) + EconomySourceTexts.Get("S261") + kingdomName + EconomySourceTexts.Pre("S262") + playerDisplayName + EconomySourceTexts.Comma + playerClanName + EconomySourceTexts.Pre("S263") + transitionSummary + EconomySourceTexts.Period;
 			return true;
 		}
 		catch (Exception ex)
 		{
-			statusText = EconomySourceTexts.Get("S083") + ex.Message;
+			statusText = EconomySourceTexts.Pre("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -6008,7 +6008,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			statusText = EconomySourceTexts.Get("S135") + ex.Message;
+			statusText = EconomySourceTexts.Pre("S135") + ex.Message;
 			return false;
 		}
 	}
@@ -6036,7 +6036,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (targetClan.IsEliminated)
 			{
-				statusText = EconomySourceTexts.Get("S094") + clanDisplayName + EconomySourceTexts.Get("S264");
+				statusText = EconomySourceTexts.Pre("S094") + clanDisplayName + EconomySourceTexts.Get("S264");
 				return false;
 			}
 			if (giver == null || giver.Clan != targetClan || targetClan.Leader != giver)
@@ -6046,7 +6046,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (targetClan.Kingdom == targetKingdom)
 			{
-				statusText = EconomySourceTexts.Get("S091") + clanDisplayName + EconomySourceTexts.Get("S265") + targetKingdom.Name + "。";
+				statusText = EconomySourceTexts.Pre("S091") + clanDisplayName + EconomySourceTexts.Get("S265") + targetKingdom.Name + EconomySourceTexts.Period;
 				return false;
 			}
 			Kingdom oldKingdom = targetClan.Kingdom;
@@ -6064,10 +6064,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				FinalizeRulingClanTransitionForDepartedClan(oldKingdom, destroyOldKingdomAfterDeparture, transitionNotes);
 				if (targetClan.Kingdom != targetKingdom)
 				{
-					statusText = EconomySourceTexts.Get("S094") + clanDisplayName + EconomySourceTexts.Get("S266") + targetKingdom.Name + "。";
+					statusText = EconomySourceTexts.Pre("S094") + clanDisplayName + EconomySourceTexts.Get("S266") + targetKingdom.Name + EconomySourceTexts.Period;
 					return false;
 				}
-				statusText = EconomySourceTexts.Get("S084") + clanDisplayName + EconomySourceTexts.Get("S267") + targetKingdom.Name + "（KingdomId=" + (targetKingdom.StringId ?? "") + "）" + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + "。";
+				statusText = EconomySourceTexts.Pre("S084") + clanDisplayName + EconomySourceTexts.Get("S267") + targetKingdom.Name + EconomySourceTexts.OpenParen + "KingdomId=" + (targetKingdom.StringId ?? "") + EconomySourceTexts.CloseParen + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + EconomySourceTexts.Period;
 				return true;
 			}
 			if (oldKingdom != null)
@@ -6076,24 +6076,24 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				FinalizeRulingClanTransitionForDepartedClan(oldKingdom, destroyOldKingdomAfterDeparture, transitionNotes);
 				if (targetClan.Kingdom != targetKingdom)
 				{
-					statusText = EconomySourceTexts.Get("S094") + clanDisplayName + EconomySourceTexts.Get("S266") + targetKingdom.Name + "。";
+					statusText = EconomySourceTexts.Pre("S094") + clanDisplayName + EconomySourceTexts.Get("S266") + targetKingdom.Name + EconomySourceTexts.Period;
 					return false;
 				}
-				statusText = EconomySourceTexts.Get("S084") + clanDisplayName + EconomySourceTexts.Get("S268") + oldKingdom.Name + EconomySourceTexts.Get("S269") + targetKingdom.Name + "（KingdomId=" + (targetKingdom.StringId ?? "") + "）" + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + "。";
+				statusText = EconomySourceTexts.Pre("S084") + clanDisplayName + EconomySourceTexts.Get("S268") + oldKingdom.Name + EconomySourceTexts.Get("S269") + targetKingdom.Name + EconomySourceTexts.OpenParen + "KingdomId=" + (targetKingdom.StringId ?? "") + EconomySourceTexts.CloseParen + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + EconomySourceTexts.Period;
 				return true;
 			}
 			ChangeKingdomAction.ApplyByJoinToKingdom(targetClan, targetKingdom, default(CampaignTime), showNotification: true);
 			if (targetClan.Kingdom != targetKingdom)
 			{
-				statusText = EconomySourceTexts.Get("S094") + clanDisplayName + EconomySourceTexts.Get("S266") + targetKingdom.Name + "。";
+				statusText = EconomySourceTexts.Pre("S094") + clanDisplayName + EconomySourceTexts.Get("S266") + targetKingdom.Name + EconomySourceTexts.Period;
 				return false;
 			}
-			statusText = EconomySourceTexts.Get("S084") + clanDisplayName + EconomySourceTexts.Get("S270") + targetKingdom.Name + "（KingdomId=" + (targetKingdom.StringId ?? "") + "）" + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + "。";
+			statusText = EconomySourceTexts.Pre("S084") + clanDisplayName + EconomySourceTexts.Get("S270") + targetKingdom.Name + EconomySourceTexts.OpenParen + "KingdomId=" + (targetKingdom.StringId ?? "") + EconomySourceTexts.CloseParen + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + EconomySourceTexts.Period;
 			return true;
 		}
 		catch (Exception ex)
 		{
-			statusText = EconomySourceTexts.Get("S083") + ex.Message;
+			statusText = EconomySourceTexts.Pre("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -6150,7 +6150,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				Kingdom targetKingdom = ResolveKingdomByIdTagStrict(kingdomToken);
 				if (targetKingdom == null)
 				{
-					statusText = EconomySourceTexts.Get("S276") + kingdomToken + "）。";
+					statusText = EconomySourceTexts.Get("S276") + kingdomToken + EconomySourceTexts.CloseParenPeriod;
 					return false;
 				}
 				return TryApplyClanJoinKingdomAction(giver, giver?.Clan, targetKingdom, out statusText);
@@ -6158,7 +6158,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			Kingdom kingdom2 = ResolveKingdomByTag(kingdomToken, giver);
 			if (kingdom2 == null || kingdom2.IsEliminated)
 			{
-				statusText = EconomySourceTexts.Get("S277") + kingdomToken + "）。";
+				statusText = EconomySourceTexts.Get("S277") + kingdomToken + EconomySourceTexts.CloseParenPeriod;
 				return false;
 			}
 			if (text == "MERCENARY")
@@ -6218,12 +6218,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = string.Format(EconomySourceTexts.Get("S281"), kingdom2.Name, kingdom2.StringId);
 				return true;
 			}
-			statusText = EconomySourceTexts.Get("S134") + serviceType + "。";
+			statusText = EconomySourceTexts.Get("S134") + serviceType + EconomySourceTexts.Period;
 			return false;
 		}
 		catch (Exception ex)
 		{
-			statusText = EconomySourceTexts.Get("S083") + ex.Message;
+			statusText = EconomySourceTexts.Pre("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -6268,7 +6268,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (!TryResolveFixedAssetTokenForGiveAsset(giver, settlementToken, fixedAssetResolutionCache, unresolvedFixedAssetTokens, out authorizedEntry, out bool isPromptAuthorized))
 			{
-				statusText = EconomySourceTexts.Get("S081") + settlementToken + "）。";
+				statusText = EconomySourceTexts.Get("S081") + settlementToken + EconomySourceTexts.CloseParenPeriod;
 				return false;
 			}
 			if (!isPromptAuthorized)
@@ -6288,7 +6288,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			mutationObservation?.MarkUnknown("economy.settlement_transfer_exception");
-			statusText = EconomySourceTexts.Get("S083") + ex.Message;
+			statusText = EconomySourceTexts.Pre("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -6486,7 +6486,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static string GetSettlementMarketItemNamePrefix(Settlement settlement)
 	{
-		return "[" + GetSettlementMarketTypeLabel(settlement) + EconomySourceTexts.Get("S284");
+		return "[" + GetSettlementMarketTypeLabel(settlement) + EconomySourceTexts.Post("S284");
 	}
 
 	private static Settlement ResolveSettlementMarketSettlement(Settlement settlement = null)
@@ -14516,7 +14516,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Grain);
 		}
-		if (NotableTitleContainsAny(titleText, "smith", EconomySourceTexts.Get("S342"), EconomySourceTexts.Get("S383"), EconomySourceTexts.Get("S384")))
+		if (NotableTitleContainsAny(titleText, "smith", EconomySourceTexts.Source("S342"), EconomySourceTexts.Get("S383"), EconomySourceTexts.Get("S384")))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Tools, DefaultItemCategories.MeleeWeapons1, DefaultItemCategories.MeleeWeapons2, DefaultItemCategories.MeleeWeapons3, DefaultItemCategories.MeleeWeapons4, DefaultItemCategories.MeleeWeapons5, DefaultItemCategories.RangedWeapons1, DefaultItemCategories.RangedWeapons2, DefaultItemCategories.RangedWeapons3, DefaultItemCategories.RangedWeapons4, DefaultItemCategories.RangedWeapons5, DefaultItemCategories.Arrows, DefaultItemCategories.Shield1, DefaultItemCategories.Shield2, DefaultItemCategories.Shield3, DefaultItemCategories.Shield4, DefaultItemCategories.Shield5, DefaultItemCategories.LightArmor, DefaultItemCategories.MediumArmor, DefaultItemCategories.HeavyArmor, DefaultItemCategories.UltraArmor, DefaultItemCategories.HorseEquipment, DefaultItemCategories.HorseEquipment2, DefaultItemCategories.HorseEquipment3, DefaultItemCategories.HorseEquipment4, DefaultItemCategories.HorseEquipment5);
 		}
@@ -15336,7 +15336,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				case "center":
 				case "lordshall":
 				case "castle":
-					stringBuilder.AppendLine("【" + text + EconomyPromptTexts.Get("S433") + text + EconomyPromptTexts.Get("S434") + text + EconomyPromptTexts.Get("S435"));
+					stringBuilder.AppendLine((PromptLanguage.IsChinese ? "\u3010" : "[") + text + EconomyPromptTexts.Get("S433") + text + EconomyPromptTexts.Get("S434") + text + EconomyPromptTexts.Get("S435"));
 					break;
 				}
 			}
@@ -15820,7 +15820,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			HashSet<string> unresolvedFixedAssetTokens = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
 			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
-			string notableMarketLabel = GetSettlementMarketTypeLabel(notableMarketSettlement) + EconomySourceTexts.Get("S440");
+			string notableMarketLabel = GetSettlementMarketTypeLabel(notableMarketSettlement) + EconomySourceTexts.Post("S440");
 			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
 				if (!IsGoldAssetTokenForExternal(tag.AssetToken))
@@ -15867,7 +15867,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			if (goldTransferAttempted > 0)
 			{
-				string goldBatchSummary = EconomySourceTexts.Get("S451") + goldTransferAttempted + EconomySourceTexts.Get("S043") + goldTransferSucceeded + EconomySourceTexts.Get("S044") + goldTransferFailedOrPartial + EconomySourceTexts.Get("S045") + goldTransferActualAmount + EconomySourceTexts.Get("S452") + goldTransferActualAmount + EconomySourceTexts.Get("S047");
+				string goldBatchSummary = EconomySourceTexts.Get("S451") + goldTransferAttempted + EconomySourceTexts.Get("S043") + goldTransferSucceeded + EconomySourceTexts.Get("S044") + goldTransferFailedOrPartial + EconomySourceTexts.Get("S045") + goldTransferActualAmount + EconomySourceTexts.Post("S452") + goldTransferActualAmount + EconomySourceTexts.Post("S047");
 				giverFacts.Add(goldBatchSummary);
 				receiverFacts.Add(goldBatchSummary);
 				Logger.Log("Logic", "[Reward] gold_batch_done attempted=" + goldTransferAttempted + " succeeded=" + goldTransferSucceeded + " failedOrPartial=" + goldTransferFailedOrPartial + " actualAmount=" + goldTransferActualAmount);
@@ -15990,7 +15990,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			if (itemTransferAttempted > 0)
 			{
-				string itemBatchSummary = EconomySourceTexts.Get("S468") + itemTransferAttempted + EconomySourceTexts.Get("S043") + itemTransferSucceeded + EconomySourceTexts.Get("S044") + itemTransferFailedOrPartial + EconomySourceTexts.Get("S045") + itemTransferActualQuantity + EconomySourceTexts.Get("S469") + itemTransferActualValue + EconomySourceTexts.Get("S047");
+				string itemBatchSummary = EconomySourceTexts.Get("S468") + itemTransferAttempted + EconomySourceTexts.Get("S043") + itemTransferSucceeded + EconomySourceTexts.Get("S044") + itemTransferFailedOrPartial + EconomySourceTexts.Get("S045") + itemTransferActualQuantity + EconomySourceTexts.Post("S469") + itemTransferActualValue + EconomySourceTexts.Post("S047");
 				giverFacts.Add(itemBatchSummary);
 				receiverFacts.Add(itemBatchSummary);
 				Logger.Log("Logic", "[Reward] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
@@ -16063,7 +16063,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						anyDebtPaymentApplied = true;
 						giverFacts.Add(string.Format(EconomySourceTexts.Get("S476"), value4, statusText));
 						receiverFacts.Add(string.Format(EconomySourceTexts.Get("S477"), value4, statusText));
-						bool flag3 = statusText.IndexOf(EconomySourceTexts.Get("S036"), StringComparison.OrdinalIgnoreCase) >= 0;
+						bool flag3 = IsDebtReleasedByAgreementStatus(statusText);
 						ShowRewardMessage(EconomyUiTexts.DebtRelease(EconomyUiTexts.DebtStatusForDisplay(statusText), flag3), flag3 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giver);
 						if (flag2)
 						{
@@ -16220,7 +16220,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						statusText = EconomySourceTexts.Get("S076");
 					}
 					string text3 = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry);
-					if (string.IsNullOrWhiteSpace(text3) || text3 == EconomySourceTexts.Get("S478"))
+					if (string.IsNullOrWhiteSpace(text3) || EconomySourceTexts.Is(text3, "S478"))
 					{
 						text3 = settlementToken;
 					}
@@ -16253,7 +16253,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = GiveAssetTagCodec.StripTags(responseText);
 			if (settlementTransferAttempted > 0)
 			{
-				string settlementBatchSummary = EconomySourceTexts.Get("S481") + settlementTransferAttempted + EconomySourceTexts.Get("S043") + settlementTransferSucceeded + EconomySourceTexts.Get("S482") + settlementTransferFailed + EconomySourceTexts.Get("S045") + settlementTransferSucceeded + EconomySourceTexts.Get("S483") + settlementTransferActualValue + EconomySourceTexts.Get("S047");
+				string settlementBatchSummary = EconomySourceTexts.Get("S481") + settlementTransferAttempted + EconomySourceTexts.Get("S043") + settlementTransferSucceeded + EconomySourceTexts.Get("S482") + settlementTransferFailed + EconomySourceTexts.Get("S045") + settlementTransferSucceeded + EconomySourceTexts.Post("S483") + settlementTransferActualValue + EconomySourceTexts.Post("S047");
 				giverFacts.Add(settlementBatchSummary);
 				receiverFacts.Add(settlementBatchSummary);
 				Logger.Log("Logic", "[Reward] settlement_batch_done attempted=" + settlementTransferAttempted + " succeeded=" + settlementTransferSucceeded + " failed=" + settlementTransferFailed + " actualValue=" + settlementTransferActualValue);
@@ -16284,10 +16284,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 								string countText = BuildWildernessHeroPartyTransferCountText(joinedWildernessMembers, joinedWildernessPrisoners);
 								giverJoinFact += string.IsNullOrEmpty(countText)
 									? EconomySourceTexts.Get("S222")
-									: EconomySourceTexts.Get("S224") + countText + EconomySourceTexts.Get("S225");
+									: EconomySourceTexts.Get("S224") + countText + EconomySourceTexts.Post("S225");
 								receiverJoinFact += string.IsNullOrEmpty(countText)
 									? " " + giverName + EconomySourceTexts.Get("S223")
-									: " " + giverName + EconomySourceTexts.Get("S226") + countText + EconomySourceTexts.Get("S227");
+									: " " + giverName + EconomySourceTexts.Get("S226") + countText + EconomySourceTexts.Post("S227");
 							}
 							giverFacts.Add(giverJoinFact);
 							receiverFacts.Add(receiverJoinFact);
@@ -16448,25 +16448,25 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		case "kingdom_annexation":
 		case "royal_abdication":
 		case "persuasion_defection":
-			prefix = EconomySourceTexts.Get("S496") + playerName + EconomySourceTexts.Get("S497");
+			prefix = EconomySourceTexts.Pre("S496") + playerName + EconomySourceTexts.Post("S497");
 			break;
 		case "asset_transfer_to_player":
-			prefix = EconomySourceTexts.Get("S498") + playerName + "：";
+			prefix = EconomySourceTexts.Pre("S498") + playerName + EconomySourceTexts.Colon;
 			break;
 		case "asset_transfer_to_npc":
 			prefix = EconomySourceTexts.Get("S499");
 			break;
 		case "asset_transfer":
-			prefix = EconomySourceTexts.Get("S496") + playerName + EconomySourceTexts.Get("S500");
+			prefix = EconomySourceTexts.Pre("S496") + playerName + EconomySourceTexts.Post("S500");
 			break;
 		case "debt_payment":
-			prefix = EconomySourceTexts.Get("S501") + playerName + EconomySourceTexts.Get("S502");
+			prefix = EconomySourceTexts.Pre("S501") + playerName + EconomySourceTexts.Post("S502");
 			break;
 		case "debt_recorded":
-			prefix = EconomySourceTexts.Get("S496") + playerName + EconomySourceTexts.Get("S503");
+			prefix = EconomySourceTexts.Pre("S496") + playerName + EconomySourceTexts.Post("S503");
 			break;
 		default:
-			prefix = EconomySourceTexts.Get("S496") + playerName + EconomySourceTexts.Get("S504");
+			prefix = EconomySourceTexts.Pre("S496") + playerName + EconomySourceTexts.Post("S504");
 			break;
 		}
 		return LimitRewardHistoryText(prefix + summary, 260);
@@ -16480,25 +16480,25 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		case "kingdom_annexation":
 		case "royal_abdication":
 		case "persuasion_defection":
-			prefix = EconomySourceTexts.Get("S496") + npcName + EconomySourceTexts.Get("S497");
+			prefix = EconomySourceTexts.Pre("S496") + npcName + EconomySourceTexts.Post("S497");
 			break;
 		case "asset_transfer_to_player":
-			prefix = EconomySourceTexts.Get("S505") + npcName + EconomySourceTexts.Get("S506");
+			prefix = EconomySourceTexts.Pre("S505") + npcName + EconomySourceTexts.Post("S506");
 			break;
 		case "asset_transfer_to_npc":
-			prefix = EconomySourceTexts.Get("S507") + npcName + "：";
+			prefix = EconomySourceTexts.Pre("S507") + npcName + EconomySourceTexts.Colon;
 			break;
 		case "asset_transfer":
-			prefix = EconomySourceTexts.Get("S496") + npcName + EconomySourceTexts.Get("S500");
+			prefix = EconomySourceTexts.Pre("S496") + npcName + EconomySourceTexts.Post("S500");
 			break;
 		case "debt_payment":
-			prefix = EconomySourceTexts.Get("S508") + npcName + EconomySourceTexts.Get("S509");
+			prefix = EconomySourceTexts.Pre("S508") + npcName + EconomySourceTexts.Post("S509");
 			break;
 		case "debt_recorded":
-			prefix = EconomySourceTexts.Get("S496") + npcName + EconomySourceTexts.Get("S503");
+			prefix = EconomySourceTexts.Pre("S496") + npcName + EconomySourceTexts.Post("S503");
 			break;
 		default:
-			prefix = EconomySourceTexts.Get("S496") + npcName + EconomySourceTexts.Get("S504");
+			prefix = EconomySourceTexts.Pre("S496") + npcName + EconomySourceTexts.Post("S504");
 			break;
 		}
 		return LimitRewardHistoryText(prefix + summary, 260);
@@ -16572,7 +16572,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			string actionKind = ResolveNonHeroRewardActionKind(summary, sourceKind);
 			string displayName = string.IsNullOrWhiteSpace(giverName) ? EconomySourceTexts.Get("S066") : giverName.Trim();
-			string text = EconomySourceTexts.Get("S496") + displayName + EconomySourceTexts.Get("S510") + summary;
+			string text = EconomySourceTexts.Pre("S496") + displayName + EconomySourceTexts.W("S510") + summary;
 			string stableKey = "nonhero_reward_action:" + NormalizeRewardActionKeyPart(sourceKind) + ":" + NormalizeRewardActionKeyPart(displayName) + ":" + NormalizeRewardActionKeyPart(summary);
 			MyBehavior.RecordPlayerActionForExternal(LimitRewardHistoryText(text, 260), stableKey, actionKind, isMajor: true, targetHero: null, settlement: settlement, locationText: settlement?.Name?.ToString() ?? displayName, won: true);
 		}
@@ -16582,14 +16582,27 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// Summaries may have been written in either language; check both variants of each keyword.
+	private static bool ContainsEconomySourceVariant(string text, string id)
+	{
+		foreach (string token in EconomySourceTexts.Variants(id))
+		{
+			if (text.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+		}
+		return false;
+	}
+
+	// Debt release status text is matched in both languages: it may be produced now or replayed from a stored fact.
+	internal static bool IsDebtReleasedByAgreementStatus(string statusText) => ContainsEconomySourceVariant(statusText ?? "", "S036");
+
 	private static string ResolveNonHeroRewardActionKind(string summary, string sourceKind)
 	{
 		string text = (summary ?? "").Trim();
-		if (text.IndexOf(EconomySourceTexts.Get("S511"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(EconomySourceTexts.Get("S512"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(EconomySourceTexts.Get("S513"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (ContainsEconomySourceVariant(text, "S511") || ContainsEconomySourceVariant(text, "S512") || ContainsEconomySourceVariant(text, "S513"))
 		{
 			return "debt_payment";
 		}
-		if (text.IndexOf(EconomySourceTexts.Get("S514"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(EconomySourceTexts.Get("S515"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (ContainsEconomySourceVariant(text, "S514") || ContainsEconomySourceVariant(text, "S515"))
 		{
 			return "debt_recorded";
 		}
@@ -16651,7 +16664,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			if (goldTransferAttempted > 0)
 			{
-				string goldBatchSummary = EconomySourceTexts.Get("S451") + goldTransferAttempted + EconomySourceTexts.Get("S043") + goldTransferSucceeded + EconomySourceTexts.Get("S044") + goldTransferFailedOrPartial + EconomySourceTexts.Get("S045") + goldTransferActualAmount + EconomySourceTexts.Get("S452") + goldTransferActualAmount + EconomySourceTexts.Get("S047");
+				string goldBatchSummary = EconomySourceTexts.Get("S451") + goldTransferAttempted + EconomySourceTexts.Get("S043") + goldTransferSucceeded + EconomySourceTexts.Get("S044") + goldTransferFailedOrPartial + EconomySourceTexts.Get("S045") + goldTransferActualAmount + EconomySourceTexts.Post("S452") + goldTransferActualAmount + EconomySourceTexts.Post("S047");
 				npcFacts.Add(goldBatchSummary);
 				playerFacts.Add(goldBatchSummary);
 				Logger.Log("Logic", "[RewardParty] gold_batch_done attempted=" + goldTransferAttempted + " succeeded=" + goldTransferSucceeded + " failedOrPartial=" + goldTransferFailedOrPartial + " actualAmount=" + goldTransferActualAmount);
@@ -16742,7 +16755,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			if (itemTransferAttempted > 0)
 			{
-				string itemBatchSummary = EconomySourceTexts.Get("S468") + itemTransferAttempted + EconomySourceTexts.Get("S043") + itemTransferSucceeded + EconomySourceTexts.Get("S044") + itemTransferFailedOrPartial + EconomySourceTexts.Get("S045") + itemTransferActualQuantity + EconomySourceTexts.Get("S469") + itemTransferActualValue + EconomySourceTexts.Get("S047");
+				string itemBatchSummary = EconomySourceTexts.Get("S468") + itemTransferAttempted + EconomySourceTexts.Get("S043") + itemTransferSucceeded + EconomySourceTexts.Get("S044") + itemTransferFailedOrPartial + EconomySourceTexts.Get("S045") + itemTransferActualQuantity + EconomySourceTexts.Post("S469") + itemTransferActualValue + EconomySourceTexts.Post("S047");
 				npcFacts.Add(itemBatchSummary);
 				playerFacts.Add(itemBatchSummary);
 				Logger.Log("Logic", "[RewardParty] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
@@ -16832,7 +16845,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		});
 		if (goldTransferAttempted > 0)
 		{
-			string goldBatchSummary = EconomySourceTexts.Get("S451") + goldTransferAttempted + EconomySourceTexts.Get("S043") + goldTransferSucceeded + EconomySourceTexts.Get("S044") + goldTransferFailedOrPartial + EconomySourceTexts.Get("S045") + goldTransferActualAmount + EconomySourceTexts.Get("S452") + goldTransferActualAmount + EconomySourceTexts.Get("S047");
+			string goldBatchSummary = EconomySourceTexts.Get("S451") + goldTransferAttempted + EconomySourceTexts.Get("S043") + goldTransferSucceeded + EconomySourceTexts.Get("S044") + goldTransferFailedOrPartial + EconomySourceTexts.Get("S045") + goldTransferActualAmount + EconomySourceTexts.Post("S452") + goldTransferActualAmount + EconomySourceTexts.Post("S047");
 			merchantFacts.Add(goldBatchSummary);
 			playerFacts.Add(goldBatchSummary);
 			Logger.Log("Logic", "[RewardMerchant] gold_batch_done attempted=" + goldTransferAttempted + " succeeded=" + goldTransferSucceeded + " failedOrPartial=" + goldTransferFailedOrPartial + " actualAmount=" + goldTransferActualAmount);
@@ -16933,7 +16946,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		});
 		if (itemTransferAttempted > 0)
 		{
-			string itemBatchSummary = EconomySourceTexts.Get("S468") + itemTransferAttempted + EconomySourceTexts.Get("S043") + itemTransferSucceeded + EconomySourceTexts.Get("S044") + itemTransferFailedOrPartial + EconomySourceTexts.Get("S045") + itemTransferActualQuantity + EconomySourceTexts.Get("S469") + itemTransferActualValue + EconomySourceTexts.Get("S047");
+			string itemBatchSummary = EconomySourceTexts.Get("S468") + itemTransferAttempted + EconomySourceTexts.Get("S043") + itemTransferSucceeded + EconomySourceTexts.Get("S044") + itemTransferFailedOrPartial + EconomySourceTexts.Get("S045") + itemTransferActualQuantity + EconomySourceTexts.Post("S469") + itemTransferActualValue + EconomySourceTexts.Post("S047");
 			merchantFacts.Add(itemBatchSummary);
 			playerFacts.Add(itemBatchSummary);
 			Logger.Log("Logic", "[RewardMerchant] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
@@ -16979,7 +16992,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					merchantFacts.Add(statusText);
 					playerFacts.Add(statusText);
-					bool flag2 = statusText.IndexOf(EconomySourceTexts.Get("S036"), StringComparison.OrdinalIgnoreCase) >= 0;
+					bool flag2 = IsDebtReleasedByAgreementStatus(statusText);
 					ShowRewardMessage(EconomyUiTexts.MarketDebtRelease(EconomyUiTexts.DebtStatusForDisplay(statusText), flag2), flag2 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
 					if (flag)
 					{

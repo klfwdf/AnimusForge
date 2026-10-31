@@ -242,9 +242,9 @@ internal static bool IsUnknownSceneDescriptionForPrompt(string sceneDescription)
 		{
 			return true;
 		}
-		return string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("LocationRaw_035"), StringComparison.Ordinal)
-			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("LocationRaw_001"), StringComparison.Ordinal)
-			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("LocationRaw_037"), StringComparison.Ordinal);
+		return AdapterPromptCaptureTexts.IsPcapCompat(text, "LocationRaw_035")
+			|| AdapterPromptCaptureTexts.IsPcapCompat(text, "LocationRaw_001")
+			|| AdapterPromptCaptureTexts.IsPcapCompat(text, "LocationRaw_037");
 	}
 internal static string NormalizeSettlementNameForPromptLookup(string name)
 	{

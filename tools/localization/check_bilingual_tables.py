@@ -47,6 +47,8 @@ LANGUAGE_INVARIANT = {
     'McmPromptSourceCompatibility': 'legacy MCM default identities and persisted option values',
     # LegacyValue is a routing id; the display text is a localized {=AF_UI_Terminal_*} string.
     'TerminalCategories': 'terminal routing ids',
+    # Source patterns that UI projection matches to rewrite stored status lines; never composed into prompts.
+    'EconomyDisplaySources': 'UI projection match patterns',
 }
 
 

@@ -16,7 +16,7 @@ internal sealed class CivilWarResultObservationAdapter
         if(kingdom==null||string.IsNullOrWhiteSpace(text)) return;
         _material("civil_war",AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_5898349b9786")+kingdom.Name,text,key,kingdom.StringId,true,true);
         string kind=CivilWarPoliticalRules.PoliticalResultKind(key);
-        if(bulletin) _bulletin?.Invoke(kind,key,CivilWarPoliticalRules.PoliticalResultPriority,kingdom.Name+"："+text,
+        if(bulletin) _bulletin?.Invoke(kind,key,CivilWarPoliticalRules.PoliticalResultPriority,kingdom.Name+(PromptLanguage.IsChinese?"\uFF1A":": ")+text,
             Clan.PlayerClan?.Kingdom==kingdom,"realm:"+kingdom.StringId,text,
             WorldBulletinEventCaptureAdapter.BulletinParticipants((actor, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_0d6138e44bcf")), (factionLeader, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_97363cc224ea")), (kingdom.Leader, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_3ba4b9d2c0d0"))), kingdom.StringId);
     }

@@ -94,8 +94,8 @@ internal sealed class ExecutionWitnessObservationController
         foreach (var pair in _executionWitnesses)
         {
             if (!pair.Key.IsActive() || pair.Key.Position.Distance(speaker.Position) > 30f) continue;
-            string fact = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_b8a20c9b08e3") + record.VenueName + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_b6afc0be2aca") + speaker.Name
-                + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_8af2350cfd65") + statement + "：『" + cue.Text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_90c7b310aa63");
+            string fact = AdapterRecordTexts.Pad(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_b8a20c9b08e3")) + record.VenueName + AdapterRecordTexts.Pad(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_b6afc0be2aca")) + speaker.Name
+                + AdapterRecordTexts.Pad(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_8af2350cfd65")) + statement + ExecutionQuoteOpen + cue.Text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_90c7b310aa63");
             CommitExecutionWitnessFact(record.SessionId + ":" + sequence, pair.Value, fact);
         }
     }
@@ -122,7 +122,7 @@ internal sealed class ExecutionWitnessObservationController
             var killer = request.Executor;
             string kingdomId = _kingdomId(victim.Clan?.Kingdom);
             string killerKingdomId = _kingdomId(killer.Clan?.Kingdom);
-            string sentence = record.VictimName + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_12404a0b6381") + record.VenueName + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_639778f7264d") + record.Method + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_2cef7e99391b");
+            string sentence = record.VictimName + AdapterRecordTexts.Pad(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_12404a0b6381")) + record.VenueName + AdapterRecordTexts.Pad(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_639778f7264d")) + CampaignSystemFactProjection.ExecutionMethodForPackage(record.Method) + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_2cef7e99391b");
             _material("execution_last_words", AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_0e2f94091000") + record.VictimName,
                 sentence + publicQuote, "execution-last-words:" + record.SessionId,
                 string.IsNullOrEmpty(kingdomId) ? killerKingdomId : kingdomId, record.VenueId,
@@ -134,6 +134,9 @@ internal sealed class ExecutionWitnessObservationController
         }
         ResetExecutionMemoryRuntime();
     }
+
+    // Quote opener glue for the witness fact; the closing quote is part of the table entry.
+    private static string ExecutionQuoteOpen => PromptLanguage.IsChinese ? "\uFF1A\u300E" : ": \u201C";
 
     private static string GetExecutionLastWordsExcerpt(ExecutionTranscript record)
     {

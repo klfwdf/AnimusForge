@@ -87,7 +87,7 @@ internal static string BuildBattleHeroDisplayName(Hero hero, bool isHighlighted,
 		}
 		if (isHighlighted && !string.IsNullOrWhiteSpace(highlightTag))
 		{
-			text += "（" + highlightTag + "）";
+			text = AdapterRecordTexts.Tidy(text + AdapterRecordTexts.OpenParen + highlightTag + AdapterRecordTexts.CloseParen);
 		}
 		return text;
 	}
@@ -116,9 +116,9 @@ internal static string BuildTrackedHeroListText(IEnumerable<Hero> heroes, Hero h
 		}
 		if (list.Count <= maxCount)
 		{
-			return string.Join("、", list);
+			return string.Join(AdapterRecordTexts.ListSeparator, list);
 		}
-		return string.Join("、", list.Take(maxCount)) + AdapterRecordTexts.Raw("AF_REC_Battle_0008") + list.Count + AdapterRecordTexts.Raw("AF_REC_Battle_0009");
+		return AdapterRecordTexts.Tidy(string.Join(AdapterRecordTexts.ListSeparator, list.Take(maxCount)) + AdapterRecordTexts.W("AF_REC_Battle_0008") + list.Count + AdapterRecordTexts.W("AF_REC_Battle_0009"));
 	}
 
 internal static string BuildTrackedHeroListText(IEnumerable<Hero> heroes, int maxCount = 5)
@@ -262,7 +262,7 @@ internal static string BuildMapEventCasualtyText(MapEventSide side)
 		catch
 		{
 		}
-		return AdapterRecordTexts.Raw("AF_REC_Battle_0015") + num + AdapterRecordTexts.Raw("AF_REC_Battle_0016") + num2;
+		return AdapterRecordTexts.Tidy(AdapterRecordTexts.W("AF_REC_Battle_0015") + num + AdapterRecordTexts.W("AF_REC_Battle_0016") + num2);
 	}
 
 internal static string BuildMapEventStableKey(MapEvent mapEvent, string locationLabel)
@@ -407,9 +407,9 @@ internal static string BuildMapEventNonLordPartyListText(MapEventSide side, int 
 		int count = Math.Max(1, maxCount);
 		if (list.Count <= count)
 		{
-			return string.Join("、", list);
+			return string.Join(AdapterRecordTexts.ListSeparator, list);
 		}
-		return string.Join("、", list.Take(count)) + AdapterRecordTexts.Raw("AF_REC_Battle_0017") + list.Count + AdapterRecordTexts.Raw("AF_REC_Battle_0018");
+		return AdapterRecordTexts.Tidy(string.Join(AdapterRecordTexts.ListSeparator, list.Take(count)) + AdapterRecordTexts.W("AF_REC_Battle_0017") + list.Count + AdapterRecordTexts.W("AF_REC_Battle_0018"));
 	}
 
 internal static string BuildMapEventNonLordPartyDisplayText(PartyBase partyBase, MapEventParty party, bool includeCounts)
@@ -435,10 +435,10 @@ internal static string BuildMapEventNonLordPartyDisplayText(PartyBase partyBase,
 			int mapEventPartyCommittedTroopCount = GetMapEventPartyCommittedTroopCount(party);
 			if (mapEventPartyCommittedTroopCount > 0)
 			{
-				list.Add(AdapterRecordTexts.Raw("AF_REC_Battle_0020") + mapEventPartyCommittedTroopCount + AdapterRecordTexts.Raw("AF_REC_Battle_0021"));
+				list.Add(AdapterRecordTexts.W("AF_REC_Battle_0020") + mapEventPartyCommittedTroopCount + AdapterRecordTexts.W("AF_REC_Battle_0021"));
 			}
 		}
-		return list.Count > 0 ? (text.Trim() + "（" + string.Join("，", list) + "）") : text.Trim();
+		return list.Count > 0 ? AdapterRecordTexts.Tidy(text.Trim() + AdapterRecordTexts.OpenParen + string.Join(AdapterRecordTexts.Comma, list) + AdapterRecordTexts.CloseParen) : text.Trim();
 	}
 
 internal static string GetMapEventNonLordPartyTypeLabel(PartyBase partyBase)
@@ -509,7 +509,7 @@ internal static bool IsBanditOrOutlawPartyBase(PartyBase party)
 internal static string BuildMapEventCommittedTroopText(MapEventSide side)
 	{
 		int mapEventSideCommittedTroopCount = GetMapEventSideCommittedTroopCount(side);
-		return (mapEventSideCommittedTroopCount > 0) ? (mapEventSideCommittedTroopCount + AdapterRecordTexts.Raw("AF_REC_Battle_0030")) : "";
+		return (mapEventSideCommittedTroopCount > 0) ? AdapterRecordTexts.Tidy(mapEventSideCommittedTroopCount + AdapterRecordTexts.W("AF_REC_Battle_0030")) : "";
 	}
 
 internal static int GetTroopRosterTotalManCount(TroopRoster roster)
@@ -560,7 +560,7 @@ internal static string BuildArmyCommandClause(MapEventSide side, Hero actorHero)
 		{
 			return "";
 		}
-		return text + AdapterRecordTexts.Raw("AF_REC_Battle_0031");
+		return AdapterRecordTexts.Tidy(text + AdapterRecordTexts.W("AF_REC_Battle_0031"));
 	}
 
 internal static int CountTrackedLordParties(MapEventSide side)
@@ -645,11 +645,11 @@ internal static string BuildPlayerDefeatedHeroDialogueFact(MapEvent mapEvent, Ma
 			battleKind = AdapterRecordTexts.Raw("AF_REC_Battle_0036");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(DialogueHistoryLedger.AfefPlayerPrefix).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0037")).Append(place).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0038")).Append(battleKind).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0039")).Append(playerName).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0040"));
+		stringBuilder.Append(DialogueHistoryLedger.AfefPlayerPrefix).Append(AdapterRecordTexts.W("AF_REC_Battle_0037")).Append(place).Append(AdapterRecordTexts.W("AF_REC_Battle_0038")).Append(battleKind).Append(AdapterRecordTexts.W("AF_REC_Battle_0039")).Append(playerName).Append(AdapterRecordTexts.W("AF_REC_Battle_0040"));
 		string winningLords = BuildTrackedHeroListText(defeatedSide?.OtherSide, 4);
 		if (!string.IsNullOrWhiteSpace(winningLords))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0041")).Append(winningLords).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0041")).Append(winningLords).Append(AdapterRecordTexts.Period);
 		}
 		return stringBuilder.ToString();
 	}
@@ -664,15 +664,15 @@ internal static string BuildNpcDefeatedByPlayerRecentActionText(MapEvent mapEven
 		StringBuilder stringBuilder = new StringBuilder();
 		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0043")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0044") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0045")).Append(playerName).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0046"));
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0043")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.W("AF_REC_Battle_0044") : locationLabel.Trim()).Append(AdapterRecordTexts.W("AF_REC_Battle_0045")).Append(playerName).Append(AdapterRecordTexts.W("AF_REC_Battle_0046"));
 		}
 		else if (mapEvent?.IsRaid == true)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0047")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0048") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0049")).Append(playerName).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0050"));
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0047")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.W("AF_REC_Battle_0048") : locationLabel.Trim()).Append(AdapterRecordTexts.W("AF_REC_Battle_0049")).Append(playerName).Append(AdapterRecordTexts.W("AF_REC_Battle_0050"));
 		}
 		else
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0051")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0052") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0053")).Append(playerName).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0054"));
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0051")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.W("AF_REC_Battle_0052") : locationLabel.Trim()).Append(AdapterRecordTexts.W("AF_REC_Battle_0053")).Append(playerName).Append(AdapterRecordTexts.W("AF_REC_Battle_0054"));
 		}
 		AppendBattleOpponentDetails(stringBuilder, defeatedSide?.OtherSide, AdapterRecordTexts.Raw("AF_REC_Battle_0055"));
 		AppendBattleCasualtyDetails(stringBuilder, defeatedSide, defeatedSide?.OtherSide);
@@ -689,15 +689,15 @@ internal static string BuildPlayerBattleDefeatRecentActionText(MapEvent mapEvent
 		StringBuilder stringBuilder = new StringBuilder();
 		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0057")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0058") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0059")).Append(opponentLabel).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0057")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.W("AF_REC_Battle_0058") : locationLabel.Trim()).Append(AdapterRecordTexts.W("AF_REC_Battle_0059")).Append(opponentLabel).Append(AdapterRecordTexts.Period);
 		}
 		else if (mapEvent?.IsRaid == true)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0060")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0061") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0062")).Append(opponentLabel).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0060")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.W("AF_REC_Battle_0061") : locationLabel.Trim()).Append(AdapterRecordTexts.W("AF_REC_Battle_0062")).Append(opponentLabel).Append(AdapterRecordTexts.Period);
 		}
 		else
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0063")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0064") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0065")).Append(opponentLabel).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0063")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.W("AF_REC_Battle_0064") : locationLabel.Trim()).Append(AdapterRecordTexts.W("AF_REC_Battle_0065")).Append(opponentLabel).Append(AdapterRecordTexts.Period);
 		}
 		AppendBattleOpponentDetails(stringBuilder, playerSide?.OtherSide, AdapterRecordTexts.Raw("AF_REC_Battle_0066"));
 		AppendBattleCasualtyDetails(stringBuilder, playerSide, playerSide?.OtherSide);
@@ -714,12 +714,12 @@ internal static void AppendBattleOpponentDetails(StringBuilder stringBuilder, Ma
 		string lords = BuildTrackedHeroListText(opponentSide, 6);
 		if (!string.IsNullOrWhiteSpace(lords))
 		{
-			stringBuilder.Append(' ').Append(sideLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0068")).Append(lords).Append('。');
+			stringBuilder.Append(' ').Append(sideLabel).Append(AdapterRecordTexts.W("AF_REC_Battle_0068")).Append(lords).Append(AdapterRecordTexts.Period);
 		}
 		string nonLordParties = BuildMapEventNonLordPartyListText(opponentSide, 5);
 		if (!string.IsNullOrWhiteSpace(nonLordParties))
 		{
-			stringBuilder.Append(' ').Append(sideLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0069")).Append(nonLordParties).Append('。');
+			stringBuilder.Append(' ').Append(sideLabel).Append(AdapterRecordTexts.W("AF_REC_Battle_0069")).Append(nonLordParties).Append(AdapterRecordTexts.Period);
 		}
 	}
 
@@ -733,8 +733,8 @@ internal static void AppendBattleCasualtyDetails(StringBuilder stringBuilder, Ma
 		string winningCasualties = BuildMapEventCasualtyText(winningSide);
 		if (!string.IsNullOrWhiteSpace(defeatedCasualties) || !string.IsNullOrWhiteSpace(winningCasualties))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0070")).Append(string.IsNullOrWhiteSpace(defeatedCasualties) ? AdapterRecordTexts.Raw("AF_REC_Battle_0071") : defeatedCasualties);
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0072")).Append(string.IsNullOrWhiteSpace(winningCasualties) ? AdapterRecordTexts.Raw("AF_REC_Battle_0073") : winningCasualties).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0070")).Append(string.IsNullOrWhiteSpace(defeatedCasualties) ? AdapterRecordTexts.W("AF_REC_Battle_0071") : defeatedCasualties);
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0072")).Append(string.IsNullOrWhiteSpace(winningCasualties) ? AdapterRecordTexts.W("AF_REC_Battle_0073") : winningCasualties).Append(AdapterRecordTexts.Period);
 		}
 	}
 
@@ -891,28 +891,28 @@ internal static string BuildMapEventNarrative(MapEvent mapEvent, MapEventSide si
 				text5 = locationLabel;
 			}
 			string text6 = MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(side.OtherSide?.MapFaction, text2);
-			text4 = ((side.MissionSide == BattleSideEnum.Attacker) ? (won ? (text + AdapterRecordTexts.Raw("AF_REC_Battle_0074") + (string.IsNullOrWhiteSpace(text3) ? AdapterRecordTexts.Raw("AF_REC_Battle_0075") : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0076"))) + text6 + AdapterRecordTexts.Raw("AF_REC_Battle_0077") + text5.Trim() + AdapterRecordTexts.Raw("AF_REC_Battle_0078")) : (text + AdapterRecordTexts.Raw("AF_REC_Battle_0079") + (string.IsNullOrWhiteSpace(text3) ? AdapterRecordTexts.Raw("AF_REC_Battle_0080") : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0081"))) + text6 + AdapterRecordTexts.Raw("AF_REC_Battle_0082") + text5.Trim() + AdapterRecordTexts.Raw("AF_REC_Battle_0083"))) : (won ? (text + AdapterRecordTexts.Raw("AF_REC_Battle_0084") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0085"))) + text5.Trim() + AdapterRecordTexts.Raw("AF_REC_Battle_0086") + text6 + "。") : (text + AdapterRecordTexts.Raw("AF_REC_Battle_0087") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0088"))) + text5.Trim() + AdapterRecordTexts.Raw("AF_REC_Battle_0089") + text6 + "。")));
+			text4 = ((side.MissionSide == BattleSideEnum.Attacker) ? (won ? (text + AdapterRecordTexts.W("AF_REC_Battle_0074") + (string.IsNullOrWhiteSpace(text3) ? AdapterRecordTexts.W("AF_REC_Battle_0075") : (text3 + AdapterRecordTexts.W("AF_REC_Battle_0076"))) + text6 + AdapterRecordTexts.W("AF_REC_Battle_0077") + text5.Trim() + AdapterRecordTexts.W("AF_REC_Battle_0078")) : (text + AdapterRecordTexts.W("AF_REC_Battle_0079") + (string.IsNullOrWhiteSpace(text3) ? AdapterRecordTexts.W("AF_REC_Battle_0080") : (text3 + AdapterRecordTexts.W("AF_REC_Battle_0081"))) + text6 + AdapterRecordTexts.W("AF_REC_Battle_0082") + text5.Trim() + AdapterRecordTexts.W("AF_REC_Battle_0083"))) : (won ? (text + AdapterRecordTexts.W("AF_REC_Battle_0084") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.W("AF_REC_Battle_0085"))) + text5.Trim() + AdapterRecordTexts.W("AF_REC_Battle_0086") + text6 + AdapterRecordTexts.Period) : (text + AdapterRecordTexts.W("AF_REC_Battle_0087") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.W("AF_REC_Battle_0088"))) + text5.Trim() + AdapterRecordTexts.W("AF_REC_Battle_0089") + text6 + AdapterRecordTexts.Period)));
 		}
 		else if (mapEvent.IsRaid)
 		{
 			string raidLocation = string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0090") : locationLabel.Trim();
-			string raidCommandPrefix = string.IsNullOrWhiteSpace(text3) ? AdapterRecordTexts.Raw("AF_REC_Battle_0091") : (AdapterRecordTexts.Raw("AF_REC_Battle_0092") + text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0093"));
+			string raidCommandPrefix = string.IsNullOrWhiteSpace(text3) ? AdapterRecordTexts.W("AF_REC_Battle_0091") : (AdapterRecordTexts.W("AF_REC_Battle_0092") + text3 + AdapterRecordTexts.W("AF_REC_Battle_0093"));
 			if (side.MissionSide == BattleSideEnum.Attacker)
 			{
-				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0094") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0095")) : (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0096") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0097"));
+				text4 = won ? (text + AdapterRecordTexts.Comma + raidCommandPrefix + raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0094") + text2 + AdapterRecordTexts.W("AF_REC_Battle_0095")) : (text + AdapterRecordTexts.Comma + raidCommandPrefix + raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0096") + text2 + AdapterRecordTexts.W("AF_REC_Battle_0097"));
 			}
 			else if (side.MissionSide == BattleSideEnum.Defender)
 			{
-				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0098") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0099")) : (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0100") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0101"));
+				text4 = won ? (text + AdapterRecordTexts.Comma + raidCommandPrefix + raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0098") + text2 + AdapterRecordTexts.W("AF_REC_Battle_0099")) : (text + AdapterRecordTexts.Comma + raidCommandPrefix + raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0100") + text2 + AdapterRecordTexts.W("AF_REC_Battle_0101"));
 			}
 			else
 			{
-				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0102")) : (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0103"));
+				text4 = won ? (text + AdapterRecordTexts.Comma + raidCommandPrefix + raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0102")) : (text + AdapterRecordTexts.Comma + raidCommandPrefix + raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0103"));
 			}
 		}
 		else
 		{
-			text4 = (won ? (text + AdapterRecordTexts.Raw("AF_REC_Battle_0104") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0105"))) + locationLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0106") + text2 + "。") : (text + AdapterRecordTexts.Raw("AF_REC_Battle_0107") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0108"))) + locationLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0109") + text2 + "。"));
+			text4 = (won ? (text + AdapterRecordTexts.W("AF_REC_Battle_0104") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.W("AF_REC_Battle_0105"))) + locationLabel + AdapterRecordTexts.W("AF_REC_Battle_0106") + text2 + AdapterRecordTexts.Period) : (text + AdapterRecordTexts.W("AF_REC_Battle_0107") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.W("AF_REC_Battle_0108"))) + locationLabel + AdapterRecordTexts.W("AF_REC_Battle_0109") + text2 + AdapterRecordTexts.Period));
 		}
 		StringBuilder stringBuilder = new StringBuilder(text4);
 		string text7 = BuildTrackedHeroListText(side, 5);
@@ -921,35 +921,35 @@ internal static string BuildMapEventNarrative(MapEvent mapEvent, MapEventSide si
 		string text10 = BuildMapEventNonLordPartyListText(side.OtherSide, 5);
 		if (!string.IsNullOrWhiteSpace(text7))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0110")).Append(text7).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0110")).Append(text7).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(text8))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0111")).Append(text8).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0111")).Append(text8).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(text9))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0112")).Append(text9).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0112")).Append(text9).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(text10))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0113")).Append(text10).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0113")).Append(text10).Append(AdapterRecordTexts.Period);
 		}
 		string text11 = BuildMapEventCommittedTroopText(side);
 		string text12 = BuildMapEventCommittedTroopText(side.OtherSide);
 		if (!string.IsNullOrWhiteSpace(text11) || !string.IsNullOrWhiteSpace(text12))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0114")).Append(string.IsNullOrWhiteSpace(text11) ? AdapterRecordTexts.Raw("AF_REC_Battle_0115") : text11);
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0116")).Append(string.IsNullOrWhiteSpace(text12) ? AdapterRecordTexts.Raw("AF_REC_Battle_0117") : text12).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0114")).Append(string.IsNullOrWhiteSpace(text11) ? AdapterRecordTexts.W("AF_REC_Battle_0115") : text11);
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0116")).Append(string.IsNullOrWhiteSpace(text12) ? AdapterRecordTexts.W("AF_REC_Battle_0117") : text12).Append(AdapterRecordTexts.Period);
 		}
 		string text13 = BuildMapEventStandoutText(side, side.OtherSide);
 		string text14 = BuildMapEventCasualtyText(side);
 		string text15 = BuildMapEventCasualtyText(side.OtherSide);
-		stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0118")).Append(text14);
-		stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0119")).Append(text15).Append('。');
+		stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0118")).Append(text14);
+		stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0119")).Append(text15).Append(AdapterRecordTexts.Period);
 		if (!string.IsNullOrWhiteSpace(text13))
 		{
-			stringBuilder.Append(" ：").Append(text13);
+			stringBuilder.Append(' ').Append(text13);
 		}
 		return stringBuilder.ToString();
 	}
@@ -983,7 +983,7 @@ internal static string BuildMapEventStandoutText(MapEventSide side, MapEventSide
 		}
 		if (num <= 0)
 		{
-			return text + AdapterRecordTexts.Raw("AF_REC_Battle_0121");
+			return text + AdapterRecordTexts.W("AF_REC_Battle_0121");
 		}
 		int num2 = (int)Math.Round((double)(100 * mapEventParty.ContributionToBattle) / (double)num);
 		if (num2 < 30)
@@ -993,17 +993,17 @@ internal static string BuildMapEventStandoutText(MapEventSide side, MapEventSide
 		string text2 = MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(leaderHero?.MapFaction ?? side.MapFaction, AdapterRecordTexts.Raw("AF_REC_Battle_0122"));
 		if (num2 > 90)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Battle_0123") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0124") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0125");
+			return AdapterRecordTexts.W("AF_REC_Battle_0123") + text2 + AdapterRecordTexts.W("AF_REC_Battle_0124") + text + AdapterRecordTexts.W("AF_REC_Battle_0125");
 		}
 		if (num2 > 75)
 		{
-			return text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0126") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0127");
+			return text2 + AdapterRecordTexts.W("AF_REC_Battle_0126") + text + AdapterRecordTexts.W("AF_REC_Battle_0127");
 		}
 		if (num2 > 50)
 		{
-			return text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0128") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0129") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0130");
+			return text2 + AdapterRecordTexts.W("AF_REC_Battle_0128") + text + AdapterRecordTexts.W("AF_REC_Battle_0129") + text2 + AdapterRecordTexts.W("AF_REC_Battle_0130");
 		}
-		return text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0131") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0132");
+		return text2 + AdapterRecordTexts.W("AF_REC_Battle_0131") + text + AdapterRecordTexts.W("AF_REC_Battle_0132");
 	}
 
 internal static string BuildMapEventAftermathText(MapEvent mapEvent, MapEventSide side, bool won, string locationLabel)
@@ -1021,15 +1021,15 @@ internal static string BuildMapEventAftermathText(MapEvent mapEvent, MapEventSid
 			string raidLocation = string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0090") : locationLabel.Trim();
 			if (side.MissionSide == BattleSideEnum.Attacker)
 			{
-				return won ? (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0134")) : (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0135"));
+				return won ? (raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0134")) : (raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0135"));
 			}
 			if (side.MissionSide == BattleSideEnum.Defender)
 			{
-				return won ? (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0136")) : (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0137"));
+				return won ? (raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0136")) : (raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0137"));
 			}
-			return won ? (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0138")) : (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0139"));
+			return won ? (raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0138")) : (raidLocation + AdapterRecordTexts.W("AF_REC_Battle_0139"));
 		}
-		return won ? (AdapterRecordTexts.Raw("AF_REC_Battle_0140") + locationLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0141")) : (AdapterRecordTexts.Raw("AF_REC_Battle_0142") + locationLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0143"));
+		return won ? (AdapterRecordTexts.W("AF_REC_Battle_0140") + locationLabel + AdapterRecordTexts.W("AF_REC_Battle_0141")) : (AdapterRecordTexts.W("AF_REC_Battle_0142") + locationLabel + AdapterRecordTexts.W("AF_REC_Battle_0143"));
 	}
 
 internal static string BuildMapEventActorRoleClause(Hero actorHero, MapEventSide side)
@@ -1037,11 +1037,11 @@ internal static string BuildMapEventActorRoleClause(Hero actorHero, MapEventSide
 		string text = MemoryEntityIdentityBannerlordAdapter.GetHeroFactionDisplayName(actorHero, side?.MapFaction);
 		if (actorHero?.IsLord == true)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Battle_0144") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0145");
+			return AdapterRecordTexts.W("AF_REC_Battle_0144") + text + AdapterRecordTexts.W("AF_REC_Battle_0145");
 		}
-		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, AdapterRecordTexts.Raw("AF_REC_Battle_0146"), StringComparison.OrdinalIgnoreCase))
+		if (!string.IsNullOrWhiteSpace(text) && !AdapterRecordTexts.EqualsRaw(text, "AF_REC_Battle_0146", StringComparison.OrdinalIgnoreCase))
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Battle_0147") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0148");
+			return AdapterRecordTexts.W("AF_REC_Battle_0147") + text + AdapterRecordTexts.W("AF_REC_Battle_0148");
 		}
 		return AdapterRecordTexts.Raw("AF_REC_Battle_0149");
 	}
@@ -1176,7 +1176,7 @@ internal void RecordPlayerDefeatedHeroBattleFact(MapEvent mapEvent, MapEventSide
 		}
 		RecentlyDefeatedByPlayer.Add(defeatedHero.StringId);
 		Logger.Log("BattleStatus", "Player defeat of lord fact recorded reason=" + (reason ?? "") + " hero=" + defeatedHero.StringId + " name=" + (defeatedHero.Name?.ToString() ?? ""));
-		_appendHistory(defeatedHero, null, null, BuildPlayerDefeatedHeroDialogueFact(mapEvent, defeatedSide, locationLabel));
+		_appendHistory(defeatedHero, null, null, AdapterRecordTexts.Tidy(BuildPlayerDefeatedHeroDialogueFact(mapEvent, defeatedSide, locationLabel)));
 		RecordNpcDefeatedByPlayerRecentAction(mapEvent, defeatedSide, defeatedHero);
 	}
 
@@ -1234,27 +1234,27 @@ internal void RecordPlayerRoutineBanditDefeatRecentAction(MapEvent mapEvent)
 		}
 		string locationLabel = GetMapEventLocationLabel(mapEvent);
 		string enemyLabel = GetPrimaryOtherSideLabel(defeatedSide);
-		if (string.IsNullOrWhiteSpace(enemyLabel) || string.Equals(enemyLabel, AdapterRecordTexts.Raw("AF_REC_Battle_0151"), StringComparison.OrdinalIgnoreCase))
+		if (string.IsNullOrWhiteSpace(enemyLabel) || AdapterRecordTexts.EqualsRaw(enemyLabel, "AF_REC_Battle_0151", StringComparison.OrdinalIgnoreCase))
 		{
 			enemyLabel = AdapterRecordTexts.Raw("AF_REC_Battle_0152");
 		}
 		int enemyCount = GetMapEventSideCommittedTroopCount(defeatedSide);
 		StringBuilder stringBuilder = new StringBuilder();
-		if (string.Equals(locationLabel, AdapterRecordTexts.Raw("AF_REC_Battle_0153"), StringComparison.Ordinal))
+		if (AdapterRecordTexts.EqualsRaw(locationLabel, "AF_REC_Battle_0153", StringComparison.Ordinal))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0154")).Append(enemyLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0155"));
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0154")).Append(enemyLabel).Append(AdapterRecordTexts.W("AF_REC_Battle_0155"));
 		}
 		else
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0156")).Append(locationLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0157")).Append(enemyLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0158"));
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0156")).Append(locationLabel).Append(AdapterRecordTexts.W("AF_REC_Battle_0157")).Append(enemyLabel).Append(AdapterRecordTexts.W("AF_REC_Battle_0158"));
 		}
 		if (enemyCount > 0)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0159")).Append(enemyCount).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0160"));
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0159")).Append(enemyCount).Append(AdapterRecordTexts.W("AF_REC_Battle_0160"));
 		}
 		if (GetMapEventSideCasualtyCount(defeatedSide) > 0)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0161")).Append(BuildMapEventCasualtyText(defeatedSide)).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Battle_0161")).Append(BuildMapEventCasualtyText(defeatedSide)).Append(AdapterRecordTexts.Period);
 		}
 		string stableKey = BuildRoutineBanditDefeatStableKey(mapEvent, defeatedSide, locationLabel);
 		_record().RecordExternalPlayerAction(stringBuilder.ToString(), stableKey, "wild_party_defeated", isMajor: false, targetHero: null, settlement: mapEvent.MapEventSettlement, locationText: locationLabel, won: true);
@@ -1272,7 +1272,7 @@ internal void RecordPlayerHideoutClearRecentAction(MapEvent mapEvent)
 		{
 			settlementName = AdapterRecordTexts.Raw("AF_REC_Battle_0162");
 		}
-		string text = AdapterRecordTexts.Raw("AF_REC_Battle_0163") + settlementName + AdapterRecordTexts.Raw("AF_REC_Battle_0164");
+		string text = AdapterRecordTexts.W("AF_REC_Battle_0163") + settlementName + AdapterRecordTexts.W("AF_REC_Battle_0164");
 		string stableKey = "hideout_cleared:" + (MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) ?? "") + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe();
 		_record().RecordExternalPlayerAction(text, stableKey, "hideout_cleared", isMajor: false, targetHero: null, settlement: settlement, locationText: settlementName, won: true);
 	}
@@ -1372,7 +1372,7 @@ internal void OnHeroPrisonerTaken(PartyBase capturer, Hero prisoner)
 				{
 					CampaignCharacterRecordCaptureAdapter.AddRelatedFactionFacts(npcActionFacts, prisoner.MapFaction);
 				}
-				string text3 = AdapterRecordTexts.Raw("AF_REC_Battle_0165") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + "。";
+				string text3 = AdapterRecordTexts.W("AF_REC_Battle_0165") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + AdapterRecordTexts.Period;
 				_record().RecordNpcMajorAction(hero, text3, text2 + ":captor", npcActionFacts);
 				_record().RecordNpcRecentAction(hero, text3, text2 + ":captor", facts: npcActionFacts);
 			}
@@ -1389,14 +1389,14 @@ internal void OnHeroPrisonerTaken(PartyBase capturer, Hero prisoner)
 				{
 					CampaignCharacterRecordCaptureAdapter.AddRelatedFactionFacts(npcActionFacts2, capturer.MobileParty.MapFaction);
 				}
-				string text4 = ((hero != null) ? (AdapterRecordTexts.Raw("AF_REC_Battle_0166") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(hero) + AdapterRecordTexts.Raw("AF_REC_Battle_0167")) : AdapterRecordTexts.Raw("AF_REC_Battle_0168"));
+				string text4 = ((hero != null) ? (AdapterRecordTexts.W("AF_REC_Battle_0166") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(hero) + AdapterRecordTexts.W("AF_REC_Battle_0167")) : AdapterRecordTexts.W("AF_REC_Battle_0168"));
 				_record().RecordNpcMajorAction(prisoner, text4, text2 + ":prisoner", npcActionFacts2);
 				_record().RecordNpcRecentAction(prisoner, text4, text2 + ":prisoner", facts: npcActionFacts2);
 			}
 			if (prisoner != null && prisoner != Hero.MainHero && prisoner.IsLord && (capturer?.LeaderHero == Hero.MainHero || capturer?.MobileParty?.ActualClan == Clan.PlayerClan))
 			{
 				Logger.Log("BattleStatus", $"NPC {prisoner.Name} captured by player");
-				_appendHistory(prisoner, null, null, AdapterRecordTexts.Raw("AF_REC_Battle_0169") + Hero.MainHero.Name + AdapterRecordTexts.Raw("AF_REC_Battle_0170"));
+				_appendHistory(prisoner, null, null, AdapterRecordTexts.Tidy(AdapterRecordTexts.W("AF_REC_Battle_0169") + Hero.MainHero.Name + AdapterRecordTexts.W("AF_REC_Battle_0170")));
 			}
 		}
 		catch (Exception ex)
@@ -1427,7 +1427,7 @@ internal void OnHeroPrisonerReleased(Hero prisoner, PartyBase party, IFaction ca
 				{
 					CampaignCharacterRecordCaptureAdapter.AddRelatedFactionFacts(npcActionFacts, capturerFaction);
 				}
-				string text3 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0171") : (AdapterRecordTexts.Raw("AF_REC_Battle_0172") + endCaptivityDetailLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0173"));
+				string text3 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? AdapterRecordTexts.W("AF_REC_Battle_0171") : (AdapterRecordTexts.W("AF_REC_Battle_0172") + endCaptivityDetailLabel + AdapterRecordTexts.W("AF_REC_Battle_0173"));
 				_record().RecordNpcMajorAction(prisoner, text3, text2 + ":prisoner", npcActionFacts);
 				_record().RecordNpcRecentAction(prisoner, text3, text2 + ":prisoner", facts: npcActionFacts);
 			}
@@ -1437,7 +1437,7 @@ internal void OnHeroPrisonerReleased(Hero prisoner, PartyBase party, IFaction ca
 				npcActionFacts2.LocationText = text;
 				CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts2, settlement, locationText: text);
 				CampaignCharacterRecordCaptureAdapter.ApplyTargetFacts(npcActionFacts2, prisoner);
-				string text4 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? (AdapterRecordTexts.Raw("AF_REC_Battle_0174") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + AdapterRecordTexts.Raw("AF_REC_Battle_0175")) : (MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + endCaptivityDetailLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0176"));
+				string text4 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? (AdapterRecordTexts.W("AF_REC_Battle_0174") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + AdapterRecordTexts.W("AF_REC_Battle_0175")) : (MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + AdapterRecordTexts.Pad(endCaptivityDetailLabel) + AdapterRecordTexts.W("AF_REC_Battle_0176"));
 				_record().RecordNpcMajorAction(hero, text4, text2 + ":captor", npcActionFacts2);
 				_record().RecordNpcRecentAction(hero, text4, text2 + ":captor", facts: npcActionFacts2);
 			}
@@ -1453,7 +1453,7 @@ internal void OnHeroPrisonerReleased(Hero prisoner, PartyBase party, IFaction ca
 					_ => "",
 				};
 				Logger.Log("BattleStatus", $"NPC {prisoner.Name} {text5}regained freedom (detail={detail})");
-				_appendHistory(prisoner, null, null, AdapterRecordTexts.Raw("AF_REC_Battle_0181") + text5 + AdapterRecordTexts.Raw("AF_REC_Battle_0182") + Hero.MainHero.Name + AdapterRecordTexts.Raw("AF_REC_Battle_0183"));
+				_appendHistory(prisoner, null, null, AdapterRecordTexts.Tidy(AdapterRecordTexts.W("AF_REC_Battle_0181") + text5 + AdapterRecordTexts.W("AF_REC_Battle_0182") + Hero.MainHero.Name + AdapterRecordTexts.W("AF_REC_Battle_0183")));
 			}
 		}
 		catch (Exception ex)
@@ -1529,8 +1529,8 @@ internal void OnPartyJoinedArmy(MobileParty party)
 			string text = MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army);
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("army_join", leaderHero);
 			npcActionFacts.LocationText = GetNearestSettlementNameForParty(party);
-			_record().RecordNpcMajorAction(leaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0192") + text + "。", "army_join:" + text, npcActionFacts);
-			_record().RecordNpcRecentAction(leaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0193") + text + "。", "army_join:" + text, facts: npcActionFacts);
+			_record().RecordNpcMajorAction(leaderHero, AdapterRecordTexts.W("AF_REC_Battle_0192") + text + AdapterRecordTexts.Period, "army_join:" + text, npcActionFacts);
+			_record().RecordNpcRecentAction(leaderHero, AdapterRecordTexts.W("AF_REC_Battle_0193") + text + AdapterRecordTexts.Period, "army_join:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1550,7 +1550,7 @@ internal void OnPartyLeftArmy(MobileParty party, Army army)
 			string text = MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army);
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("army_leave", leaderHero);
 			npcActionFacts.LocationText = GetNearestSettlementNameForParty(party);
-			_record().RecordNpcRecentAction(leaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0194") + text + "。", "army_leave:" + text, facts: npcActionFacts);
+			_record().RecordNpcRecentAction(leaderHero, AdapterRecordTexts.W("AF_REC_Battle_0194") + text + AdapterRecordTexts.Period, "army_leave:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1571,7 +1571,7 @@ internal void OnMobilePartyJoinedSiege(MobileParty party)
 			string text = settlement?.Name?.ToString() ?? AdapterRecordTexts.Raw("AF_REC_Battle_0195");
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_join", leaderHero);
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement);
-			_record().RecordNpcRecentAction(leaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0196") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0197"), "siege_join:" + text, facts: npcActionFacts);
+			_record().RecordNpcRecentAction(leaderHero, AdapterRecordTexts.W("AF_REC_Battle_0196") + text + AdapterRecordTexts.W("AF_REC_Battle_0197"), "siege_join:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1591,7 +1591,7 @@ internal void OnMobilePartyLeftSiege(MobileParty party)
 			Settlement settlement = party.BesiegedSettlement ?? ResolveSiegeSettlement(party.SiegeEvent);
 			string text = settlement?.Name?.ToString() ?? AdapterRecordTexts.Raw("AF_REC_Battle_0195");
 			bool flag = settlement != null && party?.MapFaction != null && settlement.MapFaction == party.MapFaction;
-			string text2 = (flag ? (text + AdapterRecordTexts.Raw("AF_REC_Battle_0199")) : (text + AdapterRecordTexts.Raw("AF_REC_Battle_0200")));
+			string text2 = (flag ? (text + AdapterRecordTexts.W("AF_REC_Battle_0199")) : (text + AdapterRecordTexts.W("AF_REC_Battle_0200")));
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_leave", leaderHero);
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement);
 			_record().RecordNpcRecentAction(leaderHero, text2, "siege_leave:" + text + ":" + flag, facts: npcActionFacts);
@@ -1619,7 +1619,7 @@ internal void OnDailyTickParty(MobileParty party)
 			{
 				return;
 			}
-			string text = BuildRecentPartyBehaviorText(party, locationText, armyDisplayName);
+			string text = AdapterRecordTexts.Tidy(BuildRecentPartyBehaviorText(party, locationText, armyDisplayName));
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				return;
@@ -1657,8 +1657,8 @@ internal static string BuildRecentPartyBehaviorText(MobileParty party, string lo
 		{
 			return "";
 		}
-		string BehaviorText(string key) => forPrompt ? AdapterRecordTexts.Prompt(key) : AdapterRecordTexts.Raw(key);
-		string period = forPrompt ? AdapterRecordTexts.Prompt("Period") : "。";
+		string BehaviorText(string key) => forPrompt ? AdapterRecordTexts.Prompt(key) : AdapterRecordTexts.W(key);
+		string period = forPrompt ? AdapterRecordTexts.Prompt("Period") : AdapterRecordTexts.Period;
 		MobileParty mobileParty = party.Army?.LeaderParty ?? party;
 		string text = string.IsNullOrWhiteSpace(locationText) ? BehaviorText("AF_REC_Battle_0201") : locationText.Trim();
 		if (party.Army != null)
@@ -1865,8 +1865,8 @@ internal void OnArmyCreated(Army army)
 			Settlement settlement = ResolveGatheringPointSettlement(army?.LeaderParty, army?.LeaderParty);
 			npcActionFacts.LocationText = GetNearestSettlementNameForParty(army?.LeaderParty);
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement, locationText: npcActionFacts.LocationText);
-			_record().RecordNpcMajorAction(hero, AdapterRecordTexts.Raw("AF_REC_Battle_0226") + text + "。", "army_create:" + text, npcActionFacts);
-			_record().RecordNpcRecentAction(hero, AdapterRecordTexts.Raw("AF_REC_Battle_0227") + text + "。", "army_create:" + text, facts: npcActionFacts);
+			_record().RecordNpcMajorAction(hero, AdapterRecordTexts.W("AF_REC_Battle_0226") + text + AdapterRecordTexts.Period, "army_create:" + text, npcActionFacts);
+			_record().RecordNpcRecentAction(hero, AdapterRecordTexts.W("AF_REC_Battle_0227") + text + AdapterRecordTexts.Period, "army_create:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1888,7 +1888,7 @@ internal void OnArmyGathered(Army army, IMapPoint gatheringPoint)
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("army_gather", hero);
 			npcActionFacts.LocationText = text;
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement, locationText: text);
-			_record().RecordNpcRecentAction(hero, AdapterRecordTexts.Raw("AF_REC_Battle_0228") + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + AdapterRecordTexts.Raw("AF_REC_Battle_0229") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0230"), "army_gather:" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + ":" + text, facts: npcActionFacts);
+			_record().RecordNpcRecentAction(hero, AdapterRecordTexts.W("AF_REC_Battle_0228") + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + AdapterRecordTexts.W("AF_REC_Battle_0229") + text + AdapterRecordTexts.W("AF_REC_Battle_0230"), "army_gather:" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + ":" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1907,7 +1907,7 @@ internal void OnArmyDispersed(Army army, Army.ArmyDispersionReason reason, bool 
 			}
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("army_disperse", hero);
 			npcActionFacts.LocationText = GetNearestSettlementNameForParty(army?.LeaderParty);
-			_record().RecordNpcRecentAction(hero, AdapterRecordTexts.Raw("AF_REC_Battle_0231") + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + AdapterRecordTexts.Raw("AF_REC_Battle_0232"), "army_disperse:" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army), facts: npcActionFacts);
+			_record().RecordNpcRecentAction(hero, AdapterRecordTexts.W("AF_REC_Battle_0231") + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + AdapterRecordTexts.W("AF_REC_Battle_0232"), "army_disperse:" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army), facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1964,13 +1964,13 @@ internal void OnSiegeEventEnded(SiegeEvent siegeEvent)
 			{
 				NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_end_attack", item);
 				CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement);
-				_record().RecordNpcRecentAction(item, AdapterRecordTexts.Raw("AF_REC_Battle_0236") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0237"), "siege_end:" + text, facts: npcActionFacts);
+				_record().RecordNpcRecentAction(item, AdapterRecordTexts.W("AF_REC_Battle_0236") + text + AdapterRecordTexts.W("AF_REC_Battle_0237"), "siege_end:" + text, facts: npcActionFacts);
 			}
 			foreach (Hero item2 in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Defender))
 			{
 				NpcActionFacts npcActionFacts2 = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_end_defend", item2);
 				CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts2, settlement);
-				_record().RecordNpcRecentAction(item2, text + AdapterRecordTexts.Raw("AF_REC_Battle_0238"), "siege_end_defend:" + text, facts: npcActionFacts2);
+				_record().RecordNpcRecentAction(item2, text + AdapterRecordTexts.W("AF_REC_Battle_0238"), "siege_end_defend:" + text, facts: npcActionFacts2);
 			}
 		}
 		catch (Exception ex)
@@ -1989,7 +1989,7 @@ internal void OnSiegeCompleted(Settlement settlement, MobileParty party, bool si
 				return;
 			}
 			string text = settlement?.Name?.ToString() ?? AdapterRecordTexts.Raw("AF_REC_Battle_0195");
-			string text2 = (siegeSuccess ? (AdapterRecordTexts.Raw("AF_REC_Battle_0240") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0241")) : (AdapterRecordTexts.Raw("AF_REC_Battle_0242") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0243")));
+			string text2 = (siegeSuccess ? (AdapterRecordTexts.W("AF_REC_Battle_0240") + text + AdapterRecordTexts.W("AF_REC_Battle_0241")) : (AdapterRecordTexts.W("AF_REC_Battle_0242") + text + AdapterRecordTexts.W("AF_REC_Battle_0243")));
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_complete", leaderHero);
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement);
 			npcActionFacts.Won = siegeSuccess;
@@ -2047,7 +2047,7 @@ internal static string ResolveGatheringPointLabel(IMapPoint gatheringPoint, Mobi
 			return text;
 		}
 		text = (gatheringPoint?.Name?.ToString() ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, AdapterRecordTexts.Raw("AF_REC_Battle_0244"), StringComparison.OrdinalIgnoreCase) && !string.Equals(text, "Gathering Point", StringComparison.OrdinalIgnoreCase))
+		if (!string.IsNullOrWhiteSpace(text) && !AdapterRecordTexts.EqualsRaw(text, "AF_REC_Battle_0244", StringComparison.OrdinalIgnoreCase) && !string.Equals(text, "Gathering Point", StringComparison.OrdinalIgnoreCase))
 		{
 			return text;
 		}
@@ -2085,14 +2085,14 @@ internal void OnVillageBeingRaided(Village village)
 		{
 			Settlement settlement = village?.Settlement;
 			string settlementDisplayName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
-			string text = settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0246");
+			string text = settlementDisplayName + AdapterRecordTexts.W("AF_REC_Battle_0246");
 			string clanDisplayName = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(settlement?.OwnerClan);
 			string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(settlement?.MapFaction as Kingdom, AdapterRecordTexts.Raw("AF_REC_Battle_0247"));
 			if (!string.IsNullOrWhiteSpace(clanDisplayName) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
 			{
-				text += AdapterRecordTexts.Raw("AF_REC_Battle_0248") + clanDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0249") + kingdomDisplayName + "。";
+				text += AdapterRecordTexts.W("AF_REC_Battle_0248") + clanDisplayName + AdapterRecordTexts.W("AF_REC_Battle_0249") + kingdomDisplayName + AdapterRecordTexts.Period;
 			}
-			_record().RecordEventSourceMaterial("village_raid_started", AdapterRecordTexts.Raw("AF_REC_Battle_0250") + settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0251"), text, "village_raid_started:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(settlement?.MapFaction), MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true);
+			_record().RecordEventSourceMaterial("village_raid_started", AdapterRecordTexts.W("AF_REC_Battle_0250") + settlementDisplayName + AdapterRecordTexts.W("AF_REC_Battle_0251"), text, "village_raid_started:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(settlement?.MapFaction), MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true);
 		}
 		catch (Exception ex)
 		{
@@ -2107,21 +2107,21 @@ internal void OnRaidCompleted(BattleSideEnum winnerSide, RaidEventComponent raid
 			Settlement settlement = raidEvent?.MapEventSettlement;
 			string settlementDisplayName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
 			string raidOutcomeLabel = GetRaidOutcomeLabel(winnerSide);
-			string text = settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0252") + raidOutcomeLabel + "。";
+			string text = settlementDisplayName + AdapterRecordTexts.W("AF_REC_Battle_0252") + raidOutcomeLabel + AdapterRecordTexts.Period;
 			if (winnerSide == BattleSideEnum.Attacker)
 			{
-				text += AdapterRecordTexts.Raw("AF_REC_Battle_0253");
+				text += AdapterRecordTexts.W("AF_REC_Battle_0253");
 			}
 			else
 			{
-				text += AdapterRecordTexts.Raw("AF_REC_Battle_0254");
+				text += AdapterRecordTexts.W("AF_REC_Battle_0254");
 			}
 			Hero hero = raidEvent?.AttackerSide?.LeaderParty?.LeaderHero;
 			if (hero != null)
 			{
-				text = text + AdapterRecordTexts.Raw("AF_REC_Battle_0255") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(hero) + "。";
+				text = text + AdapterRecordTexts.W("AF_REC_Battle_0255") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(hero) + AdapterRecordTexts.Period;
 			}
-			_record().RecordEventSourceMaterial("raid_completed", AdapterRecordTexts.Raw("AF_REC_Battle_0256") + settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0257"), text, "raid_completed:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) + ":" + winnerSide, MemoryEntityIdentityBannerlordAdapter.GetKingdomId(settlement?.MapFaction), MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true, MemoryEntityIdentityBannerlordAdapter.GetHeroId(hero), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(hero?.MapFaction));
+			_record().RecordEventSourceMaterial("raid_completed", AdapterRecordTexts.W("AF_REC_Battle_0256") + settlementDisplayName + AdapterRecordTexts.W("AF_REC_Battle_0257"), text, "raid_completed:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) + ":" + winnerSide, MemoryEntityIdentityBannerlordAdapter.GetKingdomId(settlement?.MapFaction), MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true, MemoryEntityIdentityBannerlordAdapter.GetHeroId(hero), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(hero?.MapFaction));
 		}
 		catch (Exception ex)
 		{
@@ -2146,14 +2146,14 @@ internal void OnSiegeAftermathApplied(MobileParty attackerParty, Settlement sett
 			string settlementDisplayName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
 			string siegeAftermathLabel = GetSiegeAftermathLabel(aftermathType);
 			string kingdomId = MemoryEntityIdentityBannerlordAdapter.GetKingdomId(attackerParty?.MapFaction);
-			string text = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(attackerParty?.LeaderHero) + AdapterRecordTexts.Raw("AF_REC_Battle_0261") + settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0262") + siegeAftermathLabel + "。";
+			string text = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(attackerParty?.LeaderHero) + AdapterRecordTexts.W("AF_REC_Battle_0261") + settlementDisplayName + AdapterRecordTexts.W("AF_REC_Battle_0262") + siegeAftermathLabel + AdapterRecordTexts.Period;
 			string text2 = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(previousSettlementOwner);
 			string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(previousSettlementOwner?.Kingdom, AdapterRecordTexts.Raw("AF_REC_Battle_0263"));
 			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
 			{
-				text += AdapterRecordTexts.Raw("AF_REC_Battle_0264") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0265") + kingdomDisplayName + "。";
+				text += AdapterRecordTexts.W("AF_REC_Battle_0264") + text2 + AdapterRecordTexts.W("AF_REC_Battle_0265") + kingdomDisplayName + AdapterRecordTexts.Period;
 			}
-			_record().RecordEventSourceMaterial("siege_aftermath", AdapterRecordTexts.Raw("AF_REC_Battle_0266") + settlementDisplayName, text, "siege_aftermath:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) + ":" + aftermathType + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(attackerParty?.LeaderHero), kingdomId, MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: settlement?.IsTown == true && aftermathType != SiegeAftermathAction.SiegeAftermath.ShowMercy, includeInKingdom: true);
+			_record().RecordEventSourceMaterial("siege_aftermath", AdapterRecordTexts.W("AF_REC_Battle_0266") + settlementDisplayName, text, "siege_aftermath:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) + ":" + aftermathType + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(attackerParty?.LeaderHero), kingdomId, MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: settlement?.IsTown == true && aftermathType != SiegeAftermathAction.SiegeAftermath.ShowMercy, includeInKingdom: true);
 		}
 		catch (Exception ex)
 		{

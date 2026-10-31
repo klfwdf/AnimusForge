@@ -62,40 +62,72 @@ namespace AnimusForge.Refactor.Domain
             int newline = text.IndexOf('\n');
             if (newline < 0) return text;
             string header = ProjectPolicyHeader(text.Substring(0, newline), localize) + "\n";
-            string body = ProjectPrefix(text.Substring(newline + 1), DiplomacyCompatibilityTexts.Get("Render_Prefix_PolicyState"),
+            string body = ProjectPrefix(text.Substring(newline + 1), "Render_Prefix_PolicyState",
                 "HistoryProjection_PolicyStatus", "Policy status=", localize);
             return header + body;
         }
         if (string.Equals(kind, "diplomatic_result", StringComparison.OrdinalIgnoreCase))
         {
-            return ProjectPrefix(text, DiplomacyCompatibilityTexts.Get("Render_Prefix_Confirmed"), "HistoryProjection_Confirmed",
+            return ProjectPrefix(text, "Render_Prefix_Confirmed", "HistoryProjection_Confirmed",
                 "[Confirmed by game mechanics] ", localize);
         }
         if (string.Equals(kind, "world_weekly", StringComparison.OrdinalIgnoreCase))
         {
-            return text.StartsWith(DiplomacyCompatibilityTexts.Get("Render_Prefix_WeeklyCorrection"), StringComparison.Ordinal)
-                ? ProjectPrefix(text, DiplomacyCompatibilityTexts.Get("Render_Prefix_WeeklyCorrection"), "HistoryProjection_WeeklyCorrection",
-                    "[World Bulletin Final Edition (Correction)]", localize)
-                : ProjectPrefix(text, DiplomacyCompatibilityTexts.Get("Render_Prefix_Weekly"), "HistoryProjection_Weekly",
+            // The correction prefix is checked first: the Chinese weekly prefix is a prefix of it.
+            return TryProjectPrefix(text, "Render_Prefix_WeeklyCorrection", "HistoryProjection_WeeklyCorrection",
+                    "[World Bulletin Final Edition (Correction)]", localize, out string corrected)
+                ? corrected
+                : ProjectPrefix(text, "Render_Prefix_Weekly", "HistoryProjection_Weekly",
                     "[World Bulletin Final Edition]", localize);
         }
         return text;
     }
 
-    private static string ProjectPrefix(string text, string source, string key, string fallback,
+    // Stored text was written in the game language of its time; accept the prefix in either language.
+    private static string ProjectPrefix(string text, string sourceId, string key, string fallback,
         Func<string, string, string> localize)
-        => text.StartsWith(source, StringComparison.Ordinal)
-            ? localize(key, fallback) + text.Substring(source.Length) : text;
+        => TryProjectPrefix(text, sourceId, key, fallback, localize, out string projected) ? projected : text;
 
-    // The publication owner emits this first-line schema from artifact fields.
+    private static bool TryProjectPrefix(string text, string sourceId, string key, string fallback,
+        Func<string, string, string> localize, out string projected)
+    {
+        foreach (string source in DiplomacyCompatibilityTexts.Variants(sourceId))
+        {
+            if (source.Length != 0 && text.StartsWith(source, StringComparison.Ordinal))
+            {
+                projected = localize(key, fallback) + text.Substring(source.Length);
+                return true;
+            }
+        }
+        projected = text;
+        return false;
+    }
+
+    // The publication owner emits this first-line schema from artifact fields, in the game language of
+    // the time it was written; each language's labels are parsed as a set (Chinese first).
     // Ambiguous/legacy headers retain their original metadata; never parse the body.
     private static string ProjectPolicyHeader(string header, Func<string, string, string> localize)
     {
-        string opening = DiplomacyCompatibilityTexts.Get("Render_PolicyOpening"), issuerLabel = DiplomacyCompatibilityTexts.Get("Render_IssuerLabel"), scopeLabel = DiplomacyCompatibilityTexts.Get("Render_ScopeLabel");
-        string headingOnly = ProjectPrefix(header, opening, "HistoryProjection_Policy", "Policy 《", localize);
-        if (!header.StartsWith(opening, StringComparison.Ordinal)) return header;
-        int closing = header.IndexOf('》', opening.Length);
-        if (closing < 0 || closing != header.LastIndexOf('》')) return headingOnly;
+        string[] openings = DiplomacyCompatibilityTexts.Variants("Render_PolicyOpening");
+        string[] issuerLabels = DiplomacyCompatibilityTexts.Variants("Render_IssuerLabel");
+        string[] scopeLabels = DiplomacyCompatibilityTexts.Variants("Render_ScopeLabel");
+        int sets = Math.Max(openings.Length, Math.Max(issuerLabels.Length, scopeLabels.Length));
+        for (int i = 0; i < sets; i++)
+        {
+            string opening = openings[Math.Min(i, openings.Length - 1)];
+            if (opening.Length == 0 || !header.StartsWith(opening, StringComparison.Ordinal)) continue;
+            return ProjectPolicyHeader(header, opening, issuerLabels[Math.Min(i, issuerLabels.Length - 1)],
+                scopeLabels[Math.Min(i, scopeLabels.Length - 1)], localize);
+        }
+        return header;
+    }
+
+    private static string ProjectPolicyHeader(string header, string opening, string issuerLabel, string scopeLabel,
+        Func<string, string, string> localize)
+    {
+        string headingOnly = localize("HistoryProjection_Policy", "Policy \u300A") + header.Substring(opening.Length);
+        int closing = header.IndexOf('\u300B', opening.Length);
+        if (closing < 0 || closing != header.LastIndexOf('\u300B')) return headingOnly;
         string suffix = header.Substring(closing + 1);
         string issuer = null, scope = null;
         if (suffix.StartsWith(issuerLabel, StringComparison.Ordinal))
@@ -112,7 +144,7 @@ namespace AnimusForge.Refactor.Domain
             || scope.IndexOf(scopeLabel, StringComparison.Ordinal) >= 0 || scope.IndexOf(issuerLabel, StringComparison.Ordinal) >= 0))) return headingOnly;
         // Preserve every dynamic value and stable scope token; only labels use the package.
         var output = new StringBuilder();
-        output.Append(localize("HistoryProjection_Policy", "Policy 《"))
+        output.Append(localize("HistoryProjection_Policy", "Policy \u300A"))
             .Append(header, opening.Length, closing - opening.Length + 1);
         if (issuer != null) output.Append(localize("HistoryProjection_PolicyIssuer", "; issuing kingdom=")).Append(issuer);
         if (scope != null) output.Append(localize("HistoryProjection_PolicyScope", "; scope=")).Append(scope);

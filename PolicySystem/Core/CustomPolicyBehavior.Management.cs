@@ -501,8 +501,8 @@ public sealed partial class CustomPolicyBehavior
 			promptContext.ExtensionContext = (promptContext.ExtensionContext ?? "")
 				+ PolicyGenerationPromptTexts.Get("VassalWorldHeader", "\n\n[Vassal policy context]\nSuzerain kingdom: ") + GetPolicyPromptKingdomName(playerKingdom)
 				+ PolicyGenerationPromptTexts.Get("VassalPublicationTarget", "\nPublication target: ") + GetPolicyPromptKingdomName(policyKingdom)
-				+ PolicyGenerationPromptTexts.Get("VassalCurrentIndependence", "\nCurrent independence: ") + currentIndependence.ToString(CultureInfo.InvariantCulture) + "/100。"
-				+ PolicyGenerationPromptTexts.Get("VassalCurrentRuler", "\nCurrent ruler: ") + rulerName + PolicyGenerationPromptTexts.Get("VassalPlayerRelation", "; Relation to player: ") + FormatSigned(rulerRelation) + PolicyGenerationPromptTexts.Get("VassalBreakawayThreshold", "; Breakaway threshold: ") + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "。";
+				+ PolicyGenerationPromptTexts.Get("VassalCurrentIndependence", "\nCurrent independence: ") + currentIndependence.ToString(CultureInfo.InvariantCulture) + "/100" + PolicyCompatibilityTexts.Period
+				+ PolicyGenerationPromptTexts.Get("VassalCurrentRuler", "\nCurrent ruler: ") + rulerName + PolicyGenerationPromptTexts.Get("VassalPlayerRelation", "; Relation to player: ") + FormatSigned(rulerRelation) + PolicyGenerationPromptTexts.Get("VassalBreakawayThreshold", "; Breakaway threshold: ") + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Period;
 		}
 		PolicyDraftRequest request = new PolicyDraftRequest
 		{
@@ -926,13 +926,13 @@ public sealed partial class CustomPolicyBehavior
 	{
 		switch (text ?? string.Empty)
 		{
-			case var rawPolicyCase45 when string.Equals(rawPolicyCase45, PolicyCompatibilityTexts.Get("Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_074"), StringComparison.Ordinal):
+			case var rawPolicyCase45 when PolicyCompatibilityTexts.Is(rawPolicyCase45, "Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_074"):
 				return PolicyUiTexts.Get("AFPOL_UI_PolicyFeedbackUnclearDefault", "The public has heard of the new policy, but feedback is not yet clear.");
-			case var rawPolicyCase46 when string.Equals(rawPolicyCase46, PolicyCompatibilityTexts.Get("Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_075"), StringComparison.Ordinal):
+			case var rawPolicyCase46 when PolicyCompatibilityTexts.Is(rawPolicyCase46, "Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_075"):
 				return PolicyUiTexts.Get("AFPOL_UI_LocalPolicyFeedbackUnclearDefault", "The people of the selected fiefs and attached villages have heard of this local policy, but feedback is not yet clear.");
-			case var rawPolicyCase47 when string.Equals(rawPolicyCase47, PolicyCompatibilityTexts.Get("Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_076"), StringComparison.Ordinal):
+			case var rawPolicyCase47 when PolicyCompatibilityTexts.Is(rawPolicyCase47, "Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_076"):
 				return PolicyUiTexts.Get("AFPOL_UI_PolicyImpactDefault", "Policy impact is determined by the evaluator and world state.");
-			case var rawPolicyCase48 when string.Equals(rawPolicyCase48, PolicyCompatibilityTexts.Get("Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_077"), StringComparison.Ordinal):
+			case var rawPolicyCase48 when PolicyCompatibilityTexts.Is(rawPolicyCase48, "Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_077"):
 				return PolicyUiTexts.Get("AFPOL_UI_VassalIndependenceNeutralDefault", "The policy was assessed as neutral for the vassal's independence tendency.");
 			default:
 				return text ?? string.Empty;
@@ -1469,7 +1469,7 @@ public sealed partial class CustomPolicyBehavior
 						line += PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectSummary_079") + visibleReason;
 					}
 				}
-				lines.Add(line.TrimEnd('。') + "。");
+				lines.Add(line.TrimEnd('。', '.') + PolicyCompatibilityTexts.Period);
 			}
 		}
 		return string.Join("\n", lines);
@@ -1494,14 +1494,14 @@ public sealed partial class CustomPolicyBehavior
 			if (!string.IsNullOrWhiteSpace(effect.EndReason)
 				&& (effect.IsEnded || (!effect.IsPermanentEffect && effect.RemainingDays <= 0)))
 			{
-				status += "：" + BuildRawPolicyEndReason(effect.EndReason);
+				status += PolicyCompatibilityTexts.Colon + BuildRawPolicyEndReason(effect.EndReason);
 			}
 			foreach (string visibleLine in BuildRawPolicyEffectLines(
 				FirstNonEmpty(effect.TargetLabel, effect.KingdomName),
 				effect.ModuleEffects,
 				effect.TotalDurationDays))
 			{
-				lines.Add(visibleLine + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyRecordEffectSummary_081") + status + "。");
+				lines.Add(visibleLine + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyRecordEffectSummary_081") + status + PolicyCompatibilityTexts.Period);
 			}
 		}
 		return string.Join("\n", lines);
@@ -1557,7 +1557,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return new List<string>
 			{
-				BuildRawPolicyTargetLabel(null, null, fallbackTargetName) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectLinesForExternal_086") + durationSuffix
+				BuildRawPolicyTargetLabel(null, null, fallbackTargetName) + PolicyCompatibilityTexts.WordGap + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectLinesForExternal_086") + durationSuffix
 			};
 		}
 
@@ -1577,7 +1577,7 @@ public sealed partial class CustomPolicyBehavior
 			}
 			lines.AddRange(values
 				.Where(value => !string.IsNullOrWhiteSpace(value))
-				.Select(value => targetLabel + "｜" + value.Trim() + durationSuffix));
+				.Select(value => targetLabel + PolicyCompatibilityTexts.FieldSeparator + value.Trim() + durationSuffix));
 		}
 		return lines;
 	}
@@ -1627,7 +1627,7 @@ public sealed partial class CustomPolicyBehavior
 				string leaderName = clan.Leader?.Name?.ToString() ?? string.Empty;
 				return string.IsNullOrWhiteSpace(leaderName)
 					? clanName
-					: clanName + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_090") + leaderName + "）";
+					: clanName + PolicyCompatibilityTexts.WordGap + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_090") + leaderName + PolicyCompatibilityTexts.CloseParen;
 			}).Where(name => !string.IsNullOrWhiteSpace(name)).ToList();
 			return BuildRawPolicyNamedOrCountTargetLabel(PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), names, clanIds.Count, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_092"));
 		}
@@ -1708,7 +1708,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_105");
 		}
-		string summary = string.Join("、", names.Take(3));
+		string summary = string.Join(PolicyCompatibilityTexts.ListSeparator, names.Take(3));
 		if (normalizedIds.Count > names.Count)
 		{
 			summary += PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_106") + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_105");
@@ -1733,13 +1733,13 @@ public sealed partial class CustomPolicyBehavior
 		}
 		if (normalizedIds.Count == 1 && names.Count == 1)
 		{
-			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + names[0] + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_107");
+			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + names[0] + PolicyCompatibilityTexts.ClauseGap + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_107");
 		}
 		if (names.Count <= 0)
 		{
 			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_108");
 		}
-		string summary = string.Join("、", names.Take(3));
+		string summary = string.Join(PolicyCompatibilityTexts.ListSeparator, names.Take(3));
 		if (normalizedIds.Count > names.Count)
 		{
 			summary += PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_106") + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_105");
@@ -1761,12 +1761,12 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_103") + totalCount.ToString(CultureInfo.InvariantCulture) + " " + countUnit;
 		}
-		string summary = string.Join("、", names.Take(3));
+		string summary = string.Join(PolicyCompatibilityTexts.ListSeparator, names.Take(3));
 		if (totalCount > names.Take(3).Count())
 		{
 			summary += PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_106") + totalCount.ToString(CultureInfo.InvariantCulture) + " " + countUnit;
 		}
-		return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyNamedOrCountTargetLabel_110") + category + "：" + summary;
+		return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyNamedOrCountTargetLabel_110") + PolicyCompatibilityTexts.WordGap + category + PolicyCompatibilityTexts.Colon + summary;
 	}
 
 	private static List<string> BuildRawPolicyEffectValues(IEnumerable<PolicyEffectInstanceSaveData> moduleEffects)
@@ -2456,7 +2456,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		switch (text)
 		{
-			case var rawPolicyCase63 when string.Equals(rawPolicyCase63, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyNamedOrCountTargetLabel_110"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellTarget", "Target");
+			case var rawPolicyCase63 when PolicyCompatibilityTexts.Is(rawPolicyCase63, "Legacy_BuildRawPolicyNamedOrCountTargetLabel_110"): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellTarget", "Target");
 			case var rawPolicyCase64 when string.Equals(rawPolicyCase64, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_129"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellPublishFief", "Publishing fief");
 			case var rawPolicyCase65 when string.Equals(rawPolicyCase65, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_130"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellPublishFiefScope", "Publishing fief and attached villages");
 			case var rawPolicyCase66 when string.Equals(rawPolicyCase66, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_131"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellMentionedTarget", "Mentioned target in the home kingdom");

@@ -564,7 +564,7 @@ internal static bool TryGetUnnamedSceneInlineState(PatiencePromptCapturePorts po
 	internal static string GetPlayerDisplayNameForRelationshipPrompt(Hero mainHero)
 	{
 		string text = (BuildPlayerPublicDisplayNameForPrompt() ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || (string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Compat_Player"), StringComparison.Ordinal) || string.Equals(text, "the player", StringComparison.OrdinalIgnoreCase)))
+		if (string.IsNullOrWhiteSpace(text) || (AdapterPromptCaptureTexts.PcapCompatVariants("Compat_Player").Any(label => string.Equals(text, label, StringComparison.OrdinalIgnoreCase)) || string.Equals(text, "the player", StringComparison.OrdinalIgnoreCase)))
 		{
 			text = (mainHero?.Name?.ToString() ?? "").Trim();
 		}

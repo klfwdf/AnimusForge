@@ -15,10 +15,11 @@ internal static class EconomyActionFactProjection
     private static readonly string[] Keys = { "S442", "S443", "S444", "S445", "S446", "S447", "S448", "S449", "S450", "S516", "S517", "S518", "S519", "S528", "S529", "S530", "S531", "S724", "S725", "S726", "S727", "GoldBatch" };
     private static readonly Lazy<Regex> Pattern = new Lazy<Regex>(() => new Regex(string.Join("|", Keys.Select(BuildPattern)), RegexOptions.Compiled | RegexOptions.CultureInvariant));
 
+    // Matches stored Chinese facts only; facts written under English are already English and pass through.
     private static string Source(string key)
         => key == "GoldBatch"
-            ? EconomySourceTexts.Get("S451") + "{0}" + EconomySourceTexts.Get("S043") + "{1}" + EconomySourceTexts.Get("S044") + "{2}" + EconomySourceTexts.Get("S045") + "{3}" + EconomySourceTexts.Get("S452") + "{4}" + EconomySourceTexts.Get("S047")
-            : EconomySourceTexts.Get(key);
+            ? EconomySourceTexts.Source("S451") + "{0}" + EconomySourceTexts.Source("S043") + "{1}" + EconomySourceTexts.Source("S044") + "{2}" + EconomySourceTexts.Source("S045") + "{3}" + EconomySourceTexts.Source("S452") + "{4}" + EconomySourceTexts.Source("S047")
+            : EconomySourceTexts.Source(key);
 
     private static string BuildPattern(string key)
     {

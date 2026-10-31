@@ -15,12 +15,12 @@ internal static class EconomyUiTexts
     internal static string ProjectPartyAssetNameForUi(string value)
     {
         if (value == null) return null;
-        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_Other"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_Other", "the other party");
-        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_Unknown"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_Unknown", "unknown");
-        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_UnknownAsset"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_UnknownAsset", "unknown asset");
-        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_UnknownSettlement"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_UnknownSettlement", "unknown settlement");
-        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_Workshop"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_Workshop", "workshop");
-        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_Caravan"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_Caravan", "caravan");
+        if (EconomySourceTexts.Is(value, "PartyAsset_Other")) return Text("AF_ECO_UI_PartyAsset_Other", "the other party");
+        if (EconomySourceTexts.Is(value, "PartyAsset_Unknown")) return Text("AF_ECO_UI_PartyAsset_Unknown", "unknown");
+        if (EconomySourceTexts.Is(value, "PartyAsset_UnknownAsset")) return Text("AF_ECO_UI_PartyAsset_UnknownAsset", "unknown asset");
+        if (EconomySourceTexts.Is(value, "PartyAsset_UnknownSettlement")) return Text("AF_ECO_UI_PartyAsset_UnknownSettlement", "unknown settlement");
+        if (EconomySourceTexts.Is(value, "PartyAsset_Workshop")) return Text("AF_ECO_UI_PartyAsset_Workshop", "workshop");
+        if (EconomySourceTexts.Is(value, "PartyAsset_Caravan")) return Text("AF_ECO_UI_PartyAsset_Caravan", "caravan");
         string workshop = EconomySourceTexts.Get("PartyAsset_Workshop");
         string caravan = EconomySourceTexts.Get("PartyAsset_Caravan");
         foreach (string label in new[] { workshop, caravan })
@@ -97,27 +97,27 @@ internal static class EconomyUiTexts
 	public static string DebtStatusForDisplay(string status)
 	{
 		string value = (status ?? string.Empty).Trim();
-		if (string.Equals(value, EconomySourceTexts.Get("S019"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S019"))
 		{
 			return Text("AF_ECO_UI_DebtStatusInvalidNpc", "Invalid debt request: the NPC or debt ID is missing.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S020"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S020"))
 		{
 			return Text("AF_ECO_UI_DebtStatusNpcRecordMissing", "No debt record was found for this NPC.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S021"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S021"))
 		{
 			return Text("AF_ECO_UI_DebtStatusNpcNoDebt", "This NPC has no debt that can currently be repaid.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S024"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S024"))
 		{
 			return Text("AF_ECO_UI_DebtStatusInvalidMarket", "Invalid market debt request: the market creditor or debt ID is missing.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S025"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S025"))
 		{
 			return Text("AF_ECO_UI_DebtStatusMarketRecordMissing", "No debt record was found for this market.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S022"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S022"))
 		{
 			return Text("AF_ECO_UI_DebtStatusLineMissing", "No unsettled debt line with that ID was found.");
 		}
@@ -127,7 +127,7 @@ internal static class EconomyUiTexts
 		if (value.StartsWith(prefix, StringComparison.Ordinal))
 		{
 			int markerIndex = value.IndexOf(marker, prefix.Length, StringComparison.Ordinal);
-			if (markerIndex > prefix.Length && value.EndsWith("）。", StringComparison.Ordinal))
+			if (markerIndex > prefix.Length && value.EndsWith(EconomySourceTexts.CloseParenPeriod, StringComparison.Ordinal))
 			{
 				string debtId = value.Substring(prefix.Length, markerIndex - prefix.Length);
 				string amount = value.Substring(markerIndex + marker.Length, value.Length - markerIndex - marker.Length - 2);
@@ -278,7 +278,7 @@ internal static class EconomyUiTexts
 	public static string DebtPromiseCounterpartyForDisplay(string name)
 	{
 		string value = (name ?? string.Empty).Trim();
-		return string.IsNullOrWhiteSpace(value) || string.Equals(value, EconomySourceTexts.Get("S066"), StringComparison.Ordinal)
+		return string.IsNullOrWhiteSpace(value) || EconomySourceTexts.Is(value, "S066")
 			? Text("AF_ECO_UI_DebtPromiseCounterparty", "the counterparty")
 			: value;
 	}
@@ -286,7 +286,7 @@ internal static class EconomyUiTexts
 	public static string DebtPromiseNoteForDisplay(string note)
 	{
 		string value = (note ?? string.Empty).Trim();
-		return string.IsNullOrWhiteSpace(value) || string.Equals(value, EconomySourceTexts.Get("S013"), StringComparison.Ordinal)
+		return string.IsNullOrWhiteSpace(value) || EconomySourceTexts.Is(value, "S013")
 			? Text("AF_ECO_UI_DebtPromiseNoNote", "None")
 			: value;
 	}
@@ -443,69 +443,69 @@ internal static class EconomyUiTexts
 			return string.Empty;
 		}
 
-		if (string.Equals(value, EconomySourceTexts.Get("S071"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S071"))
 		{
 			return Text("AF_ECO_UI_FixedAssetMissingParties", "Missing transfer counterparties.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S072"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S072"))
 		{
 			return Text("AF_ECO_UI_FixedAssetNpcOnly", "Postprocess only allows NPCs to transfer fixed assets to the player.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S073"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S073"))
 		{
 			return Text("AF_ECO_UI_FixedAssetClanMemberBlocked", "Clan members or companions cannot be transferred via fixed assets.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S074"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S074"))
 		{
 			return Text("AF_ECO_UI_FixedAssetMissingAsset", "Missing transferable fixed asset.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S075"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S075"))
 		{
 			return Text("AF_ECO_UI_FixedAssetUnknownType", "Unknown fixed asset type.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S076"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S076"))
 		{
 			return Text("AF_ECO_UI_FixedAssetQuantityMustBeOne", "Fixed asset quantity must be 1.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S077"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S077"))
 		{
 			return Text("AF_ECO_UI_FixedAssetTargetNoClan", "Target recipient does not have a valid clan.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S078"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S078"))
 		{
 			return Text("AF_ECO_UI_FixedAssetWorkshopMissingRecipient", "Missing workshop recipient.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S079"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S079"))
 		{
 			return Text("AF_ECO_UI_FixedAssetWorkshopRecipientInvalid", "Workshop recipient is not a valid living hero.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S080"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S080"))
 		{
 			return Text("AF_ECO_UI_FixedAssetCaravanMissingRecipient", "Missing caravan recipient.");
 		}
 
 		string notFoundPrefix = EconomySourceTexts.Get("S081");
-		if (value.StartsWith(notFoundPrefix, StringComparison.Ordinal) && value.EndsWith("）。", StringComparison.Ordinal))
+		if (value.StartsWith(notFoundPrefix, StringComparison.Ordinal) && value.EndsWith(EconomySourceTexts.CloseParenPeriod, StringComparison.Ordinal))
 		{
 			string token = value.Substring(notFoundPrefix.Length, value.Length - notFoundPrefix.Length - 2);
 			return Text("AF_ECO_UI_FixedAssetNotFound", "No transferable fixed asset was found ({TOKEN}).", ("TOKEN", token));
 		}
 
 		string unknownDirPrefix = EconomySourceTexts.Get("S082");
-		if (value.StartsWith(unknownDirPrefix, StringComparison.Ordinal) && value.EndsWith("。", StringComparison.Ordinal))
+		if (value.StartsWith(unknownDirPrefix, StringComparison.Ordinal) && value.EndsWith(EconomySourceTexts.Period, StringComparison.Ordinal))
 		{
 			string dir = value.Substring(unknownDirPrefix.Length, value.Length - unknownDirPrefix.Length - 1);
 			return Text("AF_ECO_UI_FixedAssetUnknownDirection", "Unknown fixed asset transfer direction ({DIRECTION}).", ("DIRECTION", dir));
 		}
 
-		string exPrefix = EconomySourceTexts.Get("S083");
+		string exPrefix = EconomySourceTexts.Pre("S083");
 		if (value.StartsWith(exPrefix, StringComparison.Ordinal))
 		{
 			string err = value.Substring(exPrefix.Length);
 			return Text("AF_ECO_UI_FixedAssetException", "Transfer failed with an error: {ERROR}", ("ERROR", err));
 		}
 
-		string succSettlementPlayerPrefix = EconomySourceTexts.Get("S084");
+		string succSettlementPlayerPrefix = EconomySourceTexts.Pre("S084");
 		string succSettlementPlayerSuffix = EconomySourceTexts.Get("S085");
 		if (value.StartsWith(succSettlementPlayerPrefix, StringComparison.Ordinal) && value.EndsWith(succSettlementPlayerSuffix, StringComparison.Ordinal))
 		{
@@ -530,7 +530,7 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FixedAssetAssetToNpc", "Player transferred {ASSET} to {GIVER} (payment not automatically deducted).", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
 
-		string skipClanPrefix = EconomySourceTexts.Get("S091");
+		string skipClanPrefix = EconomySourceTexts.Pre("S091");
 		string skipClanSuffix = EconomySourceTexts.Get("S092");
 		if (value.StartsWith(skipClanPrefix, StringComparison.Ordinal) && value.EndsWith(skipClanSuffix, StringComparison.Ordinal))
 		{
@@ -545,7 +545,7 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FixedAssetAlreadyTargetPerson", "{ASSET} already belongs to the target character.", ("ASSET", asset));
 		}
 
-		string failPrefix = EconomySourceTexts.Get("S094");
+		string failPrefix = EconomySourceTexts.Pre("S094");
 		string notFortSuffix = EconomySourceTexts.Get("S095");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notFortSuffix, StringComparison.Ordinal))
 		{
@@ -567,7 +567,7 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FixedAssetUnderSiege", "{ASSET} is currently in battle or under siege and cannot be transferred.", ("ASSET", asset));
 		}
 
-		if (context.Matches(value, EconomySourceTexts.Get("S094"), EconomySourceTexts.Get("S098"), EconomySourceTexts.Get("S099")))
+		if (context.Matches(value, EconomySourceTexts.Pre("S094"), EconomySourceTexts.Get("S098"), EconomySourceTexts.Get("S099")))
 		{
 			return Text("AF_ECO_UI_FixedAssetNotGiverClan", "{ASSET} does not belong to {GIVER}'s clan and cannot be transferred to the player.", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
@@ -600,7 +600,7 @@ internal static class EconomyUiTexts
 			return Text("AF_ECO_UI_FixedAssetWorkshopOwnerDead", "{ASSET}'s current workshop owner is invalid or deceased.", ("ASSET", asset));
 		}
 
-		if (context.Matches(value, EconomySourceTexts.Get("S094"), EconomySourceTexts.Get("S098"), EconomySourceTexts.Get("S104")))
+		if (context.Matches(value, EconomySourceTexts.Pre("S094"), EconomySourceTexts.Get("S098"), EconomySourceTexts.Get("S104")))
 		{
 			return Text("AF_ECO_UI_FixedAssetNotGiver", "{ASSET} does not belong to {GIVER} and cannot be transferred to the player.", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
@@ -651,19 +651,19 @@ internal static class EconomyUiTexts
 			return string.Empty;
 		}
 
-		if (string.Equals(value, EconomySourceTexts.Get("S110"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S110"))
 		{
 			return Text("AF_ECO_UI_KingdomTransferPlayerClanNotFound", "Player clan was not found.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S111"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S111"))
 		{
 			return Text("AF_ECO_UI_KingdomTransferNotKing", "The conversation partner is not a reigning king who can abdicate.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S112"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S112"))
 		{
 			return Text("AF_ECO_UI_KingdomTransferNoKingdom", "The conversation partner has no valid kingdom.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S113"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S113"))
 		{
 			return Text("AF_ECO_UI_KingdomTransferAlreadyKing", "The player's clan cannot reacquire the crown through abdication.");
 		}
@@ -698,7 +698,7 @@ internal static class EconomyUiTexts
 			return rulingClanText + EconomyRecruitmentDetailTexts.Describe(mSuccess.Groups["tail"].Value);
 		}
 
-		string exPrefix = EconomySourceTexts.Get("S083");
+		string exPrefix = EconomySourceTexts.Pre("S083");
 		if (value.StartsWith(exPrefix, StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_KingdomTransferException", "Kingdom transfer failed with an error: {ERROR}", ("ERROR", value.Substring(exPrefix.Length)));
@@ -715,55 +715,55 @@ internal static class EconomyUiTexts
 			return string.Empty;
 		}
 
-		if (string.Equals(value, EconomySourceTexts.Get("S118"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S118"))
 		{
 			return Text("AF_ECO_UI_FactionOnlyLeaderCanPledge", "Only the active clan leader can pledge the entire clan.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S119"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S119"))
 		{
 			return Text("AF_ECO_UI_FactionNoKingdomToAccept", "The player currently has no valid kingdom to accept the clan.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S120"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S120"))
 		{
 			return Text("AF_ECO_UI_FactionPlayerNotRuler", "The player is not the ruler of the kingdom and cannot approve clan allegiance directly.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S121"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S121"))
 		{
 			return Text("AF_ECO_UI_FactionTargetKingdomInvalid", "The target kingdom is invalid or has been eliminated.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S122"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S122"))
 		{
 			return Text("AF_ECO_UI_FactionNpcClanNotFound", "The NPC's clan could not be found.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S123"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S123"))
 		{
 			return Text("AF_ECO_UI_FactionCannotRePledgePlayerClan", "The player's clan cannot re-pledge allegiance through this NPC.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S124"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S124"))
 		{
 			return Text("AF_ECO_UI_FactionOnlyClanLeaderCanChoose", "Only the clan leader can pledge the clan's allegiance to a kingdom.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S125"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S125"))
 		{
 			return Text("AF_ECO_UI_FactionPlayerNotInKingdom", "The player is not currently part of any faction.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S126"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S126"))
 		{
 			return Text("AF_ECO_UI_FactionNoKingdomForTarget", "The player currently has no kingdom for the target clan to join.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S127"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S127"))
 		{
 			return Text("AF_ECO_UI_FactionPartnerNotVassal", "The conversation partner is not a vassal of this faction and cannot sign a mercenary contract.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S128"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S128"))
 		{
 			return Text("AF_ECO_UI_FactionPlayerAlreadyVassal", "The player is already a vassal of a kingdom and cannot join as a mercenary.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S129"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S129"))
 		{
 			return Text("AF_ECO_UI_FactionOnlyKingGrantsVassalage", "Only the king of the target kingdom can grant official vassalage.");
 		}
-		if (string.Equals(value, EconomySourceTexts.Get("S110"), StringComparison.Ordinal))
+		if (EconomySourceTexts.Is(value, "S110"))
 		{
 			return Text("AF_ECO_UI_FactionPlayerClanNotFound", "The player's clan could not be found.");
 		}
@@ -801,7 +801,7 @@ internal static class EconomyUiTexts
 		string unknownServicePrefix = EconomySourceTexts.Get("S134");
 		if (value.StartsWith(unknownServicePrefix, StringComparison.Ordinal))
 		{
-			string serviceType = value.Substring(unknownServicePrefix.Length).TrimEnd('。');
+			string serviceType = value.Substring(unknownServicePrefix.Length).TrimEnd('\u3002', '.');
 			if (serviceType.Length > 0)
 			{
 				return Text("AF_ECO_UI_FactionUnknownServiceType", "Unknown faction service type {SERVICE_TYPE}.",
@@ -811,7 +811,7 @@ internal static class EconomyUiTexts
 
 		// The clan-leader branch wraps an arbitrary exception message; it must be
 		// recognized before the generic clan-join failure pattern can claim it.
-		string clanLeaderExceptionPrefix = EconomySourceTexts.Get("S135");
+		string clanLeaderExceptionPrefix = EconomySourceTexts.Pre("S135");
 		if (value.StartsWith(clanLeaderExceptionPrefix, StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionClanLeaderException", "Clan leader allegiance failed with an error: {ERROR}",
@@ -900,7 +900,7 @@ internal static class EconomyUiTexts
 				+ EconomyRecruitmentDetailTexts.Describe(mJoinVassal.Groups["tail"].Value);
 		}
 
-		string exPrefix = EconomySourceTexts.Get("S083");
+		string exPrefix = EconomySourceTexts.Pre("S083");
 		if (value.StartsWith(exPrefix, StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionException", "Faction action failed with an error: {ERROR}", ("ERROR", value.Substring(exPrefix.Length)));

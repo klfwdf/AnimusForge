@@ -17,6 +17,8 @@ internal static class TauntSourceTexts
     internal static string Source(string id) => Table.Chinese(id);
     internal static string[] Variants(string id) => Table.Variants(id);
     internal static bool Is(string value, string id) => Table.Is(value, id);
+    /// <summary>Space between composed sentence fragments: none in Chinese, one in English.</summary>
+    internal static string Gap => PromptLanguage.IsChinese ? "" : " ";
 
     internal static string Format(string id, params (string Name, string Value)[] variables)
     {

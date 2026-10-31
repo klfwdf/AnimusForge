@@ -236,7 +236,7 @@ public sealed partial class CourierDeliveryBehavior
 		if (!session.DeliveryApplied)
 		{
 			string deliveryFact = BuildInboundDeliveryFactText(session, delivered: true, sender);
-			string historyLine = "【" + GetInboundLetterKindDisplayText(session) + "】" + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0618") + visibleLetter;
+			string historyLine = (PromptLanguage.IsChinese ? "\u3010" : "[") + GetInboundLetterKindDisplayText(session) + (PromptLanguage.IsChinese ? "\u3011" : "] ") + senderName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0618") + visibleLetter;
 			if (!TryReserveInboundDeliveredMemoryIntent(session, sender, historyLine, deliveryFact))
 			{
 				// No memory-only intent means delivery could be lost after the party is destroyed.
@@ -329,7 +329,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		catch
 		{
-			InformationManager.DisplayMessage(new InformationMessage(title + "：" + body, Colors.Green));
+			InformationManager.DisplayMessage(new InformationMessage(title + ConversationRuntimeTexts.Colon + body, Colors.Green));
 		}
 	}
 }

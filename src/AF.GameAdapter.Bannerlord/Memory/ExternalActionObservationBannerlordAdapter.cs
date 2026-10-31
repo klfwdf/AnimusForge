@@ -42,11 +42,11 @@ internal void OnQuestCompletedForActionHistory(QuestBase quest, QuestBase.QuestC
 			Settlement settlement = CampaignCharacterRecordCaptureAdapter.ResolveQuestActionSettlement(questGiver);
 			if (questGiver != null)
 			{
-				string npcText = AdapterSceneTexts.Raw("ExternalObservation_001") + questTitle + AdapterSceneTexts.Raw("ExternalObservation_002") + detailLabel + "。";
+				string npcText = AdapterSceneTexts.W("ExternalObservation_001") + questTitle + AdapterSceneTexts.W("ExternalObservation_002") + detailLabel + AdapterRecordTexts.Period;
 				_application.RecordExternalNpcAction(questGiver, npcText, stableKey + ":giver", actionKind, isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), allowNonLordHero: true, won: won);
 			}
 			string giverName = questGiver != null ? MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(questGiver) : AdapterSceneTexts.Raw("ExternalObservation_003");
-			string playerText = AdapterSceneTexts.Raw("ExternalObservation_004") + questTitle + AdapterSceneTexts.Raw("ExternalObservation_005") + detailLabel + AdapterSceneTexts.Raw("ExternalObservation_006") + giverName + "。";
+			string playerText = AdapterSceneTexts.W("ExternalObservation_004") + questTitle + AdapterSceneTexts.W("ExternalObservation_005") + detailLabel + AdapterSceneTexts.W("ExternalObservation_006") + giverName + AdapterRecordTexts.Period;
 			_application.RecordExternalPlayerAction(playerText, stableKey + ":player", actionKind, isMajor: true, targetHero: questGiver, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), won: won);
 		}
 		catch (Exception ex)
@@ -65,8 +65,8 @@ internal void OnNewCompanionAddedForActionHistory(Hero newCompanion)
 			Settlement settlement = CampaignCharacterRecordCaptureAdapter.ResolveCurrentActionSettlement(newCompanion);
 			string companionName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(newCompanion);
 			string stableKey = "companion_join:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newCompanion) + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe();
-			_application.RecordExternalNpcAction(newCompanion, AdapterSceneTexts.Raw("ExternalObservation_007"), stableKey + ":npc", "companion_join", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), allowNonLordHero: true, won: true);
-			_application.RecordExternalPlayerAction(AdapterSceneTexts.Raw("ExternalObservation_008") + companionName + AdapterSceneTexts.Raw("ExternalObservation_009"), stableKey + ":player", "companion_join", isMajor: true, targetHero: newCompanion, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), won: true);
+			_application.RecordExternalNpcAction(newCompanion, AdapterSceneTexts.W("ExternalObservation_007"), stableKey + ":npc", "companion_join", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), allowNonLordHero: true, won: true);
+			_application.RecordExternalPlayerAction(AdapterSceneTexts.W("ExternalObservation_008") + companionName + AdapterSceneTexts.W("ExternalObservation_009"), stableKey + ":player", "companion_join", isMajor: true, targetHero: newCompanion, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), won: true);
 		}
 		catch (Exception ex)
 		{
@@ -85,8 +85,8 @@ internal void OnCompanionRemovedForActionHistory(Hero companion, RemoveCompanion
 			string detailLabel = CampaignCharacterRecordCaptureAdapter.GetCompanionRemovedDetailLabel(detail);
 			string companionName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(companion);
 			string stableKey = "companion_leave:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(companion) + ":" + detail + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe();
-			string npcText = AdapterSceneTexts.Raw("ExternalObservation_010") + detailLabel + "。";
-			string playerText = companionName + AdapterSceneTexts.Raw("ExternalObservation_011") + detailLabel + "。";
+			string npcText = AdapterSceneTexts.W("ExternalObservation_010") + detailLabel + AdapterRecordTexts.Period;
+			string playerText = companionName + AdapterSceneTexts.W("ExternalObservation_011") + detailLabel + AdapterRecordTexts.Period;
 			_application.RecordExternalNpcAction(companion, npcText, stableKey + ":npc", "companion_leave", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), allowNonLordHero: true, won: null);
 			_application.RecordExternalPlayerAction(playerText, stableKey + ":player", "companion_leave", isMajor: true, targetHero: companion, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), won: null);
 		}
@@ -109,14 +109,14 @@ internal void OnGovernorChangedForActionHistory(Town fortification, Hero oldGove
 			if (oldGovernor != null && oldGovernor != newGovernor)
 			{
 				string oldName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(oldGovernor);
-				_application.RecordExternalNpcAction(oldGovernor, AdapterSceneTexts.Raw("ExternalObservation_012") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_013"), stablePrefix + ":removed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(oldGovernor), "governor_removed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: null);
-				_application.RecordExternalPlayerAction(AdapterSceneTexts.Raw("ExternalObservation_014") + oldName + AdapterSceneTexts.Raw("ExternalObservation_015") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_016"), stablePrefix + ":player_removed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(oldGovernor), "governor_removed", isMajor: true, targetHero: oldGovernor, settlement: settlement, locationText: settlementName, won: null);
+				_application.RecordExternalNpcAction(oldGovernor, AdapterSceneTexts.W("ExternalObservation_012") + settlementName + AdapterSceneTexts.W("ExternalObservation_013"), stablePrefix + ":removed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(oldGovernor), "governor_removed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: null);
+				_application.RecordExternalPlayerAction(AdapterSceneTexts.W("ExternalObservation_014") + oldName + AdapterSceneTexts.W("ExternalObservation_015") + settlementName + AdapterSceneTexts.W("ExternalObservation_016"), stablePrefix + ":player_removed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(oldGovernor), "governor_removed", isMajor: true, targetHero: oldGovernor, settlement: settlement, locationText: settlementName, won: null);
 			}
 			if (newGovernor != null)
 			{
 				string newName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(newGovernor);
-				_application.RecordExternalNpcAction(newGovernor, AdapterSceneTexts.Raw("ExternalObservation_017") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_018"), stablePrefix + ":appointed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newGovernor), "governor_appointed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: true);
-				_application.RecordExternalPlayerAction(AdapterSceneTexts.Raw("ExternalObservation_019") + newName + AdapterSceneTexts.Raw("ExternalObservation_020") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_021"), stablePrefix + ":player_appointed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newGovernor), "governor_appointed", isMajor: true, targetHero: newGovernor, settlement: settlement, locationText: settlementName, won: true);
+				_application.RecordExternalNpcAction(newGovernor, AdapterSceneTexts.W("ExternalObservation_017") + settlementName + AdapterSceneTexts.W("ExternalObservation_018"), stablePrefix + ":appointed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newGovernor), "governor_appointed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: true);
+				_application.RecordExternalPlayerAction(AdapterSceneTexts.W("ExternalObservation_019") + newName + AdapterSceneTexts.W("ExternalObservation_020") + settlementName + AdapterSceneTexts.W("ExternalObservation_021"), stablePrefix + ":player_appointed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newGovernor), "governor_appointed", isMajor: true, targetHero: newGovernor, settlement: settlement, locationText: settlementName, won: true);
 			}
 		}
 		catch (Exception ex)
@@ -171,19 +171,19 @@ internal void RecordExternalPlayerHighValueRpCraft(
 			finalName,
 			StringComparison.Ordinal);
 		string actionText = craftedByPlayer
-			? AdapterSceneTexts.Raw("ExternalObservation_022") + investment + AdapterSceneTexts.Raw("ExternalObservation_023")
-			: AdapterSceneTexts.Raw("ExternalObservation_024") + investment + AdapterSceneTexts.Raw("ExternalObservation_025")
+			? AdapterSceneTexts.W("ExternalObservation_022") + investment + AdapterSceneTexts.W("ExternalObservation_023")
+			: AdapterSceneTexts.W("ExternalObservation_024") + investment + AdapterSceneTexts.W("ExternalObservation_025")
 				+ (string.IsNullOrWhiteSpace(crafterName)
 					? AdapterSceneTexts.Raw("ExternalObservation_026")
 					: crafterName)
-				+ AdapterSceneTexts.Raw("ExternalObservation_027");
+				+ AdapterSceneTexts.W("ExternalObservation_027");
 		actionText += renamedByOutcome
-			? "“" + requested + AdapterSceneTexts.Raw("ExternalObservation_028") + finalName + "”"
-			: AdapterSceneTexts.Raw("ExternalObservation_029") + finalName + "”";
-		actionText += AdapterSceneTexts.Raw("ExternalObservation_030") + outputValue + AdapterSceneTexts.Raw("ExternalObservation_031")
+			? AdapterRecordTexts.OpenQuote + requested + AdapterSceneTexts.W("ExternalObservation_028") + finalName + AdapterRecordTexts.CloseQuote
+			: AdapterSceneTexts.W("ExternalObservation_029") + finalName + AdapterRecordTexts.CloseQuote;
+		actionText += AdapterSceneTexts.W("ExternalObservation_030") + outputValue + AdapterSceneTexts.W("ExternalObservation_031")
 			+ (string.IsNullOrWhiteSpace(result)
-				? "。"
-				: AdapterSceneTexts.Raw("ExternalObservation_032") + result + "。");
+				? AdapterRecordTexts.Period
+				: AdapterSceneTexts.W("ExternalObservation_032") + result + AdapterRecordTexts.Period);
 
 		string stableKey =
 			"player_rp_craft_high_value:" + normalizedBatchId;
@@ -215,22 +215,22 @@ internal void RecordExternalPlayerHighValueRpCraft(
 			settlementId = MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement);
 		}
 		string weeklySnapshot = craftedByPlayer
-			? AdapterSceneTexts.Raw("ExternalObservation_034") + investment + AdapterSceneTexts.Raw("ExternalObservation_035")
-			: AdapterSceneTexts.Raw("ExternalObservation_036") + investment + AdapterSceneTexts.Raw("ExternalObservation_037")
+			? AdapterSceneTexts.W("ExternalObservation_034") + investment + AdapterSceneTexts.W("ExternalObservation_035")
+			: AdapterSceneTexts.W("ExternalObservation_036") + investment + AdapterSceneTexts.W("ExternalObservation_037")
 				+ (string.IsNullOrWhiteSpace(crafterName)
 					? AdapterSceneTexts.Raw("ExternalObservation_038")
 					: crafterName)
-				+ AdapterSceneTexts.Raw("ExternalObservation_039");
+				+ AdapterSceneTexts.W("ExternalObservation_039");
 		weeklySnapshot += renamedByOutcome
-			? "“" + requested + AdapterSceneTexts.Raw("ExternalObservation_040") + finalName + "”"
-			: AdapterSceneTexts.Raw("ExternalObservation_041") + finalName + "”";
-		weeklySnapshot += AdapterSceneTexts.Raw("ExternalObservation_042") + outputValue + AdapterSceneTexts.Raw("ExternalObservation_043")
+			? AdapterRecordTexts.OpenQuote + requested + AdapterSceneTexts.W("ExternalObservation_040") + finalName + AdapterRecordTexts.CloseQuote
+			: AdapterSceneTexts.W("ExternalObservation_041") + finalName + AdapterRecordTexts.CloseQuote;
+		weeklySnapshot += AdapterSceneTexts.W("ExternalObservation_042") + outputValue + AdapterSceneTexts.W("ExternalObservation_043")
 			+ (string.IsNullOrWhiteSpace(result)
-				? "。"
-				: AdapterSceneTexts.Raw("ExternalObservation_044") + result + "。");
+				? AdapterRecordTexts.Period
+				: AdapterSceneTexts.W("ExternalObservation_044") + result + AdapterRecordTexts.Period);
 		_application.RecordEventSourceMaterial(
 			"player_rp_craft",
-			AdapterSceneTexts.Raw("ExternalObservation_045") + finalName,
+			AdapterSceneTexts.W("ExternalObservation_045") + finalName,
 			weeklySnapshot,
 			stableKey + ":weekly",
 			kingdomId,
@@ -282,10 +282,10 @@ internal void RecordVoteDealFulfilled(Hero npc, KingdomDecision decision, Decisi
 				optionTitle = "";
 			}
 		}
-		string optionPhrase = string.IsNullOrWhiteSpace(optionTitle) ? "" : (AdapterSceneTexts.Raw("ExternalObservation_047") + optionTitle + "”");
+		string optionPhrase = string.IsNullOrWhiteSpace(optionTitle) ? "" : (AdapterSceneTexts.W("ExternalObservation_047") + optionTitle + AdapterRecordTexts.CloseQuote);
 		string stableKey = "vote_deal_fulfilled:" + ((dealId ?? "").Trim()) + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(npc) + ":" + MemoryBusinessStateOwner.NormalizeWeeklyPromptKeyPart(decisionTitle);
-		string npcText = AdapterSceneTexts.Raw("ExternalObservation_048") + decisionTitle + AdapterSceneTexts.Raw("ExternalObservation_049") + optionPhrase + "。";
-		string playerText = AdapterSceneTexts.Raw("ExternalObservation_050") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(npc) + AdapterSceneTexts.Raw("ExternalObservation_051") + decisionTitle + AdapterSceneTexts.Raw("ExternalObservation_052") + optionPhrase + "。";
+		string npcText = AdapterSceneTexts.W("ExternalObservation_048") + decisionTitle + AdapterSceneTexts.W("ExternalObservation_049") + optionPhrase + AdapterRecordTexts.Period;
+		string playerText = AdapterSceneTexts.W("ExternalObservation_050") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(npc) + AdapterSceneTexts.W("ExternalObservation_051") + decisionTitle + AdapterSceneTexts.W("ExternalObservation_052") + optionPhrase + AdapterRecordTexts.Period;
 		_application.RecordExternalNpcAction(npc, npcText, stableKey + ":npc", "vote_deal_fulfilled", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: null, locationText: MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(decision?.Kingdom, ""), allowNonLordHero: false, won: true);
 		_application.RecordExternalPlayerAction(playerText, stableKey + ":player", "vote_deal_fulfilled", isMajor: true, targetHero: npc, settlement: null, locationText: MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(decision?.Kingdom, ""), won: true);
 	}
@@ -303,9 +303,9 @@ internal void RecordPlayerPrisonBreakRescue(Hero rescuedHero)
 			Settlement settlement = ResolvePrisonBreakRescueSettlement(rescuedHero, player);
 			string settlementName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
 			string locationText = string.IsNullOrWhiteSpace(settlementName) ? AdapterSceneTexts.Raw("ExternalObservation_053") : settlementName;
-			string locationPhrase = string.IsNullOrWhiteSpace(settlementName) ? "" : (AdapterSceneTexts.Raw("ExternalObservation_054") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_055"));
+			string locationPhrase = string.IsNullOrWhiteSpace(settlementName) ? "" : (AdapterSceneTexts.W("ExternalObservation_054") + settlementName + AdapterSceneTexts.W("ExternalObservation_055"));
 			string playerName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(player);
-			string text = AdapterSceneTexts.Raw("ExternalObservation_056") + locationPhrase + AdapterSceneTexts.Raw("ExternalObservation_057") + playerName + AdapterSceneTexts.Raw("ExternalObservation_058");
+			string text = AdapterSceneTexts.W("ExternalObservation_056") + locationPhrase + AdapterSceneTexts.W("ExternalObservation_057") + playerName + AdapterSceneTexts.W("ExternalObservation_058");
 			NpcActionFacts facts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("prison_break_rescue", rescuedHero);
 			CampaignCharacterRecordCaptureAdapter.ApplyTargetFacts(facts, player);
 			if (settlement != null)
@@ -343,7 +343,7 @@ internal void RecordDuelResult(Hero targetHero, bool playerWon, string duelConte
 		bool targetWon = !playerWon;
 		string playerName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(mainHero);
 		string targetName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(targetHero);
-		string text = targetWon ? (AdapterSceneTexts.Raw("ExternalObservation_059") + playerName + "。") : (AdapterSceneTexts.Raw("ExternalObservation_060") + playerName + "。");
+		string text = targetWon ? (AdapterSceneTexts.W("ExternalObservation_059") + playerName + AdapterRecordTexts.Period) : (AdapterSceneTexts.W("ExternalObservation_060") + playerName + AdapterRecordTexts.Period);
 		NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("duel_result", targetHero);
 		CampaignCharacterRecordCaptureAdapter.ApplyTargetFacts(npcActionFacts, mainHero);
 		npcActionFacts.Won = targetWon;
@@ -351,7 +351,7 @@ internal void RecordDuelResult(Hero targetHero, bool playerWon, string duelConte
 		string stableKey = "duel_result:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(targetHero) + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(mainHero) + ":" + day + ":" + hour + ":" + (targetWon ? "npc_win" : "npc_loss");
 		_application.RecordNpcOutcome(targetHero, text, stableKey, npcActionFacts, allowNonLordHero: true);
 		Settlement settlement = Settlement.CurrentSettlement;
-		string playerText = playerWon ? (AdapterSceneTexts.Raw("ExternalObservation_061") + targetName + "。") : (AdapterSceneTexts.Raw("ExternalObservation_062") + targetName + "。");
+		string playerText = playerWon ? (AdapterSceneTexts.W("ExternalObservation_061") + targetName + AdapterRecordTexts.Period) : (AdapterSceneTexts.W("ExternalObservation_062") + targetName + AdapterRecordTexts.Period);
 		string playerStableKey = "player_duel_result:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(mainHero) + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(targetHero) + ":" + day + ":" + hour + ":" + (playerWon ? "player_win" : "player_loss");
 		PlayerNotorietyBehavior.RecordPlayerActionForExternal(
 			playerText,
@@ -406,51 +406,51 @@ internal void RecordAnimusForgeSiegeInterventionForExternal(
 				outcomeLabel = massacreStarted ? AdapterSceneTexts.Raw("ExternalObservation_066") : AdapterSceneTexts.Raw("ExternalObservation_067");
 			}
 			StringBuilder textBuilder = new StringBuilder();
-			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_068"));
-			textBuilder.Append(Hero.MainHero?.Name?.ToString() ?? AdapterSceneTexts.Raw("ExternalObservation_069"));
-			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_070"));
+			textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_068"));
+			textBuilder.Append(Hero.MainHero?.Name?.ToString() ?? AdapterSceneTexts.W("ExternalObservation_069"));
+			textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_070"));
 			textBuilder.Append(settlementName);
-			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_071"));
+			textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_071"));
 			textBuilder.Append(outcomeLabel);
-			textBuilder.Append("。");
+			textBuilder.Append(AdapterRecordTexts.Period);
 			if (!string.IsNullOrWhiteSpace(trigger))
 			{
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_072"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_072"));
 				textBuilder.Append(trigger.Trim());
-				textBuilder.Append("。");
+				textBuilder.Append(AdapterRecordTexts.Period);
 			}
 			if (!string.IsNullOrWhiteSpace(detail))
 			{
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_073"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_073"));
 				textBuilder.Append(detail.Trim());
-				textBuilder.Append("。");
+				textBuilder.Append(AdapterRecordTexts.Period);
 			}
-			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_074"));
+			textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_074"));
 			textBuilder.Append(Math.Max(0, selectedSoldiers));
-			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_075"));
+			textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_075"));
 			if (plunderStarted || lootItemTotal > 0 || marketGoldLoot > 0 || civilianGoldLoot > 0)
 			{
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_076"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_076"));
 				textBuilder.Append(Math.Max(0, lootItemTotal));
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_077"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_077"));
 				textBuilder.Append(Math.Max(0, lootStackKinds));
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_078"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_078"));
 				textBuilder.Append(Math.Max(0, lootValue));
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_079"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_079"));
 				textBuilder.Append(Math.Max(0, marketGoldLoot));
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_080"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_080"));
 				textBuilder.Append(Math.Max(0, civilianGoldLoot));
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_081"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_081"));
 				textBuilder.Append(Math.Max(0, civilianTargetsLooted));
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_082"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_082"));
 			}
 			if (massacreStarted || killedCivilianUnits > 0 || killedNotables > 0)
 			{
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_083"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_083"));
 				textBuilder.Append(Math.Max(0, killedCivilianUnits));
-				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_084"));
+				textBuilder.Append(AdapterSceneTexts.W("ExternalObservation_084"));
 				textBuilder.Append(Math.Max(0, killedNotables));
-				textBuilder.Append("。");
+				textBuilder.Append(AdapterRecordTexts.Period);
 			}
 			Hero actorHero = attackerParty?.LeaderHero ?? Hero.MainHero;
 			Hero currentOwner = settlement.OwnerClan?.Leader;

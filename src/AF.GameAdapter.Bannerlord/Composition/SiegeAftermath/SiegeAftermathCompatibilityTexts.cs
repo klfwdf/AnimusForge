@@ -16,6 +16,12 @@ internal static class SiegeAftermathCompatibilityTexts
     internal static string[] RawVariants(string key) => Table.ContainsKey(key) ? Table.Variants(key) : Array.Empty<string>();
     internal static bool IsRaw(string value, string key) => Table.ContainsKey(key) && Table.Is(value, key);
 
+    // Glue punctuation between composed pieces; English forms carry their own trailing space.
+    internal static string Period => PromptLanguage.IsChinese ? "\u3002" : ". ";
+    internal static string Colon => PromptLanguage.IsChinese ? "\uFF1A" : ": ";
+    internal static string Semicolon => PromptLanguage.IsChinese ? "\uFF1B" : "; ";
+    internal static string CloseParenSemicolon => PromptLanguage.IsChinese ? "\uFF09\uFF1B" : "); ";
+
     private static Dictionary<string, string> Load(string edition)
     {
         return GcczLocalizedResourceLoader.Load(

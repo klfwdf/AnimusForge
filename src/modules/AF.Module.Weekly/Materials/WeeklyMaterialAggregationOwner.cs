@@ -273,7 +273,7 @@ internal static class WeeklyMaterialAggregationOwner
 		{
 			return "";
 		}
-		Match match = Regex.Match(text2, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0334"), RegexOptions.IgnoreCase);
+		Match match = WeeklyMaterialTexts.MatchRaw(text2, "AF_WEEKLY_Material_0334");
 		if (!match.Success)
 		{
 			return "";
@@ -296,12 +296,12 @@ internal static class WeeklyMaterialAggregationOwner
 			return "";
 		}
 		num += text3.Length;
-		while (num < text2.Length && (text2[num] == '：' || text2[num] == ':' || text2[num] == ' '))
+		while (num < text2.Length && (text2[num] == '\uFF1A' || text2[num] == ':' || text2[num] == ' '))
 		{
 			num++;
 		}
 		int num2 = text2.Length;
-		foreach (char value in new char[4] { '。', '；', ';', '\n' })
+		foreach (char value in new char[4] { '\u3002', '\uFF1B', ';', '\n' })
 		{
 			int num3 = text2.IndexOf(value, num);
 			if (num3 >= num && num3 < num2)

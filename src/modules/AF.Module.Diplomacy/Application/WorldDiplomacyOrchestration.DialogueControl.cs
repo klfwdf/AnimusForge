@@ -31,7 +31,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (DiplomacyCommitmentRules.IsPending(item) && state != "accepted")
             return DiplomacyMiscPromptTexts.Get("DialogueControl_CommitmentBinding", "An accepted commitment must be fulfilled; further conversation cannot cancel or postpone it.");
         if (item.LastControlState == state && item.LastControlReason == reason)
-            return DiplomacyMiscPromptTexts.Get("DialogueControl_AlreadyUpdatedPrefix", "Diplomatic commitment was previously updated: ") + item.Status + "。";
+            return DiplomacyMiscPromptTexts.Get("DialogueControl_AlreadyUpdatedPrefix", "Diplomatic commitment was previously updated: ") + item.Status + DiplomacyCompatibilityTexts.Period;
         if (item.Status == "published" && state == "cancelled")
         {
             var source = owner.ResolveDocument(item.DocumentId);
@@ -59,7 +59,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         else return DiplomacyMiscPromptTexts.Get("DialogueControl_HasFormalResult", "This commitment already has a formal outcome and cannot be rolled back through private discussion.");
         owner.RecordDialogueArrangementFact(item, AdvanceDialogueControlReceipt(item, state, reason),
             DiplomacyCompatibilityTexts.Get("DialogueControl_HistoricalCommitmentPrefix") + item.Status + DiplomacyCompatibilityTexts.Get("DialogueControl_ReasonPrefix") + reason);
-        return DiplomacyMiscPromptTexts.Get("DialogueControl_UpdatedPrefix", "Diplomatic commitment updated: ") + item.Status + "。";
+        return DiplomacyMiscPromptTexts.Get("DialogueControl_UpdatedPrefix", "Diplomatic commitment updated: ") + item.Status + DiplomacyCompatibilityTexts.Period;
     }
 
     private static string AdvanceDialogueControlReceipt(WorldDiplomacyDialogueArrangement item, string state, string reason)

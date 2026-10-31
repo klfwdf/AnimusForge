@@ -764,7 +764,7 @@ namespace AnimusForge.Illustrator.Context
                     {
                         profile.HasHeraldicShield = true;
                     }
-                    if (profile.EquipmentSource?.Contains(IllustratorText.Raw("Hero_444")) != true)
+                    if (!IllustratorText.ContainsRaw(profile.EquipmentSource, "Hero_444", StringComparison.OrdinalIgnoreCase))
                     {
                         profile.WeaponDetails.Add(IllustratorText.Format("Hero_445", modifierStr, itemName));
                     }

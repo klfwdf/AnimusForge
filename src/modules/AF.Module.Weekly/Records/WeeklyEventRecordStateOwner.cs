@@ -140,21 +140,24 @@ internal static string AnnotateWeeklyReportRulerNameInText(string text, string r
 			return source;
 		}
 		string escapedName = Regex.Escape(name);
-		string annotatedExistingSuffix = Regex.Replace(source, escapedName + "(?<suffix>[\\(（][^\\r\\n\\)）]{0,120}[\\)）])", delegate(Match match)
+		string annotatedExistingSuffix = Regex.Replace(source, escapedName + "(?<suffix>[\\(\uFF08][^\\r\\n\\)\uFF09]{0,120}[\\)\uFF09])", delegate(Match match)
 		{
 			string suffix = match.Groups["suffix"]?.Value ?? "";
-			if (suffix.IndexOf(WorldBulletinPolicyTexts.Raw("WBLT_Raw_051"), StringComparison.OrdinalIgnoreCase) >= 0)
+			foreach (string rulerMarker in WorldBulletinPolicyTexts.RawVariants("WBLT_Raw_051"))
 			{
-				return match.Value;
+				if (suffix.IndexOf(rulerMarker, StringComparison.OrdinalIgnoreCase) >= 0)
+				{
+					return match.Value;
+				}
 			}
-			bool fullWidth = suffix.StartsWith("（", StringComparison.Ordinal);
-			string open = fullWidth ? "（" : "(";
-			string close = fullWidth ? "）" : ")";
-			string separator = fullWidth ? "；" : ";";
+			bool fullWidth = suffix.StartsWith("\uFF08", StringComparison.Ordinal);
+			string open = fullWidth ? "\uFF08" : "(";
+			string close = fullWidth ? "\uFF09" : ")";
+			string separator = fullWidth ? "\uFF1B" : ";";
 			string inner = suffix.Length >= 2 ? suffix.Substring(1, suffix.Length - 2).Trim() : "";
 			return name + open + (string.IsNullOrWhiteSpace(inner) ? WorldBulletinPolicyTexts.Raw("WBLT_Raw_051") : (WorldBulletinPolicyTexts.Raw("WBLT_Raw_051") + separator + inner)) + close;
 		}, RegexOptions.CultureInvariant);
-		return Regex.Replace(annotatedExistingSuffix, escapedName + "(?![\\(（])", match => name + WorldBulletinPolicyTexts.Raw("WBLT_Raw_052"), RegexOptions.CultureInvariant);
+		return Regex.Replace(annotatedExistingSuffix, escapedName + "(?![\\(\uFF08])", match => name + WorldBulletinPolicyTexts.Raw("WBLT_Raw_052"), RegexOptions.CultureInvariant);
 	}
 
 internal static string BuildWeeklyReportMaterialLines(List<EventMaterialReference> materials, Func<EventMaterialReference,string> renderLine)

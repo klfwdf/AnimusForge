@@ -9,8 +9,10 @@ namespace AnimusForge;
 internal static class SocialFactPromptProjection
 {
     private static readonly Regex Slots = new Regex(@"\{(\d+)(?::[^{}]+)?\}", RegexOptions.Compiled);
+    // Projects legacy Chinese records only, so every pattern is built from the Chinese source once.
+    // Records written in English never match and pass through unchanged.
     private static readonly Lazy<string> ClanHeroSeparator = new Lazy<string>(() =>
-        SocialSourceTexts.Get("S161").Replace("{0}", "").Replace("{1}", ""));
+        SocialSourceTexts.Source("S161").Replace("{0}", "").Replace("{1}", ""));
     private sealed class Rule
     {
         internal string Key;
@@ -19,7 +21,7 @@ internal static class SocialFactPromptProjection
     private static readonly Lazy<Rule[]> Rules = new Lazy<Rule[]>(() =>
         new[] { "S162", "S163", "S164", "S165", "S166", "S168", "S169", "S170", "S185", "S187", "S440", "S441", "S115", "S167", "S113" }
             .Select(key => {
-                string source = SocialSourceTexts.Get(key);
+                string source = SocialSourceTexts.Source(key);
                 var pattern = new StringBuilder(@"\A");
                 int offset = 0;
                 foreach (Match slot in Slots.Matches(source))

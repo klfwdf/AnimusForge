@@ -209,7 +209,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	// silently turn a response generated for one identity into another identity.
 	internal static string CaptureMemorySummaryHistoryRenderingIdentity()
 	{
-		string playerName = NormalizeLine(BuildPlayerHistoryDisplayName()).Replace(SocialSourceTexts.Get("S001"), "").Trim();
+		string playerName = RemoveGenericPlayerWord(NormalizeLine(BuildPlayerHistoryDisplayName())).Trim();
 		if (string.IsNullOrWhiteSpace(playerName)) playerName = BuildPlayerHistoryDisplayName();
 		return JsonConvert.SerializeObject(new
 		{
@@ -565,9 +565,9 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			bool hasSettlement = settlement != null;
 			string settlementName = hasSettlement ? GetSettlementDisplayName(settlement) : "";
 			string locationText = hasSettlement ? settlementName : SocialSourceTexts.Get("S002");
-			string locationPhrase = hasSettlement ? (SocialSourceTexts.Get("S003") + settlementName + SocialSourceTexts.Get("S004")) : SocialSourceTexts.Get("S005");
+			string locationPhrase = hasSettlement ? SocialSourceTexts.Join(SocialSourceTexts.Get("S003"), settlementName, SocialSourceTexts.Get("S004")) : SocialSourceTexts.Get("S005");
 			string rescuedName = GetHeroDisplayName(rescuedHero);
-			string text = SocialSourceTexts.Get("S006") + locationPhrase + SocialSourceTexts.Get("S007") + rescuedName + SocialSourceTexts.Get("S008");
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S006"), locationPhrase, SocialSourceTexts.Get("S007"), rescuedName, SocialSourceTexts.Get("S008"));
 			string stableKey = "player_prison_break_rescue:" + GetHeroId(player) + ":" + GetHeroId(rescuedHero) + ":" + (settlement?.StringId ?? "") + ":" + day + ":" + hour;
 			RecordPlayerAction(
 				text,
@@ -653,7 +653,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string prisonerName = GetHeroDisplayName(prisoner);
-			string text = SocialSourceTexts.Get("S006") + verb + prisonerName + "。";
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S006"), verb, prisonerName) + SocialSourceTexts.Period;
 			RecordPlayerRecentActionFromEvent(text, "hero_prisoner_released", GetHeroId(prisoner) + ":" + detail, prisoner?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -671,7 +671,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string text = SocialSourceTexts.Get("S009") + summary.TotalCount + SocialSourceTexts.Get("S010") + BuildRosterDetailSuffix(summary) + "。";
+			string text = SocialSourceTexts.Get("S009") + summary.TotalCount + SocialSourceTexts.Get("S010") + BuildRosterDetailSuffix(summary) + SocialSourceTexts.Period;
 			RecordPlayerRecentActionFromEvent(text, "prisoners_released", summary.Signature, summary.PrimaryCultureId, ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -695,8 +695,10 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			Settlement settlement = buyerParty?.Settlement ?? sellerParty?.Settlement ?? ResolvePlayerCurrentSettlement();
 			string buyerName = BuildPartyDisplayName(buyerParty);
-			string targetText = string.IsNullOrWhiteSpace(buyerName) ? "" : (SocialSourceTexts.Get("S011") + buyerName);
-			string text = SocialSourceTexts.Get("S006") + targetText + SocialSourceTexts.Get("S012") + summary.TotalCount + SocialSourceTexts.Get("S013") + BuildRosterDetailSuffix(summary) + "。";
+			string targetText = string.IsNullOrWhiteSpace(buyerName) ? "" : SocialSourceTexts.Join(SocialSourceTexts.Get("S011"), buyerName);
+			// Chinese puts the buyer before the verb; English puts it after the object.
+			string soldText = SocialSourceTexts.Get("S012") + summary.TotalCount + SocialSourceTexts.Get("S013") + BuildRosterDetailSuffix(summary);
+			string text = (PromptLanguage.IsChinese ? SocialSourceTexts.Join(SocialSourceTexts.Get("S006"), targetText, soldText) : SocialSourceTexts.Join(SocialSourceTexts.Get("S006"), soldText, targetText)) + SocialSourceTexts.Period;
 			RecordPlayerRecentActionFromEvent(text, "prisoners_sold", BuildPartyScope(buyerParty) + ":" + summary.Signature, summary.PrimaryCultureId, settlement, "");
 			if (buyerParty?.Settlement != null)
 			{
@@ -718,7 +720,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string text = SocialSourceTexts.Get("S014") + summary.TotalCount + SocialSourceTexts.Get("S015") + BuildRosterDetailSuffix(summary) + "。";
+			string text = SocialSourceTexts.Get("S014") + summary.TotalCount + SocialSourceTexts.Get("S015") + BuildRosterDetailSuffix(summary) + SocialSourceTexts.Period;
 			RecordPlayerRecentActionFromEvent(text, "prisoners_recruited", summary.Signature, summary.PrimaryCultureId, ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -746,7 +748,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string settlementName = GetSettlementDisplayName(donatedSettlement);
-			string text = SocialSourceTexts.Get("S016") + settlementName + SocialSourceTexts.Get("S017") + summary.TotalCount + SocialSourceTexts.Get("S013") + BuildRosterDetailSuffix(summary) + "。";
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S016"), settlementName, SocialSourceTexts.Get("S017") + summary.TotalCount + SocialSourceTexts.Get("S013") + BuildRosterDetailSuffix(summary)) + SocialSourceTexts.Period;
 			RecordPlayerRecentActionFromEvent(text, "prisoners_donated", (donatedSettlement?.StringId ?? "") + ":" + summary.Signature, summary.PrimaryCultureId, donatedSettlement ?? ResolvePlayerCurrentSettlement(), settlementName);
 		}
 		catch (Exception ex)
@@ -795,8 +797,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				string settlementName = string.IsNullOrWhiteSpace(_currentSettlementStayName) ? GetSettlementDisplayName(settlement) : _currentSettlementStayName.Trim();
 				string text = stayHours >= 20.0
-					? (SocialSourceTexts.Get("S018") + settlementName + SocialSourceTexts.Get("S019") + FormatStayDuration(stayHours) + SocialSourceTexts.Get("S020"))
-					: (SocialSourceTexts.Get("S018") + settlementName + SocialSourceTexts.Get("S021") + FormatStayDuration(stayHours) + "。");
+					? SocialSourceTexts.Join(SocialSourceTexts.Get("S018"), settlementName, SocialSourceTexts.Get("S019") + FormatStayDuration(stayHours) + SocialSourceTexts.Get("S020"))
+					: (SocialSourceTexts.Join(SocialSourceTexts.Get("S018"), settlementName, SocialSourceTexts.Get("S021") + FormatStayDuration(stayHours)) + SocialSourceTexts.Period);
 				RecordPlayerRecentActionFromEvent(text, "settlement_rest_stay", settlementId + ":" + _currentSettlementStayStartDay + ":" + currentDay, settlement?.Culture?.StringId ?? "", settlement, settlementName);
 			}
 		}
@@ -821,7 +823,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			string settlementName = GetSettlementDisplayName(recruitmentSettlement);
 			string troopName = GetCharacterDisplayName(troop);
 			string sourceText = recruiter == null || recruiter == Hero.MainHero ? "" : (SocialSourceTexts.Get("S022") + GetHeroDisplayName(recruiter));
-			string text = SocialSourceTexts.Get("S023") + settlementName + SocialSourceTexts.Get("S024") + amount + SocialSourceTexts.Get("S025") + troopName + sourceText + "。";
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S023"), settlementName, SocialSourceTexts.Get("S024") + amount + SocialSourceTexts.Get("S025") + troopName, sourceText) + SocialSourceTexts.Period;
 			string scope = (recruitmentSettlement?.StringId ?? "") + ":" + (troop.StringId ?? troopName) + ":" + GetHeroId(recruiter) + ":" + amount;
 			RecordPlayerRecentActionFromEvent(text, "troops_recruited", scope, troop.Culture?.StringId ?? "", recruitmentSettlement, settlementName);
 		}
@@ -847,8 +849,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			Settlement settlement = town?.Settlement;
 			string settlementName = GetSettlementDisplayName(settlement);
 			string winnerName = GetCharacterDisplayName(winner);
-			string prizeText = string.IsNullOrWhiteSpace(prize?.Name?.ToString()) ? "" : (SocialSourceTexts.Get("S026") + prize.Name.ToString().Trim() + "。");
-			string text = SocialSourceTexts.Get("S027") + settlementName + SocialSourceTexts.Get("S028") + winnerName + "。" + prizeText;
+			string prizeText = string.IsNullOrWhiteSpace(prize?.Name?.ToString()) ? "" : (SocialSourceTexts.Join(SocialSourceTexts.Get("S026"), prize.Name.ToString().Trim()) + SocialSourceTexts.Period);
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S027"), settlementName, SocialSourceTexts.Get("S028"), winnerName) + SocialSourceTexts.Period + prizeText;
 			string scope = (settlement?.StringId ?? "") + ":" + GetCurrentGameDayIndex() + ":" + (winner?.StringId ?? winnerName);
 			RecordPlayerRecentActionFromEvent(text, "tournament_participated_nonwinner", scope, winner?.Culture?.StringId ?? "", settlement, settlementName);
 		}
@@ -868,7 +870,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			string opponentName = GetHeroDisplayName(opposingHero);
 			string resultText = GetBoardGameResultText(state);
-			string text = SocialSourceTexts.Get("S029") + opponentName + SocialSourceTexts.Get("S030") + resultText + "。";
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S029"), opponentName, SocialSourceTexts.Get("S030") + resultText) + SocialSourceTexts.Period;
 			string scope = GetHeroId(opposingHero) + ":" + state;
 			RecordPlayerRecentActionFromEvent(text, "board_game_result", scope, opposingHero?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
 		}
@@ -887,7 +889,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string captiveName = GetHeroDisplayName(captiveHero);
-			string text = SocialSourceTexts.Get("S031") + captiveName + SocialSourceTexts.Get("S032");
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S031"), captiveName, SocialSourceTexts.Get("S032"));
 			RecordPlayerRecentActionFromEvent(text, "ransom_offer_cancelled", GetHeroId(captiveHero), captiveHero.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -906,7 +908,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			string suitorName = GetHeroDisplayName(suitor);
 			string maidenName = GetHeroDisplayName(maiden);
-			string text = SocialSourceTexts.Get("S031") + suitorName + SocialSourceTexts.Get("S033") + maidenName + SocialSourceTexts.Get("S034");
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S031"), suitorName, SocialSourceTexts.Get("S033"), maidenName, SocialSourceTexts.Get("S034"));
 			Hero otherHero = IsPlayerClanHero(suitor) ? maiden : suitor;
 			RecordPlayerRecentActionFromEvent(text, "marriage_offer_cancelled", GetHeroId(suitor) + ":" + GetHeroId(maiden), otherHero?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
 		}
@@ -925,7 +927,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string kingdomName = GetFactionDisplayName(offeredKingdom, SocialSourceTexts.Get("S035"));
-			string text = SocialSourceTexts.Get("S036") + kingdomName + SocialSourceTexts.Get("S037");
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S036"), kingdomName, SocialSourceTexts.Get("S037"));
 			RecordPlayerRecentActionFromEvent(text, "vassal_mercenary_offer_cancelled", GetKingdomId(offeredKingdom), "", null, kingdomName);
 		}
 		catch (Exception ex)
@@ -943,7 +945,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string partyName = string.IsNullOrWhiteSpace(party.Name?.ToString()) ? SocialSourceTexts.Get("S038") : party.Name.ToString().Trim();
-			string text = SocialSourceTexts.Get("S039") + partyName + SocialSourceTexts.Get("S040");
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S039"), partyName, SocialSourceTexts.Get("S040"));
 			RecordPlayerRecentActionFromEvent(text, "party_leader_change_offer_cancelled", party.StringId ?? partyName, party.LeaderHero?.Culture?.StringId ?? "", party.CurrentSettlement ?? ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -961,7 +963,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string factionName = GetFactionDisplayName(opponentFaction, SocialSourceTexts.Get("S041"));
-			string text = SocialSourceTexts.Get("S042") + factionName + SocialSourceTexts.Get("S043");
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S042"), factionName, SocialSourceTexts.Get("S043"));
 			RecordPlayerRecentActionFromEvent(text, "peace_offer_resolved", GetFactionId(opponentFaction), "", null, factionName);
 		}
 		catch (Exception ex)
@@ -977,7 +979,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			Settlement settlement = alley?.Settlement ?? Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
 			string settlementName = GetSettlementDisplayName(settlement);
 			string alleyName = GetAlleyDisplayName(alley);
-			string text = SocialSourceTexts.Get("S044") + settlementName + SocialSourceTexts.Get("S045") + alleyName + SocialSourceTexts.Get("S046");
+			string text = SocialSourceTexts.Join(SocialSourceTexts.Get("S044"), settlementName, SocialSourceTexts.Get("S045"), alleyName, SocialSourceTexts.Get("S046"));
 			string scope = (settlement?.StringId ?? "") + ":" + (alley?.Tag ?? alleyName);
 			RecordPlayerRecentActionFromEvent(text, "alley_cleared_not_occupied", scope, settlement?.Culture?.StringId ?? "", settlement, settlementName);
 		}
@@ -1234,7 +1236,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		sb.AppendLine(SocialPromptTexts.Get("P012") + playerName + SocialPromptTexts.Get("P013"));
 		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? SocialPromptTexts.Get("P014") : RenderPlayerHistoryTextForPrompt(_state.MajorSummary.Trim(), playerName));
 		sb.AppendLine();
-		sb.AppendLine(SocialPromptTexts.Get("P015") + playerName + "）：");
+		sb.AppendLine(SocialPromptTexts.Get("P015") + playerName + SocialSourceTexts.CloseParen + SocialSourceTexts.Colon);
 		List<PlayerHistoryMaterial> sourceMaterials = materials ?? new List<PlayerHistoryMaterial>();
 		if (sourceMaterials.Count == 0)
 		{
@@ -1406,7 +1408,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		sb.AppendLine(SocialPromptTexts.Get("P021") + playerName + SocialPromptTexts.Get("P025"));
 		foreach (PlayerActionEntry entry in recent)
 		{
-			sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? (SocialPromptTexts.Get("P017") + entry.Day + SocialPromptTexts.Get("P018")) : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, playerName));
+			sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? (SocialPromptTexts.Get("P017") + entry.Day + SocialPromptTexts.Get("P018")) : entry.GameDate.Trim()) + SocialSourceTexts.Colon + RenderPlayerActionTextForPrompt(entry.Text, playerName));
 		}
 		sb.Append(SocialPromptTexts.Get("P026") + playerName + SocialPromptTexts.Get("P027"));
 		return sb.ToString().Trim();
@@ -1526,7 +1528,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string text = NormalizeLine(Hero.MainHero?.Name?.ToString()).Replace(SocialSourceTexts.Get("S001"), "").Trim();
+			string text = RemoveGenericPlayerWord(NormalizeLine(Hero.MainHero?.Name?.ToString())).Trim();
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				return text;
@@ -1553,7 +1555,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		string[] ageLabels = new string[6] { SocialSourceTexts.Get("S048"), SocialSourceTexts.Get("S049"), SocialSourceTexts.Get("S050"), SocialSourceTexts.Get("S051"), SocialSourceTexts.Get("S052"), SocialSourceTexts.Get("S053") };
+		string[] ageLabelKeys = AnonymousAgeLabelKeys;
 		foreach (CultureObject culture in GetCulturesForNotorietyPopup())
 		{
 			string cultureName = NormalizeLine(culture?.Name?.ToString());
@@ -1561,16 +1563,33 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			foreach (string ageLabel in ageLabels)
+			foreach (string ageLabelKey in ageLabelKeys)
 			{
-				string alias = cultureName + ageLabel;
-				if (!string.Equals(alias, actualName, StringComparison.Ordinal) && actualName.IndexOf(alias, StringComparison.Ordinal) < 0)
+				foreach (string ageLabel in SocialSourceTexts.Variants(ageLabelKey))
 				{
-					aliases.Add(alias);
+					// English labels may be written with or without a space after the culture name.
+					AddAnonymousAlias(aliases, cultureName + ageLabel, actualName);
+					AddAnonymousAlias(aliases, cultureName + " " + ageLabel, actualName);
 				}
 			}
 		}
 		return aliases.OrderByDescending(x => x.Length);
+	}
+
+	private static readonly string[] AnonymousAgeLabelKeys = { "S048", "S049", "S050", "S051", "S052", "S053" };
+
+	private static void AddAnonymousAlias(HashSet<string> aliases, string alias, string actualName)
+	{
+		if (!string.Equals(alias, actualName, StringComparison.Ordinal) && actualName.IndexOf(alias, StringComparison.Ordinal) < 0)
+		{
+			aliases.Add(alias);
+		}
+	}
+
+	/// <summary>Removes the generic player word (either language) from a display name.</summary>
+	private static string RemoveGenericPlayerWord(string text)
+	{
+		return (text ?? "").ReplaceEach(SocialSourceTexts.Variants("S001"), "");
 	}
 
 	private static string StripPlayerInternalMarkers(string text)
@@ -1587,15 +1606,16 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		string name = NormalizePlayerDisplayName(playerDisplayName);
 		return text
-			.Replace(SocialSourceTexts.Get("S054"), name + SocialSourceTexts.Get("S045"))
-			.Replace(SocialSourceTexts.Get("S001"), name)
+			.Replace(SocialSourceTexts.Source("S054"), name + SocialSourceTexts.Source("S045"))
+			.ReplaceEach(SocialSourceTexts.Variants("S001"), name)
 			.Replace(SocialSourceTexts.Get("S055"), name + SocialSourceTexts.Get("S056"))
 			.Replace(SocialSourceTexts.Get("S057"), name + SocialSourceTexts.Get("S058"))
 			.Replace(SocialSourceTexts.Get("S059"), name + SocialSourceTexts.Get("S056"))
 			.Replace(SocialSourceTexts.Get("S060"), name + SocialSourceTexts.Get("S058"))
-			.Replace(SocialSourceTexts.Get("S061"), name + SocialSourceTexts.Get("S045"))
+			.Replace(SocialSourceTexts.Source("S061"), name + SocialSourceTexts.Source("S045"))
 			.Replace(SocialSourceTexts.Get("S062"), name + SocialSourceTexts.Get("S063"))
-			.Replace(SocialSourceTexts.Get("S006"), name);
+			.Replace(SocialSourceTexts.Source("S006"), name)
+			.RewriteEnglishSecondPerson(name);
 	}
 
 	private static string RenderPlayerHistoryTextForPrompt(string rawText, string playerDisplayName)
@@ -1606,7 +1626,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 
     private static string RenderPlayerHistoryText(string rawText, string playerDisplayName, bool forDisplay)
 	{
-		string playerName = NormalizeLine(playerDisplayName).Replace(SocialSourceTexts.Get("S001"), "").Trim();
+		string playerName = RemoveGenericPlayerWord(NormalizeLine(playerDisplayName)).Trim();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
 			playerName = BuildPlayerHistoryDisplayName();
@@ -1623,7 +1643,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private static string RenderPlayerNamedReference(string rawText, string playerDisplayName)
 	{
-		string playerName = NormalizeLine(playerDisplayName).Replace(SocialSourceTexts.Get("S001"), "").Trim();
+		string playerName = RemoveGenericPlayerWord(NormalizeLine(playerDisplayName)).Trim();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
 			playerName = BuildPlayerHistoryDisplayName();
@@ -1640,7 +1660,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return text.Replace(SocialSourceTexts.Get("S001"), playerName);
+		return text.ReplaceEach(SocialSourceTexts.Variants("S001"), playerName);
 	}
 
 	private bool IsLowProfileModeEnabled()
@@ -2636,7 +2656,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				sb.Append(" ");
 			}
-			sb.Append(string.IsNullOrWhiteSpace(material.GameDate) ? "" : (material.GameDate.Trim() + "："));
+			sb.Append(string.IsNullOrWhiteSpace(material.GameDate) ? "" : (material.GameDate.Trim() + SocialSourceTexts.Colon));
 			sb.Append(text);
 		}
 		// Materials are appended chronologically; overflow drops older text.
@@ -2976,11 +2996,11 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 					? (place + SocialSourceTexts.Get("S073"))
 					: (place + SocialSourceTexts.Get("S074"))))
 			: (won == true
-				? (SocialSourceTexts.Get("S023") + place + SocialSourceTexts.Get("S075"))
+				? SocialSourceTexts.Join(SocialSourceTexts.Get("S023"), place, SocialSourceTexts.Get("S075"))
 				: (won == false
-					? (SocialSourceTexts.Get("S023") + place + SocialSourceTexts.Get("S076"))
-					: (SocialSourceTexts.Get("S023") + place + SocialSourceTexts.Get("S077"))));
-		int sentenceEnd = (originalText ?? "").IndexOf('。');
+					? SocialSourceTexts.Join(SocialSourceTexts.Get("S023"), place, SocialSourceTexts.Get("S076"))
+					: SocialSourceTexts.Join(SocialSourceTexts.Get("S023"), place, SocialSourceTexts.Get("S077"))));
+		int sentenceEnd = (originalText ?? "").IndexOf('\u3002');
 		if (sentenceEnd < 0 || sentenceEnd >= originalText.Length - 1)
 		{
 			return corrected;
@@ -3016,21 +3036,21 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			source = capturerFaction?.Name?.ToString();
 		}
-		string sourceSuffix = string.IsNullOrWhiteSpace(source) ? "" : (SocialSourceTexts.Get("S081") + source.Trim() + SocialSourceTexts.Get("S082"));
+		string sourceSuffix = string.IsNullOrWhiteSpace(source) ? "" : SocialSourceTexts.Join(SocialSourceTexts.Get("S081"), source.Trim(), SocialSourceTexts.Get("S082"));
 		switch (detail)
 		{
 		case EndCaptivityDetail.Ransom:
-			return SocialSourceTexts.Get("S083") + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S083") + sourceSuffix + SocialSourceTexts.Period;
 		case EndCaptivityDetail.ReleasedAfterPeace:
-			return SocialSourceTexts.Get("S084") + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S084") + sourceSuffix + SocialSourceTexts.Period;
 		case EndCaptivityDetail.ReleasedAfterBattle:
-			return SocialSourceTexts.Get("S085") + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S085") + sourceSuffix + SocialSourceTexts.Period;
 		case EndCaptivityDetail.ReleasedAfterEscape:
-			return SocialSourceTexts.Get("S086") + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S086") + sourceSuffix + SocialSourceTexts.Period;
 		case EndCaptivityDetail.ReleasedByCompensation:
-			return SocialSourceTexts.Get("S087") + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S087") + sourceSuffix + SocialSourceTexts.Period;
 		case EndCaptivityDetail.ReleasedByChoice:
-			return SocialSourceTexts.Get("S088") + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S088") + sourceSuffix + SocialSourceTexts.Period;
 		default:
 			return "";
 		}
@@ -3105,7 +3125,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			parts.Add(SocialSourceTexts.Get("S089"));
 		}
-		summary.DetailText = string.Join("、", parts);
+		summary.DetailText = string.Join(SocialSourceTexts.ListSeparator, parts);
 		return summary;
 	}
 
@@ -3115,7 +3135,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return "（" + summary.DetailText.Trim() + "）";
+		return SocialSourceTexts.OpenParen + summary.DetailText.Trim() + SocialSourceTexts.CloseParen;
 	}
 
 	private static bool IsPlayerPartyBase(PartyBase party)

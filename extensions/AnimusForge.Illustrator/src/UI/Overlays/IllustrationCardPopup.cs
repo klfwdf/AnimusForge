@@ -206,7 +206,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             string value = hardFacts ?? string.Empty;
 
-            int dynamicStart = value.IndexOf(IllustratorText.Raw("Residual_IllustrationCardPopup_95b32aa073bc"), StringComparison.Ordinal);
+            int dynamicStart = IllustratorText.IndexOfRaw(value, "Residual_IllustrationCardPopup_95b32aa073bc");
 
             if (dynamicStart < 0) dynamicStart = value.IndexOf("[Hard facts: current character space and action]", StringComparison.Ordinal);
 
@@ -222,7 +222,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             string value = hardFacts ?? string.Empty;
 
-            int dynamicStart = value.IndexOf(IllustratorText.Raw("Residual_IllustrationCardPopup_95b32aa073bc"), StringComparison.Ordinal);
+            int dynamicStart = IllustratorText.IndexOfRaw(value, "Residual_IllustrationCardPopup_95b32aa073bc");
 
             if (dynamicStart < 0) dynamicStart = value.IndexOf("[Hard facts: current character space and action]", StringComparison.Ordinal);
 
@@ -1313,7 +1313,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private static string ExtractSceneMotif(string prompt)
         {
             if (string.IsNullOrWhiteSpace(prompt)) return string.Empty;
-            string[] markers = { IllustratorText.Raw("Residual_IllustrationCardPopup_f455d27ac8d7"), "[Scene space]", IllustratorText.Raw("AFI_PROTOCOL_SCENE") };
+            string[] markers = { IllustratorText.Raw("Residual_IllustrationCardPopup_f455d27ac8d7"), "[Scene space]", IllustratorText.Raw("AFI_PROTOCOL_SCENE"), "[[AFI_PROTOCOL_SCENE]]" };
             int idx = -1;
             int markerLen = 0;
             foreach (var m in markers)

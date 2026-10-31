@@ -90,6 +90,10 @@
         private static readonly PromptLanguageValue<string> DirectedRedrawRepaintByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_10"));
         internal static string DirectedRedrawRepaint => DirectedRedrawRepaintByLanguage.Value;
 
+        // Chinese labels use 【...】 headings; English labels use [...] (protocol [[...]] markers excluded).
+        private static readonly System.Text.RegularExpressions.Regex IdentityHeadings = new System.Text.RegularExpressions.Regex(
+            @"【[^】\r\n]+】|(?<!\[)\[(?!\[)[^\[\]\r\n]+\](?!\])", System.Text.RegularExpressions.RegexOptions.Compiled);
+
         internal static string DirectedReferenceLabel(IllustrationReferenceImage reference)
         {
             bool character = reference.Kind == IllustrationReferenceKind.Character ||
@@ -100,9 +104,9 @@
             // Keep source role/name headings, not the old equipment-lock prose.
             var identity = new System.Text.StringBuilder();
             foreach (System.Text.RegularExpressions.Match match in
-                System.Text.RegularExpressions.Regex.Matches(reference.Label ?? "", @"【[^】\r\n]+】"))
+                IdentityHeadings.Matches(reference.Label ?? ""))
             {
-                if (match.Value == IllustratorText.Raw("Fidelity_11") || match.Value == IllustratorText.Raw("Fidelity_12") || match.Value == IllustratorText.Raw("Fidelity_13")) break;
+                if (IllustratorText.IsRaw(match.Value, "Fidelity_11") || IllustratorText.IsRaw(match.Value, "Fidelity_12") || IllustratorText.IsRaw(match.Value, "Fidelity_13")) break;
                 identity.Append(match.Value);
             }
             return identity.ToString() + (character
