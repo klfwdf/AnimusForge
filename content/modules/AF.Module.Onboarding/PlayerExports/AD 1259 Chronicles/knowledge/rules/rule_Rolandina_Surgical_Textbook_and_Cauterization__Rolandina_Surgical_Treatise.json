@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Roland of Parma's Chirurgia Rolandina established standard surgical practice across Bologna and Montpellier around 1250. Drawing from Salernitan and Arabic traditions, it codified aggressive arterial cauterization with glowing iron probes during amputations, along with trepanning instruments for skull depressions and wine washes for arrow extraction."
+      "Content": "Roland of Parma's Chirurgia Rolandina set the standard for surgical practice in Bologna and Montpellier around 1250. The treatise drew on Salernitan teaching and on Arabic medicine, and it prescribed methods that surprised many physicians of the day. Surgeons were told to cauterize severed arteries with glowing iron probes during amputations. The book also described trepanning tools for skull depressions, and it recommended washing arrow wounds with wine. Its authority came from hard lessons learned in the field, where armies produced large numbers of wounds that needed quick treatment, and from the university masters who taught it to their students."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "wanderer"
         ]
       },
-      "Content": "The field surgeon's glowing cautery iron terrifies soldiers more than enemy axes. Strong sergeants hold your thrashing limbs while red iron hisses into your stump; the agony is blinding, but it stops the bleeding."
+      "Content": "The field surgeon's glowing cautery iron frightens a soldier more than the enemy axe does. Strong sergeants hold your thrashing limbs while red iron hisses into the stump, and the pain blinds you for a while. Afterwards the bleeding stops, and that is the only mercy the field has to offer. Lie still, bite on the leather strap, and trust that the iron is what keeps you alive."
     }
   ],
   "TextMappings": []

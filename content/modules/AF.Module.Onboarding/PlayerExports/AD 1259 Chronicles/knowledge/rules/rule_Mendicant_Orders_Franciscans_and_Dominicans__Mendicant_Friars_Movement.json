@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Franciscan and Dominican mendicant friars revolutionized medieval Christendom by abandoning cloistered seclusion. Franciscans embraced radical apostolic poverty among urban paupers, preaching in the vernacular, while Dominicans deployed rigorous scholastic disputation to combat intellectual heresies in rising universities."
+      "Content": "The mendicant orders, led by the Franciscans and the Dominicans, changed how medieval Christians lived their faith. Instead of settling in cloisters on endowed estates, friars begged for their food and walked among towns and villages. The Franciscans, following Francis of Assisi's vow of apostolic poverty, lived among the urban poor and preached in the vernacular. The Dominicans, founded by Dominic de Guzman to answer heresy with reasoned preaching, trained their men in scholastic disputation and sent them into the new university towns. Both orders relied on alms and on papal privileges that let them preach and hear confessions in parishes not their own. Those privileges often sparked bitter quarrels with secular priests who saw their income and authority slipping away."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Traditional abbots held wealthy fiefs and drew cynical scorn. Now even kings and queens request humble Franciscan cinctures and gray tunics upon their deathbeds to secure safe passage through purgatory."
+      "Content": "Abbots who held rich fiefs drew cynical remarks from knights and townsmen alike. The friars owned nothing in common and lived on what the faithful gave them. Even so, great lords now ask for a Franciscan cord or grey tunic at the end of their lives, hoping the habit will ease their passage through purgatory."
     }
   ],
   "TextMappings": []

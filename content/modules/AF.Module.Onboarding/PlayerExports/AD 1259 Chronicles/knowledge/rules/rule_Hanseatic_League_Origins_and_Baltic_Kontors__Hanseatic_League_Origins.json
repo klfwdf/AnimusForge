@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "In the mid-13th century, merchants from Lübeck, Visby, and Hamburg forged commercial pacts that matured into the Hanseatic League. Deploying stout high-sided cogs, they established fortified Kontors in Novgorod and London, monopolizing northern timber, tar, beeswax, salted herring, and prized Arctic furs."
+      "Content": "In the mid-13th century, merchants from Lübeck, Visby, and Hamburg forged commercial pacts that matured into the Hanseatic League. Their cogs carried northern timber, tar, beeswax, salted herring, and Arctic furs, and each town sent factors to the foreign Kontors. The Kontor at Novgorod and the Steelyard in London kept their own warehouses, chapels, and courts, enforcing members' rules on weight and quality. Lubeck law became the model for dozens of towns, so a merchant from Danzig or Riga could expect the same dispute procedure across the sea. Hanseatic towns used trade embargoes as their main weapon against rulers who broke commercial charters."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "wanderer"
         ]
       },
-      "Content": "Hanseatic cogs feature towering fore and aft castles that render boarding attempts from small pirate skiffs nearly impossible. With hired arbalesters manning the rail, maritime raiders usually end swinging from the yardarm."
+      "Content": "Hanseatic crews live on a cog's wet deck, sleeping in the hold beside the cargo. Sailors learn the watch password before the first night at anchor. Hired crossbowmen stand along the rail between squalls. A pirate skiff that slides under the high stern takes a volley of bolts before its boarding ropes can bite, and the survivors usually end swinging from the yardarm."
     }
   ],
   "TextMappings": []

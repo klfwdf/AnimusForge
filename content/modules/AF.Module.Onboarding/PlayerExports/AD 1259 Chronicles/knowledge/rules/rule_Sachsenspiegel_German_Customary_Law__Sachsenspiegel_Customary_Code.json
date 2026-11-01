@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Compiled by Eike von Repgow, the Sachsenspiegel stands as the most authoritative vernacular record of German customary law. Divided into Landrecht (civil law) and Lehnrecht (feudal law), it formalizes imperial electoral protocols, knightly military obligations, and free tenure."
+      "Content": "Eike von Repgow compiled the Sachsenspiegel, the most authoritative vernacular record of German customary law. Its two parts, the Landrecht for civil matters and the Lehnrecht for feudal obligations, set out how the imperial electors were chosen, what knights owed in military service, and how free tenure was held. Written in German rather than Latin, the book reached lords and judges who never read the older legal texts. Its rules did not come from a single ruler's decree, but from the practice of local courts that had long kept the peace."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Under Lehnrecht, no liege lord can dispossess a vassal of his fief without judicial sanction, nor compel knight service beyond six weeks without paying board. It safeguards lesser nobility from ducal encroachment."
+      "Content": "Under the Lehnrecht, a liege lord could not strip a vassal of his fief without a judicial ruling. Knight service could not be pushed past six weeks unless the lord paid for the extra time. Such rules shielded the lesser nobility from ducal encroachment, and a count who ignored them risked losing his vassals to the courts."
     },
     {
       "Priority": 0,

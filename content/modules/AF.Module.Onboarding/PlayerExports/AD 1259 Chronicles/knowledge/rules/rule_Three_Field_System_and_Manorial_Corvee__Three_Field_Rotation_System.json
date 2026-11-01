@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The High Medieval three-field crop rotation partitioned arable land into winter cereals (wheat/rye), spring plantings (oats, barley, nitrogen-fixing peas), and fallow pasture. This surplus fueled population growth and warhorse fodder, supported by unfree serfs performing mandatory weekly corvée labor on demesne lands."
+      "Content": "The three-field rotation divided arable land into three parts each year: one sown with winter cereals such as wheat and rye, one with spring crops such as oats, barley, and peas, and one left fallow as pasture. Peas and beans fixed nitrogen in the soil, and spring oats fed draft animals and warhorses. This rhythm let villages grow more grain than the older two-field system and supported a growing population. The labor behind it came from unfree serfs who owed weekly corvée on the lord's demesne, a service recorded in manorial rolls. Lords used the surplus to pay for knights and building projects, and when a harvest failed the same obligations pressed hardest on the poorest families, who had no reserves."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "The manor feeds the knight's warhorse and forged gear. Spring oats are essential fodder for charging destriers; the reeve must ensure unfree tenants reap demesne acres before harvesting their own strips."
+      "Content": "The manor feeds the knight's warhorse and forged gear. Spring oats are essential fodder for charging destriers, so the reeve must see that unfree tenants reap the demesne acres before harvesting their own strips. A lord who wants his knights mounted watches the spring sowing as closely as he watches the muster rolls."
     }
   ],
   "TextMappings": []

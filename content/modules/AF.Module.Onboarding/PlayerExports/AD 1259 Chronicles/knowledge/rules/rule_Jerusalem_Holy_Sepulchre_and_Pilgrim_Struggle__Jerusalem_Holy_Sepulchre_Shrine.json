@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Jerusalem stands at the metaphysical center of medieval cartography, housing the Holy Sepulchre alongside the Dome of the Rock. Sacked by Khwarazmian horsemen in 1244, the holy city fell back under Muslim rule. Despite decayed fortifications, barefoot pilgrims brave desert heat and brigands to tread the Via Dolorosa."
+      "Content": "Jerusalem lay at the centre of the medieval map, and its shrines drew pilgrims from every Christian kingdom. The Holy Sepulchre enclosed the rock of Calvary and the empty tomb, while the Dome of the Rock crowned the Temple Mount in Muslim hands. Khwarazmian horsemen sacked the city in 1244, and it never returned to lasting Christian rule. Its walls had decayed and many towers stood in ruins, yet pilgrims still made the journey. They paid tolls at the gates and braved desert heat and brigands on the road from the coast to walk the Via Dolorosa. The city's economy rested on that trade, on hospices and on the customs levied on every group of visitors, so each pilgrim band meant revenue for local officials and merchants who sold relics and candles."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "wanderer"
         ]
       },
-      "Content": "No Christian banner flies over Jerusalem today; Mamluk officers collect entry groats at the gates. Never wander beyond the olive groves alone, or Bedouin horsemen will strip you to your linen."
+      "Content": "No Christian banner flies over Jerusalem today, and officers at the gates collect the entry fees in silver groats. Sentries count every pilgrim who enters and leaves. Walk beyond the olive groves alone and Bedouin horsemen will take your mount, your purse and your linen. Carry a sword, and travel only in company with the caravan."
     }
   ],
   "TextMappings": []

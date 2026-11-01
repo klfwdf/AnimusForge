@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Alpine passes constituted the geopolitical lifelines linking German heartlands with Lombardy. While the lower Brenner pass served imperial armies, the newly conquered St. Gotthard route utilized the timber walkways and chasm bridge (Teufelsbrücke) over the Reuss gorge to establish the fastest commercial corridor between Basel and Milan."
+      "Content": "The Alpine passes tied the German lands to Lombardy and carried both imperial and commercial traffic. The Brenner served armies and envoys heading south, while the newer St. Gotthard route, cut through the Reuss gorge, gave a faster link between Basel and Milan. Its timber walkways and the Teufelsbrücke bridge let mules and carts cross where the river had cut deep through rock. Upkeep fell to local communities and to lords who collected tolls, so every repair and gate became a matter of bargaining. Control of the passes shaped how silver, wool, and soldiers moved across the Alps."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "wanderer"
         ]
       },
-      "Content": "Crossing in late winter invites disaster from roaring avalanches. Pack mules pick along frosted timber planks over abyss gorges; one misstep sends pack and rider into icy torrents below."
+      "Content": "Crossing the high passes in late winter is a gamble with snow and rock. Avalanches can come down a gully without warning, and a strung-out column cannot easily turn back. Pack mules pick over frosted planks above the gorge, and one misstep sends animal, load, and rider into the torrent below. Keep to the rope line and never shout across a loaded slope."
     }
   ],
   "TextMappings": []

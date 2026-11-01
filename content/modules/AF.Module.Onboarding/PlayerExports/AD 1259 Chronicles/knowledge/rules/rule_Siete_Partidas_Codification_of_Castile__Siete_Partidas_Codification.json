@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Commissioned by Alfonso X of Castile, the Siete Partidas represents a monumental codification of law blending Roman civil jurisprudence, canon law, and maritime custom. It established coherent statutes on succession, royal authority, commerce, and justice across Iberia."
+      "Content": "Commissioned by Alfonso X of Castile and compiled in the 1250s and 1260s, the Siete Partidas is a seven-part code blending Roman civil law, canon law, and older Spanish custom. Its compilers drew on Justinian's Corpus Iuris Civilis, the canon law of the Church, and the Visigothic Liber Iudiciorum, and they treated the king as the living source of secular justice. The seven parts cover the Church, royal authority, justice, marriage, commerce, and the sea. The code did not receive formal legal force until the Ordenamiento de Alcalá of 1348, so for most of its early life it served as a royal model and a scholarly reference. Its practical effect was to bring contracts, partnerships, and maritime custom under a single written standard that merchants could cite in court."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "King Alfonso employs Roman law to curb baronial customary exemptions. The Partidas explicitly declares the king as God's vicar of secular justice, reserving appellate authority over private baronial courts."
+      "Content": "Alfonso X uses Roman law to narrow the customary immunities barons have guarded for generations. Under the Partidas the crown is the source of secular justice, and the king may hear appeals from private baronial courts. Each clause reserving appellate power to the throne tells the baron that his privileges now depend on royal favor, so he sends advisers to learn how far the new law reaches."
     },
     {
       "Priority": 0,

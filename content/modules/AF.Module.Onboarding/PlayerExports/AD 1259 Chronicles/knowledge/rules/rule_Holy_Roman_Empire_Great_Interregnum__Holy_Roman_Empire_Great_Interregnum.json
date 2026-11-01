@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Following the demise of Conrad IV in 1254, the Hohenstaufen dynasty vanished, casting the Holy Roman Empire into the Great Interregnum. Bribed by rival factions, the Prince-Electors held a double election in 1257, crowning Richard of Cornwall and Alfonso X of Castile, neither of whom could enforce sovereignty over Germany."
+      "Content": "Conrad IV's death in 1254 left the Empire without a working emperor, and the years that follow are called the Great Interregnum. In 1257 rival electors split their votes between Richard of Cornwall and Alfonso X of Castile, and neither candidate could muster enough German revenue or troops to hold the crown. Richard visited Germany only briefly. Alfonso never travelled to Germany at all, so his claim was argued by envoys and bought with silver. Without a court to hear appeals, princes and free cities formed their own leagues to keep trade roads open and punish raiders. The Imperial Diet still met to negotiate, yet every decision depended on which lord could bring the most armed men to the hearing."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "The Archbishops of Cologne, Mainz, and Trier feast in sovereign liberty. Without an imperial Caesar to curtail feudal encroachment, mining royalties, minting monopolies, and toll-house profits belong entirely to local princes."
+      "Content": "With no emperor to restrain them, every count and bishop ran his castle and toll bridge like a small kingdom. Electors accepted gold from London and Toledo, yet none wanted a ruler strong enough to revoke their coinage or mining rights. Sealed letters passed between electoral courts, each pact aimed at keeping the strongest neighbor weakest."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Free lances and robber barons rule the highways. In the absence of imperial peace (Landfrieden), a band of forty mounted men-at-arms in a fortified hilltop stone keep can extort entire caravans traversing the Danube."
+      "Content": "A man-at-arms on the Rhine road rarely knows which lord pays his wages. Robber-knight castles line the Rhine, and their garrisons demand passage money from every barge. Mercenaries sign on for a single campaign and walk away when the chest runs dry. Sentries demand the password before lifting the gate, and a wrong answer can bring a crossbow bolt from the wall."
     },
     {
       "Priority": 0,
