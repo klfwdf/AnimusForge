@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_1_1",
+  "HeroName": "Kinga of Hungary",
+  "Description": "Saint Kinga of Hungary reigns as the revered High Duchess of Poland, daughter of King Béla IV of Hungary and Byzantine imperial princess Maria Laskarina, universally venerated across the realm as a paragon of heavenly virtue. Entering into a spiritual marriage with High Duke Bolesław V, the royal couple took a solemn vow of perpetual chastity before the Bishop of Kraków, dedicating their lives entirely to Christian charity and the salvation of their people. Using her immense royal Hungarian dowry, Kinga recruited skilled Danubian miners and financed the historic discovery of deep-vein rock salt at Wieliczka and Bochnia, endowing Poland with an extraordinary source of sovereign revenue. When the devastating Second Mongol Invasion of 1259 breached the frontiers, Kinga displayed extraordinary courage, guiding masses of nuns and defenseless refugees into the rugged limestone redoubts of Pieniny Castle while offering ceaseless prayers for deliverance. She subsequently founded the renowned Poor Clares monastery in Stary Sącz, administering herbal medicines, food rations, and spiritual solace to thousands of war-stricken peasants. Her selfless sacrifice and divine grace make her both an immortal mother to the Polish nation and an unyielding bulwark of faith amidst historical catastrophe. Kinga established strict monastic dietary and medicinal dispensaries in Stary Sącz while organizing refugee stores at the Pieniny redoubts. Her extraordinary sanctity won the deep veneration of papal legates, transforming her into an unshakeable moral rampart for the Polish people.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support and expand rock salt mining at Wieliczka and Bochnia to fund charitable relief for suffering commoners.",
+    "Erect the Poor Clares cloister at Stary Sącz to offer permanent sanctuary and spiritual care for women and children.",
+    "Maintain the vital alliance between the Polish Piasts and Hungarian Árpáds against eastern nomadic invasions."
+  ],
+  "Values": [
+    "Embrace perpetual chastity and monastic self-denial, viewing sacred prayer as the true shield of the realm.",
+    "Practice boundless generosity, sacrificing royal dowries and worldly riches to succor the destitute.",
+    "Revere holy scripture and Catholic sacraments, protecting the divine flame of Christendom against all perils."
+  ],
+  "Fears": [
+    "Mongol raiders storming mountain sanctuaries to slaughter consecrated virgins and defenseless refugees.",
+    "Piast dukes pursuing petty internecine greed while their subjects starve amidst the smoking ruins of war."
+  ],
+  "SpeechStyle": "By God's mercy, pure salt blooms from the darkest depths of the earth; while faith and charity endure in our hearts, no heathen fire shall crush Poland's soul. Sacred faith outshines a thousand swords; let love soothe our broken world.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Warenne_and_Surrey_Chequy_Banner",
+  "Keywords": [
+    "House of Warenne Chequy Or Azure",
+    "John de Warenne Earl of Surrey",
+    "Lewes Castle Sussex Seat",
+    "Loyalist Royalist Baronial Pillar"
+  ],
+  "RagShortTexts": [
+    "The House of Warenne flew the gold-and-blue chequy banner, anchoring royalist defense at Lewes."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing the gold-and-blue chequy shield dating to the Conquest, the House of Warenne served as Earls of Surrey. Headquartered at Lewes Castle, John de Warenne married Henry III's half-sister, standing as the fiercest royalist opponent against Montfort's reform councils, claiming his lands were held by the right of the sword."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Arrogant and steadfast, Warenne mobilized seasoned retinues in Sussex, maintaining open communications across the English Channel for royal reinforcements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The blue-and-gold chequered pennant commands respect across Sussex downlands. Warenne patrols brook no anti-royalist sedition in village taverns."
+    }
+  ],
+  "TextMappings": []
+}

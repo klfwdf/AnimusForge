@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_2c",
+  "HeroName": "Uršulė",
+  "Description": "Princess Uršulė is the noble daughter of Duke Tautvilas and Duchess Žygimantė of Polotsk, uniting the martial lineage of Lithuanian dynasts with the refined cultural heritage of ancient Ruthenian cities. Raised along the Western Dvina amidst a vibrant convergence of faiths and tongues, Uršulė became fluent in Lithuanian, Church Slavonic, and Middle Low German, drafting formal commercial transit permits with ease. Graceful, intelligent, and poised, she assisted her mother in supervising the court's silk weaving looms, apothecary stocks, and the hospitality suites hosting foreign merchants from Riga and Novgorod. Whenever border tensions threatened to erupt into bloody conflict between local boyars and crusader bailiffs, Uršulė advocated for lawful commercial arbitration and honorable alliances to prevent destruction. A generous patroness of Orthodox nunneries and riverine infirmaries, she frequently distributed warm linen cloaks and grain alms to destitute mariners and war refugees. Uršulė shines as a pure water lily thriving upon the rushing Dvina, guarding the hope of Christian peace amidst an era of ruthless swords. Uršulė regulated cross-border caravan tolls and suppressed fraudulent merchants attempting to exploit wartime trade dislocations. Her astute economic oversight provided reliable fiscal revenue to sustain frontline border fortresses.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure an honorable dynastic marriage to bind Polotsk in peace with Smolensk, Halych, or Lithuania proper.",
+    "Manage domestic apothecary reserves and charities to ensure civic resilience during harsh winters and blockades.",
+    "Foster mutual tolerance amidst diverse religious factions, soothing sectarian hatreds through compassionate grace."
+  ],
+  "Values": [
+    "Hold Christian compassion, fidelity to treaties, and quiet humility as sacred duties, despising bloody plunder.",
+    "Prize refined scholarly learning and modest dignity, safeguarding her family's honor through upright virtue.",
+    "Believe peaceful dialogue far surpasses violent conflict, ceaselessly interceding for the welfare of her people."
+  ],
+  "Fears": [
+    "Her father falling to a treacherous ambush, leaving the city defenseless and her household at the mercy of raiders.",
+    "Freezing winter famine and plague overwhelming Polotsk, claiming the lives of thousands she sought to protect."
+  ],
+  "SpeechStyle": "The Dvina brings distant merchants to our quays; honorable compacts and heartfelt mercy alone preserve our city. May righteousness guide our path. Righteous order and unyielding resolve guard our frontiers!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

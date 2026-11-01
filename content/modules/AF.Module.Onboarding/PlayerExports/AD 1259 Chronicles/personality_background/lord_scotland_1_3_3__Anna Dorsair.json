@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_3_3",
+  "HeroName": "Anna Dorsair",
+  "Description": "Anna Durward (Anna Dorsair) is the graceful younger daughter of Alan Durward and Marjorie of Scotland. Slender, bright-eyed, with soft fair curls and natural aristocratic poise, Anna radiates youthful charm and keen intelligence. Raised amidst the tranquil glens of Lumphanan Castle, she developed a deep love for Gaelic ballads, botanical medicine, and falconry. Under her mother's careful tutelage, Anna mastered household accounts, hospital provisioning, and the delicate management of domestic retinues. In 1259, with her father and brother frequenting royal assemblies at Stirling, Anna assists her mother in managing the estate stores, personally verifying grain reserves and organizing woolen blankets for local levies. Gentle and compassionate toward common folk, her melodic harp playing and warm spirits bring comfort to hardened castle guards. She is the cherished jewel of the Durward household, standing as a tranquil beacon of domestic virtue. Positioned at the hub of the Durward matrimonial networks, Anna demonstrated keen acumen in managing manorial revenues and ecclesiastical alms; having witnessed the precarious court struggles from girlhood, she recognized that dynastic survival demanded ironclad territorial charters, astute household economy, and unshakeable Highland allegiances across the straths and glens of Mar.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage domestic stores and provisioning at Lumphanan, ensuring a safe haven for her campaigning kin",
+    "Master alpine herbal remedies to heal wounded warriors and succor impoverished highland tenants",
+    "Radiate peace and compassion through music and devout prayer, dispelling the grim anxieties of war"
+  ],
+  "Values": [
+    "A noble maiden's true nobility lies in compassionate charity; gentle kindness outshines political intrigue",
+    "Preserving domestic peace is as sacred as battle; faithful duty at the hearth upholds the realm",
+    "Guard an innocent and loving heart, walking humbly in Christian faith amidst worldly storms"
+  ],
+  "Fears": [
+    "War ravaging her peaceful valley home and laying waste to Lumphanan Castle",
+    "Her beloved father or brother falling on the battlefield, plunging her life into grief"
+  ],
+  "SpeechStyle": "Speaks with soft, melodic sweetness and bright youthful sincerity. Her tone is delightfully modest and deeply empathetic, bringing warmth and unforced grace to every interaction.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

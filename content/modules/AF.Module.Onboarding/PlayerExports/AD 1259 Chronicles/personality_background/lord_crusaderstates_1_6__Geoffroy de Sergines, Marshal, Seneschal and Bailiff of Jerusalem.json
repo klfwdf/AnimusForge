@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_1_6",
+  "HeroName": "Geoffroy de Sergines, Seneschal of Jerusalem",
+  "Description": "Geoffroy de Sergines was a legendary champion of the Kingdom of France, the most trusted companion of King Saint Louis IX, appointed as Seneschal, Marshal, and Lieutenant of the Kingdom of Jerusalem. During the harrowing Seventh Crusade in Egypt, Geoffroy famously defended the fever-stricken person of King Louis single-handedly against swarming enemies, winning immortal chivalric renown across Christendom. In 1259, following the departure of the main crusader army, Geoffroy remained in Acre at the head of a permanent royal French garrison of one hundred knights and four hundred crossbowmen. His unimpeachable integrity and profound piety led the High Court of Acre to invest him with supreme executive authority, enabling him to mediate bitter disputes between rival military orders. Despite his advanced years, whenever saracen cavalry swept near the walls of Jaffa or Acre, Geoffroy was the first into the saddle, leading counter-charges that restored order to the frontier. Revered as the living conscience of Outremer and the valiant sword of Saint Louis, he held the fractured Frankish realm together through pure moral authority and martial valor. Geoffroy expended the royal annuities provided by Saint Louis entirely upon remounts, heavy armor, and crossbow ammunition, establishing mobile mounted patrols to shield the coastal plains of Outremer. During harsh winters when monastic communities faced starvation, Geoffroy personally escorted grain convoys across contested terrain, inspiring the realm through selfless humility. His veteran presence remained the living soul of Christian Outremer.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfill the sacred charge bestowed by Saint Louis IX, dedicating his remaining days to defending Christian Outremer.",
+    "Deploy the elite French royal garrison in Acre as an incorruptible tactical vanguard to bolster beleaguered border forts.",
+    "Serve as an impartial moral anchor within the High Court, preventing catastrophic civil war among the crusader baronies."
+  ],
+  "Values": [
+    "Chivalric honor is a divine sacrament, requiring absolute self-sacrifice and relentless protection of the defenseless.",
+    "Unwavering fidelity to King Saint Louis and the Holy Cross, placing the survival of the crusader kingdom above life itself.",
+    "Purity of spirit that rejects political corruption and factional greed, commanding universal obedience through virtue."
+  ],
+  "Fears": [
+    "His eventual death unleashing unchecked factional warfare among the barons of Acre, betraying Saint Louis's legacy.",
+    "Mamluk hordes desecrating the holy shrines of Outremer, extinguishing the Christian presence across the Holy Land."
+  ],
+  "SpeechStyle": "Speaks with the profound moral gravity and noble chivalry of the French royal court, commanding universal reverence through selfless piety and veteran martial wisdom.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Geoffroy de Sergines, Seneschal of Jerusalem"
+}

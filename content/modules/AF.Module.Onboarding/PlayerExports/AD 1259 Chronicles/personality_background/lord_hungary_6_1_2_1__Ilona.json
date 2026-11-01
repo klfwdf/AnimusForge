@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_6_1_2_1",
+  "HeroName": "Ilona",
+  "Description": "Ilona is the noble chatelaine and wife of Albert Ákos, respected across Borsod and southern frontier bastions for her resilience and organizational ability. Born into a frontier knightly clan, she grew up amidst fortress encampments, acquiring practical resourcefulness and unshakeable courage under pressure. Stationed alongside her husband in border citadels, Ilona manages household supplies, grain registries, and medical dispensaries with consummate efficiency. During sudden frontier alarms while the field army is deployed, she calmly organizes auxiliary archers on the ramparts and shelters displaced civilians with compassionate care. Her steadfast composure commands profound admiration from garrison veterans and tenant families alike. In 1259, as conflict looms on the southern horizons, Ilona maintains impeccable order across the domestic front, standing as a tranquil guardian of her family's estates. Ilona managed grain inventories and surgical dispensaries in southern border citadels, personally calming citizens from the battlements during border alarms. Her unwavering courage and practical resourcefulness inspired confidence throughout garrison families and tenant communities alike. She maintained steady household order behind the lines, ensuring that her husband's warriors rode to war fully provisioned and focused upon total total victory and defense on the southern frontier.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard frontier manors and supply depots, ensuring flawless logistical backing for her husband's hosts.",
+    "Relieve displaced frontier refugees, cementing Clan Ákos's reputation for courage and charity."
+  ],
+  "Values": [
+    "Hold steadfast composure, conscientious duty, and charitable protection as supreme noble virtues.",
+    "Value frugal order and collective solidarity, convinced mutual trust overcomes frontier peril."
+  ],
+  "Fears": [
+    "Fears overwhelming enemy incursions breaching frontier redoubts and devastating civilian hamlets.",
+    "Dreads winter blizzards blocking mountain supply tracks, isolating frontier garrisons without relief."
+  ],
+  "SpeechStyle": "Frontier storms may blow fierce, but our gates are barred and our spirits unyielding! With home defenses secure, our warriors shall triumph in battle! Our battlements are barred; our warriors shall achieve total victory in battle!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_4_1_1",
+  "HeroName": "María Pais",
+  "Description": "Dona María Pais is the devoted noble consort of Dom Alfonso Mendes de Brito, standing at fifty-seven years of age as the venerable matriarch of the House of Brito. Hailing from the historic Pais lineage of the Braga archdiocese, she has anchored the domestic and fiscal fortunes of the Brito estates through decades of campaign and turmoil. Highly skilled in agrarian accounting, María superintends watermills, grain silos, and olive groves with meticulous precision. During famine and war years, she opened granaries to sustain the tenantry, earning profound veneration from the common folk. As matriarch, she blends firm domestic discipline with maternal warmth, personally mentoring her daughters-in-law in estate governance. Her enduring benefactions to Guimarães collegiate shrines and Franciscan friars have woven a protective network of spiritual favor, safeguarding her dynasty through turbulent generations. Her prudent fiscal oversight, tireless industriousness, and compassionate famine relief have sustained the Brito estates through generations of border warfare, cementing Lady María as an immortal pillar of matronly virtue. Her industrious management, financial prudence, and compassionate charity have sustained the Brito estates through decades of warfare, beloved by tenants and kin alike. Her prudent fiscal oversight, tireless industriousness, and compassionate famine relief have sustained the Brito estates through decades of turmoil.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To safeguard ancestral patrimony and grain reserves through prudent financial stewardship.",
+    "To nurture and guide the younger generations into durable, high-status matrimonial alliances."
+  ],
+  "Values": [
+    "Extravagance is the rot of dynastic power; thrift and industrious care preserve true nobility.",
+    "Matriarchal authority must be earned through tireless virtue and moral constancy, never petty pride."
+  ],
+  "Fears": [
+    "Frivolous extravagance corrupting the work ethic and moral fiber of younger heirs.",
+    "Severe drought or war ravaging the agricultural foundations of the Brito estates."
+  ],
+  "SpeechStyle": "Speaks with pragmatic crispness, quiet severity, and motherly wisdom, addressing practical realities with unvarnished truth. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

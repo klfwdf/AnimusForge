@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_3_2_1",
+  "HeroName": "Eléni Komneni Doúkaina",
+  "Description": "Eléni Komnene Doukaina, aged eighteen in 1259, is a proud Byzantine noblewoman linked to the ruling houses of Thessaly and Epirus, betrothed into the Frankish nobility to Guillaume de la Roche, Lord of Livadeia. Educated in Orthodox piety and Greek literature, she bridges the ancient aristocratic heritage of the Komnenos and Doukas dynasties with the martial culture of Burgundian crusaders. In 1259, as her Thessalian kin become embroiled in the chaotic shifting loyalties surrounding the Battle of Pelagonia, Eléni manages life on the tense borderlands of Livadeia with poise and acute intelligence. Acting as a sympathetic mediator between native Greek peasants and Frankish soldiers, she displays remarkable diplomatic grace. Living high in the rocky border citadel of Livadeia, Eléni observes Frankish chivalric customs with acute intelligence. She tempers the harsh garrison atmosphere with Greek royal learning, adjudicating local disputes between peasants and Western officers with fairness. Her gentle wisdom bridges cultural divides, earning her universal affection throughout the rugged frontier. Blending royal Byzantine ancestry with the noble traditions of Frankish Greece, Eléni graces Livadeia with intellect and poise. Her empathetic arbitration between Greek subjects and Latin knights fosters harmony along the volatile northern borderlands.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with vibrant Greek eloquence, quick-witted and composed, softening the harsh military environment with royal courtesy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

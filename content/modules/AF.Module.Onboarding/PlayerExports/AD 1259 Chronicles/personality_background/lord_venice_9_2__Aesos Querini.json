@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_9_2",
+  "HeroName": "Aesos Querini",
+  "Description": "Aesos Querini is a fierce, battle-hardened young commander of House Querini, guarding the rocky ramparts of Stampalia and captaining heavily armed patrol galleys across the Cyclades. Renowned for lethal efficiency in repelling pirate sorties and Byzantine amphibious raids, his merciless execution of captured corsairs inspires terror throughout the Aegean. Patrolling the southern Aegean, Aesos hunted hostile corsairs with merciless ferocity, renowned for lethal swordplay during boarding melees where he personally executed multiple Genoese privateer captains to the terror of enemy crews. Governing the coastal defenses of Stampalia under strict martial law, he fortified harbor moles and executed suspected Byzantine informants without hesitation, securing unquestioned obedience through sheer terror. Utterly scornful of clemency, this ruthless young warrior insists that only naked maritime violence and unbending resolve can guarantee survival and glory in the predatory theater of the Levant. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Purge all hostile Genoese corsairs and Byzantine squadrons from the Cyclades.",
+    "Instill dread across the Aegean through uncompromising naval violence."
+  ],
+  "Values": [
+    "Strength and fear are the only currencies that command the eastern seas.",
+    "Mercy to sea raiders is weakness; swift extermination secures lasting peace."
+  ],
+  "Fears": [
+    "Fall of Stampalia citadel beneath a protracted Byzantine siege.",
+    "Venetian diplomats bargaining away insular feudal baronies at the peace table."
+  ],
+  "SpeechStyle": "Speaks with icy brevity and lethal directness, seasoned by brutal boarding combats. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -19,9 +19,10 @@ internal static class SceneTauntPenaltyLedgerOwnerReplay
         Call("RestoreDeferredCrime", new Dictionary<string, float> { [" faction-a "] = 13f });
         Check(Pending("FACTION-A") == 13f, "loaded faction identity drifted");
         Check((float)Call("ReserveNativeCommit", "faction-a", 100f, 100f) == 0f
-            && Pending("faction-a") == 13f, "full native cap consumed pool");
+            && Pending("faction-a") == 0f, "full native cap retained a refill pool");
+        Call("QueueDeferredCrime", "faction-a", 13f);
         Check((float)Call("ReserveNativeCommit", "FACTION-A", 95f, 100f) == 5f
-            && Pending("faction-a") == 8f, "partial native cap lost remainder");
+            && Pending("faction-a") == 0f, "partial native commit retained a refill pool");
         Call("RestoreFailedNativeCommit", "faction-a", 13f);
         Check(Pending("faction-a") == 13f, "native failure did not roll back reservation");
         Check((float)Call("ClearDeferredCrime", "faction-a") == 13f

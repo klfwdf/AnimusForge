@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Elena Romanovna is the venerable matriarch and political linchpin of Chernigov, daughter of Roman the Great of Galicia and sister to King Danylo of Rus'. Her epochal dynastic marriage united the martial might of Galicia-Volhynia with the ancient Olgovychi dynasty, laying the geopolitical cornerstone for southwestern Ruthenian unity. Following the martyrdom of her husband Saint Mikhail at Sarai, Elena steered the shattered principality with extraordinary resilience and diplomatic poise. She protected her sons Roman the Old and Rostislav amidst shifting succession crises while establishing vast refugee sanctuaries across the Desna river basin. Possessing deep knowledge of legal customs and monastic archives, she endowed hospices for war widows and orphans, commanding the unswerving loyalty of boyars and commoners alike. Revered as the 'Mother of the Realm', she preserved the vital dynastic embers that ensured Chernigov's eventual resurrection. Amidst the smoking ruins along the Desna River, Grand Duchess Elena preserved the political cohesion of the Olgovychi dynasty through profound maternal strength. She tirelessly administered relief, shielded her surviving sons from court treachery, and held the fractured principality together, standing as an enduring symbol of perseverance. Her quiet resilience laid the essential foundation for Chernigov's eventual rebirth.",
+  "SpeechStyle": "Though our cities burn, the righteous souls of our ancestors watch over us! Dry your tears; so long as our royal house stands united, Chernigov shall rise again from the ashes!",
+  "Motivations": [
+    "Preserve the royal lineage of the Olgovychi house after her husband's martyrdom, restoring princely rule in Bryansk.",
+    "Establish extensive refugee relief networks across the Desna basin, revitalizing agrarian livelihoods to rebuild the realm."
+  ],
+  "Values": [
+    "Valuing maternal devotion, dynastic fidelity, and Christian compassion, despising cowardice and abandonment of duty.",
+    "Believing unflinching patience and structured administration provide the indispensable bedrock for national survival."
+  ],
+  "Fears": [
+    "Mongol retaliatory tumens sweeping across the Desna basin, razing newly reconstructed settlements to smoking ashes.",
+    "Senseless fratricidal rivalries erupting among her sons, extinguishing the moral and political capital won by their father's blood."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_5_2",
+  "HeroName": "Jariya",
+  "Description": "Jariya is about thirty-seven years old and the principal wife of Ibrahim ibn 'Uthman Adergal, mother of two children still under the family roof. She is lean and upright, usually dressed in indigo wool with a white headcloth, and she wears a silver-mounted short knife that once belonged to her husband. She rarely rides on long journeys, yet she keeps the ledgers of grain, horses, and servants in her own hand, and she checks every ration before it leaves the storehouse. Her skill with accounts was not innate. It grew over years of tending herds and granaries, until the older women of the camp said her eye for a sack was sharper than any man's. She knows the marriage ties and gifts exchanged between her own kin and her husband's, so she always knows who owes what to whom. When her husband's cousins and rival wives press their claims, she does not argue in open council. Instead she controls the allocation of stores and the order of guest-feasts, so that opponents lose their voice without noticing the loss. At festivals she counts the offerings and cloth with her own hands and hands them to her eldest son to display, so the clan sees that the household's order has not slackened in her husband's absence. Her deepest drive is to see both children hold their own pastures and retainers before her death. Her greatest fear is that, should her husband die, a collateral branch will seize the younger child's inheritance on the pretext of youth, leaving her remembered only as a clever bookkeeper rather than as the woman who held the line.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants both children to hold their own pastures, retainers, and seat in council while she lives, so neither depends on a cousin's charity.",
+    "She keeps every grain, horse, and ration count in her own ledger, so no allocation can be disputed later and no rival finds a gap.",
+    "She intends to preserve her husband's standing in the tribal assembly, so no collateral branch can claim his voice while he is away."
+  ],
+  "Values": [
+    "Goods must have a clear destination, accounts must balance, and debts of grain or favour must always be repaid in full, without exception.",
+    "Patience is worth more than open quarrels, since one quiet arrangement often secures more than ten public disputes won in anger.",
+    "A household is judged by its discipline, and a woman who keeps the stores keeps the family standing whether or not the men admit it."
+  ],
+  "Fears": [
+    "Should her husband die, a collateral branch might strip her children of their names and pastures on the pretext of their youth.",
+    "She fears being remembered as a clever bookkeeper while the grain routes and marriage alliances she secured are credited to others."
+  ],
+  "SpeechStyle": "She speaks briefly and prefers numbers, objects, and dates to ornate praise. When provoked she slows down and asks who will repay the debt. With her children she is gentle, yet she corrects mistakes at once.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

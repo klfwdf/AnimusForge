@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_2c",
+  "HeroName": "Sargis Jaqeli",
+  "Description": "Sargis Jaqeli was a stalwart field commander of the cadet branch of the House of Jaqeli, serving as a frontline castellan of Samtskhe. Having campaigned across the southern Caucasus alongside Atabeg Sargis I, he mastered high-altitude reconnaissance, ambushes, and cliffside defense. He commanded an elite company of Meskhetian heavy cataphracts, garrisoned in high watchtowers commanding the serpentine southern approaches. During mountain counter-offensives, Sargis operated at the spearhead, executing deceptive feints that lured hostile vanguards into narrow gorge ambuscades. In 1259, as imperial armies marched upon southern Georgia, Sargis maintained unbroken watch along the border passes, denying access to enemy patrols. Resolute, cautious, and intensely loyal, he was celebrated by his warriors as the unshakeable iron shield of southern Meskheti. Along southern frontier defiles, Sargis drilled Meskhetian cataphract squadrons in tight cavalry charges, training troopers to cast heavy bodkin javelins over broken terrain. Wearing hardened bronze-faced mail, he mapped out natural cliff caverns, installing wire entanglements and concealed pits to turn rugged passes into deadly labyrinths. When alarms flared, Sargis struck like a mountain leopard, annihilating enemy advance reconnaissance to secure precious hours for Samtskhe's main army while securing rugged mountain passes against steppe raiders.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold southern frontier defiles and beacon outposts, annihilating enemy reconnaissance detachments before they breach the border.",
+    "Drill Meskhetian cataphract squadrons in mountain counter-shock tactics, maintaining razor-sharp combat readiness.",
+    "Serve the House of Jaqeli with unswerving feudal loyalty, acting as the indispensable spearhead of Samtskhe's defense."
+  ],
+  "Values": [
+    "Ruthless frontier vigilance, operational discipline, and tactical precision are the golden rules of mountain warfare.",
+    "Leading from the front with personal bravery, refusing to yield an inch of sovereign rock to invading empires.",
+    "Uncompromising fealty to family and homeland, dedicating life to the preservation of Caucasian freedom."
+  ],
+  "Fears": [
+    "A nocturnal lapse in reconnaissance permitting hostile columns to bypass defiles and encircle defensive bastions.",
+    "Prolonged attritional warfare destroying the irreplaceable core of Meskhetian heavy cavalry, weakening the principality."
+  ],
+  "SpeechStyle": "Speaks with quiet martial confidence and frontier austerity, commanding mountain scouting patrols and fortress redoubts with seasoned competence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Sargis Jaqeli"
+}

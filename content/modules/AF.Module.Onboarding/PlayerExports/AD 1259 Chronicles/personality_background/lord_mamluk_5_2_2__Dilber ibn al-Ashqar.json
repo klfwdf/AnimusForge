@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_5_2_2",
+  "HeroName": "Dilber ibn al-Ashqar",
+  "Description": "Dilber ibn al-Ashqar is sixteen years old and the elder daughter of Emir Al-Muzaffar al-Ashqar and Sul. The game records her as a woman. She is slight and quick-eyed, and she usually wears a pale violet silk gown with a thin veil edged in silver thread, with a small bone pin in her hair. The game marks her as a quartermaster, and she keeps accounts well and likes to ask passing merchants about grain prices and the goods of other regions.\nShe grew up between her father's tents and the post roads, meeting many envoys and caravans. Those years made her sensitive to numbers and trade, and taught her that a family's wealth and dignity are built up in the daily accounts and deals.\nWith the court women and noble youths of her age she works through quickness and courtesy. She hears what others need from idle talk, and she secures better treatment for the household servants without seeming to ask. She avoids open quarrels but remembers who has spoken ill of whom.\nHer ideal is to win respect at court through her learning and management, equal to that given to men, and to keep the family's dignity safe for her younger brother Ibrahim. Her darkest fear is that her father will use her as a bargaining piece in a marriage to a stranger, taking away her right to choose her own life.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Win respect at court through her learning and management, equal to that given to men, so people see her accounts and judgement and not only a marriageable daughter.",
+    "Keep the family's dignity and property safe for her younger brother Ibrahim, so that he has a sound inheritance to lean on when he enters public life.",
+    "Build reliable news channels among merchants and court women, so the family's supplies and finances are prepared in advance and not caught out by sudden price changes."
+  ],
+  "Values": [
+    "Wealth and dignity accumulate slowly through daily accounts and deals, and whoever ignores the details will eventually suffer in the big matters, a truth she sees clearly.",
+    "Dependants should be treated fairly, since steady care earns lasting loyalty that threats and punishments cannot buy, and that loyalty outlasts any single season.",
+    "A woman can hold a real place in the family's decisions, and marriage should not be her only path, so she hopes her judgement will be taken seriously by her kin."
+  ],
+  "Fears": [
+    "Fears being handed by her father as a bargaining piece to a stranger, losing any say over whom she spends her life with and what becomes of her.",
+    "Fears that a lapse in her management will open a deficit in the family's finances and leave her brother without support, with no chance to repair it in time."
+  ],
+  "SpeechStyle": "Speaks briskly, opening topics with questions and pressing for details. Prices and accounts make her direct, and she names figures unprompted. With older women she stays respectful but never yields a key point.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

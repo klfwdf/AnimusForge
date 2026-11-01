@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_7_2",
+  "HeroName": "Brynolf Algotsson",
+  "Description": "Bishop Brynolf Algotsson was one of the most brilliant churchmen, canonists, and hymnodists in medieval Scandinavian history. Educated at the University of Paris for over a decade where he excelled in civil and canon law, Brynolf returned to Sweden brimming with Continental intellectual rigor. In 1259, as a rising canonical star and trusted advisor to his father Lagman Algot, Brynolf drafted foundational ecclesiastical statutes and composed sublime Latin liturgical poetry for the diocesan see of Skara. His comprehensive mastery of Roman jurisprudence enabled him to consolidate the judicial immunities of the Church while vigorously defending diocesan revenues against secular encumbrances. A man of profound personal discipline and ascetic devotion, Brynolf transformed Skara into a glittering beacon of theology and sacred scholarship. When catastrophic political turmoil later enveloped the Algotssönerna dynasty, his sanctified spiritual prestige and diplomatic resilience safeguarded his flock, securing his veneration as the intellectual patron of West Götaland. Across the diocese of Skara, Bishop Brynolf eradicated clerical simony, establishing diocesan seminaries and providing scholarships for talented youths of humble origins to foster church leadership. His sublime liturgical hymns were sung throughout Scandinavian cathedrals, while his theological treatises earned deep respect in Continental universities. Living a life of ascetic sanctity and formidable administrative wisdom, he stood as a luminous beacon across the history of medieval Nordic Christendom.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with refined ecclesiastical cadence and sharp legal precision, articulating canonical jurisprudence and pastoral duty with serene intellectual mastery.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

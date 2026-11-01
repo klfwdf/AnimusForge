@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5f",
+  "HeroName": "Baldwin I Rátót, ispan of Moson",
+  "Description": "Baldwin I Rátót is a crucial frontier commander and senior baron of Clan Rátót, serving as Ispán of Moson and royal chivalric counselor. Governing the strategic march of Moson along the Leitha river, Baldwin controls the primary overland gateway linking Hungary with Vienna and the Holy Roman Empire. Methodical, vigilant, and militarily adept, he reinforced Moson Castle with formidable stone bastions, moats, and riverine obstacles. He commands a versatile frontline garrison composed of heavily armored chivalric lancers, German mercenary crossbowmen, and county militias. Repeatedly victorious in border skirmishes against Austrian raiders, he earned renown as the 'Shield of Moson'. In 1259, as King Ottokar II of Bohemia consolidates his grip over Austria and threatens Styria, Count Baldwin remains on high alert atop his battlements, guarding the western gate of the kingdom. Baldwin constructed deep cavalry ditches and twin stone towers along the Leitha river crossings, drilling mixed squadrons of German crossbowmen and Hungarian horsemen. His formidable defensive preparations discouraged Bohemian probing detachments across the border. Through brilliant generalship and unceasing vigilance, Count Baldwin secured the northwestern gates of Hungary against all potential foreign invaders and marauding hostile vanguards, maintaining relentless border vigilance.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold Moson Castle and the Leitha river line, repelling any Bohemian or German invasion of the Danube plain.",
+    "Win supreme martial renown for Clan Rátót on the western march, securing hereditary privileges."
+  ],
+  "Values": [
+    "Hold frontier defense, unceasing vigilance, and iron discipline as sacred military obligations.",
+    "Value solid defensive architecture and tactical cohesion, convinced thorough readiness guarantees victory."
+  ],
+  "Fears": [
+    "Fears massive enemy siege trains breaching Moson and opening the defenseless plains to invasion.",
+    "Dreads timid diplomats surrendering the Leitha line and undoing decades of defensive works."
+  ],
+  "SpeechStyle": "The waters of the Leitha mark the kingdom's boundary, and the walls of Moson stand like iron! Anyone crossing our border shall be pulverized by our lances! The Leitha march is barred; foreign invaders will shatter against our walls!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

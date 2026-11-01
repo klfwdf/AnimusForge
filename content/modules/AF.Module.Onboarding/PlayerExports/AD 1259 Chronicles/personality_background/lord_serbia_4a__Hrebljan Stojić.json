@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_4a",
+  "HeroName": "Hrebljan Stojić",
+  "Description": "Hrebljan Stojić, aged twenty-one in 1259, is a dedicated royal officer and court steward in the service of King Stefan Uroš I, representing the noble progenitor line of the historic House of Hrebeljanović. Hailing from an esteemed chivalric clan of Raška, he combines equestrian mastery and castle fortification expertise with sharp administrative literacy. Fiercely loyal, disciplined, and courageous, Hrebljan commanded royal cavalry patrols securing the rugged Rudnik mountain passes and safeguarding convoys bound for the silver mines of Novo Brdo. In 1259, having risen to senior garrison duties at the royal court of Raška, Hrebljan oversees palace security day and night with vigilant fidelity, a rising warrior dedicated to the sovereign crown. Clad in polished mail, Hrebljan stands vigilant guard at the inner gates of Raška palace, scanning the horizon for suspicious movements. Skilled in leading swift reconnaissance patrols through mountain defiles, he enjoys the complete trust of King Stefan Uroš. This courageous young guardsman serves with absolute devotion, determined to forge an illustrious noble legacy through honorable martial deeds. Alert and incorruptible, Hrebljan commands palace guard detachments at Raška with unwavering martial fidelity. His swift cavalry scouts keep the royal silver routes secure, establishing an honorable legacy destined to elevate his family to supreme renown.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with crisp military precision and youthful resolve, concise and direct, projecting unwavering loyalty to his sovereign.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

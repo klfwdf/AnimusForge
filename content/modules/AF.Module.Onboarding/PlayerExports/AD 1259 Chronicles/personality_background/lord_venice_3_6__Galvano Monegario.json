@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_3_6",
+  "HeroName": "Galvano Monegario",
+  "Description": "Lord Galvano Monegario hails from one of the most ancient tribune dynasties of the lagoon, tracing his ancestry to the 8th-century Doge Domenico Monegario. A veteran fifty-year-old senator and commissioner of the Arsenale, Galvano oversees heavy war galley construction and the defensive alignment of the Dalmatian coast. Astute, methodical, and commanding, he directed wartime mobilization and naval replenishment during the War of Saint Sabas, serving as an indispensable pillar of Venetian logistics. Though tracing proud descent from the ancient ducal magistrate Domenico Monegario, Galvano chose to resurrect his clan's fortune through hard naval service across the Levant, commanding fast pursuit galleys between Negroponte and Candia. Possessing an intimate knowledge of Aegean shoals, treacherous shallows, and concealed coves, he repeatedly outmaneuvered superior pirate squadrons and weathered lethal squalls through supreme seafaring acumen, earning the deep trust of the Ghisi dynasts. Practical and stern, he harbors no illusions about Venetian factional politics, understanding that captured corsair prizes, intact merchant convoys, and impeccable harbor logs represent his family's truest path back into high senatorial office. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain peak industrial efficiency in the Arsenale to continuously supply frontline battle fleets.",
+    "Protect the ancient legislative prerogatives of the Monegario dynasty within the Great Council."
+  ],
+  "Values": [
+    "Constitutional antiquity, administrative rigor, and the maritime survival of the Venetian Republic.",
+    "Systematic organizational discipline, valuing statecraft backed by industrial shipyard power."
+  ],
+  "Fears": [
+    "Timber and hemp supply chains being choked off by hostile blockades, halting galley construction.",
+    "Parvenu commercial factions subverting the ancient oligarchic constitutional balance of the Republic."
+  ],
+  "SpeechStyle": "Speaks with deep senatorial gravitas, bureaucratic authority, and the calm mastery of ancient patrician blood. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

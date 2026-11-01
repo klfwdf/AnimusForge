@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_5d",
+  "HeroName": "Kōnstantînos Komnīnós Palaiológos",
+  "Description": "Kōnstantînos Komnīnós Palaiológos, aged twenty, is the gallant younger brother of Emperor Michael VIII and a destined Caesar of the imperial realm. Raised amidst the relentless discipline of frontier camps and military academies, he is an expert horseman, composite bow archer, and field tactician. Deeply trusted by Michael VIII and Sebastokrator Ioánnis, he was entrusted with reforming post-Pelagonia field corps across Macedonia and southern Thrace. A natural commander of men, he shares the hardships of his soldiers without pretense, quickly moulding raw recruits and mercenary auxiliaries into lethal shock units. Anticipating protracted campaigns across the rugged Peloponnese, he intensively studies siege engineering, sapping techniques, and mountain logistics. In court politics, Konstantînos remains fiercely loyal and modest, avoiding ambitious intrigue while staunchly reinforcing the solidarity of the ruling dynasty. He is utterly convinced that the steel swords of the Palaiologoi will shatter the rings of foreign foes, hoisting imperial double-headed eagles over every fortress across Greece. Enduring the same coarse rations and rigorous training drills as his men, his humble dedication and battlefield fearlessness inspire fanatical loyalty and steadfast resolve across every legion and auxiliary cavalry squadron under his banner. He marches boldly toward the southern battlefront, eager to prove his martial courage.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 5d lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with crisp martial directness and royal composure, delivering commands with unhesitating decisiveness and disciplined efficiency.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

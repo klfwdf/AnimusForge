@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Andriy Volodymyrovych is the second son of Volodymyr IV, distinguished among Kievan lords for his strategic foresight, organizational precision, and measured temperament. Assigned to oversee the defense network along the Teteriv and Irpin river basins southwest of Kyiv, he fortified border strongpoints with wood-and-stone bastions and hidden redoubts. Unlike his brother's aggressive cavalry charges, Andriy excels in logistics coordination, tactical reconnaissance, and stubborn defensive attrition amidst rugged terrain. Maintaining strong bonds with local woodland trackers and frontier militias, he knows every secret marsh crossing and dense forest trail, routinely stalling enemy vanguards with minimal casualties. In civic governance, he oversaw road networks, bridge repairs, and toll checkpoints, ensuring an uninterrupted flow of supplies into the beleaguered capital. His cool-headed pragmatism and strategic caution render him an indispensable bulwark of Kievan frontier resilience. Across the dense woodlands bordering the Teteriv and Irpin rivers, Prince Andriy turned natural geography into a masterclass of defensive engineering. He constructed fortified timber roadblocks, hidden observation posts, and rapid courier routes, ensuring that incoming threats were detected leagues before reaching the city gates. His patient, calculated operational strategy repeatedly bogged down raiding forces, securing Kyiv's western approaches against surprise devastation.",
+  "SpeechStyle": "The art of warfare demands foresight and unwavering vigilance; a single scout's keen eye outweighs a thousand rash blades. Hold the forest defiles, and no invader shall pass our traps!",
+  "Motivations": [
+    "Construct an impregnable defense-in-depth network along the western river passes to shield Kyiv from sudden nomad raids.",
+    "Mastermind wartime supply chains and ordnance depots, safeguarding trade arteries to support the capital's survival."
+  ],
+  "Values": [
+    "Valuing exhaustive planning, contractual fidelity, and hard realism, despising recklessness and bombastic hubris.",
+    "Believing victory belongs to disciplined logistics and vigilance, ensuring strategic stability through careful preparation."
+  ],
+  "Fears": [
+    "Severe disruption of vital supply lines by brutal winter freezes or flooding, stranding garrisons without provisions.",
+    "Catastrophic failures of intelligence reports misreading enemy movements, compromising critical ambush choke points."
+  ],
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ]
+}

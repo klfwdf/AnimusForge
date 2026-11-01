@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Premyslid_Dynasty_and_Iron_and_Golden_King",
+  "Keywords": [
+    "Premyslid Silver Double Tailed Lion",
+    "Iron and Golden King Ottokar II",
+    "Kutna Hora Silver Wealth",
+    "Bohemian Austrian Central European Empire"
+  ],
+  "RagShortTexts": [
+    "The Přemyslid dynasty forged a Central European empire funded by Kutná Hora silver mines."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Czech Přemyslid dynasty, bearing the crowned silver double-tailed lion on gules, reached imperial heights under Ottokar II, the 'Iron and Golden King'. His iron denoted disciplined armored cavalry; his gold flowed from the silver veins of Kutná Hora. Ottokar annexed Austria, Styria, and Carinthia, stretching Bohemian power from the Elbe to the Adriatic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "During the Great Interregnum, Ottokar's wealth bribed imperial electors. German princes courted his silver loans while dreading his formidable Slavic dynastic expansion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "artisan"
+        ]
+      },
+      "Content": "Mining engineers and masonry guilds flooded into Bohemia. Royal towns founded under Přemyslid charters sparked explosive urbanization across Central Europe."
+    }
+  ],
+  "TextMappings": []
+}

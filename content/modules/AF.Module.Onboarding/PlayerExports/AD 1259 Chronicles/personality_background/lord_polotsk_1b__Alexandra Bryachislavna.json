@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Alexandra Bryachislavna is the accomplished daughter of Prince Bryachislav of Polotsk and royal consort of Saint Alexander Nevsky, Hero of Rus'. Her celebrated marriage at Toropets in 1239 forged the pivotal dynastic alliance uniting Polotsk and Vitebsk with the military might of Novgorod. Cultivated in Church Slavonic scriptures and diplomatic statecraft, Alexandra displayed extraordinary moral resilience and sharp political intuition. During Nevsky's arduous campaigns on the Neva and Lake Peipus (Battle on the Ice), she capably directed rear logistics, manufacturing armor and organizing shelters for refugees and disabled veterans. Her personal charity and devout Orthodox patronage earned profound veneration across northern Rus', establishing her as an indispensable spiritual anchor. Her enduring grace and resolute patriotism shine as an immortal inspiration throughout medieval Slavic annals. Across the snow-swept northern frontier, Grand Duchess Alexandra stood as a radiant beacon of maternal fortitude for the people of Polotsk. She personally oversaw the tailoring of fur-lined coats for border guards, tended wounded veterans in convent hospices, and kept eternal prayer vigils for her husband's crusades. Her profound benevolence and unshakeable grace inspired deep reverence across all of northern Rus'. Her royal marriage established a vital geopolitical shield across northern Rus'.",
+  "SpeechStyle": "In raging winter gales, faith and fortitude are our truest shields! Hold fast to honor, and the righteous light of Rus' shall dispel the deepest shadows! Heaven preserves our sacred soil!",
+  "Motivations": [
+    "Sustain the military-diplomatic alliance between Polotsk and Novgorod, mobilizing northern logistics for frontier defense.",
+    "Establish monastic hospices and orphanages, comforting the civilian population ravaged by relentless Baltic crusades."
+  ],
+  "Values": [
+    "Valuing dynastic fidelity, unblemished Orthodox piety, and selfless service, repudiating vanity, luxury, and bad faith.",
+    "Believing resolute maternal fortitude and disciplined charity overcome the most harrowing historical catastrophes."
+  ],
+  "Fears": [
+    "Livonian crusaders raiding unprotected rear towns while field armies are engaged, subjecting civilians to horrific atrocities.",
+    "Boyar factionalism undermining the northern grand alliance, fracturing the united Orthodox resistance against invasion."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

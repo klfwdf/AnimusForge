@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_1_4",
+  "HeroName": "Dom Joan Mendes de Sousa",
+  "Description": "Dom Joan Mendes de Sousa is the capable younger son of Mem Garcia de Sousa, serving as a chief counselor and military commander within the House of Sousa. Trained in chivalric horsemanship, tactical maneuvering, and feudal jurisprudence, Don Joan combines martial reliability with acute diplomatic finesse. Enjoying the absolute confidence of his elder brother Gonçalo, he represents the family's interests before royal chanceries and episcopal councils at Coimbra. In 1259, as tensions mount over royal land inquests, Joan actively coordinates legal resistance among the northern baronies, frustrating royal commissioners with masterly legal delays. Methodical, cautious, and commanding an elite troop of retainers, he safeguards the family's communications networks between Porto and Lisbon. Prudent, unflappable, and devoted to his clan, Joan Mendes stands as the strategic intellect guiding his dynasty through stormy political waters. Shuttling between chanceries in Porto, Coimbra, and Lisbon, Dom Joan dismantled royal plots targeting family estates through masterly diplomatic maneuvering. Cool, calculating, and loyal unto death, his strategic intellect provided his brother Gonçalo with an invincible political shield safeguarding the dynasty's northern empire. His tactical diplomacy, legal erudition, and strategic loyalty provide the House of Sousa with an impenetrable shield defending its ancient seigneurial franchises.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Formulate an airtight legal defense in crown councils to halt royal incursions upon Sousa domains",
+    "Support his brother Gonçalo in military logistics to reinforce the family's northern stronghold",
+    "Maintain an extensive intelligence network across Iberia to anticipate royal political maneuvers"
+  ],
+  "Values": [
+    "Strategic intellect and legal mastery are the ultimate shields; blind rage leads only to destruction",
+    "Dynastic unity overrides all personal rivalries; solidarity within the clan ensures immortality",
+    "Discreet counsel, unswerving loyalty to his kin, and patient execution of policy"
+  ],
+  "Fears": [
+    "Royal chanceries fabricating treason charges to arrest family leaders and cripple the house",
+    "Confidential correspondence leaking to rivals, compromising delicate political alliances"
+  ],
+  "SpeechStyle": "Measured, analytical, and incisive; speaks with the calm authority, legal precision, and strategic clarity of an expert political counselor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

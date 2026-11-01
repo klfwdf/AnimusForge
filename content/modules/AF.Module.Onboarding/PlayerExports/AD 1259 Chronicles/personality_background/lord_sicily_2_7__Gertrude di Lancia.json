@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_2_7",
+  "HeroName": "Gertrude di Lancia",
+  "Description": "Gertrude di Lancia is the noble consort of Count Federico of Squillace, wielding formidable domestic authority at thirty-one years of age. Descending from the ancient Swabian nobility of the German Empire, Gertrude brings northern rigor and disciplined stewardship to the southern Mediterranean marches. Managing the expansive agricultural manors, olive groves, and mining registers of Squillace, she enforces strict domestic order with uncompromising efficiency. During Count Federico's extended military tours along the Calabrian coast, Gertrude governs the fortress administration single-handedly, ensuring flawless supply lines and quell backcountry unrest. A brilliant administrative partner and devoted mother, she commands profound respect throughout the southern command. Her Swabian precision, fiscal integrity, and calm crisis governance make Countess Gertrude the formidable domestic rock securing the keeps of Squillace. Her strict discipline and flawless logistical foresight ensure that the garrisons of Squillace stand perpetually prepared for war, commanding the total trust of her captains. Her Swabian precision, fiscal integrity, and calm crisis governance make Countess Gertrude the formidable domestic rock securing the maritime keeps of Squillace against every threat. Her administrative rigor, moral constancy, and logistical mastery command the total trust and loyalty of the entire garrison and civil population.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To steward the fiscal resources and grain depots of Squillace, keeping garrisons perpetually prepared.",
+    "To educate her children in noble virtue and martial fortitude, honoring both Swabian and Sicilian heritages."
+  ],
+  "Values": [
+    "Uncompromising discipline is the bedrock of dynastic longevity; laxity invites ruin.",
+    "A matriarch must rule with unwavering moral integrity and decisive administrative fortitude."
+  ],
+  "Fears": [
+    "Naval corsairs or invading armadas sacking coastal estates and ravaging the tenantry.",
+    "Her husband suffering catastrophe during perilous offshore naval operations."
+  ],
+  "SpeechStyle": "Speaks with curt, disciplined precision, aristocratic coolness, and uncompromising practical sharpness. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

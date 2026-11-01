@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_9_3",
+  "HeroName": "Nuzha bint Said",
+  "Description": "Nuzha is nineteen years old, the only daughter of Said and Hamduna, and she carries a proud, unyielding air in her features. She is of middling height, with straight shoulders and black hair dressed in a high knot pinned by a silver hairpin whose head is carved into a tiny lotus. She favours a reddish-brown riding habit with a narrow leather belt and a small short sword in a leather sheath. Her boots are sewn from fine cowhide, and a row of fine cloud patterns is stamped along the uppers, added at her own request to a craftsman. Since childhood she watched the troop drill beside her father and absorbed the arts of archery and tactics beyond her years. At fifteen she first led a small party of riders on a border patrol. When she met a band of scouts, she did not charge them head-on. She circled to their flank and forced them to withdraw, and since then the clan has called her 'the little general'. She cares deeply what others think of her and sometimes sulks over a single dismissive remark, but she works harder because of it. She does not yield to the male elders, yet she tries to prove herself through deeds rather than words. Her deepest drive is to one day command a cavalry troop of her own, so that her father and the whole clan acknowledge her talent, not merely her place as the chief's daughter. Her greatest fear is that her pride will be taken for wilfulness, causing her father to lose trust in her, and that she will never have the chance to prove herself at all.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants to command a cavalry troop of her own, so her father and the whole clan recognise her talent, not only her place as the chief's daughter.",
+    "She intends to study tactics and terrain deeply, training archery and scouting until she can act independently rather than watch from the side.",
+    "She plans to win authority among the young riders, so they believe her judgement and orders deserve obedience, not only her father's name."
+  ],
+  "Values": [
+    "Ability should be shown in deeds, not claimed through birth or words, so she would rather sweat on the training ground than talk idly in council.",
+    "The outcome of cavalry action often turns on terrain, and a choice of flank may decide a battle more than a full charge, so she walks each ground herself.",
+    "Pride is a strength only when it rests on real ability, so she never underestimates an opponent, however small the party may look."
+  ],
+  "Fears": [
+    "Her pride may be mistaken for wilfulness, her father may lose trust in her, and she may never be given a chance to prove herself, staying trapped at home.",
+    "Her judgement may fail on an independent mission and cost young riders their lives or health, and that responsibility would weigh on her heart forever."
+  ],
+  "SpeechStyle": "Her tone is bright and forceful, often opening with 'what I see is'. On archery and terrain she goes straight to the point and traces routes with her hands. Faced with contempt her voice turns cold, and she answers with one example.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

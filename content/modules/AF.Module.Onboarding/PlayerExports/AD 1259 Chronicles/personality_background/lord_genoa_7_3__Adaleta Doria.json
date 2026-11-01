@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_7_3",
+  "HeroName": "Adaleta Doria",
+  "Description": "Adaleta Doria represents the formidable domestic intellect of House Doria, overseeing prime shipyard shares along the harbor and syndicates in Levantine spice cargoes. Shrewd and observant, she leverages dynastic capital to secure naval commands for rising kinsmen, commanding profound respect across the oligarchy. Adaleta managed massive family shares in eastern silk, dye, and galley consortiums, mastering maritime bottomry clauses to accumulate boundless liquid specie for House Doria. From her Grand Canal palazzo, she monitored shifting senatorial balances, deploying exquisite diplomatic acumen to deflect parliamentary inquiries into her clan's naval contracts. Proud and astute, she understood that Doria supremacy was forged by naval cannon abroad and fortified by unwavering financial liquidity and strategic statecraft at home. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain paramount Doria influence over the state naval arsenals and fleet councils.",
+    "Expand family shipping investments until House Doria stands unchallenged in wealth."
+  ],
+  "Values": [
+    "Command of the sea is the very lifeblood of the Doria; none may contest it.",
+    "Meticulous calculation ensures survival through the fiercest political gales."
+  ],
+  "Fears": [
+    "Spinola or other rival patricians eclipsing Doria supremacy in the Republic.",
+    "Catastrophic oceanic storms destroying unescorted family trading armadas."
+  ],
+  "SpeechStyle": "Speaks with aristocratic poise and maritime decisiveness, sharp-minded in finance and politics. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

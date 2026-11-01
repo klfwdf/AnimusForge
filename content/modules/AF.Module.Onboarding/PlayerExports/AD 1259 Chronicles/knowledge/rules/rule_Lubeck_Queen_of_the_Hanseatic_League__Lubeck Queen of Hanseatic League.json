@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Lubeck_Queen_of_the_Hanseatic_League",
+  "Keywords": [
+    "Lubeck Queen of Hanseatic League",
+    "Trave River Brick Gothic",
+    "Lubeck Law Codification",
+    "Baltic Salt Herring Guilds"
+  ],
+  "RagShortTexts": [
+    "Lübeck presided as Queen of the Hanseatic League, dictating Baltic maritime trade through."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lübeck stood as the undisputed capital of the Hanseatic League along the Trave river. Commanding Baltic salt, grain, and herring routes through Lüneburg saltworks, its municipal patricians drafted Lübeck Law, adopted by over one hundred merchant towns across the North Sea and Baltic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "sailor"
+        ]
+      },
+      "Content": "The city's armed cog fleets enforced mercantile blockades against predatory princes, safeguarding autonomous burgher liberties."
+    }
+  ],
+  "TextMappings": []
+}

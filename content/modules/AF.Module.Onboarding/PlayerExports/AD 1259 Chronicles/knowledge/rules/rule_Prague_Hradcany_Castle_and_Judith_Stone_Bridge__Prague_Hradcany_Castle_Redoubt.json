@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Prague_Hradcany_Castle_and_Judith_Stone_Bridge",
+  "Keywords": [
+    "Prague Hradcany Castle Redoubt",
+    "Vltava River Judith Bridge",
+    "Bohemian Royal Seat Prag",
+    "Old Town German Mining Burgher"
+  ],
+  "RagShortTexts": [
+    "Prague on the Vltava River, crowned by Hradčany Castle, formed the heart of Ottokar's."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Straddling the Vltava River, Prague was the seat of the Přemyslid dynasty. Towering Hradčany Castle overlooked the historic Romanesque Judith Bridge. King Ottokar II granted charters welcoming Saxon miners and German merchants to the Old Town (Staré Město), fueling royal expansion with Kutná Hora silver."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "From Hradčany halls, Ottokar commands armies across Bohemia, Austria, and Styria. Vaults brimming with refined silver ingots allow him to outbid any rival across the Holy Roman Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "The Judith Bridge joins ancient Slavic customs with Western jurisprudence. Scholars study esoteric Kabbalah in the newly raised Altneuschul synagogue, while goldsmiths crowd the marketplace."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_2d",
+  "HeroName": "Sidonia",
+  "Description": "Sidonia was a noble matriarch of the House of Jaqeli, residing within the secluded inner keeps of Samtskhe and guarding its ancestral vaults. Austere, analytical, and discreet, she possessed forensic mastery over the survival mechanisms required by mountain citadels under total siege. Sidonia oversaw the excavation of masked subterranean cavern chambers upon Akhaltsikhe's sheer cliff walls, stockpiling durable provisions and gold bullion. She enforced absolute secrecy over these emergency refuges, trusting only hereditary retainers sworn to silence, preserving an inviolable sanctuary. In 1259, amidst epochal regional warfare, Sidonia managed the interior domestic fortress with stoic resolve, anchoring dynastic stability. Discreet, resolute, and fiercely protective of her house, Sidonia was revered as the silent guardian of Samtskhe's ultimate survival reserves. Within Akhaltsikhe's deepest cliff vaults, Sidonia oversaw stores of pitch, salt pork, and dried grain in stout oak casks, resealing bungs quarterly against damp mountain air. She regulated domestic porters through comprehensive rationing ledgers, guaranteeing provisions would outlast the longest sieges. When war horns sounded below, Sidonia assembled royal kinswomen into cavern shelters behind double iron gates, her stoic composure keeping panic at bay and steeling domestic morale through the grimmest hours.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Safeguard the masked cavern vaults and ancestral treasuries of the House of Jaqeli, securing the dynastic refuge against total ruin.",
+    "Maintain multi-year stockpiles of preserved meats, salt, and munitions in subterranean redoubts to outlast protracted sieges.",
+    "Enforce impenetrable operational security around hidden mountain defiles, preserving the ultimate lifeline of Samtskhe."
+  ],
+  "Values": [
+    "Meticulous preparation, absolute secrecy, and analytical foresight are the true anchors of survival in wartime.",
+    "Unflinching fidelity to ancestral bloodlines and Orthodox faith, guarding the nation's final refuge with stoic resolve.",
+    "Discreet, selfless service to the House of Jaqeli, preserving dynastic sovereignty far above personal comfort."
+  ],
+  "Fears": [
+    "Domestic betrayal revealing masked cavern entrances to besiegers, leading to the sacking of the realm's last treasury.",
+    "Hostile subterranean operations sealing cave ventilation networks, threatening the refuge with catastrophe."
+  ],
+  "SpeechStyle": "Speaks with cool aristocratic resolve and quiet authority, organizing fortress emergency vaults and domestic shelters with calm precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Sidonia"
+}

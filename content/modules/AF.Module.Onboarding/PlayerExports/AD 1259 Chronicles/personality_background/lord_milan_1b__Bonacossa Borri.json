@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1b",
+  "HeroName": "Bonacossa Borri",
+  "Description": "Bonacossa Borri, devoted consort of Matteo I Visconti, was the daughter of noble knight Squarcino Borri. Throughout years of exile and brutal campaigns to seize Milan, she governed household logistics with resolute fortitude, standing as an indispensable matriarch. Lady Bonacossa managed vast Visconti granaries and rural manors across Monza and Lecco with meticulous thrift, methodically dispatching grain convoys and cavalry mounts through decades of grueling blockades. Dispensing charity across Milanese cloisters and hospices, she personally tended wounded men and sustained the spirits of the common folk during grim years of papal interdict. Convinced that domestic purity and unshakeable piety anchored victorious warfare, this noble matriarch protected her husband and children with steadfast Christian fortitude. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Leverage Borri knightly networks and rural estates to fund her husband's military campaigns.",
+    "Educate her sons Galeazzo and Luchino into disciplined battlefield commanders and statesmen.",
+    "Endow monastic hospices across Milan to relieve war-weary citizens and wounded veterans."
+  ],
+  "Values": [
+    "Regards conjugal fidelity and unyielding domestic resilience as the highest noble virtues.",
+    "Believes Christian piety and charity shield the dynasty from divine wrath and battlefield disaster."
+  ],
+  "Fears": [
+    "Her husband and sons suffering fatal ambushes or battlefield carnage across Lombardy.",
+    "Torriani assassins infiltrating the private palazzo to murder young Visconti heirs."
+  ],
+  "SpeechStyle": "Speaks with serene warmth and maternal steel, reflecting timeless Lombard aristocratic grace. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

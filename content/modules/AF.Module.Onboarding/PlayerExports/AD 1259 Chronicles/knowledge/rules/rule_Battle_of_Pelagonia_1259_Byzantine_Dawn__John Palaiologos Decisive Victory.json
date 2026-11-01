@@ -1,0 +1,30 @@
+{
+  "Id": "rule_Battle_of_Pelagonia_1259_Byzantine_Dawn",
+  "Keywords": [
+    "John Palaiologos Decisive Victory",
+    "William of Villehardouin Captured",
+    "Path to Constantinople 1261"
+  ],
+  "RagShortTexts": [
+    "In 1259 at Pelagonia, Nicaea routed the Latin-Epirote coalition, capturing Achaea's prince."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fought in autumn 1259 on the plains of Pelagonia, this pivotal clash decided the fate of the Byzantine world. Sebastokrator John Palaiologos outmaneuvered a grand anti-Nicaean coalition of Epirus, Sicily, and the Principality of Achaea. Sowing discord among the Greek and Frankish leadership, John crushed the isolated Latin vanguard; Prince William II of Villehardouin was captured hiding in a haystack, yielding fortresses like Mystras that enabled the recapture of Constantinople in 1261."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "The capture of the Prince of Achaea broke the spine of Latin crusader hegemony in Greece, opening the Golden Gate to the Palaiologoi."
+    }
+  ],
+  "TextMappings": []
+}

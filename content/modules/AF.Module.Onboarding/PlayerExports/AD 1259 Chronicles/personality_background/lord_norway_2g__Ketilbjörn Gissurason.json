@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2g",
+  "HeroName": "Ketilbjörn Gissurason",
+  "Description": "Ketilbjörn Gissurason was a courageous, high-spirited scion of the Haukdælir clan, the beloved young son of Gissur Jarl Thorvaldsson. In the mid-thirteenth century, Ketilbjörn was celebrated among the youth of southern Iceland for his exceptional equestrian agility, mastery of the broadsword, and chivalric boldness. Open-hearted, fiercely proud of his lineage, and deeply devoted to his father, he took pride in leading armed border patrols across the windswept passes to deter rival incursions. Unlike the cunning intriguers of the Althing, he embraced the unvarnished warrior ethos of the sagas, believing that courage, honor, and loyalty were the true hallmarks of noble chieftains. His bright potential met a tragic and immortal end in the harrowing Flugumýri arson of 1253, where he fought desperately amidst falling burning timbers to shield his brothers before perishing in the flames. His heroic defiance and gallant memory remained etched in the collective consciousness of Icelandic oral poetry. Riding along the southern borders, Ketilbjörn led scouting patrols into rugged lava defiles, hunting down outlaws with deadly marksmanship and broadsword combat. When the fatal arson enveloped Flugumýri, he held the smoke-filled doorway with axe and shield, fighting desperately to the last breath to protect his brothers and father. His unbending chivalric courage and tragic sacrifice inspired stirring ballads recited by hearthfires across Iceland for centuries.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with candid youthful enthusiasm, fiery courage, and chivalric pride, showing eager devotion to the martial traditions of his ancestors.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

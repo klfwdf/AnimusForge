@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_3_2",
+  "HeroName": "Michaíl Komnenos Palaiológos",
+  "Description": "Michaíl Komnenos Palaiológos was the eldest son of Caesar Constantine Palaiologos and Irene Vranaina, bearing a martial pedigree derived from the foremost military houses of the empire. Growing to manhood during the euphoric resurgence of 1259, Michael was thoroughly trained in the harsh realities of heavy cavalry shock warfare, equestrian archery, and fortress assault across Nicaea and Thrace. Fiercely proud, courageous, and disciplined, he took an early officer's commission within the elite imperial horse guards, seeking every opportunity to emulate the legendary battlefield exploits of his uncle Emperor Michael VIII and Sebastokrator John. Whether patrolling contested passes against Latin raids or drilling cataphracts in counter-charge maneuvers, Michael inspired confidence among veteran sergeants. He stood as a vibrant exemplar of the rising generation of Palaiologan warriors dedicated to reclaiming the Roman motherland and securing the newly liberated European themes. Along the contested Thracian passes, Michael drilled heavy cavalry squadrons in close-formation shock charges, sparring in double-layered mail with veteran lance corporals through torrential downpours. He mastered the topography and garrison strength of every European theme, executing brilliant flank ambushes that scattered encroaching Frankish raiders. Beloved by his troopers for his egalitarian camaraderie and reckless courage, Michael stood ready to defend the reclaimed Roman frontier to the last drop of blood.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice is brisk, energetic, and resolute, vibrant with the martial confidence of an imperial officer eager for battle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

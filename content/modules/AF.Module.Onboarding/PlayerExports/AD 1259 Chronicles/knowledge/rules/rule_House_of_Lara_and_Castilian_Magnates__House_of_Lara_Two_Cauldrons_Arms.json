@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Lara_and_Castilian_Magnates",
+  "Keywords": [
+    "House of Lara Two Cauldrons Arms",
+    "Castilian Ricoshombres Magnate",
+    "Noble League Resisting Alfonso X",
+    "Seville Repartition Great Estates"
+  ],
+  "RagShortTexts": [
+    "The House of Lara led Castilian ricoshombres, resisting Alfonso X's centralized Roman law."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Premier among the 'ricoshombres' (great magnates) of Castile, the House of Lara displayed two cauldrons on gold, symbolizing lordly capacity to feast and field whole armies. Led by Nuño González de Lara, the family resisted Alfonso X's centralizing Las Siete Partidas code, championing traditional feudal liberties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Invoking the ancient Castilian feudal right of 'desnaturalización' (withdrawing fealty), the Laras formed magnate confederations to check arbitrary crown taxation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lara banners supply iron cauldrons boiling smoked beef on the march. Mercenaries flock to their wages, knowing noble retainers are paid on the nail."
+    }
+  ],
+  "TextMappings": []
+}

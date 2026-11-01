@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_2_2_1",
+  "HeroName": "Filib Cuimean",
+  "Description": "Philip Comyn (Filib Cuimean) is the spirited son and heir of Jardine Comyn, Lord of Inverallochy, representing the rising martial generation of Clan Comyn. Athletic, sharp-featured, with intense dark eyes and swift physical coordination, Philip was reared amidst the crashing waves of the Aberdeenshire coastline. Trained thoroughly in coastal reconnaissance, heavy spear infantry formations, and amphibious skirmish tactics, he commands the deep loyalty of local fishing clans. In 1259, as regional tensions flare with Norway, Philip leads the mounted scouting vanguard of Inverallochy Castle, patrolling rocky headlands and intercepting clandestine reconnaissance craft attempting to chart the coastline. Strict in discipline yet deeply caring toward his squires, Philip combines tactical alertness with fearless martial spirit. Dedicated entirely to clan and country, he stands ready to shed blood to keep the northern shores inviolate. An ambitious and fiery knight of the Inverallochy lineage patrolling the marches between Aberdeen and Moray, Philip distinguished himself in cavalry charges and rugged border reconnaissance; fiercely devoted to martial prowess, he eagerly awaited royal summons to repel Norse invaders or chastise Highland rebels, determined to elevate his branch of the Comyn dynasty through valor, chivalry, and steadfast victory.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve martial renown across coastal patrols, setting a heroic example for Clan Comyn's youth",
+    "Support his father in defending every northeastern cove, intercepting all hostile maritime spies",
+    "Master combined-arms command and coastal tactics to lead independent battle-squadrons in war"
+  ],
+  "Values": [
+    "A knight's iron duty is to stand as an impenetrable shield for his people, fighting invaders to the death",
+    "Strict discipline and mutual trust are the heart of victory; cowardice upon the walls is treason",
+    "Unconditional fealty to Clan Comyn; embrace sacrifice gladly to protect the peace of the realm"
+  ],
+  "Fears": [
+    "A lapse during night patrol allowing enemy longships to land undetected and ravage coastal villages",
+    "Falling into a tactical ambush through overconfidence, bringing dishonor upon his family's name"
+  ],
+  "SpeechStyle": "Speaks with crisp clarity, youthful resonance, and energetic directness. His tactical directives are sharp and decisive, inspiring absolute confidence among his coastal guards.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

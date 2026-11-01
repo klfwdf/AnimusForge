@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Mongol_Keshik_Imperial_Bodyguard",
+  "Keywords": [
+    "Mongol Keshik Imperial Bodyguard",
+    "Great Khan Möngke and Khubilai Guard",
+    "Kebteul Night and Turghaut Day Sentries",
+    "Heavy Willow Leaf Lamellar Armor"
+  ],
+  "RagShortTexts": [
+    "The Keshik served as the Great Khan's elite day-and-night bodyguard and military."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Created by Genghis Khan, the 10,000-strong Keshik was the Great Khan's imperial household guard and administrative core. Divided into daytime guards (Turghaut) and night sentries (Kebteul), noble recruits wore double coats of lacquered iron lamellar, armed with two composite bows, heavy sabers, and hooked lances."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Keshik served as the academy for imperial governors (darughachi) and frontline generals. In the 1260 Toluid succession crisis, winning the allegiance of the Keshik commanders secured royal legitimacy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ranked silently around the Khan's nine-tailed white yak banner, Keshik heavy cavalry anchor the imperial center. When committed to the shock charge, their synchronized onslaught crushes entire army lines."
+    }
+  ],
+  "TextMappings": []
+}

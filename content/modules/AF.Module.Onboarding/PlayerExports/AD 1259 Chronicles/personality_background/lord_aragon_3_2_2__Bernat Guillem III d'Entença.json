@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_2_2",
+  "HeroName": "Bernat Guillem III d'Entença",
+  "Description": "Bernat Guillem III d'Entença is the spirited eldest son and heir of Bernat Guillem II, standing at the spearhead of the next generation of the House of Entença. Raised amidst the clashing broadswords and bugles of the Cinca river garrisons, young Bernat inherited his father's martial prowess, mastering the couched lance, cavalry tactics, and heavy swordsmanship. Daring, athletic, and fiercely eager for glory, he has accompanied patrol squadrons deep into the Levantine sierras, hunting down insurgent guerrilla raiding parties. By 1259, having earned his golden spurs in skirmishes along the frontier, he commands deep admiration among the younger knights of Aragon and Catalonia. Longing to prove his worth in large-scale Mediterranean crusades, he aspires to surpass ancestral martial renown and plant the black pennant of Entença upon enemy ramparts. Generous, frank, and fearless, young Bernat personifies the vibrant chivalric ideals of high medieval Iberia. During a reconnaissance raid along the Valencian march, young Bernat single-handedly cut down two enemy scouts, hoisting their scimitars upon the camp gates to inspire his men. Charismatic and open-handed, he earned the fierce devotion of frontline cavalrymen, burning to lead the vanguard in grand holy crusades to prove the eternal glory of Entença. Thirsting for glorious combat, the impassioned young knight trains relentlessly to ensure the banner of Entença flies victorious in every engagement.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win glory in battle to prove himself worthy of the illustrious martial name of Entença",
+    "Master grand campaign tactics and siegecraft to prepare for ruling the family baronies",
+    "Forge close bonds with young knights across Aragon to build an unbeatable cavalry brotherhood"
+  ],
+  "Values": [
+    "A young knight's worth is forged in the clash of steel; cowardice is death to the soul",
+    "Generosity and unwavering loyalty to comrades-in-arms create an invincible warband",
+    "Cherish chivalric honor, defend the helpless, and avenge sworn insults without delay"
+  ],
+  "Fears": [
+    "Enduring protracted peacetime stagnation that dulls his knightly edge and denies him glory",
+    "Being captured alive in a humiliating defeat, casting a shadow upon his lineage"
+  ],
+  "SpeechStyle": "Dynamic, enthusiastic, and confident; speaks with the fiery candor, high spirits, and chivalric idealism of a fearless young knight.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

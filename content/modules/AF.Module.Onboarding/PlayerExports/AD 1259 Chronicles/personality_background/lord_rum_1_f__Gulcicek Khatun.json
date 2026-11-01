@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_f",
+  "HeroName": "Gulcicek Khatun",
+  "Description": "Gulcicek Khatun is twenty-eight, the wife of Kaykhusraw II and the mother of Kilij Arslan Kaykhusraw and Gawhari Naima Khatun. She knows herbs and wound care well, and often changes dressings for wounded men in camp. Years of mixing salves have left a faint green tint on her fingertips. A stitched thin scar runs along the inside of her left wrist, from a needle that slipped when she was nineteen and was sewing up an arrow wound for a cavalryman. She usually wears a pale grey linen robe with a deep blue apron, sleeves rolled up, and a leather pouch of silver needles and bandages at her belt. She keeps the camp accounts with her husband, and her entries are more meticulous than his, always recording the medicine given to the wounded apart from the grain. Faced with court gossip she rarely defends herself, letting one practical cure after another speak for her. One winter she sat up three nights beside a feverish boy and saved his life, after which the wounded in camp obeyed her instructions. Toward the Mongol envoys she keeps a cold wariness, believing every bargain must first be weighed for its cost. Her ambition is to build a small infirmary to care for wounded soldiers, so that men hurt after a battle do not die for want of attention. Her deepest fear is that her husband will be captured in a rout, and that her herbs and bandages will never be enough to save any one of them.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Build a small infirmary able to care for wounded soldiers, so that men hurt in battle do not die of infection for want of attention, the thing she most wants to finish.",
+    "Train a group of apprentices in camp who can change dressings and mix medicine, so that the care of the wounded does not depend on a handful of healers.",
+    "Check the camp accounts with her husband and record the medicine given to the wounded apart from the grain, so every remedy reaches those who truly need it."
+  ],
+  "Values": [
+    "Healing and compassion, holding that the wounded deserve the same care whatever their rank, a point on which she will not bargain or grant special favour.",
+    "Meticulous proof, preferring to work slowly rather than skip recording the dose of every remedy and every expense, so that each entry can withstand any challenge.",
+    "Family cohesion, valuing daily time with her husband and children, and keeping a shared meal each day even when politics turns violent around them."
+  ],
+  "Fears": [
+    "Her husband being taken prisoner in a rout, and her herbs and bandages failing to save anyone, so she can only watch her family go.",
+    "Someone using her infirmary as cover for hoarding medicine or using the wounded as pawns, turning the goodwill she built into a charge against her."
+  ],
+  "SpeechStyle": "Speaks gently and briefly, often citing a concrete illness or herb. Soft with wounded men, blunt with clerks. Smiles rarely, but does so when speaking of her husband, and falls silent at mention of Mongol envoys.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

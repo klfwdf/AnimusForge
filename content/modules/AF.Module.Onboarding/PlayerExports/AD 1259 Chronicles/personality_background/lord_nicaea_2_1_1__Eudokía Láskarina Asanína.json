@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_2_1_1",
+  "HeroName": "Eudokía Láskarina Asanína",
+  "Description": "Eudokía Láskarina Asanína was the daughter of Nicaean Emperor Theodore II Laskaris and Empress Elena of Bulgaria, standing as a living embodiment of the legitimate imperial line during the tumultuous transition of 1259. Reared amidst the scholarly splendor of Nicaea, Eudokia witnessed the brutal assassination of George Mouzalon and the usurpation of Michael VIII Palaiologos that stripped her brother John IV of the purple. Neutralized through dynastic exile, she was wed to Count William Peter I of Ventimiglia in Liguria, yet refused to abandon her Byzantine imperial heritage. At the courts of Genoa and later under the royal protection of Peter III of Aragon in Barcelona, Eudokia maintained an uncompromising Hellenic and Orthodox identity, patronizing wandering monks, transcribing Greek liturgical prayers, and fiercely defending her family's historic legitimacy. Her stoic resilience and regal bearing commanded profound reverence across Western courts, transforming her lifelong exile into a poignant testament to the unyielding dignity of the Laskaris dynasty. In Barcelona, Eudokia established a dedicated scriptorium and archive, eagerly gathering intelligence from Levant trade galleys regarding Byzantine affairs. Amidst festive feasts held by the Crown of Aragon, she dressed in austere purple mourning robes, a silent protest against Michael VIII's cruel usurpation of her royal house. In her final testament, she bequeathed her gold imperial seal ring of the Laskaris dynasty to her heirs, solemnly commanding them never to renounce their blood connection to the Queen of Cities.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her words are sorrowful yet impeccably dignified, reflecting the unbending pride of an exiled imperial princess who never renounced her heritage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

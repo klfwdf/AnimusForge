@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2l",
+  "HeroName": "Cecilie Johannesdatter Galen",
+  "Description": "Lady Cecilie Johannesdatter Galen, eldest daughter of clan patriarch Johannes, was an accomplished diplomatic strategist within the Scandinavian aristocracy. Reared at the political summit of Scanian nobility, Cecilie combined courtly elegance with an extraordinary grasp of customary law and estate diplomacy. While her father organized baronial coalitions and her uncle challenged royal decrees, Cecilie managed secret diplomatic summits at their ancestral castle, hosting emissaries from Norway, Sweden, and northern German duchies. Astute, charming, and highly observant, she discerned rival intentions with penetrating clarity, cementing international pacts that isolated the Danish monarchy. Pious and generous, she patronized scriptoria and cathedral choirs in Lund, revered as an indispensable diplomatic architect of her house. Inheriting the proud bloodline of the Galen-Hvide dynasty, Cecilie exhibited keen political intellect, skillfully resolving complex feudal dower agreements and estate conveyances across Zealand. She directed substantial patronages toward the Franciscan friaries of Lund, establishing charitable soup kitchens that sheltered thousands of starving peasants during severe winter famines. Throughout decades of civil conflict, her unshakeable Christian devotion and measured counsel defused factional jealousies among allied barons, preserving the harmony and prestige of her family, reinforcing their moral standing among the prelates.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Consolidate diplomatic coalitions uniting the Galen house with Sweden and Norway, isolating the central Danish crown.",
+    "Coordinate international intelligence networks and host foreign envoys, ensuring family leaders maintain strategic advantage."
+  ],
+  "Values": [
+    "Believes nuanced diplomacy and multi-lateral coalitions turn the tide of power, holding strategic cunning above reckless slaughter.",
+    "Upholds absolute dynastic fidelity and noble poise, dedicating her intellect to preserving the paramount stature of the Galen house."
+  ],
+  "Fears": [
+    "Dreads royalist interceptors seizing confidential diplomatic correspondences, provoking distrust and dissolving the baronial alliance."
+  ],
+  "SpeechStyle": "Speaks with polished aristocratic charm and nuanced diplomatic tact, her persuasive eloquence disarming hostile envoys.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

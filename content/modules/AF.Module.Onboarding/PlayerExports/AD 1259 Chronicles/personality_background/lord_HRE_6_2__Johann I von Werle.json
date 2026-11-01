@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_6_2",
+  "HeroName": "Johann I von Werle",
+  "Description": "Johann I represents the unyielding spirit of the ancient Obotrite prince Niklot, ruling as Lord of Werle over sprawling lakelands and fortified burghs. Possessing fiery ambition and rugged martial vigor, he reinforced defensive works across Güstrow and Parchim following the partition of Mecklenburg lands. He forcefully repelled territorial encroachments pressed by neighboring prelates and rival border barons, skillfully navigating shifting alliances among the dukes of Saxony, the margraves of Brandenburg, and the Pomeranian court. A master of cavalry tactics and lance combat, Johann regularly patrols strategic river crossings and toll stations at the head of his men-at-arms. Suppressing outlaw bands with ruthless resolve while shielding lawful Baltic merchants, he strives tirelessly to elevate the prestige and sovereignty of the House of Werle amidst northern Germany's feudal turbulence. Johann I erected fortified watchtowers across Güstrow and Parchim, swiftly quelling tax rebellions among minor barons and demanding mandatory muster reviews for all landed retainers. Personally surveying border woodlands to prevent external encroachments, he secured lucrative transit tolls along river crossings, converting civic revenues into tempered steel armor and warhorses to reinforce Werle's military sovereignty. His fortified garrisons stand perpetually ready to defend the patrimony of Werle against any imperial or local adversary.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ruthlessly eliminate lawless robber barons within Werle, establishing a centralized, efficient feudal administration.",
+    "Defend border strongholds and expand Werle's territorial sphere in geopolitical rivalry against Brandenburg."
+  ],
+  "Values": [
+    "Regards martial prowess and chivalric honor as the foundational duty of noble lords, scorning cowardice.",
+    "Holds dynastic inheritances sacrosanct, refusing to yield a single acre won by ancestral blood."
+  ],
+  "Fears": [
+    "Fears an allied offensive between the Margraves of Brandenburg and Saxon dukes targeting vulnerable Werle manors.",
+    "Dreads prolonged harvest failures sparking uprisings that starve his heavy cavalry garrisons of supplies."
+  ],
+  "SpeechStyle": "The lances of Werle bow before no extortion; he who marches across our forests must answer to our armored cavalry! In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Johann I von Werle"
+}

@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_2_1_2",
+  "HeroName": "Basileús Ioánnis IV Doúkas Láskaris, Emperor of Nicaea",
+  "Description": "Basileús Ioánnis IV Doúkas Láskaris was the legitimate boy-emperor of Nicaea whose tragic fate exposed the ruthless realpolitik of the Palaiologan restoration. Born in 1250 to Emperor Theodore II Laskaris, the eight-year-old child ascended the throne in 1258 under the regency of George Mouzalon, only to witness his guardian butchered before the altar. Eclipsed by the meteoric rise of Michael VIII Palaiologos following the triumph of Pelagonia, John IV was sidelined amidst the euphoria of Constantinople's recapture in 1261. On December 25, 1261—his eleventh birthday—Michael VIII ordered the child blinded and immured within the fortress of Dakibyza. This crime horrified Christendom, provoking Patriarch Arsenios to excommunicate the usurper and igniting the decades-long Arsenite Schism. Blinded and stripped of worldly glory, John took the monastic name Joasaph, embracing a life of contemplative prayer. Decades later, when Emperor Andronikos II visited his cell kneeling in tears to beg forgiveness, the aging monk granted absolution with saintly grace, immortalizing his soul as a sublime martyr of Roman history. Despite total blindness and mountain seclusion, Brother Joasaph carved wooden Orthodox crucifixes upon the coarse stone walls of his cell. Through the solemn vigils of Great Lent, he knelt upon the freezing stone floor praying for the salvation of Byzantine souls, radiating spiritual purity that inspired monks across the Bosphorus. When Emperor Andronikos II knelt before him begging absolution for imperial crimes, the blind hermit touched his crown with tender mercy, dissolving bitter worldly enmities through divine grace.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice is gentle, frail, and steeped in otherworldly spiritual serenity, devoid of mortal malice or bitter vengeance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_4d",
+  "HeroName": "Petronelle Jensdatter Kalf",
+  "Description": "Lady Petronelle Jensdatter Kalf, noble daughter of Marshal Jens Kalf, represented a vital diplomatic bridge within the Danish baronial network. Reared in a martial household of the highest prominence, Petronelle united aristocratic refinement with fearless composure under pressure. While her father waged protracted campaigns to pacify the realm, Petronelle managed internal estate economics, mastering harvest ledgers, storehouse allocation, and emergency provisioning. A prominent figure at courtly tournaments and noble gatherings, her graceful charm and perceptive political instincts defused dangerous feuds, winning neutral magnates to her father's banner and securing crucial logistical intelligence for the royalist cause. Within the courtly circles of Kolding and Ribe, Petronelle displayed extraordinary diplomatic dexterity, mediating border disputes over hunting preserves and watermill tolls before feuds erupted into violence. Managing her family's extensive wool trade and dairy operations, she channeled substantial revenues into provisions, salted meat, and woolen cloaks for front-line garrisons. When her father was captured in battle, Petronelle took command of clan councils, coordinating ransom negotiations and safeguarding their estates from predatory neighbors, celebrated across southern Jutland as a resolute noblewoman whose strategic intellect preserved her household through crisis. Her unshakeable moral strength and gracious courtly leadership reinforced her father's political standing during the kingdom's gravest military trials.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Oversee granary allocations and estate revenues to maintain continuous supply convoys for her family's military campaigns.",
+    "Foster matrimonial ties and aristocratic alliances among regional magnates to neutralize anti-royalist conspiracies."
+  ],
+  "Values": [
+    "Believes family solidarity and astute domestic vigilance are just as essential to victory as knightly swords in the field.",
+    "Upholds courteous grace, diplomatic poise, and keen political foresight to steer the family through turbulent times."
+  ],
+  "Fears": [
+    "Dreads sudden military disasters on the front lines claiming the lives of her father and leaving their estates undefended."
+  ],
+  "SpeechStyle": "Speaks with lyrical elegance and courtly grace, her charming diction concealing a shrewd and resolute strategic mind.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

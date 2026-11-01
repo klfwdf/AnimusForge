@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_1_1",
+  "HeroName": "Sanchia of Provence, Queen consort of the Romans",
+  "Description": "Sanchia of Provence, daughter of Count Ramon Berenguer IV, was Queen consort of the Romans as wife of Richard of Cornwall. One of the four famed Provençal sister-queens, she was crowned beside the throne of Charlemagne at Aachen, radiating cultural brilliance across the Anglo-German court. Sanchia was crowned in gold and pearls beside the throne of Charlemagne at Aachen, patronizing troubadours to bring Mediterranean lyric culture to the princely courts of Germany. She navigated imperial diets with brilliant diplomatic tact, utilizing her family ties across four kingdoms to mediate dangerous armed standoffs between rival princes. Celebrated across Christendom, Queen Sanchia dedicated her brilliance to dynastic peace, weaving four kingdoms into an immortal chivalric legend of sovereign sisterhood. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage the sisterhood of four queens ruling England, France, Germany, and Sicily for European peace.",
+    "Introduce Provençal lyric culture to Rhenish courts to enhance Richard's princely prestige.",
+    "Secure royal inheritance charters ensuring the smooth succession of her royal scions."
+  ],
+  "Values": [
+    "Views royal pedigree and courtly manners as emblems of state greatness, soothing factional rage.",
+    "Believes conjugal unity and Christian piety protect sovereign houses through political storms."
+  ],
+  "Fears": [
+    "German baronial revolts overrunning Rhenish palaces, endangering her and her young sons.",
+    "Richard exhausting his colossal wealth on two fronts, causing his crowns to collapse."
+  ],
+  "SpeechStyle": "Speaks with melodious Provençal grace and regal poise, captivating courtiers effortlessly. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

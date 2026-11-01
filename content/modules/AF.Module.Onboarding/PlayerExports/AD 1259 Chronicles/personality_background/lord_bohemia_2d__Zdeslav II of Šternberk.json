@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2d",
+  "HeroName": "Zdeslav II of Šternberk",
+  "Description": "Zdeslav II stands as the eldest son and primary heir of veteran lord Zdeslav I, leading the new martial vanguard of the House of Šternberk. Riding alongside his heroic father since youth, he mastered shock cavalry assaults and siege tactics across the Moravian marches and Austrian campaigns, earning appointment by King Přemysl Otakar II as garrison commander of Olomouc Castle—the historic fortress his father had immortalized in battle. Rigorous, decisive, and commanding iron discipline, Zdeslav II demands excellence from his men-at-arms while clearing border defiles of lawless highwaymen, earning the high regard of Bishop Bruno and the Moravian chivalry. Dedicated to his father's legendary legacy, he vows that the golden eight-pointed star shall never retreat, ready to defend the crown of Bohemia with his life. Watching the eastern plains from the high walls of Olomouc, Zdeslav II drilled garrison infantry in interlocking pavise shield-walls and heavy torsion crossbows, rendering the Moravian capital impregnable. Launching devastating counter-attacks along the border, he captured rogue chieftains alive, proving through unmatched valor that the golden star of Sternberg shone brighter than ever in the hands of its new commander. His tactical brilliance and resolute guardianship kept the heart of Moravia secure from all foes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guard Olomouc Castle and Moravian transit corridors, upholding the martial renown of House Šternberk.",
+    "Lead the family's armored vanguard in royal campaigns, winning new fiefs and hereditary honors."
+  ],
+  "Values": [
+    "Regards defending family honor and enforcing battlefield discipline as non-negotiable knightly laws.",
+    "Upholds straightforward warrior integrity, viewing loyalty to the crown as the fountainhead of glory."
+  ],
+  "Fears": [
+    "Fears tactical errors in decisive battles costing veteran knights and tarnishing his father's triumphant legacy.",
+    "Worries domestic baronial rebellions will expose rear garrisons, allowing Moravian bastions to fall to enemies."
+  ],
+  "SpeechStyle": "My sire's golden star is the beacon of our honor; on the ramparts of Olomouc our blades are drawn, and invaders shall find only their graves! In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Zdeslav II of Šternberk"
+}

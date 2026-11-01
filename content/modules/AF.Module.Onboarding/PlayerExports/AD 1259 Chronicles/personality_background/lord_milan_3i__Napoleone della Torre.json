@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3i",
+  "HeroName": "Napoleone della Torre",
+  "Description": "Napoleone della Torre, known as 'Napo Torriani', ruled Milan as Signore and Imperial Vicar under Rudolf of Habsburg. Governing with autocratic brilliance and iron will for twelve years, he modernized canals until his fateful defeat at Desio in 1277, ending his life in a legendary iron cage. Napoleone deepened municipal canals and widened outer moats in Milan, asserting the supreme authority of his Imperial Vicariate to compel submission from every feudal magnate. Imposing autocratic centralization and exiling conspirators, he utilized the Imperial Vicariate to elevate Milanese manufacturing and territorial hegemony to its absolute peak. A tempestuous titan of medieval statecraft, Napo Torriani left an imperishable mark on Milan through monumental canals, autocratic brilliance, and tragic defiance. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure the Imperial Vicariate from Rudolf of Habsburg to suppress feudal rivals legally.",
+    "Impose direct Torriani centralization across Como and Lecco to eliminate Visconti resistance.",
+    "Excavate massive arterial canals to make Milan Europe's richest manufacturing capital."
+  ],
+  "Values": [
+    "Believes uncompromising autocracy and heroic will alone master the fierce Italian character.",
+    "Values aristocratic pride above survival, defying death in an iron cage rather than begging."
+  ],
+  "Fears": [
+    "Archbishop Ottone mobilizing an army of exiled patricians to stage a surprise assault.",
+    "His cherished sovereign honor and imperial vicariate being mocked and trampled."
+  ],
+  "SpeechStyle": "Barks with imperial arrogance and fiery command, brooking no opposition or counsel. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

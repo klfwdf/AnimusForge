@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_2",
+  "HeroName": "Rátót nembeli Roland, Palatine of Hungary",
+  "Description": "Rátót nembeli Roland is the foremost baron and elder statesman of the Kingdom of Hungary, serving as Palatine (Nádor) and former Voivode of Transylvania. Hailing from the ancient and illustrious Rátót clan, Roland has been King Béla IV's most trusted advisor through decades of existential peril. At the catastrophic Battle of Mohi in 1241, he commanded the rearguard with desperate heroism, buying precious time for the king's escape. In the aftermath, as Palatine overseeing supreme royal justice and military assemblies, Roland relentlessly enforced the restoration of crown estates and coordinated castle construction nationwide. By 1259, as bitter dynastic discord threatens to pit King Béla against Junior King Stephen, Roland exercises his immense constitutional authority to mediate between rival baronial factions, standing as an unshakeable pillar of state stability. Roland convened regular judicial assemblies across the counties, listening to commoners' petitions and overturning unlawful baronial land encroachments. His unbending enforcement of royal decrees restored civil stability and legal order throughout the realm, commanding universal reverence. He commanded the mobilization of county militias, establishing standardized logistical procedures that guaranteed swift defense against external foes. His profound wisdom and majestic authority preserved the kingdom's legal foundations, commanding the enduring respect of all Hungarian estates.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold supreme royal law and constitutional order, striving tirelessly to reconcile king and prince.",
+    "Consolidate the Rátót clan's preeminent standing while safeguarding royal revenues and crown domains."
+  ],
+  "Values": [
+    "Regard impartial justice and constitutional fidelity as holy vows, scorning lawless baronial usurpations.",
+    "Champion majestic rule of law, convinced strict discipline alone sustains a reborn nation."
+  ],
+  "Fears": [
+    "Fears predatory magnates exploiting royal division to carve out private tyrannies, fracturing Hungary.",
+    "Dreads internal deadlock paralyzing frontier defenses and inviting devastating foreign invasions."
+  ],
+  "SpeechStyle": "The Palatine's staff upholds the sacred laws of Saint Stephen. Any grasping oligarch who defies royal justice shall answer to my armored cavalry! Royal law is absolute; traitors will be chained!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

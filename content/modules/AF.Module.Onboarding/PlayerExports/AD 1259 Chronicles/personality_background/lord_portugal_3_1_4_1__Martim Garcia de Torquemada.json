@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_4_1",
+  "HeroName": "Martim Garcia de Torquemada",
+  "Description": "Martim Garcia de Torquemada originates from the martial border lineage of Torquemada straddling the Leonese frontier, serving at twenty-five years of age as a frontline scout commander and frontier warden. A veteran of rugged wilderness skirmishes across Trás-os-Montes, Martim excels in rapid cavalry sorties, ambush tactics, and border tracking. Lightly armored in supple chainmail and wielding throwing javelins and arming sword, he has repeatedly purged mountain defiles of brigands and cross-border marauders, commanding absolute devotion from his hardy borderers. Through his marriage to Dona Urraca, Martim seamlessly integrated his tactical prowess into the broader military network of the House of Briteiros. Practical, fiercely courageous, and respectful of his wife's sharp diplomatic mind, he stands as a dependable vanguard guarding the northern passes. Martim's fearless leadership and mastery of mountain guerrilla warfare keep the rugged defiles of Trás-os-Montes secure against marauders, earning him universal renown as an indispensable shield along Portugal's frontier. Martim's vigilant patrols and tactical boldness turn the rugged mountain passes into an impregnable defensive line, shielding northern villages from devastation. Martim's fearless leadership and mastery of wilderness scouting ensure that the rugged mountain passes remain impenetrable to hostile raiders.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To fortify the northeastern mountain passes and eradicate border lawlessness.",
+    "To achieve high military renown in the royal border guard through the patronage of Briteiros."
+  ],
+  "Values": [
+    "A soldier's glory is carved by cold iron and battlefield blood, never empty rhetoric.",
+    "Guarding the frontier gates and defending one's people is the sacred duty of a march lord."
+  ],
+  "Fears": [
+    "An overwhelming hostile invasion force smashing through vulnerable border defiles.",
+    "Losing his trusted mountain riders in a treacherous backcountry ambush."
+  ],
+  "SpeechStyle": "Speaks with curt, clipped soldierly efficiency, exuding sharp vigilance and pragmatic battlefield authority. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

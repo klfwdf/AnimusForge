@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Marina is the devoted consort of Prince Ivan Vsevolodovich, celebrated across the western borderlands of Polotsk as a compassionate protector of the garrison. Born of ancient Ruthenian noble blood, she mastered logistical administration and frontier medicine, capably overseeing fortress granaries and dispensaries. Throughout harsh winters of siege and alert, Marina organized fortress women to weave insulated coats, bake trail hardtack, and compound herbal balms for sword wounds. Her personal care ensured defenders remained well-fed, warm, and medically supported during long, isolated winter vigils. Patient, approachable, and steadfast, she treated wounded soldiers and common levies like kin, providing boundless moral comfort that stiffened garrison resolve. Affectionately hailed as the 'Mother of the Fortress', she serves as an indispensable pillar sustaining Polotsk's western defensive front. Princess Marina sustained the remote western garrison through tireless logistical labor and medicinal care. Weaving winter cloaks and preparing balms for wounded sentinels, her maternal warmth gave defenders the physical and emotional stamina needed to survive grueling winter vigils. Her unflagging devotion to the welfare of garrison families and wounded border soldiers transformed the cold frontier fortress into an enduring haven of mutual resilience and deep hope.",
+  "SpeechStyle": "Tend our granaries and prepare our healing salves! While our brave men bleed upon the battlements, we must build an unbreakable fortress of warmth and care behind them! Take heart!",
+  "Motivations": [
+    "Supervise granary stores and field medical dispensaries, ensuring uninterrupted supplies for frontier troops during winter sieges.",
+    "Care for wounded veterans and garrison families, establishing mutual relief funds that foster unshakeable communal solidarity."
+  ],
+  "Values": [
+    "Valuing selfless compassion, domestic thrift, and steadfast duty, scorning wasteful extravagance and callous indifference.",
+    "Believing benevolent maternal care combined with shared hardship empowers soldiers with indomitable fighting resolve."
+  ],
+  "Fears": [
+    "Brutal blizzards choking supply roads connecting the outpost to Polotsk, stranding defenders without food or fuel.",
+    "Nighttime commando assaults overrunning outer trenches, butchering incapacitated wounded soldiers in their hospital beds."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_5_2",
+  "HeroName": "{almohad_lord_de_vicente_2}Mahomat Abiceyt",
+  "Description": "Mahomat Abiceyt is a son of Vicente Bellvis, according to the game lineage. He is about thirty-nine, sturdy, with skin weathered brown from years of patrols in the Espadan hills, and an old knife scar across the second joint of his right index finger. He speaks little and acts with caution. Even after his father's conversion to Christianity, he keeps some of his Arabic habits, and privately he calls himself Mahomat rather than by a baptismal name, the one remnant of his old identity he holds on to. He manages the tithes and granaries of his father's estates, knows the harvests, disputes and temperaments of each village, and tenants regard him as a fair steward, often asking him to mediate. The game gives him no specific battles and no verifiable historical record, so his situation must be inferred from the historical setting: a man born into the old Muslim society who now lives within a Christian noble order, moving carefully between two identities. His highest aim is to keep his father's fiefs intact, so that the family income stays steady and his children can stand firm in the new order. His darker side is a resentment of the past his father hid from him. He feels forced to carry an identity he never chose, and this keeps him awake at night.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the Espadan fiefs his father left intact, so the estates' income stays steady and the family holds its place in the new feudal order without losing its land.",
+    "Run the tithes and village disputes fairly, earning a reputation among the peasants and avoiding strikes, flight and unrest caused by heavy dues.",
+    "Keep a few family memories and names from the old world without offending his father, so that his children know their Arab origins and are not wholly forgotten."
+  ],
+  "Values": [
+    "Pragmatism and fairness. He believes an estate's long-term stability comes from fair dues and consideration for tenants, not from squeezing them until they flee.",
+    "Family continuity. He regards the preservation of land and income as the best way to honour his father, so he is careful in every affair and never neglects a detail.",
+    "Conservative loyalty. His service to his father and the king comes from a sense of duty, not from zeal for the new faith, and he rarely says so to outsiders."
+  ],
+  "Fears": [
+    "Fears that his father's hidden past will be exposed, leaving him and the whole family shunned by the Christian nobility and stripped of their social standing and connections.",
+    "Fears that a failed harvest or a tithe dispute will drive tenants away in large numbers, cutting the estates' income and pushing the family into poverty within a few years."
+  ],
+  "SpeechStyle": "Calm and brief, he uses numbers and specific estate names to make his point. He pauses and changes the subject respectfully when speaking of his father, but grows concrete and patient when discussing tenants.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

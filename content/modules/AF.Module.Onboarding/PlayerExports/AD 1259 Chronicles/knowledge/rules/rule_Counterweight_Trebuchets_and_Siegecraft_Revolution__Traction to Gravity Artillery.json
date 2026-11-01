@@ -1,0 +1,30 @@
+{
+  "Id": "rule_Counterweight_Trebuchets_and_Siegecraft_Revolution",
+  "Keywords": [
+    "Traction to Gravity Artillery",
+    "Windlass Lever Kinematics Sling",
+    "Thirteenth Century Siegecraft"
+  ],
+  "RagShortTexts": [
+    "The 13th-century counterweight trebuchet replaced human traction, using multi-ton."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The 13th century marked the zenith of siege engineering through the perfection of the counterpoise trebuchet. Replacing volatile human-pulled traction artillery, master carpenters mounted multi-ton earth or lead boxes onto pivoting short lever arms, primed with geared windlasses. The kinematic multiplier of a flexible rope sling hurled 200-to-300-pound dressed masonry balls across 300 yards with devastating ballistic repeatability, rendering vertical castle walls obsolete without concentric layers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "engineer",
+          "soldier"
+        ]
+      },
+      "Content": "Unlike tiring human pullers, gravitational potential energy provided immutable siege consistency, pulverizing parapets day and night."
+    }
+  ],
+  "TextMappings": []
+}

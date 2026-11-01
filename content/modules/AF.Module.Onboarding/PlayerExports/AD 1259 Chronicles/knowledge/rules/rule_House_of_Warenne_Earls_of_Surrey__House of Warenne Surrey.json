@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Warenne_Earls_of_Surrey",
+  "Keywords": [
+    "House of Warenne Surrey",
+    "Lewes Castle Warenne",
+    "Conqueror Kin Warenne Chequy",
+    "Royalist Warenne Earls"
+  ],
+  "RagShortTexts": [
+    "The Warenne Earls held Lewes and Yorkshire fiefs, stalwartly fielding chequy banners for."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Descended from the Conquest companion, John de Warenne held the earldom of Surrey and the imposing fortress of Lewes. Linked by blood to Henry III, the family brandished gold-and-azure checkered heraldry to uphold royal authority against rebel barons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "From Sussex coasts to Yorkshire dales, Warenne retainers provided elite knights whenever the crown invoked feudal duties."
+    }
+  ],
+  "TextMappings": []
+}

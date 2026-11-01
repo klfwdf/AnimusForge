@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_9_3",
+  "HeroName": "Bortu",
+  "Description": "Bortu is near twenty-five, slim, with skin browned by the steppe sun and a short neat fringe over his forehead. He wears a dark blue short jacket, and a worn leather quiver hangs at his belt, its arrow shafts marked with small notches that count his yearly hunts. In the game he is the eldest son of the ninth clan, twenty-four years old, the child of Tolui and Yesui, with Delbee as his wife. No medieval person of this name is recorded, so the background here rests on the clan setting alone. An eldest son in a steppe clan usually carries both the household and military duties, and the expectations of parents and old custom fall on him. Bortu learned to ride and shoot from his father, and he heard from his mother the lessons of the family's past quarrels, which shaped a cautious and steady temper. Against rivals he avoids open confrontation. He first hears the other side's claims, then seeks the counsel of his elders before he decides. He and his wife Delbee respect each other, though their differences often make them test one another. He speaks little, while she is quick and talkative. His highest aim is to complete his father's unfinished work and keep the name of the ninth clan bright in his generation. His shadow is the fear that his caution will be taken for weakness, leaving him forever unable to stand on his own beneath his father's renown.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Carry the eldest son's duties in household and army, helping his father Tolui keep the cavalry in order and the camp under control while he is away.",
+    "Complete his father's unfinished work and keep the ninth clan's name bright in his generation, so that the family's honour does not fade in his hands.",
+    "Support his wife Delbee and balance family affairs with external dealings, so that his decisions meet the expectations of his elders and still take his partner's view into account."
+  ],
+  "Values": [
+    "Filial duty and responsibility, because he treats respect for parents and family duty as the foundation of his standing, and honours old custom before his own view.",
+    "Cautious steadiness, because he believes a careful decision preserves the family better than a hasty move, so he would rather wait longer than advance rashly on any major matter.",
+    "Loyalty to the family, because he holds that personal gain must yield to the interest of the whole house, and he keeps his duties even when he would rather not."
+  ],
+  "Fears": [
+    "Fears that his caution will be seen as weakness, leaving him without independent standing beneath his father's renown, remembered as a son who only keeps what he inherits.",
+    "Fears that he will make a wrong decision while his father is away, throwing the cavalry and the camp into disorder and betraying his father's trust."
+  ],
+  "SpeechStyle": "Bortu speaks little, evenly, often pausing before he answers. He opens with a respectful phrase for his elders before setting out his view. With his wife in private he relaxes and lets a gentle humour show.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

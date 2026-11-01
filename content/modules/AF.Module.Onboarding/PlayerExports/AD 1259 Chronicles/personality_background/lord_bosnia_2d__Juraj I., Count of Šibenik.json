@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_2d",
+  "HeroName": "Juraj I., Count of Šibenik",
+  "Description": "Juraj I Šubić, aged twenty-five in 1259, is the dynamic second son of Count Stjepan II and loyal brother of Paul I, governing as Count of Šibenik and naval protector of Trogir. Commanding the strategic mouth of the Krka River, Juraj is an aggressive and accomplished maritime tactician who directs the coastal galley squadrons of the Šubić clan. Relentlessly patrolling the Dalmatian archipelago, he repeatedly repelled Venetian corsairs and secured vital sea lanes. Intelligent, fearless, and intensely loyal to his elder brother, Juraj forms the naval spearhead of the family's expanding realm. In 1259, he reinforces the seawalls of Šibenik with artillery batteries, determined to command the Adriatic waves with iron fists. Governing the naval harbor of Šibenik, Juraj I oversees warship construction and stone harbor defenses with exceptional maritime expertise. Beloved by local mariners and burghers, he suppresses piracy with an iron fist while transforming his port into a lucrative customs depot. Serving as the dynamic naval right hand of his elder brother, Juraj stands ever vigilant to repel Venetian fleets and expand family domains. With unbending vigilance and naval prowess, Juraj secures the coastal waters of Dalmatia, turning Šibenik into an impregnable maritime fortress and prosperous trading hub.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Commands with thunderous naval authority and fierce energy, swift and decisive, driving rowers and archers with tireless passion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

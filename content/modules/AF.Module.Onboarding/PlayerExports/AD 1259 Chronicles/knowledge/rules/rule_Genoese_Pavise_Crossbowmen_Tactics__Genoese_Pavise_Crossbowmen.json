@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Genoese_Pavise_Crossbowmen_Tactics",
+  "Keywords": [
+    "Genoese Pavise Crossbowmen",
+    "Pavise Shield Wall Array",
+    "Crossbow Windlass Spanning",
+    "Mediterranean Elite Arbalest"
+  ],
+  "RagShortTexts": [
+    "Genoese crossbowmen deployed massive pavises to shield reloading arbalests in lethal volleys."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Genoese crossbowmen constitute Europe's premier ranged mercenary corps. Operating in coordinated pairs, one specialist plants a man-tall curved pavise shield into the soil, while the arbalester spans heavy composite cross-bows with foot stirrups, discharging armor-piercing iron bolts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Behind a locked line of pavises, we can break any cavalry charge at eighty paces. Keep your cord dry in the rain, and never let light horsemen get behind your shield-bearer while spanning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Contracting five hundred Genoese crossbowmen demands heavy chests of Genoese florins, but whether assaulting an Andalusian breach or garrisoning Acre, their disciplined volleys deliver unmatched suppression."
+    }
+  ],
+  "TextMappings": []
+}

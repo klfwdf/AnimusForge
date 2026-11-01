@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_1_2",
+  "HeroName": "Emir Ala ad-Din Manqatuy",
+  "Description": "Emir Ala ad-Din Manqatuy is a game emir who belongs to Qutuz's faction in the Mamluk army. No historical source records him, so his origins, appearance and record are game setting. He is stocky, with high cheekbones and a small piece missing from his left ear, which the camp attributes to a mounted accident, and he usually hides it under a dark brown turban. In youth he served as horse-master in Qutuz's cavalry, learning to match fodder and rations to each horse's temperament, a skill that won him trust in later campaigns. After Qutuz seized power he was appointed supervisor of camp provisions, distributing fodder and grain to the emirs and so dealing with many small factions. He never underestimates an enemy, but he trusts ledgers and granaries more than bravado. At one council he insisted that an advance wait until the supply roads were secured, a stance that offended several officers eager for glory. He avoids the spotlight, preferring to check figures in his tent rather than shout orders at the front. His noble aim is to win the Manqatuy house a permanent place in the new Mamluk order, so that his descendants need depend on no one. His inner shadow is the fear that one misjudgement will cost him control of the supplies, and that the old commanders he has held down will strike back and undo years of careful work.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Extend his control over the army's grain and horse distribution, tying the Manqatuy house to every emir's needs so that no one can easily replace it.",
+    "Verify roads and granary stocks before each advance, accepting delay rather than letting the army starve, so that Qutuz continues to trust him.",
+    "Keep polite, transactional contact with Baybars' former followers, avoiding open enmity while never letting them see the family's supply accounts."
+  ],
+  "Values": [
+    "Victory depends on who gets horses and rations to the soldiers at the last moment, because brave charges without supplies end in defeat.",
+    "Cooperation and bargaining work better than open confrontation, and an emir's worth lies in reconciling many interests into one workable plan.",
+    "Loyalty must be measured by concrete service, since an oath without grain and fodder behind it is merely an empty slogan."
+  ],
+  "Fears": [
+    "Losing his post as provision supervisor, after which the emirs he once supplied switch allegiance and leave the Manqatuy house without a base in camp.",
+    "A single misjudgement cutting the supply roads, leaving soldiers to starve or scatter, and Qutuz judging him incompetent and expelling him from the army."
+  ],
+  "SpeechStyle": "He speaks evenly and states figures before drawing conclusions, with a merchant's calculating tone. In debates he concedes a small point to win a concession on rations, but refuses flatly when his core interests are touched.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

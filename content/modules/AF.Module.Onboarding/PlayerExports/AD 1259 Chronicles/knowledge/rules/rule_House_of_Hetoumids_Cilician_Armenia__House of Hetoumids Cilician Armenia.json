@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Hetoumids_Cilician_Armenia",
+  "Keywords": [
+    "House of Hetoumids Cilician Armenia",
+    "Hetoum I Mongol Alliance",
+    "Taurus Mountain Sis Forts",
+    "Cilician Armenian Crusaders"
+  ],
+  "RagShortTexts": [
+    "King Hetoum I traveled to Karakorum to forge an alliance with the Mongols, fortifying Sis."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Hetoumid dynasty presided over Cilician Armenia beneath King Hetoum I. By securing an early protective pact directly in Karakorum with the Great Khan, Hetoum shielded his realm from Rum Seljuks, deploying elite Armenian knightly shock cavalry from cliffside citadels like Sis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Controlling vital Cilician Gates passages, Armenian garrisons imposed prohibitive casualties on hostile caravans and invaders alike."
+    }
+  ],
+  "TextMappings": []
+}

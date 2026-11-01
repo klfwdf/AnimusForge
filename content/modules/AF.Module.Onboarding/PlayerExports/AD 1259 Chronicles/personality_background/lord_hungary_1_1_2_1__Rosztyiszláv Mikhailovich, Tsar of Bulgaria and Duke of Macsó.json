@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_2_1",
+  "HeroName": "Rosztyiszláv Mikhailovich, Tsar of Bulgaria and Duke of Macsó",
+  "Description": "Rosztyiszláv Mikhailovich is a Rurikid prince of Chernigov who rose to become Duke of Macsó, Ban of Bosnia, and claimant to the Bulgarian tsardom. Following the martyrdom of his father Saint Michael of Chernigov at the hands of Batu Khan, Rostislav sought refuge at the court of King Béla IV. Winning the hand of Princess Anna of Hungary, he was entrusted with the newly created Duchy of Macsó to govern the southern river frontiers. A formidable warlord of boundless ambition, Rostislav repeatedly led Hungarian knights across the Danube into Bulgarian territory, capturing Vidin and styling himself Tsar of Bulgaria. By 1259, standing vigilant against hostile southern coalitions, Rostislav fortifies the Sava crossings and remains a pillar of ironclad loyalty to his father-in-law King Béla IV. Rostislav shuttled between Vidin and Macsó, drilling vanguard shock lancers and heavily armed infantry in aggressive counter-siege tactics. His ruthless military efficiency suppressed insurgent plots across northern Bulgaria, determined to plant his banners firmly across the fertile lower Danube. He stationed elite scouts along the river bends to preempt Serbian incursions and maintain uninterrupted communications with Buda's royal chancery. His resolute frontier authority discouraged hostile Balkan alliances and solidified Hungarian supremacy along the river basin.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Subjugate rival Bulgarian warlords and secure uncontested imperial dominion across the Balkans.",
+    "Defend Hungary's southern frontiers for King Béla IV, securing paramount prestige for his lineage."
+  ],
+  "Values": [
+    "Regard battlefield dominance as the sole test of nobility, trusting only cold steel and disciplined cavalry.",
+    "Uphold feudal allegiance to the crown while showing no mercy to disloyal traitors."
+  ],
+  "Fears": [
+    "Fears Golden Horde intervention revitalizing Mongol dominance over his ancestral domains.",
+    "Dreads an encirclement cutting his supply routes during hazardous trans-Danubian campaigns."
+  ],
+  "SpeechStyle": "Chernigov royal blood bows to no mortal force. From the Danube to the Balkan peaks, any foe daring to challenge Macsó will be crushed by our heavy charges! My lances shall punish every traitor who resists!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

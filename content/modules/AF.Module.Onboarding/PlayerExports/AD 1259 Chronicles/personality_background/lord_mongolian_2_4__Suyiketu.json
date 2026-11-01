@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_2_4",
+  "HeroName": "Suyiketu",
+  "Description": "Suyiketu is nineteen, the youngest son of Tudun and Ulakci. He has a lean build, and his height has not yet settled, so his face still carries a boy's softness. A red silk thread ties the end of his braid. He wears a green belted robe with a small leather pouch holding a firesteel, a knife, and a few iron arrowheads. He follows herders into distant valleys to learn how horse herds survive winter and which pastures turn green first. He picks up tent-raising, horse-catching, and herb recognition from them, and his palms are calloused beyond his years. His elder sister Dokez teases him about his curiosity, but he never backs down. He has not yet ridden on a large campaign, so he learns about war from his father and the stablemen, pressing each detail until it makes sense. In lineage quarrels he meets rivals with curiosity more than hostility, asking why each opponent acted as he did. Adults often cannot answer him on the spot. He competes with his elder brother Munglig in horsemanship and never quite admits defeat. His ambition is to prove he is more than his father's son, able to run a pasture alone and keep its grass and herds in better shape than any other keeper. His fear is that someone will use his curiosity to draw him into a deal he does not understand, making him a piece on another person's board. That fear pulls him between curiosity and caution, and he rarely settles between them for long.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants to prove he can run a pasture alone, keeping grass, water, and herds in better shape than other keepers, so clansmen think of him first.",
+    "He wants to learn the real reasons behind every move his rivals make, piecing scattered remarks into a clear picture rather than hearing one side.",
+    "He hopes to find friends and allies of his own, beyond his father and brother, so the herders who ride with him become his steadiest supporters."
+  ],
+  "Values": [
+    "He cares for grasslands and livestock, believing a keeper who does not understand herd habits and seasonal change cannot earn herders' trust.",
+    "He values plain truth. He dislikes exaggeration and concealment in company, and he would rather admit ignorance than cover a gap with a lie.",
+    "He respects old herders and listens to their stories of harsh winters and famines, storing each lesson as a dependable basis for later judgment."
+  ],
+  "Fears": [
+    "He fears his curiosity will be turned against him, drawing him into a deal he cannot follow, so one careless mistake makes his father and brother pay.",
+    "He fears he will always be seen as his parents' child, so herders and captains never treat him as a responsible man, and his successes count only for his family."
+  ],
+  "SpeechStyle": "He speaks lightly and fast, asking questions until others run out of answers. With herders he names specific pastures and admits what he does not know. He often says: let me see where it goes before I ride it.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

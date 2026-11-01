@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_1_1",
+  "HeroName": "Marguerite de Sainte-Ménéhould",
+  "Description": "Marguerite de Sainte-Ménéhould, aged sixty in 1259, is the Duchess consort of Naxos and wife of Angelo I Sanudo. Originating from the historic crusader nobility of Champagne, she journeyed to the Levant decades ago to seal the dynastic alliance between French chivalric aristocracy and Venetian naval might. Resolute, pious, and diplomatic, she manages the ducal household in Naxos with dignified benevolence, soothing tensions between Frankish Catholic barons and native Greek Orthodox islanders. In 1259, as naval warfare flares across the Aegean, Marguerite oversees emergency grain supplies and castle logistics, standing as an unshakeable moral anchor for the entire Sanudo dynasty. Duchess Marguerite brought the regal dignity of Champenois chivalry to her island domain in the Cyclades. Presiding over solemn Catholic rituals while generously aiding native Greek fishing villages, she insists on strict fairness and respect for local traditions. Her moral leadership roots the Sanudo dynasty deeply into the hearts of its subjects, forming an enduring wall of popular loyalty. Balancing Western feudal piety with deep respect for local island customs, Duchess Marguerite anchors the court of Naxos. Her generous patronage and dignified wisdom maintain social peace, ensuring that Latin rule across the islands remains secure and respected.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with serene maternal authority and classic Champenois elegance, commanding profound respect across the Aegean islands.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

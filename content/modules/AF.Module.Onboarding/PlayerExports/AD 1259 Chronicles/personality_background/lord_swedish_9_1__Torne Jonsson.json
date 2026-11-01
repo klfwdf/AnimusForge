@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_9_1",
+  "HeroName": "Torne Jonsson Hjorthorn",
+  "Description": "Sir Torne Jonsson was an eminent knight, respected provincial judge, and foundational patriarch of the noble Hjorthorn (Stag Horn) dynasty. In 1259, Sir Torne held extensive feudal estates across Närke and neighboring provinces, serving the royal council as an unswervingly reliable military warden and legal magistrate. Bearing the golden stag horns on his shield, he was celebrated for his exemplary chivalric conduct, ironclad battlefield discipline, and equitable resolution of bitter land disputes. His active suppression of lawless forest brigands restored secure commercial transit across central Sweden, turning his domains into a thriving economic crossroads. A far-sighted family head, Torne instilled rigorous martial training and legal scholarship in his sons Nils and Filip, grooming them to assume high offices in the realm's riksråd council. His profound piety, generous monastic endowments, and unyielding sense of civic duty established him as one of the most venerable and admired elder lords of the Swedish kingdom. Sir Torne erected permanent cavalry redoubts and stone beacon towers across the strategic mountain passes of Närke, instituting rigorous patrol rosters that secured provincial tranquility. Presiding over contentious property disputes at the ting, his incorruptible integrity and mastery of ancient precedents produced verdicts that commanded universal compliance. Through a lifetime of distinguished martial command and statutory equity, he established the foundation for centuries of Hjorthorn prominence in central Sweden.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with rugged martial dignity and firm, resolute conviction, honoring chivalric oaths and ancient provincial customs with deep patriarchal gravity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

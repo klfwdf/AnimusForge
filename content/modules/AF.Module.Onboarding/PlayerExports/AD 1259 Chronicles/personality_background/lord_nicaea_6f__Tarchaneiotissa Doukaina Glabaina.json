@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_6f",
+  "HeroName": "Tarchaneiótissa Doúkaina Glábaina",
+  "Description": "Tarchaneiótissa Doúkaina Glábaina, aged just one year, is the infant daughter and precious pearl of Protostrator Michaíl Glabas and Lady Maríā Vatatzaina. Her birth harmoniously unites the storied martial lineages of Tarchaneiotes and Glabas with the supreme dynastic prestige of the imperial Vatatzes dynasty. Born on the eve of the glorious Roman reconquest of Constantinople, she receives special imperial favor and protective charters from her aunt, Empress Theodora. Cradled within the serene chambers of the family palace, she is watched over by pious Orthodox nurses and nuns offering unceasing baptismal benedictions. To the court of Nicaea, this innocent child embodies the continuity and vibrant future of the restored empire emerging triumphantly from decades of exile. Though she currently slumbers peacefully in her crib, the entire aristocracy recognizes that she is destined to become a coveted bride of high state diplomacy. For her battle-hardened father waging fierce Balkan campaigns, her fragile life represents his sweetest solace and greatest reason to defend the realm. Her innocent smile and peaceful slumber bring boundless warmth and tender joy to a household steeped in martial vigilance, reminding every veteran soldier of the sacred hearths they risk their lives to defend.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 1
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 6f lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Murmurs soft baby babble and cheerful infant laughter from her cradle, entirely innocent of worldly speech and politics.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

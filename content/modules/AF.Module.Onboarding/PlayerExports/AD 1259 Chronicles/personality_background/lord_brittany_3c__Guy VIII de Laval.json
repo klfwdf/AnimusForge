@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_3c",
+  "HeroName": "Guy VIII de Laval",
+  "Description": "Guy VIII de Laval is the fourteen-year-old eldest son and designated heir of Guy VII and Philippa of Vitré. Athletic, handsome, and fiercely ambitious, he has been raised in the heroic shadow of his father's crusading exploits, training relentlessly in the tilting yards of Vitré Castle. Guided by veteran crusader sergeants, young Guy excels in equestrian lance charges, sword footwork, and tactical command. Destined in adulthood to become one of the premier generals of France during the Flemish campaigns, he currently displays exceptional maturity, frequently riding alongside his mother to audit manorial granaries and inspect border fortifications. Universally admired by his future vassals, young Guy is hailed as the rising lion of the eastern march, eager to prove his chivalric valor. Guy VIII introduced rigorous drill doctrines combining Genoese-trained crossbowmen with dismounted men-at-arms in Vitré. His openhanded generosity and fearless battlefield leadership inspired fervent loyalty among his retainers, establishing him as one of western France's premier young commanders. His fearless temperament and tactical mastery on the campaign trail command universal dread among adversaries and fierce pride throughout his father's vast domains. His tireless dedication to campaign maneuvers and personal courage under arms mark him out as an extraordinary scion of high feudal chivalry.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master the military arts to emulate his father's immortal crusader glory.",
+    "Unite the sprawling inheritances of Vitré and Laval into an invincible baronial power."
+  ],
+  "Values": [
+    "Earning heroic renown on battlefield campaigns worthy of his father's crusader legacy.",
+    "Unshakable camaraderie with his soldiers, rewarding valor with openhanded generosity."
+  ],
+  "Fears": [
+    "Tactical blunders leading his loyal crossbowmen and armored cavalry into fatal encirclement.",
+    "Courtly intrigues and treacherous slander eroding the crown's confidence in his military command."
+  ],
+  "SpeechStyle": "Speaks with clear, ringing youthful firmness, passionate about knightly renown and strategic warfare, yet remarkably poised and respectful in council.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Zahringen_Margraves_of_Baden",
+  "Keywords": [
+    "House of Zahringen Baden",
+    "Black Forest Zahringen Keeps",
+    "Baden Red Bend Heraldry",
+    "Upper Rhine Baden Margraves"
+  ],
+  "RagShortTexts": [
+    "The Margraves of Baden guarded Upper Rhine trade and Black Forest valleys beneath their."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Governing the western slopes of the Black Forest, Rudolf I of Baden maintained strategic mastery over the Upper Rhine highway. Retaining their ancient Zähringen pedigree, the margraves defended mountain passes and fertile Rhine vineyards from expansive neighbors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Fortified cliff castles and rugged forest skirmishers made Baden an impenetrable bastion during interregnum chaos."
+    }
+  ],
+  "TextMappings": []
+}

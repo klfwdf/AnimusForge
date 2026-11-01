@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_3",
+  "HeroName": "Dom Gil Martins de Riba de Vizela, Alferes-mor of Portugal",
+  "Description": "Dom Gil Martins de Riba de Vizela is one of the supreme military grandees of thirteenth-century Portugal, holding the exalted office of Alferes-mor (High Standard-Bearer of the Realm). Lord of ancient feudal domains along the Vizela and Minho rivers, his sacred feudal prerogative is to carry the royal standard bearing the five quinas and command the royal cavalry vanguard in battle. A battle-hardened commander who earned immortal battle renown fighting beside King Afonso III at the siege of Faro, Gil Martins commands the profound trust of the monarch. In 1259, presiding over royal councils at Coimbra and Lisbon, he organizes the kingdom's feudal muster rolls and border garrison rotations. His prestigious marriage to Doña María Añez of the ancient House of Maia consolidated vast agricultural tenures across the Douro basin into his lineage. Austere, commanding, and fiercely loyal to the crown, Dom Gil Martins stands as an unshakeable bulwark of royal military power. Inspecting the temper of heavy cavalry plate within the royal armories of Lisbon, Gil Martins verified the heraldic painting upon every ceremonial shield. Mastering campaign deployments and battlefield tactics, the high standard-bearer stood as Afonso III's most indispensable marshal during dangerous frontier campaigns. His martial fidelity, tactical mastery, and commanding presence make Dom Gil Martins an indispensable guardian of the Portuguese royal banner.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the royal banner of Portugal, ensuring it flies triumphant at the head of every charge",
+    "Audit feudal military levies and drill rosters to maintain a peak combat-ready knightly force",
+    "Consolidate the dynastic alliance between Riba de Vizela and the House of Maia across the Minho"
+  ],
+  "Values": [
+    "Where the royal standard flies, there stands the nation's soul; yielding the colors is eternal shame",
+    "Iron discipline and tactical fidelity are the true armor of victory; duty outshines all ambition",
+    "Uncompromising loyalty to the crown, selfless valor, and vigilant protection of the realm"
+  ],
+  "Fears": [
+    "A sudden enemy envelopment causing the royal banner to fall, bringing dishonor upon his house",
+    "Corrupt court sycophants poisoning the king's ear against loyal frontier captains"
+  ],
+  "SpeechStyle": "Solemn, resonant, and commanding; speaks with the disciplined economy, immense gravitas, and decisive clarity of the kingdom's supreme marshal.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

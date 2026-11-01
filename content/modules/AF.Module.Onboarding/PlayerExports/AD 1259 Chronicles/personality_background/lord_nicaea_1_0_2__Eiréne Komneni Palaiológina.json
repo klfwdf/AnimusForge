@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_0_2",
+  "HeroName": "Eiréne Komneni Palaiológina",
+  "Description": "Eiréne Komneni Palaiológina, revered and feared under her monastic name Eulogia, was the formidable elder sister of Emperor Michael VIII and the undisputed matriarch of the Palaiologos dynasty. Widow of John Kantakouzenos, she wielded colossal private fortunes, extensive monastic patronages, and royal bloodlines stretching back to the Komnenoi and Angeloi. During the succession crisis of 1258 following the death of Theodore II Laskaris, Eulogia masterminded the conspiratorial coup that eliminated the regent George Mouzalon at the Sosandra Monastery, clearing the path for her beloved brother Michael to seize imperial power. She orchestrated strategic marriages for her daughters across Bulgaria, Epirus, and the steppe factions, establishing a vast geopolitical network. Yet, when Michael VIII signed the Union of Lyons in 1274 to appease the Papacy, Eulogia became his most uncompromising adversary, funding anti-unionist monks, defying imperial arrests, and declaring that she would rather see the empire perish than surrender its Orthodox faith. In her palatial estates across Nicaea and Constantinople, Eulogia operated confidential chanceries whose informants permeated the Varangian guards, the senate, and leading monasteries. Ruthless toward theological compromise, she eliminated factional rivals with terrifying efficiency to consolidate dynastic hegemony. When Michael VIII signed the Union of Lyons, Eulogia openly burned imperial edicts, bankrolling anti-unionist monastic insurrections and rallying common citizens against imperial decrees with fiery apostolic devotion.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her voice resounds with imperious matriarchal authority and fiery Orthodox conviction, brooking no compromise with heretic powers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

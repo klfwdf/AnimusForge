@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Papal_Excommunication_and_Interdict_Bans",
+  "Keywords": [
+    "Papal Excommunication Sovereign Anathema",
+    "Kingdom Interdict Sacramental Ban",
+    "Silenced Church Bells and Unburied Dead",
+    "Feudal Oath of Fealty Dissolution"
+  ],
+  "RagShortTexts": [
+    "Papal interdicts silenced church bells and suspended sacraments, releasing vassals from."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The papacy wielded formidable spiritual coercion through excommunication of monarchs and kingdom-wide interdicts. An interdict silenced church bells, barred public worship, and suspended holy sacraments except baptism and last rites. Deceased bodies remained unburied in ditches, while papal bulls dissolved vassals' oaths of fealty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Monarchs like King John and Frederick II experienced the destabilizing peril of papal bans. When anathema invited legitimate baronial rebellions, sovereigns were forced to sue for absolution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "A shuttered church without ringing bells chills every hearth. Watching loved ones buried in unconsecrated ditches without Christian prayers incites terror that breaks peasant forbearance."
+    }
+  ],
+  "TextMappings": []
+}

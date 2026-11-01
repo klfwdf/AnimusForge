@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_2a",
+  "HeroName": "Dejan of Zemen",
+  "Description": "Dejan of Zemen (Sevastokrator Dejan), aged thirty-five in 1259, is the influential magnate governing the eastern borderlands of Zemen and Kumanovo, founder of the noble House of Dejanović (Dragaš). Renowned for exceptional martial prowess against Bulgarian incursions, his strategic indispensability earned him marriage to Princess Teodora Nemanjić, elevating him into the highest royal circle. Shrewd, vigilant, and fiercely practical, Dejan fortified the Struma River gorges with stone watchtowers and mountain palisades, dominating the critical military crossroads connecting Raška, Sofia, and northern Macedonia. In 1259, as Balkan frontier tensions escalate, Dejan commands seasoned mountain archers and armored horsemen, standing as the impenetrable shield of Serbia's eastern march. Lord Dejan maintains vigilant watch over the fortified gorges of Zemen, overseeing every watchtower and defensive ballista emplacement. Mastering mountain ambush tactics, he leads surprise cavalry sorties that crush bandit bands and frontier raiders with ruthless efficiency. Backed by King Uroš, this formidable eastern marcher lord secures the Struma valley, anchoring the kingdom's eastern rampart with unyielding steel. Vigilant over the rugged Struma defiles, Lord Dejan guards the eastern threshold of the kingdom with veteran battlefield cunning. His formidable cavalry patrols and reinforced border forts ensure that no hostile army can breach Serbia's eastern march undetected.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with deep military gravity and vigilant authority, concise and unyielding, issuing frontier orders with absolute confidence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Dmitry Alexandrovich of Vladimir and Pereyaslavl-Zalessky, second son of Alexander Nevsky, inherited both his father's imposing physical gravitas and acute tactical prowess. In his youth he campaigned tirelessly alongside Nevsky, distinguishing himself in brutal border skirmishes defending Novgorod's Baltic routes against Lithuanian marauders before ascending the Vladimir grand ducal throne. His subsequent reign was tragically dominated by a fratricidal conflict with his ambitious younger brother, Andrey of Gorodets, who repeatedly summoned Golden Horde hosts under Tokhta and Nogai to ravage Russian soil. Confronting these apocalyptic invasions, Dmitry demonstrated astonishing defensive resilience, fortifying his citadel of Pereyaslavl-Zalessky and repelling Tatar vanguards in multiple savage sieges. Despite overwhelming odds and Mongol treachery, he fought stubbornly to defend the senior constitutional dignity of the Grand Duchy until his final breath. Standing atop the ramparts of Pereyaslavl through harrowing barrages, Dmitry fought on despite severe wounds, his stubborn resistance holding the line against steppe devastation and preserving the legitimate continuity of the Grand Principality through blood and iron. Fighting through fire and steel, his iron steadfastness at Pereyaslavl broke repeated enemy sieges, earning the undying respect of his comrades who stood beside him against impossible odds.",
+  "SpeechStyle": "Speaks with a raspy, gravelly baritone that rumbles like thunder, his austere commands tempered by tragic battle-weariness and unflinching pride.",
+  "Motivations": [
+    "Defend the grand ducal legitimacy of Vladimir, crushing his brother Andrey's treachery in summoning Mongol armies.",
+    "Fortify Pereyaslavl-Zalessky, sheltering thousands of displaced homesteaders and rebuilding devastated settlements."
+  ],
+  "Values": [
+    "Regards sovereign duty and ancestral legitimacy as paramount, fiercely despising those who summon foreign hordes against kin.",
+    "Deeply values the unwavering fidelity of his battle companions, refusing to abandon besieged garrisons or betray his oaths."
+  ],
+  "Fears": [
+    "Dreads the irreversible razing of Vladimir's Golden Gate and holy cathedrals by Mongol hosts, erasing his lineage's legacy."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ]
+}

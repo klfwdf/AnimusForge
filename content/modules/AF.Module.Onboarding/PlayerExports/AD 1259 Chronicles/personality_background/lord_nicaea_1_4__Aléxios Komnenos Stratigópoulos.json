@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_4",
+  "HeroName": "Aléxios Komnenos Stratigópoulos",
+  "Description": "Aléxios Komnenos Stratigópoulos holds an immortal place in world history as the liberator who restored Constantinople to the Roman Empire. Elevated to the exalted ranks of Grand Domestic and Caesar, Alexios was a battle-hardened tactician of daring vision and impeccable timing. After playing a decisive role at the Battle of Pelagonia in 1259 by outflanking the Frankish chivalric vanguard, he was dispatched in July 1261 with a modest reconnaissance force of only eight hundred soldiers to Thrace. Learning through local peasant volunteers that the entire Latin garrison and Venetian fleet had departed to assault Daphnousia island, Alexios seized the historic moment with breathtaking audacity. Guiding his infiltrators through a secret culvert near the Pege Gate under cover of night, he opened the city walls, set torch to Venetian commercial quarters, and provoked absolute panic that sent Latin Emperor Baldwin II fleeing without his crown. In a single stroke of military genius, Alexios ended fifty-seven years of Western Crusader occupation, restoring Byzantine sovereignty to the Queen of Cities. At Pelagonia, Alexios demonstrated tactical mastery by springing a coordinated cavalry ambush that routed Latin crusaders. On the historic night of July 25, 1261, the veteran commander personally crawled through a subterranean aqueduct beneath the Pege Gate, neutralizing sentries with his composite bow before throwing open the city portals. As dawn illuminated the Golden Horn, Alexios stood in gilded mail before Hagia Sophia proclaiming the resurrection of the Roman Empire, moving citizens to tears and sealing his immortal glory.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice commands instant obedience, resolute and razor-sharp, inspiring absolute courage in the face of impossible military odds.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

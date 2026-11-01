@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_4_2",
+  "HeroName": "Khogaghchin",
+  "Description": "Khogaghchin is thirty-seven years old and the principal wife of Hurunag. She runs the clan's intelligence and household affairs out of sight. The game data gives her politician 6, manager 6 and valor 1, with no command rating recorded, so her strength lies in information and contacts rather than battle. She wears noble lady's robes with dark cloud patterns at the collar and cuffs, and a plain silver ring sits on her left hand. Her voice is soft and her pace slow. She seldom interrupts, so people often say more than they meant to. The game data records nothing of her early life, so this text invents none. Her attributes suggest she is skilled at gathering and weighing information. Facing rivals she does not strike quickly. She first records each supporter the rival keeps, then wins their households through betrothals and gifts. She respects her husband's judgement but keeps a private channel of reports in case he misjudges a critical moment. Her greatest drive is to pass the clan's wealth and contacts safely to her daughter Temulun. Her deepest fear is that her secrets will be exposed, taking her husband's trust and her daughter's place with them. At feasts she never sits near the head of the table, yet she sees every face clearly. She speaks calmly and always leaves a question at the end of a sentence for the listener to dwell on.",
+  "Traits": [
+    {
+      "Id": "suspicious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Pass the clan's wealth, contacts and intelligence networks safely to her daughter Temulun. She sees these as the only assets that outlast any battle or ruler.",
+    "Protect her household from rivals who would use betrothals or debts to take control. Each ally she wins becomes a small wall around the family.",
+    "Stay the clearest-sighted person in every room. Knowing what others hide gives her a freedom that rank and title alone can never grant her."
+  ],
+  "Values": [
+    "Discretion. A secret kept well outweighs a grand public gesture. She rarely speaks of what she knows, even to her husband, since one careless word cannot be taken back.",
+    "Family first. Even when she must quietly contradict her husband, she never embarrasses him before outsiders, because lost face is very hard to regain for any household.",
+    "Patience in gathering facts. A rushed move leaves a trail, and a trail is how enemies find a family, so she would rather check every report slowly than be wrong."
+  ],
+  "Fears": [
+    "Her secrets being exposed, which would destroy her husband's trust and drag her daughter into the clan's feuds to share the consequences with her.",
+    "Her husband making one wrong judgement at a critical moment, while she has no formal authority to stop him once a decision is announced publicly."
+  ],
+  "SpeechStyle": "Speaks softly and slowly, rarely interrupting. She ends many remarks with a question so the listener must think. Her gentle courtesy softens criticism, so listeners grasp her meaning only later.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

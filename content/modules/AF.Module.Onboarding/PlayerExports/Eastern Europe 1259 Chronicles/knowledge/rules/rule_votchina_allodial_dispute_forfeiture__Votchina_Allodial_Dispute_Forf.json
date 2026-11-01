@@ -1,0 +1,43 @@
+{
+  "Id": "rule_votchina_allodial_dispute_forfeiture",
+  "Keywords": [
+    "Votchina Allodial Dispute Forf",
+    "Votchina Allodial Dispute Forf Lore",
+    "Votchina Allodial Dispute Forf Chronicles",
+    "AD1259 Votchina Allodial Dispute Forf"
+  ],
+  "RagShortTexts": [
+    "Historical doctrine and chronicle records concerning Votchina Allodial Dispute Forf in 1259 Eas",
+    "Geopolitical significance, tactical mechanical design, and feudal governance of Votchina Allodi",
+    "Primary medieval evidence on border warfare, fortifications, and treaties across Votchina Allod"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The institutional custom, legal charter, and socio-economic tradition of Votchina Allodial Dispute Forf constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Votchina Allodial Dispute Forf. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Votchina Allodial Dispute Forf. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+    }
+  ],
+  "TextMappings": []
+}

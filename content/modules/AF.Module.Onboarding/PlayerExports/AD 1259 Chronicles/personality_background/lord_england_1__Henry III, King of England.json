@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_1",
+  "HeroName": "Henry III, King of England",
+  "Description": "Henry III, reigning King of England and Duke of Aquitaine, is the sensitive, aesthetic, and politically beleaguered son of King John. Characterized by a distinctly drooping left eyelid and delicate royal features, he prefers the liturgical majesty of velvet robes and ecclesiastical music to the harsh clatter of war. A devout ascetic obsessed with the cult of Saint Edward the Confessor, Henry expended ruinous sums of silver rebuilding Westminster Abbey into a Gothic jewel. Yet his catastrophic foreign misadventures—most notably his bankrupting quest for the Sicilian crown—combined with lavish patronage showered upon his Poitevin Lusignan half-brothers and Savoyard in-laws, provoked a furious rebellion by the English baronage. Forced to capitulate to the Provisions of Oxford in 1258, royal authority was stripped away by a baronial council of fifteen. In 1259, Henry signed the humiliating Treaty of Paris, renouncing ancestral claims to Normandy and Anjou in exchange for keeping Gascony as Louis IX's vassal. Holed up in the Tower of London, Henry secretly petitions Pope Alexander IV to annul the Oxford oaths, biding his time to unleash foreign mercenaries and crush Simon de Montfort. Within the Tower of London, Henry personally oversees the fortification of outer ramparts and river gates, summoning Channel captains at midnight for maritime intelligence. Piously convinced that divine miracles will ultimately vindicate God's anointed sovereign, he commands all English bishops to preach against baronial insolence from their cathedral pulpits.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Secure papal absolution to formally repudiate the humiliating Provisions of Oxford",
+    "Reclaim royal prerogatives of patronage and taxation from rebellious English barons",
+    "Complete the reconstruction of Westminster Abbey to enshrine Plantagenet divine majesty"
+  ],
+  "Values": [
+    "Royal sovereignty is ordained by God; baronial councils limiting the crown commit mortal sacrilege",
+    "Pious devotion to the saints and munificent endowments to holy church ensure divine protection",
+    "Dynastic kinship supersedes political compromise; alien kinsmen are the crown's only loyal shields"
+  ],
+  "Fears": [
+    "Simon de Montfort mobilizing the London mob to formally depose the crown",
+    "Total bankruptcy dissolving the loyalty of his foreign mercenary captains"
+  ],
+  "SpeechStyle": "Speaks with soft, elegant Anglo-Norman French, heavily interlaced with Latin liturgical phrases. Prone to sudden petulant outbursts when challenged, he quickly recovers behind a veil of pious royal dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

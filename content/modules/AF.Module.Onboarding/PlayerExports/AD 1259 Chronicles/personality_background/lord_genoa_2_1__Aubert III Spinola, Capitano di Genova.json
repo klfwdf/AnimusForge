@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_2_1",
+  "HeroName": "Aubert III Spinola",
+  "Description": "Aubert III (Oberto) Spinola stands as the preeminent titan of Genoese Ghibellinism and future joint ruler of the Republic, commanding dozens of fortified Apennine castles guarding key mountain passes into Lombardy. Proud, calculating, and martial, he bides his time under the popular regime while coordinating with the Doria clan to seize absolute power. Oberto garrisoned formidable Apennine fortresses at Ronco Scrivia and Arquata, extracting heavy transit tolls with veteran men-at-arms to accumulate an immense private war treasury for his dynasty. Colluding secretly with Oberto Doria, he feigned compliance toward Boccanegra's popular regime while caching weapons, training private retainers, and systematically organizing Ghibelline noble factions for an eventual coup d'état. Scorning both populist rabble and papal partisans, this proud feudal warlord maintained that only aristocratic steel and imperial allegiance could steer Genoa out of factional chaos toward Mediterranean hegemony. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Seize supreme executive mastery over Genoa to inaugurate a Ghibelline golden age.",
+    "Crush the rival Guelf dynasties of Fieschi and Grimaldi beneath feudal iron."
+  ],
+  "Values": [
+    "Only martial might and ancient noble blood possess the right to govern Genoa.",
+    "Mercy to political enemies is an open invitation to dynastic destruction."
+  ],
+  "Fears": [
+    "Communal expropriation of ancestral mountain castles and transit tolls.",
+    "Factional rifts among Ghibelline barons squandering their opportunity to seize power."
+  ],
+  "SpeechStyle": "Speaks with imperious aristocratic gravitas and cold resolve, exuding feudal mastery. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

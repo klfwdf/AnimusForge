@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Treaty_of_Paris_1259_and_Feudal_Vassalage_Paradox",
+  "Keywords": [
+    "Treaty of Paris 1259 Louis IX",
+    "Henry III Liege Homage Gascony",
+    "Aquitaine Feudal Paradox Fief",
+    "Limoges Cahors Perigueux Cession"
+  ],
+  "RagShortTexts": [
+    "In the 1259 Treaty of Paris, Henry III renounced ancestral French claims, holding Gascony."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Concluded on December 4, 1259, between Louis IX and Henry III, the Treaty of Paris formally ended decades of Angevin-Capetian warfare. Henry III renounced ancestral claims to Normandy, Maine, Anjou, and Poitou. In return, Louis IX confirmed English possession of Gascony while transferring rights over Limoges, Cahors, and Périgueux. However, the treaty mandated that the English monarch perform liege homage as a feudal vassal to the French crown for Gascony, creating a structural paradox that ignited the Hundred Years' War."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The humiliating obligation of homage allowed French appellate jurists to summon English officials, generating perpetual diplomatic flashpoints."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5g",
+  "HeroName": "Clara",
+  "Description": "Clara is the noble chatelaine and wife of Count Baldwin I Rátót, respected across the western marches as the stalwart mistress of Moson Castle. Hailing from an illustrious Transdanubian aristocratic lineage, she brought refined diplomatic tact, landed prestige, and administrative skill to Clan Rátót. Stationed at the dangerous northwestern march facing Austria, Clara manages household logistics, grain registries, and military supplies with consummate skill. Alert to cross-border espionage and smuggling, she oversees toll collections with firm vigilance while generously endowing monastic hospices for the needy. Her steady composure under frontier pressure earns profound respect from garrison retainers and tenant burghers alike. In 1259, as Bohemian armed forces posture across the Leitha, Clara maintains impeccable domestic order, serving as her husband's most reliable domestic anchor. Clara managed household logistics, military storehouses, and garrison provisions within Moson Castle, utilizing her noble connections to regulate border tariffs. Her composed fortitude under the shadow of war preserved high morale among burghers and soldier families alike. She stood as her husband's most dependable domestic partner, ensuring that frontier fortresses remained fully equipped for prolonged siege defense and sudden enemy assaults and unpredictable siege maneuvers across the frontier.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard Moson Castle and western manors, ensuring flawless logistical backing for frontier troops.",
+    "Promote Christian charity, winning the deep affection and devotion of frontier communities."
+  ],
+  "Values": [
+    "Hold steadfast duty, composure under threat, and prudent management as supreme noble virtues.",
+    "Value harmonious domestic order, convinced unity and vigilance overcome all external perils."
+  ],
+  "Fears": [
+    "Fears a massive foreign investment exhausting water cisterns and food reserves in prolonged sieges.",
+    "Dreads border skirmishes and assassin plots endangering her children's lives."
+  ],
+  "SpeechStyle": "The ramparts of Moson pierce the clouds, and we guard the Leitha! With our home secure, our warriors may face the enemy with resolute hearts! Our ramparts are vigilant; our domestic strength guarantees total triumph!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

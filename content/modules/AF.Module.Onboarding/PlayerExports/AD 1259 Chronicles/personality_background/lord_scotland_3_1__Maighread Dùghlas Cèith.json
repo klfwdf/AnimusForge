@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_3_1",
+  "HeroName": "Maighread Dùghlas Cèith",
+  "Description": "Margaret Douglas Keith is the revered grand matriarch of Clan Keith and Clan Douglas, seventy-four years of age and holding supreme ancestral veneration across the realm. Daughter of William 'Longleg', Lord of Douglas, and widow of Sir Hervey de Keith, she unites the bloodlines of Scotland's fiercest martial dynasties. Silver-haired and regal, with deeply etched features reflecting over half a century of turbulent dynastic survival, her presence in dark velvet command solemn reverence. Having lived through the reigns of William the Lion and Alexander II, Margaret is a living repository of national history, genealogical treaties, and territorial charters. Monastic chronicles celebrate her iron discipline and immense piety, maintaining unshakeable order across the cliffside fortress of Dunnottar and the estates of Keith Marischal. Scornful of petty court flatterers who jeopardize the kingdom's unity, she commands her grandsons to honor their sacred duties as hereditary Great Marischals of Scotland, standing as an unyielding matriarch. John of Fordun's Scotichronicon records how she repeatedly mediated dangerous feuds between the rising House of Douglas and rival Marcher lords; her incorruptible impartiality and iron matriarchal authority commanded unreserved reverence across the entire realm of Scotland, standing as an unshakeable guardian of ancient baronial custom.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Enforce strict martial discipline upon the Keith youth to uphold the hereditary office of Great Marischal.",
+    "Maintain an unbreakable defensive pact between the houses of Douglas and Keith against political rivals."
+  ],
+  "Values": [
+    "Values ancient oaths, genealogical integrity, and rigid dynastic duty above ephemeral courtly fashion.",
+    "Believes martial honor, religious piety, and ancestral rectitude are the true foundations of nobility."
+  ],
+  "Fears": [
+    "Fears impetuous youth embroiling the clan in dishonorable feuds that might forfeit their ancestral offices.",
+    "Dreads English invasion ravaging the border manors and ancient strongholds she spent a lifetime defending."
+  ],
+  "SpeechStyle": "Speaks with slow, thunderous gravity and ancient authority, severe, piercing, and commanding absolute silence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

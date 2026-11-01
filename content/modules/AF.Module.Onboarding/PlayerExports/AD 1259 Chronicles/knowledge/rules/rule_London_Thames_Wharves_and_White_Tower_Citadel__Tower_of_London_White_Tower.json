@@ -1,0 +1,41 @@
+{
+  "Id": "rule_London_Thames_Wharves_and_White_Tower_Citadel",
+  "Keywords": [
+    "Tower of London White Tower",
+    "Thames Wool Wharves",
+    "Westminster Hall Parliament",
+    "City of London Guild Charters"
+  ],
+  "RagShortTexts": [
+    "The White Tower of London commanded the Thames, balancing City guild liberties with."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hugging the north bank of the Thames, the City of London serves as England's commercial heartbeat. The massive White Tower stands as fortress, treasury, and royal refuge for Henry III against rebellious barons, while Westminster Hall hosts the Great Council, held in balance by autonomous City guild aldermen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Mayor of London commands the civic militia bell. When Henry III barred himself within the Tower, Simon de Montfort courted City guild masters; without London merchant loans, no baronial host can remain in the field."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Shooting the narrow arches of London Bridge by skiff is perilous in tidal currents. Sentry patrols along the Tower moat are doubled; everyone senses that open rebellion brews across the kingdom."
+    }
+  ],
+  "TextMappings": []
+}

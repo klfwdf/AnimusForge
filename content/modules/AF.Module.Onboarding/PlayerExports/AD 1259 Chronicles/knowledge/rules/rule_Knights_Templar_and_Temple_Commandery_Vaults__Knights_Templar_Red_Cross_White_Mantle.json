@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Knights_Templar_and_Temple_Commandery_Vaults",
+  "Keywords": [
+    "Knights Templar Red Cross White Mantle",
+    "Poor Fellow Soldiers of Christ",
+    "Templar Commandery Banking Network",
+    "Templar Martial Vows to the Death"
+  ],
+  "RagShortTexts": [
+    "The Knights Templar wore white mantles with red crosses, renowned for heavy charges and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Poor Fellow-Soldiers of Christ and the Temple of Solomon commanded unmatched military prestige and international wealth. Wearing white mantles bearing red crosses, Templar knights garrisoned Safed and Pilgrim's Castle, while their European commanderies operated early banking networks clearing royal deposits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Monarchs like Louis IX and Henry III pledged royal crown lands to secure Templar loans. Templar fleets transported bullion and pilgrims across the Mediterranean under sovereign immunity from toll duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The Templar banner, the black-and-white Beauceant, represents ruthless discipline. So long as that banner stands, no brother knight may retreat without facing expulsion and dishonor in irons."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1h",
+  "HeroName": "Ljubica Nemanjić",
+  "Description": "Ljubica Nemanjić, aged fifty-seven in 1259, is a venerable royal matriarch of the Nemanjić dynasty who took monastic vows in later life. Having witnessed decades of political turmoil and dynastic transitions, she retired to a convent near Raška, dedicating herself to scripture illumination, herbal medicine, and monastic charity. Highly respected by King Uroš I and the high nobility, Ljubica serves as an impartial mediator during familial disputes and royal marriage negotiations. In 1259, amidst Serbia's economic boom and fraught external rivalries, she nurtures the royal children with grandmotherly affection and seasoned wisdom, standing as an unshakeable moral cornerstone beneath the solemn icon lamps of the royal chapel. Sister Ljubica illuminates ancient scriptural manuscripts with delicate gilded initials in her secluded monastic cell near Raška. With compassionate grace, she distributes grain to refugee widows and tends the wounded with soothing herbal remedies. Amidst the stormy political rivalries of the era, the venerable royal nun remains an indispensable sanctuary of prayer and maternal solace. Through decades of political upheavals, Lady Ljubica has provided steadfast spiritual guidance to successive generations of Nemanjić rulers. Her holy prayers and compassionate medicines bring comfort to highborn princes and impoverished villagers alike throughout Raška.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with calm, measured grace and spiritual depth, imparting elder counsel with compassionate authority and biblical resonance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

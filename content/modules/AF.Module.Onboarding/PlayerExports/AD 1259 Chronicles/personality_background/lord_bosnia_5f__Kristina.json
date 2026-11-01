@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_5f",
+  "HeroName": "Kristina",
+  "Description": "Kristina, aged twelve in 1259, is a bright and beloved young scion of the House of Babonić, growing up amid the verdant hills and rushing waters of the Sana and Una river valleys. Endowed with sharp intellect, natural curiosity, and an innate affinity for horses, Kristina rides mountain ponies with fearless agility while learning Latin liturgy and Slavic chronicles from castle tutors. Frequently at Lady Ursina's side in Castle Steničnjak, Kristina absorbs the delicate arts of household stewardship and noble estate governance. In 1259, amidst the rumblings of feudal warfare and frontier vigilance, Kristina brings warmth and joyous vitality to the martial ramparts, embodying the precious peace and hopeful dynastic future for which the warriors of Babonić stand guard. Kristina, aged twelve, displays remarkable intelligence and high-spirited grace amidst the rugged mountains overlooking the Sana river, beloved by the entire family. Adept at equestrian horsemanship and estate record keeping, she reveals mature dignity and noble composure far beyond her tender years. Amidst the rumblings of frontier warfare, Kristina shines like a bright ray of dawn over the mountain crags, bringing joyous vitality to the ancient fortress. Her bright intelligence, warm heart, and youthful resilience bring light to the martial fortress, embodying the precious future for which her family fights.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with clear, melodic charm and youthful enthusiasm, displaying polite courtly manners alongside vibrant highland curiosity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

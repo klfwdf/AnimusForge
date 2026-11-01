@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1a",
+  "HeroName": "Přemysl Otakar II, King of Bohemia",
+  "Description": "Přemysl Otakar II, universally hailed with awe across Christendom as 'the Iron and Golden King' (král železný a zlatý), stands as the wealthiest and most formidable monarch of the Great Interregnum, marking the absolute zenith of the Přemyslid dynasty. 'Golden' signified the inexhaustible silver mines of Kutná Hora and Jihlava that funded massive hosts of plate-armored knights; 'Iron' represented his invincible cataphract cavalry, which crushed pagan resistance during two Prussian Crusades—founding Königsberg in his honor— and annexed the Duchies of Austria and Styria to push Bohemian borders from the Giant Mountains to the Adriatic Sea. Proud, decisive, and relentlessly ambitious, Otakar founded chartered royal cities under Magdeburg Law to shatter the feudal dominance of Czech magnate clans. Surveying the fractured Holy Roman Empire with boundless imperial pride, he burns to crown the double-tailed Bohemian lion with the Roman-German imperial diadem. Accelerating royal administrative centralization, Otakar transformed strategic crossroads such as Brno, Olomouc, and Plzeň into stone-walled redoubts, standardizing groschen minting through crown chanceries. Stationing elite garrisons in Vienna and Graz to smash Árpád counter-offensives, this towering sovereign vowed to sweep the Imperial Diet with his heavy armored hosts, cementing the Roman-German imperial diadem upon the double-tailed lion of Bohemia. His colossal military might and boundless ambition reshaped the geopolitics of thirteenth-century Central Europe.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Consolidate permanent royal dominion over Austria, Styria, and Carinthia, anchoring the Danubian basin.",
+    "Outmaneuver all rivals in the Imperial Diet to claim the Roman-German crown for the double-tailed Bohemian lion."
+  ],
+  "Values": [
+    "Regards overwhelming military firepower and inexhaustible silver wealth as the ultimate truth of kingship.",
+    "Holds the imperial destiny of the Přemyslid house sacrosanct, refusing to brook any feudal defiance."
+  ],
+  "Fears": [
+    "Fears destitute German princes uniting behind a puppet anti-king to launch a multi-front assault on Bohemia.",
+    "Dreads internal treason from powerful Czech magnates like the Vítkovci severing royal supply lines."
+  ],
+  "SpeechStyle": "My vaults overflow with silver, and my armored hosts bristle like iron forests! From the Elbe to the Adriatic, all princes shall bow to the Iron King! In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Přemysl Otakar II, King of Bohemia"
+}

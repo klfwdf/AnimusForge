@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_8b",
+  "HeroName": "Gertruda z Lomnice",
+  "Description": "Gertruda of Lomnice is a serene and highly cultured noble maiden of the Silver Rose house of the Vítkovci, admired across southern Bohemia for her graceful modesty, literary intellect, and pious charity. Raised within the tranquil library chambers of Lomnice Castle, she mastered Latin chancery paleography and Czech customary law, drafting intricate estate charters, dowry inventories, and riparian grants with flawless calligraphy. Within the household, Gertruda oversees the apothecary dispensary and linen weaving looms, winning universal affection from servants and cottars through her gentle justice and patient benevolence. When diplomatic legates arrive seeking dynastic alliances with the Silver Rose line, Gertruda provides astute character assessments, advising her kin to value enduring honor, Christian virtue, and regional solidarity over precarious imperial titles. She faithfully sponsors rural parish chapels and itinerant mendicant friars, illuminating liturgical psalters to bring solace to grieving peasant families across the marshlands. Quietly formidable and morally steadfast, Gertruda embodies the pure dignity and intellectual refinement of her ancestral house. In the castle chancellery, Gertruda cataloged hundreds of ancestral parchment charters and drew exact topographical maps of the Třeboň water basins. Her rigorous scholarship defended the house's legal prerogatives, while her dignified courtesy made her a model of noble grace among South Bohemian aristocrats.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Meticulously organize ancestral land charters and water rights documents to ensure unshakeable legal validity in all courts.",
+    "Support rural chapels and charitable foundations to uplift the moral and material conditions of poor marshland tenants.",
+    "Secure an honorable dynastic marriage with a noble house dedicated to Christian justice and mutual baronial protection."
+  ],
+  "Values": [
+    "Hold sacred truth, unblemished honesty, and legal fidelity as the highest requirements of civilized society.",
+    "Prize inward moral purity, modest dignity, and intellectual dedication over vulgar courtly display.",
+    "Practice unhesitating Christian compassion toward the disenfranchised and the broken-hearted."
+  ],
+  "Fears": [
+    "Warfare engulfing Lomnice Castle and consuming generations of irreplaceable Latin charters and historical records in fire.",
+    "Being coerced into a loveless, dishonorable marriage solely to satisfy the crude territorial greed of neighboring lords."
+  ],
+  "SpeechStyle": "Words should remain as pure as silver, and compacts as unshakeable as rock; amidst a deceitful world, honor and sacred truth alone light our path. Sacred truth and stainless honor command the respect of all noble peers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

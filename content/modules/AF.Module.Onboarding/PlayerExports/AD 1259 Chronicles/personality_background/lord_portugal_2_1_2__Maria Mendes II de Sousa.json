@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_1_2",
+  "HeroName": "Maria Mendes II de Sousa",
+  "Description": "Doña Maria Mendes II de Sousa is an influential noblewoman of the House of Sousa, destined to marry the celebrated knight Dom Lourenço Soares de Valadares. Inheriting the aristocratic pride of her lineage alongside formidable administrative skill, Doña Maria is deeply versed in manorial law, land tenures, and estate accounting. Resolute, methodical, and energetic, she capably assists her mother in managing sprawling agrarian domains along the Minho, preserving local rural peace. In 1259, actively involved in inter-dynastic diplomacy and marital negotiations across northern Portugal, Maria demonstrates acute political intelligence. Her stately bearing and eloquence earn high esteem in aristocratic assemblies at Coimbra, while her generous patronage of rural parishes wins lasting popular goodwill. Astute, dignified, and steadfast, Maria serves as an indispensable matriarchal counselor within the House of Sousa. Managing garrison rolls and logistical supplies at Valadares Castle, Maria eradicated embezzlement and ensured sentries were generously provisioned throughout winter blockades. Residing in the strategic north while monitoring Lisbon chanceries, she guarded her house's feudal prerogatives with consummate diplomatic finesse and maternal vigilance. Her sharp managerial acumen, domestic fortitude, and political foresight make Maria an indispensable matriarch safeguarding the northern domains of her house.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Efficiently administer manorial tenures across Minho to secure unbroken economic plenty",
+    "Maneuver skillfully among baronial factions to protect her family's northern feudal supremacy",
+    "Endow monastic foundations and parish schools to cement lasting moral authority among vassals"
+  ],
+  "Values": [
+    "Orderly administration and fiscal prudence are the foundational cornerstones of great houses",
+    "A noblewoman must wield statecraft and domestic wisdom to guide her lineage through crises",
+    "Unwavering dedication to duty, filial obedience, and faithful devotion to family honor"
+  ],
+  "Fears": [
+    "Severe crop failures triggering famine and peasant flight, bankrupting her family's tenantries",
+    "Royal crown officials unilaterally seizing fortified manors at strategic river crossings"
+  ],
+  "SpeechStyle": "Stately, precise, and authoritative; speaks with the effortless composure, organizational brilliance, and quiet dignity of a seasoned noble chatelaine.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

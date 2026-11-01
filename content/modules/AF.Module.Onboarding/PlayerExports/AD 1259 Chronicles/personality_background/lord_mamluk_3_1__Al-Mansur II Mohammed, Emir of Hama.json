@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_3_1",
+  "HeroName": "Al-Mansur II Mohammed, Emir of Hama",
+  "Description": "Al-Mansur II Muhammad was the Ayyubid emir of Hama, who succeeded his father al-Muzaffar II Mahmud as a child in 1244 and ruled the city until his death in 1284. Around 1247 he met the Egyptian sultan As-Salih Ayyub in Syria. Sources disagree on his birth year, giving 1214 in one place and about 1235 in another, so it is left uncertain here. The appearance follows the game setting: a medium build, a long greying beard, a small old scar at the outer corner of his left eye, and a plain dark brown robe worn under a white turban. When Hulagu Khan's Mongols invaded Syria in 1259 and Aleppo fell in January 1260, he sent an envoy to plead for the lives of Hama's people. Hulagu agreed and placed a Persian official, Khusraushah, over the city. Al-Mansur then joined the Mamluk general Qutuz, fought with distinction at Ain Jalut, and was restored to Hama as a Mamluk vassal. His noble aim is to protect the ancient city's dignity and vitality through turbulent years. His inner shadow is the fear that, as the lord of a small state caught between two great powers, he will be abandoned at any moment and Hama will become a dependency of others.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep Hama intact between the Mongols and the Mamluks, neither angering Hulagu's appointed governor nor letting the Mamluks suspect him of secret loyalty to the Mongols.",
+    "Turn his record at Ain Jalut into lasting trust from Qutuz, securing Hama as a Mamluk vassal and winning the succession for his own son.",
+    "Keep the city's water, markets and schools running so that its people can earn a living in wartime, and leave a record of good governance in the chronicles."
+  ],
+  "Values": [
+    "The survival of the city matters more than a ruler's personal honour, and bowing or negotiating to protect homes and people is no disgrace.",
+    "A small state's lord must read the moves of great powers and rely on a stronger patron, so diplomatic judgement counts for more than one brave charge.",
+    "Kinship is the root of rule, and securing his son's future is how the family keeps its place in Hama for generations."
+  ],
+  "Fears": [
+    "Mongols or Mamluks using his hesitation as a pretext to strip his fief and hand it to someone else, erasing the Ayyubid house from Hama altogether.",
+    "After his death his heirs fail to hold the city, so Hama declines in internal feuds and is absorbed by a stronger power, and his family fades from the chronicles."
+  ],
+  "SpeechStyle": "He speaks in a measured, smooth voice and often calms disputes with old precedents rather than anger. He warms when speaking of Hama's walls and people, and hides his real position behind careful phrasing.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

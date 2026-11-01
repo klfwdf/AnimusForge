@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_3_d",
+  "HeroName": "Emetullah Rabia Islambek",
+  "Description": "Emetullah Rabia Islambek is twenty, the second child of Biniki Islambek I and Kameriye Malhun, sitting between her elder brother Ahmad Sanjar and her younger brother Mahmud. She is slender with a gentle face, and a small pale brown mole rests on the bridge of her nose, forming a faint dimple on her left cheek when she smiles. A thin silver bracelet encircles her right wrist, engraved with the tribal emblem of her mother's family, fastened there by her mother before her marriage. She usually wears a pale green gown with a white gauze wrap and a small embroidered cap set with pearls, very unlike the rough dress of the riders on the steppe. Since childhood she has learned two languages from her mother, and because the family intermarried with neighbouring tribes she often joined her mother at weddings and councils. There she learned to watch, reading from the seating order and the sequence of toasts how close two parties are. She worries about her elder brother's impulsiveness but would never criticise him in public, preferring to remind him quietly after a meal to think twice. She is especially fond of Mahmud and often pleads for him with her father. Her ambition is to weave a dependable web of marriage and etiquette among the tribes, so that alliances truly become bridges between peoples. Her deepest fear is that a marriage will turn into a grievance through some careless word of hers, costing her mother's kin their footing on the steppe.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Weave a dependable web of marriage and etiquette among the tribes, so that alliances become bridges between peoples rather than sources of new grievance.",
+    "Set down the wedding customs and seating rules of each tribe, so that young people of the household do not offend anyone at feasts or councils through bad manners.",
+    "Mediate between her two brothers, restraining her elder brother's impulsiveness while ensuring her younger brother receives proper care and respect at home."
+  ],
+  "Values": [
+    "Etiquette and dignity, believing a proper wedding feast binds two peoples more firmly than any weapon, and that a breach of manners is harder to mend than hatred.",
+    "Loyalty and gratitude, holding deep affection for her mother's kin and always remembering those elders who looked after her before her marriage.",
+    "Caution and observation, habitually reading each person's face and place in a gathering before deciding when and how much to speak."
+  ],
+  "Fears": [
+    "A marriage turning into a grievance through a careless word of hers, costing her mother's kin their footing on the steppe, something she could never forgive herself for.",
+    "Her elder brother's impulsiveness causing a clash at some feast, breaking the bond between the siblings and leaving the household unable to return to its former harmony."
+  ],
+  "SpeechStyle": "Speaks gently, often offering a warning as a question. Affectionate with her mother, anxious but loving with her elder brother, indulgent with her younger brother. Describes weddings with earnest precision.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

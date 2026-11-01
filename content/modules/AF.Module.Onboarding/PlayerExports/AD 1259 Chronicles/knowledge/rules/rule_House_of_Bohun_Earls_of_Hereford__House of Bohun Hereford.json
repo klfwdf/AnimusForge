@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Bohun_Earls_of_Hereford",
+  "Keywords": [
+    "House of Bohun Hereford",
+    "Hereditary Lord High Constables",
+    "Earls of Essex and Hereford",
+    "Welsh Marcher Lords Bohun"
+  ],
+  "RagShortTexts": [
+    "The Bohun dynasty held the hereditary Constableship of England, dominating the rugged Welsh."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Commanding the Welsh borderlands from Severn castles, the Bohuns served as hereditary Constables of England. Governing Hereford and Essex, Humphrey de Bohun emerged as a decisive baronial voice shaping the Provisions of Oxford and crown reform."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Constable's seal verified royal feudal muster rolls, giving the Earl of Hereford immense leverage over Plantagenet military operations."
+    }
+  ],
+  "TextMappings": []
+}

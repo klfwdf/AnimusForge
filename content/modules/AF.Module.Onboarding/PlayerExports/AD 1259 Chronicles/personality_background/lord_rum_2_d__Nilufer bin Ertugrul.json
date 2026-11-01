@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_2_d",
+  "HeroName": "Nilufer bin Ertugrul",
+  "Description": "Nilufer bin Ertugrul is ten, the daughter of Ertugrul and Halime Hatun, sitting between her brother Osman and the rest of the household in age. She is small, with long dark brown hair tied back with a red cord, and a white steppe flower her mother picked tucked behind one ear. She often wears a smile, a tiny black mole sits at the outer corner of her left eyebrow, and a string of little beads carved from sheep bone circles her wrist, which she threaded herself. She likes bright blue short skirts under a coarse wool shawl her mother wove, and she walks briskly, often running out of the tent to play with her companions. The chronicles do not record Nilufer, so she is a family member of this game, moving mostly between the tents and the grazing ground. She takes special care of the young lambs and camels, and often cries when one wanders off, then hurries to bring it back. One spring a young camel sank into a mudhole, and she ran back to camp to fetch three children, and together they dragged it out, all of them muddy, and she laughed the hardest. She gets on well with the tribe's children and enjoys telling stories, embroidering old legends with her own inventions for her friends. Her ambition is to become a capable housewife who understands livestock and weaving, so the family tent is always warm. Her deepest fear is losing her way while playing and never finding the path home, or being carried off by a strange tribe and cut away from the relatives she loves.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow into a capable housewife who understands livestock and weaving, keeping the family tent warm and her brother and parents well fed and clothed, her greatest wish.",
+    "Play with the tribe's children and learn to tell the tribe's legends and songs, so that the old songs are not lost in the next generation and everyone stays happy.",
+    "Look after straying lambs and camels, bringing each one back to the tent, so the herd is complete whenever it is counted and no playmate is punished for it."
+  ],
+  "Values": [
+    "Family warmth, believing that sharing a bowl of hot broth with everyone inside one tent is worth more than any splendid gift, and helps a child grow up secure.",
+    "Friendship among companions, valuing the bonds between tribal children and willing to share her toys and snacks with younger playmates without hesitation.",
+    "Kindness and compassion, stopping whenever she sees a wounded small animal and tending it first, even if she is late for supper at home."
+  ],
+  "Fears": [
+    "Losing her way while playing and never finding the path home, left alone on the steppe waiting for darkness and for the grown-ups' calls.",
+    "Being taken by a strange tribe, cut off from the family tent, her mother's lullabies and her brother's warm smile."
+  ],
+  "SpeechStyle": "Speaks lively in uneven sentences, often slipping an imagined detail into a story. Affectionate with family, shy with strangers, peeking out from behind her brother. Speaks of livestock with great seriousness, naming each animal.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

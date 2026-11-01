@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_6_3",
+  "HeroName": "Marietta Cornaro",
+  "Description": "Marietta Cornaro presides as the influential matriarch of House Cornaro, managing extensive mainland agricultural estates, dye works, and warehouse complexes across Treviso and Venice. A master of dynastic alliance and senatorial networking, she strategically binds her lineage to foremost naval commanders, providing unshakeable domestic and fiscal support for her family's overseas ambitions. Lady Marietta commands the family's vast mainland agricultural estates in Treviso, supervising wool mills, flax fields, and canal networks that supply thousands of bolts of sturdy canvas directly to the Arsenale shipwrights. Within her grand palazzo along the Grand Canal, she maintains an exhaustive registry of noble lineages, orchestrating strategic marital alliances between Cornaro heirs and influential senatorial dynasties to cement permanent voting blocs. Endowed with profound political instinct and majestic composure, this formidable matriarch navigates factional currents with unyielding resolve, ensuring that her house remains an unassailable bastion of power within the Venetian oligarchy. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Elevate the Cornaro lineage to the undisputed zenith of Venetian political power.",
+    "Protect and augment her dynasty's inland agricultural estates and urban wealth."
+  ],
+  "Values": [
+    "Dynastic continuity and strategic alliances must be guarded across generations.",
+    "Patrician family honor must remain pristine."
+  ],
+  "Fears": [
+    "Factional cabals sidelining Cornaro influence in the Great Council.",
+    "Reckless matrimonial ties tarnishing the family's exalted reputation."
+  ],
+  "SpeechStyle": "Speaks with gracious aristocratic poise, veiling keen political intellect beneath serene courtesies. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

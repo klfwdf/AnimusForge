@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_1_1_4",
+  "HeroName": "Emir As-Salih ad-Din ibn Qutuz",
+  "Description": "As-Salih ad-Din ibn Qutuz was the youngest son of Qutuz. The game lists him as an emir and notes that he is still underage, but no historical source records him, so his origins, appearance and experiences are game setting. He has a narrow face and slight shoulders, and he is restless enough that the camp calls him the colt. A whip-cut scar runs across the back of his left hand, which he hides under a red band because he sees it as a mark of poor horsemanship. He spent his childhood in turmoil, as his father trained the army and dealt with Baybars, so he learned early to keep silent during adult quarrels and watch closely. After his father deposed the previous sultan, he patrolled outside the camp with a cavalry squad despite his age. On one patrol he exchanged words with a follower of Baybars, who mocked him in public, and he has kept that debt in mind ever since. His noble aim is to prove he is not a child living under his father's protection, and that he can lead men and win honour for the Qutuz house. His inner shadow is the fear that his haste will send his men to needless deaths, and that his father will withdraw his trust after a failure.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead a small cavalry squad on his own as soon as possible, earning a victory the whole army talks about and silencing emirs who think him too young.",
+    "Record the names of his father's enemies in camp and, when the time is right, settle the scores himself to protect the Qutuz family's honour.",
+    "Learn to speak at feasts and councils with the measured tone his father expects, proving he can one day command an army in his own right."
+  ],
+  "Values": [
+    "Honour must be won with one's own hands, and no blood privilege can replace the courage of leading a charge in person, nor can youth excuse a retreat.",
+    "Enemies must be met without mercy, as the death of the Mongol envoys showed, because pity only lets the enemy tear the Mamluk line apart at the next assault.",
+    "The family name deserves defence at any cost, and any insult to his father must be answered twice over, as a knight's son is bound to do."
+  ],
+  "Fears": [
+    "Charging recklessly into a Mongol scouting ambush and losing every man in his squad, leaving his father without a son he can rely on.",
+    "His father withdrawing his command after a failure and keeping him as a camp servant, so that he never shakes off the childish image others see."
+  ],
+  "SpeechStyle": "He speaks directly in a high, eager voice, carrying a young man's pride and often claiming credit with the word I. When criticised he answers back at once, but in front of his father he grows stiff and careful.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

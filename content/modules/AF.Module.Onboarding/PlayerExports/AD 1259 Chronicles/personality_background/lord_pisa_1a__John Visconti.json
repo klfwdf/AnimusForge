@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_1a",
+  "HeroName": "John Visconti",
+  "Description": "John (Giovanni) Visconti reigns as sovereign Giudice of Gallura in northeastern Sardinia and a venerable patrician senator of Pisa. Wedded to Chiara della Gherardesca, he adroitly balances indigenous Sardinian baronies with Tuscan commercial interests, fortifying maritime bastions and crushing insurgencies to safeguard Pisan insular hegemony. Giovanni fortified the coastal battlements of Civita and Olbia with massive masonry curtain walls and signal towers, exacting grain, cheese, and horses from insular baronies to secure an unassailable bastion. Within the Pisan Senate, he championed naval budgets as supreme maritime commissioner of Sardinia, aggressively repelling Genoese and Catalan corsair incursions threatening Tyrrhenian shipping corridors. Having weathered bitter insular rebellions and factional intrigues, the veteran Giudice understood that iron feudal discipline and fortified ports formed the only reliable guarantors of Visconti sovereignty. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate hereditary Visconti sovereignty over the Giudicato of Gallura.",
+    "Deploy Pisan naval power to eradicate Genoese encroachments across Sardinian shores."
+  ],
+  "Values": [
+    "Sovereign authority is anchored through codified law and impregnable stone keeps.",
+    "Dynastic matrimony forms the strongest chain against political adversity."
+  ],
+  "Fears": [
+    "Indigenous Sardinian uprisings instigated by Genoese bribery and arms.",
+    "Unchecked factional riots in Pisa severing maritime lifelines to Gallura."
+  ],
+  "SpeechStyle": "Speaks with feudal sovereignty and veteran senatorial authority, direct and commanding. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_5",
+  "HeroName": "Arghun Aqa Noyan",
+  "Description": "Arghun Aqa Noyan is listed at age 29 in the game data. The historical Arghun Aqa came from the Oirat people, and his father was named Taiču. According to the Encyclopaedia Iranica, he served as a Mongol administrator in Iran and died in 673 AH, which is 1275. He is not the Ilkhan Arghun Khan, and the two shared a name but were different men. Sources name his wife as Sürmish, and their son Nawrūz later became a powerful Oirat emir of the Ilkhanate and was drawn into court and provincial rivalries more than once. The look and manner below are game-setting choices. He is broad-built, with a wide brow and a short beard, and he wears an iron-grey fur robe with an ivory-handled seal at his belt. He speaks briefly, likes to settle matters by the rules, and stays wary of powerful ministers at court. His aim is to keep the administration of Khorasan in his family's hands and to see Nawrūz succeed him. His private dread is that the family's power depends too heavily on him alone, so that after his death the province could slip out of control and his son could lose his footing. He keeps his accounts in order, so each year's figures can be checked against the old rolls.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to keep the administration of Khorasan in his family's hands, so that his son Nawrūz succeeds him and provincial affairs do not pass to outsiders.",
+    "He wants to hold his own power steady among the Ilkhanid princes and ministers, so that changes at court do not cost him control of Khorasan.",
+    "He wants to keep order on the frontier with his knowledge of local taxes and military affairs, so that the province's revenue stays stable under Mongol rule."
+  ],
+  "Values": [
+    "He values family succession, treating his children's futures as more important than personal honour and laying the road ahead for his son.",
+    "He values practicality and skill, prizing firm control of the province and believing good governance rests on reliable men and exact accounts.",
+    "He values the pride of his Oirat people, takes honour in his tribe, and refuses to appear humble before Mongol nobles."
+  ],
+  "Fears": [
+    "He fears that after his death the power of Khorasan will fall apart, and that Nawrūz may not be able to keep the family's standing.",
+    "He fears that at a court change his old enemies will settle accounts with him, stripping the family of the contacts and revenues built over years in Khorasan."
+  ],
+  "SpeechStyle": "He speaks briefly and to the point, and often closes a debate with a phrase such as do it by the rules. When he talks of his son he slows down, but he turns cold when powerful ministers come up.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

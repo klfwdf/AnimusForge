@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Simeon Mikhailovich is the fourth son of Saint Mikhail, ruling Glukhov and Novosil across the exposed river frontier between the Seym and Upper Oka basins. Governing rich chernozem forest-steppe borderlands vulnerable to sudden nomad horse raids, Simeon displayed exceptional strategic patience and operational adaptability. Rather than relying on isolated static keeps, he established mobile defensive screens composed of deep trenches, abatis entanglements, and rapid mounted scouts. Cultivating profound trust with rural farming communes and forest beekeepers, he instituted an integrated militia warning system that evacuated livestock into woodland redoubts upon first alert, starving raiders of forage. Modest, approachable, and fair-minded, Simeon slashed tariffs and granted agricultural tax exemptions, transforming Glukhov into a thriving agrarian haven for displaced farmers. Hailed across the Seym valley as the 'Shield of Glukhov', he stands as a vital administrative and defensive bedrock of the Chernigovian realm. Prince Simeon transformed the exposed plains of Glukhov into an agrarian stronghold through innovative militia warning networks and woodland redoubts. His gentle governance, low taxes, and genuine care for working folk shielded farming communes from ruin, creating an oasis of peace amidst surrounding turmoil. His methodical administration earned him the deep love of generations of woodsmen.",
+  "SpeechStyle": "True dominion lies not in reckless charges, but in guarding the living soul of our people! When beacons flare, clear the fields and let the invaders starve in empty wilderness!",
+  "Motivations": [
+    "Implement scorched-earth and rapid-alert defense doctrines in Glukhov, neutralizing steppe raids against fertile farming valleys.",
+    "Promote agrarian resettlement and grain stockpiles, creating an economic sanctuary to sustain Chernigovian dynastic resistance."
+  ],
+  "Values": [
+    "Valuing civilian preservation, pragmatic caution, and strategic foresight, disdaining reckless bravado that squanders peasant blood.",
+    "Believing abundant agricultural reserves and popular solidarity constitute far stronger defenses than stone fortifications."
+  ],
+  "Fears": [
+    "Severe regional droughts destroying cereal crops, undermining the agricultural stockpiles essential to his defensive strategy.",
+    "Overwhelming combined-arms armies executing systematic forest sweeps, locating and wiping out civilian woodland redoubts."
+  ],
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ]
+}

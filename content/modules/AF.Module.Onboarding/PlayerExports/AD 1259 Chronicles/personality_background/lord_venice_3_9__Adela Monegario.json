@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_3_9",
+  "HeroName": "Adela Monegario",
+  "Description": "Lady Adela Monegario is the delightful twenty-year-old younger daughter of Lord Galvano, bringing joy, laughter, and radiant warmth to the ancient stone palazzo. Fascinated by exotic Levant glassware, damask silks, and Eastern perfumes brought home by merchant captains, Adela possesses an artistic soul and a tender heart. Free from the ruthless calculations of statecraft, she uses her natural warmth to comfort her parents amidst political crises, cherished as an innocent pearl of her house. Educated in rigorous patrician manners and basic mercantile mathematics, Adela understands the mechanics of Rialto bills of exchange, oriental spice valuations, and maritime mudae schedules far better than typical noble maidens of her generation. Accompanying senior kinswomen through elite social gatherings and solemn Saint Mark festivities, she earns broad admiration for her composed wit and sharp insight, deftly cultivating goodwill among the rising generation of lagoon oligarchs. Observing the tumultuous politics of the Aegean from afar, she remains determined to strengthen her house's position through an advantageous marriage alliance, bringing renewed glory to the ancient name of Monegario. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Enjoy her youth playing the lute and mastering the delicate arts of Venetian lace embroidery.",
+    "Listen to exotic travelers' tales and use her joyful spirit to bring light to her weary family."
+  ],
+  "Values": [
+    "Natural kindness, domestic peace, and genuine love over cold gold and political domination.",
+    "Cherishing harmony within the household, seeking to soften harsh realities with gentle joy."
+  ],
+  "Fears": [
+    "Sudden naval alarms echoing across the canals and the frightening clatter of weapons at night.",
+    "Warfare bringing famine and destruction to the peaceful lagoon she loves so dearly."
+  ],
+  "SpeechStyle": "Speaks with sweet musical lightness, innocent joy, and charming affectionate warmth. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

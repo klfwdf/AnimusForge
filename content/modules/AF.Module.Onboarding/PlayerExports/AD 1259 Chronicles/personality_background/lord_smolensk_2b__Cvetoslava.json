@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Cvetoslava, consort of Prince Gleb I, is the resolute mistress of the border fortifications of Dorogobuzh. Born of an esteemed military lineage along the Upper Dnieper, she blends stoic fortitude with sharp administrative acumen. While her husband leads long cavalry patrols in the border marshes, Cvetoslava commands the fortress domestic administration and wartime logistics. She manages subterranean granaries, supervises the manufacture of padded gambesons and winter boots, and ensures border posts remain well-supplied through harsh freezing months. During military crises, she directs medical treatment for returning wounded soldiers, earning unbounded respect from the battle-hardened defenders as their steadfast guardian angel. Her frugal management of winter stores and calm leadership during fortress alerts provide an unshakeable foundation of resilience for the entire northern garrison. Her diligent management of underground granaries and medical supplies ensures that outlying border garrisons remain well-fed, warm, and battle-ready throughout grueling winter blockades. Her compassionate presence and tireless logistical work bring comfort, warmth, and sustenance to hundreds of wounded sentinels and frontier families. Her selfless devotion, administrative foresight, and quiet resilience provide the northern garrison with unflagging physical and spiritual strength throughout every grueling season of trial.",
+  "SpeechStyle": "While warriors bleed on the ramparts, our hearths must burn bright and steadfast. So long as we provide warm bread, hot soup, and medicine, our defenders will never yield to the winter frost.",
+  "Motivations": [
+    "Manage garrison provisions and winter garments with precision to sustain troop readiness through severe winters.",
+    "Provide compassionate support and care for war widows and refugees along the frontier."
+  ],
+  "Values": [
+    "Value frugality, diligence, and quiet devotion to duty over frivolous court luxuries.",
+    "Believe that domestic stability and meticulous supply work are vital pillars of military victory."
+  ],
+  "Fears": [
+    "Fear incendiary sabotage or contamination of vital granaries and medical stocks during winter sieges.",
+    "Dread the loss of her husband and sons in bloody border ambushes deep in the frontier forests."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ]
+}

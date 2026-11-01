@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3g",
+  "HeroName": "Filippo della Torre",
+  "Description": "Filippo della Torre, brother of Martino, succeeded as Lord of Milan and Podestà of Bergamo and Como. Consolidating power after Martino's death, he neutralized Visconti resurgences and extended Torriani lordship across northern Lombardy and the Lake Como region. Filippo traversed the senatorial halls of Como and Bergamo with seasoned diplomatic skill, cementing eternal mutual defense pacts that formed an unshakeable protective ring around Milan. Administering Como and Bergamo with equitable statutes, he eradicated corrupt patrician extortion to secure the absolute loyalty of northern artisans and farmers for the Torriani. Convinced that lasting lordship rested upon codified law and popular consent, Filippo bound northern Lombard communes into an enduring defensive commonwealth. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Stabilize Milan following Martino's sudden death, securing smooth dynastic succession.",
+    "Rule as Podestà across Bergamo, Como, and Vercelli to encircle Milan with vassal communes.",
+    "Block Archbishop Ottone Visconti from occupying the Milanese see to preserve secular rule."
+  ],
+  "Values": [
+    "Believes diplomatic balance and institutional law constrain enemies far better than raw force.",
+    "Holds legal continuity sacred, systematically eroding rival power through patient moves."
+  ],
+  "Fears": [
+    "Papal interdicts inciting superstitious citizens against his secular administration.",
+    "Bergamo or Como secretly defecting to the Visconti, stabbing Milan in the flank."
+  ],
+  "SpeechStyle": "Speaks with juristic precision and measured gravitas, persuasive and composed. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

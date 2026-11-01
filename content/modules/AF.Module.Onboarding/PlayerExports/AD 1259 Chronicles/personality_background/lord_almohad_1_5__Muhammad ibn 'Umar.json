@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_1_5",
+  "HeroName": "Muhammad ibn 'Umar",
+  "Description": "Muhammad ibn 'Umar is a young son of caliph 'Umar al-Murtada, according to the game lineage. His father is lord_almohad_1_1. He is seven years old, small for his age, with round cheeks, and a faded red cord is tied around his right wrist, a charm his mother obtained from a Marrakesh mosque. Most of his days are spent moving between the schoolroom and the inner courtyard. His teachers have him memorise short surahs of the Quran, but he prefers to linger among the servants and ask what is happening in the city. Adults in the palace often lower their voices when they discuss his cousin Idris and the Marinid envoys, and he tries to guess the meaning from fragments of talk, memorising every name he hears. His highest aim is to grow into a man worthy of his father's name and to keep a permanent seat for the 'Umar line in council. His darker side is a distrust of strangers and adults. When no one is watching, he quietly notes who speaks against his father, then recites those names at night, as if preparing for a future reckoning. He likes to copy the gestures of adults he has overheard, mimicking their tone when no one is around to see him.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow into a man worthy of his father's name and keep a permanent seat for the 'Umar line in council, rather than depend on the charity or favour of others.",
+    "Learn to read the whispers and expressions of adults, and work out what his cousin Idris's dealings with the Marinid court really mean for his father.",
+    "Master the Quran and court etiquette in the schoolroom quickly, so that cousins his own age cannot treat him as an ignorant child or slight him."
+  ],
+  "Values": [
+    "Curiosity and learning. He believes every unfamiliar name and rumour hides a truth worth uncovering, and he cannot rest until he knows it.",
+    "Loyalty to family. He values his father's name above his toys, and anyone who slights his father will provoke an immediate outburst.",
+    "Memory and evidence. He keeps what he hears in mind and believes that only a person who remembers cannot be deceived later."
+  ],
+  "Fears": [
+    "Fears his father or mother will be taken away one night, as the palace stories of coups describe, without any chance to say goodbye.",
+    "Fears a cadet branch will replace his place among the royal children, leaving him a nameless boy in the chronicles who must depend on others."
+  ],
+  "SpeechStyle": "Quick and rapid, he fires off questions and moves to the next topic before anyone answers. Childish stubbornness marks his speech; rebuked, he raises his voice, then falls quiet and watches the adult's face.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

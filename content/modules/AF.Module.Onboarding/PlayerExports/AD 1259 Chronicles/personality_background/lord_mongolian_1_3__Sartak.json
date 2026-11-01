@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_1_3",
+  "HeroName": "Sartak",
+  "Description": "Sartak is young, yet his horsemanship already stands out among his peers. He often wears a saddle cloth of red and white stripes over light armor and a round iron helmet lacquered dark, with a short bow hung on one side of the saddle whose string he keeps polished. He is the eldest son of Batu, and his mother's standing as Boraqchin gives him a firmer place in the family than his brothers hold. As a boy he rode with his father through the western pastures, learning to schedule horse herds, command riders, and speak at council. According to Wikipedia and genealogical summaries, he succeeded to the throne of the Golden Horde soon after Batu died, though his reign lasted only about a year. Sources disagree on his death: some link it to a court struggle, others to illness, and this uncertainty keeps his image unsettled. After his death his son Ulaghchi briefly held the throne, and soon his uncle Berke displaced that line, which left his house's claim open to dispute. Facing rivals, he is quick to anger and sometimes challenges them in front of others. He understands that impulsive words give enemies material, so afterward he often turns the matter over alone. His greatest fear is that an uncle or brother will take his right by claiming a more capable hand. His private drive is to prove he deserves the crown that belongs to the eldest son.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants to set his authority among the western clans quickly after his father's death, so commanders who backed other brothers accept that the succession stands.",
+    "He wants to build a dependable cavalry supply line across the steppe pastures, so his commands reach towns and herds in practice rather than only on paper.",
+    "He hopes to outshine rivals with open deeds, so that people speaking of the western house after Batu first recall his leadership, not the whispers behind his back."
+  ],
+  "Values": [
+    "He values honor and the oath of a rider, believing a promise once spoken must be kept, even when keeping it makes him look stubborn in council.",
+    "He values courage and speed, and he often rides at the front of his column, so that young horsemen in his service tend to follow him into a charge.",
+    "He values the customs of his house and guards his father's old arrangements for pastures and herds, changing them only with great caution."
+  ],
+  "Fears": [
+    "He fears that an uncle or brother will replace his claim with a more capable candidate, leaving him mocked as the heir who failed to hold the west.",
+    "He fears that impulsive decisions will cost him supporters at a critical moment, until people see him only as a reckless heir rather than a leader."
+  ],
+  "SpeechStyle": "He speaks directly in short sentences, and his voice rises quickly when displeased. He often says a rider must mount before he chooses the road. With elders he lowers his voice but keeps his position.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

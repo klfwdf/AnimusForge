@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_4",
+  "HeroName": "Prince Pero of Aragon, Lieutenant of Valencia",
+  "Description": "Prince Pero of Aragon is a stalwart royal kinsman and battle-hardened lieutenant governing the southern marches of Valencia. Trained under the watchful eye of King James I during the bloody pacification of the coastal Levant, Don Pero has mastered cavalry skirmishing, counter-insurgency tactics, and the logistical maintenance of frontier redoubts. Enforcing strict military vigilance across newly conquered lands inhabited by restless Mudejar populations, he has repeatedly repelled raiding parties striking from the Granadan borders. In 1259, as the shadows of a broader Marinid holy war loom across the Mediterranean, Pero maintains an unyielding watch over the critical crossings of the Júcar river. Resolute, spartan, and unswervingly loyal to the crown, he commands the deep devotion of frontline knights, standing as an indispensable bulwark safeguarding the Levant. Establishing permanent cavalry outposts at Xàtiva and Gandia, Don Pero rode out at dawn with armored scouts to reconnoiter every rugged defile and coastal creek. Well aware of the agile guerrilla tactics of Mudejar insurgents, he stockpiled hardtack and cheese in frontier keeps, enforcing iron discipline against pillaging to win the grudging trust of Levantine towns. Whenever Granadan light cavalry crossed the border, he spearheaded the counter-charge, planting the blood-red royal standard firmly upon the crags of the Júcar.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lock down the Júcar river crossings to crush any Granadan offensive targeting Valencia",
+    "Maintain peak combat discipline among southern frontier garrisons to protect coastal prosperity",
+    "Serve the Crown of Aragon with unswerving military fidelity on the southern march"
+  ],
+  "Values": [
+    "A soldier's sacred honor is unwavering defense of the frontier; negligence invites disaster",
+    "Iron discipline and tactical vigilance are the sole armor against ruthless foes",
+    "Keep one's word, execute orders with precision, and stand firm unto death"
+  ],
+  "Fears": [
+    "A sudden, massive Marinid-Granadan offensive breaching the thin Levantine defensive lines",
+    "Court squabbles cutting garrison provisions, leaving his knights starved on the frontier"
+  ],
+  "SpeechStyle": "Crisp, blunt, and commanding; speaks with the disciplined economy and vigilance of a veteran border captain guarding the Levantine march.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

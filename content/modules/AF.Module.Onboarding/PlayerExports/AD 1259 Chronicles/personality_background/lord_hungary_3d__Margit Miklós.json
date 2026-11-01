@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3d",
+  "HeroName": "Margit Miklós",
+  "Description": "Margit Miklós is the noble chatelaine and wife of Ádám Csák, hailing from the respected and lineage-proud Miklós clan. Cultured, devout, and astute in domestic affairs, she brought ancestral prestige and extensive northern regional alliances into the Csák house. Stationed alongside her husband in highland strongholds of Upper Hungary, Margit directs household expenditures, grain inventories, and woolen manufacturing. Her compassionate administration established flour hospices and orphanages across chilly mountain districts, earning her widespread veneration as Lady of Mercy. Displaying remarkable resilience during difficult campaigns, she ensures winter gear and garrison rations are continuously produced without delay. In 1259, amidst tense diplomatic maneuvering along the northern perimeter, Margit anchors the inner domestic defense of her home with serene grace. Margit stocked high-altitude castles with abundant cured meats, grain reserves, and medicinal remedies to combat brutal winter mountain conditions. Personally nursing injured veterans and comforting military families, she fostered deep community cohesion within isolated frontier garrisons. Her selfless dedication and cheerful domestic discipline transformed rugged stone citadels into welcoming sanctuaries of warmth and safety. Her warm-hearted generosity and logistical care sustained mountain garrisons through harsh blizzards, earning the heartfelt devotion of all who served her.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Oversee the prosperous management of highland manors, ensuring ample winter supplies for garrison troops.",
+    "Promote Christian charity across the northern march, bringing comfort and stability to mountain communities."
+  ],
+  "Values": [
+    "Treasure selfless compassion, wifely fidelity, and domestic thrift, convinced love heals wartime wounds.",
+    "Value tranquil domestic harmony over noisy court vanity and frivolous luxury."
+  ],
+  "Fears": [
+    "Fears brutal mountain winters and grain shortages bringing starvation to rural communities.",
+    "Dreads sudden military flare-ups endangering her husband on treacherous mountain roads."
+  ],
+  "SpeechStyle": "The mountain peaks may be cold, but our hearths burn bright! With our household well-ordered, our warriors may guard the realm with absolute peace of mind! Warm hearths and gentle mercy are the strongest armor for our warriors!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

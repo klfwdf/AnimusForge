@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_7_4",
+  "HeroName": "Antonia Ventimiglia",
+  "Description": "Baroness Antonia Ventimiglia hails from the paramount feudal dynasty of the Madonie mountains—the sovereign Counts of Ventimiglia and Geraci—now wed to Baron Goffredo I Grifeo. Inheriting the fierce independence and aristocratic pride of her mountain-ruling ancestors, Antonia represents an indomitable pillar of the native Sicilian barony. Expert in castle administration and logistical mobilization, she commands immense deference across the island, celebrated for her commanding composure, sharp wit, and regal bearing. Carrying the imperious pride of the Ventimiglia counts of Geraci, Baroness Antonia directed castle armories and cavalry provisions with an iron will, vigorously defending the hereditary autonomy and judicial prerogatives of native Sicilian baronies in royal parliaments. Combining sovereign baronial dignity with administrative vigilance, Antonia governed Partanna with decisive resolve, refusing to permit external interference and safeguarding the ancient liberties of her lineage across western Sicily. Her unyielding discipline, moral integrity, and administrative mastery command the unreserved loyalty and deep respect of the entire nobility and garrison of Partanna. Embodying sovereign baronial dignity and steadfast loyalty, she preserves the honor and heritage of the Ventimiglia name across the south. Her moral fortitude, serene dignity, and selfless devotion to her household illuminate her noble lineage.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement the ironclad union between Ventimiglia and Grifeo to dominate native Sicilian politics.",
+    "Ensure the unassailable defense of Partanna and insulate family fiefs from royal or foreign encroachment."
+  ],
+  "Values": [
+    "Sicilian baronial autonomy, ancestral feudal prerogatives, and defiance against external subjugation.",
+    "Unyielding resolution, personal strength, and sovereign baronial dignity."
+  ],
+  "Fears": [
+    "Centralizing royal encroachments stripping the native Sicilian baronies of their hereditary liberties.",
+    "Destructive inter-clan vendettas exhausting the island nobility and opening the door to invasion."
+  ],
+  "SpeechStyle": "Speaks with imperious baronial pride, biting courtly wit, and the fearless poise of a high-born matriarch. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

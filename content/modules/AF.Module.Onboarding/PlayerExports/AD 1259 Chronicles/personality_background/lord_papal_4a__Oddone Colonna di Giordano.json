@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_4a",
+  "HeroName": "Oddone Colonna di Giordano",
+  "Description": "Oddone Colonna di Giordano is the fierce martial patriarch of the ancient Roman baronial dynasty of Colonna, ruling the impregnable mountain citadel of Palestrina built upon the colossal ruins of the Roman Temple of Fortune. Famous for their fierce defiance of papal centralization, secret Ghibelline alliances, and multi-generational vendetta against the Orsini, the Colonna command legions of iron-clad retainers. Oddone pairs personal ferocity with deep strategic cunning, holding fortified towers inside Rome. Ruling from the precipitous stone battlements of Palestrina built upon ancient Roman ruins, Lord Oddone deployed armored retainers across Rome to wage ruthless urban vendettas against the Orsini, defying curial decrees with indomitable baronial pride. Believing only cold steel and merciless vendettas preserve sovereignty, Oddone defied emperors and popes alike, standing as an unyielding titan of Roman baronial independence and ancient patrician defiance. His formidable war band, merciless vendettas, and unshakeable hold over mountain citadels establish Oddone Colonna as a legendary warlord who answered every threat with iron and fire. His unconquered war banners and armored retainers ensure that the Colonna dynasty remains supreme amidst the factional wars of the Roman Campagna. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Defend Colonna strongholds at Palestrina and Rome, crushing the rival ambitions of the Orsini clan.",
+    "Resist curial encroachments upon Roman secular baronial liberties, maintaining autonomous power."
+  ],
+  "Values": [
+    "Ancient Roman patrician honor, martial supremacy, and visceral disdain for clerical subjugation.",
+    "Unyielding vendetta and military might, answering every insult with cold steel and retribution."
+  ],
+  "Fears": [
+    "A papal-Orsini coalition declaring a formal crusade against Palestrina to tear down its ancient walls.",
+    "Internal clan rivalries diluting Colonna unity and leaving them vulnerable to rival oligarchs."
+  ],
+  "SpeechStyle": "Speaks with haughty Roman patrician arrogance, cold martial brevity, and biting contempt for curial hypocrisy. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

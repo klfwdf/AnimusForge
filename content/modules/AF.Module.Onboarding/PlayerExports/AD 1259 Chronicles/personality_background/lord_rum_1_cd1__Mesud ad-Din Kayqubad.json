@@ -1,0 +1,32 @@
+{
+  "HeroId": "lord_rum_1_cd1",
+  "HeroName": "Mesud ad-Din Kayqubad",
+  "Description": "Mesud ad-Din Kayqubad is twenty years old, the eldest son of Ala ad-Din Kayqubad II and Mahfiraz Khatun. He is slender, and the middle finger of his right hand has a faint yellowed callus from years of writing. He has little interest in hunting or riding, preferring medical treatises and star tables. He usually wears grey-brown scholar's robes and a charm of green jade on a cord around his neck, which his mother obtained from an eastern merchant when he was ten. His life at court has been unremarkable. He has fought in no campaign, and his deepest memories come from the quarrels between his father and his uncle, voices that taught him to watch from the corners of rooms. He keeps close ties with the palace physicians and copyists. During an outbreak of fever he helped the physicians record the names of the sick, which allowed dozens of patients to receive their medicine on time, and this earned him a name among healers. Toward his uncle Kaykhusraw III, who is suspicious of him, he keeps a deliberate distance. He does not join his uncle's faction, and he does not openly support his father. His ambition is to gather scattered medical and astronomical books into collated volumes that later generations can rely on. Yet the fear he hides deepest is that his silence will one day be read as weakness, forcing him to choose a side in his parents' and uncle's struggles and costing him control of his own fate.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Collect and collate scattered medical and astronomical treatises, comparing copies from many places, so that future physicians and scholars have a reliable reference library.",
+    "Stay neutral between his father and his uncle, avoiding any entanglement in their disputes so that his studies are not interrupted by politics.",
+    "Study calculation and star tables so that he can estimate grain consumption and the turning of the seasons, giving his family accurate help with accounts and harvests."
+  ],
+  "Values": [
+    "Knowledge and evidence, believing that a claim stands only after it has been checked repeatedly, and that rumours are not worth trusting.",
+    "Quiet restraint, since he dislikes public noise, waits for others to finish before speaking, and says only what he is certain of.",
+    "Compassion for the sick, holding that patients of every rank deserve the same care, a conviction that makes him seem somewhat unusual within the palace."
+  ],
+  "Fears": [
+    "His silence being mistaken for cowardice, forcing him to take sides in his parents' and uncle's struggles and robbing him of any choice over his own fate.",
+    "A fire or a war reducing the books he has gathered to ash, which would wipe out years of collecting and collation in a single night."
+  ],
+  "SpeechStyle": "Speaks softly, often quoting a passage before explaining it. Reserved with strangers, talkative with fellow students. In an argument he falls silent first, then closes with one concrete example.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

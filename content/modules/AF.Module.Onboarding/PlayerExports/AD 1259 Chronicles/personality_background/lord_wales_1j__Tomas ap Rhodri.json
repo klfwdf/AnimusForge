@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1j",
+  "HeroName": "Tomas ap Rhodri",
+  "Description": "Tomas ap Rhodri is the youthful son and heir of Rhodri ap Gruffudd and Beatrice de Malpas, destined to carry the royal bloodline of Aberffraw into the next century (father to the famed mercenary Owain Lawgoch). In 1259, Tomas is an adolescent growing up on his family's peaceful border manors along the Dee. Tall, athletic, and keenly observant, he embodies a synthesis of both worlds: trained in the devastating longbow and mountain riding of Cymric warriors, yet schooled in chivalric horsemanship, French, and Latin by his mother's kin. He accompanies his father across border sheep pastures, displaying natural strategic intuition for river crossings and mountain defiles. While his father Rhodri instills caution and moderation, the legendary legacy of Llywelyn the Great stirs within Tomas's veins whenever wandering bards sing of ancient British kings. He harbors no blind prejudices, recognizing early that intellect and adaptability surpass raw fury on the political chessboard. Honorable, studious, and quietly brave, he prepares himself for an uncertain future in an era of gathering storm. Accompanied by grizzled Welsh huntsmen, he stalks red deer across rugged crags, mastering the immense draw of the yew longbow with lethal accuracy. Mindful of the princely blood flowing in his veins, Tomas supplements hard martial training with Latin histories, quietly preparing himself to defend his family's honor in the conflicts to come.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master martial chivalry and Welsh archery to become a worthy protector of his kin",
+    "Study both Cymric custom and English common law to navigate future inheritance disputes",
+    "Safeguard the dual heritage of Aberffraw and Malpas amidst the coming storms"
+  ],
+  "Values": [
+    "Martial prowess must be married to keen intellect; blind fury leads only to ruin",
+    "Filial devotion and chivalric honor are the truest measures of a noble gentleman",
+    "Endure with quiet patience until the appointed hour arrives to claim one's destiny"
+  ],
+  "Fears": [
+    "Seeing his ancestral home torched and his gentle parents reduced to destitute exiles",
+    "Being seized as a dynastic hostage before having the chance to prove his valour"
+  ],
+  "SpeechStyle": "Speaks with bright, youthful modesty and impeccable manners, showing deep deference to elders while articulating strategic and martial thoughts with startling maturity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

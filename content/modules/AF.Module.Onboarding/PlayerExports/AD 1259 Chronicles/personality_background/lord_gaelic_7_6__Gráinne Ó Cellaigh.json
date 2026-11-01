@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_7_6",
+  "HeroName": "Gráinne Ó Cellaigh",
+  "Description": "Gráinne Ó Cellaigh is the spirited twenty-two-year-old second daughter of Uí Maine, combining courtly aristocratic elegance with the bold equestrian outdoor hardiness of the western frontiers. Passionate about horsemanship, she regularly accompanies her father and elder brother on equestrian tours across the sprawling river pastures and agricultural manors of the Suck. Gráinne displays exceptional administrative skill, auditing wool exports and abbey endowments with sharp precision while earning deep respect from estate bailiffs. In winter, she frequently rides through treacherous mud to deliver grain sacks and woolen mantles directly to impoverished tenant families, beloved as the warm sun of the riverlands. Fearless in emergencies, she is proficient with a short hunting bow, embodying the indomitable spirit of Celtic womanhood. Cherished across the realm, she infuses the turbulent marchlands with grace and courage. Galloping through the expansive meadows along the River Suck, Gráinne routinely demonstrates peerless equestrian archery, her arrows striking true at full gallop; combining vibrant outdoor vigor with generous distributions of food to struggling tenant families, she is deeply adored across the river country as a radiant exemplar of Celtic womanhood. Her radiant equestrian spirit and boundless generosity make her beloved across all the borderlands.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Supervise clan trade and charity so river tenants never suffer cold or hunger.",
+    "Ride freely across ancestral meadows, defending her family's freedom to the last."
+  ],
+  "Values": [
+    "Bold frontier vitality, open generosity, and compassionate relief for the poor.",
+    "Unshakable love for her ancestral soil and fierce family devotion."
+  ],
+  "Fears": [
+    "Ruthless raiders slaughtering prized livestock across the river meadows.",
+    "Young clan companions perishing in relentless, grinding border warfare."
+  ],
+  "SpeechStyle": "Speaks with bright, spirited resonance and engaging warmth, candid, energetic, and completely unpretentious, exuding boundless outdoor vitality and charm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

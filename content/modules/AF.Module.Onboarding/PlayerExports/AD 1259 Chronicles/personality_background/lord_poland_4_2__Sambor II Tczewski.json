@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_4_2",
+  "HeroName": "Sambor II Tczewski",
+  "Description": "Sambor II of Tczew (Dirschau) reigns as Duke of Lubiszewo and Tczew, a prominent prince of the Samboride dynasty famed for his bitter, decades-long resistance against his tyrannical elder brother, High Duke Świętopełk II the Great. Governing the vital ferry crossing and fortress of Tczew along the Lower Vistula, Sambor adamantly rejected his brother's centralizing autocracy, fighting relentlessly to protect the sovereign rights of cadet branches. Confronted by Świętopełk's overwhelming military superiority, Sambor took the fateful strategic gamble of allying with the expanding Teutonic Order, ceding the stronghold of Gniew (Mewe) to the crusaders in exchange for armored knights and siege artillery. A fearless and stubborn field commander, Sambor repeatedly repulsed massive amphibious assaults outside Tczew, deploying river booms and iron-tipped stockades to paralyze enemy war galleys. He was a generous benefactor of the church, founding the great Cistercian abbey of Pelplin and granting Magdeburg municipal privileges to Tczew. Though later chroniclers debated his alliance with the crusaders, in 1259 Sambor stands as an unyielding warrior defending his ancestral hearth against fraternal subjugation. Sambor deepened concentric defensive moats and installed reinforced river boom sluices along the Vistula. His indomitable defiance repulsed all amphibious invasions and secured Tczew's territorial sovereignty.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage Teutonic and Kuyavian military alliances to preserve the complete territorial independence of Tczew.",
+    "Dominate the vital Vistula river ferry and customs, shattering Gdańsk's monopoly over regional trade.",
+    "Endow Pelplin Abbey and reinforce stone bastions to anchor his dynasty's permanent legitimacy along the Baltic."
+  ],
+  "Values": [
+    "Prize baronial sovereignty and princely honor far above fraternal bloodlines, scorning autocracy.",
+    "Embrace fearless determination, allying with powerful external forces to secure dynastic survival.",
+    "Honor feudal compacts and territorial grants, leading his retainers with uncompromising martial courage."
+  ],
+  "Fears": [
+    "Tczew falling to prolonged siege starvation, leaving him a captive at the mercy of his ruthless brother.",
+    "His crusader allies turning their swords against him to absorb Tczew into the Monastic State of Prussia."
+  ],
+  "SpeechStyle": "Świętopełk shall not swallow one inch of Tczew's soil! Though I ally with crusader knights, I will never kneel to my tyrannical brother; we fight to the death! My lance shatters all tyranny; Tczew fights to the final drop of blood!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

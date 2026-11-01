@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_7_1",
+  "HeroName": "Conchobar Ó Cellaigh",
+  "Description": "Conchobar Ó Cellaigh is the sovereign chieftain of Uí Maine (Hy-Many) and one of the wealthiest Gaelic magnates in medieval Ireland. Governing the fertile, cattle-rich riverlands between the Shannon and the Suck, his dynasty is celebrated throughout Erin for legendary patronage of bards, harpers, and jurists—giving rise to the immortal proverb 'O'Kelly's Welcome'. Forty-eight years old, Conchobar unites the prowess of an armored cavalry commander with the sophisticated statecraft of a senior monarch. Utilizing substantial revenues from wool trade and grain exports, he fortified numerous stone castles while richly endowing the Cistercian Abbey of Knockmoy and the See of Clonfert. Firmly aligned with King Felim and Prince Aedh of Connacht, King Conchobar guards the vital Shannon crossings with hundreds of armored men-at-arms, revered across all four provinces as a generous patron and an unyielding warrior. Endowing Knockmoy Abbey and the Cathedral of Clonfert with vast herds of cattle and fertile manors, King Conchobar earned immortal renown as a princely patron of learning; patrolling the vital Shannon crossings at the head of hundreds of armored lancers, his magnificent baronial statecraft commands awe and veneration across all four provinces of Ireland. He reigns as a magnificent prince of peace, generosity, and martial strength across central Ireland.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend Uí Maine's territorial integrity and seal the Shannon crossings against invasion.",
+    "Patronize poets, scholars, and monasteries to immortalize the fame of O'Kelly's welcome."
+  ],
+  "Values": [
+    "Supreme Gaelic princely generosity and munificent patronage of the arts.",
+    "Chivalric integrity, honorable hospitality, and relentless defense of clan rights."
+  ],
+  "Fears": [
+    "Collapse of the Shannon river defense allowing cavalry into the heartlands.",
+    "The ancestral fame of O'Kelly's hospitality being extinguished in ashes."
+  ],
+  "SpeechStyle": "Speaks with booming baronial magnanimity and commanding warmth, his rhetoric expansive, generous, and resonant with the unshakeable confidence of a great ruler.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Hohenstaufen_and_Staufer_Ghibelline_Twilight",
+  "Keywords": [
+    "House of Hohenstaufen Black Lions",
+    "Frederick II Stupor Mundi Legacy",
+    "Manfred Ghibelline Champion",
+    "Staufer Papal Deadly Rivalry"
+  ],
+  "RagShortTexts": [
+    "The House of Hohenstaufen defended imperial Ghibelline supremacy in southern Italy against."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing three black lions on gold, the House of Hohenstaufen embodied imperial Ghibelline majesty. Following the death of Frederick II ('Stupor Mundi'), popes waged unrelenting crusade against the dynasty. Yet Frederick's charismatic son Manfred seized the Sicilian crown, mobilizing Swabian knights and Lucera archers against papal coalitions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Manfred's court welcomed scholars, astrologers, and falconers. Despite continuous excommunications, his victories in Tuscany checked Guelph leagues, guarding imperial claims across Italy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Serving beneath the Hohenstaufen lion banner earns payment in pure gold augustales. So long as Manfred holds Naples and Palermo, the Staufer imperial cause lives."
+    }
+  ],
+  "TextMappings": []
+}

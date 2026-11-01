@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_1",
+  "HeroName": "Valdemar Birgersson, King of Sweden",
+  "Description": "King Valdemar Birgersson of Sweden, inaugural crowned monarch of the House of Bjelbo, was the eldest son of Dux Birger Magnusson and Princess Ingeborg, sister of King Eric XI. Inheriting the sacred royal charisma of the Saint Eric dynasty through his mother, young Valdemar was elected king at the 1250 Diet of Linköping and anointed in solemn liturgical splendor. Throughout the early decades of his reign, while his formidable father governed the realm as regent, Valdemar cultivated chivalric pageantry, troubadour romances, and Continental courtly manners across the royal manors of Östergötland. His marriage to Queen Sofia, daughter of King Eric IV of Denmark, cemented an illustrious interstate alliance. Gallant and cultured, Valdemar's aversion to ruthless statecraft ultimately left him vulnerable to the relentless ambitions of his younger brother, Duke Magnus Ladulås, resulting in his overthrow at the Battle of Hova. Throughout royal festivals at Uppsala and Stockholm, Valdemar patronized visiting troubadours and Continental tournaments, endowing the Swedish court with unprecedented courtly refinement. However, his private life was embroiled in theological scandal when his affair with his sister-in-law Jutta provoked papal censure and alienated the episcopate. Incapable of curbing the military coup orchestrated by his brothers, Valdemar fled to Norway, his tragic reign marking a pivotal transition from patrimonial kingship to institutional feudal governance.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Promote chivalric courtly culture across Linköping and Stockholm while cementing royal alliances with Denmark.",
+    "Assert monarchical authority under his father's tutelage to curtail baronial conspiracies across the provinces."
+  ],
+  "Values": [
+    "Reveres courtly magnificence, chivalric generosity, and regal charisma as the supreme attributes of true kingship.",
+    "Champions feudal harmony and aristocratic conciliation, scorning tyrannical cruelty in favor of courtly benevolence."
+  ],
+  "Fears": [
+    "Dreads treacherous plots orchestrated by his ambitious brothers to depose him from his legitimate throne."
+  ],
+  "SpeechStyle": "Speaks with melodic courtly elegance and youthful warmth, citing troubadour verses with regal grace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

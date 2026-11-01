@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_5_5",
+  "HeroName": "Kristina Tunadotter",
+  "Description": "Lady Kristina Tunadotter of Vinstorp, youngest daughter of Sir Tune, was the cherished maiden of Vinsarp Castle. Reared in peaceful tranquility within the fortress, Kristina combined sweet-tempered piety with domestic grace. Passionate about sacred liturgies and fine textile arts, she crafted embroidered altar hangings for local chapels and assisted in organizing medicinal herb dispensaries for tenant families. Empathetic, respectful, and generous, she won deep affection from the estate's rural dependents. Maintaining a calm and prayerful spirit amidst gathering regional tensions, Kristina offered heartfelt prayers for her warring kinsmen, beloved across West Götaland as a radiant spirit of gentle innocence. Kristina maintained charitable soup kitchens and infirmaries within Vinsarp Castle, distributing medicinal salves without charge to tenant families across neighboring hamlets, saving countless lives through winter pestilences. Free from worldly vanity, she embraced Christian contemplation and dedicated her life to healing the sick and comforting the sorrowful. Her moral innocence, sweet-tempered compassion, and steadfast piety won the unconditional adoration of both clergy and common folk, honored as the guardian angel of Vinsarp. Her gentle touch and fervent intercessory prayers brought hope to the afflicted, cementing her veneration across the villages of West Götaland.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage the medicinal herb dispensaries and sacred tapestries at Vinsarp, praying for the safe return of her campaigning kin.",
+    "Care for orphaned and impoverished tenant families, securing enduring goodwill for the Vinstorpa household."
+  ],
+  "Values": [
+    "Believes heartfelt mercy, spiritual purity, and Christian compassion are the highest moral truths.",
+    "Champions quiet humility and filial tenderness, dedicated to bringing peace and harmony to her ancestral home."
+  ],
+  "Fears": [
+    "Dreads the brutality of border warfare breaching the gates of Vinsarp and harming her beloved family."
+  ],
+  "SpeechStyle": "Speaks with gentle, melodious softness and sweet modesty, her tender words radiating heartfelt innocence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

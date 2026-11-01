@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_6_1a",
+  "HeroName": "Gaute Jonsson Mel",
+  "Description": "Baron Gaute Jonsson of Mel was the revered elder statesman, supreme royal lendmann, and paramount patriarch of the historic Giske and Bjarkøy dynasties. In 1259, ruling from his sprawling baronial seat at Mel in Sunnhordland, Gaute held an unparalleled position of moral and political veneration across the kingdom. Having served Kings Sverre, Ingi, and Hákon IV through the crucible of Norway's civil wars, he was the living memory of the realm's constitutional evolution. Renowned for his incorruptible sense of statutory justice and deep canonical wisdom, Gaute served as supreme judicial advisor and regent during royal absences abroad. His patronage established monastic foundations, stone churches, and famine-relief granaries that enriched the western fjordlands for over half a century. Honored by young King Magnus the Lawmender as a venerable mentor, Gaute stood as an immovable pillar of high medieval Scandinavian statecraft and baronial honor. Gaute utilized his unmatched moral authority to broker essential peace accords between King Haakon and Duke Skule, averting catastrophic civil warfare on multiple critical occasions. At his expansive Mel estate in Sunnhordland, he constructed a magnificent stone chapel and fortified manor, administering his vast lands with exemplary justice and prosperity. Revering him as the venerable patriarch of the kingdom, the royal council and the populace honored his enduring legacy of balanced governance.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with venerable authority, ancient patriarchal dignity, and profound wisdom, commanding the deepest reverence as the elder statesman of Norway.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Gaute Jonsson Mel"
+}

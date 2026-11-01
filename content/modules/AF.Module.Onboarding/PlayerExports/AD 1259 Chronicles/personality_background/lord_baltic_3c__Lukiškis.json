@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_3c",
+  "HeroName": "Lukiškis",
+  "Description": "Lukiškis serves as elite vanguard chieftain and strike commander under Duke Treniota of Samogitia, celebrated across the Baltic front as the deadliest skirmisher in the pagan armies. Raised within the trackless pine forests and treacherous moss bogs of Samogitia, Lukiškis developed supreme mastery of woodland ambuscades, pitfall traps, and composite archery, moving through thickets with supernatural stealth. Throughout protracted border wars against the Teutonic and Livonian orders, Lukiškis commanded agile raiders clad in boiled wolf-hides and wielding recurve bows and recurved daggers, systematically raiding crusader supply trains and eliminating outposts. At the epic Battle of Durbe in 1260, Lukiškis executed the vital tactical feigned retreat, luring the overconfident, heavy-armored German cavalry deep into impassable mire where they were mercilessly surrounded and annihilated. Fierce, untamed, and fanatically loyal to Treniota, he viewed the slaying of ironclad crusader knights and stripping their plate armor as the ultimate offering to the gods of war. Lukiškis stands as the phantom hunter of the northern taiga, an unyielding blade defending Samogitia's sacred wilderness. Lukiškis constructed camouflaged pitfall traps and sharpened palisades that blunted heavy knightly charges in treacherous marshland. His rustic engineering genius transformed wilderness thickets into deadly slaughter grounds for invading crusaders.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Wage relentless guerrilla warfare across frontier marshes, severing crusader overland routes between Prussia and Livonia.",
+    "Slay and strip high-ranking German brother knights, utilizing captured steel weapons to arm pagan war-bands.",
+    "Execute Duke Treniota's military directives with unflinching obedience, spearheading every suicidal vanguard assault."
+  ],
+  "Values": [
+    "Prize lethal woodland stealth, ruthless tactical timing, and ambush warfare over rigid set-piece conventions.",
+    "Hold brotherhood in arms and loyalty to ancestral gods as sacred, preferring death in battle to shameful capture.",
+    "Value rapid maneuverability and fluid skirmishing, exploiting environmental terrain to annihilate heavy foes."
+  ],
+  "Fears": [
+    "Being trapped within an inescapable cordon of armored pikemen, stripped of the woodland mobility that is his shield.",
+    "Witnessing his beloved primeval forests felled by crusader axes, replaced by stone castles and colonial farms."
+  ],
+  "SpeechStyle": "Crusader iron is merely a heavy coffin in our bogs! Loose your poisoned arrows from the shadows; let invaders sink into the mire of Durbe! Our concealed forest stakes will impale reckless foreign horsemen!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

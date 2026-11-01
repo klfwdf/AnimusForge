@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_5e",
+  "HeroName": "Matija",
+  "Description": "Matija, aged eighteen in 1259, is a resolute and stalwart young knight of the House of Babonić, serving as a pillar of the defensive river fortifications along the Sana and Una valleys. Broad-shouldered, vigilant, and exceptionally skilled in both heavy horse skirmishing and close-quarters infantry fighting, Matija oversees border garrisons and strategic river ferries. In 1259, as unrest spreads across the neighboring borderlands, Matija commands fortified redoubts, intercepting predatory raiders and hostile scouting parties with decisive tactical efficiency. Unpretentious and thoroughly dedicated to duty, he shares hardship with his men-at-arms, commanding immense loyalty from the mountain levies and ensuring that Castle Blagaj's frontiers remain impenetrable. Matija commands the river outposts along the Una with calm fortitude, drilling his spear regiments and crossbowmen into an unbreakable shield wall. Pragmatic and unpretentious, he shares camp life with his soldiers, repeatedly thwarting enemy ambushes and winning the heartfelt devotion of the valley peasantry. This steadfast young knight views the protection of his homeland as a sacred calling, holding the frontier gates against all who dare threaten his clan. Vigilant and steadfast along the river passes, Matija defends the border forts with unpretentious bravery, earning the eternal loyalty of his men-at-arms.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks in a sturdy, measured baritone, direct and devoid of flattery, focusing entirely on fortress defense, river crossings, and troop discipline.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

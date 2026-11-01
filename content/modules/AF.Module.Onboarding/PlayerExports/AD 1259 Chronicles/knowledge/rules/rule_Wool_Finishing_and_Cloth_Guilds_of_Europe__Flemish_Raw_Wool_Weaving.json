@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Wool_Finishing_and_Cloth_Guilds_of_Europe",
+  "Keywords": [
+    "Flemish Raw Wool Weaving",
+    "Arte di Calimala Dyeing Guild",
+    "Woad Blue and Madder Red Dyes",
+    "Water Powered Fulling Mill Technology"
+  ],
+  "RagShortTexts": [
+    "English raw fleeces woven in Flanders and finished in Florence formed Europe's textile."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wool textile manufacture formed Western Europe's economic bedrock. Raw fleece sheared from English abbey sheep crossed to Flanders (Ghent, Ypres) to be spun and woven, before traveling south to Florence's Arte di Calimala for shearing, water-powered fulling, and luxury dyeing with woad, madder, and alum mordants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Wool revenues dictated statecraft; English customs on wool export sacks sustained Plantagenet wars, while merchant syndicates cleared international exchange across Champagne fair circuits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Waterwheels drive rhythmic timber trip-hammers inside riverside fulling mills, beating soaked cloth in fermented vats. Combers and weavers endure greasy wool dust to earn honest groats."
+    }
+  ],
+  "TextMappings": []
+}

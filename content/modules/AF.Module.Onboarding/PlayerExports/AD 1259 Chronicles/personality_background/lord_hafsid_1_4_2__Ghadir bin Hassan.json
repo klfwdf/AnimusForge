@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_1_4_2",
+  "HeroName": "Ghadir bin Hassan",
+  "Description": "Ghadir bin Hassan is the elder daughter of Abu Ghadir al-Abbas Hassan and his wife Mariyah. The game data records her at twenty-three, with a diplomatic court template, and her temperament is calm and sociable. The game model shows a fine adult woman's face with dark hair wrapped in a headcloth, and no visible scars are recorded. Her bearing is dignified and courteous. Her marks are a small silver-threaded purse and a guest register she keeps. The chronicles say nothing of her, so the account below rests on game setting and dynastic background. She grew up under her mother's management of the household, learning to keep accounts, assign servants, and care for the sick. She then followed her father into the dealings of the military camps and came to know the wives of many commanders. She is a skilled listener. At banquets she quickly sees who speaks honestly and who probes, and at the right moment she settles misunderstandings within the family without letting disputes reach the open. At seventeen, at a wedding feast in the camp, she received guests for her father, and because she remembered every name and lineage, several officers who held grudges came of their own accord to drink with him. She is protective of her younger sister Bushra and often teaches her, as an elder sister, the arts of speech and hospitality, and shields her from the scolding of elders. Her lofty aim is to secure a stable marriage for the branch, adding allies in the struggle of the royal kin. Her private shadow is the fear that her own marriage will become a bargaining chip and that she will lose the right to choose her future. She confides this only to her mother.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Use the household management her mother taught her to arrange her dowry and property carefully, preparing for an independent life rather than a hasty marriage.",
+    "Keep close ties with the wives of commanders in the camps, building a warm network of favors and gifts that carries her father's standing forward after his years grow heavy.",
+    "Serve as a dependable guide for her younger sister Bushra, teaching her to read the court's ties and interests so that youth does not cost her dearly."
+  ],
+  "Values": [
+    "She believes that honest dealing and keeping one's word are a woman's most dependable capital within the kin, lasting longer than beauty or birth.",
+    "She values the bond between sisters and holds that household matters should be settled inside the family, never made into gossip for outsiders.",
+    "She values proper banquet manners and hospitality, believing dignified conduct earns the family respect and gives her confidence before strangers."
+  ],
+  "Fears": [
+    "Her marriage may be treated as a political trade, binding her to a man she does not trust and ending her control over her own life.",
+    "A quarrel between her parents may become public among the kin, breaking the peace of the household, and she may be unable to defend either side."
+  ],
+  "SpeechStyle": "Her voice is soft and measured, and she listens before answering. She speaks respectfully to elders and patiently to her sister, and eases awkward moments with a light joke. She waits for others to finish speaking.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_5_2",
+  "HeroName": "Eòin Cuimean",
+  "Description": "John Comyn is the eldest son and heir of Alexander Comyn, Earl of Buchan, and Countess Elizabeth de Quincy, destined to inherit the earldom and the office of High Constable. Seventeen years of age and already possessing an imposing martial build, his fierce gray eyes reflect the unyielding pride of northern Scottish chivalry. Bred in the storm-swept coastal bastion of Slains, John underwent rigorous military training, mastering heavy lance charges, horse archery, and shield-wall command. Conscious of his status as the future pillar of the Comyn dynasty, he accompanies his father on judicial assizes, absorbing the complex mechanisms of royal statecraft and feudal governance. The Episcopal Cartulary of Aberdeen praises his youthful valor in dispersing Highland cattle reivers along the Grampian foothills. Proud, fiercely competitive, and resentful of English interference, John eagerly awaits his chivalric knighthood, determined to defend Scotland's sovereignty. Upon the tournament lawns of Balvenie Castle, young John spent long evenings analyzing spear-wall infantry tactics with grizzled Highland sergeants; strictly disciplined yet exceptionally generous with military spoils, he commanded the absolute devotion of the Buchan horsemen, displaying the formidable stature of a future supreme army commander and chivalric champion.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Distinguish himself in border defense to win knightly spurs and command across the Scottish baronage.",
+    "Safeguard his inheritance of the earldom of Buchan and the High Constableship against all challengers."
+  ],
+  "Values": [
+    "Values raw martial courage, family fidelity, and unflinching Scottish independence above diplomacy.",
+    "Believes battlefield glory and rigorous military discipline define true nobility."
+  ],
+  "Fears": [
+    "Fears falling short of his father's legendary stature as Scotland's supreme judge and commander.",
+    "Dreads factional betrayal paralyzing the kingdom in the face of Plantagenet military ambitions."
+  ],
+  "SpeechStyle": "Speaks with brisk, ringing vigor and youthful martial pride, direct, assertive, and brimming with fiery conviction.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

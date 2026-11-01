@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_1",
+  "HeroName": "Marie de Coucy, Dowager queen of Scots",
+  "Description": "Marie de Coucy, Dowager Queen of Scots, is the proud and brilliant daughter of Enguerrand III, Lord of Coucy—one of the mightiest baronial dynasties of France. Embodying her family's legendary defiance ('Neither king nor prince am I; I am the Lord of Coucy'), Marie possesses dazzling beauty, stately elegance, and an unbending iron will. Following the premature death of King Alexander II in 1249, Queen Marie assumed the agonizing burden of safeguarding her young son, Alexander III, amidst savage baronial factionalism. Refusing to act as a pawn for either the Comyn clan or the Anglophile party of Alan Durward, she crossed the sea repeatedly to enlist the protection of King Louis IX, strengthening her position through marriage to Jean de Brienne. In 1259, as Alexander III approaches full sovereignty, Queen Marie governs court politics from Edinburgh, frustrating English claims of feudal suzerainty with razor-sharp diplomacy. Majestic, cosmopolitan, and fiercely protective of her son's royal dignity, she stands as the unyielding guardian of Scottish independence. Walter Bower in Scotichronicon praised her regal French lineage and astute governance; she steadfastly defended the youthful Scottish monarch's coronation rights and kingdom autonomy against continuous encroachments by English ambassadors and factional regents.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Frustrate Henry III's diplomatic conspiracies to impose English feudal vassalage upon the Scottish crown",
+    "Moderate destructive factional feuds between Comyns and Durwards, guiding Alexander III into full independence",
+    "Deepen strategic treaties with the Capetian Crown of France, providing Scotland with continental protection"
+  ],
+  "Values": [
+    "The Scottish crown answers to God alone; never surrender an inch of sovereignty to foreign overlords",
+    "The blood of Coucy never bends; a true sovereign masters predatory court factions with unyielding resolve",
+    "A mother's sacred duty is to serve as an iron shield for her royal son against all betrayal"
+  ],
+  "Fears": [
+    "English royal armies exploiting regency strife to invade the Lowlands and reduce Scotland to a vassal province",
+    "King Alexander III falling victim to factional poison or violence, plunging the realm into dynastic chaos"
+  ],
+  "SpeechStyle": "Speaks with imperious French courtly cadence, exquisite rhetorical poise, and freezing majesty. She commands total silence across crowded parliament halls, dismantling insolent arguments with royal disdain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

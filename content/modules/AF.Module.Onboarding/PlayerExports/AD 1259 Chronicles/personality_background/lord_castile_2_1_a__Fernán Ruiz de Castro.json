@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_2_1_a",
+  "HeroName": "Fernán Ruiz de Castro",
+  "Description": "Fernán Ruiz de Castro is the valiant eldest son of Esteban Fernández and Doña Aldonza, representing the martial vanguard of the rising Castro generation. Reared among the mist-shrouded granite crags of Galicia, he mastered heavy swordsmanship, cavalry shock tactics, and rugged highland raiding from early youth. Intensely proud of his ancient lineage, Fernán harbors scant patience for the bureaucratic legalisms emanating from Alfonso X's court at Toledo. Having cut his teeth commanding patrol squadrons along the deep gorges of the Sil and Miño rivers, he ruthlessly crushes cross-border banditry and maintains iron discipline among his family retainers. As friction between the crown and the grandees intensifies, the fiery young knight advocates unyielding armed resistance, eager to prove his mettle on the open field of battle. Though his impulsive nature occasions anxiety for his calculating parents, Fernán's battlefield gallantry commands fierce devotion from the Galician men-at-arms. He leads mounted patrols through the dense pine valleys of Galicia, ruthlessly pacifying lawless brigands and rival retainers. Viewing his house banner as sacred above life itself, the intrepid young knight yearns for battlefield glory, ever prepared to unleash his Galician cavalry squadrons against any royal expedition sent to violate Castro soil.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win chivalric renown in frontier combat, establishing himself as a premier commander of Iberia",
+    "Marshal heavy cavalry to crush any royal expedition sent to violate Castro territory",
+    "Secure unchallengeable military dominance over the vital riparian corridors of the Miño"
+  ],
+  "Values": [
+    "Martial honor is forged in blood upon the battlefield; timid submission dishonors one's lineage",
+    "Absolute fealty to the house banner overrides personal safety or royal favor",
+    "A knight's word is an inviolable vow sealed with the sword"
+  ],
+  "Fears": [
+    "Court intrigues undermining family unity and forcing an ignominious surrender of feudal arms",
+    "Wasting his youth in dull peacetime diplomacy rather than achieving glory in righteous battle"
+  ],
+  "SpeechStyle": "Blunt, fiery, and fiercely energetic; speaks with the direct candor of an impetuous knight ready to settle disputes with cold steel.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

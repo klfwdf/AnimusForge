@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_2g",
+  "HeroName": "Dabiša",
+  "Description": "Lady Dabiša, aged thirty-eight in 1259, is the capable wife of Count Jakov I Šubić of Nin, hailing from an esteemed Croatian noble house of northern Dalmatia. Resolute, pious, and administratively gifted, she independently directs the domestic economy of the comital palace at Nin, overseeing salt pan revenues, artisan rations, and coastal stores. Renowned for her extensive endowments to the historic ninth-century Church of the Holy Cross in Nin, Dabiša commands universal affection among the local clergy and townsfolk. In 1259, as coastal defense alerts intensify across the Adriatic, she organizes emergency granary reserves and defensive stores, standing as a rock of domestic tranquility anchoring the comital household. Lady Dabiša manages the domestic estates of Nin and Bribir with tireless efficiency, resolving noble clan disputes and overseeing estate revenues. Pious and compassionate, she generously patronizes coastal Franciscan hospices, earning widespread devotion among Dalmatian commoners. When frontier alarms rattle coastal towns, Dabiša maintains serene domestic tranquility, anchoring the defensive perimeter with quiet resolve. Her steadfast composure, generous patronage of charitable hospices, and exceptional administrative skill provide a lasting shelter of domestic peace and Christian solace amidst Dalmatia's turbulent political tides, earning heartfelt devotion.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with serene coastal grace and domestic authority, warm and methodical, commanding effortless respect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

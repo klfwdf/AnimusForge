@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Carcassonne_Royal_Double_Curtain_Walls",
+  "Keywords": [
+    "Carcassonne Double Curtain",
+    "Capetian Languedoc Redoubt",
+    "Fifty Two Defensive Towers",
+    "Cathar Bastion Pacification"
+  ],
+  "RagShortTexts": [
+    "Carcassonne with its double circuit walls and 52 towers cemented royal Capetian control in."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the Albigensian Crusade, Louis IX transformed the Cité de Carcassonne into a formidable royal fortress. Enclosed within inner and outer stone circuits punctuated by fifty-two crenelated towers and deep moats, its interlocking fields of fire sealed the Pyrenean frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The ramparts of Carcassonne proclaimed the end of southern baronial independence. The king's seneschal commands the garrison, deterring any intrigue between local nobles and the Crown of Aragon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Building those double walls emptied the quarry tithes of whole cantons. Common folk must live in the lower town; once the iron portcullis drops at dusk, crossbow sentries patrol through the dawn."
+    }
+  ],
+  "TextMappings": []
+}

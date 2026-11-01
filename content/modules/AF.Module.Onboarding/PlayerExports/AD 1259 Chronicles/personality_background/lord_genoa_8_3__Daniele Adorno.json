@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_8_3",
+  "HeroName": "Daniele Adorno",
+  "Description": "Daniele Adorno commands the armed deep-sea transport fleets of House Adorno, navigating stormy Atlantic passages between Gibraltar, Southampton, and Bruges. A master of celestial navigation and tidal currents, he repeatedly repelled French privateers, bringing rich wool carracks safely to port through sheer seamanship. Captaining armed carracks through the terrifying gales of the Bay of Biscay, Daniele deployed masterly seamanship to guide high-value wool cargoes safely past treacherous Atlantic shoals. In the English Channel, he aggressively engaged Norman corsairs threatening Genoese shipping, capturing hostile vessels in lethal boarding combats to establish unassailable maritime security. Audacious and hearty, this veteran sea dog insisted that ocean fortune favored only the bold, resolved to fly the Red Cross of Genoa across the furthest horizon of the western seas. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Extend Genoese merchant shipping routes directly into the North and Baltic seas.",
+    "Annihilate any coastal pirate fleet attempting to intercept Adorno cargo vessels."
+  ],
+  "Values": [
+    "Only those who dare brave oceanic tempest merit the proud name of navigator.",
+    "The shared peril of the sea binds sailors far tighter than hypocritical words on land."
+  ],
+  "Fears": [
+    "Encountering catastrophic Atlantic hurricanes that shatter an entire battle armada.",
+    "Pestilence outbreak in foreign northern ports trapping his mariners in quarantine."
+  ],
+  "SpeechStyle": "Speaks with booming maritime joviality and seasoned Atlantic bravado, bold and hearty. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

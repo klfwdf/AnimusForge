@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_5d",
+  "HeroName": "Stjepan II Blagaj de Wodicha",
+  "Description": "Stjepan II Blagaj de Wodicha, aged sixteen in 1259, is the eldest son and primary martial heir of Babonega, destined to rise as one of the most powerful Slavonian bans of the late thirteenth century. Combining the fierce physical prowess of highland borderers with the diplomatic vision of his Gorizian heritage, young Stjepan already commands his own personal vanguard of young knights at Vodica. A master of mounted lance charges and river ambuscades, he has traversed every fortress line along the Una and Sana valleys under his father's eye. In 1259, as geopolitical friction brews between the Hungarian crown and autonomous regional barons, Stjepan II stands ready to defend the sovereignty of Vodica with relentless resolve, determined to elevate the House of Babonić to peerless regional hegemony. Stjepan II leads the elite vanguard of Vodica along the highway between Zagreb and the Adriatic with daring horsemanship and tactical brilliance. Fierce and decisive, he engages border plunderers with relentless courage, defending his family's hegemony over the Sana valley with battlefield victories. This ambitious young commander stands ready to claim the supreme dignity of Ban of Slavonia, elevating House Babonić to peerless regional renown. Fierce in combat and visionary in ambition, young Stjepan leads his vanguard with heroic courage, determined to elevate his house to the highest comital ranks.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with ringing martial vigor and fierce aristocratic pride, commanding troops with sharp brevity and offering swift defiance against any slight.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

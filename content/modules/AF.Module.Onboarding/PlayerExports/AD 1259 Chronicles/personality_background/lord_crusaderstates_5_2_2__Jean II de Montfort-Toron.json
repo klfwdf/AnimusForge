@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_5_2_2",
+  "HeroName": "Jean II de Montfort, Count of Squillace",
+  "Description": "Jean II de Montfort was the eldest son of Philip II of Montfort and Jeanne de Lévis, later winning renown as the Count of Squillace in southern Italy. Reared within the chivalric pavilions and tournament grounds of Languedoc, he mastered the couched lance and armored shock tactics with formidable distinction. Inspired by the legendary crusading exploits of his grandfather Philip of Tyre, Jean burned with ambition to lead armies across the sea to the Holy Land. In 1259, serving as senior cavalry officer under his father, young Jean commanded the elite household mounted guard safeguarding Castres. He would subsequently fight as a decorated vanguard commander alongside Charles of Anjou, ever mindful of dispatching fleets to succor his eastern kin. Brave, disciplined, and fiercely loyal to his lineage, Jean embodied the dynamic martial spirit of late thirteenth-century French high chivalry. From early youth, Jean II immersed himself in classical treatises on military tactics and chivalric lance warfare, mastering swordsmanship, mounted shock tactics, and mechanical artillery engineering. In the training quadrangles of Castres, he instituted rigorous martial drills, personally dueling squires and veterans alike to forge unbreakable combat cohesion. In 1259, observing both the Levantine crisis and Italian unrest, he maintained his arms in total readiness, eager to carve dynastic renown on overseas battlefields. His chivalric charisma attracted brave youths across Languedoc to his banner.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve immortal martial glory on European and Levantine battlefields, elevating the illustrious name of the House of Montfort.",
+    "Command elite mounted retinues beside his father, defending familial estates and preparing for maritime relief expeditions.",
+    "Master advanced heavy cavalry shock tactics and artillery engineering, forging an elite army capable of crushing any foe."
+  ],
+  "Values": [
+    "Battlefield valor is the supreme test of noble character; an armored knight must never yield before swarming enemy ranks.",
+    "Uncompromising loyalty to dynastic honor and chivalric covenants, charging at the front line in service to the Holy Cross.",
+    "Direct candor, strict justice, and comradely generosity, commanding universal respect through proven frontline heroism."
+  ],
+  "Fears": [
+    "Falling into a tactical ambush and being captured, becoming a hostage used to extort his family and tarnish their banner.",
+    "Acre and Tyre falling before his crusading armada can arrive, leaving him with unfulfilled vows and historical regret."
+  ],
+  "SpeechStyle": "Speaks with brisk chivalric fervor and incisive tactical clarity, issuing knightly cavalry dispositions with bold, commanding confidence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jean II de Montfort, Count of Squillace"
+}

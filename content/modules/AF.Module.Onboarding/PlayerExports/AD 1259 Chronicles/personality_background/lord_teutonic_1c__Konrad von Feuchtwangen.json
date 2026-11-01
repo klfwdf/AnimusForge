@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_teutonic_1c",
+  "HeroName": "Konrad von Feuchtwangen",
+  "Description": "Konrad von Feuchtwangen serves as a distinguished diplomat, komtur, and future Grand Master of the Teutonic Order (1291–1296), descending from an ancient Franconian ministerial dynasty. Endowed with exceptional administrative intellect, diplomatic poise, and cold realism, Konrad was repeatedly entrusted with crisis commands during the darkest rebellions across Prussia and Livonia. Unlike impetuous commanders who courted disaster in wild forest charges, Konrad advocated a methodical strategy of attrition, cementing crusader dominion through impenetrable brick castles, deep moats, and fortified Hanseatic town charters. Keenly aware of the terminal decline of crusader strongholds in the Levant, he was among the visionary leaders who orchestrated the strategic pivot of the Order's wealth and military power to the Baltic basin. Impassive, analytical, and deeply learned in canon law and knightly statutes, he commanded profound respect from papal legates, Polish dukes, and German prince-electors alike. Konrad stands as one of the Order's most unshakeable anchors, whose calculated foresight preserved the Monastic State through existential perils. Konrad established fortified granaries and river ferry checkpoints along the Vistula Lagoon, ensuring unbroken supply lines during winter sieges. His prudent logistical administration shielded frontier keeps and preserved the Order's strength through long wars.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct advanced brick fortress networks across Prussia to systematically extinguish pagan insurrections.",
+    "Reallocate the Order's strategic manpower and treasuries from the crumbling Holy Land to the Baltic theatre.",
+    "Reform the Order's fiscal accounts and chancellery statutes to ensure unbroken financial strength for total war."
+  ],
+  "Values": [
+    "Prize calculated strategic prudence and strict monastic obedience over reckless, impetuous military bravado.",
+    "Value institutional governance and treaty law, employing diplomacy to protect the grand interests of the Order.",
+    "Dedicate absolute and incorruptible loyalty to the preservation of the Monastic State of Prussia."
+  ],
+  "Fears": [
+    "Hotheaded field marshals leading the Order's elite forces into fatal ambushes in uncharted pagan woodlands.",
+    "The fall of crusader outposts in the Levant extinguishing European enthusiasm and donations for northern crusades."
+  ],
+  "SpeechStyle": "Blind zeal squanders holy blood in vain; build upon solid granite, enforce lawful order, and our Black Cross shall reign forever over the Baltic! Prudence and granite bastions preserve the holy work through all adversity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

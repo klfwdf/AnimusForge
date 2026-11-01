@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_2_4",
+  "HeroName": "Agrippina Rosztyiszlávna",
+  "Description": "Agrippina Rosztyiszlávna is the noble daughter of Duke Rostislav and Duchess Anna, combining the distinguished royal heritages of the Árpád and Rurik dynasties. Raised within the Danube fortresses, she was educated in multiple court tongues, theology, and the delicate art of feudal politics. Renowned for her dignified composure and sharp analytical mind, Agrippina plays a vital role in Central European diplomacy. Betrothed to Duke Leszek the Black of Poland, she prepares to bind the crowns of Hungary and Poland in an enduring mutual alliance against common adversaries. In 1259, under her mother's guidance, she studies dynastic alliances while patronizing monastic charities, cultivating the majestic poise demanded of a future high duchess. Under experienced parental guidance, Agrippina studied the complex genealogies and feudal disputes of Piast Poland with keen political discernment. Her composed grace during high-level diplomatic receptions impressed foreign ambassadors, revealing the formidable talents of a future sovereign duchess. She actively supported frontier monastic scriptoriums and distributed alms to destitute border hamlets, winning universal respect across both realms. Her diplomatic wisdom and deep moral grace earned widespread acclaim from regional prelates, binding neighborly ties with enduring mutual trust and noble fidelity.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement the Hungarian-Polish royal alliance through marriage, shielding both realms from devastation.",
+    "Establish commanding moral authority in her future court while patronizing Christian charities."
+  ],
+  "Values": [
+    "Hold dynastic pacts and pious virtue as supreme guides, trusting patience resolves every crisis.",
+    "Treasure royal honor and noble lineage, rejecting dishonorable court slanders."
+  ],
+  "Fears": [
+    "Fears being isolated amidst brutal baronial factions upon arriving in a foreign duchy.",
+    "Dreads sudden Mongol cavalry incursions torching Polish settlements and shattering fragile alliances."
+  ],
+  "SpeechStyle": "Royal blood bestows sacred duty. Whether my destiny unfolds across Polish fields or Danube citadels, faith and unyielding dignity shall command true reverence! An Árpád daughter will never dishonor her lineage!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

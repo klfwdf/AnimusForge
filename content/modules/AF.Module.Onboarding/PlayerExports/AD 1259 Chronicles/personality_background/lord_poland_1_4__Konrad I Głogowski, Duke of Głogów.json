@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_1_4",
+  "HeroName": "Konrad I Głogowski",
+  "Description": "Konrad I of Głogów reigns as the resilient Duke of Głogów and founder of the Lower Silesian Głogów line, the capable son of High Duke Henry II the Pious who fell at the Battle of Legnica. Deprived of his paternal patrimony by his tyrannical elder brother, Bolesław II Rogatka, Konrad was initially pressured into clerical orders in the prince-bishopric of Passau. Refusing a life of cloistered obscurity, Konrad renounced his tonsure, secured military backing from Duke Bolesław the Pious of Greater Poland, and reclaimed his birthright at sword-point, compelling Rogatka to cede the fortified principality of Głogów. As sovereign, Konrad proved an energetic architect of territorial resilience, transforming Głogów into an unassailable bastion along the Oder with ashlar curtain walls, deep moats, and booming ironworks. He endowed the collegiate church of Saint Nicholas and granted Magdeburg municipal charters, fostering economic vitality while skillfully maneuvering between Bohemian expansionists and rapacious Silesian rivals. Astute, determined, and pragmatic, Konrad anchored his dynasty along the middle Oder, turning adversity into enduring baronial strength. Konrad deployed river boom barriers and stone watchtowers along the Oder, personally inspecting copper foundries and armor workshops. His calculated diplomacy repeatedly shattered hostile encirclement plots, establishing Głogów as an unyielding Lower Silesian stronghold.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the stone curtain walls of Głogów along the Oder to deter renewed aggression from his brother Rogatka.",
+    "Form stable diplomatic alliances with Greater Poland to guarantee the sovereign independence of his principality.",
+    "Develop metal foundries and agricultural reclamation across Lower Silesia to build an impregnable financial base."
+  ],
+  "Values": [
+    "Rely on realistic tenacity and calculated patience, striking with lethal decisive force when opportunity arises.",
+    "Value codified municipal statutes and commercial treaties as vital tools for baronial consolidation.",
+    "Hold hereditary patrimony as an inviolable sacred trust, defending family domains against all usurpation."
+  ],
+  "Fears": [
+    "His unpredictable brother Rogatka hiring German mercenaries to launch surprise attacks against Głogów.",
+    "The Bohemian crown or imperial margraves subjugating Lower Silesia, extinguishing Polish princely autonomy."
+  ],
+  "SpeechStyle": "Monastic frocks could never restrain the claws of a Piast eagle; every stone in Głogów's walls was reclaimed by my sword from treacherous usurpers! Głogów's stone walls turn back every traitor who dares cross the Oder!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

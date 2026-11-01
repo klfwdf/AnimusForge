@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_7_3",
+  "HeroName": "Tomás Ó Cellaigh",
+  "Description": "Tomás Ó Cellaigh is the scholarly young cousin of King Conchobar and senior canon-chancellor connected to Knockmoy Abbey. Nineteen years old, he uniquely pairs intellectual depth with the resolute courage of his royal house. Educated at the cathedral school of Clonfert, Tomás is exceptionally versed in Latin canon law, Patristic literature, and classical rhetoric, managing all diplomatic correspondence between Uí Maine, Dublin ecclesiastical authorities, and the Holy See. Utilizing his sharp legal acumen, he has repeatedly defended native monastic charters before church tribunals against aggressive Anglo-Norman prelates, preserving tens of thousands of acres of hereditary land for Gaelic foundations. Austere, upright, and incorruptible, Tomás provides astute geopolitical advice to clan assemblies, championing church autonomy as an essential pillar of Irish sovereignty. Arguing before high ecclesiastical tribunals in Dublin, Canon Tomás marshaled unassailable Patristic texts and canon law precedents to utterly defeat crown attempts to expropriate native diocesan assets; his incorruptible integrity and deep classical scholarship have won universal acclaim from the Irish episcopate as a formidable defender of the church. His legalistic mind ensures that the ancient liberties of his people remain uncompromised, earning immense respect from the archbishop and princes across every province of the realm.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend native monastic lands against expropriation by Anglo-Norman prelates.",
+    "Provide unassailable canon law arguments supporting Gaelic political independence."
+  ],
+  "Values": [
+    "Sacred integrity of canon law and ecclesiastical incorruptibility.",
+    "Devoting deep learning and intellectual discipline to the defense of his homeland."
+  ],
+  "Fears": [
+    "Papal curia being misled by crown bishops to suppress native rites.",
+    "Ancient theological codices being lost forever in frontier skirmishes."
+  ],
+  "SpeechStyle": "Speaks with quiet, scholastic precision and moral gravity, weaving canon law and strategic insights with calm, persuasive authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

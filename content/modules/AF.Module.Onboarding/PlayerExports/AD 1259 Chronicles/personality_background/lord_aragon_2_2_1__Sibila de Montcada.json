@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_2_1",
+  "HeroName": "Sibila de Montcada",
+  "Description": "Sibila de Montcada is a high-born noblewoman from the premier martial lineage of Catalonia, united by marriage to Ponç VI, Viscount of Bas. Carrying the prestigious heritage of Montcada knights who spilled their blood alongside King James I at Portopí, Doña Sibila embodies aristocratic poise and managerial brilliance. Schooled in Latin scriptures, estate stewardship, and manorial accounting, she oversees the extensive granaries, mills, and vassal rolls of Bas while her husband attends feudal assemblies. In 1259, she deftly navigates the delicate political balance between her natal House of Montcada and the House of Cabrera, smoothing over territorial disputes along the Pyrenean marches. Generous to local Cistercian foundations, she maintains a discrete network of correspondence that keeps her informed of royal court intrigues in Barcelona. Her moral rectitude, sharp intelligence, and gracious diplomacy make her a cherished matriarch across Old Catalonia. Overseeing the textile workshops and medicinal cellars of Bas Castle, Sibila ensured vast reserves of salted meats were stored against mountain blockades. Her gracious letters to the Bishop of Girona deftly balanced pious donations with the defense of milling monopolies along the Fluvià, earning deep devotion from tenantries. Through her tireless diplomacy and serene piety, Sibila remains an unshakeable guardian of the ancient honor uniting the houses of Montcada and Cabrera.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage the domestic revenues and granaries of Bas to ensure resilience against famine",
+    "Strengthen the unbreakable dynastic alliance between the houses of Montcada and Cabrera",
+    "Support local religious hospices to elevate the spiritual standing of her family"
+  ],
+  "Values": [
+    "A chatelaine's highest duty is orderly governance of the home and faithful preservation of lineage",
+    "Matrimonial alliances must be nurtured with mutual respect and political wisdom",
+    "Christian charity and quiet dignity outshine all worldly extravagance"
+  ],
+  "Fears": [
+    "Civil war forcing her natal House of Montcada into armed clash against Cabrera",
+    "Pestilence or marauding mercenaries devastating the tranquil valleys of Bas"
+  ],
+  "SpeechStyle": "Gracious, articulate, and poised; speaks with the effortless authority, diplomatic tact, and domestic brilliance of a seasoned feudal chatelaine.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

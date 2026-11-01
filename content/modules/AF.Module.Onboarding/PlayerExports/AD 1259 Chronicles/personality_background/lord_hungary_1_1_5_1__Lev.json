@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_5_1",
+  "HeroName": "Lev",
+  "Description": "Lev is the royal offspring of Prince Lev I of Galicia and Princess Konstancia of Hungary, uniting the noble traditions of Árpád and Romanovich. Reared amidst the rugged Carpathian hill-forts, he embodies the architectural defense vision of his grandfather King Béla IV alongside the fierce woodland combat instincts of Ruthenian warriors. Fluent in multiple frontier dialects, Prince Lev excels in both light mounted archery and thunderous shock cavalry tactics. In 1259, as probing Mongol reconnaissance parties infiltrate the upper Dniester reaches, Lev commands a specialized frontier vanguard composed of Hungarian crusaders and Slavic trackers. Guarding vital mountain defiles with relentless vigilance, he intercepts hostile detachments before they can penetrate, standing as a lethal bulwark for the realm. Lev deployed concealed rope snares and timber ramparts throughout dense Carpathian ravines, ambushing hostile scout detachments with lethal archery. His aggressive mountain operations erected an unyielding highland barrier that terrorized trespassing marauders. Leading mixed squadrons of border trackers and heavy cavalry, he intercepted marauding raiding parties long before they could threaten lowland farmsteads. His vigilant scouting parties detected foreign incursions early, neutralizing stealthy raiding parties before they could reach defenseless frontier hamlets and isolated homesteads.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the Carpathian passes at all costs, blocking nomadic raids into Hungarian and Galician lands.",
+    "Hone vanguard forces through rigorous combat, securing the total trust of King Béla IV."
+  ],
+  "Values": [
+    "View garrison duty as supreme military honor, demanding disciplined cohesion and deadly ambush precision.",
+    "Admire authentic battlefield valor, disdaining idle boastfulness and court pretensions."
+  ],
+  "Fears": [
+    "Fears winter blizzards severing supply tracks, leaving mountain garrisons cut off and encircled.",
+    "Dreads outpost reconnaissance failures allowing enemy hosts to slip past and massacre civilians."
+  ],
+  "SpeechStyle": "The mountain passes are narrow and the rocks unforgiving! Any raider daring to trespass the Carpathian defiles will be impaled upon our arrows and spears! Mountain defiles are traps; raiders die here!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

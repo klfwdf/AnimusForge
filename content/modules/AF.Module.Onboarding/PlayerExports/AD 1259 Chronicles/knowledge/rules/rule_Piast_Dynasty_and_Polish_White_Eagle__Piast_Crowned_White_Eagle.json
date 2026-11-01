@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Piast_Dynasty_and_Polish_White_Eagle",
+  "Keywords": [
+    "Piast Crowned White Eagle",
+    "Polish Seniorate Fragmentation Duchies",
+    "Boleslaw V the Chaste",
+    "Silesian German Settlement Wave"
+  ],
+  "RagShortTexts": [
+    "The Piast dynasty retained the White Eagle amidst regional ducal fragmentation across Poland."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing the crowned White Eagle on gules, the Piast dynasty was Poland's ancestral royal house. Partitioned into rival duchies—Lesser Poland, Greater Poland, Silesia, and Mazovia—it was led in Krakow by High Duke Bolesław V the Chaste, balancing regional autonomy, Tatar raids, and German burgher migration (Ostsiedlung)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Silesian Piasts adopted Western chivalric institutions, while Mazovian dukes battled pagan Lithuanian raiders. The seniorate of Krakow remained the symbolic magnet for national reunification."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Pilgrims assemble at Saint Stanislaus's tomb in Wawel Cathedral. Shared devotion keeps the memory of unified Polish sovereignty alive across fragmented duchies."
+    }
+  ],
+  "TextMappings": []
+}

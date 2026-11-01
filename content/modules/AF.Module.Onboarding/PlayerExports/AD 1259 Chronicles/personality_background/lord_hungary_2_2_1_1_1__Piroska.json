@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_2_1_1_1",
+  "HeroName": "Piroska",
+  "Description": "Piroska is the devout noble wife of Lothárd Gutkeled, renowned throughout Zala and Lake Balaton as a pillar of domestic grace and Christian benevolence. Born into an ancient Magyar aristocratic clan, she brought substantial landed wealth and refined cultural education to the Gutkeled household. Piroska oversees domestic operations with meticulous diligence, auditing agrarian registers, directing textile looms, and stocking medicinal salves. She generously patronizes local Benedictine convents and hospices, personally aiding in the preparation of herbal remedies for wounded veterans. Possessing unshakeable fortitude during turbulent seasons of war, she ensures fortress stores remain guarded and productive when her husband marches to the front. In 1259, as dark war clouds gather, Piroska leads devotional prayers for the soldiers, providing radiant spiritual comfort and serene stability to her people. Piroska founded civic hospices and spinning rooms for destitute women, sheltering war refugees with boundless Christian charity and gentle compassion. Managing household accounts and farmsteads with exemplary prudence, she ensured an unbroken flow of provisions for frontier garrisons. Her prayerful serenity and unwavering moral strength provided steady hope to tenants and soldiers throughout seasons of conflict. Her pious hospitality and charitable compassion provided enduring solace and material relief to soldiers' families throughout long seasons of conflict.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve peace and prosperity across family manors, providing ample relief and care for wounded warriors.",
+    "Advance Christian charity, winning profound respect through selfless benevolence and piety."
+  ],
+  "Values": [
+    "Hold devout piety, compassion, and frugal management as life pillars, scorning haughty vanity.",
+    "Believe gentle kindness and charitable sacrifice heal the deepest wounds of war."
+  ],
+  "Fears": [
+    "Fears horrific battlefield carnage claiming the lives of her beloved husband and kin.",
+    "Dreads wartime contagion spreading through rural villages, claiming innocent children."
+  ],
+  "SpeechStyle": "God's grace endures forever. Though storm clouds gather, firm faith and selfless love render our home an unshakeable sanctuary! Faith and charity comfort the brave; God's peace guards our manors!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

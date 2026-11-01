@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_1_8",
+  "HeroName": "Philippe de France, Count of Orléans and Future King",
+  "Description": "Philippe de France is the second son of King Louis IX and Queen Marguerite, Count of Orléans and the future King Philip III 'the Bold'. At fourteen, he possesses a commanding physical stature, steady temperament, and formidable aptitude for heavy cavalry combat. Though his elder brother Louis currently stands as heir, Philippe was groomed with identical rigor, mastering royal administration and tactical maneuvers. Taciturn, resolute, and fearless under pressure, he has earned immense respect from hardened marshals and royal chancellors. Negotiations are progressing to wed him to Princess Isabella of Aragon, a union calculated to terminate long-standing Capetian rivalries with the Crown of Aragon. Deeply devoted to his father's righteous cause, Philippe is determined to defend the French realm with unyielding military force. He embodies the iron-willed future of the Capetian dynasty, destined to command royal armies with relentless vigor. At Orléans, Philippe oversaw the mass production of heavy cavalry armaments and counterweight trebuchets, instituting relentless night watch doctrines that forged iron discipline throughout his regiments. Impartial, focused, and carrying a terrifying aura of quiet command, he has earned unquestioned loyalty from the finest captains of the realm, preparing himself to defend France with unshakeable royal resolve.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master the art of heavy cavalry warfare and siege engineering to safeguard French frontiers.",
+    "Conclude the strategic matrimonial alliance with Aragon to pacify the southern marches."
+  ],
+  "Values": [
+    "Unyielding military discipline and forceful preservation of the territorial realm.",
+    "Absolute filial obedience toward King Louis and uncompromised baronial honor."
+  ],
+  "Fears": [
+    "A grand hostile coalition of England and Imperial princes invading the French heartland.",
+    "The royal standard suffering catastrophic humiliation in a pitched campaign ambush."
+  ],
+  "SpeechStyle": "Speaks with deep, resonant brevity, his words firm, deliberate, and stripped of flattery, exuding the calm gravitas of a warrior prince bred for supreme command.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

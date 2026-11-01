@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Barcelona_and_Crown_of_Aragon_Senyera",
+  "Keywords": [
+    "House of Barcelona Dynastic Line",
+    "Aragonese Four Red Bars Senyera",
+    "James I the Conqueror Deeds",
+    "Consulate of the Sea Maritime Realm"
+  ],
+  "RagShortTexts": [
+    "The House of Barcelona unified Aragon and Catalonia under the red-and-gold Senyera,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The House of Barcelona governed the confederated Crown of Aragon under the four red stripes on gold of the Senyera banner. Led by James I the Conqueror (Jaume I), the dynasty conquered the Balearic Islands and Valencia, codifying Mediterranean maritime law into the Consulate of the Sea (Consolat de Mar)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "James balanced urban Catalan commercial syndicates against conservative Aragonese baronies. His expansive maritime policies laid foundations for Aragonese hegemony across Sicily and the Aegean."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "In Barcelona's Drassanes shipyards, shipwrights build light war galleys around the clock. Sailing under the Senyera promises rich shares of Levantine and North African cargo."
+    }
+  ],
+  "TextMappings": []
+}

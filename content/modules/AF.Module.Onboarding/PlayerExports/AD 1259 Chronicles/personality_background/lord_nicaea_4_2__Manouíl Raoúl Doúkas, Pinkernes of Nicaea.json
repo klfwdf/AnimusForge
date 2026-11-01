@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_4_2",
+  "HeroName": "Manouél Raoúl Doúkas, Pinkernes of Nicaea",
+  "Description": "Manouél Raoúl Doúkas, aged thirty-eight, serves as the esteemed Pinkernes of the Empire of Nicaea and stands as an indispensable pillar of the illustrious Raoul aristocratic dynasty. Inheriting the proud bloodlines of both Petraliphas and Doukas imperial houses, he commands immense prestige among Anatolian provincial commanders, frontier thematic garrisons, and landed magnates. Having campaigned tirelessly across Smyrna, Lydia, and the turbulent mountain passes of Bithynia, he is a seasoned master of heavy cataphract charges, combined infantry tactics, and choke-point logistics. Following the violent slaughter of the Mouzalon brothers at Sosandra Monastery, Manouél astutely safeguarded his family patrimony while aligning strategically with the rising star of Michael Palaiologos. In his ceremonial yet critically sensitive post as royal cupbearer, he oversees imperial state banquets while quietly monitoring the loyalties of palace chamberlains and household guards. Wary of Frankish expansionism in Achaea, hostile Latin fleets, and internal theological schisms within the Orthodox hierarchy, he fiercely champions the rejuvenation of frontier military pronoia grants. Dedicated to the holy liberation of Constantinople, Manouél remains determined to restore Roman imperial glory while fiercely defending the historic privileges and ancestral autonomy of the landed Byzantine aristocracy. During rigorous daily inspections of frontier barracks and drill grounds, he relentlessly instills tactical precision and iron discipline among junior officers, ensuring his heavy cavalry squadrons remain ever vigilant against enemy incursions.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 2 lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with formal imperial authority and measured aristocratic composure, employing rigid Byzantine administrative terms and concise military commands.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_1_1_c",
+  "HeroName": "Beatrice of England, Princess of England",
+  "Description": "Princess Beatrice of England is the graceful second daughter of King Henry III and Eleanor of Provence, betrothed to John, heir to the Duchy of Brittany. Blessed with her mother's refined Provençal beauty, dark hazel eyes, and slender poise, Beatrice embodies the courtly sophistication of the mid-13th-century Plantagenet court. Raised amidst the luxury of Windsor Castle, she was educated in French literature, liturgical music, and the delicate art of continental diplomacy. In 1259, as the Treaty of Paris reshapes western European politics, Beatrice becomes the central pawn in her father's grand strategy to secure allies along the English Channel. Her pending marriage to John of Brittany was designed to anchor naval supply routes to Gascony and counterbalance French capetian dominance. Unflinching before the baronial storm buffeting Westminster, Beatrice accepts her political destiny with serene intelligence and royal dignity. She diligently studies Breton feudal customs and legal charters, preparing to serve as an astute diplomatic bridge across the stormy sea. At Windsor, she spends peaceful evenings playing the lute beside her anxious mother, supervising the reception of foreign dignitaries with poise. Beatrice discreetly studies navigational charts of Breton harbors, fully aware that her diplomatic presence will secure a crucial naval lifeline across the stormy sea.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfill her dynastic duty, sealing a vital cross-Channel alliance through marriage to John of Brittany",
+    "Support and comfort her parents during the harrowing baronial crisis paralyzing Westminster",
+    "Master continental statecraft to become an admired and influential Duchess of Brittany"
+  ],
+  "Values": [
+    "A princess's glory lies in serving her dynasty; state marriages can be elevated through virtue and fidelity",
+    "Courtly grace and serene education are the surest shields against political turbulence",
+    "Preserve Christian piety and royal honor; never compromise the dignity of Plantagenet blood"
+  ],
+  "Fears": [
+    "Escalating baronial warfare halting her wedding and leaving her a captive in London",
+    "Being completely cut off from England amidst chaotic continental dynastic wars"
+  ],
+  "SpeechStyle": "Speaks with soft musicality, polished courtly French, and impeccable royal decorum. She listens with keen intelligence, replying with modest deference to elders and effortless charm to ambassadors.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

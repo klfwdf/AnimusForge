@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_3_2",
+  "HeroName": "Sancha of Castile",
+  "Description": "Dona Sancha of Castile is the noble consort of baronial leader Sancho Garcés, standing at twenty-four years of age as a key figure bridging Navarrese aristocracy with the Castilian royal court. Descending from a prominent cadet branch of the House of Burgundy-Ivrea, Sancha combines high courtly sophistication with acute diplomatic discernment. Highly educated in legal charters and fiscal administration, she superintends the domestic finances and agricultural accounts of their riverine manors along the Ebro. Acting as a trusted confidential envoy between Pamplona and Toledo, Lady Sancha has repeatedly mediated tense border skirmishes, leveraging her royal lineage to protect her husband's baronial interests. She is widely revered as an indispensable strategic asset and gracious matriarch of the eastern marches. Her masterly domestic governance, high courtly connections, and diplomatic wisdom make Lady Sancha of Castile an indispensable bridge ensuring peace across the Ebro marches. Her serene tact, generous famine relief, and maternal fortitude preserve domestic harmony and tenant prosperity throughout the fertile river valleys. Her serene tact, generous famine relief, and maternal fortitude preserve domestic harmony and tenant prosperity throughout the fertile river valleys of the Ebro, beloved by nobles and commoners alike.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To preserve the diplomatic bridge between Castile and Navarrese nobility, shielding her husband's estates.",
+    "To administer their Ebro manors with prosperity and financial resilience."
+  ],
+  "Values": [
+    "Dynastic survival rests upon delicate balance and practical statecraft; emotion is fatal.",
+    "A noble matriarch must wield patient diplomacy to dissolve armed strife and preserve honor."
+  ],
+  "Fears": [
+    "Full-scale war erupting between Castile and Navarre, pitting her husband against her royal kinsmen.",
+    "Royal Capetian forces launching armed crackdowns against the Ebro baronies."
+  ],
+  "SpeechStyle": "Speaks with polished Castilian courtliness, measured diplomatic grace, and persuasive clarity. She speaks with serene courtly poise, gentle articulation, and gracious royal dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

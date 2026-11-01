@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_2",
+  "HeroName": "Abu al-Hasan Ali ibn Ashqilula",
+  "Description": "Abu al-Hasan Ali ibn Ashqilula is the venerable patriarch of the Banu Ashqilula and sovereign Lord of Guadix and Baza, commanding universal reverence across Andalusia at sixty-five years of age. A contemporary and primary confederate of Sultan Muhammad I al-Ahmar, Ali was co-architect of the 1232 uprising in Arjona that birthed the realm. Governing the eastern marches of Guadix, he controls strategic defiles, silver mines, and fortress gates barring the routes from Murcia. A veteran of countless pitched battles, Ali wields immense arbitral prestige among the feudal nobility, commanding a formidable host of armored lancers that secures the eastern frontier. Despite his advanced years, Abu al-Hasan remains clear-headed, fiercely protective of seigneurial franchises, and incorruptible, standing as the unyielding rock safeguarding the autonomy of his ancestral house. His half-century of unblemished martial glory, incorruptible gravitas, and iron defense of baronial liberties make Abu al-Hasan Ali an immortal patriarch revered across the entire Peninsular south. With unshakeable moral weight and thunderous cavalry hosts, Lord Ali preserves the ancient feudal franchises of Guadix against all encroaching crowns. With unshakeable moral weight and thunderous cavalry hosts, Lord Ali preserves the ancient feudal franchises of Guadix against all encroaching crowns.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To safeguard the ancestral charters and mining revenues of Guadix and Baza against royal centralization.",
+    "To maintain his clan's status as co-sovereigns alongside the Nasrids, ensuring dynastic eternity."
+  ],
+  "Values": [
+    "Feudal covenants forged in blood are inviolable; betraying them invites ruin.",
+    "Military readiness must resemble unyielding granite; prudent foresight survives all dynastic changes."
+  ],
+  "Fears": [
+    "The Nasrid crown enacting treacherous purges to strip the Banu Ashqilula of their eastern keeps.",
+    "Rash, hot-headed scions igniting a catastrophic civil war that destroys the realm."
+  ],
+  "SpeechStyle": "Speaks with gravelly solemnity, slow deliberation, and crushing moral weight, cutting to the bone of political reality. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

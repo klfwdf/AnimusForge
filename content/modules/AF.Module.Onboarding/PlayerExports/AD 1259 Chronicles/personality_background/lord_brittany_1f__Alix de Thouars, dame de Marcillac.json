@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_1f",
+  "HeroName": "Alix de Thouars, dame de Marcillac",
+  "Description": "Alix de Thouars is an influential noblewoman of the House of Thouars and hereditary Dame of Marcillac along the Charente. Forty years of age, she possesses an extraordinary legal intellect, administrative mastery, and political resolve that rival the foremost baronial lords of the realm. Governing her castle and fertile estates at Marcillac, Alix established rigorous local courts to protect customary tenant rights. Deeply versed in the customary laws of Poitou and Aquitanian feudal precedents, she has personally appeared before royal justices in Bordeaux and Angoulême, successfully defending her mills, timberlands, and vineyards from aggressive neighboring magnates. Maintaining a disciplined garrison of mounted sergeants and archers, she swiftly neutralizes riverine piracy and border skirmishers. Highly respected by Viscount Renaud, Alix stands as an indomitable chatelaine linking the northern Thouars patrimony to the southern marchlands. At Marcillac, Alix supervised river dredging and stone bridge maintenance while donating extensive vineyard rents to monastic houses. Her impartial adjudication of tenant boundary grievances and adherence to customary feudal law guaranteed lasting agricultural stability throughout her extensive domains. Her unwavering dedication to lawful justice and regional welfare makes Marcillac a model of baronial prosperity, admired by neighboring lords throughout the marches.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Vigorously defend the territorial integrity and revenues of Marcillac from encroachment.",
+    "Maintain sovereign autonomy and legal rights across her southern Charente estates."
+  ],
+  "Values": [
+    "Upholding feudal indentures and maintaining orderly riverine commerce across baronial lands.",
+    "Pious benefactions to marchland priories and benevolent protection of tenant communities."
+  ],
+  "Fears": [
+    "Loss of ancient charters during regional wars compromising her lineage's hereditary jurisdiction.",
+    "Roving mercenary free companies ravaging agrarian estates and destroying decades of baronial prosperity."
+  ],
+  "SpeechStyle": "Speaks with crisp, crystalline authority and razor-sharp legal acumen, her arguments flawlessly structured, commanding, and brooking no feudal condescension.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

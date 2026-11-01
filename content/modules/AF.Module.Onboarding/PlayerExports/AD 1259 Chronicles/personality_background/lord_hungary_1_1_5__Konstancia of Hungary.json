@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_5",
+  "HeroName": "Konstancia of Hungary",
+  "Description": "Konstancia of Hungary is the noble daughter of King Béla IV and Queen Maria Laskarina, married to Grand Prince Lev I of Galicia-Volhynia (founder of Lviv). Her marriage sealed a vital post-war reconciliation between King Béla and King Daniel of Galicia, forming a united front across the Carpathian crest. Leaving Buda's palaces for the expansive Ruthenian borderlands, Duchess Konstancia earned deep reverence by respecting Orthodox customs while maintaining devout Catholic piety. She served as a trusted mediator in the nascent citadel of Lviv, fostering steady communication and mutual military aid with Hungary. In 1259, as dark rumors herald Burundai's Mongol host amassing along the Galician frontier, Konstancia organizes relief supplies and mobilizes mountain watchtowers, standing as an unyielding Carpathian guardian. Konstancia established cross-border trading fairs in nascent Lviv, welcoming artisans from across Eastern Europe and resolving sectarian tensions. Her maternal benevolence and diplomatic poise endowed the young frontier citadel with durable economic vitality and community cohesion. She sponsored defensive stone works along the upper Dniester while fostering fraternal cooperation between Hungarian and Ruthenian boyars. Her quiet strength inspired frontier families, turning dangerous mountain valleys into flourishing sanctuaries of mutual defense and Christian amity.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Sustain the unbreakable alliance between Hungary and Galicia to resist Mongol devastation.",
+    "Foster commerce and civic peace in the newly established citadel of Lviv for all faiths."
+  ],
+  "Values": [
+    "Value ecumenical harmony and mutual trust as true statecraft, honoring alliances faithfully.",
+    "Believe endurance, charity, and steadfast cooperation conquer even the grimmest tribulations."
+  ],
+  "Fears": [
+    "Fears Mongol general Burundai conscripting Galician forces to attack their own Hungarian kin.",
+    "Dreads marauding armies razing the fledgling city of Lviv and choking Carpathian mountain trade."
+  ],
+  "SpeechStyle": "The Carpathian crags stand as God's fortress. The blood of Hungary and Galicia flows united; no eastern storm can extinguish our torch of freedom! The Carpathians shield our peoples from every tempest!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

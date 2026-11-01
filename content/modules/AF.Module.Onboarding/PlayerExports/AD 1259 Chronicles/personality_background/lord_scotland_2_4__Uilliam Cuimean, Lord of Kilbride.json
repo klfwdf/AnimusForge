@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_4",
+  "HeroName": "Uilliam Cuimean, Lord of Kilbride",
+  "Description": "William Comyn is the influential Lord of Kilbride, commanding the fertile and strategically vital estates of Lanarkshire along the River Clyde. Tall, broad-shouldered, and energetic, he cuts an imposing military figure draped in polished mail and knightly surcoats. A cousin to the Black Comyn and close ally to the Earl of Buchan, William commands a disciplined retinue of heavy cavalry across the western Lowlands. His advantageous marriage to Euphemia de Clavering solidified indispensable ties with powerful northern English Marcher barons and the Earls of Dunbar. Scottish charters and Exchequer Rolls record his rigorous patrols along the Tweed and Solway frontiers, earning widespread acclaim among the younger baronage for his battlefield decisiveness. Ambitious and politically agile, William recognizes the shifting tides following Walter Comyn's passing, determined to establish Kilbride as a preeminent bastion of Comyn power throughout the realm. Scottish Exchequer Rolls record his construction of formidable stone watchtowers overlooking key crossings of the River Clyde, strictly monitoring foreign embassies and trade caravans; having unhorsed celebrated northern English knights in border tournaments, his lance mastery and aggressive tactical doctrine are acclaimed as preeminent among the younger Lowland chivalry across the entire realm.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Drill the heavy horse of Kilbride to win martial renown and expand his territorial authority.",
+    "Leverage Marcher connections through his Clavering marriage to dominate Anglo-Scottish cross-border diplomacy."
+  ],
+  "Values": [
+    "Values martial discipline, chivalric honor, and aggressive cavalry doctrine above timid diplomacy.",
+    "Believes territorial strength and ready arms are the only true guarantors of baronial independence."
+  ],
+  "Fears": [
+    "Fears Stewart expansion across Clydeside encroaching upon the watercourses and manors of Kilbride.",
+    "Dreads an open war between England and Scotland devastating his borderlands on both sides."
+  ],
+  "SpeechStyle": "Speaks with ringing martial vigor, concise and commanding, demanding rapid tactical decisions.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

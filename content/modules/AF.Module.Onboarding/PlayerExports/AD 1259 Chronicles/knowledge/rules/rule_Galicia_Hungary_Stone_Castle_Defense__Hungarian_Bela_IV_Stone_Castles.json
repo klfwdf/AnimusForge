@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Galicia_Hungary_Stone_Castle_Defense",
+  "Keywords": [
+    "Hungarian Bela IV Stone Castles",
+    "Galician Danylo Anti Mongol Forts",
+    "Carpathian Fortified Bastions",
+    "Cuman Horse Auxiliaries Settlement"
+  ],
+  "RagShortTexts": [
+    "After 1241 devastation, Bela IV and Danylo constructed stone castles and enlisted Cumans."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Traumatized by the catastrophic Mongol invasion of 1241, King Béla IV of Hungary—hailed as the kingdom's second founder—revolutionized Central European defense by decreeing the construction of over a hundred stone castles while settling thousands of pagan Cuman horse archers in the Alföld plains, joined by King Danylo of Galicia who fortified Lviv and Kholm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Barons invested colossal fortunes into masonry keeps overlooking the Danube and Carpathians. Béla IV proved that while steppe horsemen dominate open grasslands, stone fortifications equipped with siege machinery completely blunt the velocity of nomadic invasions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Garrisons atop Buda and Visegrád man heavy springalds and ballistas. Steppe tumens cannot forage when royal storehouses sit locked behind twenty feet of mortar and ashlar stone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Serfs quarried limestone until hands bled, yet no man cursed the labor. When horsemen descend with torch and lariat, survival means racing cattle across the drawbridge before the iron portcullis drops."
+    }
+  ],
+  "TextMappings": []
+}

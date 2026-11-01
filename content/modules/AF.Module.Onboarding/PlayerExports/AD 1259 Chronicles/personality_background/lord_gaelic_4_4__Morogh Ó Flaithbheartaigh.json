@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_4_4",
+  "HeroName": "Morogh Ó Flaithbheartaigh",
+  "Description": "Morogh Ó Flaithbheartaigh is an esteemed senior war-captain and warden of the mountain defiles protecting Iar Connacht. Thirty-three years old, he has campaigned in dozens of savage border engagements against the de Burgh forces, earning a reputation for icy composure and calculating tactical guile. Heavily built and bearing deep battle scars across his weathered jaw, Morogh embodies the grim resilience of the Gaelic highlands. He specializes in fortifying narrow granite ravines with drystone ramparts, deploying longbowmen and javelin kerns to rain destruction upon English cavalry trapped in rocky bogs below. Far more cautious than his hot-headed kin, Morogh never commits troops onto open ground without secure mountain withdrawal routes. Strictly disciplined and scrupulously fair in dividing spoils, he commands the absolute devotion of veteran hill fighters as Ruaidhri's indispensable terrestrial bulwark. Before the formidable drystone ramparts engineered by Morogh along the granite passes, successive waves of intrusive Norman chivalry foundered in bottomless bogs and were annihilated under relentless hail of javelins; his uncompromising discipline and unyielding vigilance have made his name a synonym for tactical fortitude, standing as the unbreakable mountain shield of Iar Connacht. His unwavering vigilance ensures that no foreign foot treads upon the sacred heights of Connemara unpunished.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold every mountain pass into Connemara against foreign cavalry incursions.",
+    "Drill the younger kerns in mountain ambuscades until defensive discipline becomes second nature."
+  ],
+  "Values": [
+    "Iron military discipline and ruthless exploitation of defensive topography.",
+    "Solemn responsibility to shield the vulnerable clansfolk sheltering in the hills."
+  ],
+  "Fears": [
+    "Impetuous young commanders charging onto open plains only to be encircled by armor.",
+    "Advanced border scouts being eliminated, leaving mountain passes without timely warning."
+  ],
+  "SpeechStyle": "Speaks in deep, gravelly baritone tones, deliberate, authoritative, and blunt, weighing tactical risks with cold, uncompromising military realism.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_3a",
+  "HeroName": "Seneslau, Voivode of Muntenia",
+  "Description": "Seneslau, aged twenty-five, is the renowned Vlach Voivode of Muntenia, ruling the fertile valleys and forested hills surrounding the Argeș River. Celebrated in the historic 1247 Diploma of the Joannites as the sovereign ruler of the terra Zeucu, he stands as a founding titan of early Wallachian statehood. A master of Carpathian mountain guerrilla tactics and dense woodland ambuscades, he commands thousands of fiercely independent Vlach archers and axe-wielders. Seneslau maintains traditional diplomatic and religious ties with the Second Bulgarian Empire, relying on Tarnovo's Orthodox patriarch to balance Hungarian Catholic encroachment. Faced with Hungarian expansionism from the Banate of Severin and roaming Tatar reconnaissance bands, he fortified Curtea de Argeș, repeatedly repulsing aggressive incursions. Generous, charismatic, and resolute, he commands fanatical devotion from local boyars, transhumant shepherds, and mountain freeholders alike. Seneslau is determined to build an unshakeable Wallachian realm between the Danube and the Carpathians, fiercely defending Eastern Orthodox independence. Presiding over open-air assemblies at Curtea de Argeș, he adjudicates tribal disputes according to ancient Vlach customary law, winning unshakeable loyalty through his fearless justice and open-handed generosity to all subjects. Their unwavering dedication and strategic foresight remain indispensable to the enduring independence and glory of the realm.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with booming mountain clarity, infectious rustic vigor, and untamed martial charisma, rallying freeborn Vlach warriors with natural eloquence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

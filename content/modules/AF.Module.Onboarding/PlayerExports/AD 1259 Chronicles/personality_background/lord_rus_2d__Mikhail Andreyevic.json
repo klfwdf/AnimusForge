@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Mikhail Andreyevic of Gorodets, younger son of Andrey Alexandrovich, brought methodical engineering precision and defensive ingenuity to the service of his house. In sharp contrast to his brother's aggressive cavalry tendencies, Mikhail was contemplative and reserved, focusing his energies upon fortress architecture, ballistics, and quartermaster logistics. Stationed at the primary citadel above the Volga, he supervised arsenals of heavy traction trebuchets, iron crossbow batteries, and dry supply depots, commanding deep respect among military engineers. Taciturn and observant, Mikhail laid ingeniously concealed deadfalls and iron caltrop fields along blind approaches, effortlessly thwarting sudden nighttime assaults. Understanding that castles fall to thirst and starvation rather than direct assault, he constructed vaulted cisterns and grain caches, serving as the immovable fortress anchor behind his father's conquests. Incorporating Byzantine ballistics and counter-weighted trebuchets along the Gorodets battlements, Mikhail created an impenetrable defensive perimeter that repelled repeated assaults, revered by his soldiers as the unbreakable mechanical bulwark of the eastern borderlands. His scientific mastery of siege engines, stone ramparts, and defensive geometries transformed Gorodets into an impregnable sanctuary, earning him the gratitude of all who sheltered beneath its formidable walls against overwhelming barbarian hosts.",
+  "SpeechStyle": "Speaks with quiet, unhurried cadence and geometric precision, stripping all emotional drama to address core tactical realities.",
+  "Motivations": [
+    "Continuously modernize the defensive fortifications along the Volga, deploying heavy mechanical engines to create impregnable citadels.",
+    "Oversee strategic granaries and armories, ensuring the army maintains abundant supply depots even during prolonged sieges."
+  ],
+  "Values": [
+    "Believes victory belongs to meticulous preparation and thick stone bastions, scorning impulsive bravado in favor of unbreachable defense.",
+    "Values pragmatic craftsmanship and engineering rigor, quietly building the physical framework that guarantees dynastic survival."
+  ],
+  "Fears": [
+    "Fears the betrayal of fortress tunnel layouts by corrupt retainers, allowing enemies to bypass formidable exterior ramparts."
+  ],
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1g",
+  "HeroName": "Luchino Visconti",
+  "Description": "Luchino Visconti, son of Matteo I, ruled as Lord of Milan and brilliant field captain. Ruthless and decisive, he instituted Milan's first professional standing army, subjugating Parma, Asti, and Tuscan salients to vastly expand Visconti frontiers across northern Italy. Luchino mobilized Italy's first professional standing army of heavy men-at-arms and crossbowmen under draconian military statutes, capturing strategic fortresses across Piedmont and Tuscany with crushing efficiency. Imposing draconian curfews and collective accountability upon conquered territories, he expropriated disloyal feudal magnates to chain Parma and Piacenza irrevocably to Milan's war engine. Possessing a heart of cold steel, Luchino viewed terror as the only reliable instrument of governance, planting the Visconti viper banner across northern Italy through ceaseless conquest. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush autonomous warlords across Piedmont and Emilia through professional cavalry supremacy.",
+    "Establish an inescapable espionage and garrison network to extinguish subversion ruthlessly.",
+    "Subordinate Genoa and Pisa to unlock direct maritime trade arteries into the Mediterranean."
+  ],
+  "Values": [
+    "Believes uncompromising terror and iron discipline ensure enduring dominion over conquered lands.",
+    "Demands absolute martial efficiency, punishing battlefield hesitation with capital severity."
+  ],
+  "Fears": [
+    "Close captains or bodyguards being suborned by papal gold to poison him in council.",
+    "Coordinated insurrections erupting across subject cities to stall outward campaigns."
+  ],
+  "SpeechStyle": "Speaks with chilling economy and razor-sharp authority, brooking zero hesitation. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_7_4",
+  "HeroName": "Toghoril",
+  "Description": "Toghoril is lean and quick, with an exceptional horsemanship that makes him the envy of his peers. An old chafe mark from the saddle lies on his left shoulder, and he wears it with pride. In the game he is the cavalry scout of the seventh clan, nineteen years old, who patrols the outer edges of the camp and knows every valley and mountain pass nearby. This character has no matching medieval record, so the background here rests on the clan's setting alone. The Merkit were long suppressed by the Borjigin house, and their descendants hope to regain respect through skill in the saddle. Toghoril grows up in that climate and wants to win battle honours in scouting and raiding, proving that he is worthy of his elders. Against rivals he leans toward direct action and likes to answer a provocation with a bold raid, sometimes without weighing the consequences. He respects his parents, and he trusts his father Megujin's judgement, yet privately hopes to surpass his father's renown one day. His highest aim is to keep the cavalry reputation of the seventh clan alive on the steppe. His fear is that his impulsiveness will cost a comrade's life on some raid, and that he will carry that failure for the rest of his life.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Win battle honours through scouting and raids, so the steppe peoples acknowledge the seventh clan's cavalry as equal to any, and his name is carried with the family's glory.",
+    "Learn every valley, pass and water source in detail, giving the clan's riders reliable routes so that the camp is not lost or ambushed during a move.",
+    "Surpass his father Megujin's renown and earn an independent standing in the clan, proving he is more than a successor who merely repeats his elders."
+  ],
+  "Values": [
+    "Courage and honour, because he believes a rider who will not charge does not deserve his horse or his bow, so bravery is the first quality he demands of himself.",
+    "Loyalty to the family, because he respects his parents and holds that the honour of the seventh clan outweighs any personal gain, and he will risk much to defend it.",
+    "Action over talk, because he dislikes long speeches and hesitation, and believes that one decisive move changes a situation more than ten discussions."
+  ],
+  "Fears": [
+    "Fears that his impulsiveness will cost a comrade's life on a raid, leaving him with a fault he can never wash away and the loss of his clansmen's trust.",
+    "Fears that he will always live in his father's shadow, leaving no name of his own on the steppe and being remembered as a mere imitator."
+  ],
+  "SpeechStyle": "Direct and quick. Toghoril speaks in short bursts and often uses images of riding and scouting. He is easy-going with comrades and respectful to elders, but answers provocation at once with a sharp question.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

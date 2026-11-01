@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Feudal_Liege_Homage_and_Osculum_Ceremony",
+  "Keywords": [
+    "Liege Homage Rituals",
+    "Feudal Kiss of Peace Osculum",
+    "Immixtio Manuum Submission",
+    "Fief Investiture Clod Rod"
+  ],
+  "RagShortTexts": [
+    "Feudal homage bound lord and vassal through clasping hands, sacred oaths, and the osculum kiss."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ritual of homage and fealty forms the supreme bond of feudal society. Bareheaded and unarmed, the vassal kneels, placing his clasped hands within those of his lord (immixtio manuum) to swear eternal faith. The lord raises him with the kiss of peace (osculum) and invests him with a staff or turf of earth symbolizing the fief."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Homage is a reciprocal contract. While the vassal owes forty days of military service and feudal aids, the overlord owes protection and just counsel. A lord who assaults his vassal's honor forfeits allegiance, justifying armed renunciation (diffidatio)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Oaths sworn upon the Holy Gospels invoke divine surveillance. A traitor who breaks homage becomes an infamous felon, disinherited under earthly statutes and consigned by the Church to spiritual ruin."
+    }
+  ],
+  "TextMappings": []
+}

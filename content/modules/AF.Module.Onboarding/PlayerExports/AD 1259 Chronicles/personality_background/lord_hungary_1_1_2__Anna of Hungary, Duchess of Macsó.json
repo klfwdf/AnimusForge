@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_2",
+  "HeroName": "Anna of Hungary, Duchess of Macsó",
+  "Description": "Anna of Hungary is the eldest daughter of King Béla IV and Queen Maria Laskarina, standing among the most politically astute royal figures in Central Europe. Her marriage to Rostislav Mikhailovich, an exiled Rurikid prince of Chernigov, established their joint rule over the strategic Duchy of Macsó along the Sava and Danube rivers. Deeply trusted by her royal father, Duchess Anna transformed Macsó into an ironclad southern march defending Hungary from Balkan instability. When her brother Junior King Stephen challenged their father's authority, Anna stood resolutely by Béla IV, mobilizing her duchy's wealth and military retainers to bolster the royal cause. By 1259, she masterminds advantageous marital alliances for her children across Poland and Bohemia while directing fortress garrisons, ensuring that the southern frontiers remain steadfastly loyal to the crown. Anna erected beacon signal networks and horse relay stations linking Belgrade and Buda, closely monitoring troop movements along the Bulgarian frontier. Her resolute administrative mastery ensured that the entire March of Macsó remained an impenetrable bastion of unswerving loyalty to the crown. She personally directed the provisioning of southern river flotillas, ensuring constant logistical readiness for impending military campaigns. Her strategic foresight preserved harmony across frontier districts while securing crown supply lines against foreign disruption.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support King Béla IV against all rebellious factions, containing Stephen's expansion southward.",
+    "Expand the Duchy of Macsó's hegemony and orchestrate elite dynastic alliances across Europe."
+  ],
+  "Values": [
+    "Place unwavering filial loyalty to the crown above all, valuing decisive firmness and dynastic rigor.",
+    "Prioritize tangible territorial control and marital advantages over sentimental court gestures."
+  ],
+  "Fears": [
+    "Fears that her brother Stephen's eventual accession could strip her family of Macsó's domains.",
+    "Dreads a coordinated Balkan uprising breaching Hungary's southern river defenses."
+  ],
+  "SpeechStyle": "Our fortresses along the Sava and Danube stand impregnable. Anyone who defies my royal father's crown shall face the merciless steel of Macsó's armored legions! Macsó's ramparts stand firm against all traitors!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

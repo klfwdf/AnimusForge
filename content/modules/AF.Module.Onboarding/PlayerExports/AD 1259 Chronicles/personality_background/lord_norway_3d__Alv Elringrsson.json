@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_3d",
+  "HeroName": "Alv Elringrsson",
+  "Description": "Baron Alv Erlingsson, universally known across Europe as 'Mindre-Alv' (Alv the Lesser), was the most audacious corsair-baron, naval strategist, and tragic rebel in medieval Norwegian history. In 1259, as an ambitious young warrior of the Tanberg house, Alv was already mastering the winds of Skagerrak and assembling an elite private fleet of swift war drakkars. From his impregnable coastal fortress of Isegran at the mouth of the Glomma, he held the maritime jugular of southern Norway, enforcing naval dominance over all coastal shipping. Elevated to the high rank of realm Jarl and special envoy to the English court of Edward I, Alv single-handedly waged a privateering naval war against the Hanseatic League and Denmark, plundering merchant convoys with impunity. Driven by supreme pride and unbending aristocratic defiance, he eventually launched a legendary baronial rebellion against the crown of King Eric Priest-Hater, waging a dramatic guerilla war on the seas until his eventual capture and execution at Helsingborg. His piratical genius, charismatic defiance of kings, and boundless daring immortalized Mindre-Alv as the ultimate corsair knight of Scandinavian lore. Surrounding his stone fortress of Isegran with palisaded watergates and artillery batteries, Baron Alv commanded fast drakkar squadrons across the stormy reaches of the Skagerrak. His daring privateering fleets intercepted heavily armed Hanseatic merchant convoys, compelling German trading cities to sue for peace and pay immense ransoms. A fearless rebel baron who defied kings and empires alike, Mindre-Alv carved an immortal, terrifying legend as the ultimate pirate-knight of the northern seas.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with fiery arrogance, commanding boldness, and defiant audacity, projecting the unstoppable charisma of a master corsair and rebellious feudal warlord.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

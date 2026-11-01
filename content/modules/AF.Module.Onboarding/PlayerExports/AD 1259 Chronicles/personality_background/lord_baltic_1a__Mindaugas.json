@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_1a",
+  "HeroName": "Mindaugas",
+  "Description": "Mindaugas reigns as the first and only crowned King of Lithuania (1253–1263), the monumental founding titan who forged warring Baltic tribes into a unified grand duchy and sovereign European kingdom. Surrounded by the crusading pincers of the Teutonic and Livonian orders, Russian principalities, and Mongol hordes, Mindaugas executed daring geopolitical masterstrokes. Ruling from the timber citadels of Voruta and Navahrudak, he brutally subdued recalcitrant regional dukes before stunning Christendom in 1251 by accepting Catholic baptism, thereby earning a royal crown directly from Pope Innocent IV. Navigating treacherous diplomatic crosscurrents, he strategically ceded contested border tracts of Samogitia to the Order to buy invaluable breathing space, all while absorbing the rich agrarian lands of Black Ruthenia along the upper Neman River. Yet his precarious crown rests upon an active volcano: his fiercely pagan nephew, Duke Treniota of Samogitia, demands the complete renunciation of Christianity and a pan-Baltic holy war, while aggrieved princely vassals conspire in the shadows. Ruthless, suspicious, and possessing supreme political foresight, Mindaugas holds his scepter with an iron grip, determined that Lithuania shall never bow to any foreign empire. Mindaugas deployed elite horse patrols along the forested river corridors and reinforced Voruta Fortress with formidable stockades. His masterly diplomatic balance kept Western legates, local pagan boyars, and Ruthenian princes under cohesive dynastic authority.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain delicate diplomatic equilibrium between Rome, the crusaders, and Rus to guarantee Lithuania's royal independence.",
+    "Ruthlessly crush seditious tribal baronies, forging Baltic clans into a centralized, modern European monarchy.",
+    "Fortify Navahrudak and Voruta, mobilizing the revenues and manpower of Black Ruthenia along the Neman."
+  ],
+  "Values": [
+    "Prize practical strategic realism and national sovereignty above rigid dogma, daring to make historic compromises.",
+    "Believe supreme power rests on iron authority and cold deterrence, stamping out tribal anarchy without mercy.",
+    "Hold the preservation of his dynasty and kingdom as an inviolable royal trust, bowing to no foreign master."
+  ],
+  "Fears": [
+    "Pagan zealots and disgruntled princely vassals launching a bloody palace coup to assassinate him in the dark.",
+    "The Teutonic Order breaching peace treaties to launch total invasion, drowning Lithuanian sovereignty in blood."
+  ],
+  "SpeechStyle": "Lithuania's primeval forests belong to the free; neither crusader monks nor eastern hordes shall conquer our land! While my sword strikes, our royal crown stands invincible! Lithuania stands unconquered across these ancient forests!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

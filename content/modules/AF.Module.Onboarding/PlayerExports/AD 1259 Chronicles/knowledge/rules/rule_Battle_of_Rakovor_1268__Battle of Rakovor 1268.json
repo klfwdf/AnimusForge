@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Rakovor_1268",
+  "Keywords": [
+    "Battle of Rakovor 1268",
+    "Novgorod Pskov Coalition",
+    "Daumantas of Pskov Charge",
+    "Livonian Danish Crusader Rout"
+  ],
+  "RagShortTexts": [
+    "In 1268 at Rakovor, allied Rus armies under Daumantas checked Danish and Livonian crusaders."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Occurring on February 18, 1268, near Wesenberg in Estonia, Rakovor brought massive Rus hosts from Novgorod and Pskov against Livonian Order knights and Danish feudal lords. Led by the exiled warrior-saint Daumantas of Pskov, deep cavalry charges repulsed the crusader line across frozen marshes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "The battle stabilized northwestern Russian frontiers, curbing Teutonic advances toward Lake Ladoga for decades."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_2",
+  "HeroName": "Marchesina Tiepolo",
+  "Description": "Dogaressa Marchesina Tiepolo, wife of Admiral Lorenzo Tiepolo, traces her illustrious heritage to the crusader royal dynasties of Outremer—descendant of the Princes of Antioch and kings of Jerusalem. Bringing the regal ceremonial majesty of the Frankish Levant to the Venetian lagoon, Marchesina served as an indomitable anchor for her household while Lorenzo campaigned across the eastern Mediterranean. Expert in managing massive war accounts and civic relief for sailors' families, she commands universal reverence. Bringing the sovereign ceremonial dignity of the crusader princes of Antioch to Venice, Marchesina Tiepolo managed extensive military supply accounts and civic hospices while her husband campaigned abroad, commanding deep reverence among the nobility. Carrying the proud crusading heritage of Outremer into the lagoon, Marchesina sustained the Tiepolo dynasty through grueling wartime campaigns, an indomitable matriarch whose noble fortitude commanded universal respect across Europe. Her sublime courage, royal crusader dignity, and unbending pride enshrine Dogaressa Marchesina Tiepolo as an immortal matriarch who guided her household with magnificent nobility. Embodying royal dignity and steadfast loyalty, she preserves the honor and heritage of her crusader ancestors across the Venetian lagoon. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Propel her husband to the ducal throne, cementing the immortal glory of the House of Tiepolo.",
+    "Strengthen alliances between Venice and the crusader states of Outremer to protect trade and faith."
+  ],
+  "Values": [
+    "Chivalric honor, royal legitimacy, and sacred crusading duty to defend the Christian Levant.",
+    "Unconditional marital solidarity, domestic harmony, and benevolent care for dependent families."
+  ],
+  "Fears": [
+    "Mamluk invasions overrunning the crusader states and destroying family fortresses in Outremer.",
+    "Her husband perishing in savage naval boarding combat, leaving their lineage vulnerable to rivals."
+  ],
+  "SpeechStyle": "Speaks with imperial crusader majesty, refined courtly eloquence, and deep compassionate dignity. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2a",
+  "HeroName": "Zdeslav I of Divišova, Lord of Šternberk",
+  "Description": "Zdeslav I of Divišov stands as the legendary founder of the illustrious Czech House of Šternberk (Sternberg), bearing the iconic golden eight-pointed star, revered as an elder martial hero of the Bohemian realm. He founded Český Šternberk Castle upon the sheer crags above the Sázava River, along with a sister bastion in Moravia, establishing the golden star as a beacon of chivalric valor throughout Central Europe. His immortal fame was forged during the Mongol invasions, when he served as a principal commander in the successful defense of Olomouc, repelling fierce steppe assaults and preserving Moravia from apocalyptic destruction. Honored by both King Wenceslaus I and King Přemysl Otakar II, Zdeslav embodies chivalric rectitude and fearless fortitude, frequently leading royal embassies and frontier defense levies as the kingdom's most venerated elder warlord. Storing years of grain and tempered steel weapons across his two fortresses of Šternberk on the Sázava and in Moravia, Zdeslav I repeatedly led his cavalry to repel Silesian and Polish border incursions. Instilling fierce chivalric discipline and patriotic duty in his men, he paced the ramparts in heavy mail even in advanced years, forging the golden eight-pointed star into an immortal legend of Central European chivalry. His legendary valor and chivalric honor cemented the House of Sternberg among the greatest heroes of Bohemia.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the core fortresses of Šternberk in Sázava and Moravia, preserving family honor against foreign invaders.",
+    "Lead family cavalry levies to new triumphs in King Otakar's campaigns, maintaining elder heroic prestige."
+  ],
+  "Values": [
+    "Regards battlefield valor, patriotic defense, and sworn oaths as inviolable chivalric duties, despising cowardice.",
+    "Holds the untarnished honor of the golden eight-pointed star as his highest earthly law."
+  ],
+  "Fears": [
+    "Worries younger nobles will succumb to court luxury, losing the iron discipline that broke the Mongol hordes.",
+    "Fears Bohemia becoming trapped in multi-front wars, squandering the hard-won peace won by veteran knights."
+  ],
+  "SpeechStyle": "The golden star of Sázava never wavers in the tempest; we shed our blood for this land by the strength of our swords and our oath to the crown! In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Zdeslav I of Divišova, Lord of Šternberk"
+}

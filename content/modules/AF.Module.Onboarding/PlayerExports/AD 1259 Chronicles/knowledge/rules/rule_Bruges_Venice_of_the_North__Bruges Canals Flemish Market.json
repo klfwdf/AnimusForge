@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Bruges_Venice_of_the_North",
+  "Keywords": [
+    "Bruges Canals Flemish Market",
+    "Zwin Bay Deep Harbor",
+    "Hanseatic Kontor Italian Banks",
+    "Bruges Belfry Textile Cloth"
+  ],
+  "RagShortTexts": [
+    "Bruges connected Atlantic seafaring through the Zwin, serving as northern Europe's premier."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bruges reigned as the banking capital of northern Europe via its deep-water Zwin channel. Baltic Hanseatic timber and grain traded against Italian silks, spices, and bills of exchange beneath the watchful gaze of the municipal belfry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "artisan"
+        ]
+      },
+      "Content": "Textile finishing guilds enforced rigorous inspection stamps, guaranteeing Bruges cloth unmatched commercial prestige across the continent."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_1_1",
+  "HeroName": "Azam Begum",
+  "Description": "Azam Begum is the wife of Şemseddin Mehmet Bey and, at thirty-three, a seasoned member of the Karamanid household. The historical sources do not name her, so her origin and marriage are game-world inventions. Judging from the usual marriages between Karamanids and Turkic minor noble families, she probably came from a horse-owning family allied to the bey. Sources are silent on her looks, so this profile imagines a composed woman with dark hair under a plain headcloth, who fastens her shawl with an old silver brooch. Her knuckles are roughened from years of handling reins. After marriage she moved with her husband between Larende and Ermenek. There she learned to look after horses and divide supplies, and she saw garrison casualties and desertions at first hand. Against cadet relatives and rivals she never acts openly. She works through the upbringing of her children and through the kin of her mother's house. She attends the mosque every day and funds a village teacher of religious learning, which earns her a good name in the countryside. Her relationship with her husband is calm and close. In a crisis she explains the stakes to him in private, then lets him make the decision publicly, a routine the household has come to expect. Her lofty aim is to find each of her children a place in the Karamanid future. Her deepest fear is her husband dying in battle or falling from favour at court, which would leave her and the children unprotected and pushed out by cadet branches.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Win fiefs and horses for her children, so that each has a reliable and secure place in the Karamanid power structure, not pushed out by brothers.",
+    "Use kin connections to secure steady fodder and supplies for her husband's cavalry around Larende, reducing losses at the front.",
+    "Keep a dignified balance within the household so that quarrels with cadet branches do not harm her children or breed lasting grudges."
+  ],
+  "Values": [
+    "Value family stability and the future of her children, believing personal resentment must yield to long-term interest and never ruin generations of work.",
+    "Think practically, counting people and supplies before promising anything, and keep every word she gives so that her name stays trusted.",
+    "Treat servants and cavalry families fairly, trading careful attention for loyalty in a crisis, and remember every favour done to her."
+  ],
+  "Fears": [
+    "Her husband killed in the field, leaving her children without support and stripped of their fiefs by cadet branches, reduced to dependants.",
+    "Her sons turning on each other over the succession, breaking the family ties she spent years keeping together and scattering the household."
+  ],
+  "SpeechStyle": "Speaks in a steady, orderly way and often lists the main points of a problem first. Her voice is never loud, yet it quiets a room. She softens when speaking of the children but names her terms plainly when land is at stake.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

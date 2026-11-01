@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Kyiv_Ancient_Pechersk_Lavra_and_Desolation",
+  "Keywords": [
+    "Kyiv Ancient Dnieper Golden Gate",
+    "Pechersk Lavra Cave Monastery",
+    "Mother of Rus Cities Ruins",
+    "Batu Khan 1240 Desolation"
+  ],
+  "RagShortTexts": [
+    "Once the proud 'Mother of Rus Cities', Kyiv languished in ruins post-1240, sustained by."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Once celebrated as the 'Mother of Rus Cities' above the Dnieper River, Kyiv was utterly destroyed by Batu Khan in 1240. Hundreds of churches and its Golden Gate were reduced to rubble. Only deep inside subterranean catacombs of the Pechersk Lavra did hermits preserve the incorrupt relics of saints, keeping alive the spiritual memory of Kievan glory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Papal envoy Plano Carpini noted unburied skulls littering fields around Kyiv, with barely two hundred houses standing. Yet in deep caverns, monks pray in continuous liturgies, copying Old Church Slavonic psalters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dnieper fords are now open highways for steppe patrols. Wolves den within the charred ruins of grand palaces; it is impossible to walk these weed-choked mounds without mourning ancient grandeur."
+    }
+  ],
+  "TextMappings": []
+}

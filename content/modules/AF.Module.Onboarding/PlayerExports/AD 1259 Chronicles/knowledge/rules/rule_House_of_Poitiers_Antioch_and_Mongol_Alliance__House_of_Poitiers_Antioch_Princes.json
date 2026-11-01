@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Poitiers_Antioch_and_Mongol_Alliance",
+  "Keywords": [
+    "House of Poitiers Antioch Princes",
+    "Bohemond VI Mongol Alliance",
+    "Antioch and Tripoli Union",
+    "Syrian Crusader Northern Bulwark"
+  ],
+  "RagShortTexts": [
+    "The Poitiers-Antioch dynasty under Bohemond VI gambled on alliance with Mongol Hulagu Khan."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Uniting the Principality of Antioch and County of Tripoli, the House of Poitiers-Antioch steered northern Outremer through high-stakes diplomacy. Influenced by his father-in-law King Hetoum of Armenia, Prince Bohemond VI allied directly with Ilkhanate Mongol leader Hulagu, aiding the capture of Aleppo and Damascus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "While vassalage to the Mongols secured territorial recoveries, it alienated the papal curia in Rome and marked Antioch as the primary target for retributive Mamluk jihads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Frankish knights and Mongol horsemen walk the same bazaars in Antioch. Yet veteran guards know that if the Ilkhan withdraws across the Euphrates, Mamluk vengeance will be merciless."
+    }
+  ],
+  "TextMappings": []
+}

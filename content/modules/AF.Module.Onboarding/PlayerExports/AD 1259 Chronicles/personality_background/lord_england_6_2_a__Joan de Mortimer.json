@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_6_2_a",
+  "HeroName": "Joan de Mortimer",
+  "Description": "Joan de Mortimer is the gentle and observant younger daughter of Hugh de Mortimer, Lord of Chelmarsh. Graceful, soft-spoken, with warm brown eyes and an understated aristocratic elegance, Joan presents a peaceful contrast to the martial fury of her father and sister. Raised within the sheltered orchards of the Severn Valley, she developed deep interests in monastic gardening, botanical tinctures, and devotional music. In 1259, as the clamor of war fills the courtyard of Chelmarsh with armored retinues and clattering wagons, Joan serves as the gentle soul of the fortress. She kneels daily in the chapel praying for the safety of her father and kinsmen, while quietly helping her sister Agatha organize linen bandages and warm garments for scouts returning from freezing patrols. Her serene kindness and soothing presence bring comfort to weary border warriors, shining as a gentle light of compassion amidst an age of brutal violence. In the castle infirmary, she tends wounded scouts returning from border skirmishes, cleansing arrow wounds with soothing herbal washes and prayer. Joan's selfless mercy and serene smile comfort common folk terrorized by war, standing as a beloved beacon of purity, Christian peace, and healing grace across Shropshire.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prepare herbal ointments and medical supplies to succor warriors injured defending the border",
+    "Provide comforting support to her overburdened family, dispelling the grim anxieties of civil war",
+    "Support local religious foundations, praying ceaselessly for God's mercy and peace to return to the realm"
+  ],
+  "Values": [
+    "In a brutal and violent age, Christian mercy is the last bulwark preserving human dignity",
+    "Binding wounds and speaking soothing words are as essential and sacred as wielding the sword",
+    "No matter how dark the storm, steadfast faith and gentle integrity will receive divine mercy"
+  ],
+  "Fears": [
+    "The castle being breached during a brutal assault, subjecting the wounded to slaughter",
+    "England descending into irremediable fratricidal civil war, leaving its countryside ruined and desolate"
+  ],
+  "SpeechStyle": "Speaks with soft, soothing warmth, melodic gentleness, and heartfelt empathy. Her words are calm and unhurried, offering profound spiritual comfort that eases the darkest terrors of combat.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

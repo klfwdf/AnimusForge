@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_3e",
+  "HeroName": "Velislav of Pernštejn",
+  "Description": "Velislav is the second son of Lord Štěpán II, recognized for quiet discipline, meticulous prudence, and architectural ingenuity within the House of Pernštejn. Contrasting his aggressive elder brother, Velislav excels in siege engineering, ballista maintenance, and logistical mobilization. Directly supervising the expansion and refortification of Pernštejn Castle, he engineered interlocking murder holes and stone galleries. He assists his father in managing mountain silver concessions and labor registries, earning the deep respect of miners and stonemasons for his strict fairness. Content to serve as the unshakeable logistical anchor behind his house's vanguard, he guards the ancestral mountain bastion with watchful precision. Drafting architectural blueprints in Pernštejn's masonry workshops, Velislav re-engineered crenelation angles and trebuchet gearings to withstand devastating siege bombardment. Systematically supervising silver smelting quality and iron armory reserves across mountain foundries, his craftsman discipline and defensive ingenuity provided an impregnable logistical foundation for all of his house's frontline ambitions across the Moravian highlands. His technical mastery of fortress engineering, logistical brilliance, and unyielding precision guarded his noble lineage from all siege perils, treacherous ambushes, famine, and winter blockades across the craggy mountains of Moravia, ensuring that every stone parapet stood impenetrable against foreign armies.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Make Pernštejn Castle an unassailable bastion, refining mechanical siege traps and stone works.",
+    "Audit mountain taxes and silver output, providing his elder brother with reliable logistical support."
+  ],
+  "Values": [
+    "Regards meticulous discipline, engineering precision, and faithful duty as supreme soldierly virtues.",
+    "Believes steady, methodical rear logistics form the invisible foundation of every great victory."
+  ],
+  "Fears": [
+    "Fears supply corridors being severed by winter blizzards or long sieges, trapping garrisons in starvation.",
+    "Worries overcommitting troops to distant wars will leave rear fortresses vulnerable to opportunistic raids."
+  ],
+  "SpeechStyle": "Cavalry sorties may capture banners, but heavy stone ramparts and abundant granaries force the enemy to break in despair beneath our walls. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Velislav of Pernštejn"
+}

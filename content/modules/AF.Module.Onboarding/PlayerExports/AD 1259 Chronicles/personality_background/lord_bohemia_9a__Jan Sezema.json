@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_9a",
+  "HeroName": "Jan Sezema",
+  "Description": "Jan Sezema serves as the patriarch of the Sezema branch of the Vítkovci dynasty, ruling the strategic commercial settlement and crossing of Sezimovo Ústí along the lower Lužnice River. His ancestral seat commands the vital intersection where northern roads to Prague cross southern routes descending into Austria, guarded by heavy stone bridgeheads, ramparts, and fortified watermills. Having campaigned against forest highwaymen and Bavarian raiders since early youth, Jan perfected defensive riverine control, deploying armed patrol skiffs and watchtowers to maintain order throughout the forested valleys. He methodically regulates crossing tariffs, travel charters, and cargo weights while patronizing local blacksmith guilds, wheelwright workshops, and ferrymen, transforming Ústí into an indispensable logistical transit hub for merchants and royal messengers. Pragmatic, vigilant, and cautious, Jan carefully preserves neutrality during internal disputes among the mightier Rožmberk and Hradec branches, steadfastly prioritizing the autonomous rights and economic survival of his immediate line. His watchful stewardship keeps the arterial crossroads of southern Bohemia open, peaceful, and fiercely defended. Jan Sezema constructed reinforced iron portcullises and customs watchtowers along both bridge abutments, cataloging all transit weapons to forestall uprisings. He established Ústí as an orderly river haven where markets and craft guilds flourished uninterrupted despite regional turmoil.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the bridgeheads and masonry towers of Sezimovo Ústí to guarantee unbroken control over lucrative river tolls.",
+    "Maintain the prudent neutrality and territorial autonomy of his cadet branch amidst grand baronial factionalism.",
+    "Expand local blacksmith crafts, milling networks, and river trade to build a resilient fiscal treasury."
+  ],
+  "Values": [
+    "Prioritize duty, territorial preservation, and the protection of commoners over reckless imperial dreams.",
+    "Value cautious preparation, steady accountancy, and defensive strength as the only reliable survival shields.",
+    "Uphold lawful commerce, fair market tolls, and rapid justice against bandits who endanger public transit."
+  ],
+  "Fears": [
+    "Escalating regional conflict suffocating continental trade routes, bankrupting the commercial markets and tolls of Ústí.",
+    "Predatory armies seizing his strategic river bridges by brute force and evicting his lineage from their fortress."
+  ],
+  "SpeechStyle": "The bridge of Ústí is the throat of the southern roads; to pass, one observes our tolls and laws, for none may disrupt my river crossings. Vigilant bridge tolls and peace preserve the security of our people.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

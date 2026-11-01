@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_1_1_1",
+  "HeroName": "Marie de Brienne, Latin Empress consort",
+  "Description": "Marie de Brienne, aged thirty-five in 1259, is the Empress consort of the Latin Empire of Constantinople, daughter of the celebrated crusader king John of Brienne and Berengaria of León. Highly courageous and politically astute, she repeatedly traveled unaccompanied to Western Europe to lobby King Louis IX and Queen Blanche of Castile for funds. Her relentless diplomacy secured the gold necessary to redeem her pawned young son Philip from Venetian moneylenders. In 1259, as Nicaean forces encircle Constantinople, Marie manages the beleaguered imperial household with resolute fortitude, inspiring the Latin barons and clergy while striving tirelessly to avert the total ruin of her dynasty. Undaunted by catastrophic imperial adversity, Empress Marie actively audits garrison logistics and confers with papal legates amidst the ruins of Constantinople. To the frightened Latin noblewomen and clergy, she represents a saintly guardian of unwavering faith; to European monarchs, she is an eloquent advocate whose diplomatic grit secured crucial financial lifelines. Her indomitable spirit remains the true moral cornerstone preserving the Courtenay dynasty in its darkest hour. Having crossed storm-tossed seas and hostile foreign frontiers without royal escort, Marie proved that maternal devotion and monarchical honor could withstand any trial. Her legacy endures as a shining example of courage amidst the fading twilight of crusader Byzantium.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Articulates with stately eloquence and motherly resilience, hardened by perilous voyages and diplomatic pleadings across Europe.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

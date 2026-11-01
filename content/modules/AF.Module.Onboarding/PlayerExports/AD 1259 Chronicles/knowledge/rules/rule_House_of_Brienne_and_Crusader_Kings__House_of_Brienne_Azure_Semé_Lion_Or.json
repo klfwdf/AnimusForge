@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Brienne_and_Crusader_Kings",
+  "Keywords": [
+    "House of Brienne Azure Semé Lion Or",
+    "John of Brienne King of Jerusalem",
+    "Latin Empire Regent Emperor Glory",
+    "Duchy of Athens Champagne Matrimony"
+  ],
+  "RagShortTexts": [
+    "The House of Brienne produced crusader sovereigns who ascended the thrones of Jerusalem and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Originating from a Champagne county, the House of Brienne achieved extraordinary chivalric renown across Outremer. Its hero, John of Brienne, rose to become King of Jerusalem and was acclaimed co-Emperor of Constantinople in his eighties, routing Greek armies outside its walls, while cadet lines secured the Duchy of Athens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Intermarrying with Capetians and Scottish royalty, Brienne commanders epitomized the international mobility and sheer martial audacity of high medieval knighthood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troubadours sing of John of Brienne leading charges knee-deep in Nile silt at Damietta. Where Brienne banners lead, soldiers follow with unyielding confidence."
+    }
+  ],
+  "TextMappings": []
+}

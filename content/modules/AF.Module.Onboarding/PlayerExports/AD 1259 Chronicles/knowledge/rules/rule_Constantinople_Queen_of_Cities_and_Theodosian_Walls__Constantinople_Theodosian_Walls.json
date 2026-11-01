@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Constantinople_Queen_of_Cities_and_Theodosian_Walls",
+  "Keywords": [
+    "Constantinople Theodosian Walls",
+    "Golden Horn Defensive Chain",
+    "Hagia Sophia Imperial Dome",
+    "Bosphorus Strait Fortress"
+  ],
+  "RagShortTexts": [
+    "Constantinople's triple Theodosian walls and Golden Horn chain guarded Christendom for."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Revered as the 'Queen of Cities', Constantinople commands the Bosphorus maritime crossroads. Defended on its landward side by the triple Theodosian Walls featuring 96 bastion towers and a deep moated talus, its Golden Horn is sealed by an iron boom chain. Despite the plunder of the Fourth Crusade in 1204, its possession remains the supreme prize of Eastern Christendom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Control of Constantinople dictates customs tolls linking the Black Sea with Mediterranean markets. Bankrupted Latin emperors strip lead from palace roofs, while Byzantine sovereigns plot tirelessly to reclaim the throne of the Caesars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Peering down from the outer ramparts of the Theodosian Wall induces vertigo. Thirty-foot masonry curtains look down upon the killing ground; scaling those stones requires filling the ditches with thousands of corpses."
+    }
+  ],
+  "TextMappings": []
+}

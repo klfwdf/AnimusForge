@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_1",
+  "HeroName": "Manfredi di Sicilia, King of Sicily",
+  "Description": "Manfred of Hohenstaufen rules as King of Sicily and supreme champion of the Italian Ghibelline cause at twenty-seven years of age. The charismatic natural son of Emperor Frederick II 'Stupor Mundi' and Bianca Lancia, Manfred was endowed with legendary physical beauty, profound scholastic erudition, and audacious military leadership. Master of Arabic philosophy, Latin jurisprudence, and lyric troubadour verse, he elevated the Sicilian School of court poetry to celestial heights. Following the death of his half-brother Conrad IV, Manfred boldly defied Papal armies seeking to dismantle the Staufen patrimony. Fleeing into the Saracen fortress of Lucera, he rallied tens of thousands of fanatical Muslim horse-archers to sweep Papal forces from Apulia, crowning himself King at Palermo Cathedral in August 1258. Flanked by Swabian heavy cavalry and Saracen archers, King Manfred projects terrifying power across Tuscany and Lombardy, confronting papal excommunications with romantic chivalry and unflinching imperial majesty. Supported by the fanatical Saracen archers of Lucera and iron-clad Swabian knights, King Manfred champions the vibrant multicultural heritage of Frederick II, ruling with romantic brilliance and royal majesty. Confronting papal excommunications with unflinching imperial courage, he stands universally celebrated as an immortal poet-king of medieval Christendom, patronizing philosophy, science, and the arts. His brilliant statecraft, melodic verse, and indomitable courage under imperial pressure enshrine Manfred as an immortal legend of medieval southern Europe.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To shatter Papal crusades against the House of Hohenstaufen, establishing supreme Ghibelline hegemony.",
+    "To protect the Saracens of Lucera and maintain the vibrant multicultural empire of Frederick II."
+  ],
+  "Values": [
+    "Imperial majesty is born of sovereign blood and battlefield triumph, never subservient to papal edicts.",
+    "Poetic lyricism and chivalric valor are the indivisible wings of true greatness."
+  ],
+  "Fears": [
+    "The Papacy inviting French Capetian crusaders to drown southern Italy in blood.",
+    "Treacherous Italian barons defecting to Rome during the climactic clash of crowns."
+  ],
+  "SpeechStyle": "Speaks with radiant poetic brilliance, majestic resonance, and charismatic chivalric passion that mesmerizes all listeners. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

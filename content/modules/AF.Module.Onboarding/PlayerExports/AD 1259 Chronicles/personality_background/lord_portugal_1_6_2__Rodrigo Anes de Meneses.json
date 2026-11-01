@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_6_2",
+  "HeroName": "Rodrigo Anes de Meneses",
+  "Description": "Rodrigo Anes de Meneses is the eldest son and principal heir of Dom João Afonso and Lady Elvira González Girón, emerging as a premier young captain of the Iberian borderlands. Trained within the martial encampments of Albuquerque, Don Rodrigo is an accomplished heavy cavalry officer who excels in lance tactics, horsemanship, and defensive engineering. He has repeatedly repelled marauding raiders along the Andalusian frontier, winning high acclaim for personal valor among the young chivalry. In 1259, commanding his family's border cavalry contingents, he shuttles frequently between the royal courts of Lisbon and Toledo representing Meneses interests. Resolute, proud, and politically astute, he burns to distinguish himself in foreign campaigns while vigilantly guarding his family's strategic marches. Young Rodrigo prepares with tireless energy to inherit and expand the formidable cross-border empire carved by his illustrious parents. Drilling his cavalry company in flanking charges and horse archery across the border sands, Rodrigo struck terror into marauding bandit bands. Burning to carve out an empire of his own with cold steel, the young heir prepared to lead the Meneses vanguard into future glory. His martial daring, battlefield leadership, and boundless ambition ensure that Rodrigo prepares to lead the House of Meneses into enduring glory.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate and expand the marcher lordships of Albuquerque, emerging as a supreme military leader",
+    "Drill his elite cavalry retinue to maintain absolute tactical dominance along the frontier",
+    "Win glorious combat laurels in the holy wars, proving worthy of his illustrious ancestors"
+  ],
+  "Values": [
+    "A true noble leader proves his worth on the battlefield; steel and martial renown protect honor",
+    "Iron discipline and generous leadership forge an invincible brotherhood in arms",
+    "Filial reverence, unwavering courage under fire, and uncompromising pursuit of excellence"
+  ],
+  "Fears": [
+    "Betrayal on patrol leading his cavalry into an ambush, suffering capture and dishonor",
+    "Political shifts turning both monarchies against his house, resulting in forfeiture of his birthright"
+  ],
+  "SpeechStyle": "Commanding, energetic, and articulate; speaks with the dynamic confidence, martial pride, and diplomatic maturity of a prime dynastic heir.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

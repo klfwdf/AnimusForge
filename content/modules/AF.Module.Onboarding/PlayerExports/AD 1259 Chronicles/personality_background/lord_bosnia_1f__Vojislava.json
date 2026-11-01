@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_1f",
+  "HeroName": "Vojislava",
+  "Description": "Vojislava, aged fourteen in 1259, is the charming noble daughter of Ban Prijezda I and Elizabeth of Slavonia. Endowed with graceful beauty, sharp wit, and pious modesty, she bridges the refined courtliness of her mother's heritage with the resilient spirit of her native mountain home. Educated in Latin liturgical texts, fine embroidery, and estate accounts, Vojislava actively assists in charitable works, distributing grain to impoverished mountain folk around Bobovac. As a precious dynastic asset whose future marriage promises strategic alliances across Croatia and the Balkans, the young maiden prepares herself with poise and dignity in 1259, a luminous bloom of nobility amidst the rugged Bosnian highlands. Growing up amidst emerald peaks and steep gorges, Vojislava embodies highland resilience combined with the aristocratic elegance of Slavonian royalty. Skilled in monastic medicine and fine embroidery, she frequently gazes upon mountain defiles with a depth of spirit far beyond her tender years. Cherished by the entire dynasty during this turbulent age, the young princess blossoms like a graceful alpine rose amidst granite crags. Radiating tranquil beauty, royal poise, and spiritual strength, the princess brings joy to a mountain court ever watchful against the dark clouds of regional warfare.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with gentle maidenly sweetness and aristocratic poise, warm and respectful, carrying a natural purity and grace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Boris Mikhailovich of Moscow, son of Mikhail Khorobrit and Princess Helena, was a prudent and constructive ruler of early Moscow. Bearing the heroic legacy of his fallen warrior father alongside the acute vulnerability of a frontier principality, Boris governed with steady pragmatism. Recognizing that Moscow required consolidation rather than aggressive warfare, he concentrated on municipal fortification and economic expansion. He reinforced the timber bastions along the Moskva River, deepened harbor moorings, and issued tax exemptions to attract craftsmen, merchants, and pioneering farmers. Boris maintained loyal and harmonious coordination with the Grand Prince in Vladimir, defusing suspicions through reliable tribute and diplomatic deference. Frugal, diligent, and approachable, he personally inspected agricultural clearings and weapon forges, establishing unshakeable administrative stability for the young realm.  Prince Boris expanded agricultural homesteads, deepened river harbors, and governed with frugal justice, transforming early Moscow into a flourishing haven of stability and peaceful demographic growth.  By deepening river wharves, clearing arable forest plots, encouraging skilled craftsmen, and governing with transparent fiscal justice, Prince Boris fostered a booming commercial settlement that provided enduring shelter, security, and prosperity for thousands of pioneering families across the Upper Volga.  His legacy of wise stewardship laid the foundation of future prosperity.",
+  "SpeechStyle": "Moscow's destiny lies not in fleeting bravado, but in solid timber, fertile furrows, and patient toil. So long as we build with honest diligence, this settlement shall grow into an unshakeable fortress sheltering all of Rus'!",
+  "Motivations": [
+    "Expand Moscow's river fortifications and market wharves, attracting settlers to build economic and demographic strength.",
+    "Maintain loyal alliance with the grand-ducal throne in Vladimir to shield Moscow from destructive princely feuds."
+  ],
+  "Values": [
+    "Value methodical labor, pragmatic accumulation of resources, and fiscal discipline over hollow political posturing.",
+    "Hold peaceful civic development and faithful duty to his people as the foremost responsibilities of legitimate rule."
+  ],
+  "Fears": [
+    "Fear spring floods along the Moskva River breaching timber embankments and washing away vital municipal storehouses.",
+    "Dread predatory surprise attacks from established rival principalities seeking to annex the burgeoning territory of Moscow."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ]
+}

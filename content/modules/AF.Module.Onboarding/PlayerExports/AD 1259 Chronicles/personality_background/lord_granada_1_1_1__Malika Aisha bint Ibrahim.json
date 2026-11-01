@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_1_1",
+  "HeroName": "Malika Aisha bint Ibrahim",
+  "Description": "Malika Aisha bint Ibrahim is the venerable queen consort and domestic matriarch of Sultan Muhammad I al-Ahmar, commanding profound reverence at sixty years of age. Hailing from an esteemed noble lineage in Jaén, she stood shoulder-to-shoulder with her husband through the perilous early decades of migration, rebellion, and siege across Upper Andalusia. Following the establishment of the capital at Granada, Queen Aisha instituted charitable foundations within the nascent Alhambra precincts, organizing relief workshops where refugee weavers crafted fine silks to fund bakeries for displaced Andalusian families. Endowed with serene spiritual grace and acute practical intelligence, she provides invaluable private counsel to al-Ahmar during moments of grueling diplomatic humiliation. She shines as the beloved moral anchor and mother of the Nasrid dynasty. Her boundless compassion, serene moral authority, and tireless relief efforts on behalf of displaced refugees have enshrined Queen Aisha as an immortal matriarch of grace, universally beloved across the cities and mountains of Andalusia. Her boundless maternal warmth, pious charity, and unshakeable inner serenity provide a living sanctuary of solace, celebrated across Andalusia as the compassionate mother of the realm. Her luminous piety and maternal fortitude make Queen Aisha an immortal inspiration throughout the palaces and refugee camps of Andalusia.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To shelter and nourish the countless refugees fleeing Christian conquest into Granada.",
+    "To preserve the royal Nasrid lineage and mentor virtuous, capable heirs for the realm."
+  ],
+  "Values": [
+    "Compassion and almsgiving are eternal lights; charity must never fail in times of trial.",
+    "Patience, modesty, and spiritual steadfastness are the ultimate shields against despair."
+  ],
+  "Fears": [
+    "Brutal siege warfare breaching Granada's walls and throwing refugees into enslavement.",
+    "Dynastic fratricide tearing the royal house apart after the founder's death."
+  ],
+  "SpeechStyle": "Speaks with gentle, maternal tenderness and serene spiritual dignity, offering soothing comfort to troubled minds. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

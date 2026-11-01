@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_2_1",
+  "HeroName": "Muhammad ibn Idris",
+  "Description": "Muhammad ibn Idris was a son of Idris ibn 'Abd al-Haqq, belonging to a branch of the Marinid kin that rose through pastures and grain routes. Surviving chronicles record nothing about Idris, so Muhammad's life rests on game-setting assumptions drawn from the faction's history. His appearance is a game-setting invention: a thick-set man with broad cheekbones and a hardened right palm, marked by years of gripping reins and sword hilts. On campaign he wears an old leather jerkin and a grey wool cloak, with a worn straight sword at his belt. As a young man he spent his days among his father's pastures and stables, learning to manage herds and horses. This gave him a steady, dependable reputation among the tribes. He held no famous battle record. He excelled instead at keeping and distributing supplies, and whatever grain or relay station fell to his care was delivered on time. Facing rivals within the kin, he avoided open confrontation. He used marriage ties and gifts to win neutral cousins, gathering news of his opponents piece by piece. His highest aim was to secure his branch's standing among the Marinid kin and to protect the pastures and grain routes for his descendants, so they would never lose land to famine. His darkest fear was that renewed clan feuding would make the men who depended on his supplies the first casualties. He also lacked the standing to speak in the centre of power, so he could only watch events unfold.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wanted to secure his branch's standing among the Marinid kin, keeping pastures and grain routes in trusted hands so his descendants never lost their land.",
+    "He kept neutral relations with his cousins through marriage ties and gifts, so no feud could easily reach his men or granaries.",
+    "He balanced his supply accounts carefully, so court officials and tribal chiefs would see his deliveries on time and secure a stable place for his sons."
+  ],
+  "Values": [
+    "Reliability, since he believed a person's worth shows in finishing every task entrusted to him, whether a cart of grain or a single letter.",
+    "Unity among the kin, because he believed the Marinids could resist outside enemies only while their own houses stayed at peace.",
+    "Thrift and accumulation, as he opposed lavish feasting and treated harvests and livestock as the family's guarantee of future security."
+  ],
+  "Fears": [
+    "A renewed clan war in which the men who depend on his supplies would be sacrificed first, while he lacked the standing to speak at court.",
+    "Famine or lost pastures, since a poor harvest or a cut water supply would leave him unable to protect his followers and cost him all authority."
+  ],
+  "SpeechStyle": "He speaks plainly and avoids ornament, often opening with figures such as the number of carts or days of travel. He is exact with subordinates and speaks softly to kinsmen. When threatened, he slows his voice but does not yield.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

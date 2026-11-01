@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_0_1",
+  "HeroName": "Anežka of Bohemia, Margravine of Meissen",
+  "Description": "Anežka is the royal daughter of King Wenceslaus I of Bohemia and sister of the late Přemyslid princes, wed to Heinrich III 'the Illustrious', Margrave of Meissen and Landgrave of Thuringia, serving as the living dynastic bridge between the Crown of Bohemia and the Saxon House of Wettin. Reared within the sacred halls of Hradčany Castle amid liturgical polyphony and royal governance, she brought serene dignity and diplomatic tact to the courts of Meissen and Dresden. Amid the Great Interregnum and King Ottokar II's rapid territorial expansion into the Danubian basin, Anežka tirelessly fostered amity along the Elbe River, mitigating trade disputes and territorial frictions between Wettin vassals and Bohemian crown stewards. She is commemorated across regional chronicles as a devoted peacemaker who safeguarded fragile northern stability. Whether directing Saxon silver tithes toward Meissen convents or hosting visiting jurists on behalf of the Přemyslid crown, Anežka radiated effortless royal majesty. She repeatedly intervened in boundary surveys along the lower Elbe to exempt Bohemian merchants from extortionate river tolls, forging an enduring channel of goodwill between Prague and Dresden that preserved northern frontier peace. Her steadfast devotion to dynastic harmony ensured that the northern borders of Bohemia remained prosperous and tranquil.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the dynastic alliance between the Přemyslid crown and the House of Wettin, securing northern trade routes.",
+    "Serve as an impartial mediator between Dresden and Prague to quell German border nobility's suspicions."
+  ],
+  "Values": [
+    "Regards blood ties and sworn treaties as the bedrock of state survival, valuing reconciliation over war.",
+    "Observes Christian charity and pious devotion, considering monastic patronage a lifelong sacred calling."
+  ],
+  "Fears": [
+    "Fears King Otakar's aggressive southern campaigns provoking an imperial coalition encircling Bohemia.",
+    "Worries internal succession feuds within Meissen will fracture her hard-won peace along the Elbe."
+  ],
+  "SpeechStyle": "The waters of the Vltava and the Elbe flow toward one common sea; resolving discord through faith and kinship is the royal calling. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Anežka of Bohemia, Margravine of Meissen"
+}

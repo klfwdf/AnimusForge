@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_4_1",
+  "HeroName": "Emir Bakr Hanif Abd al-Wahid",
+  "Description": "Emir Bakr Hanif Abd al-Wahid leads the fourth branch of the Hafsid kin. The game data records him at twenty-five, with balanced knightly combat and command skills and the template of a knightly officer. The game model shows a young man's face with a short beard, and no scars are recorded in the sources or game data. His marks are a small banner bearing the branch's emblem and an old riding whip he carries daily. The chronicles say nothing of him, so the account below rests on game setting and dynastic background. As a young man he served with the cavalry of Tunis, where veteran officers taught him guard duty and patrol, and he grew into a steady and methodical habit. Before dawn each day he walks the camp to inspect the sentries, and no dead torch or thirsty horse escapes him. He is married to Sanaa, and they have a son, Hassan, and a daughter, Medina. This has made him value the stability of his household more each year. When disputes arise among the kin, he listens to every side before reaching a judgment and seldom states his position in public. When others urge him to choose a side early, he replies that he has not yet seen the matter clearly. His lofty aim is to keep the branch's standing and to let his children grow up in peace. His private shadow is the fear that his steady temper will leave him without firm decisions when the times change suddenly.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage the camp's guard duties and patrols, so that the branch keeps its posts and men steady and is not weakened by reshuffling, and his men know whom to answer to.",
+    "Lay a good foundation for his young son Hassan and daughter Medina, so that they are educated and trained in courtesy in a peaceful home, away from the quarrels of the kin.",
+    "Stay neutral in the disputes of the kin, avoiding unnecessary clashes so that the branch's reputation is preserved and his children keep a way out."
+  ],
+  "Values": [
+    "He believes order and discipline sustain an army and a family, and every duty should have a clear assignment not changed by passing moods.",
+    "He values his household, holding that a man must protect his wife and children before speaking of honor, since no empty title is worth their safety.",
+    "He values steadiness, insisting that one should not move before seeing the situation clearly, preferring to be slow rather than risk the family."
+  ],
+  "Fears": [
+    "A sudden change in the times may transfer or disband his men, and the branch may lose its standing in the camp overnight, leaving him unable to shield his family.",
+    "His cautious nature may leave him without a timely decision at a crucial moment, letting a dispute among the kin spin out of control and split the family."
+  ],
+  "SpeechStyle": "His voice is calm and his sentences short, and he often pauses before speaking. He is gentle with his family, firm with his men, and polite toward senior kin. When undecided, he says he needs time to think.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_4_1_1",
+  "HeroName": "Isabella of Ibelin, Lady of Gibelet",
+  "Description": "Isabella of Ibelin was the high-born daughter of Balian of Ibelin, Lord of Beirut, and the noble consort to Enrico I Embriaco, Lord of Gibelet. Her marriage forged a prestigious alliance joining Outremer's foremost Frankish legal dynasty with the wealthy Genoese merchant lords of Byblos. Reared within the intellectual legal courts of Beirut, Isabella was thoroughly versed in the Assizes of Jerusalem and maritime arbitration law. During the fractious War of Saint Sabas that shattered Outremer, Isabella championed prudent neutrality within Gibelet, sheltering scholars of all factions. She generously financed the restoration of the Romanesque Cathedral of Saint John the Baptist in Byblos and endowed charities for families of shipwrecked sailors. Her diplomatic tact, pious benevolence, and feudal prestige bridged the cultural divide between Italian merchant patricians and crusader knights. Within Gibelet Castle, Isabella supervised payroll registers for hundreds of Genoese mariners and stone masons, maintaining a disciplined and prosperous domestic treasury. She regularly arbitrated civil disputes between Italian merchants and Frankish knights, handling volatile conflicts with dispassionate equity and legal grace. Her serene nobility and practical domestic acumen made her Enrico's indispensable partner in governing their coastal fiefdom. Her gracious guidance ensured that Gibelet remained a prosperous sanctuary of high culture and uninterrupted Mediterranean commerce.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve the vital familial bridge between the House of Ibelin and the Embriaco lineage to protect Gibelet's autonomy.",
+    "Manage charitable hospices and religious endowments at Saint John the Baptist Cathedral in Byblos for the vulnerable.",
+    "Instruct her children in feudal jurisprudence and chivalric honor, grooming her son Guy II for future dynastic leadership."
+  ],
+  "Values": [
+    "A noble lady must govern with moral rectitude, projecting an aura of incorruptible virtue over turbulent merchant communities.",
+    "Adherence to Christian compassion and legal fairness, arbitrating civic disputes to preserve communal peace in Gibelet.",
+    "Prudent diplomacy and self-restraint, avoiding entanglement in wider factional conflicts that could destroy the patrimony."
+  ],
+  "Fears": [
+    "Urban warfare from Acre spreading into Gibelet, igniting factional massacres that destroy the peaceful port city.",
+    "Her husband falling victim to maritime violence, leaving her young children exposed to predatory land grabs by Tripoli."
+  ],
+  "SpeechStyle": "Speaks with serene aristocratic grace and polished legal discernment, reconciling commercial and feudal disputes with composed maternal authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Isabella of Ibelin, Lady of Gibelet"
+}

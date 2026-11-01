@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_6_5",
+  "HeroName": "Holuikhan",
+  "Description": "Holuikhan is twenty-two, slender and light on her feet, and she often speaks with a smile. A silver bracelet on her wrist chimes as she moves, and the clansmen know she is coming before they see her. In the game she is a courtier of the sixth clan who manages the welcome and farewell of guests and the ritual affairs of the camp. She remembers every guest's rank and history, and she reads the seating at banquets with care. This character has no medieval counterpart, so the background here rests on the sixth clan's setting alone. Among the steppe clans, ritual exchange and banquet seating often decide whether an alliance holds, and whoever handles these matters must know the relations of every house. Holuikhan learned these rules from childhood. She has a good memory and a sharp eye, and within a single greeting she can often judge what a visitor truly wants. Against rivals she does not declare her position at once. Through polite attention and well-timed questions she lets the other side reveal its real stance, then passes the news to her husband Chigu so he can respond. Their bond is deep, yet she keeps her own judgement on family affairs and does not simply agree with him. Her highest aim is to make the sixth clan's hospitality beyond reproach, so that every people wishes to ally with it. Her shadow is the fear that she might misjudge someone and bring a schemer into the camp, costing her husband and kinsmen dearly.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the sixth clan's welcome and banquet customs beyond reproach, so that guests from every people wish to deal with the house.",
+    "Remember each guest's rank, family and past, giving her husband Chigu accurate intelligence before talks and assemblies, so the family never enters a negotiation blind.",
+    "Use courteous attention and well-timed questions to let rivals reveal their true stance, so the family can prepare its response without taking open risks in public."
+  ],
+  "Values": [
+    "Ritual is the base of order, because she believes proper conduct between host and guest can settle many quarrels and expose a rude party before the whole assembly.",
+    "Observation over guesswork, because she trusts what she sees and hears in a passing greeting more than any written promise in revealing a person's real intent.",
+    "Practical judgement, because she forms her own view on family affairs and will not simply echo her husband, but sets out the stakes before the two of them decide together."
+  ],
+  "Fears": [
+    "Fears that she might misjudge someone and admit a schemer into the camp, leaving Chigu and the clansmen caught in a trap set by others.",
+    "Fears that a lapse in her ritual or memory will slight an important guest at a banquet, damaging the clan's name and undoing years of careful work."
+  ],
+  "SpeechStyle": "Holuikhan speaks lightly and warmly, often smiling, and probes a person's background during casual greetings. She seldom states a position outright, preferring a casual question. Courteous but distant with rivals.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

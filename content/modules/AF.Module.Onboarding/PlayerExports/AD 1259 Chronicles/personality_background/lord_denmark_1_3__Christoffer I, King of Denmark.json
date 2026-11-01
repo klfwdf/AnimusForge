@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "King Christoffer I of Denmark, youngest son of the celebrated Valdemar II the Victorious, ascended the throne in 1252 amidst the catastrophic fallout of regicide and fraternal betrayal. His turbulent reign was defined by an unrelenting, multi-front war for royal survival against the rebellious dukes of Schleswig backed by Holstein, devastating coastal raids by Prince Jaromar II of Rügen, and a ferocious clash with the Danish Catholic Church led by Archbishop Jakob Erlandsen. Refusing to yield sovereign authority to ecclesiastical arrogance, Christoffer stunned Europe by arresting and imprisoning the Archbishop, prompting the Pope to place all of Denmark under papal interdict. In May 1259, while marshaling troops at Ribe to crush invading rebel coalitions, the king died abruptly after receiving holy communion, widely rumored to have been poisoned with consecrated wine by Abbot Arnfast of Ryd Abbey. His tragic reign marked the darkest crisis of medieval Danish kingship. Reigning through catastrophic civil wars, ecclesiastical interdicts, and foreign amphibious raids, Christoffer fought with unbending courage to defend the integrity of the Danish crown, his sudden and tragic martyrdom becoming an eternal symbol of royal suffering and resistance. King Christoffer's desperate defiance against papal interdicts and baronial coalitions embodied the tragic dignity of medieval kingship, dying in harness to preserve the realm.",
+  "SpeechStyle": "Speaks with thunderous authority and fierce, wounded majesty, his furious commands vibrating with sovereign defiance.",
+  "Motivations": [
+    "Crush arrogant ecclesiastical insubordination and Schleswig separatism to preserve the undivided supremacy of the Danish crown.",
+    "Repel the incursions of Rügen and Continental mercenary coalitions, securing an intact kingdom for his young heir, Eric V."
+  ],
+  "Values": [
+    "Holds royal sovereignty and territorial integrity as sacred duties, refusing to permit bishops to subordinate the crown.",
+    "Champions unyielding defiance against domestic and foreign enemies, preferring a tragic royal death to cowardly subjugation."
+  ],
+  "Fears": [
+    "Dreads papal interdicts dissolving the feudal loyalty of his subjects, triggering total collapse of the monarchy."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ]
+}

@@ -8,6 +8,9 @@ namespace AnimusForge.Refactor.Modules;
 // original save keys and performs Bannerlord crime/trust side effects.
 internal sealed class SceneTauntPenaltyLedgerOwner
 {
+    internal const float MaxDeferredCrime = 100f;
+
+    private static float BoundCrime(float amount) => float.IsNaN(amount) ? 0f : Math.Min(MaxDeferredCrime, Math.Max(0f, amount));
     private Dictionary<string, float> _deferredCrime = new(StringComparer.OrdinalIgnoreCase);
     private Dictionary<string, int> _trustTenths = new(StringComparer.OrdinalIgnoreCase);
 
@@ -26,7 +29,7 @@ internal sealed class SceneTauntPenaltyLedgerOwner
         foreach (KeyValuePair<string, float> entry in saved)
         {
             string id = (entry.Key ?? "").Trim();
-            float amount = Math.Max(0f, entry.Value);
+            float amount = BoundCrime(entry.Value);
             if (!string.IsNullOrWhiteSpace(id) && amount > 0f)
                 _deferredCrime[id] = amount;
         }
@@ -36,15 +39,15 @@ internal sealed class SceneTauntPenaltyLedgerOwner
     {
         string id = (factionId ?? "").Trim();
         return !string.IsNullOrWhiteSpace(id) && _deferredCrime.TryGetValue(id, out float amount)
-            ? Math.Max(0f, amount) : 0f;
+            ? BoundCrime(amount) : 0f;
     }
 
     internal float QueueDeferredCrime(string factionId, float amount)
     {
         string id = (factionId ?? "").Trim();
-        float add = Math.Max(0f, amount);
+        float add = BoundCrime(amount);
         if (string.IsNullOrWhiteSpace(id) || !(add > 0f)) return 0f;
-        float total = GetDeferredCrime(id) + add;
+        float total = BoundCrime(GetDeferredCrime(id) + add);
         _deferredCrime[id] = total;
         return total;
     }
@@ -57,25 +60,23 @@ internal sealed class SceneTauntPenaltyLedgerOwner
         return amount;
     }
 
-    // Reserve before the native action, matching the old re-entry behavior.
-    // The host restores the original amount if that action throws.
+    // A deferred scene incident is settled once, up to the native cap.
+    // Do not retain overflow to refill crime after payment or natural decay.
+    // The host restores the bounded original balance only if the native action fails.
     internal float ReserveNativeCommit(string factionId, float nativeCrime, float maxCrime)
     {
         string id = (factionId ?? "").Trim();
         float pending = GetDeferredCrime(id);
         float room = Math.Max(0f, maxCrime - Math.Max(0f, nativeCrime));
         float add = Math.Min(pending, room);
-        if (!(add > 0f)) return 0f;
-        float remaining = Math.Max(0f, pending - add);
-        if (remaining > 0f) _deferredCrime[id] = remaining;
-        else _deferredCrime.Remove(id);
+        if (pending > 0f) _deferredCrime.Remove(id);
         return add;
     }
 
     internal void RestoreFailedNativeCommit(string factionId, float originalAmount)
     {
         string id = (factionId ?? "").Trim();
-        float amount = Math.Max(0f, originalAmount);
+        float amount = BoundCrime(originalAmount);
         if (!string.IsNullOrWhiteSpace(id) && amount > 0f) _deferredCrime[id] = amount;
     }
 

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_3_2",
+  "HeroName": "Gueraua de Cabrera",
+  "Description": "Gueraua de Cabrera is the high-spirited and radiant daughter of Guerau VI, Viscount of Cabrera, and Lady Sancha de Santa Eugenia. Raised amidst the sweeping heights of Montsoriu Castle, Doña Gueraua seamlessly unites the aristocratic beauty of her Balearic maternal kin with the proud independence of the Cabrera lineage. Educated in Latin devotionals, illuminated heraldry, and Occitan troubadour poetry, she possesses a keen intellect and a passionate curiosity for the world beyond the fortress gates. By 1259, as she reaches marriageable age, noble suitors from across Catalonia and Aragon seek her hand, recognizing her as an invaluable dynastic prize. Despite the heavy weight of political expectations, Gueraua retains a gentle, generous spirit, frequently distributing provisions to peasant families in the mountain hamlets. Her joyful grace and melodic laughter bring warmth and light to the austere stone battlements of the great mountain fortress. Playing the lute beside the arched stone windows of Montsoriu, Gueraua sang Occitan troubadour verses that brought gentle springtime warmth to the cold mountain fortress. Humble despite her noble blood, she regularly distributed flour to widowed peasant households, shining as a beloved symbol of grace across Old Catalonia. Her compassionate spirit and courtly refinement ensure that she is celebrated throughout the realm as a paragon of noble grace and virtue.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master courtly arts and literature to uphold the illustrious reputation of her noble house",
+    "Fulfill her dynastic matrimonial duty to forge a powerful alliance for the House of Cabrera",
+    "Provide charitable aid to rural tenants to cultivate lasting goodwill across the domain"
+  ],
+  "Values": [
+    "Virtue, compassion, and courtly dignity outshine fleeting physical beauty",
+    "A noble daughter must embrace her familial duty to safeguard the ancestral lineage",
+    "Pure devotion to God and kindness to the impoverished enrich the soul"
+  ],
+  "Fears": [
+    "Being coerced into an unhappy marriage with a tyrannical lord far from her homeland",
+    "Violent warfare breaching the gates of Montsoriu and bringing tragedy to her beloved kin"
+  ],
+  "SpeechStyle": "Melodious, bright, and sincere; speaks with youthful exuberance, pure spiritual innocence, and refined courtly charm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_5_2_1",
+  "HeroName": "Jeanne de Lévis-Mirepoix, Lady of Castres",
+  "Description": "Jeanne de Lévis-Mirepoix was the daughter of Guy II de Lévis, Marshal of the Albigensian Crusade, married to Philip II of Montfort, Lord of Castres. Hailing from one of the most illustrious military houses of southern France, she inherited fierce chivalric pride alongside forensic administrative intellect. Following her marriage into the House of Montfort, Jeanne assumed complete domestic oversight over Castres Castle, regulating agricultural revenues and estate rents. In 1259, while Philip traveled extensively to coordinate royal support for the crusader states, Jeanne managed home defense preparations and mobilization magazines. She generously endowed Dominican and Cistercian foundations, maintaining permanent hospices that cared for war widows and orphans of fallen crusaders. Her benevolent charity, calm resilience, and mastery of feudal accounts provided the essential domestic stability enabling her house to project power overseas. Within the inner chambers of Castres Castle, Jeanne instituted meticulous manorial registries and rationing protocols, precisely regulating the seasonal yields of seven major feudal manors and watermills. Whenever Philip departed for royal sessions in Paris or border inspections, Jeanne presided over the baronial hall with dispassionate equity, arbitrating vassal disputes and tenant petitions. Furthermore, she lavishly endowed monastic relief workshops, extending compassionate patronage and pensions to the orphans of fallen crusaders.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage estate rents and grain stores across Castres, guaranteeing reliable silver revenues to fund her husband's crusades.",
+    "Expand monastic hospices and orphanages throughout Languedoc, practicing Christian charity to elevate her family's honor.",
+    "Educate her children in chivalric duty and statecraft, preparing her eldest son Jean II to become a formidable military leader."
+  ],
+  "Values": [
+    "A noble lady's integrity is the cornerstone of dynastic renown; impartial justice and gracious humility secure popular devotion.",
+    "Devotion to Christian charity and maternal duty, cultivating domestic peace and sheltering the vulnerable from regional conflicts.",
+    "Prudent domestic foresight and serene resilience, preserving ancestral lordships through steadfast administrative wisdom."
+  ],
+  "Fears": [
+    "Her husband falling victim to eastern maritime tempests or battle wounds, leaving their young children exposed to court intrigue.",
+    "Severe drought or famine devastating the fertile farmlands of Castres, crippling their ability to sustain their vassals."
+  ],
+  "SpeechStyle": "Speaks with serene southern French noble grace and acute administrative wisdom, overseeing castle revenues and charitable almsgiving with dignified composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jeanne de Lévis-Mirepoix, Lady of Castres"
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1g",
+  "HeroName": "Predislav Sava II",
+  "Description": "Predislav (Sava II), aged fifty-nine in 1259, is the third son of Stefan the First-Crowned and nephew of Saint Sava, serving as the revered spiritual pillar and future Archbishop of the autocephalous Serbian Orthodox Church. Having embraced monastic asceticism in his youth at Hilandar on Mount Athos, he mastered patristic theology and canon law. As longtime Bishop of Hum, he defended Orthodox dogma against both Bogomil heresies and Catholic encroachment with steadfast vigor. In 1259, from the spiritual seats of Žiča and Peć, Sava II guides his royal nephew King Uroš I in sacred ecclesiastical administration and monastic fresco commissions. Revered for unshakeable integrity, he guards Serbia's autocephalous church as the sacred soul of the kingdom. Archbishop Sava II spends rigorous days in patristic reflection, reforming Church Slavonic canon law under the dim candlelight of Peć Monastery. Acute in discerning papal and Byzantine political intrigues, he maintains the pure independence of the Serbian autocephalous Orthodox Church. Guiding King Uroš and the feudal nobility with solemn wisdom, this venerable archbishop serves as the unshakeable spiritual fortress of his nation. Standing firm against external theological pressures from Rome and Constantinople, Archbishop Sava II preserves Serbia's sacred heritage. His monastic asceticism and profound canonical learning ensure that the autocephalous church remains the unyielding soul of the nation.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with serene monastic solemnity and profound theological wisdom, slow and resonant, carrying absolute moral authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

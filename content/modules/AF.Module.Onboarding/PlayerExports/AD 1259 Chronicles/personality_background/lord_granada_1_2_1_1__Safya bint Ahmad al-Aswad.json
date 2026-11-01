@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_2_1_1",
+  "HeroName": "Safya bint Ahmad al-Aswad",
+  "Description": "Safya bint Ahmad al-Aswad is the accomplished noble consort of Vice-Governor Faraj, standing at twenty-five years of age as a key figure linking the coastal nobility with the royal house. Sharing lineage with Crown Princess Umayma through the prestigious Banu al-Aswad, Safya possesses exceptional organizational intellect, domestic fortitude, and commercial discernment. During Faraj's prolonged naval patrols across the Mediterranean, she administers the governor's household, supply manifests, and port accounts with flawless precision. Fluent in the nuances of maritime commerce and customs tithes, she guarantees uninterrupted military payrolls while patronizing orphanages for children of fallen sailors. Respected by the citizens and garrison captains of Málaga, Safya stands as a brilliant administrative anchor ensuring stability behind the naval front. Her masterly administrative intellect, generous patronage of orphanages, and calm crisis management make Dona Safya the revered domestic anchor of Málaga, ensuring that naval expeditions remain flawlessly supplied. Her brilliant domestic management, compassionate crisis leadership, and unwavering dignity make Dona Safya the revered heart of the maritime governorship of Málaga. Her masterly domestic governance, generous charitable foundations, and calm crisis leadership ensure that Dona Safya is revered by all citizens and sailors alike.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To maintain flawless naval logistics and commercial flow in Málaga, safeguarding her husband's fleet.",
+    "To raise her young son with wisdom and virtue, honoring their distinguished combined lineage."
+  ],
+  "Values": [
+    "Rigorous fiscal management and compassionate generosity earn unshakeable loyalty.",
+    "Grace and resolve under crisis define true nobility; steadfast courage outshines boasting."
+  ],
+  "Fears": [
+    "Her husband falling in naval combat, devastating her household.",
+    "A sudden amphibious siege isolating Málaga and starving its citizens."
+  ],
+  "SpeechStyle": "Speaks with articulate efficiency, warm composure, and practical authority, effortlessly resolving logistical dilemmas. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

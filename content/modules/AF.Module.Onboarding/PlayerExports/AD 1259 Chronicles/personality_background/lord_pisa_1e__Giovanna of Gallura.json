@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_1e",
+  "HeroName": "Giovanna of Gallura",
+  "Description": "Giovanna of Gallura is the beloved daughter of Nino Visconti and Beatrice d'Este, titular Giudicessa of Gallura, immortalized in Dante's verse as the innocent recipient of her father's prayers. Enduring great adversity with quiet fortitude, she personifies the legitimate sovereign line of Gallura amidst turbulent wars. Reared under the radiant memory of her father Nino, Giovanna carried her titular sovereign claims to Gallura with tragic dignity, refusing to relinquish her ancestral heritage despite foreign usurpation. Living across Tuscan cloisters and northern courts, she earned universal admiration for modesty and piety, channeling her meager stipends to relieve destitute orphans and mariners. Knowing that earthly principalities could be snatched by force while ancestral honor remained immortal, she maintained unwavering Christian serenity amidst the storms of dynastic displacement. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the legitimate sovereign heritage and heraldic honor of Gallura.",
+    "Pray unceasingly for the salvation and peace of her embattled lineage."
+  ],
+  "Values": [
+    "Her father's pure memory is a holy beacon guiding her steps through trial.",
+    "Innocent virtue and Christian faith outshine all cold political deceit."
+  ],
+  "Fears": [
+    "The ancestral crown of Gallura being permanently usurped by hostile powers.",
+    "The noble sacrifice of her father being erased from public memory."
+  ],
+  "SpeechStyle": "Speaks with gentle innocence and pious devotion, cherishing her father's sacred memory. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

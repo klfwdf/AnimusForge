@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_7d",
+  "HeroName": "Eliška z Dobrušky",
+  "Description": "Eliška of Dobruška hails from the proud Mutina lineage of eastern Bohemia, joining the titan House of Rožmberk through a prestigious baronial marriage alliance. Bringing valuable timber rights, pastoral uplands, and mining claims from her ancestral estates along the Orlické foothills, she quickly established herself as an indispensable administrator within the Rožmberk domestic sphere. Gentle, observant, and thoroughly organized, Eliška manages the intricate provisioning of Rožmberk Castle, auditing bulky shipments of grain, beeswax, barrelled salted fish, and winter furs sent from dozens of outlying manors. Well aware that the soaring fortunes of the Rožmberk dynasty invite the intense jealousy of royal courtiers and rival clans, she consistently urges prudent discretion and diplomatic moderation upon her kin. She actively sponsors parish endowments and hospital charities, often remitting burdensome feudal labor dues for war-stricken tenant farmers across the estate. Her steady, serene leadership maintains familial harmony and logistical excellence behind the towering stone battlements of her adoptive house. Eliška smoothly integrated her ancestral timber revenues and mining shares into the household ledgers, persuading her kin to open emergency granaries for starving peasants in winter. Her gracious benevolence and organizational skill transformed the imposing fortress into an orderly haven of domestic warmth and collective loyalty.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Oversee the castle's immense domestic expenditures and stores, guaranteeing self-sufficiency during protracted campaigns.",
+    "Preserve active kinship alliances with eastern Bohemian baronies to widen Rožmberk influence across the realm.",
+    "Earn the enduring loyalty of peasant tenants through charitable relief, agricultural loans, and tax moderation."
+  ],
+  "Values": [
+    "Regard domestic order, internal loyalty, and mutual affection as the foundation of enduring baronial greatness.",
+    "Prize modest self-restraint and quiet diligence, shunning ostentatious vanity that provokes royal enmity.",
+    "Uphold Christian benevolence, treating retainers and vulnerable agrarian laborers with compassion."
+  ],
+  "Fears": [
+    "Reckless young dynasts provoking royal disfavor through insolent arrogance, triggering catastrophic confiscations.",
+    "Severe drought or crop failure plunging the southern estates into widespread starvation and agrarian collapse."
+  ],
+  "SpeechStyle": "A grand fortress demands solid rock, and a great dynasty requires domestic harmony and popular goodwill; let us govern with wisdom rather than arrogance. Humility and benevolence win hearts that high walls alone cannot secure.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

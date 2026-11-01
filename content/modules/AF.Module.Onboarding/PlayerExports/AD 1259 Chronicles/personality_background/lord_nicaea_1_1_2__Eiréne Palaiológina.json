@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_1_2",
+  "HeroName": "Eiréne Palaiológina",
+  "Description": "Eiréne Palaiológina was the eldest daughter of Emperor Michael VIII and Empress Theodora Vatatzina, destined to occupy the throne of Bulgaria during one of the most turbulent epochs in Balkan history. Reared in the refined splendor of the Nicaean imperial court in 1259, Irene was endowed with impeccable courtly education, Christian piety, and a profound sense of dynastic duty. To counter anti-Byzantine coalitions in the north, her father arranged her marriage to Ivan Asen III, supporting their claim to the throne of Tarnovo amidst the catastrophic peasant uprising of Ivaylo. Accompanying her husband into the storm-battered Bulgarian capital, Irene bore the heavy crown with admirable poise, managing court affairs and royal treasuries behind fortress walls. When the political situation became untenable, she organized a disciplined withdrawal with the crown jewels back to Constantinople, where she remained a respected imperial matriarch. During the harrowing siege of Tarnovo, Irene personally held the keys to the royal treasury, rationing gold wages and heavy wool blankets to the beleaguered garrison daily. As rebel war cries echoed outside fortress bastions, the Roman princess calmly led prayers in the palatine chapel, steadying panicked court attendants through her dignified demeanor. In the perilous evacuation across the Black Sea, Irene skillfully coordinated imperial escorts to evade pirate galleys, delivering the crown assets intact to Constantinople.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her words are gracious, gentle, and poised, reflecting the serene dignity of an imperial princess dedicated to family duty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

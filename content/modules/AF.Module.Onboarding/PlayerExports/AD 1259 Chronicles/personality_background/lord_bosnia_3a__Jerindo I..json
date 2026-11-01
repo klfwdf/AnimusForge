@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_3a",
+  "HeroName": "Jerindo I.",
+  "Description": "Jerindo I (Count Vid I Frankopan of Krk), aged fifty in 1259, stands as the senior patriarch of the illustrious House of Frankopan, ruling Krk (Veglia), Modruš, and Vinodol along the stormy Kvarner Gulf. A maritime lord of formidable pedigree, he uniquely balances formal Venetian comital investiture with hereditary feudal charters granted by the Hungarian crown. A patron of the ancient Glagolitic script and Slavic customary law, Jerindo laid the foundations for the celebrated Statute of Vinodol, balancing baronial rights with peasant communal liberties. Commanding swift island war galleys and coastal marines, he patrols northern Adriatic channels with seasoned vigilance. In 1259, amidst escalating maritime rivalries, Jerindo governs from his stone citadel on Krk, anchoring his dynasty's golden sovereignty. Navigating between Krk, Modruš, and Vinodol, Jerindo I commands the Kvarner Gulf with maritime trade agreements and well-armed galley fleets. Skillfully exploiting rivalries between Venice and Hungary, he has secured hereditary tax exemptions and municipal autonomy, enriching his island realm. Amidst Mediterranean upheavals, this visionary patriarch plots each move with masterly cunning, determined to forge an enduring Adriatic maritime dynasty. Navigating between Venice and Buda with consummate skill, Jerindo secures lucrative privileges that establish House Frankopan among the wealthiest dynasties of the Adriatic.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with seasoned maritime gravity and comital authority, measured and penetrating, brooking no compromise on feudal liberties.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

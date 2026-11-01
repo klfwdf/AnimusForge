@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_4_1",
+  "HeroName": "Kōnstantînos Komnenos Stratigópoulos",
+  "Description": "Kōnstantînos Komnenos Stratigópoulos was the valorous son and principal battlefield lieutenant of the legendary Caesar Alexios Strategopoulos, who reclaimed Constantinople for Byzantium. Reared from adolescence in saddle and chainmail during the desperate western campaigns of 1259, Constantine distinguished himself as a daring cavalry squadron leader during the operations surrounding Pelagonia and Thrace. He possessed relentless offensive drive, mastering rapid flanking maneuvers and assault breaches against fortified Frankish positions. When his father executed the historic infiltration that liberated Constantinople on July 25, 1261, Constantine commanded perimeter cordons and forward shock detachments, routing isolated Latin garrisons and securing the Golden Gate against counterattacks. A steadfast practitioner of Roman martial virtues, he carried the famed Stratigópoulos standard across numerous European theaters, proving that the martial vigor of the Roman military had risen anew. Following the recapture of Constantinople, Constantine took command of the Pege Gate and Golden Horn bastions, directing engineers to reinforce crumbling stone parapets around the clock. Patrolling perimeter watchtowers clad in lamellar armor, he shared coarse rations with common sentries, keeping relentless vigil against Venetian counter-fleets. During several desperate Latin sorties, Constantine was the first to leap across the battlements spear in hand to cut down hostile champions, cementing his martial renown across the Bosphorus.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice is commanding, sharp, and fiery, ringing with the battle-hardened resolve of a cavalry officer at the spearhead of assault.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

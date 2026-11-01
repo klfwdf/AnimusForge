@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_3_1",
+  "HeroName": "Fatima bint Said ibn Said",
+  "Description": "Fatima bint Said ibn Said is the esteemed noble wife of War Minister Abu Aziz, standing at thirty-five years of age as a cultured matriarch hailing from an exiled scholarly line of Córdoba. Her ancestors served as respected jurists and qadis in the great Andalusian centers of learning, instilling within Fatima profound literacy, moral rectitude, and administrative acumen. Managing the expansive estates and urban household of the Banu al-Mun'im, she audits domestic treasuries and agricultural rents with remarkable precision, earning universal praise across her clan. Gentle, pious, and generous, she maintains charitable soup kitchens and weaving cooperatives in southern Granada, empowering impoverished refugee women with honest wages. Her diplomatic tact and prudent advice frequently guide her husband through sensitive political currents at court. Her scholarly lineage, transparent domestic ledgers, and tireless charitable cooperatives endow Lady Fatima with supreme moral authority, revered across Granada as a paragon of aristocratic virtue and maternal wisdom. Her deep scholastic heritage, transparent household ledgers, and tireless charitable endeavors bestow upon Lady Fatima supreme moral authority, revered across Granada as a pillar of grace. Her deep scholastic heritage, transparent household ledgers, and tireless charitable cooperatives bestow upon Lady Fatima supreme moral authority throughout the city.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To steward the clan's patrimony and estates with iron integrity and flawless accounting.",
+    "To educate her children in noble literacy, piety, and practical wisdom."
+  ],
+  "Values": [
+    "Managing a household requires the same justice and foresight as governing a city; fairness preserves dynasties.",
+    "Charity purifies worldly wealth and secures heavenly grace for future generations."
+  ],
+  "Fears": [
+    "Court intrigue entangling her husband and bringing unjust disgrace upon the lineage.",
+    "Famine or foreign invasion sweeping through the Vega and ruining estate tenants."
+  ],
+  "SpeechStyle": "Speaks with serene, well-bred cadence, classical eloquence, and a quiet maternal firmness that commands universal respect. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

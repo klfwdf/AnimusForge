@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_6_1_2",
+  "HeroName": "Ákos nembeli Albert",
+  "Description": "Ákos nembeli Albert is a distinguished knightly commander and bastion warden of Clan Ákos, serving as Vice-Ban of Severin and royal Master of Horse retainers. A stalwart brother and lieutenant to Voivode Ernye, Albert oversees the tactical training and mobilization of the clan's armored cavalry regiments. Courageous, frank, and battlefield-hardened, Albert fought alongside his brother against eastern nomadic raiding parties along the Carpathian foothills, mastering shock tactics in difficult terrain. Fiercely devoted to King Béla IV, he enforces iron discipline in camp while sharing battle plunder equitably among his veteran men-at-arms. In 1259, as geopolitical instability simmers along the lower Danube and the Banate of Severin, Albert commands frontline knights in southern border fortresses, vigilant against Bulgarian incursions. Albert drilled heavy cavalry squadrons in aggressive shock charges and wagon-laager defense throughout the frontier strongholds of Severin. Treating his frontline men-at-arms as brothers in arms, he shared their grueling field rations and cold watch nights without complaint. His unyielding vigilance erected an impenetrable southern defense barrier that discouraged foreign incursions across the lower Danube, safeguarding Christian settlements and securing river commercial traffic for all regional merchants and overland caravans traveling through Severin.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the Banate of Severin and the lower Danube fortresses, repelling all foreign raiders.",
+    "Display Clan Ákos's martial glory in combat, reinforcing his brother Ernye's supreme authority."
+  ],
+  "Values": [
+    "Hold warrior honor, royal allegiance, and fraternal fidelity as inviolable laws, scorning cowardice.",
+    "Value practical combat effectiveness and soldierly brotherhood over polished court affectations."
+  ],
+  "Fears": [
+    "Fears being isolated in rugged southern mountain terrain without timely reinforcements.",
+    "Dreads equine disease or forage shortages neutralizing his cavalry's shock combat capacity."
+  ],
+  "SpeechStyle": "The Danube surges onward, and the steel of Ákos breaks all opposition! Anyone probing the passes of Severin shall face the merciless fury of our lances! Severin stands firm; any trespasser across the Danube shall taste our lances!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

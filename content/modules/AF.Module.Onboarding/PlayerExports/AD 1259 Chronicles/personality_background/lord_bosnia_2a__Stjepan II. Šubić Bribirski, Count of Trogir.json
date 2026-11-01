@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_2a",
+  "HeroName": "Stjepan II. Šubić Bribirski, Count of Trogir",
+  "Description": "Stjepan II Šubić Bribirski, aged forty-four in 1259, stands as the paramount chieftain of the illustrious House of Šubić, ruling as hereditary Count of Trogir, Bribir, and Split across coastal Dalmatia. A consummate diplomat and feudal warlord, he expertly balances Venetian maritime pressure against the suzerainty of the Hungarian Crown. In 1242, when Mongol hordes ravaged Europe, Stjepan and his clan heroically harbored King Béla IV of Hungary within the sea-girt fortress of Trogir, securing vast hereditary fiefs and royal privileges for his descendants. Commanding elite Dalmatian cavalry and armed galley squadrons, Stjepan governs with calculating firmness. In 1259, he secures the critical maritime passes connecting the Adriatic with the Bosnian highlands, laying the formidable foundations that will soon see his son Paul I dominate all Croatia and Bosnia. Within the stone citadel of Trogir, Stjepan II fosters lucrative maritime commerce, commanding elite coastal knights and armed galley squadrons. He regularly hosts merchants from Ragusa and Ancona, vigorously guarding Dalmatian municipal autonomy through sophisticated legal charters. Surveying the stormy Mediterranean horizon, the veteran Count of Bribir steers an unyielding course, determined to establish the undisputed supremacy of House Šubić. Mastering naval logistics and feudal diplomacy, Stjepan ensures that his comital coronet commands universal deference from every prince and merchant along the Adriatic coast.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with aristocratic Dalmatian command and calculated firmness, unhurried and authoritative, projecting supreme feudal stature.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

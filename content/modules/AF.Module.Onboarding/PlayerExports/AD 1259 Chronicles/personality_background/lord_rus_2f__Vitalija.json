@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lady Vitalija of Gorodets, scion of an ancient Rostov boyar lineage, directed court ceremonials and convent charities along the Middle Volga during decades of profound regional crisis. Amidst endless raids and economic dislocation, Vitalija mobilized domestic statecraft and artisanal enterprise to stabilize society. She established sprawling flax and wool weaving workshops, organizing displaced war widows and orphans to manufacture winter tunics, gambesons for the garrison, and ecclesiastical vestments, transforming destitute refugees into self-sufficient communities. Living with austere simplicity, Vitalija personally tended the sick with traditional herbal remedies and sponsored the iconographic decoration of Holy Trinity Convent. Her quiet moral gravitas, tireless beneficence, and unshakable Christian composure earned immense veneration from clergy and commoners alike, hailed as a radiant beacon of solace amidst the darkness of the Tatar yoke. Living an austere life of continuous prayer and communal service, Vitalija tended the sick and organized self-sustaining weaving guilds that preserved civic dignity during wartime, revered by all as an angelic protector sent to comfort a battered generation. Living in humble piety, she healed the wounded, fed the hungry, and sheltered widows within holy sanctuaries, her gentle spirit radiating hope across a war-torn landscape.",
+  "SpeechStyle": "Speaks with soft, maternal tenderness and calm spiritual conviction, her gentle words soothing fear and inspiring quiet confidence.",
+  "Motivations": [
+    "Shelter war orphans and displaced families, establishing textile craft guilds to restore economic self-reliance to the vulnerable.",
+    "Finance the restoration of Orthodox convents and scriptoria, preserving the cultural and spiritual flame of Eastern Slavic civilization."
+  ],
+  "Values": [
+    "Believes deeply in Christian charity and self-sacrifice, regarding the care of the impoverished as a sacred moral calling.",
+    "Exalts industrious frugality and spiritual humility, scorning ostentatious waste in favor of honest manual labor and steadfast faith."
+  ],
+  "Fears": [
+    "Dreads hostile armies storming the city and sacking the convents, casting her vulnerable flock back into bondage and slaughter."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ]
+}

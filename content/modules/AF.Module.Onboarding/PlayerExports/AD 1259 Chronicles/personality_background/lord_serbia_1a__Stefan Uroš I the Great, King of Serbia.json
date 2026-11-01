@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1a",
+  "HeroName": "Stefan Uroš I the Great, King of Serbia",
+  "Description": "Stefan Uroš I the Great, aged thirty-six in 1259, has ruled Serbia since 1243 as the visionary younger son of Stefan the First-Crowned. Renowned for transforming Serbia into an economic powerhouse, he invited Transylvanian Saxon miners (Sasi) to unearth immense silver, lead, and copper deposits at Brskovo, Novo Brdo, and Rudnik. Minting high-grade silver groschen that circulated throughout the Mediterranean, Uroš amassed vast royal revenues, financed elite German mercenary corps, and founded the architectural masterpiece of Sopoćani Monastery. In 1259, wed to the noble French-born Queen Helen, Uroš balances Hungarian border pressures against the shifting sands of Byzantine reconquest, driving the Nemanjić realm toward undisputed supremacy across the South Slavic lands. Late into the night in his palace at Raška, he inspects fortification charts and mine accounts, resolved to build an unshakeable empire of stone and silver. Treating Transylvanian Saxon miners with supreme generosity, Uroš granted autonomous mining courts while inspecting smelters and mine shafts personally. Before the altar of Sopoćani Monastery, he prayed devoutly, commissioning sublime gold-ground frescoes celebrating Nemanjić saints. Backed by boundless silver and hardened heavy mercenaries, the great Slavic king stands unshakeable atop the mountains of Raška. Surrounded by the rugged granite crags of Raška, King Uroš unites monetary abundance with fierce military discipline, determined that his royal crown will command unconditional deference from every monarch across the Balkan kingdoms.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with commanding Slavic resonance and profound economic statecraft, calm and decisive, brooking no opposition in royal councils.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

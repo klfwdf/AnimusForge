@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5h",
+  "HeroName": "Baldwin II",
+  "Description": "Baldwin II is the valiant son of Count Baldwin I, standing as an elite knightly captain and vanguard commander for Clan Rátót on the northwestern march. Raised amidst the tilt-yards of Moson Castle, he developed exceptional mastery in heavy shock cavalry combat and defensive outpost operations. Bold, spirited, and fearless, Baldwin II frequently commands cavalry patrols along the Leitha river line, repelling raiding detachments of Austrian knights with frontline bravery. Generous to his men-at-arms yet demanding unyielding adherence to military discipline, he commands passionate loyalty from his mixed Hungarian and German retainers. In 1259, as Bohemian armies mass across the border, Baldwin II commands forward bridgeheads at Moson, patrolling frontier defiles with unwavering vigilance, prepared to defend his clan's honor in blood. Baldwin II led cavalry scouting detachments through rugged valleys along the Leitha, repelling Austrian raiding bands with thunderous lance charges. His daring courage in frontline skirmishes established his rising reputation as an inspiring vanguard commander across the western march. He maintained round-the-clock patrols, resolved to win immortal chivalric glory while defending his family's border domains with unyielding martial valor, swift counter-attacks, ferocious shock momentum, tactical discipline, and chivalric honor.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win glorious combat laurels in the impending western war, validating his heroic lineage.",
+    "Defend Moson bridgeheads with unyielding ferocity, punishing all foreign trespassers."
+  ],
+  "Values": [
+    "Prize reckless battlefield bravery, shock cavalry valor, and absolute loyalty, scorning hesitation.",
+    "Value martial brotherhood and tactical discipline among his mounted retainers."
+  ],
+  "Fears": [
+    "Fears diplomatic appeasement robbing frontline warriors of battlefield victory.",
+    "Dreads being encircled behind enemy lines and failing to convey vital intelligence to command."
+  ],
+  "SpeechStyle": "Our chargers neigh and our lances pierce the sky! The knights of Moson never yield; trespassers across the Leitha shall be crushed beneath our charge! Chargers advance and lances strike; invaders will be pulverized beneath our hooves!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

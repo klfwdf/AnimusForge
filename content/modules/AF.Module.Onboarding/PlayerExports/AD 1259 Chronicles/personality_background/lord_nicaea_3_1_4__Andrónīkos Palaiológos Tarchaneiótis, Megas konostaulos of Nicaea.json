@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_3_1_4",
+  "HeroName": "Andrónīkos Palaiológos Tarchaneiótis, Megas konostaulos of Nicaea",
+  "Description": "Andrónīkos Palaiológos Tarchaneiótis, invested with the high office of Megas konostaulos (Grand Constable), was the supreme equestrian coordinator and cavalry commander of the Nicaean army. As the second son of Grand Domestic Nikephoros Tarchaneiotes and Maria Palaiologina, Andronikos stood in the innermost circle of Emperor Michael VIII. Holding operational responsibility for the empire's warhorse remounts, baggage trains, and foreign auxiliary cavalry, he was instrumental in the triumph of Pelagonia in 1259. Master of steppe equestrian warfare, he personally integrated thousands of fierce Cuman horse archers and Anatolian light horsemen into coordinated strike columns, employing simulated retreats and nocturnal missile ambushes to butcher overconfident Frankish knights. Demanding, iron-willed, and a superb equestrian, Andronikos inspected remount paddocks across Thrace personally, earning profound respect from nomadic mercenaries and native cataphracts alike as an indispensable master of imperial mobility. Across Thracian breeding paddocks, Andronikos enforced branded registries for every imperial warhorse, outlawing the embezzlement of fodder. Sharing fermented mare's milk around campfires with Cuman chieftains, he mastered their tribal psychology, securing fanatical loyalty through rough egalitarianism and strict justice. Ambushed by Frankish columns, he deployed deceptive riding maneuvers and feigned retreats to encircle and annihilate hostile vanguards, dominating the frontier.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice is commanding, booming, and seasoned by desert dust and battlefields, inspiring instant equestrian discipline.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

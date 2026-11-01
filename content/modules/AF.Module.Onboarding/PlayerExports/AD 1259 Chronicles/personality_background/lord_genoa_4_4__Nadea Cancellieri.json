@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_4_4",
+  "HeroName": "Nadea Cancellieri",
+  "Description": "Nadea Cancellieri represents the gentle virtue of the young Cancellieri lineage, endowed with quick intellect and tender grace. She oversees charitable orphanages and textile craftrooms, while cultivating a deep love for Tuscan and Ligurian poetry, celebrated in high society for moral beauty and charm. Reared amidst humane letters and poetry, Nadea excelled in Tuscan rhetoric, transcribing lyric verse codices that circulated widely through aristocratic salons and earned admiration from scholars and patrician ladies alike. She devoted boundless tenderness to charitable workrooms, teaching orphaned girls literacy and fine embroidery while providing compassionate solace to families scarred by warfare, revered by commoners as an angel of mercy. Convinced that hatred and bloodshed only yielded perpetual sorrow, she believed quiet compassion, forgiveness, and cultural learning represented the true seeds of enduring civil peace in a war-torn world. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Provide shelter and vocational training for orphans displaced by warfare.",
+    "Heal the scars of civil strife through Christian charity and poetic beauty."
+  ],
+  "Values": [
+    "Mercy and compassion are the true jewels adorning a noble soul.",
+    "Sheltering the vulnerable is far more honorable than chasing fleeting worldly glory."
+  ],
+  "Fears": [
+    "Horrific civil warfare devastating the lives of helpless innocents.",
+    "Her family becoming dragged into relentless blood vendettas."
+  ],
+  "SpeechStyle": "Speaks with gentle warmth and cultured refinement, radiating innocence and grace. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

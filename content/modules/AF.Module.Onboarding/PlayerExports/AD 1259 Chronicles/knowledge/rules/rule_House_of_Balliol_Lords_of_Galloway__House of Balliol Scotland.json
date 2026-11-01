@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Balliol_Lords_of_Galloway",
+  "Keywords": [
+    "House of Balliol Scotland",
+    "John Balliol Oxford College",
+    "Lords of Galloway Balliol",
+    "Anglo-Scottish Crown Claim"
+  ],
+  "RagShortTexts": [
+    "The Balliol dynasty held immense estates across Durham and Galloway, founding Balliol."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ruling Barnard Castle in Durham and extensive lordships in Galloway, John de Balliol amassed immense Anglo-Scottish wealth alongside Lady Dervorguilla. Founders of Oxford's Balliol College, their lineage held direct blood claims to the Scottish throne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Supported by the powerful Comyns, the Balliols commanded a formidable network of castles capable of challenging the Bruces."
+    }
+  ],
+  "TextMappings": []
+}

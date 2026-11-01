@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Dominican_Inquisitorial_Network_and_Heresy",
+  "Keywords": [
+    "Dominican Inquisitorial Courts",
+    "Heresy Purge Network",
+    "Secret Denunciation Protocols",
+    "Languedoc Inquisitors"
+  ],
+  "RagShortTexts": [
+    "Dominican inquisitors established systematic registers of interrogations to uproot heresy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Papal bulls entrusted inquisitorial authority to the Order of Preachers (Dominicans). Traveling with portable archives, inquisitors recorded secret denunciations into cross-referenced parchment registers. Those convicted of Cathar or Waldensian heresy face forfeiture of estate, perpetual confinement, or secular execution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "The inquest seeks spiritual rehabilitation before damnation. Notaries record every confession under oath; reconciled penitents may escape the stake by donning yellow felt crosses of penance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "When the black friars enter a village, neighbors stop speaking across orchard hedges. One grudge whispered to an informer, and a man finds himself in church cellars before sunset."
+    }
+  ],
+  "TextMappings": []
+}

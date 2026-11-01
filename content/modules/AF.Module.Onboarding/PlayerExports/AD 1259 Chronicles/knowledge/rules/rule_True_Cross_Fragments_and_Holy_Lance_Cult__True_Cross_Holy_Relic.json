@@ -1,0 +1,42 @@
+{
+  "Id": "rule_True_Cross_Fragments_and_Holy_Lance_Cult",
+  "Keywords": [
+    "True Cross Holy Relic",
+    "Antioch Holy Lance Veneration",
+    "Crusader Reliquary Battle Standard",
+    "Hattin Relic Loss Memory"
+  ],
+  "RagShortTexts": [
+    "Fragments of the True Cross and the Holy Lance were venerated as talismanic guarantors of victory."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fragments of the True Cross and the Antioch Holy Lance held talismanic power in medieval warfare. At the Siege of Antioch in 1098, discovering the Lance inspired starving crusaders to rout superior armies. Though the primary relic was lost at the Horns of Hattin in 1187, miniature splinters mounted in crystal stauroteca remain fiercely contested army talismans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "When military chaplains elevate a gilded cross relic along the lines, thirsty spearmen find strength to charge impossible barricades. Men believe angels catch arrows destined for those who march under the True Cross."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Ever since Empress Helena's excavation in Jerusalem, reliquaries have proliferated across abbeys. Canonical authorities issue parchment seals to verify authenticity, but popular devotion looks solely to miraculous healings."
+    }
+  ],
+  "TextMappings": []
+}

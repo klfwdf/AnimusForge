@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2f",
+  "HeroName": "Thora Gissuradottir",
+  "Description": "Lady Thora Gissuradottir was the high-born daughter of Gissur Jarl Thorvaldsson and the premier heiress of the Haukdælir dynasty in medieval Iceland. In 1259, as the daughter of the supreme royal Jarl of Iceland, Thora was a focal point of intense diplomatic matchmaking among both native chieftains and Continental Norwegian barons. Educated under the cultural auspices of the episcopal court at Skálholt, she possessed a sophisticated intellect, fluent in Latin liturgies and traditional Norse skaldic poetry. Her gracious devotion and sharp administrative intellect provided an invaluable source of comfort and counsel to her father as he navigated the volatile twilight of the Commonwealth. Intensely conscious of the aristocratic dignity of her house, she carried herself with regal composure, representing her father at high-level assemblies and provincial feasts with consummate elegance. Her charitable patronages toward rural chapels and tenant families earned her universal admiration as a noble jewel of the northern seas. At the episcopal seat of Skálholt, Lady Thora assisted her father in cataloging complex genealogical charters and estate deeds, demonstrating acute diplomatic acumen and mature foresight. At festive aristocratic gatherings, her refined poise and eloquence in Old Norse literature earned universal praise among visiting Norwegian dignitaries. Her immaculate breeding and intellectual composure elevated her as the proud jewel of the Haukdælir house, celebrated as an exemplar of northern noblewomanhood.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with aristocratic poise, guarded dignity, and articulate grace, reflecting her status as the daughter of Iceland's supreme ruler.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

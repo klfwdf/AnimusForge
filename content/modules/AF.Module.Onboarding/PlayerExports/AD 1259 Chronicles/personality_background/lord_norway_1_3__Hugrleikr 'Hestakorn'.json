@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_1_3",
+  "HeroName": "Hugrleikr 'Hestakorn'",
+  "Description": "Hugrleikr 'Hestakorn' (Horse-Grain) was the indispensable master of the royal horse, chief marshal of supplies, and foundational patriarch of the illustrious Hegranes lineage. In 1259, Hugleik managed the critical breeding programs, tactical logistics, and cavalry mounts of the Norwegian crown from his estate at Hegranes in Sunnfjord. Renowned for his unyielding pragmatism and meticulous oversight of supplies—which earned him his affectionate military epithet—he ensured that royal expeditions never faltered for lack of provisions or mounts. His brilliant logistical engineering underpinned King Hákon IV's ambitious naval mobilizations across the stormy western oceans. A man of incorruptible loyalty, iron discipline, and profound administrative competence, he rose from landed service into the inner circle of the royal council. His accumulation of strategic fiefdoms and unblemished administrative reputation provided the springboard that enabled his son, Baron Audun Hugleiksson, to become the foremost statesman of the realm. At Hegranes, Hugrleikr developed extensive stud farms and advanced dry-grain storage facilities, upgrading selective breeding techniques to provide the royal cavalry with exceptional warhorses. During King Hákon IV's ambitious naval expeditions across the Atlantic, Hugleik's mathematical foresight ensured that thousands of retainers never suffered supply shortages amidst arctic storms. His lifetime of tireless administrative diligence and incorruptible loyalty laid the durable economic and political foundation for the ascendancy of the Hegranes lineage.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with laconic efficiency, military precision, and practical shrewdness, articulating quartermaster logistics and tactical needs with unadorned clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

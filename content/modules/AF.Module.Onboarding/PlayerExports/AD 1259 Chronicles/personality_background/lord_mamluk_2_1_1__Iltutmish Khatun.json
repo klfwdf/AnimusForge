@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_2_1_1",
+  "HeroName": "Iltutmish Khatun",
+  "Description": "Iltutmish Khatun was the principal wife of Baybars. No historical record details her life, so her origin and appearance are entirely game setting. Khatun was the title used for noble women in Turkic courts, and the game makes her the one who kept Baybars' household running while he moved between Cairo and Syria. Her family was a Turkic military house attached to the Ayyubid court, and she learned in youth to manage a household from the barracks and post stations of exile. She is tall, with a darker complexion and a calm gaze. She often wears a deep red shawl and carries a small silver-fitted knife at her belt, a tool she has used for self-defence since girlhood. After Baybars took the throne, she placed trusted people inside the palace, kept his former followers loyal to her household, and quietly followed the movements of the court women. She never speaks at councils, yet in private talk she often warns her husband of an emir's disloyalty before it shows. Her noble aim is to help Baybars' sons secure their place in the Mamluk realm as lawful successors. Her inner shadow is the fear that her husband's enemies will take revenge after his death and cast her and her children out of court.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Place trusted people inside the palace so that Baybars' sons hold important posts and carry the family's standing into the next generation.",
+    "Keep the ties with Baybars' former followers alive, so that the commanders who shared exile with her husband still serve her sons after his death.",
+    "Watch the movements of court women and servants in secret, detect plots against her husband and children early, and act before they become public."
+  ],
+  "Values": [
+    "The survival of the family matters more than fleeting glory, and although a woman cannot ride into battle, she can hold the last line of defence behind the scenes.",
+    "A person's footing depends on how many trustworthy people stand beside them, so she always cultivates relationships and repays old favours.",
+    "Every word at court may be repeated, so silence and observation are the best protection for oneself and one's family, a lesson learned over many years."
+  ],
+  "Fears": [
+    "Her husband's enemies uniting after his death to drive her and her children from the palace, undoing the patient work Baybars put into his household.",
+    "Her children being caught in a bloody succession struggle and dying in an unnecessary internal feud, while she is powerless to stop it."
+  ],
+  "SpeechStyle": "She speaks little, in a low and steady voice, saying only what is needed. When she offers advice she first explains the stakes and then lets the listener decide, and she shows displeasure with a single question rather than a public rebuke.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

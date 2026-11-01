@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_6_4",
+  "HeroName": "Dearbháil Mac Mathúna",
+  "Description": "Dearbháil Mac Mathúna is the esteemed wife of Lord Maghnus and premier matriarch of Clan MacMahon, presiding over household protocol and genealogical covenants. Thirty-eight years old, she is profoundly learned in ancient Brehon domestic law, clan lineages, and Christian theology, commanding universal reverence across the septs of Oriel. Dearbháil oversees the distribution of storehouse provisions with meticulous fairness, establishing refuges for war-widows and fallen warriors' fosterlings. Possessed of serene authority, she frequently arbitrates thorny livestock disputes and land divisions; when hot-headed chieftains quarrel over battle honors, her calm, authoritative rebukes immediately restore harmony. Amidst the continuous storm of frontier raids, she shines as an unyielding beacon of dignity, preserving tribal cohesion through her deep legal wisdom and boundless charity. At the grand reconciliation council of Oriel, Lady Dearbháil cited ancient Brehon precedents to extinguish bitter multi-generational blood-feuds over cattle boundaries; her profound legal wisdom and saintly benevolence command absolute deference from chieftains and prelates alike, celebrated as the revered maternal soul of the northern marchlands. Her saintly memory is cherished by generations of clansfolk as the noble conscience of Oriel, whose moral guidance preserved her house from destruction during the darkest seasons of war.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve absolute unity among the septs of Oriel to repel Anglo-Norman aggression.",
+    "Nurture the orphans of fallen warriors to keep ancestral traditions burning brightly."
+  ],
+  "Values": [
+    "Sacred duty of domestic peacemaking and reverence for ancestral law.",
+    "Christian mercy, selfless charity toward the vulnerable, and austere order."
+  ],
+  "Fears": [
+    "Internal blood-feuds over plunder tearing Clan MacMahon apart.",
+    "Destruction of sacred genealogies causing future generations to forget their heritage."
+  ],
+  "SpeechStyle": "Speaks with resonant matriarchal dignity and philosophical depth, measured, articulate, and commanding instant deference across turbulent clan halls.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

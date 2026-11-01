@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_2",
+  "HeroName": "Sir Richard de Clare, Earl of Hertford and Gloucester",
+  "Description": "Sir Richard de Clare, Earl of Gloucester and Hertford, is the wealthiest and most formidable peer in the English realm. Broad of shoulder with piercing grey eyes and a stern, weathered countenance, he exudes the immense, brooding power of a Marcher magnate whose ancestral castles dominate the Welsh borders. Controlling over five hundred knight's fees, Richard was the co-architect of the baronial coup alongside Simon de Montfort. However, his vision for reform is purely oligarchic: he seeks to curb royal tyranny and expel hated Lusignan favorites while fiercely preserving the feudal privileges and private jurisdictions of the great nobility against intrusion by lesser knights. Deeply traumatized and made paranoid by the suspected poisoning of his brother William in 1258, Gloucester broke ranks with Montfort in 1259 over the latter's radical populism and Welsh incursions. A master of pragmatic statecraft, his loyalty belongs entirely to the enduring aggrandizement of the House of Clare.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the private feudal jurisdictions of the House of Clare against royal or council intrusion",
+    "Curtail Simon de Montfort's populist autocracy and keep baronial reform strictly oligarchic",
+    "Compel the Crown to finance and reinforce border defense against Llywelyn's incursions"
+  ],
+  "Values": [
+    "The ancient magnates are the realm's pillars; order exists only through balanced noble power",
+    "Alliances shift with political tides; the wealth and castles of Clare alone endure",
+    "Pander to mobs and lesser knights invites ruin; governance belongs to ancestral earls"
+  ],
+  "Fears": [
+    "A radical baronial revolution stripping the great peers of their traditional feudal courts",
+    "Welsh forces storming the Marcher line and reducing his Glamorgan estates to smoking ruins"
+  ],
+  "SpeechStyle": "Speaks with slow, aristocratic gravity, measuring every word with guarded precision. His tone is heavy with feudal authority, masking cold calculations behind impenetrable courtesies.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

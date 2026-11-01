@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Mstislav Danilovich is the youngest son of King Danylo of Rus', celebrated across Volhynia and Polesia for his unwavering reliability, disciplined governance, and defensive mastery. Tasked with safeguarding the crucial western approaches anchored at Lutsk, Brest, and Pinsk, Mstislav proved himself an unyielding bastion of Romanovych dynastic power. Understanding the perils of the northern marches, he engineered innovative fortifications combining dressed white-stone revetments with massive oak timber breastworks, dramatically enhancing city defenses against siege engines. He maintained deep ties with local woodlanders, blacksmith guilds, and yeoman militias, establishing regular training regimens that turned agrarian villages into formidable self-defense garrisons. Renowned for strict camp discipline and honorable conduct, he prohibited plundering and protected merchant caravans, earning profound civilian veneration. His steadfast resolve makes Prince Mstislav the indispensable bedrock shielding the rivergates of Turov and Pinsk. Prince Mstislav anchored the southwestern frontier of Polesia through relentless military engineering and iron camp discipline. He supervised the excavation of wide moats diverting river waters around border keeps, maintaining vigilant twenty-four-hour watches atop wooden towers. His unyielding defensive resolve ensured that any hostile force attempting to cross into Pinsk's agrarian domains was met with impenetrable resistance.",
+  "SpeechStyle": "Fortify every stone rampart and drill every yeoman levy! In battle there are no shortcuts; iron discipline and unbreakable shield walls alone protect our ancestral homelands!",
+  "Motivations": [
+    "Establish depth-in-defense stone-and-oak fortifications between Pinsk and Lutsk, blocking hostile raiding corridors.",
+    "Enforce strict military discipline and yeoman militia readiness, forging an indomitable home defense force for Pinsk."
+  ],
+  "Values": [
+    "Prized contractual duty, military obedience, and incorruptible honor, abhorring insubordination and cruelty toward civilians.",
+    "Believing methodical defensive engineering and rigorous training regimens secure victory when apocalyptic crises strike."
+  ],
+  "Fears": [
+    "Massed fire attacks by siege catapults igniting outer timber palisades, engulfing defensive garrisons in uncontrollable infernos.",
+    "Treasonable bribery compromising watergate commanders by night, unbolting perimeter canal locks to enemy infiltrators."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

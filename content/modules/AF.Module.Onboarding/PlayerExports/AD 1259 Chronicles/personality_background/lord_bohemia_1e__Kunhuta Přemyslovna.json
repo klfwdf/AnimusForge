@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1e",
+  "HeroName": "Kunhuta Přemyslovna",
+  "Description": "Kunhuta Přemyslovna is the spirited second daughter of King Přemysl Otakar II and Queen Kunigunda, uniting the fierce blood of Rurikid grand princes with Bohemian royalty. Inheriting her mother's striking Halych beauty and her father's imperious, fiery temper, she showed an audacious and resolute character from infancy. She would later marry Duke Bolesław II of Masovia, playing a formidable role in Piast Poland's turbulent politics, and eventually governed the wealthy Benedictine convent of St. George at Prague Castle as an energetic and commanding abbess. During Bohemia's golden era, young Kunhuta reveled in falconry, equestrian coursing, and heroic sagas. Refusing to be confined to passive embroidery, she burned to emulate her royal father's sweeping grandeur and leave an indelible mark upon Central Europe. Practicing equitation alongside royal cavalry in Prague's training grounds, young Kunhuta tracked game through the deep Bohemian Forest without flinching, winning the admiration of seasoned captains. Masterfully understanding the troop strengths and fortress layouts of rival princely houses, she refused to be reduced to a passive diplomatic prize, determined to wield tangible authority and command across the marches of Poland. Her fiery valor and indomitable pride embodied the fierce, untamed spirit of royal warriors.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure tangible political authority and independent fiefdoms in future alliances, refusing to be a passive pawn.",
+    "Follow her father's grand vision by projecting Bohemian dynastic influence across Poland and Silesia."
+  ],
+  "Values": [
+    "Worships unyielding martial will and bold ambition, believing respect must be seized by force.",
+    "Regards the pursuit of military glory as a sacred fire, despising complacent mediocrity."
+  ],
+  "Fears": [
+    "Dreads being married to an irresolute prince and confined to a suffocating provincial manor.",
+    "Fears sudden catastrophe shattering the royal house, stripping away the authority she cherishes."
+  ],
+  "SpeechStyle": "Where bowstrings sing is the eagle's domain; though born a princess, the unquenchable fire of Přemysl blazes within my soul! In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Kunhuta Přemyslovna"
+}

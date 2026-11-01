@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_5b",
+  "HeroName": "Perchta z Falkenštejna",
+  "Description": "Perchta hails from the noble House of Falkenstein in the Austrian borderlands, wedded to Lord Budivoj of Krumlov as the mother of the notorious Czech oligarch Záviš of Falkenstein, casting a commanding shadow across medieval chronicles. Bringing sovereign command over Falkenstein Castle along the Danube approaches and immense territorial wealth, she transmitted her lineage's reckless ambition and aristocratic defiance to her brilliant, perilous son. Ruling Krumlov's domestic chancery with imperious resolve and diplomatic cunning, she monitored covert alliances and secret envoys, treating royal commissioners from Prague with haughty disdain. She actively urged her husband and sons to contest the Přemyslid crown, standing as the mastermind and spiritual matriarch of baronial rebellion. Directing clandestine communications with Austrian rebels and Hungarian envoys from the secret chambers of Krumlov, Lady Perchta wove an intricate covert network against King Otakar's imperial hegemony. Pouring her boundless ambition into her eldest son Záviš, she tutored him in ruthless statecraft and calculated diplomacy, determined that the bloodline of Falkenstein and Krumlov would blaze at the very summit of Central European power. Her indomitable will and cunning political intrigues molded the destiny of the great baronial uprising in Bohemia.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Amass vast wealth, private knights, and alliances for her son Záviš to claim supreme power in Bohemia.",
+    "Hold Falkenstein and Krumlov as strategic bastions, creating a cross-border rebel coalition."
+  ],
+  "Values": [
+    "Regards the pursuit of supreme power and freedom from crown domination as life's highest philosophy.",
+    "Maintains haughty aristocratic pride, despising timid conformity and gambling for absolute dominion."
+  ],
+  "Fears": [
+    "Fears Záviš's fiery ambition exposing their designs too early, drawing King Otakar's swift execution.",
+    "Worries Falkenstein being captured by Austrian ducal forces, closing off their retreat into the Alps."
+  ],
+  "SpeechStyle": "The eagle of Falkenstein never roosts beneath low eaves; my sons possess the genius and audacity to make the proudest crowns tremble! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Perchta z Falkenštejna"
+}

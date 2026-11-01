@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Enriquez_Admirals_of_Castile",
+  "Keywords": [
+    "House of Enriquez Castile",
+    "Almirante Mayor de Castilla",
+    "Infante Enrique Lineage",
+    "Atlantic Cadiz Fleet Admirals"
+  ],
+  "RagShortTexts": [
+    "Branching from royal infantes, the Enríquez line inherited the supreme admiralty of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Descending from royal infantes, the House of Enríquez monopolized the supreme office of Almirante Mayor de Castilla. Governing naval arsenals in Seville and Cadiz, their warships commanded both Atlantic sealanes and the Guadalquivir river mouth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An admiral's summons mustered privateer barques and galleys capable of blockading Granada and intercepting Berber fleets."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_1_2",
+  "HeroName": "Baudouin de Hainaut",
+  "Description": "Baudouin de Hainaut, aged thirty-nine in 1259, is a seasoned Flemish-Walloon noble of the House of Hainaut, distantly related to the first Latin Emperor Baldwin I. Serving as a senior garrison captain in Constantinople, he commands the remaining Flemish knights and Walloon mercenaries guarding the Galata quarter and northern sea gates. Pragmatic, disciplined, and deeply loyal, Baudouin knows the Latin state is tottering on the brink of ruin. Yet bound by chivalric oaths to Emperor Baldwin II, he refuses to retreat to comfortable ancestral estates in the Low Countries. Instead, he patrols the dilapidated ramparts day and night, ferreting out Greek conspiracies and preparing for a desperate last stand. Scorning courtly rhetoric and empty promises, Baudouin places his faith solely in thick masonry and heavy steel crossbows. Aware that his Flemish knights constitute the last heavy cavalry reserve in Thrace, he drastically curbs his own living expenses to maintain warhorse rations and chainmail armor. With the grim stoicism typical of northern warriors, he holds the Galata walls as an unyielding bulwark against Greek infiltration. Bound by blood and chivalric duty to the memory of the first Latin crusaders, Baudouin stands resolute on the walls of Galata. He knows that when the final assault comes, his halberds and Flemish mail will offer the only real sanctuary left in Constantinople.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with blunt Flemish resolve and veteran conciseness, cutting through courtly pretenses to focus on immediate rampart defenses.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_8_3",
+  "HeroName": "Folke Johansson Ängel",
+  "Description": "Archbishop Folke Johansson Ängel was one of the most transformative ecclesiastical titans in Swedish medieval history, presiding as Archbishop of Uppsala from 1267 to 1277. In 1259, as the leading archdeacon of the see and the ecclesiastical anchor of the noble Ängel house, Folke was already spearheading sweeping structural reforms across the archdiocese. His defining historical achievement was the monumental decision to transfer the archiepiscopal see from Gamla Uppsala to Östra Aros (modern Uppsala), laying the foundations for the magnificent Gothic cathedral that remains Sweden's ecclesiastical heart. Fiercely defending the spiritual immunities and jurisdictional independence of the Church, Folke secured papal confirmations guaranteeing that episcopal elections remained free from secular interference. Combining high-born baronial authority with immaculate canonical statecraft, he consecrated monarchs and mediated realm-shaking treaties with sovereign authority. His architectural vision, political courage, and tireless pastoral leadership transformed Uppsala into an impregnable citadel of Scandinavian Christendom. Archbishop Folke personally oversaw the erection of the soaring Gothic choir and pointed vaults of the new cathedral at Östra Aros, recruiting master masons from France to instruct native builders. Leveraging his archiepiscopal authority, he issued synodal decrees prohibiting aristocratic blood feuds, consolidating the jurisdiction of ecclesiastical courts across northern Christendom. His tireless devotion elevated the Church of Sweden to the zenith of spiritual and architectural glory, venerated as an immortal prince of the Church.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with immense ecclesiastical majesty and thunderous pastoral authority, delivering canonical decrees with regal eloquence and unyielding firmness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2i",
+  "HeroName": "Hallur Gizurrson",
+  "Description": "Hallur Gizurrson was the gallant eldest son and designated heir of Gissur Jarl Thorvaldsson, embodying the chivalric zenith and future hope of the Haukdælir house. In 1253, possessing towering martial prowess, magnetic charisma, and mature diplomatic tact, Hallur stood as the primary mediator seeking an end to Iceland's fratricidal civil war. His historic wedding to Ingibjörg Sturludóttir at Flugumýri was celebrated across the island as the grand peace summit designed to reconcile the warring Sturlungar and Haukdælir dynasties forever. Yet that festive autumn night dissolved into catastrophic horror when implacable factional hardliners surrounded the timber hall and set it ablaze. Hallur fought with titanic valor through choking smoke and showering embers, holding the collapsed doorway single-handedly to buy precious moments for his kin before falling heroically in the inferno. His tragic sacrifice extinguished the last hope of autonomous Icelandic reconciliation, turning his father into an avenging fury and paving the way for Norwegian royal conquest. Amidst the infernal flames of Flugumýri, Hallur held the burning portico against dozens of armed assailants, wielding his sword with superhuman ferocity to shield his kin. As the chosen champion destined to reconcile Iceland's deadliest dynasties, his heroic fall altered the political destiny of the island forever. His chivalric magnanimity and legendary martyrdom cemented his memory as one of the purest and most tragic heroes of the Icelandic sagas.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with resonant patriarchal authority, chivalric confidence, and natural leadership, commanding immediate respect through unyielding resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

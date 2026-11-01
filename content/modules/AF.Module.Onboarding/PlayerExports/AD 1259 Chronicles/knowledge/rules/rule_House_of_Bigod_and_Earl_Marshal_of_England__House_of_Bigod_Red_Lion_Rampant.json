@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Bigod_and_Earl_Marshal_of_England",
+  "Keywords": [
+    "House of Bigod Red Lion Rampant",
+    "Hereditary Earl Marshal Office",
+    "Framlingham Castle Stronghold",
+    "Hugh Bigod Justiciar Reforms"
+  ],
+  "RagShortTexts": [
+    "The House of Bigod held the office of Earl Marshal, governing East Anglia from Framlingham."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Commanding East Anglia from the thirteen towers of Framlingham Castle, the House of Bigod held the hereditary dignity of Earl Marshal of England. Roger Bigod openly defied Henry III's absolutist threats in Westminster Hall, while his brother Hugh Bigod served as the reformist Chief Justiciar cleaning up shire administration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Directing army muster rolls and knightly codes, Bigod's prestige was essential to legitimize the 1258 Provisions of Oxford across the kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Framlingham's curtain walls loom above surrounding meres. Serfs respect Earl Roger's itinerant justices who curb the extortion of predatory forest bailiffs."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Joachim_of_Fiore_1260_Apocalyptic_Prophecy",
+  "Keywords": [
+    "Joachim of Fiore Prophecy",
+    "1260 Age of Holy Spirit",
+    "Medieval Millenarian Fever",
+    "Spiritual Franciscan Portents"
+  ],
+  "RagShortTexts": [
+    "Joachim of Fiore's prophecy that the Age of the Spirit would commence in 1260 ignited."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Abbot Joachim of Fiore divided world history into three progressive dispensations: the Age of the Father (Law), the Age of the Son (Gospel Grace), and the culminating Age of the Holy Spirit, mathematically projected to begin around 1260. In late 1259, Mongol devastation and portents ignited apocalyptic millenarian fervor across Christendom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Radical Spiritual Franciscans embraced Joachimite prophecies, preaching that corrupt clerical hierarchies would wither before voluntary apostolic poverty in 1260. The Curia watches warily, censuring extremists who predict the obsolescence of church sacraments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Barefoot flagellants march through marketplace mud whipping their shoulders bloody, crying that judgment comes in 1260. Common folk crowd into parish chapels, weeping for mercy before the sky turns red."
+    }
+  ],
+  "TextMappings": []
+}

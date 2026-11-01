@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_5_2_1",
+  "HeroName": "Sul",
+  "Description": "Sul is thirty-two years old and the wife of Emir Al-Muzaffar al-Ashqar. She is the mother of their daughter Dilber and their younger son Ibrahim. She carries herself with calm dignity and usually wears a grey-green gown, with a silver-threaded headcloth and a small amulet pinned at the collar. The game marks her as a tactician. In her youth she followed her husband through camp drills and learned marching and deployment, and that habit still shows when she sorts the household accounts.\nShe grew up in army camps and was used to moving between tents and the post roads. After her marriage she took charge of the household's servants and retinue, and she came to plan before she acted. Those years taught her that a band of followers holds together through daily order, not through the outcome of a single battle.\nWith her husband's rivals and the women of the court she keeps to courtesy and restraint. She never argues in public, yet she remembers each lady's likes and dislikes, and she sends a fitting gift at the right moment to dissolve friction before it grows. On her husband's career she is more cautious than he is, and she often urges him to read the situation fully before he acts.\nHer ideal is to see both children establish themselves at court on their own ability, without leaning on their father's name. Her darkest fear is that once her husband falls, she and the children will be treated as political pawns, stripped of their tents and property in the upheaval, and separated from one another.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Help her daughter and younger son make their own place at court through their own ability, so the family name is not their only shield.",
+    "Keep the household servants and ledgers in order, so the retinue that travels with her husband still has grain and lodging through any upheaval.",
+    "Cultivate friendships with the wives of rival emirs, so the family keeps a channel for negotiation if her husband's standing collapses."
+  ],
+  "Values": [
+    "Order is built day by day, and a household is better protected by careful planning than by sudden courage in the field.",
+    "A quiet reply gives a rival nothing to grasp, whereas an open boast becomes a handle the enemy can turn against the speaker.",
+    "Affection within a family must rest on mutual respect, because blood alone does not guarantee loyalty in the end."
+  ],
+  "Fears": [
+    "Fears that a sudden reversal at court will let rival emirs confiscate the household's camp and goods, leaving her children with nothing.",
+    "Fears that a gap in the household's provisions will weaken her husband's standing among his peers, as hungry men lose faith in their leader."
+  ],
+  "SpeechStyle": "Speaks at a measured pace and often asks a question to draw out others. Talk of troops or supplies makes her brisk and exact. One cool remark puts her husband's rivals on guard.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

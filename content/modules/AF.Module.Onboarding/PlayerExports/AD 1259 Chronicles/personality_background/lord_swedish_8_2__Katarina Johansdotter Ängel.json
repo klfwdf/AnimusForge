@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_8_2",
+  "HeroName": "Katarina Johansdotter Ängel",
+  "Description": "Lady Katarina Johansdotter Ängel was an illustrious noblewoman and cultural luminary belonging to the exalted Ängel dynasty. In 1259, Katarina was a pivotal figure within the high aristocratic society of central Sweden, renowned for her sharp intellect, courtly elegance, and extensive dynastic connections. Educated in classical Latin and ancestral Scandinavian literature, she moved effortlessly among prelates, foreign envoys, and high barons, conducting delicate diplomatic conversations with consummate charm. Beyond her courtly presence, Katarina played a vital role in managing the administrative finances and ceremonial records of the Ängel estates. Her keen political intuition and perceptive assessment of court intrigues made her a valued informal advisor to her father and brothers during factional power struggles. A generous patron of monastic scriptoriums and ecclesiastical textile workshops, she embodied the highest ideals of medieval Scandinavian noblewomanhood. Within the great halls of the Ängel estates, Lady Katarina hosted brilliant courtly salons, welcoming wandering Continental scholars and troubadours to turn remote castles into luminous intellectual centers. Through perceptive diplomatic mediation, she defused brewing aristocratic feuds, preserving the delicate balance of power across the Svealand marches. Her intellectual brilliance, courtly poise, and immaculate grace commanded universal respect among the noble houses of Scandinavia.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with courtly refinement and diplomatic subtlety, weaving charming grace with keen political observation and aristocratic poise.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

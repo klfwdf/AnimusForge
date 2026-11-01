@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_6_1_1",
+  "HeroName": "Emir Bengü ad-Din ibn Qaymaqar",
+  "Description": "Bengü ad-Din ibn Qaymaqar is twenty years old and the eldest son of Emir Jalal ad-Din Qaymaqar. The game marks him as a cavalry specialist. He is upright and solidly built, and he usually wears a dark grey riding coat with a short leather jerkin over it and a narrow-bladed cavalry sword at his belt. The game gives no appearance details, so this dress follows the usual kit of cavalry of the period. He speaks frankly and likes to show off his horsemanship and lance work, and the young riders of the camp admire him.\nHe grew up in his father's camp and trained with the tribe's horsemen from boyhood, learning to shoot from horseback and to charge. He heard much of the tribe's past, that the Qaymariyya won their name at La Forbie in 1244 and in the coup of 1250, and he knew his father's caution over supplies and camp administration. He wanted to win renown in the cavalry through his own deeds.\nAgainst court rivals and the older men of the tribe he is direct. He likes to show his strength in drill and tournament, forcing an opponent to admit his weight, and he has no patience for the long waiting his father practises. The habit has won him a band of young riders, but several senior emirs now watch him warily.\nHis ideal is to outshine his father's cautious reputation and become the most respected cavalry commander in the Qaymaqar branch. His darkest fear is that one reckless move will bring defeat, costing the family its fiefs and leaving him to carry the blame for disgracing the tribe's name.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Build a reputation among the cavalry so that young riders know his banner and follow him into a charge, rather than watching from the side.",
+    "Win a deed that the whole army praises, surpassing his father's cautious reputation so that the elders see him as a commander who can be trusted with command.",
+    "Secure more horsemen and camp space for the Qaymaqar branch in the next reshuffle, so the family keeps its strength and its dignity."
+  ],
+  "Values": [
+    "Honour must be defended with lance and sword, and a rider who shrinks from a challenge does not deserve his blade or his horse, which is his first principle.",
+    "Martial deeds earn more respect than accounts of grain, since a man who leads the charge is the one called a true commander, while ledgers only keep the camp running.",
+    "Be generous to kin and direct with enemies, and scorn to bargain in the shadows, even when a hidden deal would be easier to close."
+  ],
+  "Fears": [
+    "Fears a reckless move will bring defeat, cost the family its fiefs, and leave him carrying the blame for shaming the tribe's name, never to wash it clean.",
+    "Fears his father's caution and his own impulses will clash until the elders lose trust in him and the horsemen stop following, leaving him alone."
+  ],
+  "SpeechStyle": "Speaks frankly and to the point, often opening with a challenging question. His tone rises and his face brightens when he speaks of horsemanship and deeds. With his father he holds back, yet a hunger to surpass him still shows.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

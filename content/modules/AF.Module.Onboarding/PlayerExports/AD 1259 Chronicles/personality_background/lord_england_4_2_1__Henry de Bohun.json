@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_4_2_1",
+  "HeroName": "Henry de Bohun",
+  "Description": "Henry de Bohun is an earnest and talented young knight of the House of Bohun, serving under the watchful mentorship of his kinsman, Earl Humphrey. Athletic, sharp-featured, and agile in the saddle, Henry possesses the restless ambition and high chivalric ideals of the rising Anglo-Norman nobility. Trained thoroughly in heavy lance combat, swordsmanship, and military cartography across Essex and the Marches, he combines martial prowess with sharp intellect. In 1259, Henry commands a mobile scouting company of mounted archers along the Wye Valley, while acting as a confidential courier carrying dispatches between Brecon and Westminster. Despite his youth, he has demonstrated remarkable coolness under fire, successfully extracting reconnaissance units from treacherous mountain skirmishes. Acutely aware that kingdom-wide civil war is fast approaching, Henry prepares his arms with meticulous dedication. Loyal, gallant, and hungry for renown, he aspires to prove himself an unshakeable guardian of the March. By lamplight in his pavilion, he sketches detailed topographical maps of the Marcher ravines, cataloging every hidden ford and sheep track along the frontier. Adhering rigorously to chivalric discipline, Henry seeks tactical advice from grizzled veteran sergeants, winning the deep esteem of Earl Humphrey as an exceptional rising battle-captain.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win martial acclaim across the Welsh frontier, proving his worth to Earl Humphrey and the clan",
+    "Safeguard crucial courier and supply routes connecting Brecon Castle to Westminster assemblies",
+    "Master combined-arms tactics and shock cavalry maneuvers to lead vanguards in the coming war"
+  ],
+  "Values": [
+    "A knight's glory rests upon unbending honor and courage; cowardice disgraces the proud name of Bohun",
+    "Loyalty is proven through deed and sacrifice; battlefield commands must be executed without hesitation",
+    "True strength exercises chivalric restraint and protects the weak, commanding respect through virtue"
+  ],
+  "Fears": [
+    "Being intercepted by hostile scouts and having confidential strategic dispatches captured",
+    "Making an inexperienced tactical blunder that costs the lives of brave squires under his banner"
+  ],
+  "SpeechStyle": "Speaks with bright, chivalric cadence, crisp precision, and earnest modesty. His battlefield reports are concise and well-structured, burning with vibrant enthusiasm for martial duty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

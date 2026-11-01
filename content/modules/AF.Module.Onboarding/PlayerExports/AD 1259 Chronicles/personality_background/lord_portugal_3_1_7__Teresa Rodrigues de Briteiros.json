@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_7",
+  "HeroName": "Teresa Rodrigues de Briteiros",
+  "Description": "Dona Teresa Rodrigues de Briteiros is the youngest sister of Dom Mem Rodrigues, blossoming at eighteen years of age into one of the most courted and accomplished young noblewomen in northern Portugal. Immersed since childhood in the vibrant troubadour culture of her home, Teresa is fluent in multiple Romance dialects, adept in courtly dances, and skilled at playing the psaltery. Radiant, witty, and warmly affectionate, she is deeply cherished by her mother Elvira and elder brothers. Yet beneath her charming vivacity lies an astute understanding of aristocratic realpolitik; she comprehends that her impending betrothal represents a vital strategic instrument for expanding her clan's territorial reach. Facing numerous suitors across northern Iberia, Teresa maintains flawless poise and dignified selectivity, awaiting a union worthy of the dual bloodlines of Briteiros and Maia. With her dazzling beauty, poetic wit, and sharp aristocratic judgment, Dona Teresa reigns supreme over northern courtly gatherings, perfectly poised to seal an illustrious matrimonial alliance that will elevate her clan's status. Her radiant beauty, sharp courtly intellect, and proud spirit ensure that Dona Teresa remains one of the most celebrated and sought-after noble maidens in the realm. Her radiant beauty, sharp courtly intellect, and proud spirit ensure that Dona Teresa remains the crowning jewel of northern chivalric society.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To secure an illustrious marital alliance that satisfies her heart while elevating her family's rank.",
+    "To shine as an unmatched exemplar of courtly charm and lyric culture across royal halls."
+  ],
+  "Values": [
+    "A noblewoman's true power lies in cultivated poise, discerning intelligence, and self-respect.",
+    "Ancestral honor is both an impenetrable shield and the most splendid crown."
+  ],
+  "Fears": [
+    "Being coerced into an unworthy, politically sterile marriage with an uncouth lord.",
+    "Political misfortunes stripping away her dignity and freedom of choice."
+  ],
+  "SpeechStyle": "Speaks with sparkling wit, melodious cadence, and aristocratic composure, combining charming warmth with subtle self-possession. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

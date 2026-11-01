@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_5_1_c",
+  "HeroName": "Ziemomysł Inowrocławski",
+  "Description": "Siemomysł of Inowrocław (Ziemomysł) reigns as Duke of Inowrocław, the second son of Duke Casimir I of Kuyavia and full brother to future King Władysław I the Elbow-high. Governing a vulnerable frontier principality between Greater Poland and the lower Vistula, Siemomysł pursued radical administrative and military modernization, heavily influenced by Western European chivalric institutions and German municipal law. He formed a close strategic confederation with the Teutonic Order and Duke Sambor II of Tczew, marrying Sambor's daughter Salomea and garrisoning his castles with expert German mercenary knights and engineers. This aggressive reliance on foreign retainers alienated conservative native Kuyavian squires, provoking a massive baronial uprising aided by Duke Bolesław the Pious of Greater Poland that briefly drove Siemomysł into exile in Prussia. Refusing to yield, Siemomysł rallied crusader reinforcements, retook his capital, and granted Inowrocław Magdeburg municipal charters while establishing state-regulated brine salt evaporation works. Pragmatic, resolute, and impervious to traditionalist slander, Siemomysł dragged his frontier duchy toward urban modernization with an iron hand. Siemomysł constructed masonry salt storehouses and river mills, injecting commercial vitality into Inowrocław. His relentless modernization policies turned his vulnerable border duchy into a thriving economic fortress.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Implement Magdeburg municipal statutes and brine salt monopolies to modernize Inowrocław into an urban fortress.",
+    "Maintain close military ties with the Teutonic Order and Tczew to deter domestic baronial insurrections.",
+    "Ruthlessly crush conservative noble rebellions to establish centralized autocratic governance across his principality."
+  ],
+  "Values": [
+    "Value practical innovation, advanced metallurgy, and foreign engineering over stagnant feudal provincialism.",
+    "Prize professional knightly discipline and siegecraft, relying on veteran retinues rather than unruly peasant levies.",
+    "Demonstrate unbending political resilience, leveraging external alliances to rebound from defeat and exile."
+  ],
+  "Fears": [
+    "A joint invasion by Greater Poland and rebel Kuyavian barons destroying his newly constructed salt evaporation works.",
+    "The Teutonic Order exploiting their military presence to usurp his throne and annex Inowrocław into Prussia."
+  ],
+  "SpeechStyle": "Stagnation breeds ruin; if German stonecraft, salt tolls, and veteran lances make Inowrocław invincible, I care nothing for the slander of backward barons! Practical reform creates enduring power; Inowrocław bows to no slander!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2g",
+  "HeroName": "Střezislava of Šternberk",
+  "Description": "Střezislava is the noble consort of hero commander Jaroslav of Šternberk, tracing her bloodline to ancient Bohemian nobility, governing the interior keep and military quartermaster supplies of their frontier castle. Resolute, composed, and indomitable under crisis, she rallied fortress women during the desperate Mongol siege to haul defensive stones and bandage wounded warriors, displaying sublime heroism that earned the lifelong reverence of knights and townsfolk. In peacetime, she established hospital cloisters for disabled veterans and organized emergency granaries and medical stores. Managing manor leases and serf harvests while her husband trained frontier levies, she is revered across the House of Šternberk as a stalwart maternal guardian who preserves order through every storm. Laboring ceaselessly across castle weaving halls and apothecary chambers, Střezislava prepared heavy woolen doublets and medicinal salves to sustain garrisons through frozen mountain blizzards, opening granaries during famine to feed war-ravaged peasant communities. Her serene fortitude kept fortress storehouses brimming, while her pious Christian devotion earned the adoration of Moravian soldiers and burghers as the benevolent heart of the Šternberk lineage. Her steadfast maternal care and unwavering faith preserved domestic harmony through the darkest years of siege and war.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guarantee logistical supplies and medical stores across Moravian keeps, freeing frontline knights from worry.",
+    "Endow monastic hospices and charities, honoring fallen champions and providing for their orphans."
+  ],
+  "Values": [
+    "Regards steadfast self-sacrifice, fidelity, and Christian mercy as the crowning virtues of noblewomen.",
+    "Believes a well-ordered home and unified community are the true foundations of any fortress."
+  ],
+  "Fears": [
+    "Fears sudden invasions shattering Moravian peace, bringing widespread displacement and devastation.",
+    "Worries frontier sentinels will become negligent, inviting attacks that tarnish her husband's legendary fame."
+  ],
+  "SpeechStyle": "When war beacons blaze, the hearth becomes our battle line; every sack of grain and roll of bandage secures another life on the ramparts. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Střezislava of Šternberk"
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_1_4",
+  "HeroName": "Tommasa Boccanegra",
+  "Description": "Tommasa Boccanegra oversees communal granaries and public grain trusts established by the popular government to protect urban artisans from famine and price-gouging. Her meticulous ledger audits and fair rationing ensure stable bread prices throughout naval blockades, earning widespread adoration from the working guilds as a guardian of the common folk. During severe naval blockades and winter grain shortfalls, Tommasa orchestrated covert shipments of wheat from Provence and Sicily, distributing subsidized rations directly to guild apprentices and mariners' dependents. She founded vocational hospices for disabled shipwrights and established weaving guilds for impoverished women, furnishing medical salves and flour stipends that earned her revered standing among urban laboring classes. Viewing social welfare as the ultimate guarantor of civic stability, she worked tirelessly to ensure that the working families who manned the galleys never suffered neglect during wartime crises. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure that commoner families and mariners' kin never suffer starvation during wartime.",
+    "Establish transparent, uncorrupted civic grain reserves and guild mutual-aid funds."
+  ],
+  "Values": [
+    "Civic bread and popular sustenance form the bedrock of legitimate governance.",
+    "Every bushel of grain belongs to the public and brooks no corrupt embezzlement."
+  ],
+  "Fears": [
+    "Venetian fleet blockades strangling grain imports and inducing widespread famine.",
+    "Administrative corruption eroding the sacred trust between the guilds and the popular regime."
+  ],
+  "SpeechStyle": "Speaks with warm practicality and fiscal precision, deeply attuned to the welfare of commoners. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

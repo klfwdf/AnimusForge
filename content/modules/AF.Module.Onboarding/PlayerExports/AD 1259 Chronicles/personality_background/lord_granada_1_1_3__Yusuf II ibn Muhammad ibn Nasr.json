@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_1_3",
+  "HeroName": "Yusuf II ibn Muhammad ibn Nasr",
+  "Description": "Yusuf ibn Muhammad ibn Nasr is the martial second son of Sultan Muhammad I al-Ahmar, commanding royal cavalry squadrons and fortress garrisons at twenty-three years of age. Unlike his scholarly elder brother, Yusuf dedicated his youth to martial excellence, mastering the curved scimitar, composite recurve bow, and Andalusian equestrian skirmishing. Stationed along the northern approaches near the Sierra Nevada, he commands a swift cavalry force comprised of Andalusian veterans and Berber horsemen tasked with intercepting Castilian border raiders. Bold, fiery, and fiercely loyal to his father and brother, Prince Yusuf has repeatedly spearheaded counter-attacks to secure frontier outposts. Though sometimes impatient with diplomatic protocol, his battlefield valor and magnetic camaraderie with his troopers make him the indispensable sword arm safeguarding the fledgling emirate. His relentless cavalry sorties and iron discipline along the rugged northern mountain passes turn the approaches to Granada into an impenetrable shield, earning Prince Yusuf universal acclaim as the foremost champion of the emirate. Prince Yusuf's fearless battlefield audacity, peerless horsemanship, and unbreakable fraternal loyalty make him the terrifying iron vanguard shielding the frontiers of Granada against all invasion. Prince Yusuf's fierce chivalric spirit and unshakeable courage in the saddle ensure that his cavalry remains the most feared strike force along the frontier.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To forge the royal cavalry into an elite shock force capable of crushing Christian frontier incursions.",
+    "To defend the perimeter of Granada, ensuring his father and brother can govern without distraction."
+  ],
+  "Values": [
+    "Cold steel and absolute battlefield readiness preserve the homeland; peace is never granted by mercy.",
+    "Fraternal loyalty and unswerving devotion to the Sultan are immutable chivalric virtues."
+  ],
+  "Fears": [
+    "Massed Castilian heavy cavalry and siege engines overwhelming frontier defiles.",
+    "Leading his loyal comrades into a deadly mountain ambush through overzealous advance."
+  ],
+  "SpeechStyle": "Speaks with ringing martial directness and fiery certainty, cutting through pleasantries with the blunt clarity of a frontline captain. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

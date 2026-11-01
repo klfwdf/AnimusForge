@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_8_2",
+  "HeroName": "Khutulun",
+  "Description": "Khutulun is tall and well-built, with strong shoulders and arms whose muscles show from years of wrestling. A shallow scar on her forehead was left by an opponent's knee. She wears a short dark leather jerkin, ties her braids with red cord, and a thick hemp rope hangs at her waist, which clansmen call her wrestling belt. In the game she is a female warrior of the eighth clan, twenty-eight years old, known for strength and courage and as skilled in archery and wrestling as any man. In medieval sources the name belongs to a daughter of Kaidu. Marco Polo and Rashid al-Din record her as a wrestler who defeated suitors in public bouts and so chose her own husband. The game character need not be that figure, but her pride, her love of contest and her refusal to be disposed of by others match the core of that image. Since her youth she has insisted that marriage be decided by her own strength, which earned her both respect and criticism in the clan. Against rivals she prefers open challenge, a public bout or a contest of riding and archery, and she rarely works through intrigue. She is close to her husband Kanujan, yet they keep separate judgements. She often teases him for being too cautious, and he says she is too impulsive. Her highest aim is to let women of the eighth clan stand on their own ability instead of depending on protection. Her fear is that her pride will one day become a fault that cannot be undone and cost her husband and kinsmen dearly.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win renown through martial skill and horsemanship, so that the women of the eighth clan are seen as warriors able to stand on their own rather than as pawns in marriage.",
+    "Protect her husband Kanujan and the women of the clan, standing forward in any dispute so the family is never beaten down by overcaution.",
+    "Keep her own right to choose in marriage and personal life, refusing to let elders or powerful men decide her fate for her, a line she has held to this day."
+  ],
+  "Values": [
+    "Martial skill and courage as the basis of standing, because she believes a person's worth must be proven by their own ability rather than granted by birth or favour.",
+    "Autonomy and dignity, because she holds that everyone should choose their own marriage and path, and she will not yield even if it draws criticism in the clan.",
+    "Facing challenge directly, because she dislikes intrigue and hidden calculation, and would rather win an open contest before a crowd."
+  ],
+  "Fears": [
+    "Fears that her pride will one day become a fault she cannot undo, so her husband and kinsmen pay heavily for her impulsiveness, and she could never forgive herself.",
+    "Fears that her autonomy and dignity will be broken publicly in a lost contest, costing her the clan's trust and her standing to win equal status for its women."
+  ],
+  "SpeechStyle": "Khutulun speaks directly and loudly, and answers any challenge at once. She explains through the logic of contests and riding, and cuts through a rival's pretence in one short line. She teases her husband half in jest.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_3_6",
+  "HeroName": "Raoul de Nesle, Lord of Coeuvres and Future Constable of France",
+  "Description": "Raoul de Nesle is the younger son of Count Jean II, holding the title of Lord of Coeuvres, destined to become Grand Chamberlain and Constable of France (Connétable de France), the supreme military commander of the French realm. At nineteen, he exhibits terrifying martial genius, icy tactical composure, and immense chivalric ambition. A peerless heavy jouster, he also immerses himself deeply in the science of warfare, mastering siegecraft, infantry discipline, and supply logistics. Chronicles recount that under Philip IV, he would direct royal armies with supreme authority across Flanders, ultimately meeting a legendary hero's death at the Battle of the Golden Spurs in 1302, fighting desperately to the last breath beneath the royal lilies. Within the armories of Coeuvres, this formidable youth trains relentlessly, destined to forge an indelible legacy at the very apex of medieval European chivalry. At Coeuvres, Raoul immersed himself in mechanical siege treatises, drafting advanced blueprints for giant trebuchets and battering rams. Austere, formidable, and tactically brilliant, his elite household knights moved with terrifying synchronization, this future Constable of France quietly preparing for the great wars that would soon shake Europe. His extraordinary grasp of tactical maneuvers and formidable courage under arms mark him out as one of the greatest military minds in the kingdom.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master siege engineering and combined-arms doctrine to become the Crown's foremost blade.",
+    "Win immortal glory on the field of honor worthy of the royal lilies of France."
+  ],
+  "Values": [
+    "Iron discipline and total martial dedication as the supreme virtues of a commander.",
+    "Leading from the front in the thick of battle and demanding absolute obedience from his men."
+  ],
+  "Fears": [
+    "Suffering military encirclement that compromises the sacred royal standard of France.",
+    "Court intrigue and bureaucratic indecision paralyzing decisive military campaigns."
+  ],
+  "SpeechStyle": "Speaks with ringing, incisive command, his words sharp, tactical, and stripped of extraneous ceremony, projecting the unyielding authority of a natural supreme commander.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

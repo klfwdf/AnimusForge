@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_5a",
+  "HeroName": "Ioánnis Komnīnós Palaiológos, Sebastokrator of Nicaea",
+  "Description": "Ioánnis Komnīnós Palaiológos, aged forty-one, is the formidable younger brother of Emperor Michael VIII and supreme military commander of the Empire of Nicaea, bearing the title of Sebastokrator. A battle-hardened veteran of legendary tactical brilliance and iron resolve, his martial renown spans the entirety of Anatolia and the Balkans without rival. In the epochal Battle of Pelagonia in the autumn of 1259, Ioánnis commanded the imperial host against the grand coalition of Epirus, Achaean crusaders, and Sicilian heavy cavalry. Employing masterful feigned retreats, mobile Cuman horse-archers, and disciplined infantry barricades, he routed the allied armies and captured Prince William of Villehardouin along with dozens of Western barons. Elevated to the supreme dignity of Sebastokrator, he remains a stoic, tireless general who spends his days fortifying frontier garrisons and drilling elite cataphract divisions. Recognizing the raw shock power of Western lances, he consistently pioneers combined-arms doctrines emphasizing ranged firepower, mobility, and devastating counter-ambushes. As the premier military architect of the Palaiologan restoration, Ioánnis's unbroken battlefield triumphs guarantee the impending liberation of Constantinople and the resurrection of Roman imperial greatness. Within the imperial headquarters, he labors day and night orchestrating complex supply trains and vanguard cavalry scouts, leaving nothing to chance as he prepares the imperial forces for the definitive liberation of Constantinople.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 5a lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with commanding thunder and concise martial brevity, radiating the unshakeable confidence, grim discipline, and decisive authority of a conqueror.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

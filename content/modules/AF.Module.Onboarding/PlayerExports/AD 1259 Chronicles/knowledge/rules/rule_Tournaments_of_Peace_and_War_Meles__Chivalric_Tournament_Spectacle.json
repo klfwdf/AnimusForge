@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Tournaments_of_Peace_and_War_Meles",
+  "Keywords": [
+    "Chivalric Tournament Spectacle",
+    "Lances à Plaisance vs Lances of War",
+    "Melee Free for All and Captures",
+    "Knight Ransom and Heraldic Finery"
+  ],
+  "RagShortTexts": [
+    "Chivalric tournaments combined spectacle with dangerous mock battles where knights captured."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Chivalric tournaments functioned as the proving ground for knightly prowess and fortunes. Contests ranged from peaceful jousts using blunted lances (à plaisance) to combat with sharpened war steel (à outrance). In the sprawling mock-battle mêlée, knights charged across open fields, capturing rivals to claim valuable armor, warhorses, and heavy cash ransoms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Landless younger sons amassed wealth by capturing aristocratic prisoners, following the path of William Marshal. Though the Papacy repeatedly banned tournaments as sinful bloodbaths, princes hosted them to hone military retinues."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Grandstands flutter with embroidered favors tossed by ladies. But on the lists, splintering ash lances fly like deadly shrapnel; a glancing impact can snap a neck in an instant."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Yaropolk Yurievich of Murom, brother of Grand Prince Davyd, is a venerable senior statesman and master of fiscal administration. Pragmatic, experienced, and deeply versed in customary Slavic law, he directs internal customs revenues and trade regulation across northern Murom. Yaropolk expanded state timber shipyards and commercial wharves in the lower posad, standardizing regional weights and measures while suppressing smuggling. His fair oversight stimulated bustling river transit along the Oka, transforming Murom into a lucrative transshipment crossroads connecting Vladimir and the Volga. In princely council, his balanced arbitration repeatedly harmonized property disputes between landed boyars and rising merchant guilds. Understanding that logistical stability underpins sovereign security, Prince Yaropolk maintained full municipal granaries and steady tax flows, standing as an indispensable economic anchor of the realm.  Yaropolk's meticulous codification of customs ordinances and expansion of boatbuilding shipyards provided fair arbitration for foreign merchants, safeguarding the vital transit revenues and economic autonomy of the Principality of Murom.  By balancing commercial fairness with sovereign customs regulation and maintaining defensive boatyards, he secured vital economic resources, weapons, and logistics needed to sustain the principality's defenses against external threats across the Oka basin.  He remains an indispensable guardian of Murom's economic sovereignty and peace.",
+  "SpeechStyle": "Clear ledgers fill the treasury, and a full treasury guarantees peace. Only through unbending fairness and just commerce can Murom stand secure. Execute your duties with honest diligence!",
+  "Motivations": [
+    "Oversee river customs tariffs and warehouse logistics along the Oka, securing abundant fiscal reserves for defense.",
+    "Enforce legal fairness across commercial wharves, attracting foreign merchants to expand regional prosperity."
+  ],
+  "Values": [
+    "Value fiscal discipline, institutional integrity, and rule of law as foundational pillars of sovereign endurance.",
+    "Prize cool analytical calculation and unpretentious diligence over reckless adventurism and court vanity."
+  ],
+  "Fears": [
+    "Fear regional warfare closing the Oka navigation channels, strangling merchant traffic and bankrupting the state treasury.",
+    "Dread bureaucratic corruption compromising strategic grain stockpiles and leaving the principality vulnerable during emergencies."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ]
+}

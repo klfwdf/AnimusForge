@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2j",
+  "HeroName": "Čeněk I of Lipé",
+  "Description": "Čeněk I of Lipé stands as the formidable patriarch of the Ronovci dynasty (bearing crossed black branches), founding the paramount aristocratic lineage of the Lords of Lipá (Páni z Lipé) who would dominate Czech politics. Ruling the strategic bastions of Česká Lípa and Žitava in northern Bohemia, he welded martial authority and astute political maneuver to construct an extensive feudal hegemony spanning the upper Elbe and Lusatian marches. Shrewd, ambitious, and calculating, Čeněk navigated King Přemysl Otakar II's centralization policies with consummate dexterity. He contributed veteran northern levies to royal Danubian campaigns to reap lucrative crown privileges, while aggressively absorbing neighboring baronies and controlling transit commerce through private retinues. He lurks like a patient titan in northern mountains, biding his time to seize supreme power in the realm. Establishing toll stations and watchtowers along the Elbe River, Čeněk channeled transit revenues from Baltic trade routes into the coffers of Lipé, bankrolling companies of seasoned Saxon crossbowmen and siege engineers. Astutely maneuvering between the crown and rival magnates, he quietly absorbed neighboring fiefdoms while placating the Prague court with gifts of warhorses, operating as a consummate northern kingmaker. His calculating genius and formidable military power laid the unshakeable foundation for the dominance of the Lords of Lipá.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Monopolize northern trade tolls leading to Lusatia and Saxony, making Lipé the undisputed master of the north.",
+    "Act as the decisive mediator between the crown and barons, seeking the Supreme Marshalship of Bohemia."
+  ],
+  "Values": [
+    "Regards dynastic territorial expansion and trade control as paramount survival laws, scorning false pieties.",
+    "Values cold patience and calculating strategy, convinced equilibrium preserves magnates beside strong kings."
+  ],
+  "Fears": [
+    "Fears the royal court dispatching an army to seize northern tolls, stripping Lipé of its autonomy.",
+    "Worries the southern Vítkovci will monopolize supreme power, marginalizing the Lipé faction."
+  ],
+  "SpeechStyle": "Northern blizzards sharpen the teeth of Lipé; royal favor is glorious, but only the castles and men-at-arms in our own grasp endure forever! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Čeněk I of Lipé"
+}

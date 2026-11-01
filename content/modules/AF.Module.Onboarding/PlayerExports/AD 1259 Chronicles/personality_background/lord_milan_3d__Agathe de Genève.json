@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3d",
+  "HeroName": "Agathe de Genève",
+  "Description": "Agathe de Genève, hailing from the sovereign Counts of Geneva, was the consort of Pagano della Torre. Bringing transalpine prestige and vast feudal connections, she managed mountain manors in Valsassina and recruited Swiss-Alpine infantry and blacksmiths to fortify the commune. Lady Agathe constructed fortified masonry granaries across Valsassina, applying the rigorous accounting traditions of Geneva to lay an indestructible economic foundation for the Popolo. Managing transalpine horse breeding and metallurgical trade with Geneva, she audited estate ledgers with iron impartiality to keep Torriani finances impregnable. Maintaining that frugality and industrious statecraft anchored durable regimes, Lady Agathe fortified Torriani ascendancy with Swiss-Alpine discipline and vision. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage iron mining estates across Valsassina to supply Milan with superior weapons.",
+    "Maintain transalpine commerce between Geneva and Milan for mutual economic enrichment.",
+    "Instill chivalric austerity and discipline into Torriani heirs to resist corruption."
+  ],
+  "Values": [
+    "Views frugality and unbending duty as true hallmarks of nobility, scorning empty vanity.",
+    "Believes industrial mountain resources and just rule anchor dynastic longevity."
+  ],
+  "Fears": [
+    "Avalanches or labor disputes halting alpine mining and cutting off communal supplies.",
+    "Her husband's generous nature being ruthlessly exploited by cunning patrician cabals."
+  ],
+  "SpeechStyle": "Speaks with alpine crispness and austere dignity, focused on practical statecraft. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

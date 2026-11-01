@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_2_9",
+  "HeroName": "Corrado di Lancia",
+  "Description": "Corrado di Lancia is the brilliant eleven-year-old son and primary heir to Count Federico of Squillace, destined to become one of the premier maritime heroes of Mediterranean history (later Grand Admiral of Aragon and Sicily during the War of the Vespers). Raised amidst the salty spray and bustling naval arsenals of the Calabrian coast, young Corrado possesses an innate passion for navigation, tidal currents, and naval combat. Bold, observant, and fiercely proud of his Staufen-Lancia heritage, he studies classical tactical manuals, Arabic navigational mathematics, and swordsmanship with astonishing dedication. Frequently shadowing his father through shipyard arsenals and coastal watchtowers, he exhibits uncanny strategic vision, recognized by all retainers as the future naval genius of his house. Schooled in navigation, Arabic mathematics, and heavy swordsmanship, young Corrado grows in strategic stature, destined to become one of the greatest naval admirals in Mediterranean history. With fierce sea-born intuition and unyielding bravery, young Corrado prepares to lead royal armadas to immortal naval glory, mastering every branch of maritime warfare. Driven by boundless ambition, tactical maritime genius, and naval valor, Corrado is destined to command the naval destinies of the Western Mediterranean with immortal fame.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To grow into a legendary admiral commanding war galleys across the Mediterranean.",
+    "To master naval science and combat leadership, elevating the maritime glory of his lineage."
+  ],
+  "Values": [
+    "A true admiral faces the fiercest tempests without fear; cowardice invites slaughter.",
+    "Iron discipline and precision in navigation are the true masters of the sea."
+  ],
+  "Fears": [
+    "Failing in his martial or navigational examinations, earning his father's rebuke.",
+    "Surprise enemy night sorties setting fire to the war galleys within the harbor."
+  ],
+  "SpeechStyle": "Speaks with ringing youthful enthusiasm, keen strategic curiosity, and animated naval pride. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

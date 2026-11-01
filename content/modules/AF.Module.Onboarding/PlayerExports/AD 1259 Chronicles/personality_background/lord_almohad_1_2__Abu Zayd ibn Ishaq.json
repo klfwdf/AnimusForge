@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_1_2",
+  "HeroName": "Abu Zayd ibn Ishaq",
+  "Description": "Abu Zayd ibn Ishaq is a son of Ishaq ibn Yusuf and the younger brother of caliph 'Umar al-Murtada. He is about forty-two, with a sallow face and a missing little finger on the left hand, injured when a cavalry saddle snapped during a training ride outside Marrakesh. He is skilled at cultivating court connections. Officials remember his letters and verses, and his peers call him the most calculating prince of the late Almohads. After the battle of Oujda in 1248 he endured Marinid pressure alongside his brother, but he has always believed he was the better candidate for the caliphate, so he quietly competes with his brother's advisers. Faced with the rise of his cousin Idris al-Wathiq, he refuses to commit and hedges both ways. In recent years he has exchanged several private letters with Marinid envoys, and his brother does not know of them. His deepest aim is to restore the standing of his branch of the family, so that his sons can inherit a real name at court. His darker side is the fear that once his correspondence is exposed, he will be executed as a traitor. He copies each incoming letter and keeps the copy under his pillow.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Restore the standing of his branch of the Ishaq line at court, so that his sons carry the same weight in any future succession as their cousins.",
+    "Navigate between the Marinids and the old Almohad officials, finding a middle path that keeps his house and estates safe until the situation clears.",
+    "Build connections with officials and provincial governors beyond Marrakesh through letters and verse, preparing an escape route for a possible power vacuum."
+  ],
+  "Values": [
+    "Calculation and patience. He believes a prince's most useful asset is the ability to wait for the right moment, not impulsive action that loses everything.",
+    "The honour of his lineage, which he regards as equal in legitimacy to his brother's branch and never a lesser cadet line to be brushed aside.",
+    "Courtly decorum. Even in hardship he insists on elegant phrasing in every letter, because that preserves his rank and dignity at court."
+  ],
+  "Fears": [
+    "Fears that his contacts with the Marinids will be exposed, and that his brother's advisers will have him executed as a traitor and seize his property.",
+    "Fears that his sons will be pushed down the court order and become forgotten cadets while the family name fades from the chronicles."
+  ],
+  "SpeechStyle": "Ironic but mild, he prefers metaphor and verse to direct conclusions and asks questions so the listener reaches the answer alone. He is faintly contemptuous of his brother and lowers his voice, slowing down, whenever Marinids come up.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

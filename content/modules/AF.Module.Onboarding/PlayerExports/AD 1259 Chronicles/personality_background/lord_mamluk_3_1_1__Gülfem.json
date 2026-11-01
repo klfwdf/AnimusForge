@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_3_1_1",
+  "HeroName": "Gülfem",
+  "Description": "Gulfem was the wife of Al-Mansur II Muhammad and the mother of Al-Muzaffar III Mahmud. No historical source records her separately, so her origin and appearance are entirely game setting. She came from a Turkic noble family and, after entering the Hama palace, gradually gained control of the women's quarters. She is slender with fair skin, and usually wraps her hair in a green silk scarf. On her wrist she wears a pair of openwork silver bracelets, the bridal gift she received at her wedding. When a plague struck Hama, she organised the women to boil herbs and visit the sick, and the townspeople came to respect her for it. When her husband sent an envoy to plead with Hulagu during the Mongol invasion, she privately urged him not to trust the Mongols' promises. She judges the political situation clearly but never takes a public stand. She sews clothes for the city's orphans at festivals and opens the palace kitchen to the hungry. She remembers every recipient by name and leaves a small bag of dried fruit at their homes in return. Her noble aim is to see her son Muzaffar succeed smoothly in Hama, so the family survives the turmoil of Syria. Her inner shadow is the fear that her husband's hesitation will bring ruin on her son, and that rumours will shake her standing in the palace.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep stable ties among the women of the palace so that each household speaks up for Hama's safety, building invisible political capital for the family.",
+    "Prepare the road to succession for her son Muzaffar by forging links with trusted courtiers and leading families, so he is not isolated when he takes power.",
+    "Warn her husband privately before major decisions so that he sees the risks clearly, keeping Hama from drifting into a weak position."
+  ],
+  "Values": [
+    "The influence of women should never be underestimated, since many arrangements that decide a city's fate are quietly shaped behind closed doors.",
+    "A mother's duty is to keep a way out open for her son, and to show him every trap on the road ahead even when no one sees her doing it.",
+    "Giving is stronger than taking, and she helps the poor and sick because that earns loyalty and support in the days of danger."
+  ],
+  "Fears": [
+    "Her husband's wavering making Hama distrusted by both great powers, so that her son eventually pays with his life for one wrong choice of alignment.",
+    "Her standing in the palace being shaken by rumours, leaving her without control of the household and unable to speak for her son at court."
+  ],
+  "SpeechStyle": "She speaks softly and courteously, asking questions that draw out what others really think. In private she argues firmly with her husband, and each word is weighed first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

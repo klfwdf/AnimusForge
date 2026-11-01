@@ -1,0 +1,42 @@
+{
+  "Id": "rule_封建臣服礼与效忠亲吻仪式",
+  "Keywords": [
+    "封建臣服礼仪规",
+    "效忠礼亲吻Osculum",
+    "臣服誓言双手合十",
+    "采邑权杖册封信物"
+  ],
+  "RagShortTexts": [
+    "封建臣服礼通过双手合十、效忠宣誓与和平亲吻，确立神圣互惠的采邑契约。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "封建臣服礼（Homage and Fealty）是中世纪世俗秩序的最高契约仪式。封臣免冠解剑、双膝跪地，将双手合拢置于封君掌中（Immixtio Manuum），口颂誓词承诺生死效忠。封君拉起封臣并赐予和平之吻（Osculum），随后授以土块、麦穗或权杖作为采邑的受封信物（Investiture），双方立下神圣互惠纽带。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "臣服礼绝非单方面的顺从，而是平等的契约誓约。封臣承担四十天骑士服役与财政襄助，封君则必须提供武力庇护与公正判决。若封君侵夺封臣家眷或无端夺地，封臣便有合法权利宣布解除誓约（Diffidatio）并拔剑起兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "手按四福音书发下的效忠誓言受天主监察。背弃效忠礼的人被称为破誓无赖（Felon），不仅世俗法律剥夺其一切封邑，教会更会将其开除出教，使其灵魂万劫不复。"
+    }
+  ],
+  "TextMappings": []
+}

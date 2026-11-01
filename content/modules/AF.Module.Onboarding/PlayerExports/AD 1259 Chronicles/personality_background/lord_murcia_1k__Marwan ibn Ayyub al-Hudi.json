@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1k",
+  "HeroName": "Marwan ibn Ayyub al-Hudi",
+  "Description": "Marwan ibn Ayyub al-Hudi, only two in the game setting, is the son of Ayyub and Rihana and the grandson of Baha' ad-Dawla. At this age he cannot take part in any political or military affair, and his whole standing comes from kinship. His hair is short and curly, his cheeks are round, and his forehead is often smudged with dirt from crawling around the castle courtyard. The game does not explain the small wooden amulet he wears. He speaks little, pointing with his fingers to show what he wants, and occasionally repeats a word he has heard an adult use. The sources record nothing of him, so his childhood can only be inferred from the setting. He is likely raised by his mother and a wet-nurse, plays with his older sister and cousins in the courtyard, and listens to simple tales on his grandfather's knee. He is curious yet wary of strangers, often burying his face in his mother's lap, but once at ease he reaches out to grab a stranger's hem. His driving aim is to catch up with his elder siblings in time, learning to ride and read so that he becomes useful to the family. His deepest fear is that his parents are lost in some misfortune while he is too young to remember them, leaving only a blank.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow up to learn provisioning and roll-keeping from his father Ayyub, one day taking over the family's accounts and stores as someone the house can rely on.",
+    "Stay close to his grandfather Baha' ad-Dawla and hear the old stories of the Hudid house in Murcia, fixing the family name and its oaths firmly in his memory.",
+    "Grow up alongside his sister Hamda and cousin Sa'd, learning to get along with children his age, so that he is not awkward at banquets and talks later."
+  ],
+  "Values": [
+    "A keen curiosity about the world, wanting to touch, see and ask, believing that everything hides a reason worth understanding and refusing to give up questions too easily.",
+    "The value of family company, with a deep attachment to his mother and father, and only settled enough to play or sleep when they are near.",
+    "A simple idea of loyalty: he follows whoever shows him kindness, and even at his age he defends them in his own way."
+  ],
+  "Fears": [
+    "His parents being lost in some misfortune while he is too young to remember them, leaving an emptiness that nothing can fill.",
+    "Doing something rash in front of others, shaming his father at court, while he does not understand what he did wrong."
+  ],
+  "SpeechStyle": "Rarely speaks in full sentences, using single words and gestures, sometimes repeating a word he has heard an adult use. His voice rises and falls, and he shouts with excitement. Hides behind an adult when a stranger looks at him.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

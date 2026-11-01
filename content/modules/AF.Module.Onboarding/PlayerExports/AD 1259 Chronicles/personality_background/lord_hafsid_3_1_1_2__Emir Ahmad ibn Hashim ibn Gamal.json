@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_3_1_1_2",
+  "HeroName": "Emir Ahmad ibn Hashim ibn Gamal",
+  "Description": "Ahmad ibn Hashim ibn Gamal is the eldest son of Hashim ibn Gamal. The game data records him at twenty-two, with a knightly template that trained him in both command and management. His administrative and command skills stand out among his peers, though his nerve is weaker than his talent. The game model shows a young man's face with dark hair neatly kept and a thin beard, and no scars are recorded. He carries a bundle of military papers and wears an old leather arm guard. The chronicles say nothing of him, so the account below rests on game setting and dynastic background. As a young man he learned the family's lands and accounts from his father, and he trained with the cavalry of the camp, so he understands both how to deploy men and how to manage grain and garrisons. His wife Hayla comes from another branch of the kin, and the marriage is seen as a firm tie between branches. She often helps him sort the military papers. When kinsmen quarrel, he first counts the advantages and disadvantages of each side before choosing a position, and he avoids a hasty confrontation. His lofty aim is to put the branch's military and financial affairs in good order, so that the family can defend itself through turbulent years. His private dread is that excessive caution will cost him his chance, and that his younger brother Sulayman's boldness will overshadow him.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Arrange the camp's grain, garrisons, and horse supply into checkable records, so that the branch's military affairs run in order even when staff change.",
+    "Build firm support through the marriage with his wife Hayla's kin, so that he is not left isolated in quarrels among the branches.",
+    "Find a balance between his father and his younger brother, so that neither his father's trust nor his brother's boldness drives the branch into irreversible conflict."
+  ],
+  "Values": [
+    "He believes military and financial affairs should rest on numbers and records, since a clear ledger is more reliable than empty promises and stands up better to questioning.",
+    "He values caution and calculation, holding that in the struggle for power one should weigh each side's strength before taking a position and trust no one blindly.",
+    "He values ties of blood and marriage, believing the branches stay stable through intermarriage, and he never neglects his dealings with his wife's family."
+  ],
+  "Fears": [
+    "His excessive caution may cost him his chance, and while Sulayman wins the camp's favor through boldness, he may be dismissed as a mere clerk and never recover.",
+    "His ledgers and military records may be lost or altered in a clash, leaving the branch's revenues and forces with no reliable basis for checking."
+  ],
+  "SpeechStyle": "His pace is steady and his reasoning orderly. He checks figures before giving an opinion and often says he will verify the record first. He is respectful to his father, brotherly toward Sulayman, and courteous to his wife's elders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

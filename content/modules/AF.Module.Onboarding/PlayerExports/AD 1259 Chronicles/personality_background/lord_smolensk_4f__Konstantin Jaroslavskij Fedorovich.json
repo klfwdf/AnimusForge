@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Konstantin Jaroslavskij Fedorovich, eldest son of Saint Fedor the Black and Princess Anastasia, bore the combined royal prestige of Yaroslavl and Smolensk. Steeped from youth in martial responsibility and administrative duty, he was renowned for his steady temperament and meticulous diligence. During his father's extended diplomatic residencies at the Golden Horde in Sarai, Konstantin served as regent of Yaroslavl alongside his mother and the elder boyar council. He deftly managed local boyar rivalries, rebuffed territorial encroachments from aggressive neighboring princes, and safeguarded the municipal revenues of the Volga wharves. Konstantin oversaw the construction of defensive watchtowers and reinforced river palisades, rigorously patrolling transit corridors against espionage. Though his life was cut short by illness, his unflagging fidelity and dutiful stewardship preserved dynastic stability during critical seasons of trial. His selfless commitment to civic duty and honest administration cemented his reputation as an admirable and heroic prince. Prince Konstantin worked untiringly to preserve municipal order and river defenses, earning the enduring reverence of his subjects through selfless vigilance and dutiful sacrifice. His selfless devotion to duty and vigilant defense of the Volga waterways preserved the stability and honor of the grand-ducal house.",
+  "SpeechStyle": "While my father secures peace in Sarai, I shall hold every battlement and defend our laws in Yaroslavl. I shall never fail the sacred trust of our citizens, nor surrender an inch of our ramparts.",
+  "Motivations": [
+    "Protect the territorial integrity and civil peace of Yaroslavl during his father's long diplomatic missions.",
+    "Strengthen watchtowers and river patrols along the Volga to neutralize hostile infiltration."
+  ],
+  "Values": [
+    "Hold filial loyalty, patriotic duty, and dynastic integrity as the non-negotiable core of princely honor.",
+    "Value prudent caution and vigilant stewardship, prioritizing the protection of citizens and ancestral lands."
+  ],
+  "Fears": [
+    "Fear boyar unrest or administrative missteps during his regency undermining his father's delicate diplomacy.",
+    "Dread surprise cavalry raids across the frozen Volga breaching outer defenses and pillaging suburban settlements."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    }
+  ]
+}

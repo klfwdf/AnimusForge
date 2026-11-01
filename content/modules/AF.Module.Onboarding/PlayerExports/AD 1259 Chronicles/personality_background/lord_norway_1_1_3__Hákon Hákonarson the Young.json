@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_1_1_3",
+  "HeroName": "Hákon Hákonarson the Young",
+  "Description": "King Hákon Hákonarson the Young was the celebrated junior co-monarch of Norway and the chivalric pride of the Sverre dynasty before his untimely death. In the mid-thirteenth century, crowned in his youth and married to Rikissa, daughter of Sweden's regent Birger Jarl, Haakon symbolized the powerful geopolitical alliance of Scandinavian kingdoms. A dazzling warrior and visionary tournament patron, he introduced Continental knightly tourneys, heraldic emblems, and romantic courtly songs to the northern courts. Commanding Leidang squadrons alongside his father, he personally spearheaded campaigns along the southern marches, earning the fanatical devotion of veteran warriors through fearless vanguard charges and generous spoils-sharing. Though his brilliant life was cut short in 1257, his romantic heroism, regal magnanimity, and charismatic leadership left an immortal imprint upon Old Norse sagas. His tactical innovations in heavy cavalry armaments and fortified littoral encampments laid the enduring groundwork for Norway's thirteenth-century martial resurgence. During border conflicts along the southern frontier, Prince Hákon the Young led heavy cavalry charges in person, shattering rebel formations and earning nationwide renown for his daring vanguard leadership. His patronage of grand tournament festivals at Trondheim introduced formalized jousting and courtly heraldry to Norway, transforming the martial training and noble ethos of the kingdom's warrior elite. Though his life shone with the brevity of a shooting star, his chivalric valor and magnetic heroism remained immortalized in Scandinavian heroic ballads.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with spirited chivalric enthusiasm and radiant charisma, inspiring warriors and courtiers with bold optimism and princely eloquence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

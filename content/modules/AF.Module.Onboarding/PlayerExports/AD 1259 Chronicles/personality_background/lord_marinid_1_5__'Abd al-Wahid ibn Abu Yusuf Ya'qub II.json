@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_1_5",
+  "HeroName": "'Abd al-Wahid ibn Abu Yusuf Ya'qub II",
+  "Description": "'Abd al-Wahid ibn Abu Yusuf Ya'qub II was the second son of Abu Yusuf Ya'qub and Lalla Umm al-'Izz, and a younger brother of Yusuf an-Nasir. His appearance is a game-setting invention: a man of middling height with high brows and a small scar below his left ear, which he is said to have gained when thrown from a horse as a youth. Chronicles record no victories for him, so his early life must be inferred from his royal birth and his brotherly position. As a second son he was raised among his father's attendants and trained in horsemanship and administration, which gave him some practical knowledge of military and civil affairs. After his brother took the throne, he received a frontier governorship. This was both an honor and a way of placing him under the new sultan's watch. He showed outward obedience but watched the court closely, noting which officials took sides at banquets. His highest aim was to prove he could carry the weight of the dynasty rather than remain an appendage of his elder brother. His darkest fear was that suspicion would turn every word and every campaign into a charge of treason, leaving him stripped of troops. Knowing this, he grew more careful and less trusting of others.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wanted to prove he could bear the dynasty's weight, not remain his brother's appendage, so he sought visible frontier results.",
+    "He hoped to keep his troops and fief, since the court could not easily cut his forces without a clear reason.",
+    "He kept quiet contacts with factions at court and sought supporters when needed, but these ties had to stay hidden lest his brother treat them as proof of plotting."
+  ],
+  "Values": [
+    "Seniority and the proper order among brothers, so he respected the eldest son's precedence and kept a public posture of obedience even when he resented it.",
+    "Personal achievement and reputation, because he believed only real campaigns and sound governance could secure an irreplaceable place at court.",
+    "Loyalty to the family, since he saw the survival of the Marinid state as more important than personal grievances, and he avoided a complete break even in rivalry."
+  ],
+  "Fears": [
+    "That his brother's suspicion would strip him of troops and fief, with his men reassigned one by one until he was cut off from court like a fallen prince.",
+    "A civil war over succession breaking out after their father's death, where being drawn into the struggle could cost him his life whether he won or lost."
+  ],
+  "SpeechStyle": "He speaks cautiously with restrained deference and addresses his brother formally. With subordinates he is direct and likes concrete figures. He seldom objects outright, preferring questions that hint at doubt.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

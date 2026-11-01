@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_6_1b",
+  "HeroName": "Inga Vikingsdóttir",
+  "Description": "Lady Inga Vikingsdóttir was the revered matriarch of Mel in Sunnhordland and the devoted consort of Baron Gaute Jonsson. In 1259, Inga directed the vast domestic economy, agricultural revenue archives, and artisanal spinning guilds across the extensive Mel estates. Descended from an ancient line of Norse chieftains, she carried herself with supreme moral authority, managing the household affairs of Norway's foremost baronial dynasty with calm precision. Known throughout western Norway for her maternal charity, she opened family granaries during subarctic famines and remitted rent for destitute tenant cottages. She partnered with her husband in founding hospices for disabled veterans and monastic schools for orphaned girls, establishing an immaculate domestic legacy. Her profound Christian piety, unshakeable dignity, and lifelong devotion to the welfare of her dependents made her a beloved matriarch across the realm. At the Mel estate, Inga established an almshouse providing daily bread and warm clothing for destitute wayfarers, earning deep veneration from surrounding tenant farmers. When Baron Gaute was absent in Bergen managing high affairs of state, Inga autonomously directed crop rotations, mill tolls, and estate security with remarkable acumen and poise. Her benevolent authority and rigorous administration transformed Mel into the most prosperous and peaceful aristocratic haven in western Norway.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with serene patriarchal dignity, tranquil reserve, and moral warmth, directing household governance with seasoned aristocratic composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Inga Vikingsdóttir"
+}

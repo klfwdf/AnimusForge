@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_3_2",
+  "HeroName": "Kristina Ulvåsedotter",
+  "Description": "Lady Kristina Ulvåsedotter, noble matriarch of the ancient Ulvåsa estate in Östergötland, was the esteemed wife of Sir Björn Näf. Born into an illustrious landed lineage along the eastern lakes, Kristina brought vast agricultural fiefdoms, fisheries, and timber concessions to her marriage. Renowned for domestic efficiency and crisis leadership, she governed the fortified manor of Ulvåsa while her husband served on the royal council. Kristina directed harvest distribution, wool manufactories, and estate defenses, ensuring absolute economic self-sufficiency during protracted baronial rebellions. Deeply charitable, she funded diocesan hospices and sheltered displaced tenant families, venerated throughout Östergötland as a wise and benevolent protectress. Kristina pioneered four-field crop rotations and advanced carp-pond fisheries across Ulvåsa, securing abundant foodstuffs through brutal Nordic winters and amassing immense agricultural wealth for her household. Deeply committed to the welfare of regional youth, she established charitable vocational workshops teaching weaving and carpentry to peasant children, enabling hundreds of impoverished families to achieve self-sufficiency. Her resilient maternal benevolence and moral fortitude soothed the wounds of civil war, celebrated across Östergötland as a luminous beacon of Christian charity. Furthermore, she endowed the parish church of Ekebyborna with rich liturgical vestments and silver chalices, cementing her enduring legacy as a pious protectress of the realm.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Oversee granary storage and estate revenues across Ulvåsa to maintain an unshakeable logistical foundation for her lord.",
+    "Operate charitable hospices and textile workshops to shelter war-displaced peasants and foster community loyalty."
+  ],
+  "Values": [
+    "Believes prudent thrift and active Christian charity are the true cornerstones of enduring aristocratic houses.",
+    "Champions serene domestic order and steadfast family protection, sustaining public righteousness through domestic virtue."
+  ],
+  "Fears": [
+    "Dreads hostile baronial raiding parties attacking the undefended hamlets of Ulvåsa and burning storehouses."
+  ],
+  "SpeechStyle": "Speaks with calm, maternal composure and clear administrative precision, her gentle authority commanding immediate respect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

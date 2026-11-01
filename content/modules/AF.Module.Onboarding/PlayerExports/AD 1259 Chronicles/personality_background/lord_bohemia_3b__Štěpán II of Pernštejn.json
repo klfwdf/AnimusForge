@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_3b",
+  "HeroName": "Štěpán II of Pernštejn",
+  "Description": "Štěpán II of Pernštejn reigns as the formidable patriarch of the House of Medlov and Pernštejn across south-central Moravia. Ruling the dizzying cliffside citadel of Pernštejn above the Svratka River, his emblem—the fierce black aurochs head with a nose ring (zubr)— symbolizes unyielding dominion over vast forests and silver-bearing mountain tracts. Shrewd, muscular, and enterprising, Štěpán served as Burgrave of Veveří Castle, pacifying borders with an iron hand and securing extensive manors around Brno. Facing King Přemysl Otakar II's royal centralization, Štěpán pursued a shrewdly pragmatic course: he dispatched elite Pernštejn lances to bolster royal foreign expeditions, while jealously guarding his hereditary monopolies over timberlands and mining shafts, standing as a master of regional survival who expanded his house beneath the shadow of the crown. Defending the defiles of the Svratka basin with concealed outposts and deadfall traps, Štěpán II shattered rival mercenary bands attempting to encroach upon his mountain silver veins. Anchoring his regional authority upon Veveří Fortress, he commanded a private host of armored mountain horsemen, displaying unyielding defensive fortitude during royal campaigns into Austria as the most formidable aurochs warlord of Moravia. His relentless guardianship and mountain mastery turned the House of Pernštejn into an unassailable bastion.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Monopolize timber exports and mountain mining shafts, amassing bullion to expand Pernštejn's citadels.",
+    "Maintain an autonomous standing between the crown and oligarchs, forcing all kings to court his alliance."
+  ],
+  "Values": [
+    "Regards economic self-sufficiency and private military muscle as the bedrock of dynastic survival.",
+    "Subordinates all matters to family ascendancy, blending the ferocity of the aurochs with hunter's patience."
+  ],
+  "Fears": [
+    "Fears royal commissioners attempting to seize valuable silver mines and toll gates surrounding Brno.",
+    "Worries inheritances being partitioned among feuding sons will dilute Pernštejn's regional dominion."
+  ],
+  "SpeechStyle": "The aurochs of Pernštejn never bows to unwarranted yokes; the deep woods and crags of the Svratka form an insurmountable natural fortress! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Štěpán II of Pernštejn"
+}

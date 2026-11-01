@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_3_1_3_2",
+  "HeroName": "Ioánnis Doúkas Tarchaneiótis",
+  "Description": "Ioánnis Doúkas Tarchaneiótis was the illustrious eldest son of Grand Domestic Michael Tarchaneiotes and Maria Philanthropena, combining the peerless martial fame of his father with the immense wealth of his maternal lineage. Groomed from youth to carry the mantle of imperial command during the resurgent year of 1259, John served as an imperial aide-de-camp on European fronts, displaying daring equestrian combat skills, mastery of the composite bow, and ferocious tactical instinct. Clad in gilded lamellar armor, he lived among the frontline cavalry sergeants, perfecting deep reconnaissance and night assaults against fortified river crossings. He would play a gallant role beside his father at the famous Battle of Berat, spearheading the shock detachment that captured Angevin general Hugh of Sully. Proud, disciplined, and fiercely loyal to his martial heritage, John stood as an ascendant champion destined to uphold the military supremacy of the restored Roman Empire. At the siege lines of Berat, young John lay in ambush with shock cataphracts amidst river thickets, launching a lightning counter-charge as Angevin knights emerged to water their destriers. Wielding a broadsword, he cut down three hostile banner-bearers before engaging general Hugh of Sully in personal melee, pinning the commander's warhorse until captured. Riding tall beside his father's triumphal chariot in Constantinople, John was hailed by weeping citizens as an ascendant hero of Rome.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice is resonant, proud, and vibrant with the indomitable confidence of a young noble officer leading at the spearhead of cavalry.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

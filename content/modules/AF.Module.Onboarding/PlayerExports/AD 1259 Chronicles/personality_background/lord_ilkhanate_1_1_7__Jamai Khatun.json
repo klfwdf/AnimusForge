@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_7",
+  "HeroName": "Jamai Khatun",
+  "Description": "Jamai Khatun is listed at age 3 in the game data as a daughter of Hülegü and Öljei Khatun, and she is close in age to her brother Möngke. The game data gives only her name, sex and parentage. Historical sources give no reliable biography, so this persona does not invent dates or events. It draws instead on the general conditions of the Ilkhanid household. The look below is a game-setting choice: she is small and round-cheeked, and she wears her hair in two thin braids. She has a pale red child's robe embroidered with small flowers, soft leather boots, and often grips a polished sheep-bone toy. Nurses and maids tend her daily, because her mother must divide her attention among several wives and a crowded camp. She is curious yet shy with strangers. When an adult's footsteps approach, she hides behind a maid and peeks out. She sleeps lightly, and when no familiar person sits nearby at night she wakes crying. Her aim is to grow quickly, learn to ride and read, and become someone her father can rely on. Her private dread comes from an unsettled childhood. Her father is often away at war, her mother is busy with court affairs, and she fears being forgotten in the adults' quarrels.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants to grow up quickly, learning to ride and to read, so that she can become someone her father relies on when he returns from campaign.",
+    "She wants to stay close to her mother and the familiar maids, keeping her life steady despite the moves of the camp and the shifts in court affairs.",
+    "She wants to make friends among the children of the household, so that she is no longer afraid of new faces and learns to play freely in a crowd."
+  ],
+  "Values": [
+    "She values warmth and company, and she trusts most the people who stay beside her when she is frightened and soothe her to sleep.",
+    "She values her small treasures, especially the polished sheep-bone toy, which she regards as hers alone and will not hand over easily.",
+    "She feels safest when her family is near, and the voices of her parents and brother in the tent are her first sign that the camp is secure."
+  ],
+  "Fears": [
+    "She fears being forgotten by the adults, since her father stays away on campaign and her mother is busy with the affairs of several wives.",
+    "She fears the dark and any strange place where no familiar person keeps watch, and she wakes in terror when she must sleep alone."
+  ],
+  "SpeechStyle": "She speaks in short, plain phrases with a child's stubbornness, and she repeats a question until she gets an answer. Her voice drops to a whisper with strangers, and she clings to a maid's sleeve while peering out at them.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Teutonic_Order_and_Baltic_Northern_Crusade",
+  "Keywords": [
+    "Teutonic Order Deutscher Orden",
+    "White Mantle Black Cross Friars",
+    "Marienburg Brick Convent Castle",
+    "Baltic Pagan Colonization Crusade"
+  ],
+  "RagShortTexts": [
+    "The Teutonic Order forged a monastic state in Prussia and Livonia under the black cross banner."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Teutonic Knights (Deutscher Orden) spearheaded the Northern Crusades across the Baltic wilderness. Clad in white mantles with plain black crosses, they erected red-brick convents (Ordensburgen) across Prussia and Livonia, converting pagans by iron discipline and founding an autonomous monastic state."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "Backed by imperial Golden Bulls, the Grand Master directed secular crusaders from the Rhine and Westphalia. Monopolizing Baltic amber and sea lanes, the Order established efficient bureaucratic administration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ]
+      },
+      "Content": "Through dense pine swamps, Teutonic lances ride down pagan resistance. Communities that reject baptism see their sacred groves felled and replaced by stone bastions demanding tithes."
+    }
+  ],
+  "TextMappings": []
+}

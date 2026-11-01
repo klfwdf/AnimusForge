@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Florence_Arno_Wool_Guilds_and_Guelph_League",
+  "Keywords": [
+    "Florence Arno Wool Guilds",
+    "Calimala Cloth Finishing Guild",
+    "Guelph White Lily Commune",
+    "Florentine Gold Florin Purity"
+  ],
+  "RagShortTexts": [
+    "Florence dominated Tuscan finance through the Arno wool trade and the trusted gold florin."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bisected by the River Arno, Florence rose as Tuscany's industrial and banking powerhouse. The Arte di Calimala and Arte della Lana imported raw northern wool, finishing and dyeing it into luxury textiles. Coining the pure gold florin in 1252 established international banking dominance, aligned with the papal Guelph cause under the red-and-white lily banner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Guild priors govern Florence by commercial balance sheets rather than feudal patents. Ghibelline aristocrats who defy communal statutes face exile and having their stone fortified towers pulled down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Near the Ponte Vecchio, dyers turn the Arno deep madder red. Journeymen labor at clattering looms; civic pride and guild precision animate Florence with dynamic mercantile ambition."
+    }
+  ],
+  "TextMappings": []
+}

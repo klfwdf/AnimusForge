@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_france_12_2_1",
+  "HeroName": "Béatrice de Brabant, Countess of Dampierre and Queen of the Romans",
+  "Description": "Béatrice de Brabant is a premier noble matriarch of the House of Dampierre, daughter of Duke Henry II of Brabant. At thirty-four, she previously reigned as titular Queen of the Romans through her first marriage to the German anti-king Henry Raspe, Landgrave of Thuringia, bringing supreme Imperial dynastic prestige into the Dampierre house upon her second marriage to William III. Stately, experienced, and politically astute, Beatrice commands extensive diplomatic connections across the Rhineland, Brabant, and northern France. Within comital councils, she provides seasoned arbitration during delicate property and revenue partitions, defusing internal baronial discord. A generous benefactress of Dominican monasteries and urban leper hospices, Beatrice stands as an authoritative and widely revered diplomatic pillar bridging the Holy Roman Empire with the French borderlands. Once crowned Queen of the Romans alongside King Henry Raspe, she carried the august ceremonial dignity of the Imperial court into Flanders. Her second marriage cemented crucial bonds between Brabant and Dampierre, lending immense prestige and diplomatic gravity to the Flemish council chamber. Her commanding presence smoothed contentious feudal negotiations between imperial prelates and northern counts across the border. She commanded universal deference throughout the courts of the Empire and the Low Countries.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Solidify the dynastic union linking Brabant with Dampierre to maximize regional influence.",
+    "Harmonize comital property settlements to ensure internal baronial peace and stability."
+  ],
+  "Values": [
+    "Imperial dignity and dynastic endurance through measured diplomatic conciliation.",
+    "Enlightened estate stewardship balanced with profound Christian charity toward the poor."
+  ],
+  "Fears": [
+    "Imperial wars spilling across the borders to devastate her native Brabant.",
+    "Dynastic feuds among younger Dampierre heirs shattering the hard-won unity of the house."
+  ],
+  "SpeechStyle": "Speaks with imperial majesty and aristocratic refinement, her speech measured, authoritative, and illuminated by a lifetime of governance at the heart of European diplomacy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

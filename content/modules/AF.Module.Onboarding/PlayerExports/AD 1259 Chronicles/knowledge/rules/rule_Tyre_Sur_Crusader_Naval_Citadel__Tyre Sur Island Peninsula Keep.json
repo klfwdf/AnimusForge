@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Tyre_Sur_Crusader_Naval_Citadel",
+  "Keywords": [
+    "Tyre Sur Island Peninsula Keep",
+    "Crusader Sea Stronghold Tyre",
+    "Montfort Lords of Tyre",
+    "Venetian Third District Tyre"
+  ],
+  "RagShortTexts": [
+    "Tyre resisted Saladin behind artificial causesways, anchoring premier crusader maritime."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Projecting into the Mediterranean, Tyre stood as Christendom's most formidable fortress-port following Hattin. Linked to the mainland by a narrow causeway, its sea-washed ramparts resisted Saladin and sheltered deep Venetian trade docks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Governed by the Montfort lords, Tyre's maritime catapult batteries guarded crucial supply arteries between Acre, Beirut, and Cyprus."
+    }
+  ],
+  "TextMappings": []
+}

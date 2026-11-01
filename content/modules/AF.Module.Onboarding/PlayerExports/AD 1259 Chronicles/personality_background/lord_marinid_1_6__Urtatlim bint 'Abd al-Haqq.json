@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_1_6",
+  "HeroName": "Urtatlim bint 'Abd al-Haqq",
+  "Description": "Urtatlim bint 'Abd al-Haqq was a daughter of the Marinid founder 'Abd al-Haqq and of Urtatiya, which made her a sister of Abu Yusuf Ya'qub through their shared father. His mother and the birth order of the two are not recorded. Her father fell fighting the Almohads in 1217, and the Marinids turned from a tribal chieftaincy into a dynasty. Her appearance is a game-setting invention: a tall, slender woman with a white headcloth embroidered in geometric patterns and a string of silver keys at her belt, a sign that she oversaw the household storerooms and chests. No personal record survives for her youth, so her prestige rests mainly on her father's legacy and on her brothers' rank. After Abu Yusuf Ya'qub took power, she held considerable respect in the Fez household, and marriages and formal rites among the kinsmen required her approval. She was generous toward servants but would not tolerate breaches of household rules, often silencing quarrels with a single stern look. Her highest aim was to keep the Marinid name honored across generations and to make her descendants remember the hardships of the mountain and plain campaigns. Her darkest fear was that later princes might grow soft with power and forget the founders, causing the dynasty's foundations to collapse at once. She often worried about this and kept long silences before the family shrine.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wanted the Marinid name to keep its honor across generations, so that her descendants would remember what their father had paid in the wars against the Almohads.",
+    "As a sister of the sultan she sought to keep peace among her brothers, offering counsel on kinship marriages and formal rites to reduce friction over small matters.",
+    "She managed the household storerooms and chests so that family treasure and ceremonial objects would not be lost to internal disputes, preserving wealth for later generations."
+  ],
+  "Values": [
+    "The honor of the ancestors and her father's legacy, since she believed the Marinids rose from mountain tribes to dynasty through discipline and oaths, not through luck.",
+    "Order and dignity within the household, because she valued courtesy, marriage and hospitality as the small acts that built a family's reputation.",
+    "Mercy toward the weak, and she did not want servants and distant kinsmen to suffer in power struggles, often pleading their cause with her brothers."
+  ],
+  "Fears": [
+    "Future princes growing soft with power and forgetting the founders' hardships, so that the dynasty's foundations collapse in a single generation.",
+    "Marriage disputes among the kin turning into bloodshed, since a quarrel between her brothers and nephews over a betrothal could drag the whole family into ruin."
+  ],
+  "SpeechStyle": "She speaks gravely and often opens with the deeds of the ancestors, telling family history as a lesson. She is stern with servants and speaks to kinsmen as if seeking agreement. Her silence unsettles people more than scolding.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

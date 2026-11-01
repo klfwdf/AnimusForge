@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Three_Field_System_and_Manorial_Corvee",
+  "Keywords": [
+    "Three Field Rotation System",
+    "Manorial Corvee Labor Duties",
+    "Serf Strips Land Tenure",
+    "Spring Autumn Fallow Cycle"
+  ],
+  "RagShortTexts": [
+    "The three-field crop rotation improved agricultural yields, underpinning manorial serfdom."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The High Medieval three-field crop rotation partitioned arable land into winter cereals (wheat/rye), spring plantings (oats, barley, nitrogen-fixing peas), and fallow pasture. This surplus fueled population growth and warhorse fodder, supported by unfree serfs performing mandatory weekly corvée labor on demesne lands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Oats and beans in spring, rye in autumn, while the third field rests for grazing. So long as the bailiff leaves our water rights alone and we pay the lord's mill multure, barley pottage keeps our children alive through frost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The manor feeds the knight's warhorse and forged gear. Spring oats are essential fodder for charging destriers; the reeve must ensure unfree tenants reap demesne acres before harvesting their own strips."
+    }
+  ],
+  "TextMappings": []
+}

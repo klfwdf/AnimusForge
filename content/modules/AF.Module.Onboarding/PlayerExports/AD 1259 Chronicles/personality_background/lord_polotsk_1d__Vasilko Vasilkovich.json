@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Vasilko Vasilkovich is an esteemed scion of the Rogvolodovichi house of Polotsk, celebrated for administrative wisdom, fiscal integrity, and agrarian stewardship. Mastering the natural resources of the Dvina river basin, he founded the state shipyards and naval pitch kilns in Polotsk, supplying the grand-ducal fleet with timber, oars, and tar. Gentle, methodical, and fair-minded, Vasilko enacted low municipal tax rates and protected peasant yeomen and foresters against aristocratic encroachments. His agrarian policies preserved abundant municipal granaries and sustained public morale through decades of regional conflict. Diplomatically, he capably executed his brother's grand strategy, frequently serving as an envoy to Pskov and Ladoga to coordinate merchant agreements. He stands as an indispensable economic anchor whose quiet industry sustained Polotsk's martial readiness. Prince Vasilko recognized that fertile agriculture and vibrant river trade formed the bedrock of sovereign resilience. He supervised the clearance of virgin timberlands along the Dvina, expanded state boatyards, and maintained abundant grain reserves that cushioned commoners against famine during hostile sieges. His diligent economic leadership provided unflagging material strength to sustain Polotsk's armies. Through meticulous administration, he cemented the realm's economic autonomy during decades of relentless conflict across the frontier.",
+  "SpeechStyle": "Build the stoutest ships and harvest the fullest grain! Whether our warriors triumph on the frontier depends upon the fullness of our granaries and the equity of our laws!",
+  "Motivations": [
+    "Expand municipal timber production, shipbuilding yards, and pitch refineries, outfitting Polotsk's river fleets with munitions.",
+    "Protect yeomen and craftsmen through fair taxation, securing deep grain reserves to sustain the city through protracted blockades."
+  ],
+  "Values": [
+    "Valuing fiscal prudence, diligent industry, and protection of the peasantry, scorning wasteful luxury and predatory extortion.",
+    "Believing organizational efficiency and abundant material reserves form the true foundation of sovereign security."
+  ],
+  "Fears": [
+    "Protracted wet seasons causing catastrophic grain rot in municipal silos, subjecting the populace to winter famine.",
+    "Hostile saboteurs burning royal timber yards and boat slips, crippling naval replacement capacity ahead of crusader offensives."
+  ],
+  "Traits": [
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

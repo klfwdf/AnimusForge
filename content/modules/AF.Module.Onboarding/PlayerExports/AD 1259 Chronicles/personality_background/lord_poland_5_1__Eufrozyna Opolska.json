@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_5_1",
+  "HeroName": "Eufrozyna Opolska",
+  "Description": "Euphrosyne of Opole reigns as Duchess of Kuyavia, daughter of Duke Casimir I of Opole and legendary mother to King Władysław I the Elbow-high (Łokietek), the sovereign who ultimately unified the fractured Kingdom of Poland. A princess of formidable intellect, commanding majesty, and far-reaching political vision, Euphrosyne married Duke Casimir I of Kuyavia as his third consort, quickly asserting mastery over the fractious court of Brześć Kujawski. While her husband campaigned across Pomerelia, Masovia, and Greater Poland, Euphrosyne governed the Kuyavian heartland, managing grain tithes, river mills, and fortress stockpiles with unwavering fiscal discipline. Navigating tense inheritance rivalries between her husband's older sons and her own offspring, she aggressively secured legitimate appanages in Brześć and Sieradz for young Władysław and Siemomysł. She personally directed the education of her sons in Latin jurisprudence, statecraft, and chivalric arms, instilling within young Łokietek the unyielding ambition to resurrect a unified Polish kingdom under the White Eagle. One of the most consequential matriarchs in Polish history, Euphrosyne's iron resolve paved the way for the golden rebirth of the Polish crown. Euphrosyne carefully structured inheritance settlements in Brześć to position her sons for royal ascension. Her commanding administrative brilliance laid the geopolitical foundation for the reunification of Poland.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure the strategic appanages of Brześć Kujawski and Sieradz for her sons to anchor their future royal claims.",
+    "Govern Kuyavian fortresses and grain reserves with iron efficiency to deter predatory neighboring dukes.",
+    "Instill in her sons an unshakeable determination to reunify the fractured duchies into a sovereign kingdom."
+  ],
+  "Values": [
+    "Hold dynastic restoration and national reunification above all, embracing sacrifices for the ultimate goal.",
+    "Prize calculated political intellect and strict domestic discipline, forging her children into formidable rulers.",
+    "Revere divine providence, trusting that Heaven has anointed her bloodline to deliver Poland from fragmentation."
+  ],
+  "Fears": [
+    "Her stepson Leszek the Black completely disinheriting her sons, leaving them landless exiles in foreign courts.",
+    "The Teutonic Order or Bohemia conquering Kuyavia, extinguishing her dreams of national restoration."
+  ],
+  "SpeechStyle": "The Piast throne shall not remain shattered forever! My sons carry royal blood, and through iron and sacred faith, they shall reunite the realm under the White Eagle! The White Eagle unites our realm; my sons shall wear the crown!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

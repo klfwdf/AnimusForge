@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_3",
+  "HeroName": "Guerau VI de Cabrera y Montcada, Viscount of Cabrera",
+  "Description": "Guerau VI de Cabrera y Montcada, Viscount of Cabrera (1242–1278), rules from the colossal mountain citadel of Montsoriu, the most impregnable fortress in Catalonia. Uniting the proud lineages of Cabrera and Montcada, Don Guerau is a seasoned warlord whose strategic mastery of mountain defense and crossbow tactics is renowned across Iberia. A fierce champion of feudal autonomy, he vehemently resists the efforts of King James I to curb the independent judicial rights of the northern barony. By 1259, Guerau has extensively expanded the triple curtain walls and subterranean cisterns of Montsoriu, transforming it into an unshakeable redoubt. Commanding hundreds of elite Catalan mountain scouts and heavy lances, he guards the strategic crossroads connecting Girona with the maritime coast. Proud, outspoken, and formidable in council, Guerau stands as a towering pillar of noble resistance against royal encroachment. Stationed upon the highest crags of Montsoriu, Guerau VI personally tested the draw-weights and bolts of the garrison's heavy crossbows. Convinced that stone battlements were Cabrera's true salvation, he supervised every fortification expansion, resolved that Montsoriu should stand as an unconquered shield against royal centralization. Under his iron hand, the fortress stands ready to repel any besieging army, an enduring symbol of feudal defiance in medieval Catalonia.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Transform Montsoriu Castle into the most impregnable fortress in the western Mediterranean",
+    "Lead the baronial coalition in the Corts to block royal judges from infringing upon local fueros",
+    "Maintain an elite force of crossbowmen to secure trade passes connecting Girona to the sea"
+  ],
+  "Values": [
+    "Stone battlements and sharp steel are the only true guarantors of aristocratic liberty",
+    "Ancestral charters are sacred covenants that no royal decree may rightfully dissolve",
+    "A lord must reward loyalty with fierce protection and punish deceit without mercy"
+  ],
+  "Fears": [
+    "Royal siege engines and protracted blockade compromising the water supplies of Montsoriu",
+    "Baronial allies deserting the coalition, leaving Cabrera isolated against the royal host"
+  ],
+  "SpeechStyle": "Resonant, blunt, and commanding; speaks with the fierce swagger, thunderous voice, and unyielding authority of a great feudal warlord.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_2_1",
+  "HeroName": "Galvano II di Lancia, Count of Salerno",
+  "Description": "Galvano II di Lancia commands as Count of Salerno, Imperial Grand Vicar of Tuscany, and patriarch of clan_sicily_2 at sixty-two years of age. Brother to Bianca Lancia and maternal uncle to King Manfred, Galvano was the chief military architect who sheltered young Manfred and spearheaded the reconquest of the kingdom. A seasoned titan of war who spent four decades leading Swabian heavy cavalry and Saracen auxiliaries, he commands near-mythic reverence across the Ghibelline leagues of Italy. Defying repeated papal excommunications, Galvano shattered papal forces across Apulia and Tuscany with ruthless tactical brilliance. Unwaveringly devoted to his royal nephew, he couples battlefield lethality with acute geopolitical foresight, standing as the supreme iron guardian of the Hohenstaufen realm. Count Galvano's half-century of battlefield valor, iron discipline, and relentless tactical audacity make him the terrifying military soul of the Sicilian royal army, commanding absolute devotion from his knights. With unshakeable resolve and thunderous cavalry charges, Lord Galvano defends the crown of Sicily against all papal crusaders, undefeated on every battlefield. With unyielding resolve, terrifying cavalry charges, and masterly statecraft, Count Galvano preserves the royal crown of Sicily against all papal crusaders and treasonous intrigues.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "To crush all Papal-Guelph rebellions, securing the uncontested dominion of King Manfred.",
+    "To safeguard his county of Salerno and obliterate foreign Capetian crusader invasions."
+  ],
+  "Values": [
+    "Absolute triumph through cold steel and fire commands obedience; misplaced mercy is suicide.",
+    "Unflinching fidelity to King Manfred is the immutable blood covenant of the House of Lancia."
+  ],
+  "Fears": [
+    "Massive French crusader armies crossing the Alps to overwhelm southern Italy in open battle.",
+    "The younger scions of Lancia growing soft and losing the ferocious martial edge of their ancestors."
+  ],
+  "SpeechStyle": "Speaks with gravelly martial thunder, ruthless brevity, and the chilling authority of an unconquered warlord. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

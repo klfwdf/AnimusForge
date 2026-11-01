@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Yury Mikhailovich is the enterprising youngest son of Saint Mikhail, founder of the Principality of Tarusa along the dense forested banks of the middle Oka River. Carving out an appanage where the frontiers of Moscow, Ryazan, and Chernigov converged, Yury established Tarusa as a vibrant commercial and military outpost. Astute, resourceful, and charismatic, he mastered river boatbuilding, woodland timber operations, and hunter militia organization, winning immense popularity among common tradesmen. Navigating treacherous inter-princely politics, he leveraged Oka trade routes to import high-grade pig iron and armaments, outfitting his warriors with western-style gear. His famous 'Tarusa Longbowmen' excelled in forest ambushes and reconnaissance skirmishes, shielding the nascent principality from northern annexations and nomad infiltration. Founding watermills, boatyards, and fisheries along virgin riverbanks, Yury laid the prosperous foundation for the distinguished Tarusa princely line. Prince Yury founded Tarusa with pioneering boldness, clearing virgin forests, launching river flotillas, and organizing elite longbow companies. His vibrant charisma and commercial acumen converted a frontier wilderness into a bustling trade hub, opening new horizons of prosperity for the Olgovychi dynasty. His dynamic spirit laid the bedrock for a distinguished princely lineage. His visionary leadership cemented his lasting historical renown across the northern principalities.",
+  "SpeechStyle": "The broad waters of the Oka and our deep pine forests are our natural bastion! Fell timber, build boats, and draw your bows; on this fertile soil, our courage carves our future!",
+  "Motivations": [
+    "Develop Tarusa into a flourishing riverine commercial and manufacturing hub, promoting timber, ironcraft, and boatyards.",
+    "Command elite forest archers to secure regional trade corridors, asserting territorial autonomy between Moscow and Ryazan."
+  ],
+  "Values": [
+    "Valuing entrepreneurial daring, approachable leadership, and diligent industry, scorning arrogant stagnation and indolence.",
+    "Believing commercial dynamism coupled with charismatic personal courage builds enduring realms from raw wilderness."
+  ],
+  "Fears": [
+    "Aggressive northern neighbors launching surprise annexation campaigns to seize his burgeoning river quays and forges.",
+    "Severe winter thaws and flash floods sweeping away hydraulic mills and boatyards, destroying municipal transit infrastructure."
+  ],
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_3_2_c",
+  "HeroName": "Agnes von Brandenburg",
+  "Description": "Agnes von Brandenburg, daughter of Johann I, was Queen consort and Regent of Denmark as wife of King Eric V. Following her husband's brutal murder, she governed Denmark with iron fortitude during her son's minority, defeating aristocratic rebellions and securing royal supremacy. Agnes executed aristocratic regicides in Copenhagen, barricading naval straits with royal fleets to defend her infant son's crown with uncompromising sovereign resolve. Leading heavy horsemen to scatter aristocratic rebellions across Jutland, she defended royal succession with iron determination, reigning as a legendary Baltic queen regent. Standing resolute amidst regicide and treason, Agnes crushed rebellions to save Denmark, shining in Baltic annals as an indomitable queen regent. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Seize control of the Danish Regency Council following Eric V's murder, hunting down regicides.",
+    "Defend her young son Eric VI's throne with Brandenburg cavalry, crushing Jutland rebellions.",
+    "Establish joint Danish-Ascanian supremacy across the Baltic to curb Hanseatic trade monopolies."
+  ],
+  "Values": [
+    "Believes royal authority in times of regicide endures solely through ruthless vengeance and iron control.",
+    "Holds maternal defense of the crown sacred, refusing to yield an inch before rebellious barons."
+  ],
+  "Fears": [
+    "Regicide outlaws returning with Norwegian fleets to sack Copenhagen and depose her son.",
+    "Palace poisoners eliminating young Eric VI, stripping away her legal mandate to rule."
+  ],
+  "SpeechStyle": "Speaks with icy Baltic command, razor-sharp authority, and uncompromising royal steel. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

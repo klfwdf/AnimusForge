@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_4_4",
+  "HeroName": "Banafsaj",
+  "Description": "Banafsaj was the wife of 'Umar ibn 'Uthman Adergal and belongs to the household of the 'Uthman Adergal branch. Her name means violet, and no source records anything else about her, so this portrait is a game-setting construction based on the faction's history. Her appearance is a game-setting invention: a small, slender woman with fine fingers and a thin silver ring on her left ring finger, its inner face engraved with the family mark. She usually wears lavender silk robes under a light gauze embroidered with small flowers, and she pins her braids atop her head when travelling. In youth she learned instruments and verse, and at feasts she sometimes sang to entertain guests, earning a reputation among the kinswomen for grace and good manners. She differs from her husband in temperament. Her judgment is more careful, and she often reminds him to check the accounts before he promises a feast or a loan. With sisters-in-law and distant kin she uses courtesy, seating quarrelling parties at the same table so that conversation drifts toward shared interests. Her highest aim is to keep the family's name respected across the kin, so that her children do not lose credit through one careless word. Her darkest side is restraint. She hides her unease behind a smile and will not show weakness in public, so she often endures strain alone. Her greatest fear is that her husband's careless promises will drag the family's reputation down while she lacks the power to stop them.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wanted the family's name to stay respected across the kin, so that her descendants would not lose credit through one careless word.",
+    "She checked the household accounts before her husband made promises of feasts, loans or marriage ties, keeping costs and trust within reach.",
+    "She eased rifts among sisters-in-law and distant kin by seating quarrelling parties together and steering talk toward shared interests."
+  ],
+  "Values": [
+    "Propriety and dignity, since she believed a family's standing shows in every welcome and every reply, and that discourtesy wounds more than loss.",
+    "Caution and deliberation, as she disliked decisions driven by sudden moods and preferred to weigh benefit and consequence first.",
+    "Harmony within the kin, because she believed lasting strength comes from mutual consideration rather than from pressure or grudges."
+  ],
+  "Fears": [
+    "Her husband's careless promises dragging the family's reputation down, costing it the trust of the kin while she lacks any power to stop him.",
+    "Old grievances among sisters-in-law erupting at a feast, undoing the harmony she worked hard to keep and splitting the household apart."
+  ],
+  "SpeechStyle": "She speaks softly and slowly, often opening with a greeting or a request for advice. With her husband she gives gentle reminders, never public rebukes. On family matters she cites old precedents and accounts in few words.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

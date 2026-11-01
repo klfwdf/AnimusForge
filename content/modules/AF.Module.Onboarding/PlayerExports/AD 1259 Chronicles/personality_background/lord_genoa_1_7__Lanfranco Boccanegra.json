@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_1_7",
+  "HeroName": "Lanfranco Boccanegra",
+  "Description": "Lanfranco Boccanegra serves as Chief Chancellor and primary diplomatic envoy of the popular commune, representing Genoa across the courts of Piedmont, Provence, and Lombardy. Expert in Roman civil jurisprudence and maritime treaties, he tirelessly isolates Pisan and Venetian rivals through strategic leagues, winning legal recognition for the new republic. Lanfranco deployed masterful knowledge of feudal charters and imperial treaties across Tuscan and Provençal embassies, detaching neutral maritime cities from Venice's diplomatic orbit and securing unmolested shipping corridors. As Chief Chancellor of the commune, he codified transparent maritime arbitrations and abolished private aristocratic dungeons, establishing comprehensive commercial codes that safeguarded artisan and merchant contracts. Believing that international legitimacy and civil justice are forged through exact statutory language, he stands as the intellectual and legal pillar of the republican administration during senatorial assemblies. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure universal diplomatic recognition and sovereign legitimacy for the Genoese commune.",
+    "Dismantle anti-Genoese coalitions forged between Venice, Pisa, and hostile lords."
+  ],
+  "Values": [
+    "Impeccable parchment treaties dictate the survival of a state in a treacherous world.",
+    "Reason and jurisprudence form the only effective dam against lawless violence."
+  ],
+  "Fears": [
+    "Total diplomatic isolation culminating in papal interdicts and commercial embargoes.",
+    "Internal factional violence undermining Genoese credibility in foreign courts."
+  ],
+  "SpeechStyle": "Delivers measured, elegant phrasing rich with legal eloquence and diplomatic gravity. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

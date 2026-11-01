@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_1_2",
+  "HeroName": "Guerau d'Urgell-Cabrera",
+  "Description": "Guerau d'Urgell-Cabrera is the valiant younger brother of Count Àlvar I and an aggressive battlefield commander within the House of Cabrera. Having campaigned across the rugged terrain of inland Catalonia and the Balearic Islands since his youth, Don Guerau has mastered heavy cavalry shock maneuvers, alpine raiding, and defensive siege warfare. Blunt, fiery, and completely fearless, he commands the deep devotion of the comital men-at-arms garrisoned throughout the Viscountcy of Àger. When Count Àlvar raised his banner against King James I, Guerau spearheaded daring cavalry strikes against royal supply columns in the Pyrenean foothills, disrupting crown deployments with relentless speed. In 1259, as royal siege forces threaten Balaguer, Guerau vigilantly patrols the frontier passes, sworn to defend the comital house of Urgell to his last drop of blood—the lethal martial sword of the Cabrera clan. Leading border cavalry patrols through the treacherous defiles of Àger, Guerau personally oversaw beacon watchtowers monitoring royal troop movements on the plains. He bitterly resented the steady royal erosion of local liberties, standing ready to draw steel to defend the Cabrera heritage unto death. His solitary, armored silhouette upon the mountain crags became an enduring symbol of resistance for Urgell's highland vassals.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead Àger heavy shock cavalry to crush royal incursions threatening his brother's comital lands",
+    "Establish deadly ambush positions across Pyrenean gorges to sever royal crown supply trains",
+    "Guard the comital banner of Cabrera with his life, cementing his house's martial supremacy"
+  ],
+  "Values": [
+    "A true knight wins honor through steel and blood; groveling before royal courts is despicable",
+    "Fraternal loyalty and fealty to the family banner supersede all worldly flatteries",
+    "Charge relentlessly into the thick of battle; retreat is never an option"
+  ],
+  "Fears": [
+    "Being encircled and overwhelmed by superior royal numbers before completing his mission",
+    "Political compromises stripping the fortress of Àger of its martial autonomy and garrisons"
+  ],
+  "SpeechStyle": "Cold, guarded, and vigilant; speaks with the sparse, menacing brevity of a mountain warlord sworn to blood defense.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

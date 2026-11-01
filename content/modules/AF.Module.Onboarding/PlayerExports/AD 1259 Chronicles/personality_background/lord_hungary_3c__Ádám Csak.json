@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3c",
+  "HeroName": "Ádám Csak",
+  "Description": "Ádám Csák is the capable son of Judge Royal Demeter I, serving as an important military commander and fortress lord across Upper Hungary. Inheriting his father's judicial discipline and ancestral martial pride, Ádám is known for his decisive nature and deep familiarity with northern mountain corridors. He coordinates garrisons across family redoubts, excelling in combined operations with highland archers and mobile cavalry to suppress lawless outlaw bands. Firmly loyal to King Béla IV, Ádám commands genuine respect among the regional gentry as an industrious, practical commander who disdains idle court intrigue. In 1259, as unrest stirs across the Polish borders and Bohemian forces posture along the northwestern march, Ádám reinforces Carpathian hill-forts, safeguarding ancestral valleys. Ádám fortified mountain ridges with stone towers and palisades, commanding mixed detachments of skilled highland archers and heavy lancers. He conducted relentless sweeps through rugged defiles to exterminate outlaw bands and secure northern commercial highways through the Carpathians. His energetic, hands-on leadership solidified Clan Csák's uncontested mastery over the strategic valleys of Upper Hungary. His mountain patrols and fortified watchtowers guaranteed uninterrupted control over vital Carpathian trade routes, repelling all lawless intrusions, securing northern borders against sudden foreign aggressors.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect Clan Csák strongholds and mountain passes across Upper Hungary, maintaining rock-solid security.",
+    "Demonstrate martial competence in frontier combat, securing royal accolades and gentry loyalty."
+  ],
+  "Values": [
+    "Regard iron discipline, practical duty, and relentless vigilance as foremost military virtues.",
+    "Prize battlefield bravery and paternal protection of his subjects, convinced vigilance preserves peace."
+  ],
+  "Fears": [
+    "Fears renewed Mongol incursions piercing Carpathian defiles, torching flourishing highland settlements.",
+    "Dreads supply shortages provoking mutiny among winter garrison troops in isolated hill-forts."
+  ],
+  "SpeechStyle": "The Carpathian ridges form our natural ramparts, and Csák steel remains razor-sharp! Anyone daring to attack our hill-forts will never leave these valleys alive! Carpathian defiles are barred; Csák fortresses yield to no foreign foe!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

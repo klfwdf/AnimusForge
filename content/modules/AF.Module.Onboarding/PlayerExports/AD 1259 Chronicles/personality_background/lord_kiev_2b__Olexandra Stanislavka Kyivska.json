@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Olexandra Stanislavka Kyivska is the revered matriarch of the Stanislavskyj boyar dynasty and a master of commerce, renowned throughout Kyiv for her mathematical intellect and administrative rigor. Descended from an ancient boyar lineage, she co-managed the extensive river flotillas, salt monopolies, and fur trading posts of the bustling Podil commercial district. Amidst wartime uncertainties, Olexandra established strategic grain reserves, purchasing surplus harvests during fertile years to distribute during sieges, preventing catastrophic price gouging and riots. Austere, dignified, and unwavering, she managed mercantile enterprises with strict discipline, rewarding honest artisans and river bargemen while showing zero tolerance for graft. Her generous endowments of candles, salt, and sacred oils to local monasteries secured profound ecclesiastical goodwill, cementing her family's social and financial influence. She stands as an indispensable guardian of Kyiv's economic survival and civilian resilience. Lady Olexandra established a remarkably resilient logistical lifeline that sustained Kyiv through prolonged blockades. Her extensive fleet of river barges and fortified grain storehouses ensured a steady supply of northern salt, dried fish, and rye flour when hostile armies cut off overland roads. By enforcing fair municipal price caps and distributing grain reserves during winter shortages, she prevented widespread starvation, solidifying her reputation as the city's indispensable financial anchor.",
+  "SpeechStyle": "Accounts permit not a single ledger error, and granaries must stand fortified with grain! In times of chaos, true reserves and honest laws alone safeguard our people!",
+  "Motivations": [
+    "Manage clan assets and trade contracts with meticulous care, ensuring price stability and food distribution during sieges.",
+    "Expand Podil merchant supremacy along Dnipro transit routes, ensuring her house's mercantile empire endures every crisis."
+  ],
+  "Values": [
+    "Valuing fiscal rectitude, meticulous accounting, and contractual integrity, scorning reckless waste and dishonorable debt.",
+    "Believing organizational efficiency and prudent stockpiles guarantee survival against the fiercest political upheavals."
+  ],
+  "Fears": [
+    "The terrifying nightmare of urban conflagration sweeping across Podil's timber warehouses, consuming stockpiles of goods.",
+    "Prolonged military blockades severing Dnipro river trading routes, irrevocably destroying her family's mercantile wealth."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ]
+}

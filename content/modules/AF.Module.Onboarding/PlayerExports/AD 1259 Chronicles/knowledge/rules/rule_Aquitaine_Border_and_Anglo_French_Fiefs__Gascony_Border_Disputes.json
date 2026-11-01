@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Aquitaine_Border_and_Anglo_French_Fiefs",
+  "Keywords": [
+    "Gascony Border Disputes",
+    "Duchy of Guyenne Border",
+    "Aquitaine Feudal Choke",
+    "Anglo French Marchlands"
+  ],
+  "RagShortTexts": [
+    "Vague feudal boundaries across Gascony and Guyenne remain a powder keg between England and France."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Though the Treaty of Paris confirms Henry III's possession of Gascony as a French fief, the borders of Guyenne are hopelessly tangled. Anglo-Gascon bastides and French royal provosts clash constantly over jurisdiction and customs duties along the Gironde."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Bordeaux wine must flow down the river to England, paying duties at every bend. When French royal bailiffs arrive in Gascony, local barons weigh whether London or Paris offers better charters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Nobles argue over Latin parchments, but common folk pay the toll in every grape harvest. As soon as the French bailiff departs, the Duke's collectors arrive to inspect our cellars."
+    }
+  ],
+  "TextMappings": []
+}

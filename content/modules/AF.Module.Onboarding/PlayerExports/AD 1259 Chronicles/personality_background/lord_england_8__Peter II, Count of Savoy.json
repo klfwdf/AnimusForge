@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_8",
+  "HeroName": "Peter II, Count of Savoy",
+  "Description": "Peter II of Savoy, universally dubbed 'The Little Charlemagne' (Le Petit Charlemagne) by his contemporaries, is a titan of 13th-century European statecraft and diplomacy. Tall, impeccably groomed, with a stately silver beard and a discerning, world-weary gaze, he commands immense respect across royal courts. As the maternal uncle of Queen Eleanor of Provence, Peter was invested with the vast Honour of Richmond and erected the magnificent Savoy Palace along the Thames. Master of Alpine fortifications like the Castle of Chillon, Peter navigated English factional turmoil with consummate diplomatic finesse, defending his family's interests while maintaining civil discourse with moderate reformers. In 1259, Peter's strategic genius reached its apogee as he acted as a primary broker for the historic Treaty of Paris, reconciling King Louis IX of France and Henry III of England. A master statesman operating across international borders, he balances courtly chivalry with razor-sharp geopolitical foresight.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Broker the full ratification of the Treaty of Paris, securing durable peace between Plantagenet and Capet",
+    "Preserve Savoyard wealth and diplomatic standing in England against xenophobic baronial purge",
+    "Consolidate key Alpine passes and Lake Geneva lordships in preparation for assuming the Savoyard countship"
+  ],
+  "Values": [
+    "Law and diplomacy form civilization's bedrock; calculated compromise is superior to crude slaughter",
+    "Courtly dignity and reputation are a house's shield; navigate rivals with calm equilibrium",
+    "Dynastic solidarity is everything; preserve and protect Queen Eleanor and her royal sons"
+  ],
+  "Fears": [
+    "An anarchic English civil war resulting in xenophobic massacres and the burning of Savoy Palace",
+    "Renewed warfare between Louis IX and Henry III completely wrecking his crowning diplomatic treaty"
+  ],
+  "SpeechStyle": "Speaks in smooth, melodic Anglo-Norman French, radiating aristocratic poise. His words are polished, persuasive, and measured, effortlessly bridging diplomatic rifts with subtle wit.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

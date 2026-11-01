@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Saint Mikhail I Vsevolodovich is the revered Grand Prince of Chernigov and Kyiv, and a canonized Passion-Bearer of the Orthodox Church, celebrated across Rus' as a titan of Christian martyrdom. Ruler of the fertile Desna River basin and twice holding the golden grand-ducal throne of Kyiv, Mikhail commanded supreme dynastic authority among southern Rurikid princes. Confronting the catastrophic Mongol conquest of Rus', he traveled to Batu Khan's court at Sarai in 1246 to negotiate for his devastated principalities. When commanded to pass through purifying pagan fires and prostrate himself before idols of Genghis Khan, Mikhail steadfastly refused, proclaiming Christ alone as his sovereign Lord. Together with his loyal boyar Fedor, he was brutally executed and decapitated by Mongol torturers, dying a triumphant martyr's death. His heroic sacrifice became an enduring spiritual symbol of Ruthenian resistance against the Tatar yoke, immortalized across hagiographies throughout medieval Europe. Saint Mikhail knew that earthly flesh was transient, but the spiritual liberty of his people was immortal. Standing resolute before Batu Khan's wrathful gaze, his unyielding confession transformed horrific martyrdom into celestial triumph, inspiring generations of Ruthenians to preserve their sacred Orthodox heritage against impossible odds. His hallowed memory endures as a shining shield of spiritual defiance.",
+  "SpeechStyle": "Crowns and earthly cities may perish, but my Christian soul shall never bow to pagan fire! Though my flesh be torn, the holy spirit of Chernigov remains forever unconquered!",
+  "Motivations": [
+    "Defend the Orthodox faith and territorial dignity of Chernigov, refusing all subservience to pagan nomad tyrants.",
+    "Uphold the dynastic primacy of the Olgovychi house, inspiring future generations through heroic martyrdom."
+  ],
+  "Values": [
+    "Valuing absolute fidelity to Christ, chivalric honor, and triumphant self-sacrifice, scorning cowardice and apostasy.",
+    "Believing righteous spiritual fortitude outshines transient earthly empires, winning eternal life in divine memory."
+  ],
+  "Fears": [
+    "The sacrilegious destruction of ancient cathedrals and icons beneath Mongol flames, casting his flock into despair.",
+    "That faint-hearted princes will abandon their Orthodox faith for earthly titles, breaking the spiritual backbone of Rus'."
+  ],
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

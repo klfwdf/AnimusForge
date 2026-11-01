@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Furta_Sacra_Holy_Relic_Thefts_and_Transfers",
+  "Keywords": [
+    "Furta Sacra Holy Relic Translatio",
+    "Saint Mark Body Smuggled Under Pork",
+    "Saint Nicholas Relics Seized for Bari",
+    "Civic Patron Saint Relic Protection"
+  ],
+  "RagShortTexts": [
+    "Furta Sacra pious thefts of saintly bones were celebrated as heavenly approval of a city's."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Medieval civic piety celebrated 'furta sacra' (holy thefts) as divine providence rather than theft. Because a city's geopolitical prestige and pilgrim revenues depended on possessing miraculous relics, exploits like Venetians smuggling Saint Mark's body out of Alexandria under pork crates or Bari sailors seizing Saint Nicholas were hailed as the saints willingly choosing new shrines."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possessing premier relics transformed towns: Cologne's acquisition of the Three Magi bones from Milan established its archbishopric. The 1204 sack flooded Western churches with looted True Cross splinters and martyr teeth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "artisan"
+        ]
+      },
+      "Content": "Goldsmiths fashioned crystal and cloisonné reliquaries to house sacred bones. Parading the reliquary across city walls during sieges inspired unshakeable civic faith in divine protection."
+    }
+  ],
+  "TextMappings": []
+}

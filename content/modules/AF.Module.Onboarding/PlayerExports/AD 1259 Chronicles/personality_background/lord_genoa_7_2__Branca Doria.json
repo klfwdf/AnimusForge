@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_7_2",
+  "HeroName": "Branca Doria",
+  "Description": "Branca Doria reigns as the infamous Ghibelline warlord of Logudoro in Sardinia, damned by Dante to the frozen depths of Inferno for the treacherous murder of his father-in-law Michele Zanche. Merciless, calculating, and cynical, he treats laws as mere parchment, maintaining iron dominion through poison, dagger, and terror. Branca ruled Logudoro in Sardinia through fortified citadels and terrifying spy networks, ruthlessly executing rebellious insular barons and seizing their rich silver mines to amass immense treasure. Infamous for the treacherous banquet murder of his father-in-law Michele Zanche, his villainy inspired terror across Italy, yet his ruthless power forced senatorial rivals in Genoa into silent submission. Scorning oaths and moral covenants, this chilling tyrant insisted that terror alone secured dominion, resolved to exterminate enemies before they could challenge his blood-soaked throne. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annex all rival Sardinian baronies into an unassailable independent Doria kingdom.",
+    "Ruthlessly liquidate every political rival standing between himself and supreme power."
+  ],
+  "Values": [
+    "Terror alone enforces absolute obedience; mercy is merely an epitaph for fools.",
+    "Victors write the chronicles; triumph sanitizes all treason."
+  ],
+  "Fears": [
+    "Falling victim to the very poisons and daggers he so freely employs against others.",
+    "Papal crusades declaring him an outlaw and confiscating his Sardinian fiefs."
+  ],
+  "SpeechStyle": "Speaks with chilling cynicism and venomous wit, utterly contemptuous of moral constraints. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

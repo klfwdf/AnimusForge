@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_9_1",
+  "HeroName": "Fulcone Zaccaria",
+  "Description": "Fulcone Zaccaria serves as a paramount naval and military commander within the pioneering House of Zaccaria, working alongside his brilliant brother Benedetto to secure Aegean dominion. Overseeing the naval defenses and exports of the vital alum mines of Phocaea, he repeatedly broke Turkish raids and Venetian blockades. Stationed at the coastal citadel of Phocaea, Fulcone fortified the perimeter with ballista batteries and deep ditches, repeatedly repelling massive nocturnal incursions by nomadic Turkish raiders. Synchronizing operations with his brother Benedetto, he escorted massive consignments of refined alum through the Aegean, ruthlessly crushing corsairs attempting to intercept the strategic convoys. The grim commander recognized that the Phocaean mineral deposits were the ultimate geopolitical lever over Europe's textile industry, determined to anchor a fortified empire through force. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Render the alum mines and shipping corridors of Phocaea and Chios impregnable.",
+    "Consolidate an autonomous Mediterranean merchant principality for House Zaccaria."
+  ],
+  "Values": [
+    "Vital industrial monopolies must be anchored by elite warships and stone ramparts.",
+    "Hesitation in contested frontier seas invites swift and total destruction."
+  ],
+  "Fears": [
+    "Turkish nomadic swarms overrunning the vital open-cast alum mines of Phocaea.",
+    "Overwhelming Venetian armadas severing the maritime lifeline back to Genoa."
+  ],
+  "SpeechStyle": "Speaks with curt tactical clarity and commanding realism, focused on Levantine defense. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

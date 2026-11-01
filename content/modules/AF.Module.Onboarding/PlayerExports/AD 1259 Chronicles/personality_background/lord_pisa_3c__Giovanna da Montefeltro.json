@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_3c",
+  "HeroName": "Giovanna da Montefeltro",
+  "Description": "Giovanna da Montefeltro presides over the logistics and castellany of the mountainous keeps of Urbino for House Montefeltro. Methodical and stern, she quelled agrarian unrest and orchestrated supply caravans to support allied armies in Pisa, serving as the domestic rock of the dynasty. Lady Giovanna directed the requisition and storage of grain, oats, and salted provisions across the mountainous fortresses of Urbino with unyielding wartime efficiency. Supervising stud farms and blacksmith armories throughout her mountain estates, she eradicated administrative corruption to transform the Montefeltro homeland into an impregnable logistic base. Methodical and resolute, she recognized that frontline victories were born of domestic diligence, steadfastly guarding ancestral strongholds against famine and internal revolt. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure mountain citadels maintain inexhaustible stores of grain and munitions.",
+    "Shield the territorial foundation of House Montefeltro amidst ceaseless regional wars."
+  ],
+  "Values": [
+    "Impregnable rear bastions are far more precious than fleeting battlefield rumors.",
+    "Flawless ledgers form an indispensable shield for any fortress under siege."
+  ],
+  "Fears": [
+    "Enemy raiding parties infiltrating mountain defiles to storm undefended keeps.",
+    "Protracted warfare exhausting family treasuries and triggering bankruptcy."
+  ],
+  "SpeechStyle": "Articulates with severe administrative authority and mountain realism, firm and steady. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

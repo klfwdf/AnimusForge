@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_4_2_2",
+  "HeroName": "Aléxios Raoúl Doúkas",
+  "Description": "Aléxios Raoúl Doúkas, aged sixteen, is an ardent and spirited young scion of the noble Raoul dynasty, proudly bearing the imperial legacy of the Doukai. Raised amidst the military barracks, frontier forts, and courtly chambers of Nicaea, he has thoroughly mastered horse archery, cataphract lance charges, and classical tactical formations. Though youthful, he has already accompanied senior kinsmen along the frontiers near Smyrna and Phrygia, witnessing the devastation wrought by nomadic Turkish raiders and Latin corsairs. Driven by fierce family pride and hereditary military ambition, he hungers for battlefield renown to demonstrate his worth alongside the most veteran commanders of the realm. Possessing keen martial reflexes, his passionate nature occasionally renders him impatient when navigating subtle diplomatic maneuvers, legalistic intrigues, and treasonous palace factions. Loyal to his bloodline and devoted to the Orthodox faith, he views the historic reconquest of Constantinople as his holy and personal destiny. Aléxios dreams of leading elite heavy horsemen across Thrace to shatter the Frankish crusader lines and restore the holy capital to imperial greatness. Having demonstrated extraordinary personal bravery in early skirmishes along the borderlands, his daring charges have earned him the devoted admiration of his youthful peers, cementing his reputation as an intrepid rising hero of the realm.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 2 lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with youthful vigor, rapid determination, and bold fervor, displaying absolute confidence and unyielding contempt for Western invaders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

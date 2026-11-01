@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_1_4",
+  "HeroName": "Urraca Mendes de Briteiros",
+  "Description": "Urraca Mendes de Briteiros is the eldest daughter of Dom Mem Rodrigues, displaying serene dignity, graceful poise, and quiet intelligence at nine years of age. Educated under the watchful guidance of her mother María and grandmother Elvira, she has become thoroughly versed in fine embroidery, court etiquette, and liturgical prayers. Gentle yet remarkably observant, Urraca assists her mother in guiding her younger siblings while absorbing the intricate genealogical alliances of the northern Portuguese nobility. Her delicate hands craft exquisite altar cloths for the family chapel, reflecting deep personal piety and artistic grace. As a high-born heiress of the House of Briteiros and Maia, her future hand is already prized among aristocratic houses, yet she remains modest and dutiful, shining as an angelic pillar of grace within the family hearth. Endowed with gentle piety, graceful domestic leadership, and deep familial affection, Urraca illuminates the ancestral keep with an angelic calm, earning the enduring admiration of high-born visitors and the tender devotion of her siblings. Urraca's devout soul, gentle grace, and mastery of aristocratic accomplishments render her an exemplary daughter whose serene presence illuminates the ancestral castle. Her gentle heart and moral constancy make Urraca an inspiring beacon of noble grace throughout the baronies of the north.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To master noble arts and liturgical virtues, honoring her family's illustrious name.",
+    "To protect and care for her younger siblings, preserving warmth and peace in the family manor."
+  ],
+  "Values": [
+    "Modesty, serene prayer, and pious virtue are the true spiritual shield of a noble house.",
+    "Familial devotion and respect for generational hierarchy preserve domestic harmony."
+  ],
+  "Fears": [
+    "Violent political strife intruding upon the sanctity of domestic refuge.",
+    "Falling short of the exacting standards set by her mother and grandmother."
+  ],
+  "SpeechStyle": "Speaks with soft, gentle modesty and flawless courtly etiquette, radiating innocence and aristocratic composure. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Boleslava Svyatoslavna, consort of Grand Prince Yaroslav of Vladimir, carries the illustrious royal blood of Kiev and Chernigov. Raised amidst the cultured courts of southern Rus', she combines regal elegance with acute intellect and deep Christian compassion. In Vladimir, Boleslava established herself as an indispensable co-ruler and trusted counselor, managing court endowments and ecclesiastical charities. She patronized the historic convents of Vladimir, founded municipal hospices for war orphans, and directed widespread food distribution during severe freezing winters. Her tactful diplomacy repeatedly harmonized contentious feuds among proud boyar families, safeguarding internal peace within the grand council. Venerated by sentinels and burghers alike as a maternal guardian angel, she radiates calm fortitude and unswerving moral authority across the Upper Volga.  Grand Duchess Boleslava mobilized the municipal burghers and ecclesiastical hospices, providing hot food and warm garments for thousands of winter refugees, forever venerated as a holy maternal guardian protecting the sacred city.  Her compassionate guidance, municipal hospices, and noble patronage of the arts provided the citizens of Vladimir with unflagging physical and spiritual strength throughout every season of trial, earning the eternal love, gratitude, and devotion of the entire realm.",
+  "SpeechStyle": "A crown's true glory shines not from gold, but from tender mercy toward every suffering soul. With God's eternal grace, the spirit of Vladimir shall endure through every winter frost.",
+  "Motivations": [
+    "Mobilize civic and church funds to sustain orphanages, medical hospices, and food pantries for displaced families.",
+    "Establish reliable domestic welfare systems for wounded veterans and the widows of fallen warriors."
+  ],
+  "Values": [
+    "Treasure Christian compassion and moral purity, believing righteous stewardship alone earns divine favor.",
+    "Value dynastic concord and peaceful arbitration over bitter internal rivalries and boyar bloodshed."
+  ],
+  "Fears": [
+    "Fear protracted blockades causing devastating famines and pestilence that claim countless innocent lives.",
+    "Dread factional boyar hatred unraveling the realm's administrative cohesion and leaving it prey to conquest."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

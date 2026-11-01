@@ -1,0 +1,43 @@
+{
+  "Id": "rule_rule",
+  "Keywords": [
+    "Rule 179",
+    "Rule Lore 179",
+    "Rule History 179",
+    "EE1259 Rule 179"
+  ],
+  "RagShortTexts": [
+    "Historical doctrine and chronicle records concerning Rule 179 in 1259 Eastern Europe.",
+    "Geopolitical significance, tactical mechanical design, and feudal governance of Rule Lore 179.",
+    "Primary medieval evidence on border warfare, fortifications, and treaties across Rule History 1"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The martial craftsmanship and physical mechanics of Rule represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Arms-men binding leather cords tightly around the hilt of Rule feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Feudal marshals oversee weapon shipments of Rule in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+    }
+  ],
+  "TextMappings": []
+}

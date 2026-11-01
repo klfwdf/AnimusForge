@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Lisbon_Atlantic_Tagus_Harbor",
+  "Keywords": [
+    "Lisbon Tagus Estuary Atlantic",
+    "Saint George Castle Keep",
+    "Portuguese Capital Afonso III",
+    "Atlantic Fishery Salt Trade"
+  ],
+  "RagShortTexts": [
+    "Lisbon guarded the deep Tagus estuary, becoming Portugal's definitive capital for."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Commanding the sprawling Tagus estuary, Lisbon became the permanent capital of Portugal under Afonso III. Crowned by Saint George's Castle, the deep harbour sheltered Atlantic traders navigating between northern Europe and the Mediterranean."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "sailor",
+          "merchant"
+        ]
+      },
+      "Content": "Jewish cartographers, Flemish mariners, and seasoned Portuguese sailors converged along the docks, exchanging maps and navigational lore."
+    }
+  ],
+  "TextMappings": []
+}

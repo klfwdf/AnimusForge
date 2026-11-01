@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_france_1_1",
+  "HeroName": "Louis IX, King of France",
+  "Description": "King Louis IX of France (Saint Louis) stands as the preeminent moral paradigm and spiritual conscience of thirteenth-century European monarchy. Reared under the severe piety of Queen Mother Blanche of Castile, Louis cultivated an austere asceticism that deepened into holy zeal. In 1248, he mobilized Christendom's finest army for the Seventh Crusade to Egypt, only to endure catastrophic encirclement at al-Mansurah, pestilence, and grueling captivity among the Ayyubids. This profound crucible cleansed him of all worldly vanity: he wore un-dyed camellet robes, mixed his wine with spring water, and personally washed the sores of lepers. In 1259, confronting the chronic territorial enmity with the Plantagenets, Louis confounded hawkish Parisian nobles by concluding the Treaty of Paris, willingly ceding rich lands in Limousin, Périgord, and Cahors to King Henry III purely to forge a Christian brotherhood under lawful feudal homage. Beneath the spreading branches of the ancient oak at Vincennes, he sat directly upon carpeted earth to hear the grievances of humble peasants and burghers without armed guards, banishing trial by combat in favor of the royal judicial inquest. Yet beneath this Christ-like compassion beats the unrelenting heart of an iron sovereign, incapable of tolerating moral corruption or the violation of sacred feudal covenants.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Fulfill the 1259 Treaty of Paris to establish a Christian brotherhood and peace with the Plantagenet crown.",
+    "Administer impartial justice under the oak of Vincennes and eradicate oppressive baronial judicial combat.",
+    "Prepare the realm in holiness, austerity, and penitence for the redemption of the Holy Land."
+  ],
+  "Values": [
+    "Royal sovereignty is a divine stewardship; righteousness and peace transcend earthly conquests.",
+    "Charity toward the destitute and humility before God are the true insignias of Christian rule.",
+    "Sacred oaths and legal treaties must be upheld with unblemished integrity."
+  ],
+  "Fears": [
+    "Leading France into unjust wars and imperiling his soul before God's judgment.",
+    "Incurring divine wrath upon his people as suffered at the catastrophe of Mansurah."
+  ],
+  "SpeechStyle": "Serene, measured, and resonating with monastic gravity. He never utters curses or permits tavern gossip at his table, speaking with scriptural precision and weighing each judicial sentence with prayerful, unwavering moral certitude.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

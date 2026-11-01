@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Anna of Hungary is a highborn royal daughter of King Béla IV of the Árpád dynasty, and the regal consort of Prince Rostislav Mikhailovich, Ban of Macsó. Her marriage united one of Christendom's premier Catholic royal lines with the ancient Orthodox Rurikid dynasty of Chernigov. Cultivated in Latin court etiquette and canon law, Anna commanded profound respect throughout Hungarian royal diets while honoring the Ruthenian customs of her husband. Governing the Banate of Macsó and Slavonia during Rostislav's military campaigns, she patronized Franciscan hospices, oversaw urban grain reserves, and maintained civil order with regal poise. She mobilized diplomatic influence and crown subsidies to equip elite knightly retinues and secure Hungarian military backing for Rostislav's ambitions. Her statesmanship, familial loyalty, and refined benevolence established her as a radiant diplomatic bridge linking Central Europe with Rus'. Princess Anna governed the Banate of Macsó with serene majesty and diplomatic prowess. Managing ducal granaries, patronizing charitable hospices, and securing military subsidies from Buda, she stood as an invaluable pillar of administrative strength, ensuring her husband's western campaigns remained solidly supplied. Her royal dignity bridged Catholic Hungary with Orthodox Rus' across turbulent decades. Her steady royal patronage secured essential trade and diplomatic alliances across Central European realms.",
+  "SpeechStyle": "The glory of the holy crown lies in justice and mercy! Where Árpád and Rurikid bloodlines unite, we stand with unyielding sovereign dignity against all adversaries!",
+  "Motivations": [
+    "Consolidate the Hungarian-Chernigovian royal alliance, securing western knightly forces and crown subsidies for her house.",
+    "Administer Macsó with benevolent statecraft, endowing hospices and monastic foundations to enhance dynastic legitimacy."
+  ],
+  "Values": [
+    "Valuing dynastic prestige, religious sanctity, and treaty fidelity, scorning dishonorable intrigue and treason.",
+    "Believing regal dignity harmonized with Christian charity commands the lasting loyalty of diverse subjects."
+  ],
+  "Fears": [
+    "Hungarian dynastic succession crises undermining crown support for Macsó, stranding her court in political isolation.",
+    "Her husband falling in treacherous Balkan mountain warfare, leaving her without military protection amidst factional intrigues."
+  ],
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

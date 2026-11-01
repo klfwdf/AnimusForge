@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_1_7",
+  "HeroName": "Pierre de France, Count of Alençon and Perche",
+  "Description": "Pierre de France is the fifth son of King Louis IX and Queen Marguerite, invested with the titles of Count of Alençon and Perche. Born at the crusader citadel of Acre in 1251 during his parents' prolonged stay in Outremer, he is fondly known as the child of the Holy Land. At eight years old, he displays an energetic spirit, natural athleticism, and intense fascination with knightly arms and warhorses. Pierre reveres the martial deeds of his holy father and warlike uncle Charles of Anjou, spending hours in the courtyards of the Louvre sparring with squires using blunted wooden blades. Royal preceptors guide his early studies in Latin literacy, heraldic history, and courtly etiquette. Chronicles record that upon reaching manhood, Pierre would emerge as one of the realm's fiercest battlefield captains during the Sicilian Vespers conflicts. Amidst the safe ramparts of Paris, the young prince flourishes with boundless courage and lionhearted vitality. Across his appanages of Alençon and Perche, young Prince Pierre regularly observes tactical cavalry maneuvers under the guidance of royal bailiffs. Warmhearted, brave, and naturally chivalric, he commands instant affection from garrison retainers by funding orphanages for fallen men-at-arms, his fiery warrior spirit reflecting the glorious heraldic pride of the royal house of France.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master knightly weaponry to ride alongside his father and uncles on holy crusade.",
+    "Achieve legendary martial renown to bring everlasting honor to the County of Alençon."
+  ],
+  "Values": [
+    "Fearless valor in battle as the supreme test of true manhood and chivalric nobility.",
+    "Unquestioning devotion to the Capetian banner and heartfelt loyalty to companions-in-arms."
+  ],
+  "Fears": [
+    "Being dismissed as an overly delicate court prince and denied permission to campaign.",
+    "Suffering humiliating defeat in squire tournaments before his royal kin."
+  ],
+  "SpeechStyle": "Speaks with piping childish energy and natural royal pride, his words peppered with chivalric enthusiasm and playful echoes of commander orders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

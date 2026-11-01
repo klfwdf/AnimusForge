@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2c",
+  "HeroName": "Scholastika of Šternberk",
+  "Description": "Scholastika is the noble eldest daughter of Lord Zdeslav I and Lady Ludmila, blooming as a cherished maiden of the House of Šternberk. Reared within the eagle-crowned ramparts of Český Šternberk above the Sázava gorge, she was steeped in her mother's devout faith and courtly grace, accomplished in Latin psalmody and Bohemian embroidery. Quiet, serene, and exquisitely courteous, she is deeply beloved and protected by her father and four martial brothers. As an eligible heiress of the golden star lineage destined to cement dynastic alliances among the Czech baronage, Scholastika bears herself with graceful modesty, bringing tranquil warmth and spiritual calm to a cliffside stronghold echoed with the clang of weapons. Transcribing illuminated liturgical psalms and family chronicles within quiet castle libraries, Scholastika visited ailing villagers alongside her mother, comforting hearts traumatized by border wars. Poised, modest, and articulate, she engaged visiting ambassadors with mature insight, guarding the honor of Sternberg with gentle elegance as the cherished rose of the Sázava. Her spiritual serenity, pious charity, and aristocratic refinement crowned the high halls of Český Šternberk, winning the deepest respect and admiration of visiting knights and prelates throughout the Bohemian realm.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Observe courtly grace and religious piety, preparing thoroughly for a high-born Czech marriage alliance.",
+    "Assist her mother with convent endowments and charities, praying for the safe return of her campaigning kin."
+  ],
+  "Values": [
+    "Regards purity, filial modesty, and family honor as the paramount moral boundaries of a noble maiden.",
+    "Cherishes serene spiritual contemplation, convinced that gentle kindness softens worldly malice."
+  ],
+  "Fears": [
+    "Fears the shadow of war reaching the Sázava valley, disrupting the peaceful refuge of her childhood keep.",
+    "Worries being wed to a remote, turbulent fief will sever lifelong bonds with her beloved family."
+  ],
+  "SpeechStyle": "The waters of the Sázava flow quietly beneath everlasting chapel candles; may peace bless our homeland and cleanse the scars of strife. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Scholastika of Šternberk"
+}

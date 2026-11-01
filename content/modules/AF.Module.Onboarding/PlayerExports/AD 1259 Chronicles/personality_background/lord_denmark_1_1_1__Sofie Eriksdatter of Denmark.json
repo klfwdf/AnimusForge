@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Queen Sofie Eriksdatter of Sweden, eldest daughter of Danish King Eric IV Plovpenning, stood as a vibrant and formidable royal figure bridging the courts of Copenhagen and Stockholm. Following the traumatic assassination of her father, her marriage in 1260 to King Valdemar Birgersson of Sweden sealed a crucial Dano-Swedish alliance. Proud, witty, and fiercely independent, Sofie dominated her husband's royal council, urging Swedish military intervention into Denmark to recover her disputed maternal estates in Jutland. Renowned for her sharp tongue, love of chess, and mastery of scaldic poetry, she entertained northern nobility with magnetic brilliance. When domestic scandals and palace feuds rocked the Swedish crown, Queen Sofie bore the storm with regal defiance, fiercely upholding the royal prerogatives of her Danish lineage across Scandinavian history. Championing Danish courtly elegance, tournaments, and chess across the Swedish halls, Queen Sofie reigned as a magnetic arbiter of high northern culture, her unyielding advocacy for her Jutlandic ancestral estates profoundly steering Swedish royal policy throughout decades of appanage warfare. Queen Sofie's razor-sharp intellect, courtly charisma, and fearless defense of her ancestral lands left an indelible mark upon the royal institutions of both Denmark and Sweden.",
+  "SpeechStyle": "Speaks with melodic, sharp-witted brilliance and imperious pride, her cutting retorts asserting effortless royal superiority.",
+  "Motivations": [
+    "Deploy Swedish diplomatic and military pressure to reclaim her rightful Danish patrimony and withheld ancestral rents.",
+    "Assert uncontested royal dominance in the Swedish court, steering foreign policy to champion her father's royal lineage."
+  ],
+  "Values": [
+    "Reveres sovereign pride and royal blood as inviolable, refusing to bow before usurpers or surrender princely birthrights.",
+    "Values audacious assertiveness in high statecraft, believing true authority is commanded through steel and uncompromising will."
+  ],
+  "Fears": [
+    "Dreads the permanent confiscation of her Danish patrimony by Copenhagen, reducing her royal standing in Scandinavia."
+  ],
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ]
+}

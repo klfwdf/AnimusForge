@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_9_2",
+  "HeroName": "Birgitta Johansdotter",
+  "Description": "Lady Birgitta Johansdotter was the revered matriarch of the Hjorthorn dynasty and the devoted consort of Sir Torne Jonsson. In 1259, Birgitta directed the complex domestic economy, agricultural stores, and artisanal workshops across the family's heartland manors in Närke. Descended from an esteemed line of Svealand barons, she brought substantial dower lands and sophisticated managerial expertise to the Hjorthorn household. Her compassionate nature was celebrated across the province; during severe winter blizzards and food shortages, she opened the estate granaries to feed starving peasant families. Birgitta placed immense emphasis on the moral and spiritual upbringing of her children, imbuing her sons Nils and Filip with deep piety, chivalric honor, and a sense of judicial responsibility. A humble and generous benefactress of rural convents and chapels, she was universally venerated as a shining beacon of domestic wisdom and maternal grace. Across the Hjorthorn estates, Lady Birgitta introduced four-field crop rotations and selective sheep breeding, exporting fine woolen textiles to Hanseatic ports and amassing immense movable wealth. Her boundless compassion towards rural tenants during brutal famines, distributing hot broth and woolen blankets to vulnerable families, earned her widespread veneration as a saintly protectress. Her domestic genius, administrative frugality, and maternal charity formed the enduring bedrock of her family's regional ascendancy.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with gentle poise, measured warmth, and thoughtful consideration, demonstrating refined aristocratic dignity and quiet moral strength.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

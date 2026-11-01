@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Flemish_Civic_Pike_Militia_and_Goedendag",
+  "Keywords": [
+    "Flemish Civic Pike Militia",
+    "Goedendag Spiked Iron Club Staff",
+    "Ghent and Bruges Cloth Guilds",
+    "Anti Knight Dense Infantry Square"
+  ],
+  "RagShortTexts": [
+    "Flemish cloth guild militias wielded spiked goedendag clubs in dense infantry hedge formations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The wealthy textile communes of Flanders (Bruges, Ghent, Ypres) mobilized formidable civic infantry phalanxes. Organized by craft guilds, weavers and drapers fielded dense pike hedges supported by the feared 'goedendag'—a heavy wooden club capped with a steel spike designed to impale horses and crush plate helms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Communal magistrates resisted royal French feudal exactions. When the belfry tocsin tolled, tens of thousands of disciplined guild artisans mobilized beneath trade company banners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "The goedendag costs modest coin but cracks iron bascinets effortlessly. A pair of apprentices can brace against a galloping knight, spearing the charger and dragging the rider into the mud."
+    }
+  ],
+  "TextMappings": []
+}

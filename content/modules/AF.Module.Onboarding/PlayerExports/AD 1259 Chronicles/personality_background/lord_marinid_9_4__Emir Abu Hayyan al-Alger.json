@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_9_4",
+  "HeroName": "Emir Abu Hayyan al-Alger",
+  "Description": "Abu Hayyan is about twenty-nine years old and serves as the emir of this branch. He comes from a merchant family of Algiers with no direct blood tie to Said, yet he was drawn into the family's inner circle through a betrothal and years of trade. He is of middling height with a pale, smooth face and a neatly trimmed black beard. He usually wears a deep green silk robe whose collar and cuffs are edged with pale gold, and a fine leather belt holds a small box of seals, ink, and pens. On his hand is a green jade ring carved with his family crest, handed down from his grandfather. As a young man he worked as a clerk in a warehouse at the Algiers harbour, handling tax slips, contracts, and pledges without number. That work gave him the ability to spot a flaw in a document at a glance. Later he negotiated a large grain sale on behalf of the family with a coastal town. He noticed a vague phrase in the seventh clause of the contract, rewrote it into a term that favoured his side, and doubled the profit of the entire deal. After that Said regarded him as a counsellor he could trust. He seldom attacks rivals directly. He waits patiently for their contracts to reveal a gap, and then produces the evidence in one stroke. His deepest drive is to bind the trade routes of the branch to the cavalry's supply, so that the family's wealth no longer depends on any single town or the goodwill of one man. His greatest fear is that someone will set a trap in a contract that he fails to notice, and the credit he has built over years will vanish in a single slip.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants the trade routes of the branch bound to the cavalry's supply, so the family's wealth no longer depends on any single town or one man's goodwill.",
+    "He intends to scrutinise every contract's wording and clauses, so that terms favouring his side can withstand challenge from either party.",
+    "He plans to train young clerks in the accounts and management of contracts, so the family need not depend on outsiders for negotiation and finance."
+  ],
+  "Values": [
+    "Each word in a contract may decide a whole deal's profit, so he reads every clause to its last word before signing, since one vague term can ruin it.",
+    "Credit is a more costly asset than money, and a single breach can take ten deals to repair, so he would rather forgo a profit than break a promise.",
+    "Wealth must rest on what can be counted, and only when accounts are clear and figures open can each income and expense withstand outside scrutiny."
+  ],
+  "Fears": [
+    "A trap set in a contract that he fails to notice may wipe out the credit built over years in one lapse, and the trade routes of the family would be severed with it.",
+    "The family may depend too heavily on one town or one ally, and if that party changes its attitude, the whole trade route and the cavalry's supply would stall."
+  ],
+  "SpeechStyle": "His pace is even and his manner precise, often citing 'the third clause' or 'let us check once more'. He gives exact sums. Facing rivals he listens smiling, then breaks their argument with a document or figure.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

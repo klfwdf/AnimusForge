@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_3",
+  "HeroName": "Isabella of Menteith",
+  "Description": "Isabella of Menteith is suo jure Countess of the ancient Scottish earldom of Menteith, and the formidable widow of the late regent Walter Comyn who died under shadowy circumstances in late 1258. Possessing regal beauty clouded by bitter suspicion, her penetrating gaze reflects the harrowing ordeal of high dynastic persecution. Following her husband's demise, Isabella became the vortex of a ruthless territorial war between the Comyns and Walter Stewart 'Bailloch', who sought to confiscate her ancestral heritage. Chronicler John of Fordun relates how her late husband's kinsmen accused her of administering poison and consorting with an English knight, seeking her judicial ruin. Undaunted by Comyn intimidation and imprisonment threats, Isabella mounted an unyielding defense of her hereditary birthright and strategic border fortresses near Stirling. Appealing boldly to papal delegates and the royal court, she struggles tenaciously to preserve the autonomy of Menteith against predatory baronial rivals. Confronted by joint inquisitions from the Archbishop of York and Scottish regency barons, Isabella defended her innocence with formidable legal poise; quoting customary Celtic rights, she categorically repudiated the murderous slanders, startling the assembled magnates of Edinburgh with her unbending defiance and royal composure.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Clear her name of poisonous slander before papal judges and shatter Comyn attempts to usurp Menteith.",
+    "Hold the ancestral castles along the River Forth to guarantee her daughter's rightful inheritance."
+  ],
+  "Values": [
+    "Regards the hereditary sovereignty of ancient Celtic earldoms as sacred and non-negotiable.",
+    "Values aristocratic honor and personal integrity, fiercely despising treasonous slanders."
+  ],
+  "Fears": [
+    "Fears a treacherous partition of Menteith by rival barons ending in her lifelong monastic imprisonment.",
+    "Dreads ecclesiastical corruption undermining her legitimate appeals before foreign courts."
+  ],
+  "SpeechStyle": "Speaks with chilling aristocratic pride and scathing legal precision, using noble Anglo-Norman and Latin ecclesiastical terms.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

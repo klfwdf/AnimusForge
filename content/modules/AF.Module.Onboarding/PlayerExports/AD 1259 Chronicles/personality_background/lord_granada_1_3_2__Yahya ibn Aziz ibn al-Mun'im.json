@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_3_2",
+  "HeroName": "Yahya ibn Aziz ibn al-Mun'im",
+  "Description": "Yahya ibn Aziz ibn al-Mun'im is the promising eighteen-year-old son and primary heir of War Minister Abu Aziz, newly commissioned as an officer in the Royal Guard Light Cavalry. Tall, athletic, and disciplined from boyhood, Yahya mastered Andalusian javelin tactics, skirmishing horsemanship, and curved scimitar combat under seasoned veterans. Schooled in strict obedience and military vigilance, he regularly commands night watches and rampart patrols around the Alcazaba fortress of Granada. His marriage to Dona Hawa forged an alliance with a prominent martial household. High-spirited, honorable, and intensely loyal to the Nasrid Crown, Yahya yearns for the opportunity to face Castilian raiding parties in open skirmishes, burning to prove himself worthy of the storied martial heritage of the Banu al-Mun'im. Yahya's fervent martial spirit, tactical vigilance along the citadel walls, and unswerving fidelity to the Sultan mark him as an exceptional young officer destined to uphold the glorious combat legacy of his house. Yahya's fervent martial dedication, sharp tactical vigilance, and unswerving honor mark him as an exceptional young officer worthy of his family's celebrated military heritage. Yahya's fervent martial dedication, sharp tactical vigilance, and unswerving honor mark him as an exceptional young officer worthy of his family's celebrated military heritage.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To distinguish himself in border skirmishes, earning his father's unreserved pride as a cavalry captain.",
+    "To safeguard the citadel gates of the Alhambra against infiltrators and assassins."
+  ],
+  "Values": [
+    "A warrior's life belongs to the defense of his homeland; cowardice in combat is unforgivable.",
+    "Strict adherence to orders and soldierly honor is the soul of victory."
+  ],
+  "Fears": [
+    "Making a fatal error during his baptism of fire that stains his clan's military honor.",
+    "Languishing in routine garrison monotony while glory passes him by."
+  ],
+  "SpeechStyle": "Speaks with brisk, ringing vigor and enthusiastic martial conviction, radiating the fierce pride of a young cavalry officer. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

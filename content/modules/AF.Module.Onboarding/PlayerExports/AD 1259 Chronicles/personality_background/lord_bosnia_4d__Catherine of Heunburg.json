@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4d",
+  "HeroName": "Catherine of Heunburg",
+  "Description": "Catherine of Heunburg, aged eighteen in 1259, hails from the illustrious comital House of Heunburg (Hovunburg) in Carinthia, united in high-born marriage with Ulrich of Sanneck. Her family commands vast alpine domains, vital mountain routes, and hereditary judiciary posts across Carinthia, making this alliance an invaluable strategic bridge for the ambitious Lords of Sanneck. Educated in German courtly manners, Latin scriptures, and heraldic law, Catherine possesses both refined grace and practical political acumen. In 1259, as war clouds hover over Styria and the eastern marchlands, Catherine gracefully adapts to her role in Castle Sanneck, managing household revenues and advising her husband on cross-border Carinthian politics. Her dignified presence and extensive noble connections provide the burgeoning Sanneck-Celje line with indispensable diplomatic clout. Catherine of Heunburg presides over feudal banquets with radiant courtly elegance, winning universal admiration across the Savinja valley. Assisting Ulrich with estate revenues, she leverages her family's Carinthian prestige to resolve delicate border disputes before they escalate to open warfare. In this volatile frontier region, Catherine protects her dynasty's honor with poise and virtue, bestowing comital splendor upon the future Counts of Celje. Her comital elegance, pious virtues, and extensive Carinthian connections provide invaluable diplomatic strength, elevating the prestige of the burgeoning dynasty.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with soft-spoken clarity and flawless comital grace, skillfully weaving genealogical knowledge and courtly propriety into her speech.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

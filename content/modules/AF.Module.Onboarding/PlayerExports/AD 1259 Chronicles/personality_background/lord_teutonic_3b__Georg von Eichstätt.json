@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_teutonic_3b",
+  "HeroName": "Georg von Eichstätt",
+  "Description": "Georg von Eichstätt serves as Vice-Landmeister of Livonia (1260) and former komtur of Semigallia, hailing from a distinguished Bavarian ministerial dynasty of Eichstätt. Celebrated across northern commanderies for his stoic fortitude and defensive tenacity, Georg spent over a decade on the most exposed frontier bastions bordering Lithuania, mastering bog ambuscades and scorched-earth warfare. Commanding the timber-and-stone redoubt of Dünaburg (Daugavpils) on the Upper Daugava, he repeatedly repulsed massive siege assaults launched by Grand Duke Mindaugas of Lithuania, holding the river gateway with indomitable grit despite dwindling supplies. Blunt, resolute, and fearless under fire, Georg commanded boundless devotion from his German brother knights and native Livonian levies, sharing rough barley rations and braving sub-zero blizzards alongside his sentries. Following the catastrophic crusader disaster at Durbe in the autumn of 1260, Georg was thrust into supreme command of the shattered province, feverishly regrouping defenses until he fell mortally wounded in heroic battle against invading Lithuanian hosts. A fearless sentinel of the frontier, Georg embodied the unyielding steel of the Teutonic Black Cross. Georg fortified Dünaburg with concentric earthworks and led frozen winter sorties against marauding Lithuanian war-bands. His steadfast frontier bravery inspired brother knights to stand firm against overwhelming pagan assaults.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend Dünaburg and the Daugava riverline to shatter Grand Duke Mindaugas's northern conquests.",
+    "Rapidly reorganize fortress garrisons during crises to prevent pagan insurrections from merging into total war.",
+    "Exemplify fearless combat leadership, instilling iron resilience into rising generations of brother knights."
+  ],
+  "Values": [
+    "Hold duty and standing fast to the last breath as supreme obligations, scorning retreat in the face of superior foes.",
+    "Prize brotherhood in arms and sharing hardships with troopers, despising cowardly civilian duplicity.",
+    "Maintain unwavering faith in the Order, believing martyrdom on the frontier earns an eternal crown in Heaven."
+  ],
+  "Fears": [
+    "His isolated frontier stronghold being cut off by blizzards, starving his valiant garrison without arrows.",
+    "Administrative paralysis at headquarters delaying vital reinforcements, throwing away hard-won bastions."
+  ],
+  "SpeechStyle": "The Black Cross of Saint Mary flies atop Dünaburg! While breath remains in my chest, pagans shall not cross the Daugava; draw steel and fight to the end! Dünaburg never surrenders; pagans shall never cross the Daugava River!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

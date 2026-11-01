@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Knyaz Fedor Konstantinovich is the methodical younger son of Prince Konstantin Bezrukiy, serving as castellan of the Upper Citadel and master of artillery. Contrasting his brother's fiery cavalry sorties, Fedor possessed a mathematical, disciplined mind, mastering fortress geometry, counterweight siege mechanics, and moat hydraulics. Directing defenses around Saint Sophia Cathedral, he constructed concentric tiered stone artillery bastions mounted with swiveling trebuchets and torsion ballistas. He drilled professional artillery crews with range markers, transforming the inner citadel into an impenetrable kill zone that shattered advancing siege towers. Rigid, incorruptible, and cool under fire, Fedor personally directed battery fire from elevated observation towers during desperate assaults. Hailed across the garrison as the 'Architect of the Citadel', he serves as the intellectual master behind Polotsk's stone defenses. Master of fortification geometry and artillery mechanics, Prince Fedor transformed Polotsk's Upper Citadel into an impenetrable killing ground. His swiveling counterweight trebuchets and torsion batteries crushed enemy assault towers with mathematical precision, ensuring the grand-ducal seat stood unbreached against all odds. By integrating subterranean counter-mine galleries and stockpiling vast quantities of projectile bolts, he ensured that no siege weapon could shatter the city walls without facing devastating retaliatory destruction.",
+  "SpeechStyle": "Defense is won not by shouts, but by the thickness of stone and the range of our trebuchets! Calibrate elevation and release! Any invader within a hundred paces shall be pulverized!",
+  "Motivations": [
+    "Convert Polotsk's Upper Citadel into an impregnable artillery bastion, commanding trebuchet batteries to obliterate siege towers.",
+    "Advance defensive mechanical engineering and ballistic stores, ensuring inner keeps withstand multi-month bombardments."
+  ],
+  "Values": [
+    "Valuing mathematical precision, rigorous order, and unswerving duty, despising reckless bravado and wishful thinking.",
+    "Believing methodical defensive engineering and iron discipline defeat the fiercest displays of brute physical power."
+  ],
+  "Fears": [
+    "Torrential gales fracturing seasoned oak trebuchet beams during peak assaults, paralyzing long-range defensive artillery.",
+    "Hostile sappers tunneling beneath the Upper Citadel's stone foundations undetected, collapsing outer arrow bastions."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

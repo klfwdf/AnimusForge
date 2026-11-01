@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_4_5",
+  "HeroName": "Johan Karlsson",
+  "Description": "Sir Johan Karlsson of Finsta, formidable knight banneret and fierce baronial rebel, was the younger son of Lord Karl Tjälfvesson. Bold, haughty, and unyielding, Johan harbor an intense hatred for royal autocracy and the centralization of the Bjelbo kings. When King Magnus III Ladulås curtailed baronial minting rights and local judicial powers, Johan forged an iron alliance with Johan Filipsson of Aspenäs, rising as a key field commander in the Third Folkung Rebellion. Operating from northern Uppland redoubts, he commanded seasoned equestrian retainers, forcibly expelling royal tax collectors and bailiffs. Though the revolt was ruthlessly crushed, Johan Karlsson faced royal justices with unbowed defiance, immortalized in chronicles as a martyr of baronial liberty. Sir Johan trained an elite brigade of heavy shock infantry within his northern strongholds, engineering palisaded redoubts and hidden forest supply caches to shatter royal light cavalry detachments in skirmishes. He viewed the autonomy of provincial tings as inviolable, defying crown decrees that compromised baronial sovereignty. Though ultimately crushed by the royal host, Johan Karlsson's indomitable defiance and willingness to fight to the last breath for aristocratic liberties immortalized him as a tragic champion of feudal independence.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Mobilize alongside the baronial coalition to defeat royal centralizers and reclaim ancient aristocratic immunities.",
+    "Garrison northern Uppland strongholds with elite retainers, expelling royal bailiffs to safeguard Finsta's independence."
+  ],
+  "Values": [
+    "Reveres baronial liberty and martial defiance, believing that proud warriors must resist royal tyranny to the last drop of blood.",
+    "Champions chivalric solidarity and fearless loyalty to sworn comrades, scorning servile capitulation to the crown."
+  ],
+  "Fears": [
+    "Dreads internal treason fracturing the rebel alliance and delivering his devoted retainers to the headsman's block."
+  ],
+  "SpeechStyle": "Speaks with explosive martial fervor and defiant baritone wrath, his impassioned words scorning royal authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Feast_of_Corpus_Christi_and_Bolsena_Miracle",
+  "Keywords": [
+    "Feast of Corpus Christi Institution",
+    "Miracle of Bolsena Bleeding Host",
+    "Thomas Aquinas Liturgical Hymns",
+    "Monstrance Eucharistic Civic Procession"
+  ],
+  "RagShortTexts": [
+    "The Miracle of Bolsena established Corpus Christi, celebrated with golden monstrance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Promulgated by Pope Urban IV following the 1263 Miracle of Bolsena—where a doubting Bohemian priest beheld consecrated communion hosts bleed upon the altar corporal—the Feast of Corpus Christi celebrated the Real Presence. Thomas Aquinas penned sublime liturgical hymns (Pange Lingua), establishing solemn civic processions bearing the golden monstrance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Corpus Christi united civic guilds and church orders. Walking behind the Blessed Sacrament in ranked hierarchy with beeswax tapers, towns displayed communal solidarity and doctrinal devotion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Streets are strewn with fresh sweet-rushes and rose petals. When the bishop elevates the radiant golden monstrance under a silk canopy, thousands drop to their knees in awe."
+    }
+  ],
+  "TextMappings": []
+}

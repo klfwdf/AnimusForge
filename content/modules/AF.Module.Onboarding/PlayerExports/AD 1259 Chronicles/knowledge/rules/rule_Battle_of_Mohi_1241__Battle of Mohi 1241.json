@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Mohi_1241",
+  "Keywords": [
+    "Battle of Mohi 1241",
+    "Batu Subutai Pincer Attack",
+    "King Bela IV Flight Hungary",
+    "Wagon Laager Sajo River"
+  ],
+  "RagShortTexts": [
+    "In 1241 at Mohi, Batu and Subutai outflanked King Béla IV across the Sajó River,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On April 11, 1241, Batu Khan and Subutai executed an epochal envelopment against King Béla IV along the Sajó River at Mohi. While catapults contested the bridge, Subutai bridged deep marshes downstream, trapping the dense Hungarian wagon laager in a catastrophic rout."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "The devastation spurred Béla IV's comprehensive post-war fortification program, multiplying stone castles across the realm."
+    }
+  ],
+  "TextMappings": []
+}

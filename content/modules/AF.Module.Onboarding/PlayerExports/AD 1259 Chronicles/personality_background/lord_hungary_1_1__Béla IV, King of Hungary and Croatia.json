@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1",
+  "HeroName": "Béla IV, King of Hungary and Croatia",
+  "Description": "Béla IV is the King of Hungary and Croatia from the venerable Árpád dynasty, revered by his subjects as the Second Founder of the Realm. Following the apocalyptic devastation of the 1241 Mongol invasion at the Battle of Mohi, he endured bitter exile on the Dalmatian island of Trogir before returning to resurrect his shattered kingdom. Displaying extraordinary resilience and statecraft, Béla broke with ancient royal taboos by promoting the nationwide construction of stone fortifications, erecting royal citadels at Buda and Visegrád to withstand any future nomadic onslaught. He integrated Cuman light horsemen into royal hosts, granted municipal self-government charters to burgeoning towns, and systematically reorganized devastated crown domains. By 1259, confronting the restless territorial ambitions of his eldest son Junior King Stephen and the rising power of King Ottokar II of Bohemia across Styria, Béla commands his realm with stern discipline, determined that the sacred Crown of Saint Stephen shall never falter. Béla personally inspected the dual fortifications of Visegrád and the Danube river chain defenses, enforcing relentless quarrying standards upon local lords. Through strategic dynastic alliances spanning Poland, Bavaria, and Halych, he elevated the Kingdom of Hungary back to paramount diplomatic prominence across Central Europe. His visionary administration revitalized agricultural settlements across the devastated Great Plain while maintaining seasoned royal cavalry squadrons.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct an impregnable network of stone fortresses and autonomous towns to safeguard the realm from foreign invasions.",
+    "Restrain unruly baronial oligarchs and filial revolts, securing centralized royal authority under the Árpád crown."
+  ],
+  "Values": [
+    "Uphold the territorial integrity and sacred majesty of Saint Stephen's crown as the ultimate royal duty.",
+    "Value practical defense fortifications and battlefield discipline over frivolous court pageantry."
+  ],
+  "Fears": [
+    "Dreads another apocalyptic steppe invasion turning Hungarian farmsteads and towns into smoking ash.",
+    "Fears that dynastic civil strife between father and son will fracture the kingdom before external rivals."
+  ],
+  "SpeechStyle": "The fires of Mohi failed to break Saint Stephen's crown. Our granite bastions stand tall, and Hungarian steel shall crush any invader who dares test our resolve! Buda stands stone-clad; Saint Stephen's crown shall shine!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

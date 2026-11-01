@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_1g",
+  "HeroName": "Aimery IX de Thouars",
+  "Description": "Aimery IX de Thouars is the designated heir to the Viscounty of Thouars, destined to become the twenty-third Viscount. Thirty-four years of age, athletic, cultured, and diplomatically astute, he has been groomed since youth by his uncle Renaud to assume paramount leadership. Aimery frequently represents the House of Thouars at the court of King Louis IX in Paris, winning immense respect among royal peers for his courtly eloquence, fluent Latin oratory, and unswerving chivalric honor. Militarily innovative, he emphasizes tight coordination between heavy lance wedges and mobile archers, having distinguished himself in pacifying border rebellions across western Poitou. Acutely aware that Thouars sits at the crossroads of the French Crown, Brittany, and English Gascony, Aimery champions pragmatic diplomacy backed by military preparedness. Universally recognized as the rising star of his dynasty, he stands ready to guide Thouars into a prosperous future. Aimery complemented his knightly prowess with advanced legal studies in the assizes of Poitiers, enabling him to balance ducal prerogatives against local baronial privileges. Highly trusted by Viscount Renaud, he is widely regarded as the most promising diplomat and captain among western France's younger nobility. Through his energetic supervision and keen legal acumen, Aimery stands as a bulwark of stability, guaranteeing the continuity of baronial governance.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Succeed to the Viscounty of Thouars and elevate the family among the premier lords of France.",
+    "Maintain delicate geopolitical equilibrium between Paris and Rennes to secure lasting autonomy."
+  ],
+  "Values": [
+    "Embracing knightly valor upon the field alongside strict observance of feudal customs.",
+    "Pragmatic calculation in navigating crown authority to ensure the enduring security of his clan."
+  ],
+  "Fears": [
+    "Garrison defenses falling into neglect, permitting sudden foreign seizure of critical frontier passes.",
+    "Royal bailiffs undermining the ancient high justice prerogatives of Thouars through intrusive inquests."
+  ],
+  "SpeechStyle": "Speaks with ringing aristocratic eloquence and energetic poise, articulate, charming, and radiating the magnetic confidence of a gifted future sovereign.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

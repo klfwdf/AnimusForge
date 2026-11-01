@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_ef1",
+  "HeroName": "Kilij Arslan Kaykhusraw",
+  "Description": "Kilij Arslan Kaykhusraw is twenty-eight, the son of Kaykhusraw II and Gulcicek Khatun. His uncles Kaykhusraw III and Ala ad-Din Kayqubad II once held higher rank at court than he does. He is tall and sallow, with a pale brown birthmark on the back of his right hand in the shape of an outstretched eagle, a mark he takes some pride in, often resting that hand on his sword hilt. He usually wears a dark green short robe, and its lining carries the Seljuk royal emblem embroidered in silver thread, worn only at formal occasions. In his younger years he was posted to a small town east of Konya, where he formed friendships with the local Turkish cavalry commanders and gained a body of men loyal to him. He resents the distribution of power at court and believes his rank should not sit below figures the Mongols have promoted. His approach to rivals is courtesy first and force afterward. He keeps polite relations on the surface while quietly noting every error his opponents make. One year, when the eastern outpost was attacked, a man in his unit broke and ran. He noted the name on the spot and told no one afterwards. His ambition is to see the Seljuk banner flying again over the walls of Konya. His fear is that this day never comes, that his name fades from the chronicles, and only a vague princely title remains.",
+  "Traits": [
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win power and fiefs that match his rank, since he will not remain on the margins of court and believes his standing deserves wider recognition.",
+    "Strengthen his influence over the garrison east of Konya, so that the Turkish cavalry commanders close to him become a force he can rely on at a decisive moment.",
+    "Record every failing and weakness of his court rivals, and when the time is right, use that evidence to remove them from their positions, his most valued move."
+  ],
+  "Values": [
+    "Rank and dignity, believing Seljuk royal blood grants him a place that cannot be ignored, and any arrangement pushing him to second place is an insult he will not bear.",
+    "Prudent patience, preferring to read the situation thoroughly before acting and avoiding any display of his intentions before he has a sure chance.",
+    "Care for loyal followers, remembering each cavalryman who served him in the eastern garrison and rewarding them in concrete ways when they need it, so none is left cold."
+  ],
+  "Fears": [
+    "His name fading from the chronicles, leaving only a vague princely title and erasing every trace of his ambition and his efforts.",
+    "Rivals striking first, using the authority of a Mongol embassy to transfer his followers out of the east one by one, until he stands exposed at court with no allies."
+  ],
+  "SpeechStyle": "Speaks with a guarded edge, often ending with a probing question. Polite but distant with senior courtiers, direct with his men. His smile vanishes when a threat appears.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

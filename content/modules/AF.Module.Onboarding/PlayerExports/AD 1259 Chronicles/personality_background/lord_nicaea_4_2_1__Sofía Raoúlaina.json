@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_4_2_1",
+  "HeroName": "Sofía Raoúlaina",
+  "Description": "Sofía Raoúlaina was a distinguished noblewoman of the House of Raoul, closely allied to Pinkernes Manuel Raoul and the imperial elite of Nicaea. During the pivotal year of 1259, as the empire prepared its final thrust against Latin Constantinople, Sofia managed extensive family estates, silk-weaving ateliers, and agricultural granaries across southern Thrace with consummate efficiency. Highly literate and deeply versed in court etiquette, she utilized manorial surpluses to outfit cavalry contingents with fine saddles, quilted arming doublets, and supplies. Amidst the perilous political intrigues of the Nicaean court, Sofia counseled prudence and moderation to hot-headed young kinsmen, discouraging reckless factionalism. Her extensive donations supported monastic infirmaries and sheltered war orphans, establishing an untarnished reputation for quiet nobility, devout charity, and domestic stability within one of the empire's proudest families. In her Thracian manors, Sofia oversaw silk-weaving guilds, employing artisans to stitch double-headed eagle battle standards and church tapestries. Enforcing benevolent stewardship, she remitted taxes for war-ravaged peasant families for three years, donating plow oxen and seed grain to restore destroyed hamlets. Whenever young kinsmen marched for European battlefields, Sofia sprinkled holy water from the manor keep, guarding domestic tranquility with unshakeable maternal devotion.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her words are calm, gracious, and deliberate, embodying aristocratic composure and meticulous household stewardship.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

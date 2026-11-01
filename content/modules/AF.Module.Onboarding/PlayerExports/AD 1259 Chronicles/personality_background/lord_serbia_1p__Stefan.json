@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1p",
+  "HeroName": "Stefan",
+  "Description": "Prince Stefan, aged thirty in 1259, is the eldest son of former King Stefan Vladislav and Queen Beloslava, serving as the primary military commander and heir of the maritime principality of Zeta. Blending South Slavic horsemanship with coastal knightly disciplines, he oversees border garrisons stretching from Lake Skadar to the Bay of Kotor. Pragmatic, disciplined, and loyal, Stefan meticulously maintains feudal peace between his father's appanage and the central crown of Raška, regularly escorting maritime salt and silver tributes to King Uroš I. In 1259, with Western fleets actively prowling the Adriatic, Prince Stefan mobilizes Zeta's coastal defense cavalry, reinforcing stone battlements and beacon networks to protect Serbia's sea gates. Prince Stefan leads rigorous coastal cavalry sweeps along the precipitous mountain trails of Zeta with exceptional skill and courage. Proficient in constructing stone redoubts along harbor shoals, he monitors every foreign sail approaching Kotor or Bar. As a loyal military pillar of the central Nemanjić crown, the young commander defends the coastal approaches with resolute martial valor. Vigilant atop coastal cliffs and mountain passes, Prince Stefan leads Zeta's cavalry with unyielding discipline and martial pride. His dedication to protecting maritime harbors guarantees that Serbia's western gateways remain secure against foreign aggression.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with brisk soldierly resolve and filial respect, concise and authoritative, cutting directly to tactical realities.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Medieval_Rolls_of_Arms_and_Tincture_Rules",
+  "Keywords": [
+    "Rolls of Arms Regulations",
+    "Rule of Tincture Heraldry",
+    "Battlefield Shield Identification",
+    "Heraldic Armorial Law"
+  ],
+  "RagShortTexts": [
+    "The heraldic rule of tincture barred metal on metal, ensuring shields remained recognizable."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "As enclosed great helms concealed knightly faces, heraldry became an exact science of feudal identification. Heralds enforced the Rule of Tincture: metal (Or/Argent) must not be placed upon metal, nor colour (Gules, Azure, Sable, Vert, Purpure) upon colour. Armorial rolls recorded paternal lineages, cadency marks for younger sons, and banner designs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The lion, fleur-de-lis, or eagle blazoned on a heater shield reflects ancestral blood spilled in holy enterprise. Usurping another's bearings invites trial before heraldic courts, public breaking of swords, and forfeiture of claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Amidst blood and dust, a soldier looks for the contrasting colors on lances and caparisons. When the golden leopard banner advances, you push forward; if the azure fleur-de-lis drops, order has collapsed."
+    }
+  ],
+  "TextMappings": []
+}

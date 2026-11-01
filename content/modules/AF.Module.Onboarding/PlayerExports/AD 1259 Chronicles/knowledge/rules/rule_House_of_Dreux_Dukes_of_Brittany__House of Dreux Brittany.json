@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Dreux_Dukes_of_Brittany",
+  "Keywords": [
+    "House of Dreux Brittany",
+    "Ermine Banner of Brittany",
+    "Nantes Rennes Ducal Suzerainty",
+    "Dreux Capetian Cadet Branch"
+  ],
+  "RagShortTexts": [
+    "The House of Dreux reigned as Dukes of Brittany, balancing Anglo-French rivalry to guard."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Branching from Louis VI, the House of Dreux ruled Brittany from Nantes and Rennes under John I. Skillfully arbitrating between Paris and Westminster, they safeguarded Celtic mariner wealth and heavy cavalry autonomy beneath their ermine crest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The ducal court of Brittany bowed rarely to external edicts, backed by fierce maritime revenues and unyielding feudal levies."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_5a",
+  "HeroName": "Stjepan 'Babonega' I Ursini Blagajski",
+  "Description": "Stjepan 'Babonega' I Ursini Blagajski, aged forty-seven in 1259, reigns as the formidable patriarch of the House of Babonić, the preeminent noble clan of Slavonia and Western Bosnia whose descendants would claim comital descent from Rome's Orsini lineage. Ruling from Steničnjak and Vodica along the Una, Sana, and Kupa rivers, Babonega controls the strategic riverine gateways connecting Central Europe to the Bosnian interior. In 1259, under the suzerainty of King Béla IV of Hungary, Babonega vigorously guards his clan's hereditary autonomy, commanding a powerful retinue of armored horsemen and fortified river forts. Neither royal commissioners from Buda nor rival Bosnian bans dare tread upon his domains without caution. Master of highland warfare and frontier diplomacy, Babonega rules as an unyielding marchland magnate, laying the foundation for his family's ascent to the Banate of Slavonia. Stjepan Babonega patrols the gorges along the Sana and Una rivers with iron resolve, supervising the erection of stone bastions and heavy river chains. Mastering Balkan geopolitical rivalries, he maintains formal feudal allegiance to Hungary while exercising uncompromised judicial sovereignty over his clan lands. In this volatile border march, the austere Babonić chieftain maneuvers with calculating firmness, forging an unyielding highland principality. Commanding highland garrisons and river chains with unyielding resolve, Babonega defends his clan's sovereignty, laying the bedrock for his house's ducal future.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with a deep, stony resonance born of highland command, issuing decisive feudal decrees with cold aristocratic authority and ancestral pride.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

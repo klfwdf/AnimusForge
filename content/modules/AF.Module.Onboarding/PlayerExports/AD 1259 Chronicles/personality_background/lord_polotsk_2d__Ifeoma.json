@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lady Ifeoma is an accomplished noble scholar and physician of Mediterranean heritage, celebrated throughout Polotsk for her profound intellect and medical arts. Connected through merchant patrician lines engaged in long-distance luxury trade between the Byzantine Black Sea and Baltic ports, she settled in Polotsk. Fluent in Greek, Arabic, and Church Slavonic, Ifeoma brought advanced Mediterranean medical manuscripts, surgical techniques, and herbal remedies to the northern realm. She established an esteemed infirmary in Polotsk, saving hundreds of critically wounded garrison guards and plague-stricken refugees through innovative antiseptics. Astute, composed, and cosmopolitan, she advised the grand-ducal council on international trade dynamics and southern diplomacy. Her extraordinary healing compassion and intellectual sophistication earned her deep reverence across all estates, making her a radiant pillar of humanitarian solace. Lady Ifeoma brought advanced Mediterranean surgical science and botanical remedies to the northern frontier. Her renowned Polotsk infirmary saved hundreds of critically injured defenders, while her cosmopolitan counsel advised the grand-ducal court on distant trade. Her boundless humanitarian grace established her as a treasured beacon of healing and international wisdom. Her profound pharmacological expertise and gentle spiritual solace restored hundreds of despairing wounded fighters to the battlements during protracted seasonal sieges.",
+  "SpeechStyle": "Across all lands, human life is precious and sacred truth remains unbroken. Through medical knowledge and sincere charity, we dispel the darkest agonies of war! Hope endures!",
+  "Motivations": [
+    "Establish advanced surgical infirmaries and botanical gardens, saving wounded garrison defenders and impoverished commoners.",
+    "Leverage cross-cultural trade ties connecting the Baltic with the Byzantine Black Sea, enriching Polotsk's material resilience."
+  ],
+  "Values": [
+    "Valuing scientific inquiry, humanitarian healing, and universal tolerance, despising superstition, xenophobia, and cruelty.",
+    "Believing empirical knowledge guided by genuine compassion overcomes prejudice and redeems humanity from dark suffering."
+  ],
+  "Fears": [
+    "Invading armies burning her infirmaries and medical codices, incinerating decades of empirical botanical research.",
+    "Uncontrollable virulent plagues striking the besieged city when medicinal supplies are exhausted, decimating defenders."
+  ],
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ]
+}

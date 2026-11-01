@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Palermo_Norman_Palace_and_Arab_Byzantine_Art",
+  "Keywords": [
+    "Palermo Norman Palace",
+    "Sicilian Arab Byzantine Mosaic",
+    "Conca d Oro Citrus Groves",
+    "Mediterranean Multicultural Haven"
+  ],
+  "RagShortTexts": [
+    "Palermo was a crossroads of Arab, Byzantine, and Norman art, centered in the Norman Palace."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Palermo, resting in the Conca d'Oro citrus groves, forms the crowning jewel of Arab-Norman civilization. Inside the Norman Palace, the Cappella Palatina features Islamic carved muqarnas timber ceilings alongside dazzling Byzantine gold-ground mosaics. Royal edicts under Manfred are promulgated in Latin, Greek, and Arabic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "In royal tiraz textile workshops, Moorish weavers embroider gold blessings upon coronation mantles donned by Christian kings. Rational astronomy, medicine, and mathematics thrive in royal favor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Moorish aqueducts and qanats channel cold mountain water to every lemon terrace. So long as wheat galleys sail unhindered, harbor markets overflow with dried figs, sesame cakes, and spiced sardines."
+    }
+  ],
+  "TextMappings": []
+}

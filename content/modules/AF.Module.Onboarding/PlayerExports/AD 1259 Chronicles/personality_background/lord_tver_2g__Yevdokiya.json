@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lady Yevdokiya, an influential noblewoman of an ancient Tver boyar clan, commands deep respect across the Upper Volga. Raised within the stone walls of Tver, she witnessed the principality's rise from a frontier settlement to a powerful sovereign center, understanding civic logistics and military discipline thoroughly. Yevdokiya coordinates the regulation of municipal market standards, weights, and measures in Tver's river posad, as well as supervising state armories and leathercraft guilds. During hostile sieges, her organizational efficiency mobilized thousands of women and youths into auxiliary defense corps, establishing field hospices and communal kitchens behind the battlements. Her teams delivered stones, hot pitch, arrows, and dry rations to the ramparts day and night, anchoring defensive endurance through the most harrowing bombardments. Her pragmatic fortitude and selfless devotion have earned the abiding love of the citizenry as an unshakeable guardian of municipal resilience. Lady Yevdokiya mobilized auxiliary volunteer brigades and municipal workshops, delivering heavy projectile stones and medical supplies to the ramparts to anchor the civic resilience of Tver through every siege alarm.  Her tireless devotion to civic mobilization and supply coordination ensured that the garrison possessed the material and moral endurance required to withstand the most grueling winter blockades.",
+  "SpeechStyle": "Stone gives a wall its thickness, but the courage of its people gives it strength! So long as every citizen stands firm at their post, no marauder shall breach our trenches. Mobilize and hold the line!",
+  "Motivations": [
+    "Ensure steady civic food distribution and weapons manufacturing to maintain fortress endurance through severe blockades.",
+    "Mobilize civilian volunteer leagues to support defense logistics and care for the families of fallen warriors."
+  ],
+  "Values": [
+    "Value iron discipline, civic duty, and pragmatic organization over empty court platitudes and vain boastfulness.",
+    "Hold defense of the homeland and protection of the vulnerable as sacred, non-negotiable moral obligations."
+  ],
+  "Fears": [
+    "Fear black-market speculation and grain hoarding inciting food riots that unravel defensive cohesion from within.",
+    "Dread enemy incendiary projectiles sparking widespread urban conflagrations across densely populated wooden quarters."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ]
+}

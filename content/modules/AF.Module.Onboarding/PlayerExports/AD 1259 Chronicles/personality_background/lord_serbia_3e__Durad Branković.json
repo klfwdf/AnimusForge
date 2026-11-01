@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_3e",
+  "HeroName": "Durad Branković",
+  "Description": "Durad Branković, aged four in 1259, is the bright young second son of Vuk Branković, destined to become the legendary Despot of Serbia (r. 1427–1456, celebrated builder of Smederevo Fortress). Naturally observant, witty, and inquisitive, young Durad possesses an unusually sharp mind, fascinated by armory forges, silver minting, and travelers' tales of distant realms. Under the loving tutelage of his mother Lady Mara in Priština castle, he begins early instruction in Church Slavonic script and Greek psalms. In 1259, reared amidst gleaming chainmail and spirited warhorses, the young prince thrives under his father's protective mantle, unconsciously preparing for an epic destiny that will see him steer the Serbian nation through its most perilous historical trials. Four-year-old Durad watches with wide eyes as castle blacksmiths hammer glowing sword blades, sparks dancing in his dark irises. He delights in building intricate stone fortress models with wooden blocks, displaying an uncanny fascination with defensive bastions. Reared amidst heroic chivalric fervor, little Durad thrives under loving care, carrying within his small frame the seeds of future heroic leadership. Naturally inquisitive and intellectually sharp, four-year-old Durad delights in examining armory tools and castle construction blocks. Sheltered within the martial halls of Kosovo, he grows in vigor and wit, carrying the seeds of future heroic leadership for his nation.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with charming boyish quickness and bright curiosity, asking endless intelligent questions about weapons and maps.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

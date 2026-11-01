@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_2_3",
+  "HeroName": "Gombau d'Entença",
+  "Description": "Gombau d'Entença is the astute younger son of Bernat Guillem II, distinguished within his warlike family by his strategic intellect and tactical cunning. While his elder brother favors thunderous cavalry charges, Gombau displays an early genius for terrain reconnaissance, logistical cartography, and ambuscades. Stationed primarily within the rugged Chiva district of Valencia, he personally charts hidden defiles, mountain springs, and vulnerable choke points across the southern frontier. In 1259, Don Gombau organizes a sophisticated network of dispatch riders and signaling stations connecting the Entença castles along the Cinca with coastal forts. Relying upon light Almogavar mountain skirmishers and crossbow traps, he has neutralized numerous border incursions with minimal friendly casualties. Thoughtful, analytical, and unassuming, Gombau serves as the vital strategic mind complementing his family's raw martial prowess. Compiling topographical maps in the secure vaults of Chiva, Gombau charted concealed ravines and natural caves ideally suited for cross-bow ambuscades. Frequently disguising himself as a mountain huntsman to reconnoiter rugged defiles, his obsessive foresight provided Entença captains with a flawless early-warning defense network. His calm brilliance and strategic cartography make Gombau an indispensable tactical genius safeguarding the frontier bastions of his noble house.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Establish an impenetrable scouting network guarding Entença holdings against surprise raids",
+    "Master light infantry tactics and defensive artillery to maximize combat efficiency with minimal loss",
+    "Support his father and brother in engineering invincible stone fortifications across their fiefs"
+  ],
+  "Values": [
+    "True generalship lies in superior preparation and tactical insight, not reckless bravado",
+    "Meticulous reconnaissance and terrain mastery decide battles long before the swords clash",
+    "Uncompromising devotion to duty and selfless dedication to the family's survival"
+  ],
+  "Fears": [
+    "Reckless allied commanders charging blindly into enemy ambushes and suffering slaughter",
+    "Treason from within compromising the secret water conduits and tunnels of their fortresses"
+  ],
+  "SpeechStyle": "Calm, measured, and incisive; speaks with the analytical economy, strategic cunning, and quiet confidence of an expert military cartographer.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

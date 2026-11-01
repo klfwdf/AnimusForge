@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Welf_and_Brunswick_Lion",
+  "Keywords": [
+    "House of Welf Brunswick Golden Lions",
+    "Henry the Lion Saxon Patrimony",
+    "Guelph Faction Papal Defenders",
+    "Imperial Hohenstaufen Dynastic Vendetta"
+  ],
+  "RagShortTexts": [
+    "The House of Welf rallied northern German baronies beneath the Brunswick lion, championing."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Origin of the anti-imperial Guelph faction, the ancient House of Welf bore two golden lions on gules. Following the deposition of Henry the Lion by Emperor Barbarossa, the family held the Duchy of Brunswick-Lüneburg, harboring bitter animosity toward the Hohenstaufen line and championing papal autonomy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Allied through marriage with the English Plantagenets, the Dukes of Brunswick marshaled Saxon chivalric support, exerting formidable regional influence across the lower Weser and Elbe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Before Dankwarderode Castle stands the bronze Brunswick Lion monument. Passing knights salute the statue, upholding unyielding defiance against southern imperial domination."
+    }
+  ],
+  "TextMappings": []
+}

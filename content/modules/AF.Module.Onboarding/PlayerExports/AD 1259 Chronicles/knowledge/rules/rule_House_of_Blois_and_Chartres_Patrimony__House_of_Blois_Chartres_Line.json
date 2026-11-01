@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Blois_and_Chartres_Patrimony",
+  "Keywords": [
+    "House of Blois Chartres Line",
+    "Loire Valley Chateaux Blois",
+    "King Stephen of England Kin",
+    "Central French Feudal Pivot"
+  ],
+  "RagShortTexts": [
+    "The House of Blois dominated the Loire valley, having supplied kings to England and counts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Holding court above the Loire at Blois and Chartres, the ancient House of Blois rivaled early Capetians and supplied King Stephen to England. Though its vast territories subdivided over generations, the family retained pivotal strategic tolls along the Loire and funded cathedral masterworks at Chartres."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Masters of diplomatic agility between Plantagenet and Capetian rivals, Blois castellans garrisoned key river crossing castles with veteran men-at-arms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "From Blois ramparts, sentries overlook barges hauling salt and timber. Armed patrols probe cargo with iron spits to prevent toll evasion."
+    }
+  ],
+  "TextMappings": []
+}

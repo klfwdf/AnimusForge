@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_2_d",
+  "HeroName": "Margarete von Brabant",
+  "Description": "Margarete von Brabant, daughter of Duke Heinrich III, was consort of Count Reginald I of Guelders. Serving as a diplomatic buffer between Brabant and Guelders during eras of intense border friction, she was revered for Christian piety, gentleness, and peace-making statecraft. Margarete established commercial markets and monastic hospices along the Guelders border, mediating volatile skirmishes to promote Christian harmony across neighboring lands. She introduced advanced Brabantian weaving methods to Guelders, pacifying turbulent feudal vassals through pious humility as a beloved peacemaker of the Low Countries. Radiating Christian benevolence, Lady Margarete healed the scars of feudal warfare between Guelders and Brabant, beloved as an eternal angel of reconciliation. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Mediate volatile disputes between her husband Reginald and her brother Johann I to avert war.",
+    "Endow monastic hospices across Guelders, healing the scars of recurrent border warfare.",
+    "Advocate Christian reconciliation across Low Countries councils, championing peaceful arbitration."
+  ],
+  "Values": [
+    "Believes Christian mercy and familial love alone break generational spirals of blood feuds.",
+    "Holds devoted matrimonial service and devout prayers as the purest callings of a noble consort."
+  ],
+  "Fears": [
+    "Her brother and husband meeting in fatal single combat, destroying her family.",
+    "Guelders being ravaged by brutal armies, laying waste to the hospices she painstakingly built."
+  ],
+  "SpeechStyle": "Speaks with gentle serenity, heartfelt compassion, and unwavering pastoral grace. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

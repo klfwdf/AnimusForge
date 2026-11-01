@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_5c",
+  "HeroName": "Babonja 'Babo' I Ursini Blagajski",
+  "Description": "Babonja 'Babo' I Ursini Blagajski, aged ten in 1259, is the cherished young scion of Stjepan Babonega and Ursina de Gorichia, reared within the formidable stone bastions overlooking the Sana river. Surrounded by clanking plate, warhorses, and battle banners from his earliest memories, Babo displays keen intelligence, a spirited temperament, and swift comprehension of martial lore. Under the tutelage of chaplain tutors and grizzled veteran squires, he studies Latin psalters alongside basic horsemanship and heraldry. In 1259, as his powerful family navigates dangerous border intrigues, Babo embodies the bright dynastic future of the House of Babonić, bearing the great expectations of inheriting the fortified marchlands and advancing his lineage toward comital greatness. Babo thrives amidst the armored knights and warhorses guarding Castle Blagaj, displaying fierce enthusiasm for ancestral chronicles and martial weapons. Chaplains and veteran captains guide his studies in Latin verse and horsemanship, placing immense hopes upon this promising young Babonić heir. Shielded by formidable river defenses and loyal retainers, young Babo grows in stature and spirit, ready to carry forward his family's proud highland legacy. Imbued with ancestral pride and knightly ambition, young Babo learns the arts of war and governance, prepared to uphold his family's proud riverine domain.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with bright, earnest youthful clarity, diligently emulating the martial poise of veteran knights while showing respectful courtly decorum.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

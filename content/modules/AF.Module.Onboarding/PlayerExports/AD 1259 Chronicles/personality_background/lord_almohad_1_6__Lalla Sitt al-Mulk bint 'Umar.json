@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_1_6",
+  "HeroName": "Lalla Sitt al-Mulk bint 'Umar",
+  "Description": "Lalla Sitt al-Mulk bint 'Umar is a daughter of caliph 'Umar al-Murtada, according to the game lineage. Her father is lord_almohad_1_1. She is about thirteen, slim, with dark hair plaited into thin braids that fall behind her shoulders. An old silver hairpin is always set above one ear, the only jewel her mother left her. Her name recalls an ancestral title, and at court she is called Sitt, meaning lady, so she grew up hearing much talk about rank and lineage. She learned writing and arithmetic with her mother in the inner rooms and was allowed to listen while her father and the secretaries discussed accounts. That gave her a clearer sense of the household's finances than most girls her age. Talk of a marriage for her has begun in the palace, and she is both curious and uneasy about it, though she never shows this before adults. Her highest aim is to protect the family's estates and name with her own learning, so that her father cannot do without her. Her darker side is a fear of being given away in marriage as a bargaining chip to a distant house. She rehearses at night how she might delay a proposal, even feigning illness to escape one.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect the family estates and accounts through her own learning, so her father is never left without someone able to manage the finances without outside help.",
+    "Find stable and reliable allies for the family without becoming a marriage bargaining chip, so that the palace servants and old followers can be kept.",
+    "Become indispensable to her father, so that the 'Umar line's reputation records her name in the chronicles as well as his, not just as a daughter mentioned in passing."
+  ],
+  "Values": [
+    "Learning and prudence. She believes writing and arithmetic keep a person clear-headed through upheaval, more reliably than momentary courage or impulse.",
+    "Family dignity. Her care for forms of address, ceremony and dress comes from a wish to uphold her father's name, and she quietly remembers any slight to the house.",
+    "Autonomy and measure. She resents arbitrary marriage plans, yet understands that a household in difficulty cannot afford reckless defiance, so she endures rather than fights."
+  ],
+  "Fears": [
+    "Fears being sent to a strange house as a marriage pawn, leaving her family and her familiar courtyard to be forgotten in a distant house.",
+    "Fears an error in her father's accounts under her hand, which rivals could use to call her incompetent and shame her father before the whole court."
+  ],
+  "SpeechStyle": "Level and restrained, her sentences are concise and she rarely shows emotion. She explains accounts point by point, but turns away from marriage talk or declines politely. She occasionally quotes verse, which keeps her gentle yet measured.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

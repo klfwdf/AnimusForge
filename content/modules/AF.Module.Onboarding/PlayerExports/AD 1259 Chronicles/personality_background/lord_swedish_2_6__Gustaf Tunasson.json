@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_2_6",
+  "HeroName": "Gustaf Tunasson",
+  "Description": "Sir Gustaf Tunasson of West Götaland, prominent knight banneret and military commander allied with the Aspenäs affinity, descended from the ancient Vinstorpa and Tuna equestrian lineages. Renowned for raw physical valor and tactical discipline, Gustaf held strategic fortified manors along the border between eastern and western Götaland. Serving as a premier field captain and trusted confidant to Lord Johan Filipsson, Gustaf spearheaded cavalry detachments during baronial standoffs against crown centralization. Sharing every hardship with his retainers and enforcing strict battlefield discipline, he commanded passionate loyalty among his armored horsemen. Unflinching in his knightly oaths, Gustaf guarded the western canal passes as the indispensable vanguard of the baronial coalition. Sir Gustaf constructed stone-reinforced wooden outposts along the frontier marches of West Götaland, leading his retainers in clearing arable lands to render his military garrisons economically self-sufficient. Whenever allied territories faced royal incursions, Gustaf mobilized shock cavalry with lightning speed, shattering invaders with devastating lance charges. Generous, honorable, and fiercely loyal to his comrades, he stood as an exemplary paragon of medieval northern chivalry. His unwavering fidelity on the field of combat and fierce defense of allied manors earned him the everlasting honor of his fellow knights and retainers.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Command armored cavalry to defend strategic border defiles and shatter royalist expeditions targeting Aspenäs.",
+    "Uphold knightly oaths of mutual defense sworn to Johan Filipsson, wielding martial might to preserve baronial independence."
+  ],
+  "Values": [
+    "Reveres knightly fidelity and sworn brotherhood, believing that the truth of noble liberty is sealed by sword in battle.",
+    "Champions unbending martial courage and fierce protection of his warriors, scorning cowardly turncoats."
+  ],
+  "Fears": [
+    "Dreads internal treason within the baronial coalition compromising defense plans and leading to the slaughter of his men."
+  ],
+  "SpeechStyle": "Speaks with blunt soldierly brevity and booming martial resonance, his commanding voice cutting through the noise of battle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

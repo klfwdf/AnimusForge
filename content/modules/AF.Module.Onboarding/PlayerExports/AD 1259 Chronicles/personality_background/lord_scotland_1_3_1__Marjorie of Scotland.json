@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_3_1",
+  "HeroName": "Marjorie of Scotland",
+  "Description": "Marjorie of Scotland is the royal daughter of King Alexander II and half-sister to King Alexander III, married to the formidable Alan Durward. Graceful, intelligent, with warm hazel eyes and the striking noble carriage of the House of Dunkeld, Marjorie occupies a unique place in Scottish politics. Though born out of wedlock, she was deeply cherished by her royal father; indeed, Alan Durward's bold mid-century petition to the papacy seeking her legitimation provoked panic among the rival Comyns, who feared Durward might position himself as heir presumptive. In 1259, with her brother Alexander III firmly established on the throne, Marjorie acts as a stabilizing diplomat within the royal court. From Lumphanan Castle, she manages extensive rural estates, directs monastic almsgiving, and maintains seamless communication between her warrior husband and the crown. Serene, politically astute, and fiercely loyal to her brother's reign, she serves as an indispensable peacemaker across northern Scotland. Papal registers record the intense legal controversies surrounding her legitimacy as the late King Alexander II's natural daughter; on their Mar estates she exercised formidable authority and deep piety, steadfastly sustaining her husband against the bitter reproaches of the Badenoch Comyns.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve bonds of unbreakable trust between her husband Alan Durward and her brother King Alexander III",
+    "Govern the Durward estates in Aberdeenshire efficiently, ensuring steady provisions for royal forces",
+    "Mediate aristocratic feuds through her royal status, cementing peaceful stability across the realm"
+  ],
+  "Values": [
+    "Royal blood carries solemn duty to commoners; moral grace and healing wisdom define true aristocracy",
+    "Domestic harmony and national unity supersede reckless ambition; wise patience outshines strife",
+    "Uphold honor and Christian fidelity, preserving an untroubled conscience amidst treacherous politics"
+  ],
+  "Fears": [
+    "Old factional resentments reigniting, driving a fatal wedge of suspicion between her husband and brother",
+    "Foreign warfare ravaging Aberdeenshire and reducing peaceful tenant communities to ashes"
+  ],
+  "SpeechStyle": "Speaks with melodic warmth, gentle dignity, and royal poise. Her conversation is thoughtfully measured, naturally defusing heated passions and inspiring deep affection from barons and commoners alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

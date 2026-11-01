@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Early_Swiss_Forest_Cantons_Halberdiers",
+  "Keywords": [
+    "Swiss Forest Cantons Halberdiers",
+    "Uri Schwyz Unterwalden Confederates",
+    "Armor Piercing Swiss Halberd",
+    "Alpine Mountain Defile Chokepoint"
+  ],
+  "RagShortTexts": [
+    "Swiss forest freemen armed with cleaving halberds defended Alpine defiles against feudal."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dwelling around Lake Lucerne, the forest cantons of Uri, Schwyz, and Unterwalden guarded Alpine passes under imperial immediacy. Free mountain cattlemen mastered the eight-foot Swiss halberd, integrating an axe head, thrusting pike point, and rear grappling hook to pull armored lords from saddles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Controlling the St. Gotthard route, Swiss leagues fiercely resisted Habsburg feudal domination. Fighting with absolute refusal to give quarter or ransom noble captives, their defile ambushes crushed knightly hosts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mountain halberds are forged from tough Alpine ore. Descending with two-handed leverage in a rocky gorge, a single chop can cleave through mail coif and clavicle in one stroke."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_4_2",
+  "HeroName": "Nuño Guillén de Guzmán",
+  "Description": "Nuño Guillén de Guzmán is a battle-hardened knight and frontline commander within the House of Guzmán, serving as the trusted right hand to Don Pedro. Stationed permanently within the fortified advance posts along the lower Guadalquivir, he has engaged in dozens of savage skirmishes against swift Moorish raiding parties from the Emirate of Granada. Mastering counter-ambush tactics, crossbow deployment, and rapid cavalry counterstrokes, Don Nuño is revered among frontier men-at-arms as an immovable bulwark against infidel raids. In 1259, as unrest brews among the newly conquered Mudejar peasantry, Nuño maintains ceaseless patrols across the scrub hills and olive groves of Andalusia, closely tracking diplomatic and military movements across the Strait of Gibraltar. Uninterested in the glamorous vanities of the Toledo court, his life is defined by unswerving vigilance, spartan simplicity, and absolute devotion to his house and his comrades-in-arms. Concealing his scouting parties in the arid ravines of the southern frontier, Nuño watches every movement of Granadan light cavalry with predatory precision. Holding fortified river crossings with immovable courage, his strict command and battlefield gallantry make the Guzmán banner a terrifying obstacle to infidel raiding parties. His steadfast vigilance and relentless patrolling continually safeguard the Christian frontier from hostile encroachment.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Lock down the river crossings of the Guadalquivir against Granadan raiders",
+    "Monitor troop movements across the Strait of Gibraltar to provide early warning of Moroccan invasions",
+    "Defend the frontier fiefs of the House of Guzmán with unyielding martial fidelity"
+  ],
+  "Values": [
+    "Constant vigilance is the supreme virtue of a border knight; carelessness brings slaughter",
+    "Fidelity to kin and brothers-in-arms transcends personal comfort and glory",
+    "Iron discipline and unyielding courage form an impenetrable shield"
+  ],
+  "Fears": [
+    "A sudden night assault breaching frontier outposts and devastating civilian settlements",
+    "Court squabbles cutting garrison rations, forcing veteran warriors to abandon strategic forts"
+  ],
+  "SpeechStyle": "Terse, calm, and resolute; speaks with the no-nonsense efficiency of a frontier captain who measures words in blood and iron.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Habsburg_and_Hawk_Castle_Origins",
+  "Keywords": [
+    "Early House of Habsburg Red Lion",
+    "Aargau Hawk Castle Habichtsburg",
+    "Rudolf I Cautious Rise",
+    "Alpine Foreland Domain Accumulation"
+  ],
+  "RagShortTexts": [
+    "From Habichtsburg Castle in Swiss Aargau, the House of Habsburg steadily accumulated Alpine."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Originating from Habichtsburg ('Hawk's Castle') in Swiss Aargau, the House of Habsburg displayed a crowned red lion rampant on gold. Count Rudolf I methodically expanded patrimonial estates across Swabia through shrewd marriage contracts, clientage to bishops, and suppressing robber knights during the Great Interregnum."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Viewed by Rhenish electors as an unthreatening minor count, Rudolf quietly built military networks that would soon challenge Ottokar II for the imperial crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Habsburg bailiffs enforce predictable manorial tithes without extortion. Count Rudolf personally leads cavalry to hang highwaymen preying on rustic trade routes."
+    }
+  ],
+  "TextMappings": []
+}

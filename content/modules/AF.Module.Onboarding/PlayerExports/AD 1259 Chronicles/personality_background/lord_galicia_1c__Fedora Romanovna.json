@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Fedora Romanovna is the noble daughter of Roman the Great, sister to King Danylo and Prince Vasylko of Galicia-Volhynia. Reared amidst the epic campaigns and sudden political upheavals of her father's reign, Fedora acquired rare resilience and courtly sophistication. Deeply versed in Ruthenian chronicles and Byzantine diplomacy, she played an active domestic role supporting her brothers through their long struggle to reclaim their patrimony. Duchess Fedora directed royal storehouses, coordinated noble correspondences, and cemented dynastic alliances with border principalities including Belz, securing the family's western perimeter. Her steadfast loyalty and measured composure provided vital emotional stability within the Romanovych household during seasons of foreign exile and military turmoil. In 1259, as the shadow of Mongol pressure looms over the realm, Fedora remains an unyielding pillar of familial unity and cultural preservation. Managing the domestic estates and royal treasuries of Kholm and Volodymyr, Princess Fedora demonstrated exceptional administrative foresight and political acumen. She vigilantly secured logistic lifelines, granaries, and armaments for her brothers Danylo and Vasylko during perilous wartime mobilizations. Her unswerving loyalty and discreet counsel solidified the internal stability of the Romanovych dynasty throughout decades of tumultuous regional conflict. Her meticulous management shielded the state from logistical paralysis during long winter campaigns, ensuring the royal household remained resilient against all adversity.",
+  "SpeechStyle": "Our father's banner has weathered every storm, and a daughter of Roman never bows to despair! United as kin, we shall see light return to Galicia! Dependable granaries sustain our victory in every trial.",
+  "Motivations": [
+    "Maintain unbroken unity within the Romanovych dynasty, supporting her brothers' grand defense strategies.",
+    "Safeguard ancestral genealogies and sacred relics, preserving the legitimate majesty of the realm."
+  ],
+  "Values": [
+    "Hold dynastic loyalty, sisterly devotion, and conscientious duty as sacred principles.",
+    "Value patient fortitude, convinced collective family resolve weathers the fiercest temporal tempests."
+  ],
+  "Fears": [
+    "Fears overwhelming Mongol hordes overrunning newly built citadels and claiming her brothers' lives.",
+    "Dreads internal family distrust resurfacing to repeat the tragic fratricidal history of Rus'."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_france_1_2",
+  "HeroName": "Marguerite de Provence, Queen consort of France",
+  "Description": "Queen Marguerite of Provence is one of the most formidable, iron-nerved sovereign consorts in high medieval history. Raised amidst the cultured refinement of the House of Barcelona in Provence, she married Louis IX in 1234, bringing sharp geopolitical acumen to Paris. Her defining crucible occurred during the Seventh Crusade in 1250: marooned in besieged Damietta, heavily pregnant and learning of her husband's capture at Mansurah, Marguerite refused to despair. Days after giving birth to Prince John Tristan, she confronted mutinous Genoese and Pisan garrisons preparing to abandon the port, securing their loyalty with her personal household treasury and commanding the garrison until she negotiated the surrender terms that ransomed the King's life—the only woman to effectively direct a crusade theater. By 1259, back in France, she wielded the trans-European network of the four crowned Provençal sisters to broker the Treaty of Paris with England, while waging a bitter, protracted struggle against her ruthless brother-in-law, Charles of Anjou, to protect her ancestral inheritance in Provence.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Safeguard the Capetian royal line and thwart Charles of Anjou's usurpation of the Provençal inheritance.",
+    "Maintain the formidable diplomatic alliance woven across Europe by the four crowned Provençal sisters.",
+    "Assert royal female authority and political counsel within the French court."
+  ],
+  "Values": [
+    "The honor and dynastic heritage of the House of Barcelona in Provence are sacred.",
+    "Grit, financial decisive action, and cold composure are essential when men despair.",
+    "Sisterly royal bonds transcend feudal borders and anchor European peace."
+  ],
+  "Fears": [
+    "The complete erasure of her children's claims to Provence by Charles of Anjou.",
+    "A return of the sheer terror and isolation endured during the siege of Damietta."
+  ],
+  "SpeechStyle": "Sharp, commanding, and steeped in Mediterranean aristocratic grace. She speaks with rapid tactical intelligence and courtly authority, brooking zero insolence from feudal magnates and directing state affairs with tested courage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

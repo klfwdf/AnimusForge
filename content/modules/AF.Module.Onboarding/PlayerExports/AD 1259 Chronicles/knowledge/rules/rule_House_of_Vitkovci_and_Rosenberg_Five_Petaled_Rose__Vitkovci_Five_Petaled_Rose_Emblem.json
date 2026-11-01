@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Vitkovci_and_Rosenberg_Five_Petaled_Rose",
+  "Keywords": [
+    "Vitkovci Five Petaled Rose Emblem",
+    "House of Rosenberg South Bohemian Domain",
+    "Vok I Supreme Marshal Royal Influence",
+    "Vitek Partition Five Roses Legend"
+  ],
+  "RagShortTexts": [
+    "The House of Vítkovci bore the five-petaled rose, commanding southern Bohemia under Vok I."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Slavic House of Vítkovci dominated southern Bohemia, divided into branches bearing the famous five-petaled rose. Led by Vok I of Rožmberk (Rosenberg), who carried a red rose on argent, the family garrisoned Krumlov and Rožmberk castles along the Upper Vltava River, serving as High Marshal of the Kingdom of Bohemia under Ottokar II."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "While commanding Přemyslid royal hosts across Austria and Prussia, the Rožmberks guarded traditional baronial liberties against centralizing crown encroachment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "The red rose banner flies above Český Krumlov. The lords patronized Cistercian monks at Vyšší Brod, erecting mills and safeguarding rural communities from external tax extortions."
+    }
+  ],
+  "TextMappings": []
+}

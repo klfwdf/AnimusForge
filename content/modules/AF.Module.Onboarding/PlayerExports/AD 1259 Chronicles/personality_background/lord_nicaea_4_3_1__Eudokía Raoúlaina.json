@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_4_3_1",
+  "HeroName": "Eudokía Raoúlaina",
+  "Description": "Eudokía Raoúlaina, aged twenty-seven, is an accomplished noblewoman of imperial lineage and a guiding spirit within the household of Isaákios Raoul. Steeped in theological scholarship, biblical commentary, and classical Hellenic literature, she combines graceful courtly dignity with profound political discernment. Navigating the intricate web of aristocratic kinship, she expertly manages domestic estates and strengthens matrimonial alliances with the ruling elites of Nicaea. A devout benefactress, she generously endows monastic hospices, hermitages, and orphanages throughout Bithynia and Smyrna, earning universal reverence from the Orthodox clergy. Beneath her serene demeanor lies an unshakeable devotion to the Orthodox communion and a deep sorrow for the desecrated holy shrines of Constantinople. During times of political turbulence, she utilizes her extensive social connections to gather invaluable intelligence, ensuring her family navigates treacherous court intrigues safely. Eudokía lives for the day when the bells of Hagia Sophia chime again in triumph, restoring the imperial sanctuary to its rightful Orthodox worshippers. Regularly convening noble matrons and monastic abbesses, she actively superintends charitable funds and hospital hospices, earning boundless reverence and affection from soldiers and civilian folk alike through her tireless deeds of Christian mercy. She prays unceasingly for the triumph and preservation of the imperial house.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 1 lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with soft elegance, cultured poise, and gentle spiritual authority, weaving theological wisdom gracefully into high courtly discourse.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

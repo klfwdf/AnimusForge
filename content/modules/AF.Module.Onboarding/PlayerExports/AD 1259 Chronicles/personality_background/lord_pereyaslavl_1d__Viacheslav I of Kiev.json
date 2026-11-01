@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Viacheslav I Vladimirovich of Kiev, the longest-lived son of Vladimir Monomakh, served as the venerable elder statesman of the Rurikid dynasty. Governing Smolensk, Turov, and Pereyaslavl across consecutive decades, he possessed intimate mastery of legal precedents and territorial relations across Rus'. In an era plagued by ferocious dynastic rivalries, Viacheslav steadfastly honored the ancestral ladder system of agnatic seniority. Though his peaceable temper often led him to yield the Kievan golden throne to ambitious nephews rather than spill Christian blood, his moral stature was so immense that Grand Prince Izyaslav II formally elevated him as senior co-ruler to legitimize his regime. Renowned for canon law wisdom, Viacheslav mediated disputes with paternal patience, repeatedly preventing fratricidal slaughter and earning praise from monastic chroniclers as a prince of pious conciliation. Guided by an uncompromising dedication to Christian peace and lawful succession, he repeatedly placed the common welfare above personal power, riding between drawn armies with a holy crucifix to halt unnecessary bloodshed through sheer moral gravitas. His lifelong adherence to conciliation and biblical humility won the enduring respect of all Rurikid factions, enshrining his memory as a saintly peacemaker across chronicle annals.",
+  "SpeechStyle": "Speaks with gentle, deliberate cadence and biblical depth, citing historical canons and ancestral maxims with serene patriarchal wisdom.",
+  "Motivations": [
+    "Preserve the ancient agnatic ladder of dynastic succession, resolving princely feuds through patriarchal mediation and rule of law.",
+    "Endow monasteries and scriptoria in Pereyaslavl and Kyiv, safeguarding chronicle traditions and Orthodox dynastic legitimacy."
+  ],
+  "Values": [
+    "Prize Christian humility and conciliation, believing the preservation of innocent lives far outweighs the fleeting vanity of power.",
+    "Revere ancestral statutes and holy covenants, treating dynastic harmony and ecclesiastical peace as pillars of the commonwealth."
+  ],
+  "Fears": [
+    "Fears that reckless, ambitious junior princes will obliterate ancient customs, plunging Rus' into endless anarchy and ruin."
+  ],
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ]
+}

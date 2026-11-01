@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Olga Yaroslavna, daughter of Grand Prince Yaroslav, is a culturally refined and deeply pious noblewoman of Vladimir. Educated amidst the sacred scriptoria and sacred chants of the Cathedral of the Dormition, she possesses profound knowledge of theology, ancient charters, and iconographic arts. Olga generously endows the stonemason workshops and monastic copyists of Vladimir, preserving the priceless cultural heritage established by Andrei Bogolyubsky. Modest and gentle in demeanor, she devotes her personal wealth to providing food, warm clothing, and medicines for the destitute and displaced orphans of the realm. During political disagreements within the princely family, her quiet moral clarity and insightful counsel repeatedly restored familial harmony among rival kinsmen. Revered by townspeople as an immortal symbol of Christian purity and cultural grace, Princess Olga stands as a luminous protectress of spiritual endurance.  Princess Olga's steadfast patronage of sacred scriptoria and charitable dispensaries preserved priceless liturgical traditions and comforted hundreds of war victims, shining as an immortal beacon of Christian piety.  Her pure Christian devotion, generous endowments to iconographic masters, and quiet moral wisdom illuminated the darkest hours of regional discord, establishing her as an immortal pattern of noble virtue.",
+  "SpeechStyle": "The carvings on our white stone cathedrals record the glory of our fathers, but faith guides our souls. Though worldly storms rage, holy love and divine peace shall preserve Vladimir forever.",
+  "Motivations": [
+    "Sponsor monastic scriptoria and stonemason guilds to preserve the illuminated artistic heritage of Rus'.",
+    "Maintain permanent charitable hospices to shelter the poor and comfort wounded victims of war."
+  ],
+  "Values": [
+    "Treasure godly faith, moral rectitude, and selfless compassion as the true jewels of the human soul.",
+    "Prize quiet humility and disciplined contemplation over arrogant court vanity and predatory ambition."
+  ],
+  "Fears": [
+    "Fear catastrophic warfare consuming the Cathedral of the Dormition and incinerating ancient sacred codices.",
+    "Dread the coarsening effects of endless bloodshed hardening the hearts of citizens into pitiless cruelty."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ]
+}

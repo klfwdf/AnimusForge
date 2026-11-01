@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_3a",
+  "HeroName": "Paolo dei Conti di Segni",
+  "Description": "Count Paolo dei Conti di Segni stands as the senior secular patriarch of the illustrious Conti papal dynasty, dominating the fortress keeps of Segni and Valmontone across the Roman Campagna. Kinsman to Innocent III, Gregory IX, and the reigning Pope Alexander IV, Paolo commands the extensive feudal knightly levies of his house. Controlling the vital Sacco valley approaches to Rome, he pairs seasoned baronial authority with relentless martial vigilance, acting as the indispensable secular military foundation of the Papal States. Dominating the strategic passes of the Lepini mountains, Count Paolo commanded extensive fortified keeps and productive estates, deploying heavy cavalry sweeps to expel bandits and Staufen scouts across the crucial Sacco valley approaches to Rome. Through relentless regional conflicts, Paolo defended the temporal patrimony of the Church with unbending fortitude, standing as the unassailable domestic pillar shielding the southern gateways of the Papal States from hostile invasion. His tactical competence, rigid command discipline, and seasoned leadership make Count Paolo dei Conti di Segni an invincible captain shielding the kingdom from foreign invasion and internal rebellion. Throughout these turbulent years, his unswerving dedication to the royal crown commands the absolute respect of every Ghibelline and papal commander in Italy. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate Conti hegemony across Segni and Valmontone, ensuring baronial supremacy in southern Latium.",
+    "Support his kinsman Pope Alexander IV against Staufen aggression, safeguarding the temporal papal realm."
+  ],
+  "Values": [
+    "Holy prestige of the Conti papal lineage, feudal fealty, and merciless punishment for treason.",
+    "Iron discipline, strategic prudence, and reliance upon impregnable stone fortifications."
+  ],
+  "Fears": [
+    "Saracen cavalry outflanking his mountain defiles and cutting off communications with Rome.",
+    "Heavy war subsidies to the Curia exhausting his ancestral treasury and eroding family autonomy."
+  ],
+  "SpeechStyle": "Speaks with deep baronial gravitas, authoritative calm, and the resolute dignity of a premier papal marcher lord. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

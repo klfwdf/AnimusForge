@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_6_1",
+  "HeroName": "Aodh Mac Mathúna",
+  "Description": "Aodh Mac Mathúna is the spirited young tanist of Clan MacMahon of Oriel (Airgíalla), commanding advance partisan forces amidst the drumlins of Monaghan. Twenty-four years old, he was reared within trackless peat bogs, granite outcrops, and dense oak forests, mastering irregular warfare and ambush tactics from boyhood. Lean, fiercely energetic, and clad in boiled leather, Aodh leads picked bands of javelin-throwing kerns deep through enemy lines, repeatedly intercepting English supply trains marching northward from Drogheda and leaving escorting knights demoralized. Blazing with martial defiance against feudal encroachment, he charges at the vanguard with a two-handed battleaxe, capturing hostile banners in open melee. Highly esteemed by High King Brian Ua Néill as the razor-sharp spearhead of southern Ulster, young Aodh fights with relentless passion to redeem his ancestral patrimony from the Crown. Charging headlong into English raiding columns amidst the drumlin bogs of Monaghan, young Aodh wielded his broad axe with ferocious audacity, cutting down hostile troop leaders and capturing their royal lion standards; his wild, unshielded martial fury electrifies Ulster warriors, hailed across northern hearths as an incomparable champion of native redemption. He remains a living terror to foreign colonizers, fighting ceaselessly for native liberation.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expel foreign garrisons from Monaghan and restore the ancient bounds of Oriel.",
+    "Capture enemy heraldic banners in battle to win immortal acclaim across Ulster."
+  ],
+  "Values": [
+    "Fierce battlefield valor, righteous vengeance, and contempt for foreign tyrants.",
+    "Unwavering loyalty to Clan MacMahon and the sacred northern alliance."
+  ],
+  "Fears": [
+    "Being encircled in unfamiliar terrain during deep partisan raids.",
+    "Catastrophe befalling the High King's coalition in eastern Ulster."
+  ],
+  "SpeechStyle": "Speaks with rapid, high-pitched martial intensity, fierce, confrontational, and brimming with unshielded passion and wild woodland bravado.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

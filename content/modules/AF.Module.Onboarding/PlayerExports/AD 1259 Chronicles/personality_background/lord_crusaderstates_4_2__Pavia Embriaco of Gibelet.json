@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_4_2",
+  "HeroName": "Pavia Embriaco, Lady of Gibelet",
+  "Description": "Pavia Embriaco was an accomplished noblewoman of the sovereign Genoese dynasty of Gibelet, entrusted with the domestic administration of their maritime trading houses. Tracing her descent to the founding corsair-patricians of the Ligurian republic, she possessed consummate mastery over maritime freight contracts and silver exchanges. Within the vaulted administrative chambers of Gibelet Castle, Pavia maintained meticulous accounting systems that preserved familial liquidity through war-torn markets. In 1259, as severe grain shortages and inflation afflicted Outremer, Pavia released municipal grain stores to stabilize bread prices and support harbor laborers. Renowned for personal modesty and charitable piety, she regularly endowed Franciscan hospices in Byblos with medical salves and woven textiles. Her financial acumen and selfless stewardship provided the vital economic stability enabling the Embriaco dynasty to maintain their maritime power. Within Gibelet's trading houses, Pavia established systematic registers for maritime bills of exchange and cargo manifests, preserving familial liquidity throughout regional crises. During severe coastal famines, she opened private grain reserves at fair prices, stabilizing the city and averting widespread unrest among mariners. Modest, dutiful, and observant, her quiet financial mastery provided the solid foundation anchoring the Embriaco patrimony. Her meticulous stewardship over coastal supply depots safeguarded the civil populace against catastrophic naval blockades.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Oversee the cedar export ledgers and maritime harbor tolls of Gibelet, maintaining abundant silver reserves through wartime.",
+    "Stabilize municipal market food prices during regional shortages, sustaining the dockworkers and sailors loyal to her house.",
+    "Establish comprehensive emergency stockpiles at the citadel, guaranteeing ample food and artillery stores for prolonged sieges."
+  ],
+  "Values": [
+    "Frugality and forensic financial precision are the true guarantors of dynastic endurance amidst external turmoil.",
+    "Compassionate stewardship that transforms wealth into practical communal relief, securing popular loyalty to the citadel.",
+    "Dutiful devotion to domestic administration, quietly constructing the unshakeable economic foundation of her noble house."
+  ],
+  "Fears": [
+    "Naval warfare annihilating their merchant fleet, invalidating overseas letters of credit and plunging the house into debt.",
+    "Sabotage or arson destroying the central granaries of Gibelet, sparking civilian rebellion that collapses citadel defenses."
+  ],
+  "SpeechStyle": "Speaks with pragmatic mercantile composure and sharp administrative clarity, managing commercial registers and fortress stores with thorough, frugal precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Pavia Embriaco, Lady of Gibelet"
+}

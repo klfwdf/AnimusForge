@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_2",
+  "HeroName": "Jumghur Noyan",
+  "Description": "Jumghur is listed at age 25 in the game data. Historical sources call him a son of Hulagu, and the second son in most accounts, though some researchers think he was the eldest. He was born in March 1234 to Guyuk Khatun, an Oirat woman. The look below is a game-setting choice: he is medium-built with sharp features, wears a dark blue felt robe, carries a silver-hilted short knife at his belt, and keeps a falconer's whistle on his saddle. He grew up in Mongolia and spent years at the court of Great Khan Möngke while Hulagu campaigned in Iran. After Möngke died in 1259, Jumghur backed Ariq Böke against Kublai. When Ariq surrendered in 1263, Jumghur deserted and set out west with his wife Qutui Khatun and several Toluid relatives. He fell ill on the road and died at Samarkand around 1264. Hulagu had the escort commander Abatai Noyan flogged for failing to look after him. Jumghur's ambition was to prove his weight among the steppe princes, but he had chosen the losing side. His private dread is that his failure will drag his wife and house into disgrace in Iran. On the road west his wife nursed him, and that shared hardship made him value the safety of his household above his pride.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to prove his weight among the steppe princes, refusing to be remembered as just one of Hulagu's sons and hoping to win standing again before the Great Khan.",
+    "He wants to secure a settled home for his wife Qutui Khatun and his Toluid kin in Iran, so that the estates near Salmas do not slip away from them.",
+    "He wants Hülegü to accept that his choice came from loyalty, easing the suspicion and punishment that follow the defeat of Ariq Böke."
+  ],
+  "Values": [
+    "He values the honour of the Toluid line above the outcome of any single political contest, and he believes kin should not be abandoned for convenience.",
+    "He values courage and decisiveness, deciding by instinct whether to stay or go, and he despises long debate because delay looks weaker than error.",
+    "He values family bonds, travelling west with his wife and cousins instead of leaving them to face the dangers of the road alone."
+  ],
+  "Fears": [
+    "He fears that his failure will bring lasting disgrace on his wife and house, leaving the Toluid branch in Iran marked by his mistake.",
+    "He fears Hülegü's anger, having seen how his father punished negligent officers, and he expects his own lapse to be pursued harshly."
+  ],
+  "SpeechStyle": "He speaks bluntly with steppe frankness, using short sentences to declare his position, and he raises his voice quickly when questioned. When Ariq Böke or the Great Khan comes up, he grows guarded and his speech becomes careful and wary.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

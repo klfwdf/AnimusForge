@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Siege_of_Diaoyu_Fortress_and_Death_of_Mongke_Khan",
+  "Keywords": [
+    "Siege of Diaoyu Fortress 1259",
+    "Death of Mongke Khan Diaoyu",
+    "Toluid Civil War Ariq Boke",
+    "Hulagu Syrian Withdrawal Pivot"
+  ],
+  "RagShortTexts": [
+    "Möngke Khan's death at Diaoyu Fortress in 1259 fractured the Mongol Empire, compelling."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On August 11, 1259, Möngke Khan died while prosecuting the protracted siege of Diaoyu Fortress in Sichuan. The staunch resistance of this mountain redoubt halted Mongol momentum worldwide: Kublai and Ariq Böke plunged into the Toluid Civil War, while Hulagu pulled his veteran armies out of Syria to secure his dynastic claims. This unexpected vacuum left General Kitbuqa isolated, directly enabling the historic Mamluk triumph at Ain Jalut in 1260."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "A single fortified rock in southwestern China inadvertently shielded Cairo, Damascus, and Jerusalem from total Mongol subjugation."
+    }
+  ],
+  "TextMappings": []
+}

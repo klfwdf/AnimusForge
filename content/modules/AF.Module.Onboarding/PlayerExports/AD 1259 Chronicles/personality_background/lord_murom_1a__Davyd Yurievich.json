@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince and Saint Davyd Yurievich of Murom (in monastic tonsure Peter), is one of the most celebrated and beloved rulers in medieval Russian chronicle tradition. Reigning from the timber and stone citadel above the Oka River, he guarded the strategic riparian gateway connecting the lower Oka with the Volga commerce arteries and Ryazan steppes. Prince Davyd and his saintly consort Euphrosyne (Fevronia) are immortalized in the legendary Tale of Peter and Fevronia of Murom as the patron saints of marriage, fidelity, and Christian love. When arrogant boyars demanded that he banish his wise peasant-born wife, Davyd chose exile and poverty on the river over breaking his holy marriage vows; soon after, civil chaos forced the humbled boyars to plead for his return, after which he ruled with legendary justice and mercy. He fortified the Oka river barriers, endowed the Saviour Monastery, protected riparian farming communities against steppe raiders, and fostered urban trade. Tonsured as monastics on their deathbed, the holy couple died on the same day and were buried in a shared tomb, venerated forever across Rus' as divine miracle-workers.  His visionary leadership, unbending defense of the Oka waterways, and profound marital fidelity left an indelible legacy of righteous kingship, inspiring generations of Russian rulers to govern with justice and mercy.",
+  "SpeechStyle": "The waters of the Oka bear witness to the sacred sanctity of our vows. Without righteous love and divine truth, earthly power is mere foam upon the river. Defend our holy heritage with pure hearts!",
+  "Motivations": [
+    "Defend Murom's sovereign independence and secure the Oka River trade routes against foreign raids and devastation.",
+    "Rule with incorruptible justice and Christian benevolence, reconciling boyar factions to maintain social harmony."
+  ],
+  "Values": [
+    "Hold sacred fidelity, marital honor, and selfless stewardship as divine commandments above all worldly glory.",
+    "Prize humble benevolence, righteous law, and compassionate charity as the true foundation of enduring statecraft."
+  ],
+  "Fears": [
+    "Fear steppe raiders crossing the shallow river passes under fog to plunder forest farming villages and enslave citizens.",
+    "Dread arrogant boyar factions reviving selfish intrigues and destroying the precious social unity of the principality."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    }
+  ]
+}

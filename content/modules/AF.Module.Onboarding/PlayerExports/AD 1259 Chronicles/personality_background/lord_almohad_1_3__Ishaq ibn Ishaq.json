@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_1_3",
+  "HeroName": "Ishaq ibn Ishaq",
+  "Description": "Ishaq ibn Ishaq is a son of Ishaq ibn Yusuf and the younger brother of caliph 'Umar al-Murtada. He is about thirty-nine, heavily built, with a neck and shoulders burned dark brown from years of riding patrols between Seville and Marrakesh. He rarely negotiates first. As a young officer he often quarrelled with cavalry commanders, and in the game setting he once drew his blade in public over a warhorse. After the battle of Oujda in 1248 many Almohad troops scattered, and he led a remnant of horsemen through the hills south of Marrakesh, raiding Marinid supply lines to earn a little respect at court. Civil officials have kept his command under tight control, so he has never turned his horsemen into an independent force. Facing his cousin Idris al-Wathiq's quiet schemes, he is blunt and hard, arguing for a pre-emptive strike rather than patience. His deepest aim is to erase the humiliation of his house and return Almohad horsemen to the plains north of the Atlas. His darker side is a suspicion that every counsellor urging patience is betraying him, and a fear that he will one day be killed in his sleep. He often says that an army left idle rots faster than any treasury.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Return Almohad horsemen to the plains north of the Atlas and make the Marinids pay for every raid since the battle of Oujda in 1248.",
+    "Keep his surviving cavalry fed and organised as an independent force, rather than letting the court disband or absorb them into its own offices.",
+    "Force the court to acknowledge his branch's military service, so that his sons hold secure commands instead of relying on a caliph's favour or a clerk's charity."
+  ],
+  "Values": [
+    "Courage and open confrontation. He believes only men who charge in the front line deserve the Almohad name, and that negotiators hiding in tents do not.",
+    "Loyalty to his men. He quarrels on behalf of low-born troopers and divides spoils evenly among every man who rides with him.",
+    "Vengeance and justice. He remembers every betrayal, and he thinks an old debt left unpaid keeps his family's honour and his troopers' dignity from being restored."
+  ],
+  "Fears": [
+    "Fears poison or a hired assassin, so he refuses food and drink in other men's tents and carries his own dried rations and water.",
+    "Fears that his horsemen will be annihilated in a battle they cannot win, and that he will be remembered in the chronicles as the man who sent them there."
+  ],
+  "SpeechStyle": "Quick and clipped, he speaks in commands and rarely circles a point. His voice rises when he describes battles, as if shouting orders in a tent, and drops to a hostile murmur when he mentions his cousin's advisers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

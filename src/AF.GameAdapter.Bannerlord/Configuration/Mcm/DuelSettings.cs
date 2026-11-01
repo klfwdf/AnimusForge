@@ -582,7 +582,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public const string ReasoningEffortNone = "none";
 
-	public const string ReasoningEffortMinimal = "minimal";
 
 	public const string ReasoningEffortMedium = "medium";
 
@@ -720,7 +719,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public string MainApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled.")]
 	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public Dropdown<string> MainApiReasoningEffortDropdown
 	{
@@ -1527,7 +1526,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled.")]
 	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryApiReasoningEffortDropdown
 	{
@@ -1606,7 +1605,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled.")]
 	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessApiReasoningEffortDropdown
 	{
@@ -1689,7 +1688,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public string EventAndRebellionApiReasoningEffort { get; set; } = ReasoningEffortHigh;
 
-	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
+	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled.")]
 	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionApiReasoningEffortDropdown
 	{
@@ -5780,8 +5779,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			ReasoningEffortMedium,
 			ReasoningEffortHigh,
 			ReasoningEffortXHigh,
-			ReasoningEffortMax,
-			ReasoningEffortMinimal
+			ReasoningEffortMax
 		};
 	}
 
@@ -5801,6 +5799,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	{
 		List<string> options = BuildReasoningEffortOptions();
 		int selectedIndex = dropdown?.SelectedIndex ?? 2;
+		// Legacy index 5 was minimal; preserve indices 0-4 and migrate it to low.
+		if (selectedIndex == 5) selectedIndex = 0;
 		if (selectedIndex < 0 || selectedIndex >= options.Count)
 		{
 			selectedIndex = 2;
@@ -5823,10 +5823,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public static string NormalizeReasoningEffortSelection(string effort)
 	{
 		string text = (effort ?? "").Trim().ToLowerInvariant();
+		// Read legacy settings without exposing or sending the retired value.
+		if (text == "minimal") return ReasoningEffortLow;
 		switch (text)
 		{
 		case ReasoningEffortNone:
-		case ReasoningEffortMinimal:
 		case ReasoningEffortLow:
 		case ReasoningEffortMedium:
 		case ReasoningEffortHigh:

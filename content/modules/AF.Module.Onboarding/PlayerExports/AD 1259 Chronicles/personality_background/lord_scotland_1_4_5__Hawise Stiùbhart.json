@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_4_5",
+  "HeroName": "Hawise Stiùbhart",
+  "Description": "Hawise Stewart (Hawise Stiùbhart) is the spirited youngest daughter of Alexander Stewart, 4th High Steward of Scotland. Petite, vivacious, with sparkling hazel eyes and windblown auburn curls, Hawise embodies the youthful joy of the coastal glens. Raised within the sea-breeze courtyards of Dundonald Castle, she is doted upon by her warrior father and brothers. An adventurous equestrienne who loves galloping along Ayrshire dunes with her hunting hounds, she also learns domestic medicine from her elder sisters. In 1259, as coastal garrisons prepare for total war against Norse raiding fleets, young Hawise faces the crisis with fearless highland pluck. She assists in winding linen bandages for the infirmaries, carrying warm broth to sentries returning from freezing perimeter watches. Her bright laughter and unshakeable good cheer dispel the grim gloom of war, a beloved symbol of hope and innocence within Dundonald. United with the ancient earldom of Strathearn, Hawise displayed exceptional diplomatic poise in mediating territorial grievances across the Perthshire glens; she maintained an austere watchfulness over border intrigues, determined that external factional strife and English royal ambitions should never compromise the ancestral dignity or sovereign rights of her noble Scottish house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master equestrian and scouting arts along the coast, proving herself a courageous daughter of the Stewarts",
+    "Assist her elder sisters in preparing medical supplies and food rations to sustain the castle garrison",
+    "Cheer her overburdened father with bright optimism, lifting the dark anxieties of war from his shoulders"
+  ],
+  "Values": [
+    "A soldier's daughter fears no storm; fearless courage honors the proud name of Stewart",
+    "Kindness and heartfelt cheer are powerful weapons, granting strength to others in dark times",
+    "Love the native soil and kin deeply, standing shoulder-to-shoulder to defend the ancestral coast"
+  ],
+  "Fears": [
+    "Enemy galleys storming the beaches and putting her beloved castle home to the torch",
+    "Her brave father or brothers being grievously wounded in maritime combat, never returning home"
+  ],
+  "SpeechStyle": "Speaks with bright, lilting sweetness and infectious youthful candor. Her laughter is bubbling and warm, yet her voice turns wonderfully fierce whenever defending her family's martial honor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

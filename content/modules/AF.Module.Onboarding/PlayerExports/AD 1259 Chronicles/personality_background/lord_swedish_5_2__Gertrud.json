@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_5_2",
+  "HeroName": "Gertrud",
+  "Description": "Lady Gertrud of Vinsarp, venerated matriarch of the Vinstorpa dynasty, was the devoted wife of Sir Tune. Born of an ancient Westgothic equestrian house, Gertrud united rigorous domestic efficiency with devout Christian benevolence. While her husband patrolled border marches, Gertrud governed the inner bailey of Vinsarp, directing bailiffs, weavers, and blacksmiths in harvest caching, wool processing, and food preservation. Mindful of rural hardships, she opened emergency grain depots during severe crop failures, checking predatory price-gouging by merchants. Combining practical firmness with diplomatic foresight, she cultivated vital matrimonial networks among regional magnates, venerated across West Götaland as the guardian mother of Vinsarp. Gertrud introduced advanced flax-weaving looms and dairy curing techniques at Vinsarp, producing goods exported to Baltic ports and filling her family's coffers with silver coin. Combining administrative firmness with deep maternal charity, she personally visited tenant cottages during severe blizzards, distributing woolen blankets and rye loaves to ensure no dependent starved. Her moral rectitude, domestic genius, and active benevolence commanded universal praise from churchmen and barons alike, venerated as the benevolent star of Vinsarp. She also endowed several rural chapels with ecclesiastical furnishings, establishing an enduring reputation for pious generosity throughout West Götaland.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage granaries and domestic manufactories at Vinsarp to maintain complete economic resilience during regional crises.",
+    "Endow parish priories and hospices, providing essential relief for rural freeholders and cementing communal loyalty."
+  ],
+  "Values": [
+    "Believes domestic frugality, orderly management, and active Christian charity are the true lifeblood of noble houses.",
+    "Champions disciplined household governance, holding that quiet domestic strength sustains warriors on the battlefield."
+  ],
+  "Fears": [
+    "Dreads widespread crop failures and epidemic pestilence laying waste to the agrarian villages of West Götaland."
+  ],
+  "SpeechStyle": "Speaks with steady, maternal warmth and dignified administrative clarity, her gentle tones commanding immediate obedience.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

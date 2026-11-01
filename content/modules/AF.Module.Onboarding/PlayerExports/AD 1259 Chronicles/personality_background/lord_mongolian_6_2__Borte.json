@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_6_2",
+  "HeroName": "Borte",
+  "Description": "Borte is slender, with fine lines at the corners of her eyes from years of wind and dust. A bowstring has worn an old scar into the web of her left hand, and she usually hangs a short bow from her saddle. In the game setting she is the finest mounted archer of the sixth clan, and her people say she can hit three arrows into a galloping target. The namesake in the Secret History of the Mongols and in Rashid al-Din's Jami al-tawarikh is Borte of the Olkhonud, betrothed as a child to Temujin, the future Genghis Khan. She was married at about seventeen and was carried off by the Merkit soon after the wedding. Her husband and his allies, including Jamukha, later worked to rescue her. That captivity was the deepest wound of her life, and it left her distrustful of the Merkit, even though she later became famous as the first and chief wife of Genghis Khan. In the game she is married to Kadan and has a daughter, Mandukhai. Against rivals she does not argue. She sets clear rules in camp, punishes anyone who breaks them in public, regardless of rank, and so her people keep a wary respect for her judgement. Her highest aim is to preserve the honour and order of the family on the steppe. Her shadow is the fear of captivity, of losing her identity and freedom again, which keeps her alert even in the safest tent.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the honour and order of the sixth clan intact on the steppe, so that the family does not split apart through internal strife or betrayal, as her sense of duty requires.",
+    "Train her daughter Mandukhai and the clan's young men in horsemanship and discipline, so that they can stand on their own ability in any contest rather than depend on protection.",
+    "Keep oaths and customary etiquette in dealings with other clans, so that no alliance is broken for a passing advantage and the family keeps its proper place in the steppe order."
+  ],
+  "Values": [
+    "Honour above profit, because she believes a person who loses honour does not deserve a seat at the assembly even with horses and pastures in hand.",
+    "Discipline and fairness, because every camp rule must bind every person equally, and offenders are punished regardless of rank, which keeps her people from growing careless.",
+    "Faithfulness to oaths, because once a promise is spoken it must be honoured even at cost, since broken faith passes its punishment down through generations."
+  ],
+  "Fears": [
+    "Fears being captured again and losing her identity and freedom, a dread that makes her distrust unfamiliar envoys and strange camps, so that she often appears cold.",
+    "Fears that Mandukhai or other clansmen will be betrayed through too much trust, and that she will fail to notice in time, leaving the family open to a devastating raid."
+  ],
+  "SpeechStyle": "Measured and low-voiced. Borte speaks with few words and rarely raises her voice. She explains with oaths, rules and old stories. Toward those who show disrespect her tone grows calmer, and she names the exact breach.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

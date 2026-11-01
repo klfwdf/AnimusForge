@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_3_1_4_1",
+  "HeroName": "Sofía Tarchaneiótissa",
+  "Description": "Sofía Tarchaneiótissa was the prudent and steadfast daughter of Grand Constable Andronikos Tarchaneiotes, growing to maturity during the monumental restoration campaigns of 1259. Stationed within fortified frontier estates across Macedonia, Sofia observed the rigors of imperial logistics firsthand, developing formidable domestic leadership and crisis-management abilities. When her father marshaled Cuman auxiliary cavalry and imperial regiments for European campaigns, Sofia personally coordinated manorial workshops producing wool uniforms, cured rations, and harnesses for baggage trains. Highly cultured and deeply devout, she patronized mountain hermitages and rural Orthodox sanctuaries away from turbulent court politics. Her quiet diplomacy, discretion, and administrative vigilance protected the family's regional influence, serving as a reliable domestic anchor for one of the empire's most distinguished military dynasties. At her Macedonian workshops, Sofia inspected composite recurve bows personally, testing horn laminations and quiver bindings with expert scrutiny. Managing estate revenues with thrift, she funded beacon towers along frontier passes, distributing hot pottage and surgical balms to marching legionaries. Shunning court intrigue, she schooled younger siblings in aristocratic discipline, her patient domestic wisdom acting as an enduring moral anchor that preserved the household's estates, prestige, and prosperity through every turbulent political transition.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her words are calm, orderly, and understated, reflecting sharp logistical competence and serene aristocratic discretion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

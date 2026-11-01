@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_6_1",
+  "HeroName": "Ákos nembeli Erdő I of Mérk",
+  "Description": "Ákos nembeli Erdő I of Mérk is a revered clan patriarch and senior statesman of the illustrious Ákos dynasty, tracing direct descent from Önd, one of the seven Magyar conquering chieftains. Governing ancestral domains across Borsod county and the Tisza basin, Erdő served as Ispán of Borsod while maintaining steadfast loyalty to King Béla IV. During the dark devastation of the 1241 Mongol invasion, he defended fortified marshlands around Mérk, rallying scattered knights and peasant militias to resist nomadic raiders. His leadership proved instrumental in the post-war reconstruction of northeastern Hungary's defensive perimeter. Honored across the realm for his stern integrity and ancestral prestige, Erdő commands deep respect among the regional gentry. In 1259, amidst the brewing royal conflict between father and son, Erdő unites his clan councils to uphold royalist stability across the northeast. Erdő I restored water dykes and drainage canals across Borsod, revitalizing agricultural lands that had been left desolate following the Mongol catastrophe. Invoking his ancestral authority as a conquering chieftain's descendant, he convened clan councils to swear mutual defense pacts. His patriarchal wisdom and steadfast devotion to the crown maintained harmonious order and loyalty throughout the northeastern counties.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the ancestral domains and internal unity of Clan Ákos across Borsod and the Tisza basin.",
+    "Uphold central royal authority amidst factional strife, guaranteeing regional peace and recovery."
+  ],
+  "Values": [
+    "Hold ancestral clan dignity and lawful allegiance to the crown as sacred oaths, scorning treason.",
+    "Prize elder statesmanship and benevolent justice, convinced moral virtue outlasts ephemeral power."
+  ],
+  "Fears": [
+    "Fears royal civil war devastating the northeastern plains, destroying decades of hard-won recovery.",
+    "Dreads predatory nouveau-riche oligarchs usurping ancient clan privileges and customary rights."
+  ],
+  "SpeechStyle": "The blood of Chieftain Önd surges within our veins, and the foundation of Ákos stands firm! Upholding Saint Stephen's crown, no storm shall shake our honor! The blood of Önd endures; Clan Ákos stands united with the royal crown!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_3d",
+  "HeroName": "Niels I. Eriksen Gyldenstierne",
+  "Description": "Sir Niels I. Eriksen Gyldenstierne of Ågård, a pivotal statesman of the Golden Star lineage, combined profound juristic expertise with consummate diplomatic finesse. Serving as a senior representative at the national Danehof assemblies, Niels shaped the constitutional balance between the Danish crown and provincial nobility. He navigated treacherous rivalries involving King Eric V, the ducal house of Schleswig, and the archiepiscopal see of Lund, consistently securing commercial tax exemptions and military immunities for Jutlandic lords. Within his ancestral domains, Niels financed modern watermills, stone granaries, and fortified dikes, vastly amplifying the financial and logistical power of his household. Revered for his incorruptible legal wisdom, he was hailed as an indispensable architect of regional stability. Niels demonstrated consummate legislative skill during the drafting of regional charters and feudal covenants, serving as the principal legal scribe for the Jutland ting to curtail arbitrary royal exactions. He pioneered the construction of navigable canal ways across Vendsyssel, facilitating the transit of timber and grain while generating lucrative toll revenues for his household. Dispassionate and inscrutable in diplomacy, his equitable arbitration reconciled contentious noble factions, laying the durable structural and political foundations that elevated the Gyldenstierne dynasty to the apex of the Danish realm.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Champion the chartered liberties of the Jutlandic baronage at the Danehof to check autocratic royal centralization.",
+    "Modernize economic infrastructure across the Ågård estates to reinforce his family's long-term financial security."
+  ],
+  "Values": [
+    "Values codified jurisprudence and calculated compromise over reckless violence, holding that law preserves true liberty.",
+    "Champions long-term strategic foresight, scorning impulsive actions in favor of protecting clan continuity."
+  ],
+  "Fears": [
+    "Dreads the destruction of parliamentary assemblies and customary rights by royal autocrats."
+  ],
+  "SpeechStyle": "Speaks with calm, forensic deliberation, citing customary statutes with razor-sharp lucidity and persuasive gravitas.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

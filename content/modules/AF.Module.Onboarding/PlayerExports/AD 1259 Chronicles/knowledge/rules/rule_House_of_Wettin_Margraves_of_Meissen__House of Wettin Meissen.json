@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Wettin_Margraves_of_Meissen",
+  "Keywords": [
+    "House of Wettin Meissen",
+    "Saxony Wettin Dynasty",
+    "Thuringian Succession Wettin",
+    "Ostsiedlung Meissen Cavalry"
+  ],
+  "RagShortTexts": [
+    "The Wettin dynasty governed Meissen and Thuringia, leveraging silver mines and eastern."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Under Margrave Henry the Illustrious, the House of Wettin reigned across Meissen and Thuringia. Enriched by the lucrative silver veins of Freiberg, their disciplined armories and mineral wealth solidified imperial authority along the Elbe frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Meissen silver coins bought mercenaries and fortified mountain passes, rendering Wettin estates invulnerable to sudden baronial raids."
+    }
+  ],
+  "TextMappings": []
+}

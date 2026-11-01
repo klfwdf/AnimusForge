@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_6b",
+  "HeroName": "Eudokía Komnīnī́ Angelína",
+  "Description": "Eudokía Komnīnī́ Angelína, aged thirty-seven, carries the illustrious bloodlines of both the Komnenos and Angelos imperial dynasties within the house of Vatatzes. Reared amidst the opulent ceremonial of Nicaea's golden age, she commands an unmatched mastery of Byzantine dynastic genealogies and palace etiquette. Dignified, articulate, and politically astute, she serves as a revered matriarch whose wise counsel is sought across aristocratic salons and convent chapter houses. Having witnessed the arduous campaigns that rebuilt Nicaea from the ashes of 1204, she is fiercely dedicated to imperial integrity and Orthodox purity. Amidst the ascent of Michael VIII, Eudokía expertly leveraged strategic family marriages to preserve the dignity, landed estates, and titles of the older aristocracy. A generous patroness of exiled scholars, she funds scriptoria transcribing classical philosophy and establishes endowments aiding dispossessed Christian refugees. Eudokía remains steadfast in her belief that regardless of the reigning dynasty, the survival of the Roman world rests upon cultural elegance and Orthodoxy. Mastering the genealogical intricacies and ceremonial protocol of the high aristocracy, she presides over courtly assemblies and diplomatic receptions with consummate majesty, universally celebrated as a regal guardian of ancient imperial customs. Her high moral authority guides the older aristocracy through momentous dynastic change.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 6b lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with aristocratic poise, immaculate diction, and traditional imperial grace, delivering incisive observations wrapped in flawless courtly protocol.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

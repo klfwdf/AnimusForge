@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_4_1",
+  "HeroName": "Dom Alfonso Mendes de Brito",
+  "Description": "Dom Alfonso Mendes de Brito is the venerable patriarch of the ancient House of Brito and head of clan_portugal_4, commanding universal reverence at fifty-nine years of age. Deeply entrenched in their ancestral fief of Brito near Guimarães since the foundation of the Portuguese monarchy, his family represents the bedrock of northern baronial cavalry. Dom Alfonso campaigned across decades under Kings Sancho II and Afonso III, acquiring immense tactical wisdom and battlefield authority during the grueling sieges of Alentejo and the Algarve. Despite his advanced years, he remains hale, sharp-eyed, and resolute, personally superintending estate revenues, fortification repairs, and militia levies. In the assemblies of the Cortes, Dom Alfonso speaks with unshakeable moral weight, balancing unwavering royal loyalty with an iron defense of seigneurial privileges. He stands as a towering pillar of chivalric tradition and territorial governance in northern Portugal. His half-century of battlefield valor and seasoned council in the Cortes has forged Dom Alfonso into a living patriarch of Portuguese chivalry, universally revered for his incorruptible honor and fatherly guardianship of his people. His half-century of unblemished service, martial wisdom, and incorruptible gravitas make Dom Alfonso an immortal pillar of the Portuguese feudal order.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To safeguard the hereditary charters and agrarian wealth of the House of Brito for succeeding generations.",
+    "To serve as a senior arbitrator in the Cortes, upholding kingdom-wide stability and ancestral legal order."
+  ],
+  "Values": [
+    "Honor and fidelity are immutable standards; no noble may compromise them for transient gain.",
+    "Disciplined stewardship and measured caution are the only guarantees of centuries-long survival."
+  ],
+  "Fears": [
+    "Youthful nobles succumbing to decadent vanity and reckless aggression, tarnishing ancestral sacrifices.",
+    "Renewed royal civil war dragging the peaceful northern river valleys back into carnage."
+  ],
+  "SpeechStyle": "Speaks with deep, gravelly timbre and slow, measured solemnity, every word carrying the crushing weight of seasoned authority. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

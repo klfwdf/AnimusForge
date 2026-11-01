@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_6_1",
+  "HeroName": "Simon di Sanseverino, Count of Tricarico",
+  "Description": "Count Simon di Sanseverino reigns as the paramount lord of the Sanseverino dynasty across Basilicata and Count of Tricarico. Dominating the rugged Lucanian defiles and the critical overland highways connecting Naples with Taranto, Simon commands a formidable host of seasoned mountain cavalry. Having proven his unflinching loyalty to the Hohenstaufen crown by subduing rebellious barons, he stands as King Manfred's indispensable martial bulwark anchoring the southeastern interior of the realm. As a formidable feudal magnate dominating the Lucanian peaks, Count Simon repeatedly led heavy cavalry sweeps against bandit strongholds and papal emissaries, erecting an impenetrable network of mountain watchtowers that earned King Manfred's deepest gratitude and trust. Through shifting political tides, Simon unfurled the imperial Hohenstaufen standard with unbending resolve, commanding his troopers with iron discipline and standing as the unassailable domestic pillar shielding southern Italy from foreign aggression. His tactical competence, rigid command discipline, and fatherly care for his soldiers make Count Simon an invincible captain shielding the kingdom from foreign invasion and internal rebellion. Throughout these turbulent years, his unswerving dedication to the royal crown commands the absolute respect of every Ghibelline commander in Italy. His battlefield valor, strategic vigilance, and unswerving feudal honor inspire all who serve his house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate the territorial rights of Tricarico and secure Sanseverino primacy across Basilicata.",
+    "Eradicate papal partisans and bandit networks to protect overland communication corridors."
+  ],
+  "Values": [
+    "Feudal fealty, martial honor, and uncompromising retribution against disloyal traitors.",
+    "Iron discipline combined with generous baronial protection for loyal vassals and retainers."
+  ],
+  "Fears": [
+    "Hostile naval landings on the Adriatic coast severing his communications with Apulia.",
+    "Exhaustive protracted warfare draining grain silos and depleting his elite warhorse breeding studs."
+  ],
+  "SpeechStyle": "Speaks with rugged baronial authority, blunt martial brevity, and the decisive gravity of an upland marcher lord. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

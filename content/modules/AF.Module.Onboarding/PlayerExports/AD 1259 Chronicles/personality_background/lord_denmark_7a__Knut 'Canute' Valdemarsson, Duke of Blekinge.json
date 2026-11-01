@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_7a",
+  "HeroName": "Knut 'Canute' Valdemarsson, Duke of Blekinge",
+  "Description": "Duke Knut Valdemarsson of Blekinge, royal prince and lord of vast Baltic apanages, was the eldest natural son of King Valdemar II the Victorious by Helena Guttormsdotter. Endowed with the regal pride and martial stature of the Estridsen dynasty, Knut previously governed the Duchy of Estonia as Duke of Reval before receiving extensive hereditary fiefdoms across Blekinge and Lolland, ascending as one of the wealthiest feudal rulers in northern Europe. Anchored within his coastal fortresses in Blekinge, Knut maintained elite squadrons of armored lancers and war galleys that policed the eastern maritime approaches of Denmark. During decades of fratricidal civil war in the motherland, he exercised formidable autonomous authority, mediating dynastic quarrels while shielding his domains from Swedish incursions. Endowing Cistercian monasteries and securing cathedral immunities, Duke Knut commanded international prestige as an indispensable elder statesman of the Scandinavian kingdoms. Duke Knut fortified the maritime havens and beacon stations across Blekinge, channeling lucrative Baltic customs dues and herring tithes into his ducal treasury. When Teutonic fleets or merchant convoys from Novgorod encountered shipwrecks in heavy seas, Knut dispatched rescue flotillas and naval escorts, winning international acclaim for his regal magnanimity. His steadfast governance over Denmark's eastern maritime borderlands established him as an insurmountable royal anchor across the Baltic Sea.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Consolidate autonomous feudal governance over Blekinge and Lolland while safeguarding vital Baltic maritime trade.",
+    "Arbitrate dynastic disputes among royal contenders to preserve the sacred authority of the Estridsen dynasty."
+  ],
+  "Values": [
+    "Reveres his royal descent from King Valdemar the Victorious, holding that true princely majesty demands martial strength and impartial justice.",
+    "Champions feudal law and generous church benefactions, maintaining family unity to weather political storms."
+  ],
+  "Fears": [
+    "Dreads destructive civil wars within Denmark inviting hostile seaborne invasions that sack the coastal ports of Blekinge."
+  ],
+  "SpeechStyle": "Speaks with commanding princely resonance and courtly elegance, his authoritative baritone reflecting royal lineage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

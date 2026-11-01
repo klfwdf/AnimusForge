@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lord Semyon of Dorogobuzh, son and trusted lieutenant of veteran commander Yeremey, is the dashing cavalry champion of the southwestern border marches. Raised on horseback amidst frontier alarms, he combines remarkable mounted archery and swordsmanship with deep tactical cunning in woodland warfare. Semyon leads an agile mobile vanguard of border scouts and skirmishing light cavalry, specializing in intercepting hostile raiding parties and neutralizing enemy reconnaissance. Swift as the wind and lethal in execution, he frequently launches nocturnal counter-ambushes under the cover of torrential rains or heavy mists, shattering enemy logistics deep within border forests. Sharing rough camp rations and sleeping beside his men in the snow, Semyon earns the fanatical loyalty of his cavalrymen by always leading charges from the front. He stands as a vigilant falcon guarding the frontier skies of Tver, determined to protect every farmstead from foreign depredation. Semyon commanded swift cavalry ambushes under the cover of torrential rains, disrupting hostile supply lines and defending frontier homesteads with lethal mounted archery and daring woodland tactics.  His swift mounted counter-attacks and mastery of forest warfare repeatedly shattered enemy logistics, earning him the fanatical admiration and loyalty of every scout who rode under his banner.",
+  "SpeechStyle": "My cavalry rides through every thicket of Dorogobuzh! Those who dare trespass on Tver's soil shall never leave these woods alive. Draw your swords and follow me into the fray!",
+  "Motivations": [
+    "Command rapid-response cavalry sweeps through frontier forests to eradicate enemy raiding columns and protect villagers.",
+    "Uphold his father's martial renown by honing his vanguard warriors into an elite forest strike force."
+  ],
+  "Values": [
+    "Value fearless battlefield charge and chivalric honor, believing glory is won in the saddle with spear and sword.",
+    "Prize unshakeable solidarity with his men, demanding unwavering loyalty to their sacred oath of frontier defense."
+  ],
+  "Fears": [
+    "Fear overextending a mounted pursuit into uncharted bogs and falling into an ambush that destroys his comrades.",
+    "Dread his aging father succumbing to illness at the frontline, leaving the garrison without its revered master commander."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

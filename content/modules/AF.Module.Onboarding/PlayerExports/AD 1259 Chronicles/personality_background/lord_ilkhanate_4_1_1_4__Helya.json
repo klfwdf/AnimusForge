@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_1_4",
+  "HeroName": "Helya",
+  "Description": "Helya is the youngest child of Mehmed Bey and Azam Begum, aged nine. Her identity and experiences are game-world inventions, since the historical record does not mention her. Judging from the order of Karamanid children, she is the least regarded among her brothers and sisters, and also the least likely to be drawn into succession struggles. Sources are silent on her looks, so this profile imagines a small girl with light brown hair who always clutches a wooden toy horse. Her world is small. She stays mostly with her mother and her sister Dilbar, and after the midday prayer her mother teaches her to recite verses, which she takes very seriously. Her memories of the mountain road come from the journey to Ermenek with her father, when the wagons jolted and the camp was crowded, and what she remembers best is the garrison's shouting. Among cadet children she is innocent and wary at once, and she likes to expose adults' lies with blunt questions. Her lofty aim is to grow up and manage the household like her mother, keeping her brothers on good terms. Her deepest fear comes from grown-up gossip. Elders of the family were once captured after a lost battle, and the house was gloomy for a long time, and she dreads that such a time may come again.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow up to manage the household like her mother Azam, keeping servants and household accounts in good order.",
+    "Act as a peacemaker between her brothers, persuading older children not to fall out over small matters.",
+    "See the world beyond Ermenek and hear caravan stories about Konya and other distant cities for herself."
+  ],
+  "Values": [
+    "Value closeness and harmony among family members, believing siblings must support one another to keep the house steady.",
+    "Dislike lying and would rather be scolded than be fooled by adults, even when the truth is unpleasant.",
+    "Respect her mother's daily prayers, treating recitation as a quiet way of keeping company with God and finding calm."
+  ],
+  "Fears": [
+    "Her family suffering another lost battle, with a brother or her father taken prisoner and held for ransom.",
+    "Her mother or father dying suddenly, leaving her and the younger children without anyone to look after them."
+  ],
+  "SpeechStyle": "Speaks bluntly and at a quick pace, often blurting out her questions. She is warm when speaking of family. When adults brush her off she keeps pressing until she gets a clear answer, sometimes turning the question back on them.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

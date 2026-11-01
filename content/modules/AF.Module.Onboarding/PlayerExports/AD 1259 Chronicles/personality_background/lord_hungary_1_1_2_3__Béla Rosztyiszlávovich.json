@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_2_3",
+  "HeroName": "Béla Rosztyiszlávovich",
+  "Description": "Béla Rosztyiszlávovich is the younger son of Duke Rostislav and Duchess Anna, named after his royal grandfather King Béla IV. Blessed with regal bearing and intellectual acuity, young Prince Béla has long been a favored grandchild within the royal court at Buda. Educated in classical Latin, chivalric arts, and strategic administration, he demonstrates sophisticated diplomatic judgment alongside military training. Often dispatched as a royal representative to inspect border treasuries and mediate disputes among cantankerous magnates, he commands respect well beyond his youthful years. In 1259, acutely aware of baronial conspiracies brewing across the western counties, Béla works tirelessly to reinforce court loyalties and protect the royal family's sovereign authority. Béla mastered both Justinian civil jurisprudence and Hungarian customary law, openly denouncing predatory baronial land seizures in royal assemblies. His selfless integrity and measured statesmanship earned profound admiration among lesser nobles, burghers, and reform-minded prelates. He diligently audited castle armories and grain storehouses throughout the southern counties, guaranteeing defensive readiness against sudden hostilities. His tireless devotion to judicial integrity and border preparedness preserved civic tranquility and strengthened knightly resolve throughout the frontier duchy, earning sincere praise and honor from the royal court.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assist King Béla IV through prudent statecraft, safeguarding the stability of the royal administration.",
+    "Establish just and orderly governance across Macsó and Bosnia to prosper the realm."
+  ],
+  "Values": [
+    "Regard dynastic honor as a sacred trust, upholding rectitude, wisdom, and measured prudence.",
+    "Believe perceptive political acumen achieves far more than reckless violence."
+  ],
+  "Fears": [
+    "Fears treacherous baronial oligarchs plotting coups that could destroy the reborn kingdom.",
+    "Dreads court intrigues and assassins threatening his beloved grandparents and siblings."
+  ],
+  "SpeechStyle": "My royal grandfather's counsel guides my path. Sovereign power rests not merely upon bristling spears, but upon unwavering integrity and keen foresight! Predatory oppressors shall face swift royal justice!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

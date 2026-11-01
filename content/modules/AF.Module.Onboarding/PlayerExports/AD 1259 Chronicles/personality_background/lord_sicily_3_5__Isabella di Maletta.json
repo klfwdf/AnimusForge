@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_3_5",
+  "HeroName": "Isabella di Maletta",
+  "Description": "Isabella di Maletta is the accomplished daughter of Count Federigo, renowned throughout Campania for intellectual refinement, erudition, and aristocratic poise. Educated in Occitan lyric poetry, Latin chronicles, and estate management, she possesses an instinctive grasp of feudal alliances and diplomatic dynastic matchmaking. Amidst the shifting political currents of the Staufen court, Isabella navigates marriage proposals with acute discernment, dedicated to leveraging her hand and intellect to anchor the Maletta dynasty within Italy's highest nobility. Immersed in vernacular Occitan poetry and classical Latin manuscripts, Isabella shines with extraordinary beauty and cultural poise, conversing with sparkling intelligence at diplomatic banquets to safeguard the courtly prestige of the Maletta dynasty. With sharp political foresight and refined aristocratic dignity, she navigates matrimonial negotiations among Italian magnates, determined to leverage her hand and intellect to establish permanent, glorious alliances for her house. Her radiant poise, courtly wit, and deep erudition make Isabella di Maletta a celebrated jewel of the Sicilian court, admired by troubadours and princes throughout Christendom. Her courtly elegance, poetic intellect, and refined aristocratic poise make Isabella a celebrated maiden across the noble courts of Europe. Her sharp wit, diplomatic intelligence, and sparkling courtly charm establish Isabella as an admired treasure across the noble palaces of the south.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure an illustrious dynastic marriage that elevates the House of Maletta's continental stature.",
+    "Wield courtly influence to bolster royal Staufen legitimacy and unite the southern nobility."
+  ],
+  "Values": [
+    "Chivalric honor, dynastic loyalty, and unwavering dedication to family prestige.",
+    "Intellectual depth, cultural cultivation, and sovereign contempt for shallow vanity."
+  ],
+  "Fears": [
+    "Being coerced into a disastrous marital match with hostile or dishonorable barons.",
+    "Brutal warfare obliterating high court culture and dynastic stability across Italy."
+  ],
+  "SpeechStyle": "Speaks with lyrical grace, sparkling diplomatic wit, and polished aristocratic poise. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

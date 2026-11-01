@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_3c",
+  "HeroName": "Helena z Medlova",
+  "Description": "Helena descends from the ancient lineage of Medlov, serving as the gracious and compassionate chatelaine of Pernštejn Castle. Modest, pious, and deeply devoted to domestic order, she expertly supervised mountain herb gardens, wool weaving halls, and manorial storerooms, establishing charitable kitchens to succor impoverished miners and foresters, earning the affection of all across the Pernštejn domains. Eschewing cold court intrigue, Helena dedicated herself to instructing her children in Christian piety, chivalric honor, and filial loyalty. While her husband governed garrisons and surveyed mountain fiefs, her quiet, benevolent presence brought enduring serenity to their rugged fortress. Tending mountain herb gardens in the sheltered courtyards of Pernštejn, Helena boiled gentian and sage into healing cordials for wounded soldiers, distributing woolen cloaks to serfs during freezing winters. Her humble charity soothed the wounds of mountain skirmishes, spreading her name as a saintly protector across the Svratka valley and providing a sanctuary of compassionate grace within the formidable fortress. Her tender benevolence, maternal devotion, and pious Christian charity brought celestial warmth, spiritual solace, and enduring comfort to her family's rugged mountain stronghold through every season of hardship, protecting all dependents through bitter winter seasons.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Oversee Pernštejn Castle's interior stores, ensuring abundance through harsh winters and wartime blockades.",
+    "Instill Christian virtue and courtly breeding in her scions, praying their lineage is shielded from strife."
+  ],
+  "Values": [
+    "Regards devout faith, modest grace, and selfless family guardianship as a chatelaine's highest calling.",
+    "Believes patient kindness and virtuous stewardship overcome violence more permanently than swords."
+  ],
+  "Fears": [
+    "Fears war blazes will engulf the Svratka valley, pillaging peaceful villages and monastic sanctuaries.",
+    "Worries her children will become political casualties in baronial clashes, longing for enduring safety."
+  ],
+  "SpeechStyle": "Stone citadels repel hostile steel, but only mercy and charity warm human hearts; honoring God and sheltering the poor are our sacred calling. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Helena z Medlova"
+}

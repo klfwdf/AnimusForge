@@ -1,0 +1,43 @@
+{
+  "Id": "rule_poisoning_of_yaroslav_ii_1246",
+  "Keywords": [
+    "Poisoning Of Yaroslav Ii 1246",
+    "Poisoning Of Yaroslav Ii 1246 Lore",
+    "Poisoning Of Yaroslav Ii 1246 Chronicles",
+    "AD1259 Poisoning Of Yaroslav Ii 1246"
+  ],
+  "RagShortTexts": [
+    "Historical doctrine and chronicle records concerning Poisoning Of Yaroslav Ii 1246 in 1259 East",
+    "Geopolitical significance, tactical mechanical design, and feudal governance of Poisoning Of Ya",
+    "Primary medieval evidence on border warfare, fortifications, and treaties across Poisoning Of Y"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The historic clash and devastating campaign of Poisoning Of Yaroslav Ii 1246 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Veterans recall the carnage of Poisoning Of Yaroslav Ii 1246 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lords and commanders tallying losses after Poisoning Of Yaroslav Ii 1246 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_2_1_a",
+  "HeroName": "Rohese de Clare",
+  "Description": "Rohese de Clare is the highborn eldest daughter of Richard de Clare, Earl of Gloucester, and Maud de Lacy, betrothed into the powerful northern baronial House of Mowbray. Tall, graceful, and possessing the striking hazel eyes and dark chestnut hair of the Clares, Rohese carries herself with the stately poise of Marcher royalty. Raised between the luxurious chambers of Tonbridge Castle and the massive stone fortifications of Glamorgan, she witnessed firsthand the martial logistics and feudal summits shaping the kingdom. In 1259, her impending marriage to Roger de Mowbray forms a vital diplomatic bridge uniting the Clare dynasty with the ancient baronies of Yorkshire and Lincolnshire. Far from a passive spectator, Rohese assists her mother in managing complex household accounts, directing diplomatic receptions, and maintaining family correspondence. Devoted to her brother Gilbert, she approaches her upcoming role with sharp intelligence and aristocratic resolve, prepared to champion Clare interests across the north. She assists her mother in auditing northern wool revenues, examining Mowbray genealogies and legal tenures with sharp aristocratic discernment. Conscious of her vital role in forging a trans-regional baronial alliance, Rohese approaches her future marriage with the unshakeable confidence of Clare blood.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement a powerful alliance with the northern baronies through her strategic union with Roger de Mowbray",
+    "Assist her mother in managing Tonbridge Castle's vast logistical preparations amidst political turmoil",
+    "Establish commanding influence across her future northern estates as a proud daughter of the House of Clare"
+  ],
+  "Values": [
+    "The blood of Clare stands proud wherever destiny calls; never accept humiliation or neglect",
+    "A noblewoman's true brilliance lies in knitting alliances and preserving stability through wisdom",
+    "Uncompromising honor, Christian piety, and aristocratic dignity are the eternal marks of true nobility"
+  ],
+  "Fears": [
+    "Civil war disrupting her marriage and pitting the Houses of Clare and Mowbray on opposing sides",
+    "Hostile baronial armies laying siege to Tonbridge Castle and laying waste to family lands"
+  ],
+  "SpeechStyle": "Speaks with melodic sweetness, polished courtly French, and natural aristocratic confidence. Her conversation is perceptive and poised, effortlessly commanding respect while putting allies at ease.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

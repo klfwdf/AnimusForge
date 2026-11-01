@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z2",
+  "HeroName": "Alix Pahlavouni",
+  "Description": "Alix Pahlavouni was a highborn daughter of the illustrious Pahlavouni princely dynasty, which had held hereditary military command over Ani and the Catholicosate for centuries. Her marriage into the Hetoumid inner circle united the venerable prestige of Bagratid Armenia with the dynamic sovereignty of the Cilician kingdom. Deeply versed in Classical Armenian and Greek ecclesiastical manuscripts, Alix actively patronized monastic scriptoria, goldsmithing guilds, and reliquary ateliers across Sis and Lampron. Amidst the clash of Frankish crusader customs, Seljuk pressure, and Mongol incursions, she guarded Armenia's ancestral liturgy and legal traditions with fierce cultural pride. In 1259, she meticulously audited ecclesiastical property registries and monastic charters, defending sacred endowments against encroachment. Reserved, dignified, and intellectually formidable, Alix was celebrated by scribes and scholars as an indispensable living conduit of ancient Armenian high culture. At Sis and Lampron, Alix established specialized archival preservation scriptoria, commissioning master epigraphers to transcribe and preserve ancient Armenian stone inscriptions and royal diplomas. She engaged visiting Byzantine theologians in philosophical discourse, vigorously defending Apostolic orthodoxy through rigorous Classical patristic scholarship. During grand royal synods, Alix wore an ancestral Pahlavouni ruby pectoral cross, her austere aristocratic poise commanding universal reverence across the court.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Guard the venerable cultural and liturgical heritage of the Pahlavouni house, revitalizing Classical Armenian scholarship in Cilicia.",
+    "Oversee monastic scriptoria and illuminators, preserving irreplaceable illuminated Gospels and historical chronicles.",
+    "Uphold traditional baronial protocol and dynastic dignity within the royal court against foreign dilution."
+  ],
+  "Values": [
+    "Spiritual and cultural resilience transcends fleeting military fortunes; an ancient nation survives through its sacred literature.",
+    "Rigorous administrative precision, intellectual rectitude, and fierce protection of ecclesiastical endowments.",
+    "Aristocratic dignity and uncompromising devotion to ancestral customs."
+  ],
+  "Fears": [
+    "Sacrilegious destruction of monastic libraries, consuming irreplaceable manuscripts and centuries of national memory in flames.",
+    "Forcible assimilation of the Armenian Apostolic Church by external Latin or Byzantine ecclesiastical hegemonies."
+  ],
+  "SpeechStyle": "Articulates thoughts with aristocratic poise and literary refinement, reflecting ancient princely lineage and deep reverence for cultural patrimony.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Alix Pahlavouni"
+}

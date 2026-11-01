@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_1_4",
+  "HeroName": "Isabelle de France, Princess of France and Queen of Navarre",
+  "Description": "Isabelle de France is the second daughter of King Louis IX and Queen Marguerite, reigning as Queen consort of Navarre and Countess of Champagne through her marriage to Theobald II. Raised within the pious and intellectually vibrant atmosphere of the Parisian Capetian court, she internalized her father's legendary humility and Christian devotion. Her union with the young King of Navarre established an indispensable dynastic bridge binding the French crown with the strategic Pyrenean marches and wealthy Champagne fairs. Renowned for her radiant grace and acute political discernment, Isabelle played a vital role in reconciling baronial disputes across both Pamplona and Troyes. She endowed numerous Franciscan priories and charitable hospitals, frequently setting aside her royal mantle to distribute provisions to destitute widows and pilgrims. Praised by ecclesiastical chroniclers as an angelic peacemaker, she commands universal reverence across the kingdom as a shining beacon of saintly royal womanhood. Beyond her courtly duties, Queen Isabelle supervised the grand expansion of Pamplona Cathedral, providing daily rations and medical care to weary pilgrims traveling along the Way of Saint James. Resolute, magnanimous, and deeply pious, her majestic poise defused feudal rebellions across the Pyrenees, earning her everlasting veneration as a holy peacemaker across Navarre and Champagne.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Advance Christian charity and maintain stable governance across Navarre and Champagne.",
+    "Strengthen the political and dynastic bonds linking Navarre with the French Crown."
+  ],
+  "Values": [
+    "Emulating her father's legendary humility and pious peacemaking across Christendom.",
+    "Preserving lawful baronial covenants and shielding vulnerable communities from exploitation."
+  ],
+  "Fears": [
+    "Violent municipal revolts in Navarre tearing the realm into factional bloodshed.",
+    "Her husband perishing abroad, plunging the throne into dynastic chaos."
+  ],
+  "SpeechStyle": "Speaks with serene grace and angelic softness, her courtly French illuminated by profound scriptural literacy and gentle diplomatic wisdom.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

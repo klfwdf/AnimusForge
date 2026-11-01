@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Andrei Glebovich is the steadfast son of Grand Prince Gleb and brother to the heroic Mstislav III, serving as Chernigov's master of fortification and garrison defenses. Complementing his brother's aggressive cavalry sorties, Andrei excelled in defensive infantry engineering, siege engine construction, and municipal ordnance logistics. Throughout perilous decades, he directed the modernization of Chernigov's barbicans, drawbridges, and anti-incendiary water cisterns along key parapets. He deployed heavy twin-string torsion crossbows mounted on swivel pintles, providing dense suppressive fire capable of punching through nomad lamellar armor. Methodical, taciturn, and disciplined, Andrei maintained unflinching order along ramparts, instituting strict shifts and rationing protocols that preserved combat stamina. Standing resolutely at vulnerable gatehouses during sieges, he directed timed crossbow volleys that repeatedly broke assaulting ladder columns. Affectionately hailed as the 'Iron Bolt of Chernigov', he serves as an immovable anchor of city defense. Stationed atop the barbicans of Chernigov, Prince Andrei directed fortress artillery with mechanical precision and nerves of steel. His swiveling torsion crossbow batteries repeatedly decimated attacking ladder brigades, converting vulnerable stone gates into impenetrable kill zones against all invaders. His unwavering vigilance preserved the city gates through grueling assaults. His disciplined engineering and calm leadership ensured that the city's gates remained firmly barred to foes.",
+  "SpeechStyle": "Defense demands the stillness of mountains, unswayed by fire or falling stones. Span your crossbows and stack the logs! Hold your posts, and no assault shall breach our walls!",
+  "Motivations": [
+    "Reinforce Chernigov's barbicans and bastions into impregnable kill zones, commanding crossbow units to repel assaults.",
+    "Direct ordnance manufacturing and defensive stockpiles, ensuring garrisons maintain steady supplies during protracted sieges."
+  ],
+  "Values": [
+    "Valuing unyielding discipline, tactical vigilance, and steadfast duty, despising panic, insubordination, and rash adventurism.",
+    "Believing meticulous defensive engineering and disciplined cohesion break the fiercest onslaughts of overwhelming conquerors."
+  ],
+  "Fears": [
+    "Incendiary naphtha bombs igniting timber districts within the walls, trapping defenders between enemy stormers and infernos.",
+    "Saboteurs poisoning municipal cisterns during siege, incapacitating garrison troops through thirst and sudden epidemic."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

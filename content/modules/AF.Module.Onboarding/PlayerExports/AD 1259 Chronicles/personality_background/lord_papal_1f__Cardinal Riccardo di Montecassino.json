@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_1f",
+  "HeroName": "Cardinal Riccardo di Montecassino",
+  "Description": "Cardinal Riccardo di Montecassino reigns as Abbot of the venerable Abbey of Montecassino—the mother monastery of the Benedictine Order—and a senior cardinal-priest of the Holy See. Perched atop the rocky acropolis guarding the Liri valley between Rome and Naples, Montecassino represents both a towering spiritual beacon and an unassailable border fortress. Master of scholastic theology and monastic discipline, Riccardo also directs fortress garrisons and armed abbey retainers, standing as Alexander IV's vigilant southern shield. Presiding over the sovereign acropolis of Montecassino, Abbot Riccardo mobilized monastic crossbowmen and fortress garrisons, barring the critical mountain passes between Rome and Naples and turning the ancient monastery into an unassailable bastion. Vigilant against Saracen raids and imperial incursions, Riccardo supervised defensive ramparts day and night, swearing to protect the sacred relics of Saint Benedict from the destructive fires of medieval warfare. His resolute defense of holy ground and profound monastic discipline make Abbot Riccardo di Montecassino an unshakeable rock shielding the Christian patrimony of central Italy. His unyielding vigilance and monastic courage guarantee that the sacred mountain of Saint Benedict remains completely safe from desecration. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the sacred sanctuary of Montecassino and preserve its priceless library of manuscripts.",
+    "Bar the southern mountain passes against any Staufen or Saracen incursions into Latium."
+  ],
+  "Values": [
+    "Benedictine obedience, monastic austerity, and preservation of sacred Christian patrimony.",
+    "Righteous defense of holy ground, regarding armed guardianship as a holy duty before God."
+  ],
+  "Fears": [
+    "Siege engines battering the ancient walls of Montecassino and destroying priceless manuscripts.",
+    "Saracen mercenaries from Lucera sacking the monastery and massacring peaceful monks."
+  ],
+  "SpeechStyle": "Speaks with contemplative monastic solemnity, Latin scriptural depth, and firm martial resolve. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

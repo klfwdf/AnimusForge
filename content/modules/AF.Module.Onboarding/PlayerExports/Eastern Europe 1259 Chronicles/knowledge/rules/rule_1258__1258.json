@@ -1,0 +1,43 @@
+{
+  "Id": "rule_1258",
+  "Keywords": [
+    "1258",
+    "1258 Lore",
+    "1258 Chronicles",
+    "AD1259 1258"
+  ],
+  "RagShortTexts": [
+    "Historical doctrine and chronicle records concerning 1258 in 1259 Eastern Europe.",
+    "Geopolitical significance, tactical mechanical design, and feudal governance of 1258 Lore.",
+    "Primary medieval evidence on border warfare, fortifications, and treaties across 1258 Chronicle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The institutional custom, legal charter, and socio-economic tradition of 1258 constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of 1258. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under 1258. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+    }
+  ],
+  "TextMappings": []
+}

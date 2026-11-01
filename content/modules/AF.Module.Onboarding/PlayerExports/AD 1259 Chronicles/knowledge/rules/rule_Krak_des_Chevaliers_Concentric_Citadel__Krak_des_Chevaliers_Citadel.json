@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Krak_des_Chevaliers_Concentric_Citadel",
+  "Keywords": [
+    "Krak des Chevaliers Citadel",
+    "Hospitaller Fortress Treasury",
+    "Syrian Concentric Castle",
+    "Double Curtain Enceinte"
+  ],
+  "RagShortTexts": [
+    "Krak des Chevaliers stood as the pinnacle of concentric design, provisioned for multi-year sieges."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Commanding the Homs gap in Syria, Krak des Chevaliers represents the zenith of Hospitaller military architecture. Its concentric ring layout places towering inner walls above lower outer circuits, backed by deep cisterns, windmills, and subterranean granaries capable of sustaining two thousand defenders for years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "While the Hospitaller white cross flies above its battlements, caravan routes between Aleppo and Damascus remain exposed to sudden cavalry sallies. Saladin himself bypassed it; only relentless artillery can breach its defenses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Storming the Krak is suicide. Even if you cross the dry ditch and scale the outer talus, defenders on the towering inner circuit rain crossbolts and boiling oil into the killing ground between the walls."
+    }
+  ],
+  "TextMappings": []
+}

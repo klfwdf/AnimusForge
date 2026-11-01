@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_7a",
+  "HeroName": "Vok I. z Rožmberka",
+  "Description": "Vok I of Rožmberk (Rosenberg) stands as the supreme titan of the Bohemian nobility, High Marshal of the Bohemian Kingdom, and royal governor (Landeshauptmann) of Upper Austria and Styria under the 'Iron and Golden' King Přemysl Otakar II. A peerless military commander and far-sighted imperial statesman, Vok spearheaded the deployment of Bohemian cataphract cavalry south across the Danube, subduing Bavarian marcher lords and securing Přemyslid hegemony over the alpine duchies. High above the serpentine loops of the Vltava River, he founded the imposing stronghold of Rožmberk Castle as the unshakeable seat of his dynasty, while demonstrating profound Christian piety by endowing the grand Cistercian monastery of Vyšší Brod (Hohenfurth) as the spiritual necropolis of his line. Vok governed his vast territorial principality with iron discipline, initiating systematic German land reclamation, opening rich iron mines, and establishing heavily fortified road tolls that generated immense fiscal power. Undaunted by imperial envy or envious court rivals, he inextricably bound the five-petaled red rose of Rožmberk to the imperial destiny of Bohemia, forging a baronial imperium that defined the politics of Central Europe. King Otakar II bestowed golden bull charters honoring Vok's martial valor, granting him extensive hereditary estates and administrative jurisdictions south of the Danube. Within the crypts of Vyšší Brod Abbey, Vok constructed monumental stone tombs for his lineage, carving the fame of the red rose permanently into the annals of Bohemia.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Consolidate royal gubernatorial control over Austria and Styria, expanding Rožmberk landholdings into the Alpine heartlands.",
+    "Establish Vyšší Brod Monastery as the supreme Cistercian spiritual sanctuary and eternal mausoleum for his bloodline.",
+    "Fortify the Vltava river basin with stone bastions, mills, and iron foundries to sustain total military readiness against imperial threats."
+  ],
+  "Values": [
+    "Regard dynastic expansion, martial sovereignty, and familial prestige as the ultimate measure of nobility.",
+    "Champion strict military obedience and overwhelming force as the sole reliable guarantees of political stability.",
+    "Maintain fierce feudal fidelity to the Bohemian crown, executing royal campaigns with unmatched chivalric vigor."
+  ],
+  "Fears": [
+    "An imperial coalition expelling Bohemian rule from Austria and undoing decades of hard-won marcher conquests.",
+    "Future royal ingratitude stripping his heirs of hereditary governorships and hard-won territorial jurisdictions."
+  ],
+  "SpeechStyle": "By the five-petaled rose, our heavy lances subdued the rebellions of Styria and secured the southern march; let none doubt the resolve of Rožmberk iron! Our red rose banners shall crush all rebellion beneath our chargers!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_8_3",
+  "HeroName": "Leonardo Giustiniani",
+  "Description": "Leonardo Giustiniani is a daring young galley captain of House Giustiniani, having already tasted maritime warfare alongside veteran kinsmen in Levantine waters. Mastery over rigging, oars, and shock boarding tactics renders him a formidable sea fighter; bold, restless, and eager to capture Genoese flagships to win early senatorial accolades. Audacious and untamed, Leonardo repeatedly spearheaded boarding charges in Aegean skirmishes, leaping across plunging gunwales amidst crashing swells to slay hostile steersmen and capture enemy navigation charts with breathtaking daring. Sharing harsh rations and grueling watches with his rowers, he mastered every martial art of maritime combat while forging fanatical loyalty among his crew, hailed widely as the rising star of the fleet. Yearning to carve his own glorious path to senatorial renown, this spirited young warrior vows to break Genoese battle lines and prove worthy of the heroic Giustiniani blood flowing in his veins. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Board and capture an enemy Genoese heavy war galley in open naval combat.",
+    "Prove his tactical supremacy among the rising naval captains of Venice."
+  ],
+  "Values": [
+    "A true son of Venice proves his worth through blood and iron on the open deck.",
+    "Decisive courage in battle outshines timid calculation on land."
+  ],
+  "Fears": [
+    "Consignment to mundane harbor patrols while peers reap naval glory.",
+    "Being overshadowed by rival young captains in the race for senatorial distinction."
+  ],
+  "SpeechStyle": "Speaks with exuberant vigor and rapid cadence, radiating the audacious courage of a young captain. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

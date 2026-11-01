@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Sanseverino_and_Salerno_Barons",
+  "Keywords": [
+    "House of Sanseverino Barry Argent Azure",
+    "Salerno and Cilento Great Barony",
+    "Sicily Grand Constable Office",
+    "Anti Angevin Southern Resistance"
+  ],
+  "RagShortTexts": [
+    "The House of Sanseverino commanded Cilento and Salerno, serving as premier barons of the."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Carrying silver and blue horizontal bars, the House of Sanseverino dominated southern Italy from Salerno and Cilento. Tracing Norman lineage and holding the office of Grand Constable, their vast estates fielded hundreds of heavy cavalry, anchoring domestic baronial power during the Hohenstaufen twilight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Neither Manfred nor prospective Angevin conquerors could govern Naples without securing Sanseverino conciliation, given their impregnable mountain garrisons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Perched upon limestone crags in Cilento, Sanseverino forts command coastal passes. Armored retainers strike with tactical fury, mastering rugged mountain melees."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_1_2_a",
+  "HeroName": "Henry of Cornwall",
+  "Description": "Henry of Cornwall was a martial scion and knight of House Plantagenet-Cornwall. Raised in royal camps along the Rhine, he mastered German greatsword combat and English horsemanship, serving with selfless chivalric fidelity to defend his family's Rhenish and English manors. Henry guarded Rhenish border fortresses with unflinching knightly discipline, mastering German broadswords and lances to repel marauding bands across Lower Germany. He guarded royal baggage trains along the Rhine, repelling Bohemian cavalry ambushes with heroic loyalty and standing as an immovable shield for King Richard. Valuing frontline combat above courtly ease, this intrepid royal knight defended family fortresses with martial loyalty, personifying pure chivalric brotherhood. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win fiefs and knightly renown through battlefield valor to forge his own fortunes.",
+    "Command escort cavalry guarding King Richard and Earl Edmund during bullion transfers.",
+    "Purge robber-barons along Rhenish gorges to protect merchant caravans and trade."
+  ],
+  "Values": [
+    "Regards battlefield deeds as the only true currency of men, scorning courtly flattery.",
+    "Believes unswerving loyalty to his royal kin is the bedrock of chivalric knighthood."
+  ],
+  "Fears": [
+    "Falling in remote German forest ambushes, denied burial in ancestral ground.",
+    "The downfall of his royal patrons casting him adrift as a penniless landless mercenary."
+  ],
+  "SpeechStyle": "Speaks with robust military candor and battlefield grit, loyal, direct, and brave. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

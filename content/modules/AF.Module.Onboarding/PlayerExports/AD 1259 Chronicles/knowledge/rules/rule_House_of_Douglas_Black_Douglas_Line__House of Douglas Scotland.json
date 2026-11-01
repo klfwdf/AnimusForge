@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Douglas_Black_Douglas_Line",
+  "Keywords": [
+    "House of Douglas Scotland",
+    "Black Douglas Clan Spears",
+    "Lothian and Southern Uplands",
+    "Border Reiver Tactics Douglas"
+  ],
+  "RagShortTexts": [
+    "Anchored in the Southern Uplands, the Black Douglas perfected savage border guerrilla."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Emerging from the Southern Uplands, the Black Douglas under William the Hardy mastered ruthless night raids along the Tweed. Their hard-hitting light cavalry and schiltron spearmen struck terror into northern English border marches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Uncompromising and fiercely patriotic, the Douglas clan prioritized asymmetric woodland warfare over rigid chivalric pageantry."
+    }
+  ],
+  "TextMappings": []
+}

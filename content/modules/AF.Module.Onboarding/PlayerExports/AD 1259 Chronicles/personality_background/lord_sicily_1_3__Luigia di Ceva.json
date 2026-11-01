@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_3",
+  "HeroName": "Luigia di Ceva",
+  "Description": "Luigia di Ceva is the esteemed noble marchioness of Tommaso I di Saluzzo, wielding immense administrative influence at thirty-seven years of age. Descending from the ancient Ghibelline Marchesi di Ceva entrenched along the Ligurian alpine ridges, her marriage unified two premier border dynasties. Highly skilled in manorial accounting and frontier logistics, Luigia governs the treasury, pass tolls, and garrison provisions of Saluzzo with serene authority during her husband's frequent military deployments with King Manfred. Resolute, fair-minded, and politically astute, she resolves feudal disputes among mountain vassals and ensures uninterrupted defensive readiness, revered as the indispensable matriarchal anchor of the marquisate. Her masterly domestic administration, financial prudence, and calm crisis management make Marchioness Luigia the indispensable logistical heart of the alpine marquisate. Her tireless diligence, fair justice, and profound Christian charity preserve peace and tenant prosperity across the fertile alpine valleys of Piedmont. Her acute managerial intelligence, moral fortitude, generous almsgiving, and maternal devotion establish Marchioness Luigia as an indispensable pillar of alpine baronial governance, beloved by mountain folk. Her wisdom, moral courage, and serene nobility ensure that the alpine domains remain prosperous and secure through every changing season of war.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To steward the fiscal accounts and supply granaries of Saluzzo, ensuring impregnability against siege.",
+    "To preserve the dynastic patrimony, ensuring the smooth succession of her children."
+  ],
+  "Values": [
+    "Prudent foresight and rigorous fiscal thrift are the pillars of survival; vanity brings ruin.",
+    "Guarding the welfare and security of manorial tenants is a sacred duty."
+  ],
+  "Fears": [
+    "War ravaging the alpine valleys, turning flourishing manors to ash.",
+    "Her husband falling victim to the brutal warfare sweeping southern Italy."
+  ],
+  "SpeechStyle": "Speaks with composed dignity, practical clarity, and serene authority, laying out logistical realities with calm precision. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

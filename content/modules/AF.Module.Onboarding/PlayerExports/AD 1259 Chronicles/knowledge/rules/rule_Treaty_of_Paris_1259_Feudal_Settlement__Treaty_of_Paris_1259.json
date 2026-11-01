@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Treaty_of_Paris_1259_Feudal_Settlement",
+  "Keywords": [
+    "Treaty of Paris 1259",
+    "Henry III Homage to Saint Louis",
+    "Gascony Feudal Dispute",
+    "Hundred Years War Catalyst"
+  ],
+  "RagShortTexts": [
+    "The 1259 Treaty of Paris resolved French claims as Henry III paid homage, breeding deep seeds."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Signed in December 1259, the Treaty of Paris saw Henry III of England formally surrender hereditary Plantagenet claims to Normandy, Maine, Anjou, and Poitou, retaining only the Duchy of Aquitaine (Gascony) as a feudal vassal performing liege homage to Saint Louis IX of France."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "French jurists hailed Louis IX's arbitration as a triumph, binding the sovereign King of England beneath the jurisdiction of the Parlement of Paris. English magnates, conversely, decried it as national betrayal, bitter at the formal loss of ancestral Angevin lands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Garrisons in Bordeaux and Bayonne fly Capetian-approved charters, but the wine shippers and longbowmen swear allegiance solely to the Plantagenet coin. An anointed king kneeling to another anointed king is an unnatural peace built upon burning embers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Bells pealed in Notre-Dame de Paris for Christian amity. Peasant vine-growers in Gascony care little for legal homage, praying only that neither royal army marches through to commandeer winter oxen and burn the casks."
+    }
+  ],
+  "TextMappings": []
+}

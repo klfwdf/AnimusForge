@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_2_a",
+  "HeroName": "Mathilde von Brabant",
+  "Description": "Mathilde von Brabant, daughter of Duke Heinrich II of Brabant, married Robert I of Artois (brother of Saint Louis of France) and later Guy III of Saint-Pol. A vital dynastic link between France and the Low Countries, she governed Artois as Regent with formidable administrative resolve. Mathilde suppressed lawless robber-barons in Artois, establishing civic audits and governing as Regent with maternal iron to preserve her son's inheritance following Egyptian crusades. She constructed arterial canals and cloth manufacturing guilds in Artois, balancing civic liberties with royal authority to make her province France's most tranquil march. Uniting royal bloodlines, Mathilde governed Artois as Regent with formidable authority, safeguarding her son's heritage through the storms of crusade warfare. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Govern Artois as Regent following Robert's heroic death at al-Mansurah, securing her son's heritage.",
+    "Serve as an indispensable diplomatic conduit linking the Capetian crown and the Duchy of Brabant.",
+    "Enforce strict justice against unruly barons to maintain urban prosperity across Artois."
+  ],
+  "Values": [
+    "Believes a noblewoman's true glory lies in governing steadfastly through catastrophic disaster.",
+    "Holds equitable justice and unbending duty as the lifeblood of sovereign regency."
+  ],
+  "Fears": [
+    "French royal bailiffs encroaching upon Artois liberties to sideline her authority.",
+    "The fallout of crusade disasters in Egypt sparking insurrections across her borders."
+  ],
+  "SpeechStyle": "Speaks with imperious Capetian authority and Flemish iron will, commanding and decisive. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

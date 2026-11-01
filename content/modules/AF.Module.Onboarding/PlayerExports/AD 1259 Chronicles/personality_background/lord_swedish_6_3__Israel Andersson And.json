@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_6_3",
+  "HeroName": "Israel Andersson And",
+  "Description": "Sir Israel Andersson And was a distinguished Swedish knight and ambitious military commander belonging to the illustrious And family of Uppland. In 1259, Israel commanded elite mounted contingents patrolling the frontier borders and commercial waterways around Lake Mälaren and the Baltic approaches. Renowned for his tactical daring and iron discipline, he ruthlessly suppressed outlaw gangs and defended coastal trading settlements from maritime raiders. Combining martial prowess with his lineage's traditional acumen in customary law, he served Birger Jarl's crown as an energetic envoy and royal commissioner in eastern defensive marches. He advocated for the modernization of Swedish cavalry tactics, importing heavy armaments and promoting stone fortification architecture to counter eastern regional threats. Driven by a fierce ambition to elevate his dynasty into the foremost circle of the realm's riksråd council, Israel proved a staunch champion of royal order. His leadership within the equestrian class made him one of the most formidable and promising young barons of late thirteenth-century Sweden. Along the shores of Lake Mälaren, Sir Israel drilled shock heavy cavalry in advanced breakthrough maneuvers while commissioning fortified patrol galleys to secure strategic waterway transit against hostile incursions. In bloody skirmishes against maritime pirates, he led vanguard charges in heavy plate mail, wielding poleaxe and lance to dispatch raider captains and restore order along vital trade routes. His rare combination of rigid battlefield discipline and tactical innovation established him as one of the most formidable cavalry commanders of his generation.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with bold martial vigor and assertive confidence, blending sharp battlefield authority with astute political pragmatism.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

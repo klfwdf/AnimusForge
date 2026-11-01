@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_3_1",
+  "HeroName": "Sancho Garcés VI",
+  "Description": "Sancho Garcés represents the ancient royal Basque lineage of the House of Jiménez, serving at twenty years of age as the proud chieftain of clan_navarre_2 and Lord of the fertile Ribera del Ebro. Bearing the revered name of King Sancho VI 'The Wise', Sancho champions the traditional autonomous liberties and feudal fueros of the indigenous Navarrese and Basque nobility against encroaching French centralism. Governing vital crossing points, agricultural estates, and cliffside keeps along the Ebro, he controls the transit avenues linking Navarre with Castile and Aragon. Proud, calculating, and deeply entrenched in the regional cortes, he complies with King Theobald II while fiercely defending the judicial franchises of his peers. His marriage to Lady Sancha of Castile provides immense external leverage, cementing him as the paramount indigenous baronial leader of the realm. His unyielding defense of ancestral Basque liberties and deep parliamentary authority in the Cortes establish Sancho Garcés as the revered champion of indigenous Navarrese sovereignty. With unyielding pride and legal mastery, he shields his people against foreign encroachment, an immortal bulwark of native Basque honor. With unyielding pride and legal mastery, he shields his people against foreign encroachment, standing as an immortal bulwark of native Basque honor.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To defend the ancestral fueros and seigneurial liberties of native Navarrese barons against French centralism.",
+    "To expand his estates along the Ebro river valley, restoring the glory of the ancient House of Jiménez."
+  ],
+  "Values": [
+    "Ancient custom and indigenous liberties are sacred; no foreign crown may dismantle them.",
+    "Defending the ancestral heritage and land of Navarre is the supreme duty of a native lord."
+  ],
+  "Fears": [
+    "French royal bureaucrats disenfranchising the local Cortes and reducing Navarre to a Champagne province.",
+    "Border skirmishes with Castile devastating his rich agrarian estates along the Ebro."
+  ],
+  "SpeechStyle": "Speaks with aristocratic Basque gravity, austere dignity, and unyielding firmness when defending ancestral rights. He speaks with measured chivalric eloquence, serene authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

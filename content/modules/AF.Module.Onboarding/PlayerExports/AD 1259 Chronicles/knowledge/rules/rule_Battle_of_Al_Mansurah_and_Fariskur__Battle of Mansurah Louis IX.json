@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Al_Mansurah_and_Fariskur",
+  "Keywords": [
+    "Battle of Mansurah Louis IX",
+    "Fariskur Rout Seventh Crusade",
+    "Robert of Artois Death",
+    "Mamluk Baibars Town Ambush"
+  ],
+  "RagShortTexts": [
+    "In 1250 at Mansurah and Fariskur, street ambushes decimated French crusaders, culminating."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The 1250 Seventh Crusade disaster at Mansurah unfolded when Robert of Artois rashly spurred crusader cavalry into labyrinthine town lanes. Baibars closed the city gates, systematically annihilating the vanguard. Starvation and dysentery forced Louis IX's retreat to Fariskur, where the king and barons surrendered to Mamluk forces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "The catastrophe demonstrated the vulnerability of heavy feudal cavalry within confined urban kill-zones."
+    }
+  ],
+  "TextMappings": []
+}

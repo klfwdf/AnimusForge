@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Vasily Vasilyevich of Kashin, second son of Prince Vasily and Princess Elena, is a shrewd administrator and strategic organizer. Complementing the frontline combat fury of his elder brother Mikhail, young Vasily inherited his father's calculating intellect, diplomatic acumen, and logistical foresight. He oversees regional granaries, horse-breeding studs, and armor foundries across the agricultural estates of Kashin, possessing encyclopedic knowledge of fortress readiness. Vasily modernized supply registries, rationalized labor levies, and sponsored forest clearance to expand arable farmlands, vastly augmenting state reserves. In military affairs, he developed an extensive beacon signal network and concealed scout relays to track foreign movements long before hostile hosts could approach the gates. Convinced that logistics dictate the outcome of every war, Prince Vasily stands as the intellectual and organizational engine of Kashin's defense. Vasily organized advanced beacon communications, iron foundries, and extensive grain reserves, ensuring that the defenses of Kashin remained completely self-sufficient and invincible through protracted winter sieges.  His encyclopedic mastery of fortress engineering, supply logistics, and advanced scout relays made him an indispensable strategic mastermind safeguarding the principality of Kashin against all unexpected military disasters and sieges.  His organizational brilliance ensures the fortress stands firm against all odds.",
+  "SpeechStyle": "Battles are won long before the first spear is thrown, decided by granaries and calculating foresight. With abundant provisions and vigilant scouts, we shall outlast every foe. Follow orders with precision!",
+  "Motivations": [
+    "Perfect Kashin's supply reserves, weapons production, and scout networks to withstand protracted hostile sieges.",
+    "Modernize fiscal administration and estate farming to expand the material strength and autonomy of the principality."
+  ],
+  "Values": [
+    "Regard meticulous preparation, data accuracy, and logistical superiority as the foundational pillars of victory.",
+    "Prize cool analytical calculation, always seeking the maximum strategic benefit with minimal cost in human life."
+  ],
+  "Fears": [
+    "Fear enemy siege engineers sabotaging subterranean water springs, crippling fortress defenses despite ample food stores.",
+    "Dread catastrophic droughts or unseasonable frosts decimating regional harvests and draining vital granaries."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ]
+}

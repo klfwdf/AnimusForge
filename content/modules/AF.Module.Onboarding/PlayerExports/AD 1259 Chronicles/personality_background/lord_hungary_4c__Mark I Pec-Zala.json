@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_4c",
+  "HeroName": "Mark I Pec-Zala",
+  "Description": "Mark I Péc-Zala is the gallant son of Judge Royal Denis, serving as an elite knightly captain and judicial bailiff across Zala county. Embodying his father's unyielding rectitude and ancestral warrior virtues, Mark developed formidable expertise in armored cavalry combat and archery. Straightforward and resolute, he commands the county judicial cavalry, tasked with apprehending outlaw bands and safeguarding royal assizes across western Hungary. Facing down arrogant private retainers of rebellious lords, Mark displayed remarkable composure, tactical courage, and legal steadfastness. He directly oversees the signal beacon network across Zala, guaranteeing immediate alarm in the event of foreign incursions. In 1259, as wartime desertion and banditry stir along border trade roads, Mark patrols highways with his armored lancers, acting as the sharp sword of public order. Mark led the county judicial cavalry along the highways of western Hungary, establishing permanent checkpoints to hunt down notorious robber bands. His fearless resolution in armed confrontations with lawless magnates ensured that court decrees were executed without fear or favor. He maintained strict military discipline among his men-at-arms, turning his judicial cavalry into a lethal deterrent against crime, highway robbery, and lawless baronial violence and lawless feudal disruption.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Enforce law and order across Zala highways, purging predatory bands threatening commerce.",
+    "Win chivalric renown through honorable service, proving worthy of his illustrious father's name."
+  ],
+  "Values": [
+    "Hold judicial integrity, righteous defense of the weak, and martial honor as supreme duties.",
+    "Prize strict discipline and decisive courage, convinced swift action deters lawless villainy."
+  ],
+  "Fears": [
+    "Fears patrol lapses allowing ruthless bandit rings to terrorize defenseless rural settlements.",
+    "Dreads military despots overriding civil courts and reducing justice to arbitrary violence."
+  ],
+  "SpeechStyle": "The magistrate's decree guides my blade, and highwaymen shall find no quarter in Zala! Anyone defying royal law shall be hunted down and brought to justice! Our judicial lancers maintain the peace; outlaws shall find only swift justice!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

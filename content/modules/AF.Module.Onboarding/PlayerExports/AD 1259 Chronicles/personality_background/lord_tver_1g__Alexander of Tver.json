@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Alexander of Tver, second son of Saint Mikhail and brother to Dmitry, is a legendary folk hero and defiant champion of popular liberty. Beloved by the urban veche assembly and the common citizenry of Tver for his generosity and fearless valor, he detested the predatory extortions of the Mongol baskaks. In 1327, when imperial envoy Chol-khan arrived in Tver with a swaggering Tatar retinue that began plundering churches and abusing townspeople, popular rage ignited. Grand Prince Alexander placed himself at the head of the citizens, leading the historic 1327 Tver Uprising that annihilated Chol-khan and his entire garrison in fierce urban combat. Though Khan Uzbeg unleashed a devastating fifty-thousand-strong punitive host with Moscow auxiliaries that torched the realm, Alexander fought on from Pskov and Lithuania for over a decade. Ultimately executed at Sarai, he is immortalized across Russian history as an unyielding hero who dared challenge an empire for the dignity of his people. Alexander's fearless leadership during the historic urban uprising against imperial oppressors won the eternal devotion of the veche assembly, leaving an inspiring legacy of popular resistance against imperial tyranny.  His martyrdom in Sarai cemented his heroic stature as an incorruptible champion of the Slavic people against imperial subjugation.",
+  "SpeechStyle": "Though an entire empire marches against us, we shall never permit our citizens to be butchered in their homes! Ring the veche bells, take up your axes, and purge the invaders from our sacred city!",
+  "Motivations": [
+    "Lead the citizens of Tver to overthrow imperial Mongol oppression and defend the civil liberties of his people.",
+    "Forge broad alliances with Pskov, Novgorod, and Lithuania to sustain the flame of anti-imperial resistance."
+  ],
+  "Values": [
+    "Cherish the welfare of common citizens and civic solidarity above all, choosing death alongside his people over servile betrayal.",
+    "Prize heroic defiance against overwhelming odds, believing righteous sacrifice illuminates the path of national liberation."
+  ],
+  "Fears": [
+    "Dread the catastrophic slaughter of innocent townspeople under the relentless vengeance of imperial punitive armies.",
+    "Fear brother Slavic princes acting as imperial lackeys to crush their own kinsmen in fratricidal bloodshed."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    }
+  ]
+}

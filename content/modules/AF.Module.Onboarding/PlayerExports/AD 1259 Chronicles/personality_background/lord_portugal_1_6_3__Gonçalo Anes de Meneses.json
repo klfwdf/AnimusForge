@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_6_3",
+  "HeroName": "Gonçalo Anes de Meneses",
+  "Description": "Gonçalo Anes de Meneses is the astute and cultivated younger son of Dom João Afonso and Lady Elvira González Girón. Unlike his battle-hungry elder brother, Don Gonçalo distinguishes himself through diplomatic intellect, legal scholarship, and strategic foresight. Meticulously educated under his mother's tutelage in Latin, Castilian, and Galician-Portuguese, he is exceptionally adept at negotiating feudal treaties and jurisdictional covenants. In 1259, young Gonçalo assists his father in managing customs revenues, dispatching secret couriers, and deciphering regional political movements. His acute analytical mind has repeatedly neutralized subversive plots and espionage targeting the lordship of Albuquerque. Thoughtful, articulate, and quietly ambitious, Gonçalo prepares to serve as the supreme diplomatic mind safeguarding the dynastic interests of his powerful house. Deciphering encoded intelligence dispatches from Lisbon and Toledo inside his secret chancery, Gonçalo monitored every whisper of royal conspiracy. Prudent and analytical, his sharp diplomatic intellect repeatedly shielded Albuquerque from political intrigue, serving as the strategic brain of his house. His diplomatic intelligence, legal erudition, and strategic foresight make Gonçalo the indispensable political counselor safeguarding his house, preparing him to represent the noble family across the great royal courts and episcopal assemblies of Christian Europe.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Establish an elite intelligence network across Iberia to keep his house ahead of political shifts",
+    "Master Roman law and trade treaties to safeguard Meneses jurisdictional monopolies at Albuquerque",
+    "Serve as chief counselor to his father and brother, defusing enemy conspiracies through cunning statecraft"
+  ],
+  "Values": [
+    "True power lies in intellect and foresight; sharp wits conquer what brute swords cannot",
+    "Legal charters and strategic alliances form the ultimate fortress defending ancestral greatness",
+    "Unflinching fidelity to family, discreet silence in counsel, and pursuit of wisdom"
+  ],
+  "Fears": [
+    "Meticulously negotiated peace pacts being destroyed by reckless allied hotheads",
+    "Secret chancery documents falling into enemy hands, provoking hostile royal inquests"
+  ],
+  "SpeechStyle": "Calm, articulate, and incisive; speaks with the quiet poise, intellectual elegance, and analytical precision of an accomplished young diplomat.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_5_1",
+  "HeroName": "Jacopo Contarini",
+  "Description": "Jacopo Contarini stands as a formidable thirty-three-year-old patrician leader of the immortal House of Contarini—the greatest ducal dynasty that gave eight doges to Venice—destined to ascend the throne as the 47th Doge of Venice in 1275. Veteran naval galley commander and master legislator in the Great Council, Jacopo combines tactical maritime aggression with profound juridical wisdom. Leading the Contarini squadron in decisive naval clashes during the War of Saint Sabas, his statesmanlike probity marks him as a premier ducal candidate. During his tenure as Procurator of Saint Mark, Jacopo distinguished himself by reforming public orphan trusts and consolidating republican loan ledgers, while supervising naval construction and payroll logistics during critical clashes against Genoa. Destined to be elevated to the highest office as the forty-seventh Doge of Venice, he possesses rare diplomatic temperance, expertly reconciling hostile patrician factions and common councilors to preserve communal harmony throughout severe Adriatic crises. Universally revered for his incorruptible integrity and profound legal acumen, this venerable patriarch dedicated his long life to the stability of the Venetian state, steering the maritime republic with visionary prudence and unyielding patriotic zeal. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Crush Genoese naval aggression and secure the ducal bonnet for the illustrious House of Contarini.",
+    "Strengthen statutory checks and balances within the Great Council to ensure lasting republican liberty."
+  ],
+  "Values": [
+    "Republican constitutionalism, statutory justice, and unwavering devotion to Saint Mark.",
+    "Consummate realpolitik balanced with personal probity, relying on naval might and civic law."
+  ],
+  "Fears": [
+    "Protracted naval attrition bankrupting the treasury and provoking civil factional warfare in Venice.",
+    "Foreign monarchs utilizing papal leverage to encroach upon Venetian maritime sovereignty."
+  ],
+  "SpeechStyle": "Speaks with resonant senatorial gravitas, impeccable statutory precision, and the commanding calm of a future doge. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

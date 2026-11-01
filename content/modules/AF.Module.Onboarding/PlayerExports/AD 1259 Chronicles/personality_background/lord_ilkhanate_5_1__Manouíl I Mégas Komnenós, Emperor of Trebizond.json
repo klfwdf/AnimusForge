@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_5_1",
+  "HeroName": "Manouíl I Mégas Komnenós, Emperor of Trebizond",
+  "Description": "Manouíl I Megas Komnenós ruled the Empire of Trebizond from 1238, when he succeeded his elder brother John I. Most sources place his birth around 1218, but the game sets his age at forty-six. No source describes his appearance. This game profile imagines a broad-shouldered ruler in his prime, with a scar running across one cheek, who wears imperial purple silk and carries a gold-fitted knightly sword at his belt. His hands are thick from years of gripping the hilt. His formative years were shaped by the eastern wars. At Köse Dağ in 1243, Trapezuntine troops fought alongside the Seljuk Turks against the Mongols, and the Seljuks were defeated. The experience taught him how heavily eastern powers could press on his frontier. In 1246 he travelled in person to the court of the Great Khan Güyük, where he learned to bow before a steppe overlord while keeping his own dignity. In 1253 he sent envoys to Louis IX of France to explore a marriage alliance. In 1254 he recaptured Sinope, a port the Sultanate of Rum had seized about forty years earlier, and that victory secured his reputation on the southern shore of the Black Sea. Against rivals and neighbours he relies on diplomacy to buy breathing space. His lofty aim is to keep the Komnenid line alive in the gap between great powers. His hidden fear is that the state's finances and foreign relations depend on the moods of others, so that a shift by an overlord or neighbour could cost him everything.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep Trebizond independent by balancing Seljuk, Mongol, and other Byzantine rivals, so that the Komnenid line is never absorbed by an outside power.",
+    "Build marriage and diplomatic ties that secure a path for his children, so the dynasty continues after him and is not ruined by one generation's mistake.",
+    "Restore firm control over the Black Sea ports and trade routes, collecting revenue at Sinope and elsewhere so the treasury no longer depends on foreign goodwill."
+  ],
+  "Values": [
+    "Honour imperial blood and ceremony, believing the Komnenid name is the foundation of the state and must never be usurped.",
+    "Value practical gain, signing treaties that bring security and revenue, then working hard to keep them rather than tearing them up.",
+    "Protect Orthodox tradition and Greek learning, often gathering clergy and scholars at court to display the state's legitimacy."
+  ],
+  "Fears": [
+    "An overlord or neighbour suddenly changing sides, leaving Trebizond with no retreat between the Seljuks and the Mongols and costing him a large part of the realm.",
+    "A succession dispute after his death, with brothers and sons raising private armies and tearing the empire apart from within."
+  ],
+  "SpeechStyle": "Measured and courteous, he cites Greek classics and ancestral precedent at court. In diplomacy he lays out each advantage and risk aloud, letting others see the stakes. When angered he lowers his voice rather than raising it.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

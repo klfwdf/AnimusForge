@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1l",
+  "HeroName": "Jelena",
+  "Description": "Lady Jelena, aged thirty-nine in 1259, is the capable wife of Dragoslav Komnen Doukas, hailing from a distinguished feudal clan of Raška. Highly disciplined, devout, and administratively gifted, she independently oversees the family's vast agrarian estates and livestock farms while her husband serves on foreign embassies. Ensuring the steady flow of grain, pack animals, and timber to royal silver mines, Jelena maintains flawless domestic stability. Renowned for her extensive endowments to local Orthodox monasteries and almshouses, she commands immense affection throughout the Raška valley. In 1259, she coordinates emergency granary reserves, standing as a resilient pillar of domestic fortitude at court. Lady Jelena manages her baronial estates with remarkable diligence, personally auditing grain silos and olive oil cellars. Treating rural tenant families with benevolent fairness, she ensures consistent winter provisions, maintaining flawless order across her domain. Amidst frontier alarms, she calmly organizes the defense of estate granaries, exemplifying the stoic fortitude of Slavic matriarchs. With admirable domestic foresight, Lady Jelena manages estate granaries and tenant welfare with unmatched efficiency. Her steadfast composure amidst frontier war alarms provides an enduring bulwark of domestic peace supporting her husband's diplomatic service and safeguarding the agricultural prosperity of the entire Raška valley.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with gracious aristocratic poise and practical clarity, warm yet firm, commanding respect across the baronial estates.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

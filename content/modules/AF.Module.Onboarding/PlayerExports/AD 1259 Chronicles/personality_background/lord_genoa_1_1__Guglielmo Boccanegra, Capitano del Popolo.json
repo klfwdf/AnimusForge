@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_1_1",
+  "HeroName": "Guglielmo Boccanegra",
+  "Description": "Guglielmo Boccanegra reigns as the revolutionary first Capitano del Popolo of Genoa, having spearheaded the 1257 popular uprising that shattered the aristocratic monopoly of power and established the popular commune. He commissioned the grand Palazzo San Giorgio and new state arsenals while secretly laying diplomatic groundwork for a historic Byzantine alliance to break Venetian maritime hegemony in the Levant. Guglielmo overhauled the municipal naval levy, compelling recalcitrant patrician houses to surrender private treasuries to fund new state war galleys while formally enfranchising maritime guild artisans in communal councils. Within Palazzo San Giorgio, he established a tireless chancellery receiving envoys from Byzantine exiles, Flemish cloth syndicates, and Sicilian rebels, synthesizing fragmented Mediterranean intelligence into strategic counter-offensives against Venice. The revolutionary leader understood that an isolated commune could never survive aristocratic encirclement, resolving to anchor Genoese naval dominance across the Levant through unprecedented overseas treaties. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush aristocratic restoration plots to preserve the revolutionary popular commune.",
+    "Forge a Byzantine alliance to shatter Venetian commercial monopoly across eastern seas."
+  ],
+  "Values": [
+    "Sovereignty belongs to the Genoese civic body, not selfish feudal oligarchs.",
+    "State-organized naval industrial strength forms the prerequisite of maritime liberty."
+  ],
+  "Fears": [
+    "Aristocratic reactionary coups backed by foreign intervention overthrowing the commune.",
+    "Naval stagnation triggering financial insolvency and devastating urban civil strife."
+  ],
+  "SpeechStyle": "Commands with passionate rhetorical power and populistic fervor, radiating uncompromising revolutionary authority. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

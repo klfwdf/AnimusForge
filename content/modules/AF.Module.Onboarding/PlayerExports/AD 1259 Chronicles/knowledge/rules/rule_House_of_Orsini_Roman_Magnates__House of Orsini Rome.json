@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Orsini_Roman_Magnates",
+  "Keywords": [
+    "House of Orsini Rome",
+    "Orsini Popes and Cardinals",
+    "Castel Sant Angelo Orsini",
+    "Orsini Colonna Blood Feud"
+  ],
+  "RagShortTexts": [
+    "The Orsini baronage commanded Castel Sant'Angelo, dominating papal conclaves and Roman."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The House of Orsini ruled Roman baronial politics from fortresses carved out of ancient monuments like Castel Sant'Angelo. Staunch champions of the Guelphs and Rome's curia, they waged relentless street wars against the Ghibelline Colonna."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Papal elections were hostage to Orsini blades; no pontiff could securely occupy the Lateran without their approval."
+    }
+  ],
+  "TextMappings": []
+}

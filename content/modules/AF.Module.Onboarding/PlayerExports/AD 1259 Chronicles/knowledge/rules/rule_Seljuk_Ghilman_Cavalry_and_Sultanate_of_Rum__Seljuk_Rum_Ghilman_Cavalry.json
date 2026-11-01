@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Seljuk_Ghilman_Cavalry_and_Sultanate_of_Rum",
+  "Keywords": [
+    "Seljuk Rum Ghilman Cavalry",
+    "Konya Elite Heavy Horse Archers",
+    "Persian Turkic Composite Armored Guard",
+    "Anatolian Plateau Tactical Core"
+  ],
+  "RagShortTexts": [
+    "Seljuk Ghilman cavalry united heavy armor with deadly archery, forming Konya's elite guard."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Stationed in Konya, the Ghilman cavalry formed the imperial military core of the Seljuk Sultanate of Rum. Recruited as slave soldiers educated in chivalric codes, they combined Anatolian nomadic archery with Persian-style heavy armor, donning nasal-bar steel helms and mail over felt bards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Amidst Mongol vassalage, Grand Vizier Mu'in al-Din Parwana relied upon the disciplined Ghilman to hold refractory Turkmen tribal beys in check across central Anatolia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Barded horses of the Ghilman kick up choking red dust clouds across the plateau. Charging with horse-tail pennants fluttering, their coordinated lance attacks hit like iron battering rams."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_4",
+  "HeroName": "Köszegi nembeli Henrik, Justiciar of Hungary",
+  "Description": "Henrik Kőszegi, known as Henrik the Great, is the most formidable and cunning oligarch of Transdanubia, serving as Judge Royal (Országbíró) and later Ban of Slavonia. Head of the ascendant Kőszegi dynasty of German descent, Henrik rules from his impenetrable mountain fortress at Kőszeg, commanding an immense personal army of hardened mercenaries and German retainers. Calculating, ruthless, and insatiably ambitious, Henrik feigned obedience to King Béla IV by accepting high judicial offices while quietly seizing surrounding estates, establishing a virtually autonomous principality along the Austrian border. In 1259, acutely exploiting the deepening rift between King Béla and Junior King Stephen, Henrik maneuvers between factions with predatory brilliance. Covertly communicating with King Ottokar II of Bohemia while selling his support at exorbitant prices to the Hungarian crown, he stands as a dangerous titan whose loyalty belongs only to his house. Henrik excavated deep concentric rock ditches and double ashlar curtain walls around Kőszeg, stockpiling vast stores of siege ammunition and provisions. Ruling Transdanubia with an iron fist, he brutally liquidated any local rival daring to resist his territorial ascendancy. He fortified mountain passes leading toward Styria and Austria, imposing heavy tolls on merchants to finance his ever-growing mercenary battalions.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand his private network of castles across Transdanubia and Slavonia into an unassailable principality.",
+    "Exploit the royal rift and Bohemian friction, extorting supreme offices and vast lands from all contenders."
+  ],
+  "Values": [
+    "Believe private armies and stone citadels alone ensure survival, treating feudal oaths as commercial pawns.",
+    "Prize cold strategic cunning, liquidating any rival noble who obstructs his clan's expansion."
+  ],
+  "Fears": [
+    "Fears royal reconciliation uniting the monarchy to crush overmighty magnates and besiege Kőszeg.",
+    "Dreads mutiny among his expensive mercenary garrisons undermining his coercive military power."
+  ],
+  "SpeechStyle": "The granite cliffs of Kőszeg outlast any royal parchment! Beyond Buda's gates, only my steel and my coin dictate the law of this land! Transdanubia answers to my coin and cold steel alone!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

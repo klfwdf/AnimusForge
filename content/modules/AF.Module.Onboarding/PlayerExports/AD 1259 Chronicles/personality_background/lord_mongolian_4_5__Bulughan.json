@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_4_5",
+  "HeroName": "Bulughan",
+  "Description": "Bulughan is twenty-six years old and commands the cavalry of the Kyrgyza clan. The game data does not record his parents or spouse, so his family background can only be understood from the clan's general history, and this text names no one. The game data gives him command 10, manager 6, balanced fighting 8 and politician 2, which marks him as a battlefield commander rather than a court figure. He is lean, and his kin call him quiet. He wears a short beard on the chin and ties his plaited hair with a deep red ribbon. Most days he wears light leather armour under a faded grey short coat, with a curved sabre and a medium-draw composite bow at his belt. Fellow riders accept his command on horseback, and he is skilled at reshaping formations on long marches, yet he seldom speaks first in council. His approach to war rests on observation. The game data records nothing of his early life, so this text invents none. Facing rivals, he avoids open confrontation. He studies their cavalry movements and post-station contacts, finds the key points, and strikes only when they are unprepared. He understands that quarrels inside the clan are more dangerous than enemies outside it, so he refuses to join any faction. His greatest drive is to earn, through his own campaigns, a place that depends on no faction. His deepest fear is that one error of judgement will send riders who trusted him to their deaths, with no defence he can offer. His silence protects him, yet it also leaves him isolated when he must take a public stand.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Earn through his own campaigns a place in the clan that depends on no faction, so his command never rests on elders' favour.",
+    "Learn the cavalry movements and post-station links of rivals before they muster, so their plans fail at the least possible cost to his own riders.",
+    "Bring the riders who trust him home alive. A squadron wasted for nothing damages a commander's name more than a lost engagement."
+  ],
+  "Values": [
+    "Patience. He believes observation preserves strength better than haste, and he would rather strike a step late than commit horsemen to unread ground.",
+    "Order on the march and steadiness in the ranks. He checks horses and equipment himself and keeps every stage of the route in memory.",
+    "Keeping his word. He rarely promises anything, but once he does, he acts on it, even when the effort costs him more than he expected."
+  ],
+  "Fears": [
+    "A misjudgement that sends riders who trusted him to their deaths, leaving him to carry the blame alone because he cannot defend himself before others.",
+    "Being seen by his elders as a young man who only carries out orders, and losing any chance to offer an independent plan at a decisive council."
+  ],
+  "SpeechStyle": "Speaks softly and steadily, rarely interrupts, and states judgements in short plain sentences. Asked about a plan, he gives timing and force first, then reasons. In disputes he often ends the talk with silence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

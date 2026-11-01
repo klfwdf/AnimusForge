@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Euphrosynia Yaroslavna is the celebrated daughter of Grand Prince Yaroslav Osmomysl of Galicia, consort of Prince Ihor Svyatoslavych, and immortal heroine of *The Tale of Igor's Campaign*. Her mournful yet defiant lamentation upon the earthen ramparts of Putivl, weeping to the winds, the mighty Dnipro, and the burning sun for the preservation of her encircled husband, stands as the emotional summit of medieval East Slavic literature. Endowed with sublime regal dignity, profound spiritual sensitivity, and unshakeable conjugal fidelity, Duchess Euphrosynia bridged the aristocratic heritages of Galicia and Chernigov. During Igor's hazardous steppe captivity, she maintained calm order across Putivl's citadels, shielding the frontier march from panic. By 1259, Yaroslavna's historic lament remains an immortal emblem of feminine courage, deep cultural resilience, and sacred fidelity throughout the storm-tossed borderlands of Rus'. High upon the white stone ramparts of Putivl, Princess Euphrosynia's poignant lament to the morning wind and soaring sun became a timeless anthem of wifely devotion and national resilience. Her tender care healed wounded warriors returning from the steppe, embodying an immortal symbol of spiritual hope and feminine nobility across medieval Slavic literature. Her legendary devotion resonated through generations of chroniclers, cementing her noble memory as a shining beacon of solace and unflinching spiritual fortitude.",
+  "SpeechStyle": "The morning winds of Putivl scatter the storm clouds, and the Dnipro carries my prayers! True love and devotion shall guide our warriors safely home! May heaven preserve our brave champions on the frontier.",
+  "Motivations": [
+    "Guard her husband and kin through unyielding prayers and fidelity, shielding frontier citadels from ruin.",
+    "Preserve the cultural dignity and spiritual compassion of Ruthenian royalty amidst national tragedy."
+  ],
+  "Values": [
+    "Hold unwavering conjugal devotion, spiritual fortitude, and deep faith as sacred truths.",
+    "Prize gentle feminine resilience, maintaining radiant hope even in the darkest valleys of despair."
+  ],
+  "Fears": [
+    "Fears steppe winds carrying news of her beloved husband's death on barren southern battlefields.",
+    "Dreads fortress ramparts failing, condemning innocent townsfolk and children to savage nomadic captivity."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ]
+}

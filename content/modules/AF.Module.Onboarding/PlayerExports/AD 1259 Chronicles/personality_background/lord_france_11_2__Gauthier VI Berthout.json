@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_france_11_2",
+  "HeroName": "Gauthier VI Berthout, Lord of Mechelen",
+  "Description": "Gauthier VI Berthout is the sovereign Lord of Mechelen (Malines), representing an ancient dynastic lineage deeply connected with the high nobility of Brabant and Auvergne. At forty-six, he commands the bustling river hub of the Dyle between Brussels and Antwerp, controlling lucrative trade charters for cloth manufacturing, brewing guilds, and river tolls. A master of regional realpolitik, Gauthier expertly steered Mechelen through decades of jurisdictional friction involving the Duke of Brabant, the Prince-Bishop of Liège, and the Crown of France. He modernized the urban fortifications of Mechelen with deep water moats and stone bastions while instituting enlightened mercantile protections that attracted wealthy international traders. Honorable, methodical, and commanding, Gauthier stands as an indispensable diplomat and administrator in the Low Countries. His vigilant oversight ensured that Mechelen remained a secure commercial haven for international merchants and guilds. Positioned precariously between the ambitious Dukes of Brabant and the Prince-Bishops of Liège, he governed Mechelen through calculated fiscal diplomacy and charter concessions to wealthy guildmasters. His pragmatic governance ensured stability along the busy Scheldt and Senne commercial corridors. By vigilantly defending municipal toll immunities, he turned Mechelen into a flourishing cloth marketplace capable of resisting regional territorial absorption. His steadfast vigilance safeguarded burgher rights and commercial transit.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the municipal liberties of Mechelen against encroachment by neighboring princes.",
+    "Expand trade networks along the Dyle to ensure continuous wealth for his house."
+  ],
+  "Values": [
+    "Pragmatic protection of commercial fueros and sovereign independence in crisis.",
+    "Fidelity to sworn treaties balanced with relentless defensive preparedness."
+  ],
+  "Fears": [
+    "Regional wars between Brabant and Flanders turning Mechelen into a besieged battleground.",
+    "Radical guild revolts overthrowing customary baronial governance and the rule of law."
+  ],
+  "SpeechStyle": "Speaks with seasoned, deliberate diplomacy, his phrasing precise, analytical, and carrying the calm gravitas of a master governor accustomed to navigating great power politics.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

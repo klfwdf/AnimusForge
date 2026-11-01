@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Order_of_Santiago_and_Sword_Cross_Pilgrim_Guards",
+  "Keywords": [
+    "Order of Santiago Knights",
+    "Red Sword Shaped Cross Crosslet",
+    "Camino de Santiago Pilgrim Guard",
+    "Leonese Castilian Chivalric Elite"
+  ],
+  "RagShortTexts": [
+    "The Order of Santiago bore red sword-crosses, safeguarding the pilgrimage route to Compostela."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Named for Saint James the Moor-slayer, the Order of Santiago carried red sword-cross emblems. Allowing married knights under Augustinian rule, it attracted the cream of Castilian and Leonese nobility, guarding both the pilgrim road to Compostela and frontline pastures in Extremadura."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "The Grand Master commanded immense revenues across royal domains. Blending secular inheritance with knightly brotherhood, Santiago fielded disciplined divisions during royal Andalusian sieges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Pilgrim hospices and bridges along the Camino are sustained by Santiago commanderies. When mountain brigands strike unwary travelers, knights ride out promptly to hang culprits along roadsides."
+    }
+  ],
+  "TextMappings": []
+}

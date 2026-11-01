@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_3_1_d",
+  "HeroName": "Lora de Vere",
+  "Description": "Lora de Vere is the spirited youngest daughter of Hugh de Vere, 4th Earl of Oxford, and Hawise de Quincy, doted upon by her fierce elder brothers. Petite, vivacious, with sparkling hazel eyes and unbound chestnut hair, Lora possesses an infectious energy and fearless nature. Raised amidst the ancient woodlands surrounding Castle Hedingham, she is an expert equestrienne and falconer, far preferring riding the perimeter trails to quiet indoor embroidery. In 1259, as the armories ring day and night with the hammering of smiths forging broadheads and hauberks, Lora awakens to the grim reality of impending civil war. Under her elder sister Isabel's guidance, she learns to prepare lint dressings and catalog medical supplies, while kneeling in the castle chapel each evening to pray for her father and brothers. Possessing the innate courage of the House of Vere, she faces the gathering conflict without fear, ready to defend the ancestral keep with indomitable youthful spirit. Riding spirited palfreys along boundary trails, she oversees the training of deerhounds and hunting falcons across the Essex woodlands. Fearless in council, Lora declares that if enemies ever assail Castle Hedingham, she will draw a yew longbow to defend her ancestral home.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master equestrian and falconry arts, proving herself a fearless companion worthy of her warrior brothers",
+    "Assist her elder sister in preparing medical stores and domestic provisions for the castle garrison",
+    "Cheer and comfort her aging mother Hawise, dispelling the grim gloom of war with her bright spirit"
+  ],
+  "Values": [
+    "Courage is the proudest crest of a noble house; fear and trembling betray our martial bloodline",
+    "Fierce devotion to kin surpasses all worldly politics; stand shoulder-to-shoulder to defend the ancestral soil",
+    "Guard an honest, joyful heart, confronting every shadow with fearless laughter and bright determination"
+  ],
+  "Fears": [
+    "Hostile foraging warbands ravaging the beloved woodlands and villages surrounding Hedingham",
+    "Her elder brothers suffering grievous wounds in battle before she can ride to their aid"
+  ],
+  "SpeechStyle": "Speaks with bright, rapid-fire exuberance and sparkling youthful candor. Her laughter is infectious, yet her tone quickly turns fierce and resolute whenever the honor of her family is questioned.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

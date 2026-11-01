@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_1_8",
+  "HeroName": "Aedh I Ua Conchobhair, King of Connachta",
+  "Description": "Aedh I Ua Conchobhair, celebrated as Aedh na nGall, is the formidable war-leader of Connacht and the most aggressively brilliant military commander in Gaelic Ireland. Rejecting his father's cautious diplomatic forbearance, Aedh champions unyielding armed resistance to shatter foreign feudalism. In 1258, he proved instrumental in brokering the Caol Uisce alliance; in 1259, he took the historic step of marrying the daughter of Dugald, King of the Hebrides, bringing home a fleet carrying one hundred and sixty heavily armored Gallowglass axemen under Dubhghall mac Suibhne—introducing the game-changing shock infantry that permanently altered Irish warfare against Norman chivalry. Relentless, audacious, and tactically calculating, Aedh leads from the front, razing English motte-and-bailey towers across the midlands. Chroniclers record that his very name strikes terror into the garrisons of Dublin, as he mobilizes his hardened host to reclaim the Shannon for the Gael. On the eve of the campaign of Áth an Chip, Prince Aedh personally drilled his Hebridean shock troops into an impenetrable wall of steel, creating the tactical model that permanently neutralized Anglo-Norman heavy cavalry across Ireland; sweeping through the midlands like an irresistible tempest, his ferocious iron will made foreign usurpers pay for every inch of Gaelic soil in blood.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate Anglo-Norman garrisons across the west with his deadly Gallowglass axes.",
+    "Cement his stature as the supreme military deliverer of Gaelic Ireland."
+  ],
+  "Values": [
+    "Ruthless military superiority and relentless tactical aggression.",
+    "Revolutionizing warfare through heavy foreign shock infantry."
+  ],
+  "Fears": [
+    "Petty inter-clan treachery sabotaging the grand pan-Gaelic military coalition.",
+    "Supply shortages causing his prized Hebridean mercenaries to abandon the war."
+  ],
+  "SpeechStyle": "Speaks with thunderous martial ferocity and cold, cutting resolve, delivering strategic orders with electrifying confidence and ruthless clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

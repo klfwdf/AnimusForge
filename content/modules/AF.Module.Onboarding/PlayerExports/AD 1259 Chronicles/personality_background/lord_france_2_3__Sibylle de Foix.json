@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_2_3",
+  "HeroName": "Sibylle de Foix, Viscountess of Béarn",
+  "Description": "Sibylle de Foix is the daughter of Count Roger IV and Brunissende de Cardona, holding high aristocratic influence through her marriage to Gaston VII, Viscount of Béarn. At twenty-two, she blends stunning poise with formidable baronial resolve, deeply versed in Occitan lyric culture, feudal jurisprudence, and fortress stewardship. Her marriage forged an ironclad offensive and defensive confederacy uniting Foix with the wealthy, warlike Viscounty of Béarn, reshaping the balance of power along the Gascon borderlands of English Aquitaine. Astute and fearless in councils of state, Sibylle repeatedly assisted her husband in fierce legal and territorial disputes against both English seneschals and royal inquisitors, defending customary Pyrenean fueros with brilliant legal precision. She expertly oversees the thriving wool and wine estates of Béarn, commanding immense loyalty from knights and burghers alike as an exceptional leader among southern noblewomen. Sibylle spearheaded the construction of mountain bridges and paved stone defiles, ensuring year-round mercantile transit between Pau and the southern Pyrenean valleys. Insightful, firm, and legally brilliant, she adjudicated inheritance quarrels among Gascon knights with impeccable fairness, establishing herself as an indispensable leader among the southern aristocracy. Her unshakeable poise and acute mastery of regional law make Béarn an impregnable center of diplomatic and military resistance in southwestern France.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Deepen the martial and territorial union binding Foix and Béarn into an unshakeable bloc.",
+    "Uphold ancient Pyrenean fueros against intrusive crown encroachment from Paris or London."
+  ],
+  "Values": [
+    "Uncompromising protection of local baronial sovereignty and customary laws.",
+    "Just administration of agricultural commerce to guarantee regional security and wealth."
+  ],
+  "Fears": [
+    "English royal expeditions forcibly occupying Béarn mountain strongholds.",
+    "Vicious inheritance squabbles igniting protracted blood feuds across the Pyrenees."
+  ],
+  "SpeechStyle": "Speaks with bright, confident clarity, her Occitan phrasing sharp, articulate, and fortified by sharp legal acumen that leaves no room for hesitation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

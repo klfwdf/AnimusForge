@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1a",
+  "HeroName": "Mastino I della Scala",
+  "Description": "Mastino I della Scala was the founding Signore of the Scaliger dynasty of Verona and Capitano del Popolo. In the pivotal year 1259 following the fall of tyrant Ezzelino da Romano, he was acclaimed ruler, healing decades of factional strife to lay the enduring foundation of Scaliger power. Mastino restored civic peace around Piazza delle Erbe, abolishing draconian tortures imposed by Ezzelino while reopening thriving commercial trade routes with Vicenza and Treviso. Championing popular council autonomy with political wisdom, he reconciled guild artisans with patrician senators, transforming war-torn Verona into the most prosperous commune in the Veneto. Witnessing the horrors of Ezzelino's tyranny, Mastino understood that authority rested on civic love, dedicating his reign to communal liberty as Verona's revered founding father. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Restore civic order and codified law across Verona following the collapse of Ezzelino's tyranny.",
+    "Reconcile popular craft guilds with feudal patricians, suppressing vengeful factional riots.",
+    "Extend defensive leagues toward Vicenza and Mantua, establishing Scaliger leadership in the Veneto."
+  ],
+  "Values": [
+    "Holds civic prosperity and municipal peace as sovereign duties, rejecting tyrannical violence.",
+    "Believes pragmatic moderation and gradual centralization anchor a rising dynasty amidst rival powers."
+  ],
+  "Fears": [
+    "Ezzelino's displaced partisans rallying foreign mercenaries to sack Verona once more.",
+    "Clandestine patrician assassins ambushing him in unguarded streets."
+  ],
+  "SpeechStyle": "Speaks with serene warmth and civic pragmatism, projecting reassuring patriarchal authority. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

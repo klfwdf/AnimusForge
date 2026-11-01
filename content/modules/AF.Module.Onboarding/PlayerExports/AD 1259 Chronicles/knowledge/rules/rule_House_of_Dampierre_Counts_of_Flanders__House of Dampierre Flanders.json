@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Dampierre_Counts_of_Flanders",
+  "Keywords": [
+    "House of Dampierre Flanders",
+    "Ghent Bruges Cloth Guilds",
+    "Avesnes Dampierre Succession",
+    "Black Lion Banner Flanders"
+  ],
+  "RagShortTexts": [
+    "The Dampierre dynasty governed prosperous Flemish weaving cities, balancing royal."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The House of Dampierre commanded the textile heartland of Flanders under Guy of Dampierre. Caught between independent cloth-guild communes like Bruges and Ghent and long succession wars against the Avesnes, the dynasty relied on English wool while resisting encroaching Capetian suzerainty from Paris."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Flemish count yields vast mercantile wealth, yet rules on the knife-edge of burgher revolts and ferocious urban pike militias."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "artisan"
+        ]
+      },
+      "Content": "The weavers of Ghent pay countal duties solely to preserve ancient charters. Disrupt the English fleece convoys, and dockworkers will shut the rivergates."
+    }
+  ],
+  "TextMappings": []
+}

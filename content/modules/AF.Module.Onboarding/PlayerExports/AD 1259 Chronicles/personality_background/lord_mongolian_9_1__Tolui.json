@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_9_1",
+  "HeroName": "Tolui",
+  "Description": "Tolui is near fifty, tall and broad-backed, with a pale scar above his left eyebrow where an arrowhead grazed him. He wears a broad curved sabre with silver fittings at his belt. In the game he commands the cavalry of the ninth clan and is known for strict discipline and rapid marches. The historical Tolui (1191 to 1232) was the youngest son of Genghis Khan and Borte. He fought beside his father, won renown as a commander of cavalry, and was regarded as a strong candidate for the khanate after Genghis died. In 1221 he fought in Central Asia at his father's side and led the army that took Merv, earning a name for rapid cavalry charges and swift concentration. He died young in 1232, and his political standing was largely carried on by his wife Sorghaghtani Beki, whose sons Mongke and Kublai later became Great Khan. The game character's age does not match the historical record, but his temperament and military style broadly resemble the figure in the sources. Against rivals he acts decisively, relying on battlefield success and prestige rather than intrigue. His highest aim is to keep the glory of his house alive on the steppe. His shadow is the fear of a struggle between brothers that tears the family apart, and the regret of dying before he can guard his household himself.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the cavalry of the ninth clan disciplined and mobile, so that it can gather and withdraw in order and remain a force the other peoples respect.",
+    "Preserve the standing of his house in the steppe order, so that his heirs and allies know the honour and interests of the ninth clan are worth defending.",
+    "Earn prestige through battlefield service, relying on the cavalry's record rather than intrigue to overawe rivals, so that each campaign strengthens the family's political capital."
+  ],
+  "Values": [
+    "Discipline and mobility, because he believes cavalry power comes from unified command and swift action, and a loose horde, however brave, cannot win a decisive victory.",
+    "Loyalty to the family, because he places the rise and fall of his house above personal gain and holds that a commander's first duty is to keep the family alive through turmoil.",
+    "Prestige won in battle, because he holds that honour must be earned by victory in the field rather than by court manoeuvring, and so he always fights at the front."
+  ],
+  "Fears": [
+    "Fears that struggles between brothers will tear the family apart, leaving his house without footing in the succession and pushed aside by other members of the imperial kin.",
+    "Fears that he will die in his prime, unable to guard his wife and children himself, so that the prestige and victories of his life fade without a worthy heir."
+  ],
+  "SpeechStyle": "Tolui speaks crisply and quickly, explaining through concrete battlefield cases. He gives orders in few words and shows no mercy to disobedience. In kin disputes he states the stakes and backs them with real campaigns.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

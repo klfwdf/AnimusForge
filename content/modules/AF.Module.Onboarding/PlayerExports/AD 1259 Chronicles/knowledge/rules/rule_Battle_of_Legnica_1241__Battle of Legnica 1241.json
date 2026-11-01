@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Legnica_1241",
+  "Keywords": [
+    "Battle of Legnica 1241",
+    "Henry II Pious Death Silesia",
+    "Teutonic Polish Coalitions",
+    "Mongol Smoke Screen Tactics"
+  ],
+  "RagShortTexts": [
+    "In 1241 at Legnica, Mongol forces under Baidar crushed Silesian, Polish, and Teutonic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On April 9, 1241, Baidar's Mongol columns annihilated the combined chivalry of Poland, Moravia, and Teutonic knights at Legnica. Deploying dense smoke screens and tactical feigned retreats, the Mongols surrounded Duke Henry II the Pious, severing his head as a gruesome trophy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "The battle exposed the vulnerability of rigid European heavy cavalry charges against coordinated Eurasian horse archery."
+    }
+  ],
+  "TextMappings": []
+}

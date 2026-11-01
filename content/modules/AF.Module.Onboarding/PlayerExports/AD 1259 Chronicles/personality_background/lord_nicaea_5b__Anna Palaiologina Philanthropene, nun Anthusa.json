@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_5b",
+  "HeroName": "Ánna Palaiológina Philanthrōpīnī́, nun Anthoúsa",
+  "Description": "Ánna Palaiológina Philanthrōpīnī́, aged twenty-two, is an imperial daughter of the Palaiologan house married into the distinguished Philanthropenos naval aristocracy. Possessing a contemplative soul and profound spiritual insight into Orthodox hesychastic theology, she embraced monastic tonsure under the holy name Anthoúsa. Though secluded in prayer within her Bithynian convent, her imperial lineage and renowned sanctity afford her unique diplomatic influence across Nicaean society. Through her marriage to the Philanthropenoi—commanders of imperial maritime fleets—she acts as a trusted mediator smoothing friction between palace courtiers and admirals. She directs her substantial hereditary wealth toward constructing military infirmaries, soup kitchens, and sanctuaries for war orphans along the Aegean coast. Amidst the ruthless political machinations preceding the reconquest of Constantinople, nun Anthoúsa consistently urges her imperial kinsmen to exercise Christian mercy and restraint. Her prayers unceasingly rise for the imperial army, pleading that the holy restoration of the Roman realm be achieved without sacrificing righteous spiritual purity and moral integrity. Secluded within her quiet convent chambers, she unceasingly lights candles of intercession and transcribes sacred hymns, dedicating her pure life and prayers to invoking divine protection over the embattled Roman warriors marching to the frontiers.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 5b lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with soft, melodic serenity and profound spiritual detachment, offering gentle apostolic wisdom that disarms anger and restores calm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

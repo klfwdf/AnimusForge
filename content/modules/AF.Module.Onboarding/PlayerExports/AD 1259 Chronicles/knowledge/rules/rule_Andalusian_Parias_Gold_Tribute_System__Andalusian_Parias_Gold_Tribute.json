@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Andalusian_Parias_Gold_Tribute_System",
+  "Keywords": [
+    "Andalusian Parias Gold Tribute",
+    "Granada Paria Tribute System",
+    "Jaen Treaty Protection Gold",
+    "Trans Saharan Gold Dust Route"
+  ],
+  "RagShortTexts": [
+    "Granada maintained autonomy by paying massive annual gold parias tribute to the Crown of Castile."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Under the 1246 Treaty of Jaén, the Nasrid Emirate of Granada preserved its sovereignty by paying massive annual parias in pure gold to Castile. Benefiting from trans-Saharan caravan gold dust routes and luxury silk manufacture, Granada's tribute paradoxically financed the very Castilian military apparatus encircling it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Castilian grandees continually weigh military conquest against the steady harvest of Islamic gold dinars. The annual paria operates as a golden leash, draining Moorish treasury reserves without requiring costly sieges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Granadan silk weavers work by lamplight, knowing seven copper dirhams of every ten are melted into bullion for Toledo. Whenever the Castilian king threatens war, taxes double across the vega."
+    }
+  ],
+  "TextMappings": []
+}

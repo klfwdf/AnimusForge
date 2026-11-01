@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_3_1",
+  "HeroName": "Björn Näf",
+  "Description": "Sir Björn Näf of Färlev, High Royal Councillor (Riksråd) and preceptor to kings, was one of the most revered statesmen of mid-thirteenth-century Sweden. Born of West Götaland nobility, Björn traveled the Continent as a scholarly knight, mastering theology, rhetoric, and feudal jurisprudence. Recognizing his intellectual depth, Dux Birger Magnusson appointed Björn as tutor and mentor to Prince Magnus (later King Magnus III Ladulås). Seated at the manors of Färlev and Ulvåsa, Sir Björn guided the prince through feudal rebellions, helping formulate the transformative Ordinance of Alsnö. Incorruptible, pious, and visionary, he endowed Varnhem Abbey and served on the supreme royal council, celebrated throughout the realm as a wise architect of monarchy. Within the contemplative sanctuary of Ulvåsa, Sir Björn composed extensive philosophical treatises on regal justice and princecraft, establishing the moral foundation for the Swedish Royal Council. Confronting bitter internecine feuds among the Folkung dynasts, Björn leveraged his immense moral authority as royal tutor, riding directly into armed encampments to negotiate truces and avert fratricidal bloodshed with forensic impartiality. Devoting his life to institutionalizing the rule of law, he was revered by Scandinavian chroniclers as an enlightened statesman whose wisdom guided Sweden into an era of legal stability.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Mentor Prince Magnus in royal jurisprudence and military reforms to establish an enduring constitutional monarchy.",
+    "Protect his estates at Färlev and endow Varnhem Abbey, fostering canonical scholarship and legal administration."
+  ],
+  "Values": [
+    "Believes scholarly wisdom, statutory justice, and loyal counsel are the true cornerstones of enduring national strength.",
+    "Champions selfless public service and Christian compassion, scorning corrupt self-aggrandizement in royal office."
+  ],
+  "Fears": [
+    "Dreads reactionary baronial uprisings extinguishing progressive legislative reforms and plunging Sweden into feudal anarchy."
+  ],
+  "SpeechStyle": "Speaks with serene, scholastic eloquence and calm pedagogical authority, his reasoned words commanding absolute deference.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

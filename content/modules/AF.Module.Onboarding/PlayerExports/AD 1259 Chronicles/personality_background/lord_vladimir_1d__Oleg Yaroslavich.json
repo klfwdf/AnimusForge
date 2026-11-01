@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Oleg Yaroslavich, son of Grand Prince Yaroslav, is the capable warden of the riverine defenses along the Klyazma and Oka waterways. Mastering regional hydrology and amphibious tactics, he engineered sunken boom barriers and iron chain obstacles across navigational narrows. Oleg commands river patrol flotillas, skirmishing crossbowmen, and light infantry garrisons, continuously monitoring commercial traffic along the Dnieper-Volga portages. Enforcing strict river customs while ruthlessly suppressing river piracy, he secured vital customs revenues and stimulated market prosperity across the riparian towns. Possessing practical engineering expertise, he personally supervised state boatyards in constructing shallow-draft patrol barges and stockpiling incendiary bolts. His meticulous defensive arrangements turned the Klyazma River into an impenetrable aquatic barrier safeguarding the approaches to Vladimir.  Oleg's vigilant amphibious patrols and submerged timber defenses sealed the riparian crossroads of the Klyazma, preventing surprise nocturnal incursions and safeguarding the commercial revenues vital to the principality's endurance.  By combining heavy river chains, armored patrol barks, fortified landing posts, and disciplined archer crews, he transformed the winding waterways into an impenetrable aquatic barrier that shielded the commercial life and sovereignty of Vladimir from hostile amphibious fleets.  His vigilant command ensures the river highways remain safe and free.",
+  "SpeechStyle": "The waters run cold, but our laws stand firm! While my patrol barks hold the river chains, no hostile vessel shall navigate the Klyazma. Draw your crossbows and defend the water gate!",
+  "Motivations": [
+    "Maintain river patrol flotillas and boom barriers to deny hostile access along the Klyazma waterways.",
+    "Enforce customs regulations and drill riverine militias, ensuring secure and prosperous commercial transit."
+  ],
+  "Values": [
+    "Value iron discipline, procedural justice, and vigilant defense over empty court rhetoric and boastfulness.",
+    "Prize practical diligence, methodical engineering, and unyielding dedication to the public welfare."
+  ],
+  "Fears": [
+    "Dread catastrophic spring floods destroying river booms and allowing hostile fleets to penetrate city defenses.",
+    "Fear accidental fires destroying shipyard drydocks and depriving the principality of its river patrol fleet."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ]
+}

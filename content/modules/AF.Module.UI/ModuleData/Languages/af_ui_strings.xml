@@ -159,7 +159,7 @@
   <string id="AF_MCM_MainApi_Model_Hint" text="For example, gpt-4o-mini. Enter a model supported by your configured endpoint." />
   <string id="AF_MCM_MainApi_Dropdown_Hint" text="Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above." />
   <string id="AF_MCM_MainApi_Thinking_Hint" text="When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
-  <string id="AF_MCM_MainApi_Reasoning_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_MCM_MainApi_Reasoning_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_MCM_MainApi_Temperature_Hint" text="Controls response-generation randomness. 0 is more stable and 2 is more varied. Default: 0.80." />
   <string id="AF_MCM_MainApi_MaxTokens_Hint" text="The max_tokens value for main API response generation. Default: 12000; endpoints that do not support a high limit may reject the request." />
   <string id="AF_MCM_MainApi_Streaming_Hint" text="Main responses use SSE when this option or the selected speech service is enabled. Supported interfaces reveal text progressively; local speech reads accepted complete replies sentence by sentence. Preprocessing, postprocessing and weekly reports are unchanged. The saved switch defaults to off; changes apply to the next request." />
@@ -814,7 +814,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_MainApiThinkingEnabled_Hint" text="When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
   <string id="AF_TERMINAL_UI_MainApiThinkingEnabled_Group" text="1. AI core configuration/1. Main API (response generation)" />
   <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Title" text="Main API Reasoning Effort Dropdown" />
-  <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Group" text="1. AI core configuration/1. Main API (response generation)" />
   <string id="AF_TERMINAL_UI_MainApiTemperature_Title" text="Main API Temperature" />
   <string id="AF_TERMINAL_UI_MainApiTemperature_Hint" text="Controls response-generation randomness. 0 is more stable and 2 is more varied. Default: 0.80." />
@@ -847,7 +847,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_AuxiliaryApiThinkingEnabled_Hint" text="When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
   <string id="AF_TERMINAL_UI_AuxiliaryApiThinkingEnabled_Group" text="1. AI core configuration/2. Preprocessing API (rule retrieval and simple dialogue)" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Title" text="Auxiliary API Reasoning Effort Dropdown" />
-  <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Group" text="1. AI core configuration/2. Preprocessing API (rule retrieval and simple dialogue)" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiTemperature_Title" text="Auxiliary API Temperature" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiTemperature_Hint" text="Controls randomness in preprocessing, rule routing, and simple dialogue. 0 is more stable and 2 is more varied. Default: 0.00." />
@@ -877,7 +877,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiThinkingEnabled_Hint" text="When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiThinkingEnabled_Group" text="1. AI core configuration/3. Postprocessing API (action and emotion tags)" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Title" text="Action Postprocess API Reasoning Effort Dropdown" />
-  <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Group" text="1. AI core configuration/3. Postprocessing API (action and emotion tags)" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiTemperature_Title" text="Action Postprocess API Temperature" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiTemperature_Hint" text="Controls randomness in action-tag and emotion-tag classification. A low value is recommended. Default: 0.00." />
@@ -910,7 +910,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiThinkingEnabled_Hint" text="Disabled by default. Event weekly reports and kingdom-rebellion naming require strict formats; enable only after confirming that the endpoint reliably writes the final answer to content. When enabled, OpenAI-compatible thinking endpoints receive thinking.type=enabled and reasoning_effort; Anthropic/Claude endpoints receive thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiThinkingEnabled_Group" text="1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Title" text="Event And Rebellion API Reasoning Effort Dropdown" />
-  <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Group" text="1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Title" text="Event And Rebellion API Temperature" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint" text="Controls randomness for weekly reports, kingdom naming, diplomatic declarations, scribe drafting, and other tasks using the event/rebellion API. Diplomacy uses the main API temperature when incomplete configuration causes fallback to the main API. 0 is more stable and 2 is more varied. Default: 0.80." />

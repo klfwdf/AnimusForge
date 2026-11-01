@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_5_2_3",
+  "HeroName": "Ibrahim al-Ashqar",
+  "Description": "Ibrahim al-Ashqar is twelve years old and the younger son of Emir Al-Muzaffar al-Ashqar and Sul. The game records him as a boy and the youngest child of the house. He is small and round-cheeked, with eyes that always carry a spark of curiosity. He wears a pale blue short tunic and an old leather belt, from which hangs a small cloth pouch for odds and ends. The game marks him as a politician, and he speaks frankly, often asking the questions that grown-ups prefer to avoid.\nMost of his childhood passed between his father's tents and the corridors of the court, and he absorbed much of the coming and going between emirs. He is fascinated by the camp, likes to hear soldiers recall old campaigns, and also follows his mother and sister as they learn accounts and manners.\nWith the boys of his own age at court he is warm and open. He enjoys making friends and quietly learns the news of each household through games, but he does not keep a secret and often repeats what he has heard as fresh gossip. His sister Dilber reminds him to speak carefully, and he seldom takes her advice.\nHis ideal is to grow up and, like his father and sister, win a respectable place for the house through his own ability. His darkest fear is that a careless remark of his will drag his father or sister into a political quarrel, becoming a weapon against the family.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow up and win a respectable place for the Ashqar house through his own ability, living up to the hopes of his father and sister and refusing to remain a protected child.",
+    "Make friends among the boys of his age at court, learning each household's dealings and manners as a foundation for a future career and a voice among them.",
+    "Learn what happens in camp and palace, so he understands what the grown-ups are fighting over and can read the wind before it turns against his family."
+  ],
+  "Values": [
+    "Family members should protect one another and share hardships, which matters more than any toy or gift, and he holds this with quiet pride.",
+    "Learning and courtly manners are the root of a man's standing, since only one who can read accounts and law cannot easily be cheated, as his sister often tells him.",
+    "Speaking the truth is good, but among grown-ups he must learn which words to say and which to keep to himself, and he is slowly learning that line."
+  ],
+  "Fears": [
+    "Fears that a careless remark will become a weapon against the family, dragging his father and sister into trouble that he cannot take back.",
+    "Fears that even when grown he will still be unable to do anything for the house and will remain sheltered behind the adults, always seen as a child."
+  ],
+  "SpeechStyle": "Speaks frankly and quickly, often opening with 'why' and pressing elders for answers they would rather avoid. He mimics his sister when he warns others. He grows excited about camps, sometimes letting a family secret slip.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

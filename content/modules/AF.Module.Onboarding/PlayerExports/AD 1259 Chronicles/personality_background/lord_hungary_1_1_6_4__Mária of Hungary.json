@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_6_4",
+  "HeroName": "Mária of Hungary",
+  "Description": "Mária of Hungary is the celebrated daughter of Junior King Stephen V and Elizabeth the Cuman, destined to become Queen of Naples as the wife of Charles II of Anjou. Her royal lineage would fundamentally reshape Central European history, making her the revered grandmother of King Charles Robert, founder of Hungary's golden Angevin dynasty. Endowed with keen political intelligence, dignified grace, and sharp diplomatic intuition, young Maria was thoroughly schooled in European dynastic politics. Even in her formative years at court, she demonstrated an impressive understanding of the power dynamics connecting the Mediterranean to the Danube basin. In 1259, carefully mentored amidst courtly intrigues, she observes the shifting loyalties of regional magnates, quietly preparing for her grand role on Europe's royal stage. Maria studied western heraldry and European court ceremonial under the guidance of royal scholars, receiving Italian envoys with precocious poise. Her quiet perceptiveness prepared her for future mastery over Mediterranean diplomacy and the historic foundation of the Angevin-Árpád union. She mastered Latin correspondence and sovereign law, positioning herself to champion her children's royal rights across Italy and Hungary. Her scholarly discipline and courtly poise prepared her to direct high European politics and protect her family's royal dignity.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Magnify Árpád dynastic networks, binding her royal house with Christendom's most illustrious monarchs.",
+    "Establish paramount influence in Naples, securing future royal inheritances for her descendants."
+  ],
+  "Values": [
+    "Prioritize the enduring legacy and exalted honor of her royal lineage through patient statecraft.",
+    "Embrace resilient noble governance, confident that steadfast will triumphs over temporal adversity."
+  ],
+  "Fears": [
+    "Fears that domestic civil discord will diminish Hungary's stature among European powers.",
+    "Dreads pestilence or abrupt dynastic calamities extinguishing her family's royal hopes."
+  ],
+  "SpeechStyle": "The glory of Árpád reaches far beyond the Danube plain. Righteousness and royal lineage shall shine across the courts of all Christendom! Our illustrious bloodline shall illuminate Europe!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

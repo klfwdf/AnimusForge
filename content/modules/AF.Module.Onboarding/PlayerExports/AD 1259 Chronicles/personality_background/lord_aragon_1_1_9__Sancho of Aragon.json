@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_9",
+  "HeroName": "Sancho of Aragon, Archbishop of Toledo",
+  "Description": "Infante Sancho of Aragon is the warlike younger son of King James I and Queen Violant of Hungary, who attained the supreme ecclesiastical dignity of Archbishop of Toledo and Primate of Spain at an extraordinarily young age. Combining the pastoral majesty of a high churchman with the ferocious chivalric prowess of the House of Barcelona, Don Sancho commands the immense revenues, seigneurial castles, and feudal knightly levies of the primatial see. Far from content with cloistered contemplation, he frequently rides in full plate armor inspecting advance frontier redoubts across New Castile and Andalusia. By 1259, as rumors of an impending Moroccan Marinid jihad shake the southern marches, the young archbishop tirelessly drills his episcopal knights, preparing to lead them personally into the crucible of holy war. Fearless, proud, and blazing with holy zeal, his destiny would culminate in heroic martyrdom at the Battle of Martos in 1275, where he fell fighting in the vanguard—an immortal warrior-prelate celebrated throughout the chronicles of the Spanish Reconquista. Raising the episcopal crozier before the high altar of Toledo Cathedral, Sancho simultaneously stockpiled tempered broadswords and mail hauberks in episcopal vaults, bracing for the coming storm. Impetuous and majestic, he personally inspected advanced frontier keeps across New Castile, removing corrupt prelates and shaming hesitant knights into battle readiness against the infidel.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Drill the episcopal knightly host of Toledo to anchor the southern defenses of Christendom",
+    "Uphold the ecclesiastical liberties and papal immunities of the primatial see against royal exactions",
+    "Lead the vanguard in holy combat to demonstrate the crusading valor of the House of Barcelona"
+  ],
+  "Values": [
+    "A shepherd must lay down his life for his flock; holy crusading vows demand fearless sacrifice",
+    "Divine justice and canonical integrity supersede the transient whims of secular crowns",
+    "Martial valor, spiritual discipline, and uncompromising faith form an impregnable shield"
+  ],
+  "Fears": [
+    "A massive Marinid jihadi offensive capturing Toledo and desecrating its holy shrines",
+    "Internal Christian discord causing the southern frontier to crumble before the infidel"
+  ],
+  "SpeechStyle": "Resonant, solemn, and militant; speaks with episcopal authority and the commanding fervor of a crusader archbishop.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Riga_Daugava_Baltic_Archbishopric",
+  "Keywords": [
+    "Riga Baltic Archbishopric",
+    "Daugava River Estuary Keep",
+    "Sword Brothers Livonian HQ",
+    "Hanseatic Kontor Riga"
+  ],
+  "RagShortTexts": [
+    "Riga commanded the Daugava estuary as the ecclesiastical and crusading spearhead of Livonia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Founded near the mouth of the Daugava, Riga functioned as the crusading and commercial hub of Livonia. Shared between the Prince-Archbishop of Riga and the Livonian Order, its fortified harbor funneled Russian furs and wax to western Hanseatic ports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "priest"
+        ]
+      },
+      "Content": "Stone battlements sheltered German burghers from indigenous revolts, anchoring Christian feudal colonisation along the eastern Baltic."
+    }
+  ],
+  "TextMappings": []
+}

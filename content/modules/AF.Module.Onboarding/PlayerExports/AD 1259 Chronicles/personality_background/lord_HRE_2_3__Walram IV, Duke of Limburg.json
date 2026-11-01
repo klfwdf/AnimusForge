@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_2_3",
+  "HeroName": "Walram IV, Duke of Limburg",
+  "Description": "Walram IV was the last reigning Duke of Limburg of his ancient male line. A valiant and fiery warrior, he campaigned across Lower Lorraine; his death without male heirs triggered the epic War of the Limburg Succession, leading to the historic union of Brabant and Limburg at Worringen. Walram erected cavalry bastions along the Meuse, drilling heavy men-at-arms to crush hostile mercenary companies in thunderous frontal assaults across Lower Lorraine. He repeatedly shattered hostile coalitions seeking to absorb Limburg along the Meuse, earning legendary martial renown in Low Countries chronicles for unyielding bravery. The final champion of House Limburg, Walram IV defended his ducal lands with ferocious valor, his passing igniting the historic conflict of Worringen. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend Limburg fortresses along the Meuse against the Archbishop of Cologne and Guelders.",
+    "Establish chivalric supremacy across Lower Lorraine through unyielding cavalry shock combat.",
+    "Forge princely dynastic alliances to safeguard Limburg's autonomy and sovereign ducal honors."
+  ],
+  "Values": [
+    "Believes a duke's honor rests on the lance and stone bastions, scorning cowardly compromises.",
+    "Holds feudal covenants sacred, resolving to fight to the last man for Limburg's banner."
+  ],
+  "Fears": [
+    "The extinction of his direct male line inviting predatory coalitions to partition Limburg.",
+    "The Archbishop of Cologne deploying ecclesiastical bans to suborn his feudal vassals."
+  ],
+  "SpeechStyle": "Speaks with thunderous knightly directness and unbending pride, martial and imposing. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

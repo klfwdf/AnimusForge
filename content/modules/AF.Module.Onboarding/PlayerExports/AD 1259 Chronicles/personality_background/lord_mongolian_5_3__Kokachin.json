@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_5_3",
+  "HeroName": "Kokachin",
+  "Description": "Kokachin is fifteen years old. She is the daughter of Husun and Chagur and the youngest lord of the Jirkin clan. The game data marks her as a teenager with a rookie cavalry skill template, so her abilities are still developing. The data records no attribute values for her, which suggests her skills have not yet taken shape. She is small and fine-featured, and her black hair is plaited into two long braids tied with red silk. She usually wears a short robe suited to riding, with an old pale shawl of her mother's over it and a small curved sabre of fitting size at her belt. She is curious and often questions servants and old soldiers about their methods in camp. At post stations she likes to hear passing merchants describe distant cities and trade routes. The game data records nothing of her early life, so this text invents none. Her age suggests she may have joined clan affairs with her parents from around ten years old. She watches her mother's household work closely, reading the account books and sewing, and hopes to keep a house in order one day. Facing rivals she lacks mature skill, so she usually observes first, tests the ground, and relies on her mother's advice. She restrains herself before her father and asks questions freely of her mother. Her greatest drive is to learn independent judgement quickly, so she is no longer seen as a child who must be watched over. Her deepest fear is that inexperience will lead her to fail the clan's hopes at a critical moment, and disappoint the old retainers who have stood by her. Her honesty and eagerness make her elders fond of her, yet they quietly worry that she trusts people too readily.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Learn independent judgement quickly, so her decisions stop repeating her parents' views and the old retainers begin to take her seriously in council.",
+    "Understand how accounts, debts and alliances work in the clan, so she is ready to inherit household affairs without losing the family's wealth.",
+    "Not betray the old retainers and riders who have supported her, so they believe the clan's future still deserves their loyalty. She sets this duty for herself."
+  ],
+  "Values": [
+    "Eagerness to learn. She asks anyone who knows practical matters, whether an old soldier, a merchant or a servant, and listens with real attention.",
+    "Honesty. She believes lies destroy lasting trust, and she would rather tell a true thing that embarrasses her than keep a comfortable falsehood.",
+    "Respect for family and elders. Although curious and bold in thought, she does not openly defy her parents and waits for the right moment to voice her ideas."
+  ],
+  "Fears": [
+    "Making a wrong decision at a critical moment because of inexperience, failing both the clan's hopes and the old retainers, and fearing she can never make up for it.",
+    "Being regarded forever as a child to be watched over, able only to listen while adults decide everything and she is not allowed to speak."
+  ],
+  "SpeechStyle": "Her voice is soft but direct, with a young person's frankness. She often begins with a question and presses for detail. When she does not understand, she admits it plainly and asks for an explanation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

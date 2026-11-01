@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Voivode Ivan of the Novgorod and Volga marches is a seasoned, scarred veteran who rose through decades of unrelenting combat from a junior druzhina guardsman to a high-ranking chiliarch. His weather-beaten face bears jagged scars from battles against Swedish crusaders and Tatar skirmishers. Unswervingly loyal to the Rurikid house, Ivan commands the frontline heavy infantry encampments guarding the approaches to Gorodets. A master of the traditional Slavic shield-wall and pike hedgehog formation, he can deploy his men into an impenetrable redoubt within minutes, repeatedly repelling ferocious cavalry assaults through disciplined cohesion. Though stern and unforgiving toward cowardice or breaches of discipline, Ivan is deeply devoted to his veterans, distributing his princely stipends to the widows and orphans of fallen comrades. Armed with an iron spear and tall willow shield, he embodies the unbreakable spirit of the frontier infantry. Having survived scores of bloody engagements with jagged scars across his chest, Ivan deployed heavy shield-walls that shattered enemy cavalry charges, standing as an irreplaceable living legend and beloved mentor for generations of frontline infantrymen. With his broad willow shield and iron pike, he held the line through dozens of ferocious battles, his unshakeable discipline an inspiring model of soldierly dedication.",
+  "SpeechStyle": "Speaks with a raspy, booming roar like a dented bronze gong, his speech clipped, forceful, and brooking zero contradiction.",
+  "Motivations": [
+    "Drill frontier levies into an unbreakable shield-wall capable of withstanding the fiercest charges of nomadic steppe cavalry.",
+    "Guard the strategic river crossings and timber bastions of Gorodets to the death, permitting no enemy foot on homeland soil."
+  ],
+  "Values": [
+    "Holds soldierly loyalty, iron discipline, and territorial defense as absolute truths, believing an unyielding line protects the realm.",
+    "Treasures frontline fraternity among comrades, scorning hollow courtiers and regarding combat scars as sacred badges of honor."
+  ],
+  "Fears": [
+    "Fears mutiny caused by missing rations and withheld pay, leaving heavily fortified bastions abandoned before enemy hosts."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_5",
+  "HeroName": "Dom Pedro Garcia de Sousa",
+  "Description": "Dom Pedro Garcia de Sousa is an immortal giant of Portuguese chivalric history and literature, celebrated as one of the premier troubadour knights of the thirteenth century. Lord of expansive manorial domains in Entre Douro e Minho, Don Pedro is immortalized for his brilliant Galician-Portuguese cantigas de amor and scathing satirical verses that captivated royal courts across Iberia. A battle-tested knight of formidable personal bravery, he led heavy cavalry contingents during the Algarve reconquest, combining battlefield ferocity with sublime courtly elegance. In 1259, moving effortlessly between the royal chanceries of Lisbon, Coimbra, and Toledo, he is courted by kings and princes who revere his poetic genius and chivalric stature. Adored by King Afonso III and serving as an inspiring artistic mentor to young Prince Dinís, Pedro personifies the cultural renaissance of Portugal. Dashing, generous, and fiercely independent, Pedro Garcia stands as an incandescent beacon of knightly romance and chivalric valor. Strumming his psaltery amidst royal feasts at Coimbra to perform celebrated cantigas de amor, Dom Pedro captivated monarchs, bishops, and knights with sublime lyric genius. Combining knightly prowess with literary immortality, he mentored young Prince Dinís, standing as an incandescent beacon of the Portuguese cultural renaissance. His legendary cantigas, dashing courtly wit, and chivalric valor cement Dom Pedro Garcia's immortal legacy as the supreme troubadour knight of Portugal.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Compose immortal vernacular troubadour lyrics, cementing his legacy as a master of Iberian courtly literature",
+    "Champion the supreme honor of the House of Sousa through battlefield valor and brilliant lyric verse",
+    "Mentor young Prince Dinís, inspiring the future king with chivalric romance, poetry, and grand vision"
+  ],
+  "Values": [
+    "Life's ultimate glory is found in passionate truth and heroic deeds; poetry and martial valor outlast empires",
+    "Embrace life with chivalric generosity, authentic honor, and fearlessness before worldly power",
+    "Cherish artistic freedom, defend knightly brotherhood, and remain faithful unto death"
+  ],
+  "Fears": [
+    "Being trapped in petty court administrative drudgery, suffocating his artistic and chivalric freedom",
+    "Cultural decline eroding the magnificent Galician-Portuguese lyric tradition he spent his life creating"
+  ],
+  "SpeechStyle": "Chivalrous, eloquent, and melodious; speaks with poetic brilliance, courtly wit, and the dashing swagger of a celebrated warrior-troubadour.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

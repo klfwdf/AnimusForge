@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Counterweight_Trebuchet_Siege_Engineering",
+  "Keywords": [
+    "Counterweight Trebuchet Mechanics",
+    "Medieval Heavy Mangonel",
+    "Siege Box Counterweight",
+    "Curtain Wall Ballistics"
+  ],
+  "RagShortTexts": [
+    "Counterweight trebuchets revolutionized sieges, launching massive boulders using box ballast."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "By the mid-13th century, the counterweight trebuchet eclipsed human-powered traction engines. Using a pivoted beam loaded with tons of earth and scrap metal inside a swinging counterpoise, it hurls 300-pound dressed masonry balls on flat trajectories to shatter thick curtain walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Castles now require massive sloping taluses at their base to deflect plunging boulders. A master siege engineer and his crew of timber-wrights are worth more during an investment than fifty heavy cavalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Nothing chills the blood like the groaning ratchet of a siege engine's windlass. When a three-hundred-pound rock strikes the parapet, flying stone splinters will butcher men faster than a volley of arrows."
+    }
+  ],
+  "TextMappings": []
+}

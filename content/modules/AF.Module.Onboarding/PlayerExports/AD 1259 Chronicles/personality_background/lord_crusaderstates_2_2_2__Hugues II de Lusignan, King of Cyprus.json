@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_2_2_2",
+  "HeroName": "Hugh II of Lusignan, King of Cyprus",
+  "Description": "Hugh II of Lusignan, the only son of King Henry I and Queen Plaisance of Antioch, was crowned King of Cyprus in his cradle and held rightful titular claim as Lord of Jerusalem. Raised amidst the marble arcades of Nicosia and the sea-facing ramparts of Acre, he received rigorous royal instruction in Latin chronicles, chivalric horsemanship, and feudal statecraft. In 1259, as a boy-king under the formidable regency of his mother Plaisance, Hugh served as the living symbol of legitimacy uniting crusader knights across the Eastern Mediterranean. Surrounded by mailed barons in the High Court of Acre, the young monarch observed judicial trials, diplomatic audiences, and military muster orders from his gilded throne. Precociously observant and dutiful, he exhibited keen interest in naval galley designs, border reconnaissance dispatches, and the epic histories of his crusading forebears. Carrying the fragile hopes of a fractured realm upon his young shoulders, Hugh represented the promised dawn of renewal for the Latin East. Under the martial tutelage of veteran seneschal Baldwin of Ibelin, young Hugh practiced equestrian lance charges daily, displaying the chivalric spirit of his Lusignan forebears. At the general assembly of Cypriot barons, the boy-monarch delivered royal decrees with polished solemnity, winning the deep devotion of his chivalric vassals. His regal composure carried the bright hopes of Outremer toward future renewal.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Master knightly warfare and the Assizes of Jerusalem to prepare for his majority as supreme commander of Outremer.",
+    "Heed the counsel of his royal mother and veteran officers, winning the enduring affection of the chivalry of Cyprus.",
+    "Fulfill his ancestral vow to reclaim holy Jerusalem, aspiring to lead Christian armies in mainland campaigns upon adulthood."
+  ],
+  "Values": [
+    "The royal crown is a divine duty to defend the oppressed and uphold righteousness rather than an instrument of indulgence.",
+    "Reverence for veteran crusader captains and holy prelates, seeking wisdom from seasoned counselors to govern justly.",
+    "Honoring the fierce martial bloodline of Lusignan and Poitiers, cultivating unyielding fortitude against adversity."
+  ],
+  "Fears": [
+    "Predatory conspirators manipulating his minority to usurp sovereign prerogatives and plunge Cyprus into civil war.",
+    "The sudden conquest of Acre by saracen armies before he reaches manhood, extinguishing his kingdom forever."
+  ],
+  "SpeechStyle": "Speaks with youthful earnestness and impeccably schooled royal etiquette, addressing elder statesmen and foreign knights with precocious dignity and respectful curiosity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Hugh II of Lusignan, King of Cyprus"
+}

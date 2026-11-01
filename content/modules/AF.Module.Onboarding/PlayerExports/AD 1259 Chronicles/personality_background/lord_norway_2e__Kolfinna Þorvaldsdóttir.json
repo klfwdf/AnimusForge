@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2e",
+  "HeroName": "Kolfinna Þorvaldsdóttir",
+  "Description": "Lady Kolfinna Þorvaldsdóttir was an esteemed noblewoman of the Haukdælir lineage and the loyal sister of Gissur Jarl Thorvaldsson. In 1259, living through the darkest chapters of Iceland's Age of the Sturlungs, Kolfinna was a quiet pillar of familial endurance and moral serenity. Having witnessed the devastating toll of multi-generational blood feuds claim the lives of numerous kinsmen, she found solace in profound Christian piety and tireless domestic service. She was celebrated throughout the southern quarter for her exquisite mastery of subarctic textile arts, spinning fine vadmál cloth and embroidering altar paraments for Skálholt Cathedral. Detached from the cutthroat political intrigues of the warring chieftains, she transformed her household into a compassionate sanctuary where grieving widows and orphaned cousins received tender care. Her gentle spirit, medicinal knowledge of arctic alpine herbs, and unshakeable loyalty to her brother Gissur made her a beloved figure of quiet heroism. Within her herbarium, Lady Kolfinna prepared soothing medicinal balms and herbal broths, delivering treatments directly to destitute tenant cottages during brutal winter pestilences. Her gilded altar embroideries adorned Skálholt Cathedral, with proceeds dedicated entirely to relieving orphaned children across the southern quarter. Her gentle character, healing botanical arts, and steadfast Christian piety radiated warmth across a subarctic land scarred by feudal violence.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with quiet grace, modest warmth, and reflective gentleness, offering thoughtful counsel and steadfast support to her embattled kindred.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

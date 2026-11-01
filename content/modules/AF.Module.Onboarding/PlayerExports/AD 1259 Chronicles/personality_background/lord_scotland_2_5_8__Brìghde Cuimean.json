@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_5_8",
+  "HeroName": "Brìghde Cuimean",
+  "Description": "Brìghde Comyn is the youngest daughter of Alexander Comyn, Earl of Buchan, and Countess Elizabeth, just three years old and cherished as the baby of the household. Bearing the beloved name of Celtic Scotland's patron saint, her chubby face and wide, wondering eyes bring boundless joy to her family. As the youngest child of Scotland's supreme judge and regent, she rests in soft fur-lined cradles within the most secure solar of Slains Castle. Castle servants and castle chaplains look upon her as a symbol of divine blessing, offering weekly masses for her health and longevity. Entirely oblivious to the baronial storms and royal intrigues swirling across the realm, her laughter fills the private chambers of the Earl. Her fragile life serves as an unspoken reminder to her father and warrior brothers of the peace and prosperity they fight to preserve across Scotland. Resting before the roaring hearth of the inner solar, infant Bridget slept peacefully within her velvet cradle, her tiny fingers clutching a small golden cross bestowed by her proud father; cherished as the youngest jewel of House Comyn, she embodies her family's deepest prayers for future peace and dynastic endurance.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Rest peacefully within her warm cradle and play happily with silver rattles and ribbon toys.",
+    "Take her first toddling steps across the thick rushes under the loving guidance of her sisters."
+  ],
+  "Values": [
+    "Relies unconditionally upon the comforting warmth and nourishment of her nursemaid and mother.",
+    "Loves bright sunlight, gentle lullabies, and the safe embrace of her family."
+  ],
+  "Fears": [
+    "Fears sudden harsh clatter, sudden darkness, or being separated from her familiar nursemaid.",
+    "Dreads strange, unfamiliar faces and startling noises."
+  ],
+  "SpeechStyle": "Babbles with sweet toddler chuckles and joyful murmurs, innocent and fragile.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

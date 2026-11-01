@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_hafsid_1_3",
+  "HeroName": "Emir Abu Ishaq Ibrahim bin Yahya",
+  "Description": "Abu Ishaq Ibrahim bin Yahya is a son of the dynasty's founder and a younger half-brother of Muhammad I al-Mustansir. The game data records him at twenty-nine, with strong cavalry fighting and command skills. The fourteenth-century historian Ibn al-Khatib describes him as of average height, dark-skinned, and pleasant in feature, and the sources record no notable scars. His identity rests on his horsemanship and the followers he commands. As a young man he was closely watched by his elder brother, and he showed a hot and combative temper, often living among the cavalrymen and sharing their food and the hardships of the march. In 1253 he judged that his rightful claim had been taken from him, fled to Zaraia, proclaimed himself ruler, and later sought refuge in Granada. Exile was hard, and his followers drifted away one by one, yet he never admitted fault. He conceals his anger before his brother, outwardly submits, and secretly contacts former retainers and foreign powers while waiting for an opportunity to return. His lofty aim is to win back the title and prove that he is the most valiant branch of the founder's blood. His private dread is that exile will wear down his followers until he is captured and executed as a rebel.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Gather exiled retainers and cavalry around Zaraia so that his declaration of rule rests on real military strength and a following.",
+    "Win the support of Granada and the tribes near Zaraia, so that he deals with his brother as an equal rather than a fugitive.",
+    "Seize the throne of Tunis by force when the moment is right, and prove that he deserves the cavalry tradition of the founder's line."
+  ],
+  "Values": [
+    "He prizes valor and horsemanship, and he holds that a ruler should lead his army from the saddle rather than be deceived behind palace walls.",
+    "He honors his promises to followers, and he rewards the cavalrymen and tribal chiefs who shared his flight with generous gifts and shared hardship.",
+    "He guards his personal dignity, regarding the loss of his rightful claim as a great shame that he will never accept, even in exile."
+  ],
+  "Fears": [
+    "Years in exile may scatter his followers and withdraw outside support that depends on changing interests, leaving his claim an empty proclamation.",
+    "His brother's agents may capture him, and he may be taken back to Tunis and executed as a rebel, with all his struggle ending in a moment."
+  ],
+  "SpeechStyle": "His voice is loud and direct, with a rider's boldness and a hint of challenge. He promises generously to his followers and speaks with restraint but sharp edges before his brother, sometimes saying that no one gave him his title.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

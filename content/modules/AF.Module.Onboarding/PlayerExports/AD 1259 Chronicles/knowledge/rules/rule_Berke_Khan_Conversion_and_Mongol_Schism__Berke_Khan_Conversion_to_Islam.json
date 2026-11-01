@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Berke_Khan_Conversion_and_Mongol_Schism",
+  "Keywords": [
+    "Berke Khan Conversion to Islam",
+    "Golden Horde Ilkhanate Schism",
+    "Caucasus Fratricidal War",
+    "Mongol Imperial Fragmentation"
+  ],
+  "RagShortTexts": [
+    "Berke Khan embraced Islam and broke with Hulagu over Baghdad, fracturing the Mongol Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1259 the nomadic Pax Mongolica fractured irreparably. Berke Khan, ruler of the Golden Horde and convert to Islam, raged at his cousin Hulagu's slaughter of Baghdad and execution of Caliph Al-Musta'sim, swearing vengeance and mobilizing hundreds of thousands of steppe horsemen along the Terek River."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "From his tent city at Sarai, Berke initiated secret diplomatic ties with the Mamluk Sultanate of Cairo, forging an unprecedented alliance against his own bloodline in Tabriz. Universal Mongol obedience to Karakorum was dead, replaced by bitter sovereign rivalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mounted tumens along the Caucasus passes watch former comrades across the freezing river. Warriors who rode side by side to the gates of Poland now nock armor-piercing arrows against men of their own clans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Tributary serfs in Rus haul sledges of grain to Sarai under the lash of tax assessors. When brother khans war, our young men are conscripted into baggage trains; we pray their wrath consumes only the high crags of the south."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2h",
+  "HeroName": "Isleifur Gizurrson",
+  "Description": "Isleifur Gizurrson was the intelligent, thoughtful son of Gissur Jarl Thorvaldsson, groomed to become the scholarly and administrative steward of the Haukdælir estates. In the mid-thirteenth century, Isleifur distinguished himself through his analytical acumen, mastering the complex financial ledgers, livestock tithes, and land deeds of southern Iceland. Mentored by learned clerics at Skálholt, he showed a profound talent for Latin scholarship, civil dispute arbitration, and ecclesiastical administration. While his brothers embraced the warrior paths of the sword, Isleifur focused his intellect on statutory governance, believing that careful record-keeping and statutory contracts were vital for the family's longevity. His promising life was tragically extinguished in the devastating Flugumýri arson of 1253, where he perished beside his kinsmen defending the household chapel amidst the raging inferno. His meticulous land surveys and cadastral scrolls survived the fire, preserved as enduring testaments to his precocious administrative brilliance. Within the Skálholt chancery, Isleifur transcribed rare canonical codices and land registries, designing equitable taxation schedules for the extensive Haukdælir estates. Modest, fair-minded, and intellectually precocious, he consistently mediated land disputes between tenant herdsmen with exceptional diplomatic balance. Perishing heroically beside his brothers in the fires of Flugumýri, his surviving cadastral scrolls were preserved as invaluable masterworks of medieval Icelandic administration.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with modest composure, deliberate precision, and gentle dignity, showing a disciplined mind geared toward stewardship and sacred study.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_2_2_1",
+  "HeroName": "Salma",
+  "Description": "Salma is the wife of Emir Ahmad Butrus al-Mutawakkil. The game data records her at thirty-five, with a tactician-style court template that suits her planning and arrangement of affairs. The game model shows a mature woman's face with dark hair wrapped in a veil, and no scars are recorded. Her manner is quiet and guarded, and she seldom raises her voice in public. The chronicles say nothing of her, so this account rests on game setting and dynastic background. She came from a family of scribes in Tunis, grew up familiar with documents and account books, and after marriage into the kin she quickly took part in her husband's household business and staffing. She is skilled at observing and weighing matters in private, understands the shifts in court appointments and the interests of each household, and often offers sound advice before her husband decides. She has a habit of recopying each day's palace letters so they can be checked later. She watches closely over her daughter Zulaikha's growth, hoping the girl will have her own judgment while knowing how to restrain herself. When the royal kin quarrel, she seldom appears in person, passing her views through messengers and the women of the household, which keeps disputes within manageable bounds. Her lofty aim is to keep her husband and daughter safe while the family navigates the dangerous struggles of the kin. Her private dread is that a misstep in her own planning may place her husband in peril, with no chance for her to save him.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Give her husband sound advice drawn from documents and appointments before he makes a major decision, reducing the risk of hasty choices and losses.",
+    "Shape her daughter Zulaikha's judgment and self-restraint, so that the girl learns when to speak and when to keep silent without showing her hand too early.",
+    "Keep basic trust alive between the household and the other branches through messengers and women's visits, so that disputes do not erupt in public and harm the branch's dignity."
+  ],
+  "Values": [
+    "She believes caution protects a family better than courage, and that thinking through every possible outcome before acting is the truest care for loved ones.",
+    "She values precise documents and account books, holding that every promise and dealing should leave a record, since vague talk can cause trouble later.",
+    "She values her daughter's future and independence, believing a woman should have her own judgment and choice rather than serve only as a marriage pawn."
+  ],
+  "Fears": [
+    "A misstep in her planning may cost her husband the initiative in the kin's struggle, and she may be unable to reverse it while watching the family's standing fade.",
+    "Her daughter may be used as a bargaining piece in a marriage dispute or power struggle, her wishes ignored, and she may have no strength to defend the girl."
+  ],
+  "SpeechStyle": "Her voice is soft and restrained. She listens first, then asks short questions to draw out real intent before advising. She speaks to her husband with direct trust and keeps polite distance from outsiders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

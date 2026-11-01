@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Milan_Po_Valley_Granary_and_Armourers_Guild",
+  "Keywords": [
+    "Milan Po Valley Irrigation",
+    "Milanese Master Armourers",
+    "Torriani Visconti Feud",
+    "Lombard Free League Hegemony"
+  ],
+  "RagShortTexts": [
+    "Milan anchored Lombardy's Po Valley agriculture and commanded Europe's finest armor workshops."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Center of Lombardy's fertile Po basin, Milan dominated northern Italian road networks. It was Europe's undisputed capital of armor manufacturing, where guild armourers utilized Alpine iron and water-powered trip hammers to fashion tempered mail and transitional plates amidst intense rivalry between the Torriani and Visconti clans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "In the armorers' quarter, watermills drive deafening trip-hammers. Milanese masters understand biomechanics intimately, articulating overlapping plates so seamlessly that harness feels like a second skin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Going into battle clad in Milanese forged gear doubles a soldier's confidence. Heavy crossbow quarrels deflect off cold-worked iron surfaces with nothing worse than a shower of sparks."
+    }
+  ],
+  "TextMappings": []
+}

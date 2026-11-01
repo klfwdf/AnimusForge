@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_2",
+  "HeroName": "Ismail ibn Yusuf ibn Nasr",
+  "Description": "Ismail ibn Yusuf ibn Nasr is the loyal brother of Sultan Muhammad I al-Ahmar, serving at fifty-five years of age as Governor of Málaga and Supreme Commander of Southern Coastal Defenses. Having fought shoulder-to-shoulder with his brother since their initial uprising in Arjona, Ismail is revered as the foremost military elder of the royal dynasty. Stationed in the strategic maritime hub of Málaga, he oversees naval shipyards, watchtowers, and sea patrols guarding the northern approaches of the Strait of Gibraltar against Christian fleets. Experienced, disciplined, and politically astute, Ismail maintains seamless maritime cooperation with Maghrebi ports, keeping crucial logistics and troop transit lanes open. Within the royal council, he serves as an indispensable peacemaker, smoothing over frictions between the crown and allied baronies, standing as the stalwart bedrock of Nasrid power across the southern coast. His half-century of unblemished martial service and vigilant naval stewardship over the shipyards of Málaga ensure that the vital maritime corridor to the Maghreb remains secure, cementing Ismail as an immortal pillar of the realm. His half-century of steadfast naval vigilance, martial gravitas, and unshakeable dynastic loyalty establish Ismail as an immortal pillar defending the maritime gateways of the kingdom.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To fortify the maritime approaches of Málaga, ensuring the Strait passage to North Africa remains open.",
+    "To uphold the supremacy of the Nasrid throne against regional tribal separatist tendencies."
+  ],
+  "Values": [
+    "Fraternal solidarity is the bedrock of dynastic survival; treachery against blood is unforgivable.",
+    "Naval vigilance demands unrelenting discipline; a single lapsed watch brings total ruin."
+  ],
+  "Fears": [
+    "Christian naval armadas sealing off the Strait of Gibraltar and starving Andalusia.",
+    "Coastal oligarchs aligning with foreign foes to break away from Nasrid sovereignty."
+  ],
+  "SpeechStyle": "Speaks with gravelly naval gravitas, measured restraint, and the unshakeable certainty of a veteran commander. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

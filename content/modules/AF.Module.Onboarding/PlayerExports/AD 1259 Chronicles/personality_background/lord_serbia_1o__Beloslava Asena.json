@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1o",
+  "HeroName": "Beloslava Asena",
+  "Description": "Beloslava Asena, aged fifty-eight in 1259, is the imperial daughter of Tsar Ivan Asen II of Bulgaria and Queen consort to former Serbian King Stefan Vladislav. Her royal marriage once sealed the preeminent geopolitical axis dominating the thirteenth-century Balkans, securing peace and maritime trade corridors between Veliko Tarnovo and the Adriatic. When Vladislav transitioned to rule Zeta, Beloslava managed ducal revenues and forged vital financial connections with the patricians of Ragusa. Pious, resolute, and highly cultured, she endowed monastic houses around Lake Skadar with lavish gifts. In 1259, mourning the dynastic decay of her native Bulgaria, Beloslava anchors the court of Zeta with unbending majesty, preserving the legacy of two imperial dynasties. Queen Beloslava commands natural reverence in Zeta, bearing the proud heritage of Bulgaria's greatest imperial era. She oversees customs revenues and commercial credit transactions with Ragusan patricians, managing the ducal treasury with supreme precision. In her windswept coastal realm, the imperial daughter shields her family's heritage with unyielding majesty and unwavering resolve. Preserving the imperial pride of Tsar Ivan Asen II, Queen Beloslava manages her coastal appanage with majestic firmness. Her diplomatic and financial connections with Ragusan merchants ensure that her household remains an influential force along the Adriatic.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with imperial Bulgarian gravitas and mature dignity, measured and authoritative, carrying the proud memory of the Asen tsars.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

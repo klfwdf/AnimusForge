@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_3h",
+  "HeroName": "Thoros",
+  "Description": "Prince Thoros (Toros) was the beloved younger son of King Hethum I and Queen Isabella, and loyal brother-in-arms to Crown Prince Leo. Inheriting the martial spirit of the Hetoumid house, he mastered heavy cavalry shock combat, broadsword dueling, and horse archery. Charismatic, generous, and fearless, Thoros was renowned for sharing his royal gifts, golden armor, and chargers with common battle-tested troopers. Bound by deep fraternal devotion to his elder brother Prince Leo, Thoros served as his most trusted vanguard commander along frontier passes. In 1259, Thoros trained aggressively across Taurus valley muster fields, resolved to shed his blood defending Christian Armenia against hostile invasion. Heroic, open-hearted, and defiant, Prince Thoros was immortalized in national memory as the valiant martyr-prince whose courage illuminated his house. Prince Thoros instituted intense combined-arms tactical sparring in the muster quadrangles of Sis, personally dueling sergeants with blunt broadswords to temper morale. Intensely dedicated to his warhorses and arms, he walked horse lines every evening inspecting iron shoes and grooming mounts, living on terms of warm brotherhood with his troopers. Whenever war drums thundered, Thoros spurred his steed first through the portcullis, tearing through enemy lines with ferocious couched-lance charges that struck terror into opposing ranks.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Ride alongside King Hethum and Crown Prince Leo, crushing hostile invaders with couched lance to safeguard the sovereignty of Cilicia.",
+    "Forge an invincible heavy cavalry strike force to spearhead counterattacks during decisive battles, fulfilling princely obligations.",
+    "Share danger and glory equally with his troopers, cultivating unbreakable comradely devotion across the army."
+  ],
+  "Values": [
+    "Dauntless battlefield bravery, fraternal devotion, and self-sacrifice are the supreme virtues of chivalric royalty.",
+    "Contempt for cowardice and selfish calculation; direct, heroic action alone preserves national liberty.",
+    "Uncompromising devotion to the Armenian Apostolic faith and mountain homeland, willing to sacrifice life itself for the realm."
+  ],
+  "Fears": [
+    "Failing to shield his royal brother in battle, leading to the capture of the crown prince and dynastic collapse.",
+    "Overwhelming enemy hordes overwhelming Taurus mountain strongholds, consigning his homeland to slaughter and servitude."
+  ],
+  "SpeechStyle": "Speaks with youthful chivalric courage and fiery battlefield passion, rallying horsemen and debating combat tactics with fearless ardor.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Thoros"
+}

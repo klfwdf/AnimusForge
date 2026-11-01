@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_6_3_a",
+  "HeroName": "Gunnar Arnbjørnsson Bolt",
+  "Description": "Sir Gunnar Arnbjørnsson Bolt was a celebrated knight-commander, royal councilor, and the foundational patriarch of the illustrious Bolt dynasty. In 1259, Gunnar was establishing himself as a formidable military leader across the southeastern marches of Norway, commanding heavy shock cavalry with singular skill. Bearing the heraldic crossbow bolt that symbolized piercing martial resolve, he spearheaded royal punitive expeditions and border campaigns under King Hákon IV. Renowned for his indomitable personal valor in the vanguard, he was repeatedly rewarded with extensive crown feoffments across Borgarsyssel and Viken. An ambitious dynastic strategist, he laid the military and economic foundations that propelled the Bolt house into dominant national prominence over the succeeding two centuries. His tactical innovations in heavy cavalry shock charges and defensive masonry established him as one of high medieval Norway's most distinguished knightly commanders. Across the coastal inlets and forests of Viken, Gunnar established interconnected cavalry outposts and watchtowers, patrolling the frontier with an elite company of armored lancers. He capitalized on toll collection rights along Bohuslän trade routes, deploying privateer flotillas that firmly established the rising prominence of the Bolt lineage. His bold determination, martial vigor, and practical administrative prowess inaugurated a dynasty that would dominate the southeastern borderlands for generations.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with ringing martial authority, bold chivalric vigor, and decisive resolve, articulating tactical commands and family ambitions with commanding steel.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Gunnar Arnbjørnsson Bolt"
+}

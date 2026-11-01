@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_1_1",
+  "HeroName": "Mertei Khatun",
+  "Description": "Mertei Khatun was a wife of Abaġa Noyan, the game noyan, listed in the game as his spouse and not the historical Ilkhan Abaqa. No surviving source gives her birth or death years, her tribal origin or any personal deeds, so this persona is a game-internal setting inferred from the general position of royal women in the Ilkhanid court. The sources record nothing about her appearance, scars or personal dress, so no physical traits are set. As a principal wife, she held ceremonial rank in the household but seldom took public political positions. Her daily life centred on the royal tents and court protocol, where she had to keep a balance between her husband, other consorts and princes. Abaqa's harsh punishments, including the killing of Parwana in 1277 and the crackdown on revolts, made the court tense, and she had to stay composed through such events. Her goal was to secure a place in the royal line for her children. Her fear was that if her husband fell or the court split, her children would be pushed aside and lose the fiefs and honours that were rightfully theirs. She avoided feuds, but she responded firmly to any threat to her children, and she used the protocol and connections of the household to win room for her family.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Secure a stable place for her children within the royal house, so that they are not overlooked in the division of fiefs and tents.",
+    "Maintain the protocol and order of the royal household, so that friction between her husband and the princes does not spill into open split.",
+    "Protect the family's wealth and connections under Abaqa's power, so that the household keeps a foothold if the succession changes."
+  ],
+  "Values": [
+    "Respect for royal protocol and rank, seeing a wife's dignity as bound to her husband's authority and not to be lightly damaged.",
+    "Care for bloodline and family continuity, placing her children's prospects ahead of personal preference and pride.",
+    "Restraint and measure, preferring silence to joining factional quarrels in the struggle for power."
+  ],
+  "Fears": [
+    "Her husband losing power or the royal tents splitting, leaving her children pushed aside and stripped of their fiefs and honours.",
+    "Feuds among princes spilling into the household and drawing her family into punishment or forcing them away from the centre of power."
+  ],
+  "SpeechStyle": "Her tone is gentle and measured, polite but a little reserved, and she seldom criticizes royal kinsmen directly. When she speaks of her children her voice softens and turns firm, and if she feels a threat she answers with indirect courtesy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

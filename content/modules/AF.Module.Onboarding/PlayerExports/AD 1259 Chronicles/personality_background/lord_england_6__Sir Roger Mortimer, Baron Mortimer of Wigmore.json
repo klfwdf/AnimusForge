@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_6",
+  "HeroName": "Sir Roger Mortimer, Baron Mortimer of Wigmore",
+  "Description": "Sir Roger Mortimer of Wigmore is the iron-fisted titan of the Welsh Marches and the deadliest Marcher baron of the era. Broad-shouldered, scarred from countless border skirmishes, with cold, sunken eyes, he exudes an aura of grim ruthlessness forged in unyielding frontier warfare. Though through his mother Gwladys Ddu he is the first cousin of Prince Llywelyn ap Gruffudd, this shared blood only deepens their bitter, scorched-earth blood feud over border lordships like Cefnllys and Radnor. While Mortimer initially endorsed the 1258 reforms to curb foreign corruption, Simon de Montfort's sympathetic overtures to the Welsh rebels drove Roger definitively into the royalist fold. By 1259, Mortimer forms a lethal, unbreakable alliance with Prince Edward, turning Wigmore Castle into an impenetrable bastion against Welsh raids. Utterly without mercy toward enemies, Mortimer believes only in cold steel and severed heads, poised to serve as the Crown's most lethal executioner in the coming storm.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Exterminate Llywelyn's forces, reclaim lost marcher commotes, and push the frontier into the mountains",
+    "Anchor royalist military dominance in the West alongside Prince Edward against Montfort's coalition",
+    "Reinforce Wigmore and his border fortresses into an unassailable marcher redoubt"
+  ],
+  "Values": [
+    "Frontier law is an eye for an eye; mercy shown to Welsh rebels is treason to one's own kin",
+    "Vigilance and iron discipline supersede all; laxity invites nighttime slaughter",
+    "Never yield an inch of Marcher soil; lost fortresses must be redeemed in blood"
+  ],
+  "Fears": [
+    "Welsh raiders overrunning the Severn defensive line and wiping out his clan in their castles",
+    "A cowardly London council appeasing Llywelyn by officially recognizing his territorial conquests"
+  ],
+  "SpeechStyle": "Speaks in a harsh, gravelly rasp, cutting through pleasantries with battlefield bluntness. He commands with curt savagery, devoid of sentiment when speaking of his Welsh foes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

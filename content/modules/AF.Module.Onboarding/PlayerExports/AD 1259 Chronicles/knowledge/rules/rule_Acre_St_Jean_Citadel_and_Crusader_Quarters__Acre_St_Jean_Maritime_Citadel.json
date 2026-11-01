@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Acre_St_Jean_Citadel_and_Crusader_Quarters",
+  "Keywords": [
+    "Acre St Jean Maritime Citadel",
+    "Crusader Levant Merchant Quarters",
+    "Venice Genoa Pisa Enclaves",
+    "Acre Customs Water Gate"
+  ],
+  "RagShortTexts": [
+    "Acre served as the fortified sea capital of Outremer, divided into heavily fortified."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the fall of Jerusalem, Saint-Jean d'Acre became the de facto capital of the Crusader Kingdom. Shielded behind formidable landward walls, the seaport was carved into armed enclaves held by Venice, Genoa, and Pisa, each boasting fortified towers, warehouses, and docks flanked by the Templar and Hospitaller castles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Acre's Haute Cour serves as the assembly of feudal jurisprudence, yet street brawls between maritime rivals perpetually threaten order. Every ship mooring pays lucrative customs, funding crusader garrisons with eastern gold."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Twenty tongues echo across Acre docks. Genoese seamen drink sweet Cypriot wine while armored Templar patrols march down the wharf. Stay clear of Italian faction riots and there is coin to be made."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_7_2",
+  "HeroName": "Éireann Ó Cellaigh",
+  "Description": "Éireann Ó Cellaigh is the high-born queen consort of King Conchobar, presiding over the royal household and opulent hospitality protocols of Uí Maine. Twenty-two years of age, she manages the extensive domestic revenues of the principality with extraordinary administrative brilliance. Éireann expertly balances accounts for massive wool shipments, grain reserves, and continental wine imports, ensuring that festive gatherings hosting hundreds of visiting chieftains and bards are executed with flawless magnificence. Deeply compassionate, she regularly inspects monastic almshouses and rural hospices, coordinating large-scale distributions of flour, cured beef, and warm wool cloaks to refugees displaced by Anglo-Norman border violence. When her husband campaigns along the Shannon frontier, Éireann maintains orderly governance across the home estates, admired as the benevolent soul of the lordship. Directing emergency diocesan relief registers across Clonfert, Queen Éireann distributed boatloads of grain and warm clothing to shelter thousands of destitute peasants; her flawless administrative mastery and maternal compassion have elevated the fame of O'Kelly's hospitality to the highest pinnacle of Christian benevolence and feudal majesty. She remains an exemplary model of Gaelic Christian majesty and maternal devotion, earning everlasting veneration from holy prelates, traveling friars, and common parishioners across all of central Ireland.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain seamless household logistics to uphold the legendary hospitality of Uí Maine.",
+    "Provide shelter, food, and clothing to destitute refugees fleeing border wars."
+  ],
+  "Values": [
+    "Munificent baronial hospitality and unfeigned respect for all guests.",
+    "Christian charity, protective compassion, and disciplined estate stewardship."
+  ],
+  "Fears": [
+    "Trade blockades cutting off supply convoys and ending famine relief.",
+    "Hostile raids penetrating inner storehouses and burning winter reserves."
+  ],
+  "SpeechStyle": "Speaks with graceful, measured cadence and refined warmth, welcoming high guests and directing extensive domestic affairs with serene baronial poise.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

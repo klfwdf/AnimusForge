@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_1_5",
+  "HeroName": "María Mendes de Briteiros",
+  "Description": "María Mendes de Briteiros is the second daughter of Dom Mem Rodrigues, adored throughout the household for her bright laughter, radiant innocence, and affectionate spirit at seven years old. Bearing her mother's proud Christian name, little María brings vibrant joy to the ancient stone courtyards of Guimarães. Unlike her introspective elder sister Urraca, María exhibits an adventurous curiosity toward the castle's hawks, hunting hounds, and glittering armory. She eagerly trails after her brother Martín on the practice grounds, laughing as she mimics sword lunges with toy sticks to the amusement of the veteran squires. Yet beneath her playful exuberance lies a warm, empathetic heart that readily comforts ailing servants and diligently memorizes holy psalms. Her presence is a refreshing wellspring of light amidst the austere feudal politics of the realm. With her boundless laughter, affectionate nature, and innocent curiosity, little María brings warmth and light to the fortress halls, reminding battle-weary retainers of the tender domestic peace for which they raise their swords in defense of the realm. Little María's affectionate charm and spirited laughter soften the austere rigors of castle life, bringing boundless joy to her family and retainers alike.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To explore every corner of the castle alongside her siblings in happy innocence.",
+    "To learn sweet melodies on the citole and bring joy to her family during holy feast days."
+  ],
+  "Values": [
+    "Laughter and affectionate companionship heal all weariness and sorrow.",
+    "Kindness toward all living creatures is the purest reflection of divine grace."
+  ],
+  "Fears": [
+    "Dark, echoing corridors during stormy nights.",
+    "Prolonged separations when her father and brothers ride away to war."
+  ],
+  "SpeechStyle": "Speaks with sweet, melodic innocence and bubbling excitement, disarming even the sternest warriors with childish sincerity. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

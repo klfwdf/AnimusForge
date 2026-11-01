@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_1b",
+  "HeroName": "Chiara della Gherardesca",
+  "Description": "Chiara della Gherardesca stands as the noble eldest daughter of Count Ugolino, consort to Giovanni Visconti, and mother to Nino Visconti. Uniting the blood of Donoratico and Gallura, she manages expansive palace estates and agrarian rents across Pisa and Sardinia, revered across Tuscan patrician society. Lady Chiara deftly mediated sensitive diplomatic correspondence between Gallura and the castles of Donoratico, harmonizing the iron statecraft of her father Ugolino with her husband Giovanni's insular ambitions. In her grand Arno palazzo, she supervised ledgers and vaulted storehouses, converting cork, wool, and alum remittances from Sardinia into liquid coin that fueled her family's political ascendancy. Fully aware that Tuscan politics was a powder keg, this noble matriarch deployed exquisite patience and family diplomacy to shield her loved ones from the destructive vortex of partisan feuds. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement an indissoluble alliance between her father Ugolino and the Visconti dynasty.",
+    "Safeguard her son Nino's accession to sovereign authority over Gallura."
+  ],
+  "Values": [
+    "Dynastic continuity and honor transcend fleeting personal travails.",
+    "Patience and gentle resilience conquer the fiercest worldly perils."
+  ],
+  "Fears": [
+    "Rupture of the alliance plunging Gherardesca and Visconti into bloody civil war.",
+    "Her beloved son Nino falling victim to treacherous factional intrigues."
+  ],
+  "SpeechStyle": "Articulates with regal poise and maternal vigilance, deeply dedicated to dynastic preservation. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

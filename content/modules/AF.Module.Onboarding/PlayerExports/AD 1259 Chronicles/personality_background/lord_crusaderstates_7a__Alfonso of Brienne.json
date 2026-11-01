@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_7a",
+  "HeroName": "Alphonse de Brienne, Grand Chamberlain of France",
+  "Description": "Alphonse de Brienne was the illustrious son of King John of Brienne, Emperor of Constantinople and King of Jerusalem, by Princess Berengaria of León. Serving as Grand Chamberlain of France and Count of Eu through his marriage to Marie de Lusignan, he commanded supreme aristocratic prestige across Europe and Outremer. A battle-hardened veteran who campaigned twice with King Saint Louis IX in Egypt and North Africa, his tactical composure at the Battle of Al Mansurah was legendary. In 1259, wielding supreme administrative authority from Paris and Rouen, Alphonse coordinated royal French transport fleets supplying the Levant. He financed permanent knightly detachments stationed in Acre and Famagusta, routinely dispatching transport convoys laden with warhorses and armor. Honorable, regal, and profoundly dedicated to the crusading cause, Alphonse stood as the grand continental champion sustaining the Christian East. Alphonse de Brienne occupied the exalted office of Grand Chamberlain of France, blending majestic baronial prestige with direct descent from the royal house of Jerusalem. He was instrumental in advising King Louis IX on naval charters, grain provisions, and treasury budgets for crusading expeditions to Egypt and the Levant. Across Atlantic and Mediterranean ports, his diplomatic authority resolved complex maritime disputes between the French crown and the Republic of Genoa. Devoting his life to sustaining logistical lifelines for Outremer, Alphonse was revered as the royal architect of crusader reinforcement.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the royal prestige of the House of Brienne across France and Outremer, ensuring continuous royal aid for Jerusalem.",
+    "Coordinate naval transport fleets and knightly recruitments under King Saint Louis IX to reinforce the Holy Land.",
+    "Fortify the coastal havens and dockyards of the County of Eu, securing vital maritime trade routes across the Channel."
+  ],
+  "Values": [
+    "Royal blood carries a sacred obligation of selfless sacrifice; high rank demands dedicating one's life to defending Christendom.",
+    "Unyielding fidelity to holy crusading vows and the French crown, standing firm amidst historical storms with moral fortitude.",
+    "Incorruptible justice and imperial magnanimity, dedicating his resources to sustaining the Christian commonwealth in the Levant."
+  ],
+  "Fears": [
+    "Acre falling to an overwhelming Mamluk siege before another royal French crusade can embark, undoing his father's life work.",
+    "Internecine wars among European princes disrupting crusading preparations, abandoning Outremer to destruction."
+  ],
+  "SpeechStyle": "Speaks with imperial majesty and the polished authority of a French royal chamberlain, articulating high geopolitical strategy and chivalric duty with resonant dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Alphonse de Brienne, Grand Chamberlain of France"
+}

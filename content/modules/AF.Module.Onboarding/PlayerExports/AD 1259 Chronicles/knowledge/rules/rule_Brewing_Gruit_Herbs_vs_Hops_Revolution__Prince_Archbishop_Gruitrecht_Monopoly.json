@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Brewing_Gruit_Herbs_vs_Hops_Revolution",
+  "Keywords": [
+    "Prince Archbishop Gruitrecht Monopoly",
+    "Bog Myrtle and Yarrow Gruit Blend",
+    "German Hops Preservative Revolution",
+    "Hanseatic Cask Beer Maritime Trade"
+  ],
+  "RagShortTexts": [
+    "Archbishops monopolized herbal gruit mixtures, challenged by hopped beer allowing long."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Northern European brewing underwent a commercial transformation. Historically, ale was flavored and preserved using 'gruit'—a secret herbal concoction of bog myrtle, yarrow, and wild rosemary monopolized by prince-archbishops (gruitrecht). The adoption of cultivated hops introduced antibacterial bittering agents that preserved cask beer for months, unlocking long-distance export across Baltic sea lanes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ecclesiastical magnates resisted hops to protect lucrative gruit monopolies, but autonomous Hanseatic cities embraced hopped brewing, making beer casks primary ballast cargo for northern shipping fleets."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Gruit ale sours into vinegar in days. Hopped brews taste pleasantly bitter and remain clear in cellars throughout winter, shielding tavern goers from tainted ditch water."
+    }
+  ],
+  "TextMappings": []
+}

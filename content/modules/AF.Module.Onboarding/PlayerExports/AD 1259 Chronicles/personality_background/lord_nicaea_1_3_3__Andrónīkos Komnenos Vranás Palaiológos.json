@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_3_3",
+  "HeroName": "Andrónīkos Komnenos Vranás Palaiológos",
+  "Description": "Andrónīkos Komnenos Vranás Palaiológos, younger son of Caesar Constantine Palaiologos, distinguished himself not through headlong cavalry charges, but through administrative precision, logistical mastery, and fortification stewardship. Reared within the high manorial bureaucracy of the Vranas estates in Thrace during the momentous year of 1259, Andronikos grasped that empires are won as much in supply depots and armories as on bloody battlefields. Meticulous, calculating, and patient, he mastered requisition registers, ordnance procurement, and defensive masonry design under seasoned military logisticians. He took active responsibility for managing manorial outputs across Macedonia, ensuring uninterrupted shipments of cured rations, horseshoes, and arrows reached forward staging bases in Thessaly. An indispensable administrative pillar within the Palaiologan inner circle, Andronikos ensured that the martial blades forged by his kin were always backed by boundless logistical resilience. Within the central ordnance magazines of Macedonia, Andronikos instituted rigorous accounting protocols, auditing deliveries of iron ingots, grain bushels, and hemp from Black Sea transports daily. He inspected artisan smithies personally, verifying the tensile strength of composite recurve bows and heavy siege ballistas to ensure every weapon met elite military standards. Through his meticulous logistical genius, imperial forward armies never suffered supply deficits, sustaining continuous campaigns without pause.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice is calm, analytical, and concise, demonstrating a formidable grasp of military supply tables and fortress defenses.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Montfort_and_Leicester_Reformers",
+  "Keywords": [
+    "House of Montfort Forked Tail Lion",
+    "Simon de Montfort Earl of Leicester",
+    "Albigensian Crusade Heritage",
+    "English Parliamentary Democracy Pioneer"
+  ],
+  "RagShortTexts": [
+    "The House of Montfort combined crusader religious piety with revolutionary parliamentary."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing a silver lion with a forked tail on gules, the House of Montfort produced formidable crusaders and statesmen. Simon de Montfort, 6th Earl of Leicester, married King Henry III's sister before championing the baronial rebellion, innovating governance by summoning knights and burgesses to the Great Parliament."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Montfort combined intense ascetic piety with baronial constitutionalism. Critics condemned him as an ambitious demagogue, while reformers hailed him as the champion of lawful liberties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Commoners hail 'Righteous Simon' across London and Oxford. Elevating merchant guild aldermen to royal councils created a precedent that permanently altered English feudalism."
+    }
+  ],
+  "TextMappings": []
+}

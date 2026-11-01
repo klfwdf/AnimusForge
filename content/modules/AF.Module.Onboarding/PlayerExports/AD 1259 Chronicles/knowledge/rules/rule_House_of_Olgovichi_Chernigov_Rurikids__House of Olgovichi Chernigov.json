@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Olgovichi_Chernigov_Rurikids",
+  "Keywords": [
+    "House of Olgovichi Chernigov",
+    "Saint Michael Martyr Prince",
+    "Bryansk Forest Keeps Chernigov",
+    "Chernigov Rurikids Golden Horde"
+  ],
+  "RagShortTexts": [
+    "The Olgovichi retreated into Bryansk forest keeps after Mongol devastation, preserving."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Olgovichi represented one of the oldest Rurikid branches, revered across Rus after Grand Prince Michael of Chernigov was martyred by Batu Khan. Governing from fortified Bryansk forests, they resisted both Tartar tributes and Lithuanian raids."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Impenetrable bog forests shielded the princes' druzhina retinues, preserving traditional Orthodox sovereignty against steppe overlords."
+    }
+  ],
+  "TextMappings": []
+}

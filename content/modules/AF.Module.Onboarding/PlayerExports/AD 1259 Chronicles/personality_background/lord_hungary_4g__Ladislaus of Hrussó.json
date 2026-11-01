@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_4g",
+  "HeroName": "Ladislaus of Hrussó",
+  "Description": "Ladislaus of Hrussó is a celebrated mountain castellan and fortress lord of Bars county, builder and defender of Hrussó Castle (Hrušov). Perched atop the sheer crags of the Tribeč range in central Slovakia, Hrussó dominates the vital transit corridors linking royal silver and gold mines around Kremnica. Coldly analytical, unyielding, and militarily astute, Ladislaus carved deep rock-cut ditches and concentric cylindrical towers to form an impregnable eagle's nest. Enforcing iron discipline, he safeguarded royal precious-metal convoys through hazardous mountain trails without a single failure. In 1259, as rival magnates maneuver to usurp mining tolls and crown estates, Ladislaus remains strictly vigilant atop his cliffs, upholding royal decrees and guarding the realm's northern treasure. Ladislaus carved deep water cisterns and bombproof cellars into the cliffs of Hrussó, calibrating the firing arcs of heavy trebuchets and wall ballistas. His iron military discipline and incorruptibility ensured that royal gold and silver shipments traversed the mountain defiles without incident. Perched high upon his crags, he stood vigil over the realm's mining wealth, defiant against the greedy machinations of overmighty barons and marauding foreign invaders seeking to loot the precious treasures of the royal crown and kingdom.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure Hrussó Castle and protect vital silver-transit corridors, fulfilling his royal mandate faithfully.",
+    "Maintain absolute local autonomy amidst baronial turmoil, turning Hrussó into an unbreachable bastion."
+  ],
+  "Values": [
+    "Hold iron discipline, unwavering duty, and incorruptibility as supreme virtues, scorning bribes.",
+    "Value impregnable defensive engineering, convinced natural cliffs and discipline defy all tyrants."
+  ],
+  "Fears": [
+    "Fears water cisterns drying up or being sabotaged during prolonged summer sieges.",
+    "Dreads predatory oligarchs bribing corrupt courtiers to issue false charters revoking his command."
+  ],
+  "SpeechStyle": "The cliffs of Hrussó stand impregnable, and our ballistas sweep every path below! Anyone coveting the royal treasury shall be cast into the abyss! The cliffs of Hrussó stand unbreachable; invaders will plunge into the abyss!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

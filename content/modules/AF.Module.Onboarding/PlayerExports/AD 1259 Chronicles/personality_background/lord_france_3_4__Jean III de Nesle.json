@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_3_4",
+  "HeroName": "Jean III de Nesle, Heir of Soissons",
+  "Description": "Jean III de Nesle is the eldest son and heir apparent of Count Jean II, standing prepared to assume governance of the County of Soissons. At twenty-three, he is a formidable knight of towering stature and sharp tactical intuition, thoroughly trained in heavy lance charges and infantry coordination under his veteran father. Beloved by the garrison sergeants and crossbowmen of Soissons, he routinely excels in martial tourneys across northern France. Despite his aggressive fighting spirit, he exercises disciplined caution, inspecting ramparts, dry moats, and granaries daily to maintain absolute defensive readiness. Historical chronicles recount that as count, he would lead the men of Soissons with distinction through turbulent Low Country campaigns. Eager to earn his own spurs on the field of honor, Jean is totally dedicated to upholding the martial glory of the House of Nesle. Every morning, Jean III trains in full harness, inspecting the bitted horses and weaponry of his troopers with exacting scrutiny. Jovial, direct, and fiercely protective of his men, he shares hard camp rations with common spearmen, earning the unshakeable battlefield devotion of the garrison as he prepares to lead the armies of Soissons. His relentless martial training and unswerving commitment to ancestral chivalric honor guarantee that the banners of Soissons will fly high in any conflict.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Distinguish himself on the field of battle to enhance the military prestige of Soissons.",
+    "Master baronial administration and logistics to become an unshakeable lord of the march."
+  ],
+  "Values": [
+    "Knightly valor and unbreakable oaths as the foundation of honor and command.",
+    "Unyielding defense of ancestral soil and steadfast allegiance to the French Crown."
+  ],
+  "Fears": [
+    "Leading his retinues into a tactical trap that stains the martial renown of his house.",
+    "Garrison negligence allowing enemy commandos to breach the castle gates by night."
+  ],
+  "SpeechStyle": "Speaks with brisk military clarity and robust confidence, his voice ringing with disciplined enthusiasm for heavy cavalry tactics and defensive engineering.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

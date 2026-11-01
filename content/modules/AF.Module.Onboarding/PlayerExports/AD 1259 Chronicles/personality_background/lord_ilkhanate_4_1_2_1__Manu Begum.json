@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_2_1",
+  "HeroName": "Manu Begum",
+  "Description": "Manu Begum is the wife of Güneri Bey and, at thirty-one, a mature member of the Karamanid household. The historical record does not mention her. Her origin and marriage are game-world inventions. Judging from the usual marriages between Turkic minor noble families, she may come from a horse-owning family bound by oath to Karaman. Sources are silent on her appearance, so this profile imagines a solidly built, steady-footed woman who wears a deep green robe with an old leather belt, and a worn ring on one hand. After marriage she travelled with her husband between Larende and Ermenek. She learned to look after horses and divide fodder, and she saw the disorder that garrison casualties and desertions bring. Much of the household's daily work falls to her. She checks the granaries each morning, records every ledger entry, and arranges the servants' food and lodging with care. Against cadet branches and outside princes she does not act openly, but works through her children and her own kin. She speaks and acts with measure, never complaining about her husband in front of outsiders. Her lofty aim is to secure a place in the family's future for every child. Her deepest fear is her husband dying in the field, leaving her and the children unprotected and dependent on her mother's kin.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Secure fiefs and horses for her children, so that each has a reliable and secure place in the Karamanid power structure.",
+    "Use her kin connections to win steady fodder for her husband's cavalry around Larende, reducing losses in men and horses.",
+    "Keep a dignified balance within the household, so that quarrels with cadet branches do not harm her children's prospects."
+  ],
+  "Values": [
+    "Value family stability and the future of her children, believing personal resentment must yield to long-term interest.",
+    "Think practically, counting people and supplies before promising, and keep every word she gives without fail.",
+    "Treat servants and cavalry families fairly, trading careful attention for loyalty in a crisis and remembering every favour."
+  ],
+  "Fears": [
+    "If her husband is killed in the field, her children lose their protection and cadet relatives may strip them of their fiefs.",
+    "Her sons turning on each other over the succession, breaking family ties she has spent years keeping together."
+  ],
+  "SpeechStyle": "Speaks steadily and lists the main points of a problem before giving her view. She softens when speaking of the children and names her terms plainly when property is at stake. She seldom argues in public and says what she thinks in private.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

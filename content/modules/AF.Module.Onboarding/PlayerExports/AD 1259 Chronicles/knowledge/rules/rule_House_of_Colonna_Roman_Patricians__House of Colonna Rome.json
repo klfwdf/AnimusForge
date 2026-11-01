@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Colonna_Roman_Patricians",
+  "Keywords": [
+    "House of Colonna Rome",
+    "Colonna Column Crest",
+    "Palestrina Keep Colonna",
+    "Ghibelline Roman Nobles"
+  ],
+  "RagShortTexts": [
+    "The Colonna aristocracy rallied around their column emblem, anchoring Ghibelline resistance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The House of Colonna flew a solitary marble column on red, spearheading Roman Ghibelline defiance from the cyclopean heights of Palestrina. Fiercely imperial, they countered papal dominance across Lazio and the Tiber bridges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Colonna castles mocked papal excommunications, housing veteran mercenaries loyal solely to family patriarchs."
+    }
+  ],
+  "TextMappings": []
+}

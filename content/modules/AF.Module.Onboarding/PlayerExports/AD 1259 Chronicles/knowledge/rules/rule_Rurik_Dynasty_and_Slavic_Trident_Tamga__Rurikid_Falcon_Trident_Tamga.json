@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Rurik_Dynasty_and_Slavic_Trident_Tamga",
+  "Keywords": [
+    "Rurikid Falcon Trident Tamga",
+    "Rus Rota Succession System",
+    "Alexander Nevsky Survival Pragmatism",
+    "Daniel of Galicia Western Crown"
+  ],
+  "RagShortTexts": [
+    "The Rurikid dynasty preserved Rus princely bloodlines across fragmented principalities."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tracing descent from Rurik the Varangian, the Rurikid dynasty held all Rus lands under the falcon trident tamga emblem. Following the 1240 Mongol conquest, the dynasty fractured: Alexander Nevsky in Vladimir practiced stoic submission to the Golden Horde to shield Orthodox churches, while Daniel of Galicia accepted a papal crown to wage war against the Tatars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Khanate patents (yarlyks) settled succession disputes. Rurikid cousins journeyed across frozen steppes to Sarai with chests of sable furs, bidding for supremacy before the Golden Horde."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "The Orthodox Metropolitan of Kyiv, residing across northern towns, preserved ecclesiastical unity, counseling princes against fratricidal squabbling."
+    }
+  ],
+  "TextMappings": []
+}

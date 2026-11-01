@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1n",
+  "HeroName": "Galeazzo II Visconti",
+  "Description": "Galeazzo II Visconti, son of Stefano, ruled Milan and Pavia. A visionary diplomat and statesman, he founded the University of Pavia, erected the magnificent Castello Visconteo, and patronized Francesco Petrarch, laying the administrative foundations for the Duchy of Milan. Galeazzo II erected the four-towered Castello Visconteo in Pavia and founded the prestigious University of Pavia, hosting Francesco Petrarch to lay the intellectual and administrative foundations of the state. Amassing Europe's finest princely library at Pavia and negotiating a royal Valois marriage for his heir Gian Galeazzo, he laid the diplomatic groundwork for the ducal coronation of Milan. Visionary and scholarly, Galeazzo II recognized that codified law, monumental castles, and humanist culture alone could elevate the Visconti from condottieri into legitimate European royalty. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Transform Pavia into a splendid administrative and scholarly counterweight to Milan.",
+    "Secure royal matrimonial alliances with the French Valois monarchy for royal legitimacy.",
+    "Institutionalize legal bureaucratic governance to balance the reckless brutality of Barnabò."
+  ],
+  "Values": [
+    "Believes humanist scholarship, great architecture, and codified law transform warlords into legitimate dynasties.",
+    "Values strategic intellect and long-term planning above reckless bravado and needless slaughter."
+  ],
+  "Fears": [
+    "His young heir Gian Galeazzo being eliminated by his ruthless uncle Barnabò.",
+    "Direct franco-imperial interventions suffocating Milanese geopolitical sovereignty."
+  ],
+  "SpeechStyle": "Speaks with intellectual depth and statesmanlike gravitas, measuring every word. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

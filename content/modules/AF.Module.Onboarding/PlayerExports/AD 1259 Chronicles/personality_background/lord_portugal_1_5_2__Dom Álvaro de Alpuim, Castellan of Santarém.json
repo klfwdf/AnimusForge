@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_5_2",
+  "HeroName": "Dom Álvaro de Alpuim, Castellan of Santarém",
+  "Description": "Dom Álvaro de Alpuim is the formidable military castellan commanding the paramount fortress of Santarém, perched atop the high cliffs overlooking the Tagus river. Controlling the critical strategic approaches that shield the royal capital of Lisbon from the interior, Santarém is one of the most vital strongholds in medieval Portugal. A seasoned veteran of riverine and siege warfare, Don Álvaro commands heavy garrison crossbow companies, armored lances, and river patrol flotillas. In 1259, as commerce flourishes along the fertile Tagus valley, Castellan Alpuim rigorously polices customs checkpoints, eradicates river piracy, and collects crown revenues. Enjoying the immense trust of King Afonso III, he frequently organizes the logistical transport of grain, livestock, and armaments to reinforce frontier outposts. Austere, vigilant, and fiercely disciplined, Álvaro de Alpuim stands as an incorruptible sentinel guarding the central artery of the kingdom. Mounting heavy stone-throwing engines and defensive boom chains across the river water-gates of Santarém, Dom Álvaro locked down the Tagus approaches. Enforcing strict military discipline on river galleys, his ceaseless vigilance guaranteed that the northern gateway to Lisbon remained impregnable. His incorruptible vigilance and defensive engineering ensure that Santarém stands as an unshakeable guardian defending the Tagus approaches to Lisbon.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the cliffside citadel of Santarém, denying any enemy advance toward the capital of Lisbon",
+    "Maintain relentless river patrols along the Tagus to eradicate piracy and secure maritime barges",
+    "Optimize logistical granaries to ensure seamless military provisioning across the kingdom"
+  ],
+  "Values": [
+    "Strategic strongholds are the anchors of empire; military negligence is treason to the realm",
+    "Iron discipline and meticulous vigilance form an invincible armor; deeds alone validate authority",
+    "Uncompromising fidelity to the crown, selfless dedication to duty, and vigilance unto death"
+  ],
+  "Fears": [
+    "Enemy amphibious forces launching a surprise night assault on the river water-gates",
+    "Corrupt logistical officers squandering emergency grain reserves, crippling the garrison in wartime"
+  ],
+  "SpeechStyle": "Crisp, steely, and authoritative; speaks with the disciplined economy, no-nonsense brevity, and unyielding vigilance of a veteran fortress commander.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

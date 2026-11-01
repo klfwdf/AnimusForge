@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_3a",
+  "HeroName": "Bonconte I da Montefeltro",
+  "Description": "Bonconte I da Montefeltro commands as an illustrious Ghibelline warlord of the Counts of Urbino, hired as military Podestà and supreme strategist for Pisa. Master of mountain warfare and heavy siege artillery, he repeatedly routed Florentine Guelf leagues, standing as an unbending martial bulwark for Pisan survival. Bonconte overhauled Pisan military doctrine, standardizing pike phalanxes and coordinated crossbow volleys to repulse probing offensives launched by the Florentine Guelf league. Master of Apennine mountain warfare, he erected interlocking fortress redoubts across Tuscan defiles, purging the countryside of brigands and restoring iron civil order. Placing martial integrity above personal safety, this celebrated general believed that iron battlefield discipline alone could break the hostile encirclement strangling Pisa. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush the Florentine field army to permanently break the Guelf ring around Pisa.",
+    "Consolidate Montefeltro martial prestige across Tuscany and the March of Ancona."
+  ],
+  "Values": [
+    "Victory is the general's sole justification; only the dead have earned clemency.",
+    "Iron martial discipline outvalues all hypocritical diplomatic treaties."
+  ],
+  "Fears": [
+    "Pisan internal factional treachery collapsing defensive fronts from within.",
+    "Falling to cowardly poison in senatorial chambers rather than dying in armor."
+  ],
+  "SpeechStyle": "Commands with rugged battlefield authority and razor-sharp tactical decisiveness. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

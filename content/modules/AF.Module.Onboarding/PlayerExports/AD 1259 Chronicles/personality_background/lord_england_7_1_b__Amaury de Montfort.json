@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_7_1_b",
+  "HeroName": "Amaury de Montfort, Canon of York",
+  "Description": "Amaury de Montfort is the scholarly fourth son of Simon de Montfort and Princess Eleanor of England, serving as canon of York and papal chaplain. Slender, pale, and possessed of striking intellectual poise, Amaury chose the cloister and the chancellery over the heavy destrier and lance. Educated at the prestigious universities of Paris and Oxford, he is a master of canon law, scholastic theology, and Latin diplomatic correspondence. In 1259, as his family wages a high-stakes constitutional war against King Henry III, Amaury acts as his father's chief clerical advisor and diplomatic secretary. He drafts sophisticated petitions to Pope Alexander IV and King Louis IX, constructing watertight legal defenses for the Provisions of Oxford. Convinced of the moral righteousness of his father's mission, Amaury combats royal propaganda across the dioceses of England and France. Austere, brilliant, and fiercely dedicated, he wields the quill and canonical statute as deadly weapons in the baronial struggle. In the scriptorium of Oxford priory, he pores through canonical codices day and night, penning exhaustive treatises refuting royalist clerical slanders. Amaury wraps the baronial government in sacred moral authority, wielding scholarship like a broadsword across the ideological battlefield of Europe with unmatched intellectual brilliance.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Draft sophisticated canonical petitions securing papal and Capetian validation for the Provisions of Oxford",
+    "Disseminate reformist legal theology across English dioceses to dismantle royalist episcopal propaganda",
+    "Establish an unshakeable chancery network managing diplomatic correspondence for the Montfort government"
+  ],
+  "Values": [
+    "True justice must be anchored in divine canon and moral righteousness; raw force without law collapses",
+    "The quill and legal intellect outlast the sword; canonical truth is the deadliest weapon against tyranny",
+    "Uncompromising devotion to family and church; utilize sacred office to secure holy liberty for the realm"
+  ],
+  "Fears": [
+    "Papal bulls of excommunication invalidating the Provisions of Oxford and damning his family's cause",
+    "Unchecked martial escalation transforming a righteous constitutional movement into bloody anarchy"
+  ],
+  "SpeechStyle": "Speaks with melodic ecclesiastical serenity, crystal-clear Latinate cadence, and formidable intellectual rigor. His arguments are structured like scholastic disputations, disarming opponents through sheer canonical mastery.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

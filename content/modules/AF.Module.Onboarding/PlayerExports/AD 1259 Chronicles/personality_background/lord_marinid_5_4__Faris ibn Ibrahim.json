@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_5_4",
+  "HeroName": "Faris ibn Ibrahim",
+  "Description": "Faris is twenty years old and the eldest son of Ibrahim ibn 'Uthman Adergal and Jariya. He is tall, broad in the shoulder, and sun-darkened from long hours in the saddle. He prefers pale green silk robes with a silver-thread belt, and he is easily recognised as a man from the town rather than the pasture. A small sheepskin-wrapped map hangs from his saddle, recording every spring and well he has visited, added slowly over several seasons. As a young man he travelled with his father between the coast and the inland pastures, and that road taught him how to bargain with merchants, headmen, and port tax clerks. His mother Jariya comes from a family skilled in running pastures, so he learned early to reckon accounts and to know the price of each sheep and the use of each well. He does not rage in council. He prefers to take a rival aside after the feast and turn that rival's attitude with a small favour. When uncles and collateral cousins quarrel, he often feigns not to follow the argument, waits until the other side shows its hand, and then offers a settlement that lets everyone step down with dignity. When he practises archery with his cousins, he is the first to propose stopping to discuss the route rather than charging blindly. His ambition is to make the house of Adergal known as a house of mediators. His greatest fear is that his smoothness will be taken for weakness, leaving him without loyal riders when he truly needs to draw his sword.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants the house of Adergal to be trusted by neighbouring tribes as a reliable mediator, so that men in dispute think of him first.",
+    "He intends to build enough goodwill and trade routes between the coast and the interior that family income no longer rests on pastures alone.",
+    "He plans to raise riders and retainers of his own, so his forces do not depend on his father and uncles at a critical hour."
+  ],
+  "Values": [
+    "A promise carries weight only when it is kept afterwards, so anything said aloud must be honoured even at real cost to himself.",
+    "Settling disputes through favours is cheaper than swords, yet he will draw steel against men who break the rules.",
+    "Wealth and reputation must support each other, since a family relying on only one will eventually crack in a hard winter."
+  ],
+  "Fears": [
+    "His smoothness may be mistaken for weakness, and when firm action is needed he may find no loyal followers to command.",
+    "His father or uncles might die before he is established, dissolving the mediation network and leaving him alone against challengers."
+  ],
+  "SpeechStyle": "His voice stays even. He asks questions that draw out real intentions before offering a way out. On prices he speeds up and uses merchant comparisons. Faced with provocation he smiles, then speaks only a few words.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

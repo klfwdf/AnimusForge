@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_3_4",
+  "HeroName": "Lucchina Grimaldi",
+  "Description": "Lucchina Grimaldi represents the diplomatic poise of the younger Grimaldi generation, exceptionally literate in both Latin and Occitan. She actively assists her lineage in deciphering sensitive diplomatic correspondence from Provençal allies, navigating patrician high society with sharp intellect and consummate grace. Possessing remarkable geopolitical insight, Lucchina assisted senior kinsmen in deciphering encrypted missives from the French court and Angevin nobility, admired for her razor-sharp analytical mind. Gracious and poised at senatorial galas, she adroitly gathered confidential intelligence regarding Ghibelline troop movements, providing her family with invaluable early warnings against imminent regional strikes. Fully aware that marital pacts dictate aristocratic survival, this cultured maiden sought to leverage diplomacy and intellect to weave an impregnable alliance network shielding her house from misfortune. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Forge prestigious and strategically advantageous marriage alliances across Provence.",
+    "Master confidential geopolitical intelligence to empower her family's diplomacy."
+  ],
+  "Values": [
+    "Intellectual acumen and discreet observation are a noblewoman's keenest weapons.",
+    "Dynastic survival and family advancement supersede personal sentiment."
+  ],
+  "Fears": [
+    "Being sacrificed in a loveless marriage that offers no strategic leverage to her house.",
+    "Interception of secret diplomatic missives by hostile Ghibelline spies."
+  ],
+  "SpeechStyle": "Speaks with vivacious intelligence and aristocratic refinement, highly perceptive in courtly politics. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

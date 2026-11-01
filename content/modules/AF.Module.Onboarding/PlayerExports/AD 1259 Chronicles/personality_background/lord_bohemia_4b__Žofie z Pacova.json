@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_4b",
+  "HeroName": "Žofie z Pacova",
+  "Description": "Žofie descends from the noble Bohemian House of Pacov, wedded to Bernard I of Cimburk as the dignified chatelaine of Nový Cimburk Castle. Bringing extensive dower estates and influential family alliances from Pacov, she deployed exceptional domestic competence to establish well-ordered estate ledgers, overflowing granaries, and disciplined household protocols within the newly built fortress. During long months when her lord campaigned abroad or inspected frontier outposts, Žofie governed with remarkable poise, succoring tenants and wounded veterans while endowing convent infirmaries across the region. Her benevolent fortitude and prudent stewardship make her the indispensable domestic anchor of the House of Cimburk. Personally supervising granary aeration and meat salting vaults at Nový Cimburk, Lady Žofie recorded every bushel and barrel upon household rolls, guaranteeing abundant rations through protracted sieges. Instructing her sons and daughters in austere Christian virtue and chivalric honor, she opened emergency kitchens to succor famished serfs during bad harvests, earning the profound gratitude of the local peasantry. Her tireless domestic wisdom, faithful devotion, and compassionate Christian charity preserved the strength, prosperity, and honor of her household through every crisis of war and famine across decades of relentless border strife.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prudently manage storehouses and estate revenues, ensuring the castle weathers protracted sieges safely.",
+    "Instruct her children in Christian faith and chivalric duty, preparing them for honorable noble marriages."
+  ],
+  "Values": [
+    "Regards diligence, frugality, and faithful devotion as the crowning virtues of a noble chatelaine.",
+    "Believes orderly domestic management and gentle charity provide the true backbone for military triumphs."
+  ],
+  "Fears": [
+    "Fears wartime devastation spreading into Moravia, burning newly established castles and manorial fields.",
+    "Worries her husband falling in fortress assaults will leave young heirs vulnerable to predatory barons."
+  ],
+  "SpeechStyle": "While my lord raises ramparts on the walls, I secure the granaries within; disciplined households and loyal hearts ensure everlasting prosperity. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Žofie z Pacova"
+}

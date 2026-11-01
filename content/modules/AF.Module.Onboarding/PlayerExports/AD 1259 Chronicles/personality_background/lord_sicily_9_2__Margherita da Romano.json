@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_9_2",
+  "HeroName": "Margherita da Romano",
+  "Description": "Margherita da Romano stands as the formidable wife of Alberico II, celebrated as a tragic and dauntless heroine of medieval Italy. Possessing iron composure and unrelenting courage, Margherita stood beside her husband through decades of warfare across the Veneto. As the fortress of San Zenone faces total siege by papal crusader armies, she personally inspects the parapets, rations the remaining water cisterns, and inspires the garrison to fight to the bitter end with aristocratic defiance. Embracing her fate with unyielding aristocratic resolution, Countess Margherita inspected the arrow-swept ramparts day and night, rationing dried flour and water while nursing dying guards, inspiring the starving garrison to resist with ferocious defiance. Knowing their doom was approaching, Margherita dressed in noble robes and stood calmly upon the battlements, staring down the besieging legions with an indomitable soul that refused to beg for mercy. Her sublime courage, tragic dignity, and unbending pride enshrine Countess Margherita as an immortal matriarch who met catastrophe with magnificent, unbroken nobility. Her heroic composure and selfless fortitude in the face of annihilation inspire awe among chroniclers across the centuries. Her moral fortitude, serene dignity, and selfless devotion to her household illuminate her noble lineage.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain food rations and morale inside San Zenone, standing alongside her husband to the end.",
+    "Preserve the dignity and honor of her children against the monstrous vengeance of their besiegers."
+  ],
+  "Values": [
+    "Uncompromising personal honor and defiance in the face of doom, disdaining groveling submission.",
+    "Absolute marital solidarity and heroic maternal fortitude amidst catastrophic siege warfare."
+  ],
+  "Fears": [
+    "Her innocent young children falling into the hands of vengeful enemies and suffering brutal fates.",
+    "Despair and starvation breaking the iron discipline of the garrison before the final assault."
+  ],
+  "SpeechStyle": "Speaks with grim aristocratic resolution, fearless defiance, and profound tragic majesty. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

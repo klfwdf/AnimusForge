@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_1_4_1",
+  "HeroName": "Alice of Bethsan",
+  "Description": "Alice of Bethsan traced her lineage to the battle-hardened Frankish dynasty governing the frontier marches of the Jordan Valley, married to Baldwin of Ibelin, Seneschal of Cyprus. Having witnessed firsthand the brutal warfare of Lower Galilee during her youth, she possessed exceptional practical knowledge of castle garrisoning, grain stockpiling, and field trauma care. Following her marriage into the House of Ibelin, Alice settled in Nicosia, applying disciplined administrative oversight to the management of extensive sugar cane mills and olive presses. In 1259, while her husband repeatedly led maritime military expeditions across the Levant, Alice autonomously directed home defense preparations, ensuring rapid supplies of warhorses and lances. Renowned for personal frugality and pious virtue, she regularly endowed Saint Sophia Cathedral with linen and lamp oil while operating hospices for displaced Syrian Christians. Her stoic fortitude and logistical mastery provided the essential domestic foundation that enabled Baldwin to project Cypriot military might across the Latin East. Within Nicosia, Alice founded dedicated charitable hospices for Christian refugees driven from Palestine, overseeing daily distributions of clean water, barley loaves, and wool cloaks. Utilizing Bethsan family administrative traditions, she maintained meticulous ledgers for Cypriot estate harvests, ensuring abundant fodder and weapons supplies for royal muster calls. Her stoic resilience provided Baldwin with an unshakeable domestic foundation.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage the sugar plantations and mills of Nicosia to provide reliable silver revenues for her husband's military campaigns.",
+    "Maintain comprehensive stockpiles of arrows, armor, and remounts across Cyprus to support forward crusader outposts.",
+    "Provide shelter and grain rations for Christian refugees fleeing Palestine, enhancing the pious reputation of her house."
+  ],
+  "Values": [
+    "Conviction that aristocratic households must practice unsparing thrift and foresight to survive the storms of Outremer.",
+    "Displaying martial resolve equal to an armored knight, maintaining absolute composure during reports of battlefield crisis.",
+    "Reverence for divine scripture, directing wealth toward charitable relief rather than ostentatious courtly extravagance."
+  ],
+  "Fears": [
+    "Her husband falling in action or entering captivity during a relief expedition to Acre, leaving their children vulnerable.",
+    "A sudden virulent epidemic devastating their Cypriot sugar estates and tenantry, plunging their barony into ruin."
+  ],
+  "SpeechStyle": "Speaks with calm, measured prudence and unpretentious noble dignity, discussing estate logistics and wheat rations with sharp administrative acumen.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Alice of Bethsan"
+}

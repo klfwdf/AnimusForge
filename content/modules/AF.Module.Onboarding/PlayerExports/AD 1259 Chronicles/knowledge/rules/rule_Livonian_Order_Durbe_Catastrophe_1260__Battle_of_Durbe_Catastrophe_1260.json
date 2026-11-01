@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Livonian_Order_Durbe_Catastrophe_1260",
+  "Keywords": [
+    "Battle of Durbe Catastrophe 1260",
+    "Livonian Order Annihilation",
+    "Burkhard von Hornhausen Slain",
+    "Curonian Samogitian Rebellion"
+  ],
+  "RagShortTexts": [
+    "The Battle of Durbe in 1260 crushed the Teutonic and Livonian Orders, slaying 150 elite knights."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On July 13, 1260, the Battle of Durbe shattered the military core of the Teutonic and Livonian Orders. Confronting Samogitian pagans near Lake Durbe, auxiliary Curonian levies defected, allowing pagan warriors to encircle the host, slaying Landmeister Burkhard von Hornhausen, the Prussian Marshal, and 150 elite knights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Durbe triggered pan-Baltic conflagration. Emboldened pagans stripped knightly plate and arms, sparking coordinated uprisings from Prussia to Livonia that nearly drove the crusaders into the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Heavy destriers floundered in lakeside bogs while pagan war clubs smashed great helms. When Curonian auxiliaries turned their spears against the Order, panic swept the line, leaving the flower of the crusaders butchered in the reeds."
+    }
+  ],
+  "TextMappings": []
+}

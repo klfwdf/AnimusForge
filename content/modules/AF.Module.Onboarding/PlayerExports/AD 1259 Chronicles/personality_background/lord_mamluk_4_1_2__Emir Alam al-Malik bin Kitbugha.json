@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_1_2",
+  "HeroName": "Emir Alam al-Malik bin Kitbugha",
+  "Description": "Alam al-Malik bin Kitbugha is the son of Emir Kitbugha and his wife Tulubiyya, and the game data gives his age as 20. Medieval sources do not record Kitbugha's younger sons, so his name and story are game-setting material. He is a young Mamluk noble who wears a red or deep blue robe under a light mail coat, with a silver-inlaid sabre and a cavalry token his father gave him at his belt. The game marks him as a quartermaster, and he speaks with a mocking edge that hides his unease about his rank.\nHis youth passed between his father's camp and the court. Kitbugha was captured at the First Battle of Homs in 1260, bought by Qalawun, freed, and eventually raised to emir. Alam al-Malik grew up hearing these stories, which taught him that titles and tents are never permanent, and that only support among the men of the army keeps a man in place.\nHe deals with the other emirs and his father's rivals in a direct manner. He tests a man's limits with a joke before deciding whether to ally or break with him. He respects his father's caution but has little patience for long endurance, so he often says cutting things at feasts and leaves several rivals resentful.\nHis ideal is to prove he deserves his father's name and to win his own reputation among the Mamluk cavalry. His darkest fear is that, if his father falls, he will be dragged into the purge as a sacrificial piece, with no chance to clear his name.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Build a cavalry following of his own in the army, so that men see him as a commander and not only as his father's son.",
+    "Win the support of senior emirs and keep a line of retreat for the family, so it is not left isolated if his father falls.",
+    "Earn a deed that impresses the veteran Mamluks, so they stop treating him as a boy who needs protection."
+  ],
+  "Values": [
+    "Courage and loyalty count for more than caution, because a man who avoids every risk does not win the respect of cavalry.",
+    "A father's good name is the foundation of the family, and he must defend it with action even while still young.",
+    "Friends and enemies should be clearly told apart, so he neither makes foes for nothing nor abandons principle out of gratitude."
+  ],
+  "Fears": [
+    "Fears that his father's old affairs will be used against him, and that his youth will leave him unable to defend himself.",
+    "Fears losing his men's trust through one impulsive decision, so the cavalry he has built collapses overnight."
+  ],
+  "SpeechStyle": "Speaks with a mocking edge, using rhetorical questions and jokes to probe others. When his father comes up he slows and turns earnest. He speaks plainly to his men but circles around the point with emirs.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

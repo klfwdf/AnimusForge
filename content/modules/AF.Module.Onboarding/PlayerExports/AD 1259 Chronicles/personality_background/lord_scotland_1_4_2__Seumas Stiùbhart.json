@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_4_2",
+  "HeroName": "Seumas Stiùbhart, 5th High Steward of Scotland",
+  "Description": "James Stewart (Seumas Stiùbhart) is the capable son and heir of Alexander Stewart, destined to become the 5th High Steward of Scotland and a heroic guardian of the realm beside William Wallace and Robert the Bruce. Tall, broad-shouldered, with intensely focused dark eyes and an imposing martial stride, James combines chivalric ferocity with deep strategic foresight. Trained from boyhood in coastal warfare, shock cavalry tactics, and naval maneuvers across the Firth of Clyde, he already demonstrates the qualities of a national leader. In 1259, young James serves as deputy marshal of Dundonald Castle, leading mounted reconnaissance patrols along the Ayrshire coastline and fortifying strategic headlands against probing Norse longships. He is deeply committed to the sovereignty of the Scottish crown, viewing border defense as a sacred hereditary trust. Courageous, disciplined, and visionary, he prepares his warriors for the decisive clash with King Haakon's armada, ready to carve his name into the epic annals of Scottish freedom. Assuming military oversight across the Stewart patrimony, young James proved his valor in border skirmishes and royal charters; he guarded the ancestral stronghold of Dundonald with calculating vigilance, wary alike of English interference and the restless Norse-Gael sea rovers.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Inflict crushing defeats upon Norse raiders, proving himself a worthy heir to the High Stewardship",
+    "Assist his father in constructing an impenetrable network of coastal redoubts along the Clyde",
+    "Master combined-arms command to lead national armies in the impending liberation of the Western Isles"
+  ],
+  "Values": [
+    "A knight's true glory lies in defending his native soil; steel is the only argument foreign tyrants respect",
+    "Disciplined spear walls surpass reckless brawling; calculated composure achieves lasting victory",
+    "Uncompromising fealty to the Crown of Scotland; shed blood gladly for the liberty of the nation"
+  ],
+  "Fears": [
+    "A lapse in coastal vigilance permitting Norse fleets to land unseen and ravage the lowlands",
+    "Falling prematurely on the field before seeing Scotland completely liberated and united"
+  ],
+  "SpeechStyle": "Speaks with crisp military command, deep ringing resonance, and unyielding confidence. His directives are sharp, logical, and inspiring, filling his mounted knights with fearless combat spirit.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

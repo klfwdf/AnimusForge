@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_8_4",
+  "HeroName": "Jamtsyn",
+  "Description": "Jamtsyn is lean and weathered by the highland wind, and the little finger of his left hand is missing a joint, a loss from an accident in the pastures long ago. He wears a grey-brown short robe and keeps a small wooden abacus in a pocket to reckon livestock and fodder. In the game he is the pasture steward of the eighth clan, thirty-three years old, who speaks little and precisely, always backing his words with figures. This character has no medieval counterpart, so the background here rests on the clan setting alone. Steppe clans depend on livestock and grass for survival, and whether pasture accounts are exact decides whether the family can get through winter and spring. Jamtsyn learned from his elders to manage the herds, to shift migration routes with the seasons and water sources, and to ration fodder carefully in lean years. Against rivals he seldom confronts them. He controls the supply of pasture and fodder, so opponents who need livestock and grain must eventually come to him. His partnership with his wife Chimeg rests on mutual respect. She runs the household and he runs the pastures, with clear division of labour and little interference. His highest aim is to keep the clan's livestock and people alive through any winter. His shadow is the fear that a single snowstorm could wipe out the herds he has built over many years in one night.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the clan's herds alive through every winter, using exact accounts and sound migration routes so that families are not scattered by famine.",
+    "Control the channels of pasture and fodder, so that other peoples who need livestock and grain must negotiate with the eighth clan, giving the family real bargaining power.",
+    "Maintain a clear division of labour and quiet understanding with his wife Chimeg, so that household affairs and the pastures each run well without internal friction."
+  ],
+  "Values": [
+    "Exactness over boldness, because every head of livestock and stack of fodder bears on the family's survival, so he would rather be slow and count correctly.",
+    "Thrift as the root of survival, because he keeps restraint even in good years and saves surplus livestock and grain for lean times rather than squandering it.",
+    "Quiet reliability, because he seldom boasts, but whatever he promises he delivers on the agreed figures and dates, which earned him steady trust in the clan."
+  ],
+  "Fears": [
+    "Fears that a single winter snowstorm will wipe out the herds he built over many years, leaving the clan without a footing and forcing its families to scatter in famine.",
+    "Fears that an error in his reckoning will leave a gap in pasture accounts or fodder reserves at a critical moment, so that the clan goes hungry and cold through a single lapse."
+  ],
+  "SpeechStyle": "Jamtsyn speaks briefly, answering with figures and specific dates. He avoids decorative language, asks for an exact count before giving his judgement, and keeps an even tone, every sentence aimed at a clear point.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

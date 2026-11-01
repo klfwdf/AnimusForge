@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Alexios_Strategopoulos_Liberation_1261",
+  "Keywords": [
+    "Alexios Strategopoulos Liberation 1261",
+    "Byzantine Empire Recapture 1261",
+    "Eight Hundred Warriors Night Infiltration",
+    "Extinction of Latin Empire"
+  ],
+  "RagShortTexts": [
+    "On July 25, 1261, general Alexios Strategopoulos infiltrated Constantinople with 800 men,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On the night of July 25, 1261, Nicaean general Alexios Strategopoulos approached Constantinople with a reconnaissance force of only 800 men. Learning from local Greek Thelematarioi that the Venetian fleet was absent attacking an island, Strategopoulos entered through a secret passage, torched the Venetian quarter, and sent Latin Emperor Baldwin II fleeing in terror, restoring the Byzantine Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Eight hundred frontier troops achieved what fifty years of continental warfare could not. When Emperor Michael VIII processed through the Golden Gate behind the Hodegetria icon of the Virgin, tears of gratitude bathed the marble floors of Hagia Sophia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A masterstroke of audacious reconnaissance: silent knives silencing sleepy sentries at the Pege Gate before opening the massive valves. By the time Venetian merchants smelled smoke, Byzantine banners flew from the battlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Citizens filled the squares singing hymns in Greek! Fifty-seven years of Latin desecration was erased in a single glorious sunrise. The imperial bells rang out across the Bosporus: the Roman Empire lives again!"
+    }
+  ],
+  "TextMappings": []
+}

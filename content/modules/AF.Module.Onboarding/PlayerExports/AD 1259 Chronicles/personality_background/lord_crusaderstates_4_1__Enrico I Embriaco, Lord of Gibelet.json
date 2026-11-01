@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_4_1",
+  "HeroName": "Enrico I Embriaco, Lord of Gibelet",
+  "Description": "Enrico I Embriaco, Lord of Gibelet (ancient Byblos), headed the illustrious Genoese patrician dynasty that held sovereign feudal sway along the central Lebanese coast. Since the First Crusade, the Embriaco family had governed this ancient Phoenician port, fusing Italian maritime mercantile dominance with Frankish feudal baronial lordship. Enrico solidified his high-born standing by marrying Isabella of Ibelin, daughter of Balian of Beirut, intertwining his commercial empire with Outremer's premier chivalric aristocracy. In 1259, amidst the destructive fury of the War of Saint Sabas that saw Genoese quarters besieged across Acre, Enrico skillfully safeguarded Gibelet's independent autonomy. He deployed his private fleet of armed galleys to dominate lucrative exports of Lebanese cedar timber and olive oil while heavily fortifying Gibelet's seaside citadel with iron portcullises. Calculating, proud, and politically astute, Enrico navigated the shifting rivalries between Tripoli, Antioch, and Genoa with masterful statecraft. At the ancient harbor of Gibelet, Enrico constructed reinforced stone water-gates and torsion artillery bastions, securing the coastal approaches against surprise naval assault. In protracted diplomatic negotiations with Genoa and Acre, his forensic eloquence successfully preserved his barony's lucrative commercial tax exemptions. His mercantile mastery and ironfisted governance established him as one of the most formidable maritime dynasts in Outremer.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the hereditary sovereignty of Gibelet against the encroachments of the Counts of Tripoli, securing trade monopolies.",
+    "Protect the Embriaco mercantile fleet following the War of Saint Sabas, dominating cedar and textile routes to Genoa.",
+    "Reinforce the coastal battlements and harbor breakwaters of Gibelet into an unassailable maritime fortress."
+  ],
+  "Values": [
+    "Commercial silver and armed war galleys form the true foundation of feudal power; wealth must sustain military strength.",
+    "The sovereign independence of the House of Embriaco is absolute, resisting any attempt by regional counts to curb ancient fiefs.",
+    "Pragmatic statecraft and calculating diplomacy; navigating imperial rivalries through cold logic and iron fortitude."
+  ],
+  "Fears": [
+    "The Counts of Tripoli mobilizing their feudal host to besiege Gibelet and dispossess the Embriaco family of their ancient fief.",
+    "A punitive Venetian battle fleet bombarding and blockading Gibelet harbor, severing their commercial lifeline to Genoa."
+  ],
+  "SpeechStyle": "Speaks with the icy precision and formidable commercial acumen of a Genoese patrician dynast, issuing harbor decrees with calculating, commanding authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Enrico I Embriaco, Lord of Gibelet"
+}

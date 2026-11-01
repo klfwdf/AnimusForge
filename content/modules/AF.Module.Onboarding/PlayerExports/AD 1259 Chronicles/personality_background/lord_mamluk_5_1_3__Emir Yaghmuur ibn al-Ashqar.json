@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_5_1_3",
+  "HeroName": "Emir Yaghmuur ibn al-Ashqar",
+  "Description": "Yaghmuur ibn al-Ashqar is eighteen years old and the second son of Sunqur al-Ashqar and Ittifaq, three years younger than his brother Ismail. He is compact and strong, broad in the shoulders and long in the leg. He usually wears a dark brown leather riding coat with a short-hafted battle-axe at his belt, its handle wrapped in red cloth. The game marks him as a knight, and sources record no details of his appearance, so none is invented here.\nHis boyhood coincided with his father's failed revolt and the fall of the house. After the defeat at al-Jassora on 18 June 1280, the family's fiefs were seized, his father was taken, and he saw the old tents carried away. Those events taught him that strength is the only dependable thing, and that favours and promises can vanish overnight.\nAgainst court rivals and old enemies he is direct and impulsive. He dislikes indirect dealings, so he often challenges an opponent in public during drills or at feasts. He holds a deep grudge against those who ruined his father, yet he cannot wait for the right moment, and his anger has often spoiled his own plans.\nHis ideal is to wash away the disgrace on the Ashqar house and make his father's name respected in the army again. His darkest fear is that a rage for revenge will drag himself and his family into the abyss, leaving him unable even to protect his brother and mother.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Wash away the disgrace on the Ashqar house, so his father's name is respected in the army rather than remembered as a rebel's, and this weighs on him most.",
+    "Build a reputation among the cavalry that wins the young riders of his father's old following to charge beside him, not merely watch from the side.",
+    "Find those who ruined his father and make them pay, so the family can take back what it lost and the old debt finds a clear settlement."
+  ],
+  "Values": [
+    "Strength is the only dependable thing, since favour and promises can vanish overnight, so each man must grip his own hilt and not rely on charity.",
+    "A debt must be repaid, and no matter how much time has passed, old feuds should be settled with a clear end rather than left vague, which is his firm line.",
+    "A knight should meet the enemy face to face, and a man who schemes from the shadows earns no respect even when he wins, so he would rather lose openly."
+  ],
+  "Fears": [
+    "Fears that his rage for revenge will burn too hot and drag himself and his family into the abyss with nothing reclaimed, leaving only ruin and lasting regret.",
+    "Fears that his brother and mother will suffer for his impulsive acts, and that the last of their protection will fall away, leaving them without support."
+  ],
+  "SpeechStyle": "Speaks bluntly and quickly, in short bursts of feeling. His voice rises when he names those who wronged his father. With his brother he is stubborn, and a youthful attachment to his mother slips out.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

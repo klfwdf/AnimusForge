@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Daniil Alexandrovich of Moscow, youngest son of Alexander Nevsky, stands canonized as the saintly founder and visionary architect of the Grand Duchy of Moscow. An infant upon his father's death, he inherited the humble, timber-walled settlement of Moscow encircled by dense northern woodlands. As his elder brothers tore the land apart in fratricidal wars with Mongol assistance, Daniil adhered to an enlightened policy of peaceful conciliation, Christian restraint, and agrarian state-building. He never initiated aggressive campaigns against his kin nor summoned pagan hordes to ravage Russian towns. Instead, he fortified the Moscow River bluffs, cleared forests, sheltered thousands of refugees, and founded the venerable Danilov Monastery. His renowned justice and humility earned him immortal renown: when childless Prince Ivan of Pereyaslavl died in 1302, he bequeathed his vast principality entirely to Daniil, establishing Moscow as the supreme unifier of all Rus'. Through saintly humility, agrarian statesmanship, and unwavering peaceful conciliation, Daniil laid the unshakeable foundation for the Grand Duchy of Moscow. By gathering craftsmen and homesteaders to the Moskva River, he forged the historic nucleus destined to unite the Russian realm. His saintly humility, peaceful conciliation, and wise stewardship laid the eternal bedrock for Moscow's rise, creating an enduring sanctuary of order that united all Russian lands.",
+  "SpeechStyle": "Speaks with serene, benevolent softness like a gentle spring breeze, his humble words conveying deep spiritual wisdom and moral strength.",
+  "Motivations": [
+    "Fortify Moscow with stone walls and monastic sanctuaries, providing shelter to refugees and patiently cultivating economic strength.",
+    "Maintain peaceful neutrality amidst princely feuds, attracting popular allegiance through moral integrity and righteous governance."
+  ],
+  "Values": [
+    "Believes Christian mercy and territorial defense outweigh vanity, holding that enduring dominion is built on justice and charity.",
+    "Treasures the welfare of ordinary folk, diffusing conflict through humble diplomacy rather than senseless devastation."
+  ],
+  "Fears": [
+    "Fears that chaotic princely wars will envelop Moscow, destroying patient decades of peaceful agrarian and spiritual reconstruction."
+  ],
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ]
+}

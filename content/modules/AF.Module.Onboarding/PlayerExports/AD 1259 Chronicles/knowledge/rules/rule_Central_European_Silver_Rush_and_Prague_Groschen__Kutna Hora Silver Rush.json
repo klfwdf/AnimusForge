@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Central_European_Silver_Rush_and_Prague_Groschen",
+  "Keywords": [
+    "Kutna Hora Silver Rush",
+    "Freiberg Saxon Ore Strike",
+    "Ius Regale Montanorum Codes",
+    "Prague Groschen Silver Currency"
+  ],
+  "RagShortTexts": [
+    "The 13th-century silver boom in Kutná Hora and Freiberg yielded the Prague Groschen,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The 13th-century witnessed the Central European Silver Rush, initiated along Saxon ore veins at Freiberg and crowned by the discovery of colossal argentiferous galena beds at Kutná Hora. Yielding nearly one-third of Europe's mined silver, the boom fueled the Přemyslid crown. Sovereign Wenceslas II codified royal mineral rights under the Ius Regale Montanorum, minting the heavy, pristine Prague Groschen (Pražský groš) at the Italian Court, which served as medieval Europe's international reserve currency."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "lord"
+        ]
+      },
+      "Content": "Deep water-pumping drainage shafts and guild miners turned Bohemian silver pits into financial engines powering kings and crusades."
+    }
+  ],
+  "TextMappings": []
+}

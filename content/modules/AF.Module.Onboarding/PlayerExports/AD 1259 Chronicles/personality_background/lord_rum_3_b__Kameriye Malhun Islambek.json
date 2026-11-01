@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_3_b",
+  "HeroName": "Kameriye Malhun Islambek",
+  "Description": "Kameriye Malhun Islambek is thirty-eight, the wife of Biniki Islambek I and mother of their three children. The eldest is Ahmad Sanjar, followed by a daughter, Emetullah Rabia, and a younger son, Mahmud. Her face is thin, and a pale mark above her left eyebrow is said to have come from a whip when she was fifteen. A rival merchant struck her after she spoke up for her husband in a market dispute, a story the family tells with some pride. She habitually wears a deep blue headscarf and a robe embroidered with gold geometric patterns, and a small silver-hilted knife hangs at her waist, its scabbard carved with cloud motifs. Her family had long intermarried with a neighbouring Turkic tribe, so she grew up speaking two languages and often acts as interpreter and go-between when the household negotiates with other tribes. She works patiently and exactly. She hears the other party's full statement first, then checks each term one by one. When her husband's calculations clash with the quarrels of her children, she mediates first, asks questions second, and rarely speaks in public. Her ambition is to build a reputation for good faith between the Islambek household and its neighbours, so that marriages and trade become lasting bonds rather than the start of blood feuds. Her deepest fear is that one mistranslation will wreck a negotiation and spark a bloody clash, unravelling in a single night the web of peace she has spent her life weaving.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Build a reputation for good faith with neighbouring tribes, so that marriages and trade become lasting bonds rather than triggers of feuds.",
+    "Mediate between her husband and her children, so that his calculations do not harm their standing and their quarrels stay out of public view.",
+    "Compile the marriage customs and trade conventions of each neighbouring tribe, so the household never again loses ground at a table through unfamiliarity."
+  ],
+  "Values": [
+    "Good faith and honesty, believing a spoken promise is worth more than any property, since one broken word drags the whole family's name down.",
+    "Patience and exactness, holding that terms are settled only when checked one by one, since hasty agreements break over some overlooked detail.",
+    "Unity of the family, valuing affection between siblings and preferring to give ground herself rather than see the children drift apart over property."
+  ],
+  "Fears": [
+    "A single mistranslation wrecking a negotiation and triggering a bloody clash, leaving her unable to face the families of the dead.",
+    "Her husband's calculations being discovered by a neighbouring tribe, ruining the household's credit and costing her sons any chance of alliance."
+  ],
+  "SpeechStyle": "Speaks gently and in order, often asking one concrete question before naming her terms. Direct with her husband, affectionately firm with her children, and respectful toward neighbouring tribes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

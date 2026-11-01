@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_7_3",
+  "HeroName": "Magnus Algotsson",
+  "Description": "Sir Magnus Algotsson was an audacious knight and fiery scion of the Algotssönerna dynasty, renowned throughout western Sweden for his reckless courage and martial pride. In 1259, Magnus stood at the head of a formidable retinue of Westgothic cavalrymen, displaying extraordinary prowess in tournament melees and border skirmishes against southern raiders. Impatient with cautious legalism and resentful of royal centralizing overreach, he fiercely championed the autonomous military prerogatives of the regional nobility. Magnus's passionate nature and disdain for political calculation would later precipitate one of Sweden's most famous scandals—the audacious bridal abduction of Ingrid Svantepolksdotter—defying the explicit decrees of King Magnus Ladulås and plunging his clan into deadly confrontation with the crown. Yet within his own lands, he was revered by hot-blooded knights as a romantic champion of chivalric liberty who dared to risk his life and fortune for love and baronial honor. His martial charisma made him a legendary and turbulent protagonist of high medieval Swedish politics. In the rugged frontier defiles of Västergötland, Sir Magnus maintained secluded cavalry camps, drilling elite strike squadrons in lightning raids that struck terror into regional adversaries. Surrounded by superior royal forces during punitive campaigns, he repeatedly broke through encirclements single-handedly to cover his brothers' retreat, inspiring stirring sagas of knightly bravado. Living strictly by the edge of his blade and his sacred chivalric oaths, he left an indelible mark upon the martial chronicles of northern Europe.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with fiery chivalric passion and defiant boldness, scorning cautious diplomacy in favor of direct knightly action and passionate defiance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

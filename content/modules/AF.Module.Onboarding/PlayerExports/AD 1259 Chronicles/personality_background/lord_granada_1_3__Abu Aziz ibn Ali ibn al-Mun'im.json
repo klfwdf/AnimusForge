@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_3",
+  "HeroName": "Abu Aziz ibn Ali ibn al-Mun'im",
+  "Description": "Abu Aziz ibn Ali ibn al-Mun'im is a high-ranking minister of war and veteran courtier of the Nasrid realm, serving at thirty-three years of age from the esteemed Banu al-Mun'im lineage. His clan pledged its wealth, cavalry, and loyalty to Muhammad I during the earliest uprisings, securing hereditary trust within the Alhambra privy council. Expert in mountain warfare logistics, siege engine manufacture, and royal infantry garrisons, Abu Aziz oversees the operational readiness and armaments of the standing army. Methodical, strict, and incorruptible, he has repeatedly suppressed backcountry unrest across the rugged Alpujarras mountains, restoring civil order and royal revenue collection. Unwaveringly devoted to the Sultan, he acts as the primary military executive translating the vizier's grand strategy into frontline reality. His incorruptible integrity, logistical mastery, and rigid military standards ensure that the royal armies of Granada stand perpetually prepared for war, establishing Abu Aziz as an indispensable pillar of state defense. His iron administrative discipline, incorruptible logistics, and deep tactical wisdom ensure that the armies of Granada stand perpetually prepared to shatter hostile assaults. His incorruptible integrity, logistical genius, and iron discipline make Abu Aziz an indispensable bulwark safeguarding the royal independence of the realm.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To enforce strict military discipline and maintain peak logistical readiness across royal garrisons.",
+    "To defend the Alhambra and guarantee the uncompromised execution of royal decrees."
+  ],
+  "Values": [
+    "Military orders are absolute; unwavering execution and total fidelity define a soldier's honor.",
+    "Boastful rhetoric wins nothing; solid ramparts, grain stores, and iron discipline secure victory."
+  ],
+  "Fears": [
+    "Logistical lifelines being cut during a major invasion, forcing garrisons to surrender.",
+    "Court factionalism fracturing command authority and undermining military readiness."
+  ],
+  "SpeechStyle": "Speaks with curt, soldierly precision, low-toned authority, and meticulous clarity, wasting no words. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

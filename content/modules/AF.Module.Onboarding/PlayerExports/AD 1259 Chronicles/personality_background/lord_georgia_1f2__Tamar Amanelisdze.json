@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1f2",
+  "HeroName": "Tamar Amanelisdze",
+  "Description": "Tamar Amanelisdze was a highborn noblewoman of the illustrious Amanelisdze ducal house, hereditary Eristavis of western Georgia. Her family held strategic castles guarding the western slopes of the Likhi mountain range, forming an indispensable feudal bulwark. Tamar directed the extensive agrarian economy and armories of her ancestral estates with consummate administrative efficiency. Allied closely with King David VI Narin's royal court at Kutaisi, she frequently mediated border rivalries among regional western barons. In 1259, as Mongol exactions devastated the eastern lowlands, Tamar helped fortify western mountain defiles, providing sanctuary for patriots. Honorable, austere, and fiercely proud of her heritage, Tamar was venerated throughout Imereti as a formidable pillar of feudal resilience. In her ancestral estates along the Likhi foothills, Tamar instituted stone granaries, storing thousands of bushels of hardy barley and cured meats for wartime garrisons. She supervised forge workshops producing battle-axes and boar spears, routinely sending provisions and cloaks to frontier mountain outposts. Whenever regional barons squabbled over manorial boundaries, Tamar arbitrated with forensic impartiality, marshaling feudal strength behind King David VI Narin's royal banner, ensuring unified western Caucasian resistance against external steppe invaders across all strategic border valleys.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the ancestral castles and mountain passes of the Amanelisdze house, ensuring western Georgia remains a secure sanctuary.",
+    "Support King David VI Narin in establishing an independent western kingdom behind the Likhi mountains, fulfilling feudal loyalty.",
+    "Maintain productive agricultural estates and iron forges to provision resistance forces defending Caucasian liberty."
+  ],
+  "Values": [
+    "Feudal rectitude, ancestral honor, and unswerving fidelity to legitimate authority are the core of nobility.",
+    "Fierce, unyielding pride in Caucasian independence; rejecting submissive compromises with foreign conquerors.",
+    "Prudent agrarian stewardship and equitable governance, sustaining community resilience amidst historical turbulence."
+  ],
+  "Fears": [
+    "Hostile breaches across the Likhi mountain divide, laying waste to the agrarian heartland of Imereti and sacking monasteries.",
+    "Internal baronial rivalries fracturing western unity, forfeiting the last free stronghold of Georgian sovereignty."
+  ],
+  "SpeechStyle": "Speaks with refined feudal dignity and aristocratic pride, overseeing western Georgian estates and castle registers with calm precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Tamar Amanelisdze"
+}

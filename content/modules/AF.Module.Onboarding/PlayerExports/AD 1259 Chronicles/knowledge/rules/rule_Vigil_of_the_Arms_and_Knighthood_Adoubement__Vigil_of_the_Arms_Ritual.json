@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Vigil_of_the_Arms_and_Knighthood_Adoubement",
+  "Keywords": [
+    "Vigil of the Arms Ritual",
+    "Knighthood Adoubement Accolade",
+    "Golden Spurs Investiture",
+    "Chivalric Oath of Virtues"
+  ],
+  "RagShortTexts": [
+    "The knighting ritual required overnight chapel prayer vigil, ceremonial bath, and the sword."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Elevating a squire to knighthood constitutes a sacral initiation. The candidate takes a ritual purifying bath and keeps a silent overnight vigil of arms before the chapel altar. At dawn mass, priests bless his arming sword, senior sponsors fasten gilded spurs, and the presiding lord delivers the sword accolade onto his shoulder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The accolade is the sole stroke a knight receives without retaliating. Accepting the consecrated blade binds him to defend the Church, protect the defenseless, and uphold heraldic honor above personal profit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gilded-spur lords swear lofty vows before altars, but in the mire of war, iron speaks plainest. Still, an anointed knight surrounded by foes is spared for ransom, while foot levies are ridden down without a second glance."
+    }
+  ],
+  "TextMappings": []
+}

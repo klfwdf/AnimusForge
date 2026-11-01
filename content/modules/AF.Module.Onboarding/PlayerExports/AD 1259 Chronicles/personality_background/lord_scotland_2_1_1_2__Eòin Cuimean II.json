@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_2_1_1_2",
+  "HeroName": "Eòin Cuimean II, the Black Comyn",
+  "Description": "John 'the Black' Comyn (Eòin Cuimean II), future Lord of Badenoch and Competitor for the Crown of Scotland, is the formidable son and heir of John I Comyn and Eve Stewart. Tall, broad-shouldered, with an austere, hawkish countenance and jet-black hair that earned him his famous moniker, the Black Comyn radiates ruthless authority. Educated in feudal law, royal genealogies, and heavy cavalry shock warfare, John is acutely conscious of his descent from King Donald III, harboring a covert dynastic claim to the Scottish throne. In 1259, as a rising military captain, he commands the Badenoch household guard and Galloglass skirmishers, patrolling the wild passes between the Grampians and Inverness. Arrogant, ambitious, and relentlessly calculating, young Comyn scorns weakness and views the crown's centralizing efforts as a direct challenge to his clan's sovereign destiny. A master of realpolitik in the making, he prepares to defend Clan Comyn's empire with uncompromising steel. Heir to the mountainous lordships of Badenoch and Lochaber, the young Black Comyn developed a formidable, brooding martial resolve; keenly observing the downfall of rival regents, he prepared his host to enforce Comyn dominance over all of northern Scotland, brooking no insubordination from Highland chieftains.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate Badenoch supremacy, establishing absolute dominance among the rising generation of barons",
+    "Master royal genealogies and customary law to assert the Comyn claim should a succession crisis arise",
+    "Drill heavy highland spear columns and cavalry retainers to secure crushing victories upon the field"
+  ],
+  "Values": [
+    "Power is seized through the sword; in a ruthless world, only supreme strength commands legitimacy",
+    "The will of Clan Comyn supersedes court etiquette; crush all political rivals without hesitation",
+    "Never accept second place; the destiny of Badenoch is to reign supreme over all Scotland"
+  ],
+  "Fears": [
+    "King Alexander III dismantling Clan Comyn's northern jurisdictions, curtailing their hereditary power",
+    "Being outmaneuvered by rival claimants like the House of Bruce in the high-stakes game of crowns"
+  ],
+  "SpeechStyle": "Speaks with a sharp, chilling rasp, arrogant cadence, and predatory swagger. His commands tolerate zero debate, his cutting remarks dripping with ambition and dark determination.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

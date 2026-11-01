@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Flagellant_Movement_of_1260_and_Apocalypse_Panic",
+  "Keywords": [
+    "Flagellant Penitent Movement of 1260",
+    "Joachim of Fiore Apocalypse Year 1260",
+    "Knotted Scourge Self Mortification",
+    "Laude Hymn Marches and Anti Corruption"
+  ],
+  "RagShortTexts": [
+    "Apocalyptic fear in 1260 sparked mass Flagellant marches across Italy, scourging flesh to."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Anticipating the apocalyptic third age prophesied by Joachim of Fiore for the year 1260, mass hysteria erupted across northern Italy. Sparked by hermit Raniero Fasani of Perugia, the Flagellant movement mobilized tens of thousands. Penitents stripped to the waist, marching under black banners while flogging their backs with iron-tipped leather scourges (disciplines)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "Initial enthusiasm reconciled long-standing vendettas, yet as wandering flagellant processions denounced ecclesiastical corruption and usurped priestly absolution, authorities moved to outlaw unauthorized assemblies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Dusty miles of barefoot penitents chant mournful laude hymns. The sickening thud of leather knotted with steel tearing into bare backs terrifies onlookers into falling on their knees."
+    }
+  ],
+  "TextMappings": []
+}

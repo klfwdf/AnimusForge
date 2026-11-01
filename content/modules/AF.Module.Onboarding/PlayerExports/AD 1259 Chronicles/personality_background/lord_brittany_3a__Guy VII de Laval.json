@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_3a",
+  "HeroName": "Guy VII de Laval, Baron of Vitré and Sire of Laval",
+  "Description": "Guy VII de Laval is the renowned Sire of Laval and Baron of Vitré jure uxoris, governing the paramount eastern gateway to Brittany. Thirty-nine years of age, he unites the strategic command of the massive stone fortresses of Vitré and Laval with the celebrated glory of a grand crusader. An intimate companion in arms to King Louis IX during the Seventh Crusade (1248–1254), Guy distinguished himself at the Battle of Al Mansurah and the defense of Damietta, enduring captivity alongside his saintly monarch with unbending chivalric fortitude. Chronicler Jean de Joinville lauds his formidable battlefield prowess throughout his Life of Saint Louis. Strictly disciplining his elite garrison companies along the royal highway to Rennes, Guy commands immense deference in both Paris and Brittany as an incorruptible military titan and premier pillar of feudal chivalry. Following his return from Egypt, Guy VII endowed a permanent infirmary for wounded crusaders in Vitré and reformed militia muster rolls. His iron discipline and unimpeachable chivalric honor made him a natural arbiter during delicate border disputes between Brittany and the French crown. His profound devotion to holy vows and masterly fortification works have transformed Vitré into an impenetrable sanctuary of righteous chivalry and regional peace.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify Vitré and Laval into an unbreachable bastion protecting the eastern Breton marches.",
+    "Serve the Capetian crown with immaculate chivalric integrity, upholding his crusader vows."
+  ],
+  "Values": [
+    "Cherishing the sacred crusader vows sworn alongside Saint Louis in the Levant.",
+    "Guarding the people of Laval and Vitré with uncompromising justice and martial vigilance."
+  ],
+  "Fears": [
+    "March vassals rekindling destructive feuds that shatter the fragile stability of the borderlands.",
+    "Leaving behind youthful heirs incapable of suppressing predatory neighbors coveting Vitré."
+  ],
+  "SpeechStyle": "Speaks with commanding, metallic martial resonance, his words forged in the fires of crusade warfare, authoritative, decisive, and radiating unshakeable chivalric majesty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

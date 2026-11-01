@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_1_2",
+  "HeroName": "Arghun",
+  "Description": "Arghun (born around 1258, died 10 March 1291) was the son of Abaqa and the fourth ruler of the Ilkhanate, reigning from 1284 to 1291. Like his father he was a Buddhist, yet he was friendly toward Christians, which made his court stand apart in Iran. The sources record nothing about his appearance, scars or weapons, so his persona rests on his political career. In 1284 his chief minister Buqa carried out a coup that overthrew his uncle Tekuder and raised Arghun to the throne. In the early years Arghun relied heavily on Buqa, but the two men fell out over the distribution of power. Buqa was executed in January 1289, and Arghun turned to new advisers. He sought an alliance with the Christian West against the Mamluks, sending the monk Rabban Sauma to European courts in 1287. His most serious problems came from within the royal family, where rivalries among the princes and pressure from the Chagatai realm kept him from focusing on foreign war. His ambition was to restore the authority of the Ilkhanate and regain the initiative against Egypt. His fear was betrayal, and as his reign went on he grew more suspicious of those around him. He died in 1291 after roughly seven years on the throne.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Restore the authority of the Ilkhanate across Iran and western Asia, so that princes and regional powers no longer dare to challenge royal power and the throne keeps its standing.",
+    "Form an alliance with the Christian West to attack the Mamluks from two sides, and regain the initiative in the war against Egypt instead of fighting on two fronts.",
+    "Choose reliable advisers for finance and the army after Buqa, so that power does not again fall into the hands of a single faction and orders are carried out."
+  ],
+  "Values": [
+    "Loyalty and good faith are the basis of ties between ruler and servant, and once broken oaths are made, royal power struggles to stay steady.",
+    "Religious tolerance helps calm a multi-ethnic population, so he respects the faith of Christian clergy and Buddhist monks alike.",
+    "Measure in the use of power, believing that leaning too heavily on one favourite leaves a ruler without real control of government."
+  ],
+  "Fears": [
+    "A joint move by his brothers and the Chagatai and Qaidu lines, plunging the Ilkhanate into war on its eastern and western fronts at once.",
+    "A powerful minister like Buqa gathering too much authority, so that a shift of loyalty could topple him the way Tekuder was overthrown."
+  ],
+  "SpeechStyle": "Measured and dignified, he speaks respectfully of his father Abaqa. With close advisers he tests their thoughts with indirect questions, and he makes no firm promises to envoys.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

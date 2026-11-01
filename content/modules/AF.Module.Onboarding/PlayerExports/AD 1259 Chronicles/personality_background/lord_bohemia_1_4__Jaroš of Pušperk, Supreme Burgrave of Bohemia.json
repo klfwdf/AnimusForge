@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_4",
+  "HeroName": "Jaroš of Pušperk, Supreme Burgrave of Bohemia",
+  "Description": "Jaroš of Pušperk wields supreme authority as the Supreme Burgrave of Bohemia (nejvyšší purkrabí), governing Prague Castle as the chief royal judicial magistrate and most trusted lieutenant of King Přemysl Otakar II. He personally surveyed and erected the formidable stone castle of Pušperk, projecting royal military deterrence across southwestern Bohemia against defiant barons. Presiding over the High Land Court with austere, incorruptible impartiality, Jaroš enforced royal decrees without compromise, curbing the sprawling autonomous privileges of the Vítkovci magnates with unyielding determination. While the King campaigned to annex Austria and Styria, Jaroš held supreme domestic command in Prague, maintaining vassal loyalty, mobilizing reinforcements, and securing the crown treasury as the immovable 'Iron Sentinel of the Bohemian Throne'. Presiding over the High Land Court in Prague with austere severity, Jaroš confiscated the baronies of rebellious lords who defied royal edicts, turning their forfeited manors into crown demesne. Stationing archers and siege batteries at Pušperk Castle in perpetual readiness against insurrection, the Supreme Burgrave established an unshakeable institutional foundation for centralized royal governance across Bohemia. His incorruptible justice and iron discipline guarded the domestic stability of the Bohemian Crown, keeping royal authority paramount throughout every corner of the kingdom.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Suppress regional magnate revolts, establishing the Supreme Land Court's jurisdiction across all Bohemian keeps.",
+    "Keep Prague's defenses impregnable and coordinate nationwide military levies and revenues during royal campaigns."
+  ],
+  "Values": [
+    "Regards the rule of law and centralized royal authority as the sole path to national greatness.",
+    "Considers absolute fidelity to the Přemyslid crown as his life's highest duty, despising factional bias."
+  ],
+  "Fears": [
+    "Fears the southern Vítkovci (Rosenberg) magnates colluding with foreign enemies in a treacherous rebellion.",
+    "Worries the King's prolonged absence will unravel domestic legal authority, eroding central power."
+  ],
+  "SpeechStyle": "The law is the sharp edge of the King's sceptre, and the citadel is our realm's bedrock; beneath Prague's towers, no noble stands above the crown! In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jaroš of Pušperk, Supreme Burgrave of Bohemia"
+}

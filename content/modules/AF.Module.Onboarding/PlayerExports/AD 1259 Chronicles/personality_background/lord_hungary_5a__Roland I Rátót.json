@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5a",
+  "HeroName": "Roland I Rátót",
+  "Description": "Roland I Rátót is a venerated patriarch of the illustrious Rátót clan, descended from Norman knightly brothers Oliver and Rathold of Caserta who entered Hungary in the late eleventh century. Controlling vast ancestral domains across Nógrád, Heves, and the Pásztó valley, Roland served King Béla IV with unwavering devotion throughout decades of existential crisis. Following the Mongol devastation of 1241, he expended clan fortunes to construct stone keeps and refuge ramparts throughout northern highlands, sheltering thousands of displaced subjects. Mastering both customary Hungarian law and royal chancellery statutes, Roland commanded immense authority during royal diets, frequently arbitrating bitter disputes among rival baronial dynasties. In 1259, as dynastic civil discord looms between father and son and Bohemian legions mass along the western border, Roland mobilizes clan regiments from Pásztó, standing as an unshakeable guardian of royal stability. Roland established permanent judicial chanceries across the mountain defiles of Nógrád, personally hearing petitions from lesser gentry and correcting arbitrary baronial seizures. Through skillful constitutional diplomacy, he harmonized relations between Buda's royal court and regional county assemblies. His unyielding commitment to statutory justice provided rock-solid stability across northern Hungary throughout seasons of war, preserving constitutional stability.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve Clan Rátót's extensive landed patrimony in Nógrád, honoring the chivalric heritage of his Norman ancestors.",
+    "Uphold central royal authority amidst factional strife, shielding the kingdom from dissolution."
+  ],
+  "Values": [
+    "Hold royal allegiance, clan unity, and knightly honor as sacred oaths, scorning treasonous opportunism.",
+    "Value dignified governance and strict legality, convinced discipline sustains the state."
+  ],
+  "Fears": [
+    "Fears royal civil war plunging Hungary into fratricidal ruin, undoing decades of reconstruction.",
+    "Dreads predatory oligarchs allying with foreign powers to usurp ancient clan domains."
+  ],
+  "SpeechStyle": "The Norman blood of Caserta never fades, and the fortresses of Rátót stand unbreakable! So long as Saint Stephen's crown endures, no traitor shall shake this realm! Clan Rátót defends the sacred justice of Saint Stephen's crown!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

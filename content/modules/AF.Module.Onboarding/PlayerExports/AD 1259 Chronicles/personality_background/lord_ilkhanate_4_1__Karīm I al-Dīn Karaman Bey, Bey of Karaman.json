@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1",
+  "HeroName": "Karīm I al-Dīn Karaman Bey, Bey of Karaman",
+  "Description": "Karīm I al-Dīn is the founder figure of the Karamanid beylik of south-central Anatolia, and at fifty-six he is in his prime. Sources record that after his father handed him effective power, he captured the old city of Laranda around 1256 and renamed it Karaman after himself. No source describes his appearance. This game profile imagines a heavy-set, grey-bearded veteran of the steppe frontier who keeps a curved sabre at his belt. As a young man he lived between the Seljuk sultanate and the Mongol commanders, and he watched the Mongol general Baiju defeat the Seljuk prince Kaykaus II in 1256. That taught him that a lesser lord survives only by choosing a patron. Against his enemies he played both sides. He fought King Hethum of Lesser Armenia and beat back several attacks, while he also relied on the minister Mu'in al-Din Parwana, who granted him Larende and Ermenek. He gave the captured castles to trusted commanders and bound local followers to his household by personal ties, never letting power pass into outside hands. His ambition is to make Karaman a lasting dynasty, one that can be handed down through generations. His deepest fear is that a single decisive defeat will erase everything his family has built and remove the Karamanid name from the historical record.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold Larende and Ermenek as his own domains, so that Karaman rule no longer depends on temporary Seljuk or Mongol permission.",
+    "Use Parwana's influence to win more castles and tax revenue at the Konya court, weakening his rivals one holding at a time.",
+    "Place the key fortresses in the hands of his sons, so that the lordship stays within his own bloodline and never passes to a cadet branch."
+  ],
+  "Values": [
+    "Respect the seniority of elders, and treat the unity of the kin group as worth more than any individual honour, always asking what a decision means for the family's future.",
+    "Judge land, horses, and men by what they actually yield, and trust oaths only after they have been tested over time.",
+    "Keep courteous public relations with neighbours while holding in reserve the right to strike back by force, never showing an enemy the true limit of his patience."
+  ],
+  "Fears": [
+    "A single decisive defeat that takes his brothers captive, loses his cities, and erases the Karamanid name from the record.",
+    "Being squeezed between Konya's ministers and King Hethum until no escape route remains open to his family."
+  ],
+  "SpeechStyle": "Measured and deliberate. He opens with lineage and old oaths, speaks about land and alliances with cold precision, and gives orders to his captains without repeating himself.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

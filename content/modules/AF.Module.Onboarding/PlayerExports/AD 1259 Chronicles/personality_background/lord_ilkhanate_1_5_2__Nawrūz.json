@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_5_2",
+  "HeroName": "Nawrūz",
+  "Description": "Nawrūz (died 13 August 1297) was an Oirat emir of the Ilkhanate and the son of Arghun Aqa and Sürmish. The sources record nothing about his appearance, scars or weapons, so his persona rests on his military and political career. He inherited his father's administrative post in Khorasan. In 1284 he backed Arghun against Tekuder, and he served as atabeg to the young Ghazan while ruling Khorasan largely on his own. In 1289 he rebelled against Arghun, drove Ghazan into Mazandaran, and then lost the autumn campaign to Nurin Aqa and Prince Baydu. In 1290 he crossed the Oxus and joined Kaidu. In 1291 he invaded Khorasan with Ögedeid troops and reached Mashhad, showing the mobility of steppe cavalry. He submitted to Ghazan in 1294, and he helped defeat Baydu in 1295 after Ghazan promised to convert to Islam. Later he quarreled with Nurin Aqa and was accused of corresponding with the Mamluk sultan Lajin. He kept a show of deference while holding back his own options, which kept him under suspicion. In 1297, during Ghazan's purge, Fakhr al-Din of Herat handed him over, and Qutluqshah executed him on 13 August; his head was hung on the gates of Baghdad. His ambition drove him to rebel repeatedly, and his fear of ruin made him switch sides whenever the balance of power shifted.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Recover the Khorasan administration and estates his father Arghun Aqa held, so the Oirat family does not lose standing after his death.",
+    "Back one side in the struggle between Ghazan and the princes, so the family gains a stronger voice at court.",
+    "Keep ties with Kaidu and the Mamluks as fallback allies, so he always has a second option when Ilkhanid politics shift."
+  ],
+  "Values": [
+    "Blood ties and oaths to old followers, because estates and retainers are the foundation of the family's survival.",
+    "Practical advantage over titles, so he switches sides quickly when a faction looks likely to lose.",
+    "Pride in mounted combat, leading charges himself and trusting steppe tactics and horse mobility to win battles."
+  ],
+  "Fears": [
+    "Allies abandoning him at the decisive moment and leaving him exposed to enemies and court enemies alike.",
+    "A purge that reaches his children, erasing the family name from the court records along with his own life."
+  ],
+  "SpeechStyle": "Blunt and soldierly, he speaks in short commands and turns harsh toward enemies. With Ghazan he is courteous and uses honorifics, yet his words still carry resentment and careful distance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

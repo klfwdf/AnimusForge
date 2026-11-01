@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_3_3",
+  "HeroName": "Luchetto Grimaldi",
+  "Description": "Luchetto Grimaldi shines as a brilliant young captain and courtly troubadour of House Grimaldi, destined to serve as Podestà in multiple Italian communes. Valiant in naval skirmishes against Pisan privateers, he composes celebrated Occitan verses celebrating chivalric honor, embodying the highest Renaissance virtues of arms and letters. Luchetto displayed dazzling courage off Savona, boarding and sinking hostile corsairs before composing triumphant Occitan verses directly upon the wave-swept deck, sung across harbors by admiring crews. Celebrated across northern Italian courts for eloquence and courtly charm, he represented Genoa in youth embassies to Bologna, winning international prestige for House Grimaldi through poetic diplomacy. Blending romantic idealism with martial valor, this brilliant young knight pledged blade and lute to defend civic liberty against tyranny, embodying the finest chivalric virtues of his age. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Immortalize the glory of House Grimaldi through martial deeds and celebrated poetry.",
+    "Defend the freedom of the Ligurian coast against tyrannical Ghibelline dominion."
+  ],
+  "Values": [
+    "Chivalric honor is the sacred soul of life, far outshining gold or estates.",
+    "The sword and the lute must unite to strike down tyranny and deceit."
+  ],
+  "Fears": [
+    "Suffering dishonorable capture or defeat at sea that stains his knightly renown.",
+    "Witnessing poetic ideals suffocated beneath the cynical barbarism of partisan feuds."
+  ],
+  "SpeechStyle": "Speaks with lyrical elegance and knightly chivalry, articulate and impassioned. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

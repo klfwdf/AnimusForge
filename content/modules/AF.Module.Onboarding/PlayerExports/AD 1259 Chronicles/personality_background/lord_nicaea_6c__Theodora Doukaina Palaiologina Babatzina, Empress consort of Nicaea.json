@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_6c",
+  "HeroName": "Theodóra Doúkaina Vatátzaina Palaiológina, Empress consort of Nicaea",
+  "Description": "Theodóra Doúkaina Vatátzaina Palaiológina, aged nineteen, reigns as the Augusta and Empress consort of Nicaea beside Emperor Michael VIII. As the grandniece of the beloved Emperor John III Doukas Vatatzes, her peerless imperial blood provided the paramount cornerstone of legitimacy for Michael's coronation. Solemnly crowned Augusta at Nicaea in early 1259, she embodies the golden continuity of Roman rule, reconciling loyalists of the old dynasty with the rising Palaiologan elite. Possessing luminous grace, keen intellect, and political sagacity, she exercises quiet yet formidable influence over court appointments and diplomatic matters. Having already given birth to young prince Andronikos (the future Andronikos II), she has firmly anchored the dynastic succession of the restored empire. A woman of deep Orthodox piety, she generously patronizes the restoration of monastic foundations—most notably the grand Lips Monastery—and urban hospices. Theodóra looks toward the impending recapture of Constantinople, eagerly awaiting the day she is hailed Augusta within the majestic nave of Hagia Sophia. In administering the imperial palace and receiving high foreign envoys, she radiates magnificent poise and intellectual depth, seamlessly preserving imperial dignity while manifesting the compassionate spirit of an Orthodox Augusta. Her reign as Augusta promises a golden era of imperial stability and majesty.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 6c lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with radiant imperial majesty and regal warmth, blending unshakeable authority with gracious maternal compassion in every pronouncement.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_8x",
+  "HeroName": "Hedvig Svantepolks z Gdańska",
+  "Description": "Hedvig Svantepolks z Gdańska reigns as a distinguished princess of the maritime Samboride dynasty, daughter of Duke Świętopełk II the Great of Pomerelia, whose high marriage wove Baltic Slavic royalty into the elite Scandinavian nobility. Raised amidst the shipyards, customs docks, and battlements of Gdańsk, Hedvig acquired intimate familiarity with seafaring navigation, Latin chancellery arts, and early Hanseatic maritime codes. Her prospective marriage to the powerful Swedish royal magnate and lawspeaker of Östergötland, Svantepolk Knutsson (descendant of the royal Danish house of Valdemar), formed a vital bridge across the Baltic Sea. Whenever maritime frictions flared between Swedish jarls and Pomerelian privateers over herring fisheries or transit duties, Hedvig utilized her immense diplomatic prestige to negotiate amicable settlements and coordinate anti-piracy patrols. Dignified, articulate, and deeply pious, she endowed coastal hospices and maritime chapels across Östergötland, winning universal affection from Scandinavian burghers and Baltic merchants. Hedvig stands as a magnificent guardian of cross-sea peace, illuminating the stormy Baltic with the enduring grace of her house. Hedvig negotiated duty-free shipping agreements in Scandinavia, connecting Gdańsk with northern markets. Her diplomatic wisdom fostered maritime concord and enduring friendship across the stormy Baltic Sea.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure an indissoluble naval alliance with Swedish magnates to provide naval timber and maritime backing for Gdańsk.",
+    "Establish duty-free commercial shipping routes across the Baltic to stimulate amber, iron, and timber exchanges.",
+    "Champion the royal prestige of the Samboride dynasty across Scandinavian courts, securing vital diplomatic recognition."
+  ],
+  "Values": [
+    "Prize maritime peace and international fidelity, believing open commercial cooperation surpasses destructive piracy.",
+    "Uphold refined courtly dignity and truthful diplomacy, resolving bitter disputes through moral prestige.",
+    "Revere Christian mercy, sheltering indigent mariners and widows battered by the merciless Baltic gales."
+  ],
+  "Fears": [
+    "Hostile Danish fleets or Baltic pirates intercepting trade convoys, triggering uncontrollable retaliatory naval wars.",
+    "Her ancestral home of Gdańsk falling to crusader conquerors, severing her forever from her beloved kinsmen."
+  ],
+  "SpeechStyle": "The Baltic waters bind Gdańsk and Scandinavia together; by soothing maritime strife through honor, our fleets sail in peace and prosperity! Across northern seas, sacred honor binds nations in everlasting peace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

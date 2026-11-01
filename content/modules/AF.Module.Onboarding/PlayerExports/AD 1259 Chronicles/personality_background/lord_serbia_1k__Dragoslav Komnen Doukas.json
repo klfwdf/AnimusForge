@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1k",
+  "HeroName": "Dragoslav Komnen Doukas",
+  "Description": "Dragoslav Komnen Doukas, aged forty in 1259, is a distinguished diplomat and military noble carrying the dual bloodlines of the Byzantine Doukai and the Serbian Nemanjić house. Serving as King Uroš I's trusted plenipotentiary, he has undertaken delicate missions to Epirus, Thessalonica, and the Republic of Ragusa. Fluent in Greek, Old Slavonic, and diplomatic Latin, Dragoslav blends Byzantine geopolitical sophistication with the martial readiness of a Raškan feudal commander. In 1259, as empires collide at the Battle of Pelagonia, Dragoslav shuttles between frontier garrisons and the royal court, providing acute intelligence on the maneuvers of Michael II of Epirus and Manfred of Sicily, counseling strategic patience to secure maximum gain for Serbia. Dragoslav maintains extensive networks of merchants and couriers across the strategic ports of the southern Adriatic coast. In treaty negotiations with foreign legates, his rigorous legal acumen consistently secures maximum commercial and territorial advantages for Serbia. Riding tirelessly between mountain fortresses, this accomplished diplomat-warrior shields the royal crown with seasoned statecraft. Mastering the delicate balance of diplomatic statecraft and feudal defense, Dragoslav protects Serbia's vital communication lines. His strategic foresight and persuasive rhetoric outmaneuver foreign envoys, securing prosperity and peace for the realm.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with seasoned diplomatic eloquence and crisp strategic clarity, persuasive and analytical in state negotiations.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Great_Novgorod_Kremlin_and_Veche_Bell_Republic",
+  "Keywords": [
+    "Novgorod Kremlin Detinets",
+    "Veche Bell Civic Democracy",
+    "St Sophia Cathedral Domes",
+    "Volkhov River Baltic Trade"
+  ],
+  "RagShortTexts": [
+    "Great Novgorod preserved republican independence along the Volkhov, governed by the."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Straddling the Volkhov River, Great Novgorod flourished as an autonomous merchant republic in northern Rus. Its Detinets kremlin and St. Sophia Cathedral overlooked bustling trading wharves. Governed by the ringing of the civic Veche bell, free burghers elected magistrates (Posadniks) and hired princes like Alexander Nevsky, paying tribute to spare their city from Mongol flames."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Here, princes serve under contract as military commanders; should a prince violate city liberties, the Veche bell summons citizens to expel him. Yet against Teutonic crusaders, Nevsky's military genius proves irreplaceable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Inscribed birchbark letters serve as everyday correspondence for commoners. From commercial debt ledgers to domestic domestic notes, widespread literacy distinguishes Novgorod from Western serfdoms."
+    }
+  ],
+  "TextMappings": []
+}

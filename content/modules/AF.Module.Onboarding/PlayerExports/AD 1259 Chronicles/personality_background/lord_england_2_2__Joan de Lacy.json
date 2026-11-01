@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_2_2",
+  "HeroName": "Joan de Lacy",
+  "Description": "Joan de Lacy is a respected noble kinswoman of the House of Lacy, sister to Countess Maud de Lacy and trusted confidante within the Clare family circle. Possessing gentle, dignified features, warm grey eyes, and serene composure, Joan embodies the quiet moral strength of the Anglo-Norman baronial aristocracy. For years, she served as an indispensable familial bridge connecting the vast northern estates of Lincoln with the southern castles of Tonbridge and Gloucester. In 1259, deeply dismayed by the ideological polarization tearing the realm into royalist and Montfortian factions, Joan resides primarily upon her rural manors in Essex and Kent. She manages local monastic endowments, audits agricultural rents, and coordinates extensive charitable distributions of grain and firewood to impoverished tenants. Disdaining martial ambition, Joan dedicates herself to mediating domestic grievances and nurturing the younger generation of Clare children. Her unfailing compassion, mature counsel, and quiet piety render her a beloved matriarchal anchor amidst the raging storms of the Barons' War. She meets regularly with rural vicars to distribute alms, personally dispensing loaves and rough woolen cloaks to destitute refugees fleeing baronial feuds. Joan's mature wisdom resolves bitter squabbles among younger kin, providing an enduring refuge of Christian charity within a kingdom sliding into strife.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Mediate familial disputes, preserving unbroken solidarity between the Houses of Lacy and Clare",
+    "Oversee rural agricultural estates, providing food relief and sanctuary to tenants caught in feudal strife",
+    "Endow local priories and almshouses, seeking through prayer and charity to avert the horrors of civil war"
+  ],
+  "Values": [
+    "Temporal power is fleeting as morning mist; only compassion for the poor and domestic harmony endure",
+    "Patience and gentle forbearance quench wrath; vengeful violence merely breeds endless sorrow",
+    "Fulfill humble stewardship and Christian charity, guarding a righteous conscience amidst world madness"
+  ],
+  "Fears": [
+    "Beloved kinsmen slaughtering one another across civil war battlefields in senseless pride",
+    "Rampant military foraging causing agricultural collapse, plunging rural England into famine"
+  ],
+  "SpeechStyle": "Speaks with gentle, soothing warmth and calm maternal cadence. She listens with genuine empathy, her words patient and unhurried, offering wise, unassuming counsel that diffuses heated tempers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

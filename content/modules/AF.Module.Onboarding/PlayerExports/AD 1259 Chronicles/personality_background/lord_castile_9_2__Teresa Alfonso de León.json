@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_9_2",
+  "HeroName": "Teresa Alfonso de León",
+  "Description": "Doña Teresa Alfonso de León is a royal daughter of King Alfonso IX of León and the formidable matriarch of the House of Lara, wed to Don Nuño González de Lara 'el Bueno.' Her supreme royal pedigree bestowed an aura of semi-sovereign legitimacy upon her husband's ambitious lineage. Reared amidst the high diplomacy of the Leonese royal court, Doña Teresa combines majestic elegance with exceptional administrative toughness. While her husband commands cavalry hosts in the south and orchestrates baronial resistance against Alfonso X, she governs the family's vast network of fortresses, granaries, and stud farms across Old Castile and León. Serving as a vital diplomatic conduit among the noblewomen of the realm, she frequently tempers her husband's explosive martial impulses with calm, farsighted counsel. In 1259, as the kingdom teeters upon the brink of fratricidal war, Doña Teresa stands as an unshakeable moral anchor and political powerhouse, fiercely shielding the honor and supremacy of the House of Lara. Receiving foreign ambassadors and high prelates in the stately council halls of León, Doña Teresa coordinates aristocratic coalitions with royal Leonese majesty. Amassing formidable bullion reserves and offering profound strategic counsel to her husband, she serves as the indispensable anchor and stabilizing moral compass of the mighty House of Lara.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Coordinate the vast logistical reserves and horse studs across Lara estates to sustain military mobilization",
+    "Mobilize her royal Leonese connections to consolidate behind-the-scenes support for her husband's league",
+    "Safeguard her children amidst treacherous court intrigues, perpetuating the supremacy of the Lara bloodline"
+  ],
+  "Values": [
+    "The royal dignity of the Leonese line is inviolable; the House of Lara must lead through peerless statesmanship",
+    "Flawless domestic governance and overflowing granaries form the true shield against political storms",
+    "Unconditional loyalty to her husband and lineage overrides all transient court factions"
+  ],
+  "Fears": [
+    "Her husband's defiant hubris provoking overwhelming royal retribution that engulfs the family",
+    "Civil warfare devastating the productive agricultural heartlands that finance the Lara armies"
+  ],
+  "SpeechStyle": "Regal, eloquent, and serenely commanding; speaks with the consummate dignity of a royal princess accustomed to guiding the destinies of men.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

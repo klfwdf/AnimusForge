@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4h",
+  "HeroName": "Sophia",
+  "Description": "Sophia, aged nineteen in 1259, is a high-born maiden of the House of Sanneck, embodying both the courtly sophistication of Styrian nobility and the proud spirit of her mountain homeland. Educated in devotional manuscripts, illuminated psalters, and monastic herbal medicine, Sophia oversees Castle Sanneck's apothecary gardens and textile workshops with gentle diligence. In 1259, as political turmoil swirls around the Babenberg inheritance and cross-border raiding erupts, she observes the high-stakes game of noble matchmaking with perceptive realism. Understanding that her future betrothal will form an essential diplomatic bridge connecting Sanneck with powerful magnates across Styria, Carniola, or Croatia, Sophia prepares herself to be not merely a comital bride, but an influential guardian of her dynasty's honor and welfare. Sophia studies monastic healing arts and Latin psalters within Castle Sanneck, bringing compassionate care to wounded garrison soldiers and impoverished tenants. Familiar with comital lineages across Styria and Carniola, she understands her diplomatic destiny, preparing herself with dignity, grace, and intellectual poise. Amidst feudal power struggles, this gentle noblewoman brings peace and spiritual serenity to the mountain citadel, embodying the virtuous soul of House Sanneck. Her healing herbs and serene prayers comfort the sick and wounded, while her dignified intellect makes her a treasured guardian of her family's honor.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with serene, melodious warmth and dignified intellect, showing quiet resilience when discussing dynastic duties and healing arts.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

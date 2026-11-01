@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Borjigin_Golden_Clan_and_Toluid_Schism",
+  "Keywords": [
+    "Borjigin Golden Clan Lineage",
+    "Toluid Four Khanates Partition",
+    "Khubilai and Ariq Boke Kurultai Rift",
+    "Genghis Khan Yassa Supreme Law"
+  ],
+  "RagShortTexts": [
+    "The Borjigin Golden Clan dominated Eurasia under the Yassa, facing profound schism in 1259."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Borjigin 'Golden Clan' traced direct descent from Genghis Khan, claiming divine mandates from Tengri to rule all nations under the Yassa code. The sudden death of Möngke Khan in 1259 shattered imperial cohesion, triggering the Toluid Civil War between Khubilai in China and Ariq Böke in Karakorum, splitting the Mongol Empire into autonomous realms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Rivalries erupted across frontiers: Berke of the Golden Horde embraced Islam, breaking with Hulagu of the Ilkhanate over the sack of Baghdad and mobilizing armies along the Caucasus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Steppe veterans whisper of omen-laden skies. When princes of the Golden Clan draw bows against one another, their invincible aura dissolves into fratricidal slaughter."
+    }
+  ],
+  "TextMappings": []
+}

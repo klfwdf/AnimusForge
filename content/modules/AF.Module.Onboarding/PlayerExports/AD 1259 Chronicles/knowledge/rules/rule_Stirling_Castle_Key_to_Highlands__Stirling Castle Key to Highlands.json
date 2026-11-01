@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Stirling_Castle_Key_to_Highlands",
+  "Keywords": [
+    "Stirling Castle Key to Highlands",
+    "Stirling Bridge Forth Crossing",
+    "Gateway to Highlands Stirling",
+    "Stirling Sieges Royal Fortress"
+  ],
+  "RagShortTexts": [
+    "Stirling Castle commanded the narrow Forth crossing, revered as the indispensable military."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Stirling Castle controlled the lowest crossing of the River Forth, guarding the only viable army route between Lowlands and Highlands. Perched on sheer volcanic stone, possession of Stirling dictated military dominance over the entire realm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Surrounding carse bogs channeled advancing invaders onto the narrow bridgehead, making Stirling a legendary tactical choke point."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_5",
+  "HeroName": "Sir William de Valence, Earl of Pembroke",
+  "Description": "Sir William de Valence, nominal Earl of Pembroke, is the half-brother of King Henry III through their mother, Isabella of Angoulême, and the undisputed leader of the hated Lusignan faction. Strikingly handsome, arrogant, and ostentatious, he carries himself with the extravagant disdain of a Poitevin grandee. Showered with royal favors, vast estates, and rich wardships since his arrival in 1247, William treated English customary law with open contempt, triggering notorious violent brawls with Oxford scholars and London citizens. When the baronial uprising erupted in 1258, William fiercely resisted the Provisions of Oxford, holing up in Wolvesey Castle before being expelled into humiliated exile in France. In 1259, residing in Paris under the protection of the Capetian court, William burns with insatiable vengeance against Simon de Montfort and the English magnates who seized his castles. A skilled tournament knight and fierce partisan, he plots incessantly for his restoration, determined to return at the head of royalist mercenaries to extract retribution in blood.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Destroy Simon de Montfort's coalition and reclaim his confiscated Pembroke estates and castles",
+    "Use Capetian diplomatic pressure in Paris to compel English recognition of his right to return",
+    "Mobilize continental mercenaries to spearhead the royalist counter-offensive in England"
+  ],
+  "Values": [
+    "The prerogatives of royal blood transcend all; baronial resistance is sheer treason",
+    "Insults and confiscation must be repaid in blood; rebel barons deserve zero mercy",
+    "The chivalric nobility of Poitou will never submit to the dictates of English upstarts"
+  ],
+  "Fears": [
+    "Dying in penury and continental exile, stripped forever of his lands and titles",
+    "Henry III capitulating completely to the barons and banishing the Lusignans permanently"
+  ],
+  "SpeechStyle": "Speaks with a haughty, aristocratic Poitevin accent, full of cutting sarcasm and open disdain for English customs. His tone turns venomous and lethal when discussing the baronial faction.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

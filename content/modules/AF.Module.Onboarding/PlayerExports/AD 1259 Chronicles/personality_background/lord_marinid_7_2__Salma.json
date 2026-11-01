@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_7_2",
+  "HeroName": "Salma",
+  "Description": "Salma is about forty-six years old and the wife of Umar, mother of two daughters, Subh and Sukayna. She has a full, gentle figure and a warm face, and she often wears a pale blue cotton headcloth edged with tiny white shells that chime when she walks. Her clothes are soft in tone, mostly pale green and cream, with simple vine embroidery at the cuffs. A wooden prayer beadstring hangs from her wrist, and every morning after prayer she counts the beads once through. As a young woman she helped her father run a grain store at an oasis, learning to reckon storage and spoilage and to soothe the anger of buyers with courtesy. After marriage she reorganised her husband's medicine room in good order and prepared special meals for the women and children who came to the house for treatment. When quarrels arise among the women of the clan, she never uses her rank to press anyone. She invites the woman to share a cup of tea in a quiet room and lets her talk until the grievance is spoken. Over the years she watched several distant cousins' daughters married off at the elders' whim, and she never forgot it. At festivals she brews tea for the older women with her own hands, then speaks on their behalf so they have a chance to be heard before the men. Her deepest drive is to see her daughters make their own choices in marriage and inheritance, free from arrangement by others. Her greatest fear is that her husband's learning will fail to protect the household, and that she will be unable to leave her daughters enough property to stand on their own.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants her daughters to choose their own marriages and inheritance, not have these arranged by others, even if she must argue with the elders for it.",
+    "She plans to turn her husband's medicine room and granary into a dependable base for the household, with every supply and treatment properly recorded.",
+    "She intends to care for visiting women and children with food and rest, so quarrels among the women of the clan grow fewer and mutual support grows."
+  ],
+  "Values": [
+    "Courtesy is the first door to resolving resentment, since a cup of tea and a kind word often bring a person down more gently than public rebuke.",
+    "Accounts must be clear, and every sack of grain or head of livestock should carry a stated reason, so vague talk cannot drag on.",
+    "A daughter's marriage and inheritance should be her own decision, and a path chosen by others, however respectable, is not real security."
+  ],
+  "Fears": [
+    "Her husband's learning may fail to protect the household, and without enough property for her daughters, they may be looked down on by collateral lines after a death.",
+    "Her daughters may be married off against their wishes by the elders, and she may be left only to pour tea and sigh in her own room."
+  ],
+  "SpeechStyle": "Her voice is soft, and she often begins with 'sit, and tell me slowly'. On grain, accounts, or marriage she grows exact, listing figures. With unreasonable people she turns quieter and presses each point home.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

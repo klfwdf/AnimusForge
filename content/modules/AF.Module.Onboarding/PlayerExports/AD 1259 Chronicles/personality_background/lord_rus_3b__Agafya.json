@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Agafya of Moscow, noble consort of Saint Daniil Alexandrovich, served as the maternal foundation of the nascent Muscovite principality. Hailing from an ancient boyar house, she shared in her husband's frugal and arduous task of transforming a forest trading post into a secure regional center. Agafya managed domestic accounts, food dispensaries, and infirmaries within the wooden Kremlin, personally organizing noblewomen to sew winter garments for destitute peasant refugees during freezing months. The devoted mother of Grand Princes Yuri and Ivan I Kalita (the Moneybag), she imparted principles of religious piety, fiscal prudence, and statesmanship to her sons. Her generous patronization of the Danilov Monastery and local churches established an enduring tradition of religious benefaction, revered across Muscovite memory as an upright matriarch of the Golden Age. Nurturing her sons with principles of fiscal stewardship, deep piety, and public justice, Agafya transformed domestic governance into an instrument of charity, her enduring relief institutions sheltering thousands of impoverished families across generations. Her devoted maternal guidance, quiet piety, and generous civic charities nurtured future rulers who transformed Moscow from a humble wooden town into a mighty grand duchy, leaving an indelible imprint upon northern civilization.",
+  "SpeechStyle": "Speaks with tranquil, maternal warmth and gracious empathy, her gentle tone bringing deep reassurance to all in distress.",
+  "Motivations": [
+    "Manage internal welfare and food stores, ensuring desperate refugees arriving in Moscow find reliable food, warmth, and shelter.",
+    "Educate her sons to become farsighted and compassionate rulers capable of guiding Moscow toward supreme sovereignty."
+  ],
+  "Values": [
+    "Values austere thrift, Christian charity, and deep faith, believing divine blessings accompany rulers who love their people.",
+    "Treasures familial peace, wholeheartedly supporting her husband's nonviolent statecraft to preserve domestic harmony."
+  ],
+  "Fears": [
+    "Fears devastating invasions breaching Moscow's palisades, forcing fragile refugee families back into famine and displacement."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ]
+}

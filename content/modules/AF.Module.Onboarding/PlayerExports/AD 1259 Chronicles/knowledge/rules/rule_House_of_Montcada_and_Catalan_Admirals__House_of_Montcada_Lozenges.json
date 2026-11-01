@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Montcada_and_Catalan_Admirals",
+  "Keywords": [
+    "House of Montcada Lozenges",
+    "Catalan Seneschal Lineage",
+    "Balearic and Valencia Vanguards",
+    "Sicilian Maritime Expansion"
+  ],
+  "RagShortTexts": [
+    "The House of Montcada bore lozenges, serving as hereditary seneschals of the Crown of Aragon."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing gold and red lozenges, the House of Montcada held hereditary office as Great Seneschals of Catalonia. Foremost in James I's crusades taking Mallorca and Valencia, where senior commanders fell in amphibious assaults, the family subsequently projected private naval power across Sicily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Dominating the Corts of Barcelona, the Montcadas championed naval statecraft, integrating merchant syndicates with shock knightly contingents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Aboard Montcada war galleys, Catalan seamen fight alongside feral Almogavars. When grapple hooks lock ships together, their cleavers make quick work of opponents."
+    }
+  ],
+  "TextMappings": []
+}

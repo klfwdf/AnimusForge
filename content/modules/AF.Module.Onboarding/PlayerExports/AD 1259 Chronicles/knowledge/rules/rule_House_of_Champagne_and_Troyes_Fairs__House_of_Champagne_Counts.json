@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Champagne_and_Troyes_Fairs",
+  "Keywords": [
+    "House of Champagne Counts",
+    "Blois Champagne Lineage",
+    "Troyes Provins Fair Revenues",
+    "Champagne Chivalry and Navarre"
+  ],
+  "RagShortTexts": [
+    "The House of Champagne commanded international trade fairs, ascending to Navarre's throne."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Governing rich eastern plains, the House of Champagne hosted the international fairs of Troyes and Provins. Thibaut IV, renowned as both troubadour and monarch, secured the crown of Navarre, turning the dynasty into an economic and chivalric powerhouse linking Flemish cloth with Italian banking."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Letters of fair credit sealed by Champagne wardens carried universal enforcement, making the count indispensable to French kings and the Roman curia alike."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "artisan"
+        ]
+      },
+      "Content": "At the opening of Troyes market bells, silver coin flows across counting benches. Paying fair tolls guarantees armed escorts against highway robbers."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_1",
+  "HeroName": "Alfonso III, King of Portugal and the Algarve",
+  "Description": "Afonso III 'the Boulonnais' (O Bolonhês, 1210–1279), King of Portugal and the Algarve, stands as the visionary state-builder who defined the territorial boundaries of the Portuguese realm. Exiled to France in youth where he acquired administrative brilliance as Count of Boulogne, he returned backed by papal authority to wrest the crown from his incapable elder brother, Sancho II. Afonso proved an exceptionally capable commander, capturing Faro in 1249 and completing the Portuguese Reconquista by expelling the Moors from the Algarve. Establishing Lisbon as the definitive royal capital, he convened the historic Cortes of Leiria in 1254, pioneering the political representation of common burghers in crown councils. By 1259, ruling from the Castle of São Jorge overlooking the Tagus estuary, Afonso vigorously consolidates royal judicial and fiscal supremacy, enduring papal tensions over ecclesiastical immunities. Disciplined, pragmatic, and tireless, King Afonso personally oversees maritime shipyards and commercial charters, cementing Portugal's destiny as an Atlantic power. Directing royal chancellors within the archive chambers of Lisbon, Afonso rigorously audited the tax immunities held by feudal barons and monastic orders. Confronting aggressive papal legates with steely obstinacy, the warrior-reformer refused to compromise the sovereign supremacy of the Portuguese crown. His tireless statecraft established Lisbon as an enlightened maritime capital, securing the five quinas banner across the Atlantic seaboard for generations. His decisive reforms and unyielding defense of royal sovereignty permanently shaped the destiny of the Portuguese monarchy.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate royal sovereignty over the Algarve, neutralizing Castilian territorial pretentions",
+    "Enforce fiscal and legal reforms from the Cortes of Leiria to curb feudal and clerical immunities",
+    "Expand naval dockyards in Lisbon and Porto to pioneer Atlantic maritime commerce with northern Europe"
+  ],
+  "Values": [
+    "A king's duty is to expand boundaries and enforce uniform law; aristocratic inertia invites collapse",
+    "Commercial vigor and burgher prosperity are the lifeblood of royal strength; rule with firm equity",
+    "Decisive action, pragmatic statecraft, and unyielding defense of the crown's independence"
+  ],
+  "Fears": [
+    "Papal excommunication igniting baronial revolts that unravel his centralized royal institutions",
+    "Castilian armies breaching the Guadiana river border to contest Portuguese possession of the Algarve"
+  ],
+  "SpeechStyle": "Resonant, authoritative, and incisive; speaks with the stately gravitas, administrative clarity, and commanding presence of a transformative royal reformer.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

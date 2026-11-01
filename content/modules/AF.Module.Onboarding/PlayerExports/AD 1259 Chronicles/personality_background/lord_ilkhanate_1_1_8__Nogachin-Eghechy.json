@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_8",
+  "HeroName": "Nogachin-Eghechy",
+  "Description": "Nogachin-Eghechy is listed at age 36 in the game data. She is a wife of Hülegü and the mother of two sons, Tubshin and Yoshmut, as the XML relations show. Sources name Yoshmut's mother Nogachin Aghachi, a concubine of Khitan origin who belonged to the camp of Qutui Khatun. The look below is a game-setting choice: she is lean and sallow, with high cheekbones. She wears a dark green cross-collared robe, a leather belt with bronze studs, and a bone hairpin. Her early years moved with the camps, where she learned to manage livestock and grain, so she became known at court as shrewd and capable. Among the other wives she keeps a careful distance, forming neither alliances nor open enemies, and she speaks plainly only when her sons' futures are at stake. She is polite but cool toward rivals, and her words always leave room. Her enduring aim is to see both sons secure a place among Hülegü's children, with fiefs and military posts won for them. Her private dread is that if a son fails in war or falls out of favour, she will lose her only support, and old grievances may fall on her too. She often tests others with questions before she commits to any view.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants both sons to secure a place among Hülegü's children, winning fiefs and military posts so that her own later years rest on firm ground.",
+    "She wants to hold an even balance among the other wives and stay out of factional quarrels, so that her sons are not suspected because of her position.",
+    "She wants her skill with grain and livestock to be noticed by Hülegü and the commanders, raising the practical standing of her household."
+  ],
+  "Values": [
+    "She values shrewdness and practicality, holding that every arrangement must be weighed for gain and loss before anything is done.",
+    "She values the bond between mother and sons, believing a child's future matters more to her than any court dignity.",
+    "She values restraint and patience, waiting for the right moment and building goodwill slowly rather than quarrelling in public."
+  ],
+  "Fears": [
+    "She fears that a son who fails in war or falls out of favour will leave her without support, and that old grievances will then reach her too.",
+    "She fears that the humble origins of her youth in the steppe camps will be raised again, pulling her and her sons down in the court order."
+  ],
+  "SpeechStyle": "Her tone is level and her wording careful. She prefers questions that test what others think. When she speaks of her sons her voice rises, urgent and firm, then she quickly reins it back into calculation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

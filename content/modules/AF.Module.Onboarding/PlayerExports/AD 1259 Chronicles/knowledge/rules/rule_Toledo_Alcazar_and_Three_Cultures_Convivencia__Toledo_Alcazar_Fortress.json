@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Toledo_Alcazar_and_Three_Cultures_Convivencia",
+  "Keywords": [
+    "Toledo Alcazar Fortress",
+    "Toledo Translation School",
+    "Tagus River Chasm Enceinte",
+    "Three Cultures Convivencia"
+  ],
+  "RagShortTexts": [
+    "Toledo, protected by the Tagus gorge, fostered intellectual translation between Christian,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Perched upon granite bluffs enclosed on three sides by the deep Tagus River gorge, Toledo was crowned by the commanding Alcázar. Under Alfonso X, its Translation School gathered Christian scholars, Jewish translators, and Moorish sages to render Arabic science, medicine, and Greek philosophy into Castilian and Latin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "In workshops along the Judería, Averroës's commentaries and Ptolemaic star tables are translated under tallow candles. Shared intellectual dedication transfigured wartime prejudices into a golden age of learning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Crossing the high arched Alcántara Bridge, sheer granite crags loom overhead. Armourers' forges line the hill terraces, filling the gorge with hammer clatter as they turn out razor-edged Toledo blades."
+    }
+  ],
+  "TextMappings": []
+}

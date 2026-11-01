@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Paris_Cite_Island_and_Sorbonne_Scholars",
+  "Keywords": [
+    "Paris Ile de la Cite",
+    "Seine River Latin Quarter",
+    "Robert de Sorbon College",
+    "Capetian Heart of France"
+  ],
+  "RagShortTexts": [
+    "The Île de la Cité on the Seine held French royal majesty, flanked by Sorbonne scholars in."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Encircled by the Seine, the Île de la Cité anchors Capetian royal power, home to Notre-Dame and the jewel-box Sainte-Chapelle. On the Left Bank, the Collège de Sorbonne (founded 1257 by Robert de Sorbon) draws masters like Thomas Aquinas, establishing the Latin Quarter as Western Europe's intellectual capital."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Students from four nations—French, Picard, Norman, and English—sit on straw-covered floors debating Aristotelian dialectic. Vellum parchment dressers and illuminated book copyists drive a booming trade."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Bridges over the Seine are crowded with two-story houses and cobblers' stalls. Carting country butter and cider into the central market at Les Halles means paying gate tolls, but Paris silver coin never depreciates."
+    }
+  ],
+  "TextMappings": []
+}

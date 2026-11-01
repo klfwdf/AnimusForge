@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_4_1_2_1",
+  "HeroName": "Ragnveig Þórirsdóttir Tinghatt",
+  "Description": "Lady Ragnveig Þórirsdóttir Tinghatt was a high-born noblewoman of the distinguished Tinghatt clan of western Norway and the capable consort of Sir Sigurd of Hestbø. In 1259, Ragnveig directed the maritime economy, salted-fish production, and insular defense logistics across the island manors of Finnøy. Steeped in the maritime traditions of Rogaland nobility, she possessed exceptional administrative competence, supervising coastal storehouses and tidal mills that supported fleet readiness. During her husband's prolonged naval patrols across the North Sea, Ragnveig assumed active command of the fortress garrison, organizing lookouts and repelling coastal raiders with calm resolve. A devout benefactress of Stavanger Cathedral, she endowed parish chapels and founded mutual-aid guilds for the families of lost mariners. Her pragmatic fortitude, noble composure, and fierce devotion to the Hestbø lineage established her as an admired pillar of western Norwegian society. Within Hestbø castle, Ragnveig managed logistics and victualing for hundreds of armored retainers, employing rigorous quarterly accounts to keep the insular garrison well-supplied through harsh subarctic winters. She frequently arbitrated complex fishing boundary disputes and municipal tax allotments among neighboring coastal settlements with notable fairness and resolve. Her refined aristocratic composure combined with pragmatic insular tenacity made her Sigurd's most trusted partner in governing the southern waters.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with maritime poise, crisp clarity, and aristocratic self-possession, managing island estate logistics with energetic competence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Ragnveig Þórirsdóttir Tinghatt"
+}

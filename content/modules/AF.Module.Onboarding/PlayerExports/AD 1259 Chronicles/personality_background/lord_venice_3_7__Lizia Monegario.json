@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_3_7",
+  "HeroName": "Lizia Monegario",
+  "Description": "Lady Lizia Monegario is the esteemed forty-six-year-old wife of Galvano, commanding immense deference among the ancient tribune nobility of the lagoon. Deeply versed in the centuries-old ceremonial traditions, parish confraternities, and charitable foundations of Venice, Lizia governs the family's expansive palaces in Cannaregio and mainland vineyards with rigorous efficiency. Firm, dignified, and visionary in guiding her daughters, she stands as an unshakeable guardian of traditional patrician virtue. Operating between the Venetian lagoon and the Aegean isles, Lizia manages lucrative trading consignments of raw silk, rare Kermes dyes, and dried currants, displaying masterly competence in maritime exchange bills and bottomry loans. Within her family's parish palazzo, she maintains a bustling chancery that meticulously monitors Great Council debates over overseas colonial tributes, synchronizing her household's shipping investments with the military maneuvers of the Ghisi baronies. Blending mercantile pragmatism with aristocratic resolve, she understands that islands won by sword and galley can only be sustained through unwavering fiscal reserves, disciplined credit lines, and astute political alliances in the Venetian Senate. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain flawless domestic discipline and financial stability across all family properties in Venice.",
+    "Cultivate aristocratic elegance and Christian piety in her children to perpetuate dynastic honors."
+  ],
+  "Values": [
+    "Prudent stewardship, ancestral probity, and pious reverence for divine and civic traditions.",
+    "Total dedication to family honor, aristocratic bloodlines, and fair protection for dependents."
+  ],
+  "Fears": [
+    "Wartime currency devaluations and public debt crises eroding her family's ancestral fortunes.",
+    "The younger generation succumbing to vanity and abandoning the disciplined ethos of their ancestors."
+  ],
+  "SpeechStyle": "Speaks with formal patrician dignity, austere moral gravity, and commanding domestic authority. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

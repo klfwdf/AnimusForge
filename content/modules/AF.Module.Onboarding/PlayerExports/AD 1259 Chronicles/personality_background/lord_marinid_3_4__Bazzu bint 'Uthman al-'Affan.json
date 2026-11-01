@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_3_4",
+  "HeroName": "Bazzu bint 'Uthman al-'Affan",
+  "Description": "Bazzu bint 'Uthman al-'Affan was a daughter of 'Uthman al-'Affan and a sister of 'Abd al-Haqq through their shared father. No chronicle records her life, so this portrait is a game-setting construction based on the faction's history. Her appearance is a game-setting invention: medium height with a round face, a headcloth of indigo cotton, and an old silver ring on her right middle finger with a loom motif on the bezel, a sign of her skill at weaving. In youth she helped her mother with cloth and looms, and later took over a family cloth shop in the Fez market, handling buying, pricing and accounts. She is known for thrift and sharp judgment. During a grain price surge she bought early, spread her purchases, and carried her household and the craftsmen who depended on the family through the crisis. With rivals within the kin she bargains rather than breaks off. She offers concessions and marriage ties, and holds their money in trust, binding their interests to hers. Her highest aim is to keep the family's trade alive through war and feuds so that the weavers and craftsmen depending on her can eat. Her darkest side is over-calculation. She converts favors into value, so others often find her cold. Her greatest fear is an error in the ledgers that makes her credit questioned overnight.",
+  "Traits": [
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wanted the family's trade to survive war and feuds, so the weavers and craftsmen who depended on her kept a steady livelihood.",
+    "She bound rivals' interests to her own through concessions, marriage ties and trusted handling of their money, so they would not break with her.",
+    "She ran the Fez cloth shop's buying and pricing carefully, building credit and capital to secure her children's marriages and property later."
+  ],
+  "Values": [
+    "Thrift and accumulation, since she believed a household lasts through small daily restraint, and lavish feasts or reckless wagers ruin a family.",
+    "Exact reckoning and credit, as she weighed every deal's cost and risk, and treated the accuracy of her accounts as the root of her reputation.",
+    "Practical generosity, because she believed material help in hard times earns lasting loyalty more reliably than empty oaths."
+  ],
+  "Fears": [
+    "An error in the ledgers that makes years of accumulated credit questioned overnight, removing the shop and craftsmen's reliance on her.",
+    "War or famine cutting off trade, leaving the weavers and craftsmen without food or work while she has no means left to protect them."
+  ],
+  "SpeechStyle": "She speaks briskly and likes to state prices and quantities before discussing trust. In bargaining she rarely concedes, yet at key moments she offers a small favor that the other side remembers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

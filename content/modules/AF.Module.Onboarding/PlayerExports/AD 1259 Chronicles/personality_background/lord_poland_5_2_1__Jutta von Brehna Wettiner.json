@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_5_2_1",
+  "HeroName": "Jutta von Brehna Wettiner",
+  "Description": "Jutta von Brehna Wettiner reigns as Duchess of Świecie and Pomerelia, daughter of Count Dietrich I of Brehna from the illustrious Saxon House of Wettin, married to the formidable Duke Mściwój II (Mestwin II). Bringing the prestigious bloodlines of the German High Nobility and extensive diplomatic channels along the Elbe River into Pomerelia, Jutta proved an invaluable partner in her husband's quest for unified baronial sovereignty. Amidst the brutal internecine wars between Mściwój, his uncle Sambor II, and his rival brothers, Jutta held the river fortress of Świecie with remarkable composure, auditing logistical ledgers and provisioning garrisons. Mastering Saxon customary law and imperial chancellery protocols, she conducted intricate correspondence with the Archbishop of Magdeburg and the Margraves of Brandenburg, neutralizing foreign intervention plots against her husband. Within her court, Jutta cultivated Franciscan spiritual devotions, endowing urban infirmaries and orphanages that endeared her to native Pomerelian commoners along the lower Vistula. A woman of formidable intellect, unblemished dignity, and sharp strategic foresight, Jutta helped guide the Samboride dynasty toward its historic destiny. Jutta established order within the chancellery of Świecie and endowed Franciscan hospices for war refugees. Her refined Saxon statecraft provided steady domestic authority behind her husband's victorious campaigns.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage her Saxon Wettin lineage in Germany to win diplomatic backing and neutrality for Duke Mściwój.",
+    "Supervise the fiscal revenues, granaries, and arsenals of Świecie to maintain unbroken logistical readiness.",
+    "Protect the lives and succession of her children amidst the brutal dynastic civil wars tearing Pomerelia apart."
+  ],
+  "Values": [
+    "Prize practical diplomatic alliances and meticulous domestic stewardship over reckless emotional outbursts.",
+    "Uphold legal jurisprudence, aristocratic dignity, and truthful statecraft to outwit treacherous adversaries.",
+    "Revere Christian piety, extending charitable protection to war-stricken peasants and monastic orders."
+  ],
+  "Fears": [
+    "Świecie falling to a sudden night assault by Teutonic crusaders, leaving her children helpless captives.",
+    "Her husband falling to a treacherous baronial assassination, leaving their territories dismembered."
+  ],
+  "SpeechStyle": "Noble blood is proven through composure amidst the storm, not through empty boasting; while I hold Świecie, our ducal crown shall shine supreme! Dignity and patience endure all storms; Świecie's crown shines undimmed!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

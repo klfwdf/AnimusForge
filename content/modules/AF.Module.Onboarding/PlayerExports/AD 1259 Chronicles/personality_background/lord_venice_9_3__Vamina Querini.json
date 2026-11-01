@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_9_3",
+  "HeroName": "Vamina Querini",
+  "Description": "Vamina Querini represents the cultured elegance of House Querini, assisting her father in managing the family's opulent palazzi along the Grand Canal and supervising insular revenue ledgers. Shrewd and composed, she navigates the factional undercurrents of the lagoon nobility, defending the proud lineage's lofty prestige with diplomatic dexterity. Cultured and astute, Vamina hosts aristocratic salons within the Querini palazzo along the Grand Canal, scrutinizing the shifting allegiances of rival families while gleaning vital political intelligence beneath courteous pleasantries. She fiercely defends the lofty prestige of her house in Venetian society, auditing overseas gold remittances and precious gem inventories with meticulous precision to sustain an immaculate facade of aristocratic opulence. Proud, poised, and unyielding, this young noblewoman considers Querini honor her highest duty, determined to preserve her family's sovereign standing amidst the treacherous currents of Venetian high politics. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the unblemished aristocratic status of House Querini in Venetian society.",
+    "Oversee the secure remittance of Aegean feudal revenues and precious goods."
+  ],
+  "Values": [
+    "Patrician dignity is an inviolable heritage that brooks no vulgar insolence.",
+    "Deep composure reveals the perilous reefs hidden beneath political currents."
+  ],
+  "Fears": [
+    "Public humiliation of her family through reckless political gambles or scandal.",
+    "Loss of the ancestral island estates providing the dynasty's financial independence."
+  ],
+  "SpeechStyle": "Speaks with cultured restraint and haughty vigilance, polite yet intensely aloof. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

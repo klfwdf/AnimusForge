@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Wittelsbach_and_Bavarian_Lozenges",
+  "Keywords": [
+    "Wittelsbach Blue and White Lozenges",
+    "Duchy of Bavaria Partition Patrimony",
+    "Rhenish Palatinate Electorate Power",
+    "Hohenstaufen Steadfast Imperial Ally"
+  ],
+  "RagShortTexts": [
+    "The House of Wittelsbach held Bavaria and the Palatinate under the iconic blue-and-white."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing white-and-blue lozenges, the House of Wittelsbach entrenched its power across Bavaria and the Rhenish Palatinate. Splitting in 1255 into Upper Bavaria-Palatinate and Lower Bavaria under Dukes Louis II and Henry XIII, the dynasty held hereditary office as Counts Palatine, wielding paramount voting rights in imperial elections."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Historically loyal to the Hohenstaufen line, Duke Louis the Strict defended Alpine passes and Rhine river tolls against aggressive expansion by rival archbishops and foreign claimants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Bavarian farms brew rich barley beer under customary land law. So long as dues in smoked hams and oats are delivered to ducal bailiffs, the valleys enjoy peace."
+    }
+  ],
+  "TextMappings": []
+}

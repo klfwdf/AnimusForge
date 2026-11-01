@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_1_4",
+  "HeroName": "Mu'mina ibn Muhammad ibn Nasr",
+  "Description": "Princess Mu'mina bint Muhammad ibn Nasr is the devout daughter of Sultan Muhammad I al-Ahmar, renowned across Granada for her contemplative piety and charitable works at twenty years of age. Reflecting her name, which signifies 'The True Believer', Mu'mina dedicated her youth to classical Islamic theology, Hadith studies, and the sublime art of Andalusian calligraphy, transcribing Quranic verses for the Great Mosque. Gentle, modest, and selfless, she directs charitable endowments in the bustling Albayzín quarter under Queen Aisha's patronage, securing food and shelter for war orphans and maimed veterans. Shunning court intrigue, Princess Mu'mina embodies the moral conscience of the dynasty, universally cherished by ulema and commoners as a living testament to faith and mercy. Her holy contemplation, exquisite calligraphic transcriptions, and boundless charity among the impoverished refugee quarters surround Princess Mu'mina with widespread veneration, shining as a living beacon of divine mercy. Her self-abnegating charity, spiritual contemplation, and tender devotion to the poor of the Albayzín quarter encircle Princess Mu'mina with a sacred aura of holiness and universal love. Her selfless charity, pure spiritual devotion, and gentle compassion ensure that Princess Mu'mina remains beloved as a true holy blessing upon the royal house.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To invoke divine intercession for the defense of Granada through ceaseless prayer and charity.",
+    "To safeguard vulnerable refugees in the Albayzín quarter, providing food and holy dignity."
+  ],
+  "Values": [
+    "Worldly thrones and palaces will turn to dust; only pious deeds endure before the Creator.",
+    "Nourishing the afflicted and the destitute is the highest calling of a noble soul."
+  ],
+  "Fears": [
+    "Savage sieges destroying the holy sanctuaries and innocent populace of Granada.",
+    "The royal dynasty straying from religious rectitude into vanity and corruption."
+  ],
+  "SpeechStyle": "Speaks with serene, whisper-soft humility and graceful Quranic phrasing, radiating spiritual warmth and inner peace. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

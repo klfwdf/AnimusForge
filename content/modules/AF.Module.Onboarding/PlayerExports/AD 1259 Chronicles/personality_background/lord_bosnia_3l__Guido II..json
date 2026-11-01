@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_3l",
+  "HeroName": "Guido II.",
+  "Description": "Guido II Frankopan, aged four in 1259, is a lively young scion of the House of Frankopan, reared within the maritime fortress of Krk. Robust, cheerful, and full of boyish vigor, he is an energetic presence in the comital courtyards, beloved by guardsmen for his playful spirit. Captivated by galloping warhorses and swift patrol galleys cutting through the turquoise surf, young Guido spends joyful hours mimicking sea captains with wooden play swords. Guarded within massive coastal walls in 1259, the young lord thrives in radiant health, a spirited sprout of the Frankopan dynasty growing under the benevolent skies of Kvarner. Little Guido II, barely four years old, plays enthusiastically along castle battlements, playfully mimicking the proud postures of watch commanders. Castle chaplains regularly bless this spirited young count, praying that Almighty God may nurture this tender Frankopan shoot into a mighty pillar of the realm. Surrounded by roaring waves and loyal spearmen, little Guido enjoys a joyous childhood, radiating cheerful energy throughout the island citadel. Filled with spirited curiosity and playful boldness, little Guido thrives within the stone citadel, destined to grow into a stalwart defender and gallant commander of his illustrious house.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with lively, cheerful toddler enthusiasm, laughter-filled and playful, fascinated by wooden swords and ships.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

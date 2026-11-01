@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_4",
+  "HeroName": "Manfredo IV di Saluzzo",
+  "Description": "Manfredo IV di Saluzzo is the eighteen-year-old son and direct heir to Marquess Tommaso I, christened in honor of King Manfred of Sicily. Robust of frame and passionately devoted to the profession of arms, young Manfredo drilled since boyhood in heavy cavalry charges, mountain swordsmanship, and archery across the rugged alpine passes. High-spirited, honorable, and intensely loyal to the Staufen cause, he models himself after the great chivalric champions of the imperial party. Entrusted with frontier patrol commands, he has already distinguished himself by routing Guelph skirmishers attempting to infiltrate the valleys. Resolute and daring, Manfredo IV represents the formidable next generation of Piedmontese leadership. Trained under his father's veteran captains in mountain warfare and equestrian combat, young Manfredo IV stands fully prepared to defend the proud baronial honors of Saluzzo. Fearless in the saddle and respected by his men, he leads mountain patrols with natural authority and chivalric pride, defending his borders against foreign encroachment. Burning with knightly zeal, equestrian excellence, and disciplined tactical prowess, Manfredo IV stands fully ready to expand the glorious honors of his ancient house on every front. Ready to charge at the vanguard of the mountain cavalry, he defends his lands with fearless zeal, chivalric honor, and youthful vigor.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To win high martial renown along the alpine frontier, proving worthy of King Manfred's name.",
+    "To inherit the marquisate and forge Saluzzo's heavy cavalry into the terror of northern Italy."
+  ],
+  "Values": [
+    "A true knight defends his lands with cold steel; cowardice in the saddle is eternal shame.",
+    "Unflinching fidelity to feudal oaths and the imperial crown defines honorable manhood."
+  ],
+  "Fears": [
+    "Making a fatal error during his baptism of fire that tarnishes his ancestral military honor.",
+    "Languishing in tedious garrison duties while grand continental wars unfold without him."
+  ],
+  "SpeechStyle": "Speaks with ringing youthful resonance, fiery enthusiasm, and chivalric confidence, radiating battlefield drive. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

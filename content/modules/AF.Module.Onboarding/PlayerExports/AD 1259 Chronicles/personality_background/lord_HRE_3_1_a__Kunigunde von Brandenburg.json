@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_3_1_a",
+  "HeroName": "Kunigunde von Brandenburg",
+  "Description": "Kunigunde von Brandenburg, daughter of Otto III and Beatrice of Bohemia, was a noble Ascanian princess. Contracted in high dynastic unions, she was revered for Christian piety and domestic prudence, mediating disputes among feudal baronies across the Elbe river basin. Kunigunde directed woolen weaving hospices across frontier manors, personally crafting winter uniforms for garrison troopers to sustain the spiritual morale of pioneer settlers. Maintaining Christian virtue amidst dynastic friction, her selfless mediation defused armed border clashes, winning veneration from frontier folk as a guardian angel of peace. Spotless in Christian charity and treaty faith, Kunigunde guarded her house's honor as an eternal beacon of harmony on the German frontier. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold Ascanian princely dignity and diplomatic duty across German-Slavic marches.",
+    "Endow hospices for displaced frontier settlers, praying for divine favor over the realm.",
+    "Enforce strict treaty fidelity among vassals to prevent reckless border skirmishes."
+  ],
+  "Values": [
+    "Believes Christian mercy and patient endurance dissolve ethnic and factional hatreds.",
+    "Holds dynastic loyalty and the sanctity of marriage vows supreme above worldly vanity."
+  ],
+  "Fears": [
+    "Pagan raiders sacking the frontier convents and charitable hospices she founded.",
+    "Reckless young knights provoking ruinous wars that lay waste to Ascanian towns."
+  ],
+  "SpeechStyle": "Speaks with quiet pastoral gentleness and heartfelt serenity, radiating spiritual grace. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

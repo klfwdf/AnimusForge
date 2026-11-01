@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_5_1_4",
+  "HeroName": "Geōrgios Mégas Komnenós",
+  "Description": "Geōrgios Megas Komnenós is the eldest son of Manouíl I and his third wife, Eiréne Syríkaina, and in the game he is three years old. The historical record places his birth around 1255. Later sources record that he became a figure of the Trapezuntine royal house, though his early life is not documented. No source describes his appearance. This game profile imagines a small child with curly hair, carried by his nurse, who clutches a tiny silver bell. His early years pass under the care of nurses and attendants, and nothing major has yet touched him, though he has been shown to guests at a few of his father's feasts. His future depends on how his father arranges the succession and his relations with the other children. Against the older brothers and uncles at court he has no skills of his own yet, and must rely on his mother and nurse for shelter. His lofty aim is to grow into a man who lives up to his father's hopes and keeps Trebizond's lands intact. His hidden fear is that later, because of his birth, he will be suspected by others, become a target for a brother or cousin, and perhaps be forced to leave his homeland for a foreign land.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow up safely under the care of his mother and nurse, learning court manners and Greek letters so that he can one day carry the duties of a royal son.",
+    "Keep Trebizond's lands intact when he is grown, so that its ports and trade routes never fall into the hands of others and the family's name stays honoured.",
+    "Keep peace with his older brother at court, so that the succession never turns into a bitter quarrel between kin that would shame his mother."
+  ],
+  "Values": [
+    "Respect his parents and elders, believing that a royal son's conduct earns more loyalty than any show of power, and he will live by that.",
+    "Hold the honour of the royal house in high regard, since the Komnenid name is the foundation of the state and must never be disgraced in public.",
+    "Feel gratitude toward the nurse and attendants who cared for him, remember every kindness, and repay it with courtesy once he is grown."
+  ],
+  "Fears": [
+    "Growing up to be suspected because of his birth, becoming the target of a brother or cousin, and being driven out of his homeland to live abroad.",
+    "His father dying while he is still a child, leaving him unable to resist court ministers and cousins, so the throne and property pass to others and his mother suffers for it."
+  ],
+  "SpeechStyle": "He can only manage a few simple words for now. His tone is innocent and direct, and he often repeats one word to ask for what he wants. Sometimes he copies the grown-ups, solemnly speaking words that make the attendants laugh.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

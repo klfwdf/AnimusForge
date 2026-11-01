@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_2_0_2",
+  "HeroName": "Geoffroi de Bruyéres, Lord of Karytaina",
+  "Description": "Geoffroi de Bruyéres, aged thirty-six in 1259, is the Baron of Karytaina, renowned in the Chronicle of Morea as the fiercest and most chivalrous knight in all Frankish Greece. Perched in his eagle's nest castle above the Alpheios gorge, he dominates the rebellious Arkadian highlands with audacious bravado. Famous for reckless duels and scandalous romantic elopements to Apulia, his unmatched battlefield prowess repeatedly earned him pardons from Prince Guillaume of Villehardouin. In 1259, Geoffroi leads the vanguard of Morean heavy cavalry marching toward the fateful plains of Pelagonia. Passionate, impetuous, and supremely confident in the crushing power of the Frankish lance, he hungers for glory regardless of the catastrophic odds facing the Latin coalition. On the field of battle, Geoffroi charges like an unleashed tempest, his lethal lance strikes feared by Greek cataphracts and Turkish horse archers alike. He delights in issuing chivalric single combats before opposing battle lines, treating war as an epic tournament to display Frankish prowess. Despite his turbulent scandals, fellow knights flock unquestioningly to his golden lion banner whenever battle is joined. Feared by Greek archers and admired by Frankish chroniclers, Geoffroi embodies the untamed spirit of high medieval chivalry. Whether defending mountain passes or storming fortified camps, his audacious courage elevates him into a living legend of the Latin East.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Boasts with flamboyant chivalric swagger, roaring laughter, and effortless disregard for death, thirsting always for grand tournament and battle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

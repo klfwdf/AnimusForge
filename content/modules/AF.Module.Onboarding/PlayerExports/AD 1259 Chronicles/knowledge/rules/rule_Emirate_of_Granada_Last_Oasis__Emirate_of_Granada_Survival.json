@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Emirate_of_Granada_Last_Oasis",
+  "Keywords": [
+    "Emirate of Granada Survival",
+    "Nasrid Dynasty Muhammad I",
+    "Alhambra Fortified Citadel",
+    "Castilian Gold Tribute Vassalage"
+  ],
+  "RagShortTexts": [
+    "Granada survived as the final Muslim oasis through tribute to Castile, fortifying the Alhambra."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sheltered beneath the Sierra Nevada, the Emirate of Granada emerged under Muhammad I ibn Nasr as the sole surviving Islamic realm in Iberia. Purchasing autonomy through substantial gold parias paid to Castile and fortifying the red citadel of the Alhambra, Granada preserved Andalusian culture for centuries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Nasrid emirs rule through diplomatic finesse and Saharan gold. By humoring Castilian kings with tributary allegiance while keeping open ports to the Marinid sultans of Fez, Granada balances on a razor's edge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Nasrid jinetes ride light Arabian bloodlines, loosing javelins at a full gallop through mountain passes. Heavy northern knights who attempt to climb into the high serranias find their armor a deadly burden in narrow defiles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Refugees from Seville and Cordoba engineered terraced aqueducts fed by snowmelt. Heavy tributes weigh upon our looms, but silk mills hum and the call to prayer rings true across the green Vega."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_2_2",
+  "HeroName": "Elvira Añez de Sousa",
+  "Description": "Doña Elvira Añez de Sousa is the courageous and accomplished eldest daughter of Dom Fernão Garcia, Lord of Gouveia, and Lady Urraca Fernandes. Reared amidst the rugged granite crags of Gouveia overlooking the Beira plateau, Elvira unites the fierce martial spirit of her marcher father with the refined nobility of the House of Sousa. Educated in vernacular troubadour lyrics, Latin scriptures, and estate accounting, she displays remarkable organizational skill in managing castle domestic rolls. In 1259, as she reaches marriageable age, noble embassies from across central and northern Portugal present competing petitions for her hand. Deeply mindful of her dynastic duty to fortify the family's alliances across the Serra da Estrela, she assists her parents in hosting aristocratic assemblies. Resolute, warm-hearted, and proud, Elvira regularly distributes provisions to garrison sentries, earning universal devotion across the high mountain lordships. Accompanying her father along the watchtower ramparts of Gouveia, Elvira personally inspected winter cloaks and arrow stores, demonstrating extraordinary martial fortitude. Brave, radiant, and politically astute, she capably assisted her mother in seigneurial administration, admired across the northern nobility as a model marcher maiden. Her fearless spirit, aristocratic poise, and practical leadership ensure that Elvira is admired as a model noblewoman throughout the mountain lordships.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master courtly literature and castle administration to elevate the chivalric renown of her house",
+    "Fulfill her dynastic matrimonial duty to cement a powerful alliance supporting the Beira march",
+    "Provide compassionate aid to garrison sentries and tenantries, cultivating lasting popular devotion"
+  ],
+  "Values": [
+    "A noble daughter must embody courage and moral discipline; standing firm amidst adversity reveals nobility",
+    "Authentic virtue and active compassion outshine all transient courtly luxuries and jewels",
+    "Unwavering loyalty to family, faithful devotion to knightly honor, and reverent trust in God"
+  ],
+  "Fears": [
+    "Being bartered away in an unhappy foreign marriage to a ruthless lord far from her mountains",
+    "Warfare breaching the battlements of Gouveia Castle, bringing destruction upon her kin"
+  ],
+  "SpeechStyle": "Clear, composed, and spirited; speaks with the natural courtly polish, fearless candor, and dignified warmth of an alpine noblewoman.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

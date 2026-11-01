@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_6",
+  "HeroName": "Gravina Tiepolo",
+  "Description": "Lady Gravina Tiepolo is the lively nineteen-year-old younger daughter of Admiral Lorenzo, famous for sparkling wit, playful curiosity, and buoyant vitality. Possessing an instinctive fascination with naval architecture, shipwright drafts, and compass dials, Gravina delights in interrogating returning galley captains about exotic ports in Tyre, Trebizond, and Cyprus. In patrician salons, she disarms stuffy senators with quick repartee and sharp analytical observations, adored by her family. Fascinated by naval architecture and compass dials, Gravina Tiepolo studied galley drafts in the shipyards, her witty humor and vibrant curiosity lightening the heavy burdens of her celebrated father and brothers upon their return from war. With an inquisitive mind that penetrated the secrets of naval engineering, Gravina brought radiant vitality to her household, her affectionate spirit inspiring her battle-hardened father amidst the grueling burdens of statecraft. Shielded by ancient battlements and loving kin, little Gravina flourishes in happiness and playful laughter, representing the tender hope of her noble lineage. Her bright laughter, quick intelligence, and affectionate charm illuminate the ancestral palazzo with joy and creative vitality. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Study naval architecture and navigation instruments to understand the construction of war galleys.",
+    "Explore the rich cultures of the Levant and live an intellectually adventurous and autonomous life."
+  ],
+  "Values": [
+    "Intellectual curiosity, creative freedom, and honest affection over stifling patriarchal dogmas.",
+    "Cherishing domestic harmony and using her joyful humor to lighten the burdens of her family."
+  ],
+  "Fears": [
+    "Being confined to a stifling domestic routine that extinguishes her intellectual vitality.",
+    "The relentless Mediterranean naval war bringing tragedy and loss to her beloved household."
+  ],
+  "SpeechStyle": "Speaks with bright vivacity, quick-witted banter, and charming, intelligent curiosity. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

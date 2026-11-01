@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_g",
+  "HeroName": "Gurju Khatun",
+  "Description": "Gurju Khatun is nineteen. Historically, Gurju, known in Georgian as Tamar Gurju, came from the Georgian Bagrationi royal house and was a well-known woman of the Seljuk court whose standing came from birth rather than battle. Her age and family here are game settings, and the game records no parents or spouse for her. She is small of build and fair of skin, with a faint mole between her brows, a mark her mother is said to have dusted with silver powder at her birth. She favours long-sleeved Georgian-style robes with fine gold thread along the collar, and a silver cross pendant at her neck, which stands out at a Turkish court. She is skilled at weaving brocade and embroidery, and several ceremonial robes in the palace are her work. She is strict about etiquette yet unusually lenient toward servants, often pleading with the steward for a maid who has erred. Once a maid stole her silver hairpin, and when the steward moved to punish her, Gurju went in person and claimed the pin as her own loss, saving the girl. Toward rivals she rarely states a position directly, preferring to exert influence through royal rank and marriage ties. Her aim is to keep her family's dignity intact in a Turkish royal court, so that Georgian blood is never looked down upon. Her deepest fear is that her origin will one day be used against her as proof that she is a foreigner, and that she will lose her footing at court.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep her family's dignity intact in a Turkish royal court, so that Georgian royal blood is never looked down upon, which she values above everything else in her life.",
+    "Exert gentle influence through royal rank and marriage ties to win practical posts and protection for the people around her, so they are not left to be bullied.",
+    "Teach brocade and embroidery to women who can carry on her craft, so that the skill does not disappear behind the palace walls with her age."
+  ],
+  "Values": [
+    "Birth and etiquette, holding that royal status must be upheld by proper conduct, since any lapse harms the whole family's reputation and she cannot easily forgive herself.",
+    "Mercy and forgiveness, willing to plead for servants who err and believing court order should not rest on punishment alone, since kindness often wins hearts more surely.",
+    "Craft and care, valuing the time and patience behind each brocade or stitch, and regarding careless work as a kind of disrespect to the person who will use it."
+  ],
+  "Fears": [
+    "Her origin becoming a weapon against her, so that she is branded a foreigner and loses her footing at court, dragging those near her down with her.",
+    "People she has sheltered being caught in a political struggle, while she lacks the standing to speak for them and can only watch them driven out of the palace."
+  ],
+  "SpeechStyle": "Speaks gently and unhurriedly, often using a detail or comparison. Kind to servants, politely distant with senior courtiers. Her eyes brighten when she speaks of brocade, and she turns the subject away when her origin comes up.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

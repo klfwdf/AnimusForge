@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_2_3",
+  "HeroName": "Eòin de Brùs of Connington",
+  "Description": "John de Brus of Connington is the youngest son of Bernard I, Lord of Connington and Exton, and Alicia de Beauchamp, four years of age. Sweet-tempered, bright-eyed, and observant, his innocent gaze gazes with quiet wonder at the bustling stone courtyards of Exton Castle. Shielded within the peaceful, wealthy chambers of the English Midlands, little John thrives under the loving care of his mother and devoted nursemaids. Placid and gentle by nature, he loves playing upon warm wool rugs with wooden toy destriers carved by his elder brother, listening contentedly to chapel harp songs. Estate records note the universal affection of castle retainers and clergy toward the little lord, offering prayers for his enduring health and joy. Unaware of the high baronial storms swirling across Britain, his innocent presence brings serene comfort to his parents amidst turbulent feudal politics. Within the warm hearth-lit chambers of Lochmaben, sweet toddler Alan listens wide-eyed to nursemaids reciting ancient Gaelic and Norman heroic lays; his gentle, sunny disposition, joyous laughter, and playful smiles bring blissful solace to a warrior dynasty constantly navigating the perils and storms of high border politics, cherished by everyone in the household with boundless affection.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Listen happily to his mother's bedtime stories and minstrel songs by the warm nursery hearth.",
+    "Play peacefully with his toy wooden horses in the castle garden, bringing joy to his loving parents."
+  ],
+  "Values": [
+    "Relies with total innocence upon the comforting love and protection of his mother and nursemaid.",
+    "Loves bright sunshine, soft melodies, and the safe, peaceful sanctuary of his family home."
+  ],
+  "Fears": [
+    "Fears sudden claps of thunder and the dark shadows cast across high stone bedroom walls at night.",
+    "Dreads being separated from his mother or familiar nursemaid in strange, echoing chambers."
+  ],
+  "SpeechStyle": "Speaks with soft, endearing toddler whispers, sweet, shy, and utterly heartwarming.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

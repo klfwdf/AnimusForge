@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_1_3",
+  "HeroName": "Sibilla d'Empúries",
+  "Description": "Doña Sibilla d'Empúries is the refined and cherished daughter of Count Ponç IV and Countess Teresa Fernández de Lara. Raised within the sunlit coastal chambers of Castelló d'Empúries overlooking the azure waters of the Gulf of Roses, Sibilla was nurtured in Occitan troubadour verse, chivalric romances, and sacred Latin liturgy. She seamlessly combines the aristocratic stature of her Castilian maternal ancestors with the vibrant seafaring spirit of the House of Empúries. In 1259, as royal and baronial embassies present competing marriage proposals, young Sibilla displays mature political insight and deep family loyalty. Understanding that her future union will influence the geopolitical equilibrium of Catalonia, she actively participates in courtly receptions beside her mother. Generous, intelligent, and deeply devout, she frequently dispenses charity to the impoverished fishermen of the coast, celebrated as the 'Pearl of Roses.' Embroidering ceremonial standards adorned with the double-headed eagle in the seaside gardens of Castelló, Sibilla reflected consummate high-born grace. Her sharp wit and fluency in Latin and Catalan charmed visiting prelates and knights, disarming political tensions with her gentle warmth and infectious courtly poise. Her luminous presence and diplomatic instincts make her a beloved emblem of maritime peace and Christian charity across the Mediterranean shores.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master courtly protocols and languages to enhance the aristocratic prestige of her house",
+    "Fulfill her dynastic matrimonial destiny to forge an enduring peace for her family",
+    "Dispense charitable relief to coastal fishing communities to earn divine favor"
+  ],
+  "Values": [
+    "True nobility consists in moral purity, courtly elegance, and selfless loyalty to one's house",
+    "Genuine kindness and courtly tact conquer hearts far more effectively than arrogance",
+    "Steadfast faith in divine providence and loving devotion to family"
+  ],
+  "Fears": [
+    "Being bartered away in a humiliating political treaty to a cruel foreign lord",
+    "Naval warfare bombarding Castelló and burning the peaceful fishing havens of Roses"
+  ],
+  "SpeechStyle": "Lyrical, poised, and bright; speaks with captivating courtly refinement, diplomatic tact, youthful elegance, and gentle warmth.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

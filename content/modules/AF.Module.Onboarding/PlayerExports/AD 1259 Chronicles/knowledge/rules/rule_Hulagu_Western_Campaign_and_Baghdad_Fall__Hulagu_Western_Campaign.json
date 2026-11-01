@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Hulagu_Western_Campaign_and_Baghdad_Fall",
+  "Keywords": [
+    "Hulagu Western Campaign",
+    "Sack of Baghdad 1258",
+    "Abbasid Caliphate Fall",
+    "Tigris Inked and Bloodied"
+  ],
+  "RagShortTexts": [
+    "Hulagu sacked Baghdad in 1258, extinguishing the Abbasid Caliphate and thrusting Mongol power."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1258 Hulagu Khan obliterated Baghdad, trampling Caliph Al-Musta'sim beneath horses to avoid shedding royal blood, terminating five centuries of the Abbasid Caliphate. The Grand Library of Baghdad was hurled into the Tigris, turning the waters black with ink and crimson with blood as the Ilkhanate prepared to sweep into Syria."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The annihilation of Baghdad shattered universal Islamic authority. Christian vassals such as Bohemond of Antioch and Hethum of Cilician Armenia chose survival, kneeling before Hulagu and providing Christian guides for the Mongol tumens against Damascus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Veterans from Mesopotamia whisper of Mongol siege engines hurling jars of naphtha and ceaseless volleys from recurve bows. Facing such an engine of war, only disciplined iron formations can hope to halt their cavalry advance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "They tell of books darkening the river, but common folk remember the mounds of unburied dead. When the great khans ride, stone castles tumble and peasants are ground into the desert dirt."
+    }
+  ],
+  "TextMappings": []
+}

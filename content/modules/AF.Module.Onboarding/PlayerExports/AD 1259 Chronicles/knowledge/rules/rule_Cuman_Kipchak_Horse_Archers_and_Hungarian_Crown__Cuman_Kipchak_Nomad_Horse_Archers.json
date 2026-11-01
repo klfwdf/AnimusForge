@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Cuman_Kipchak_Horse_Archers_and_Hungarian_Crown",
+  "Keywords": [
+    "Cuman Kipchak Nomad Horse Archers",
+    "Yellow Silk Kaftan and Felt Cap",
+    "Hungarian Royal Auxiliary Resettlement",
+    "Parthian Shot Feigned Retreat Tactics"
+  ],
+  "RagShortTexts": [
+    "Cuman horse archers resettled in Hungary served Béla IV with lethal feigned retreats and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fleeing Mongol conquests, Cuman-Kipchak pastoral nomads entered the Kingdom of Hungary under Khan Koten. Retained by King Béla IV as royal cavalry, Cuman warriors wore silk caftans and conical felt caps, cycling remount horses across vast distances and unleashing lethal feigned retreats and rapid horse archery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Though resented by conservative Hungarian magnates for pagan customs, Béla IV anchored crown military power upon Cuman alliances, marrying his son Stephen to a Cuman princess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Cuman steppe ponies thrive on scrub grass. Loosing recurve arrows from galloping saddles with effortless dexterity, they pin pursuers down before circling back to finish the rout."
+    }
+  ],
+  "TextMappings": []
+}

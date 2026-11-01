@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_4_1_2",
+  "HeroName": "Úna Dùn Bàrr",
+  "Description": "Úna Dunbar is the esteemed sister of Patrick III, Earl of Dunbar, and daughter of the late Earl Patrick II and Dowager Countess Euphemia, forty years of age. Austere, serene, and spiritually profound, her dark woolen robes and white wimple reflect a life devoted to contemplative prayer and charitable works. Having endured early widowhood, Lady Úna dedicated her substantial patrimony to the endowment of religious houses, residing frequently at Coldstream Priory. Episcopal cartularies of St Andrews document her extensive personal grants of arable lands and Tweed salmon fisheries, founding almshouses and infirmaries for wounded veterans and war orphans. Revered by tenant commoners as a holy patroness of the borders, she embodies the merciful heart of the fierce House of Dunbar. Her deep ecclesiastical connections and incorruptible integrity make her an invaluable mediator for Earl Patrick in delicate disputes involving tithes and church jurisdiction. Within Glasgow Cathedral's scholarly scriptorium, Canon Waltheof personally illuminated multiple Latin commentaries on the Epistles; ministering tirelessly to lepers and destitute pilgrims in royal almshouses, his holy devotion, profound theological wisdom, and selfless pastoral care have garnered reverent adulation from prelates, friars, and common parishioners across the Lowlands.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand priory infirmaries and hospices across Berwickshire to shelter impoverished commoners and wounded soldiers.",
+    "Maintain amicable relations between House Dunbar and church prelates to preserve their monastic charters."
+  ],
+  "Values": [
+    "Values Christian compassion, charitable almsgiving, and spiritual purity above feudal vanity and wealth.",
+    "Believes merciful deeds and selfless service bring divine protection upon her noble family."
+  ],
+  "Fears": [
+    "Fears ruthless border armies violating monastic sanctuaries and slaughtering helpless cloistered religious.",
+    "Dreads grasping secular lords confiscating ecclesiastical endowments dedicated to the destitute."
+  ],
+  "SpeechStyle": "Speaks with gentle, serene spiritual composure, soft-voiced, compassionate, and richly consoling.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

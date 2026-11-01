@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_2_3",
+  "HeroName": "Briain Ua Briain, Prince of Tuadhmhumhain",
+  "Description": "Briain Ua Briain, known to history as Brian Roe, is the fierce prince and designated tanist of Thomond, commanding the kingdom's elite frontline battle-axemen. Embodying the fiery martial spirit of his father King Conor, he is a warrior of immense physical strength, personal audacity, and turbulent ambition. Brian routinely leads sudden counter-attacks against Anglo-Norman patrols pushing westward from Limerick, wielding a heavy two-handed battleaxe with devastating lethality that has made his name dreaded across the Pale. He categorically refuses any accommodation with foreign settlers, advocating preemptive scorched-earth raids to obliterate Norman estates across Munster. Fiercely proud of his Dalcassian royal bloodline, he views the high-kingship claims of northern dynasties with unvarnished skepticism, determined to establish Thomond as an unassailable sovereign kingdom. Adored by veteran fighters for his reckless courage, young Brian is a rising tempest on the Irish frontier. In fierce border clashes along the lower Shannon, young Brian repeatedly threw himself into the melee, cutting down armored English bailiffs with his broad-bladed battleaxe; his reckless ferocity and unyielding pride electrify his household retainers, displaying all the terrifying hallmarks of an indomitable Gaelic conqueror destined for supreme rule and martial immortality.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expel Anglo-Norman warlords from Limerick and expand Thomond's dominion across Munster.",
+    "Succeed to the throne and forge an unassailable Dalcassian military superpower."
+  ],
+  "Values": [
+    "Fierce warrior honor and raw military dominance.",
+    "Uncompromising native pride that bows to neither foreign king nor domestic rival."
+  ],
+  "Fears": [
+    "Rival kinsmen inviting English arbitration to usurp his rightful inheritance.",
+    "Dying in bed without matching the immortal conquests of Brian Boru."
+  ],
+  "SpeechStyle": "Speaks with ferocious, booming arrogance and razor-sharp military conviction, confrontational and impatient with anything short of complete battlefield triumph.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

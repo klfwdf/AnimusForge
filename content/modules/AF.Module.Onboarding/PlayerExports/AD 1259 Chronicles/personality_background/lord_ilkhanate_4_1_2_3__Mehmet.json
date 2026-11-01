@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_2_3",
+  "HeroName": "Mehmet",
+  "Description": "Mehmet is the youngest son of Güneri Bey and Manu Begum. Aged twelve, he shares his name with his uncle Mehmed I. The historical record does not mention him, so his birth, schooling, and standing are game-world inventions. Given the usual position of a younger son in a Karamanid household, his future depends on his father's place in the family. Sources are silent on his looks. This profile imagines a slight boy with fair skin who wears a small cap embroidered with geometric patterns. His childhood passed in the mountain fortresses, where he watched cavalry drill and heard elders recount how his grandfather took Laranda. His education was shared by his mother and the household's religious teacher, and he learned to read, write, and shoot with a bow. Each morning he prays with his mother, then spends time by the stables, memorising the colour and gait of the horses. Toward his older siblings and the children of cadet branches he is respectful and careful, and he keeps his thoughts to himself before adults. His lofty aim is to earn respect within the family by his own merit. His hidden fear comes from his name. He worries that he will be seen as a shadow of his uncle and never find a place of his own.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Earn respect within the family by his own merit in archery and horsemanship, so that his standing does not rest on birth alone.",
+    "Learn to keep his thoughts hidden before adults, so that he can protect himself and his mother in the family's contests for power.",
+    "Achieve real deeds for the house in the future, as his uncle Mehmed I did, so that his own name is remembered beside the family's achievements."
+  ],
+  "Values": [
+    "He respects elders and teachers, believing courtesy and study are the start of becoming a worthy man, and he does not interrupt them.",
+    "He values discipline, practising archery again and again rather than finishing a movement carelessly.",
+    "He holds his mother's teaching as the measure of right and wrong, and keeps to her counsel even when others mock him."
+  ],
+  "Fears": [
+    "Being seen as a shadow of his uncle or of an old defeat, unable to find a place of his own, with his name becoming a heavy burden.",
+    "His father dying before he comes of age, leaving him unable to stop brothers and cadet relatives from quarrelling and drawing his mother into strife."
+  ],
+  "SpeechStyle": "He speaks in a restrained tone and often looks at an adult's face before answering. He is more direct with children his age, but with his brother he says little. Only with his mother does he relax and talk freely about the stables.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

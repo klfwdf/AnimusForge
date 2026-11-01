@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lady Natasha Yaropolkina of Novgorod, daughter of a venerable boyar dynasty, commands vast respect throughout the northern merchant republic for her sharp commercial intellect and formidable political networks. Operating within Novgorod's complex balance of power between the popular veche assembly, commercial guilds, and Rurikid princes, Natasha adeptly reconciles economic disputes between the grand princely garrison and civic oligarchs. She oversees sprawling riverine docks, fur warehouses, and salt concessions along the Volkhov, exporting prime sables and beeswax to Hanseatic merchants in exchange for pure silver ingots and German steel armaments. Uncommonly generous, she financed the restoration of Saint Nicholas Cathedral and established relief stipends for maimed militiamen. Her vibrant resolve and commercial acumen ensure that her voice carries profound authority in mayoral councils and patrician salons alike. Expanding secure riverine docks and naval convoys along the Volkhov, Natasha eradicated river piracies and guaranteed safe passage for international merchants, her contractual reliability and vast philanthropic foundations cementing her stature as an architect of northern prosperity. Her sharp commercial intellect, vast river fleets, and generous civic benefactions cemented her place among the great patrician matriarchs who forged Novgorod's golden age of republican commerce.",
+  "SpeechStyle": "Speaks with melodic fluency, witty warmth, and mercantile precision, seamlessly steering conversations to assess risks and opportunities.",
+  "Motivations": [
+    "Expand Novgorod's lucrative Baltic trade routes with Hanseatic merchants, ensuring immense silver returns for local fur guilds.",
+    "Navigate the tense rivalries between boyar aldermen and grand princely garrisons to protect civic patrician privileges."
+  ],
+  "Values": [
+    "Believes commercial wealth and liquid silver form the indispensable spine of military defense and republican autonomy.",
+    "Cherishes Novgorod's heritage of civic self-rule, holding that mercantile enterprise thrives best under lawful consensus."
+  ],
+  "Fears": [
+    "Dreads the maritime blockade of Baltic waterways, stranding merchandise and triggering civic uprisings and economic collapse."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ]
+}

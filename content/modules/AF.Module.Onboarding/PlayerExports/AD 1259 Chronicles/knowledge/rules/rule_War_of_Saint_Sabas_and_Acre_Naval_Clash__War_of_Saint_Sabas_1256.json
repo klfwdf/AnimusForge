@@ -1,0 +1,41 @@
+{
+  "Id": "rule_War_of_Saint_Sabas_and_Acre_Naval_Clash",
+  "Keywords": [
+    "War of Saint Sabas 1256",
+    "Battle of Acre Naval Clash",
+    "Venetian Genoese Levant Feud",
+    "Templar Hospitaller Rivalry"
+  ],
+  "RagShortTexts": [
+    "The War of Saint Sabas divided Acre into bloody street fights between Venice and Genoa."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The War of Saint Sabas (1256–1270) fractured Crusader Outremer into fratricidal war. Venice, Pisa, and the Templars clashed against Genoa, Hospitallers, and Philip of Montfort. The 1258 naval Battle of Acre saw Venetian galleys rout Genoa, compelling the Genoese to ally with Nicaea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Italian commercial credit sustains Outremer fortresses, yet maritime vendettas undermine the realm. Seeing Templars and Hospitallers shoot crossbow bolts at each other across Acre streets delights Cairo emirs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Around Acre harbor, Venetian marines and Genoese crossbowmen trade catapult fire day and night. Nobody can unload cargo without taking an iron bolt through the arming coat."
+    }
+  ],
+  "TextMappings": []
+}

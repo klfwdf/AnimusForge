@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Battle_of_Skuodas_and_Courland_Ambush",
+  "Keywords": [
+    "Battle of Skuodas 1259",
+    "Samogitian Forest Ambush",
+    "Livonian Order Defeat at Skuodas",
+    "Baltic Resistance Prelude"
+  ],
+  "RagShortTexts": [
+    "In 1259 at Skuodas, Samogitian pagan warriors routed the Livonian Order, shattering crusader."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1259, Samogitian pagan warriors led by war-chieftain Alminas raided Courland and ambushed returning Livonian Order contingents at the Battle of Skuodas. Over thirty brother-knights were slaughtered in the dense wetlands, shattering the aura of crusader invincibility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Chieftains across the Baltic realized that mail-clad heavy cavalry are vulnerable in forested marshlands. Skuodas inspired the Semigallians and Curonians to renounce forced Christian oaths and forge an anti-crusader league."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Samogitians sprang from the brush with barbed spears and broad-headed axes, dismounting armored destriers in knee-deep mud where knightly lances were useless sticks. It was a merciless pagan slaughter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Forest folk hid baptismal crosses beneath floorboards and poured mead upon sacred roots. The old thunder god answered our prayers; the German monks are flesh and blood, and our woods remain free."
+    }
+  ],
+  "TextMappings": []
+}

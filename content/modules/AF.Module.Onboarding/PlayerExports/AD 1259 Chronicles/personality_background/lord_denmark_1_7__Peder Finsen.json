@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_1_7",
+  "HeroName": "Peder Finsen",
+  "Description": "Sir Peder Finsen of Denmark, royal knight and privy counselor, stood as a resolute military champion of the central monarchy under King Christoffer I and Queen Regent Margaret Sambiria. Amidst ferocious conflicts between crown and clergy, compounded by aristocratic rebellions and Slavic piratical raids, Finsen remained unwavering in his feudal allegiance to the throne. Descended from an ancient Jutlandic equestrian line, he mastered castle architecture and cavalry skirmish logistics. When Copenhagen was sacked in 1259 by amphibious raiders and rebellion engulfed Zealand, Finsen personally spearheaded the armored royal bodyguard, repelling multiple rebel ambushes along river narrows to secure the person of the ten-year-old King Eric V. Meticulous and incorruptible, he managed grain requisitions and the reconstruction of coastal beacon towers across the archipelagos, hailed by royal loyalists as an immovable rock of feudal integrity. During the reorganization of monarchical strongholds in Zealand, Finsen personally supervised defensive upgrades at Kalundborg and Vordingborg, integrating crossbow platforms into their ramparts. Confronting baronial coalitions allied with North German mercenaries, he appeared before the High Court of the Realm to deliver scathing indictments against seditious magnates. His incorruptible administrative diligence and rigorous enforcement of military discipline earned him the unwavering confidence of Queen Regent Margaret Sambiria, cementing his reputation as an indispensable bastion of the royalist cause.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the legitimate royal line of Estridsen to the death, crushing baronial conspiracies that seek to weaken the crown.",
+    "Rebuild and fortify the royal defensive network across Jutland and Zealand, securing provisions for sustained military pacification."
+  ],
+  "Values": [
+    "Regards the knightly oath of vassalage and absolute monarchical loyalty as supreme moral truths, honoring military discipline.",
+    "Champions unpretentious diligence and steadfast duty, scorning opportunistic barons in favor of protecting the young monarch."
+  ],
+  "Fears": [
+    "Dreads rebel baronial coalitions storming royal bastions, murdering the young King Eric V and extinguishing the legitimate line."
+  ],
+  "SpeechStyle": "Speaks with austere, resonant gravitas and martial economy, his precise royal directives brooking no hesitation or disobedience.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

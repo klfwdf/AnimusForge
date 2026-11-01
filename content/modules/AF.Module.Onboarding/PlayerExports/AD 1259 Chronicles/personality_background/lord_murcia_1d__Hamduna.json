@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1d",
+  "HeroName": "Hamduna",
+  "Description": "Hamduna, twenty-eight in the game setting, is the wife of Ja'far ibn Muhammad al-Hudi and mother of their son Sa'd. The game gives her only a single name, with no patronymic, and the sources record no family for her, so her origins can only be a background inference. She has a gentle face, often covers her hair with a pale headcloth, and wears an old silver bangle whose origin the game does not explain. Her daily work centres on correspondence and hospitality. When her husband travels to negotiate, she often receives the envoys and the women of visiting households in his place. After 1243, dealings between the Murcian court and its neighbours ran on banquets and letters, and women in such roles rarely appear in the record, so her exact function can only be guessed. Against rivals she prefers kindness that leaves them dignity, and she quietly learns their weak points while doing so. Her driving aim is to keep the household safe, so that her husband and son do not lose each other in a crisis. Her deepest fear is that a failed negotiation brings revenge, her husband is dragged down with the family name, and she can only watch.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep dealings with rivals courteous and leave room for retreat, so one failed talk does not drive the family into a corner.",
+    "Raise her son Sa'd in letters and etiquette, so he can hold his place at court and understand the family's duties and limits.",
+    "Build a network of women and officials' households through banquets and gifts, a channel that carries news when the men are away."
+  ],
+  "Values": [
+    "Honest dealing even with enemies, never humiliating an opponent, because graceful retreat often buys a longer peace.",
+    "Keeping the household whole above any single gain, so no bargain is struck at the cost of husband or child.",
+    "Respect for local faith and custom, treating guests of every rank alike so that she earns trust across Murcian society."
+  ],
+  "Fears": [
+    "A failed negotiation bringing reprisal, with her husband imprisoned or exiled from his fiefs while she and her son can do nothing but wait.",
+    "Her young son Sa'd pulled into the family's power struggles, forced to carry duties not his own and losing a settled childhood."
+  ],
+  "SpeechStyle": "Speaks softly and often with a smile, rarely refusing outright. On sensitive matters she first eases the mood with greetings and concern, then turns slowly to the point. With her son she is patient and teaches through stories.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

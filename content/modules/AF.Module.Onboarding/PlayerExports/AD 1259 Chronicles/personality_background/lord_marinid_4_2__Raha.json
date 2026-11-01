@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_4_2",
+  "HeroName": "Raha",
+  "Description": "Raha was the wife of 'Ali ibn 'Uthman Adergal and belongs to the household of the 'Uthman Adergal branch. Beyond her name, no source records anything about her, so this portrait is a game-setting construction based on the faction's history. Her appearance is a game-setting invention: a woman of middle height with fair skin, usually veiled in pale grey gauze over her nose and mouth, leaving calm eyes visible. She wears an old wooden bangle with fine geometric carvings, a gift from her mother when she married into the family. In youth she spent her days between the weaving room and the kitchen, learning mending, dyeing and stock keeping, which earned her a name as a capable housewife. Her father and brothers served in the hill garrisons, so she knew the grain and supply routes well and often checked her husband's figures. While her husband served at the mountain pass garrison, she managed the household grain, livestock and the reception of guests, never letting household spending run into disorder. She is gentle with the women of the kin but seldom voices an opinion in public. Her highest aim is to keep the household's property and children secure, so that her husband can watch the pass without worry. Her darkest side is endurance. She keeps grievances and worries to herself rather than burden her husband with household matters, so she often bears the strain alone. Her greatest fear is that harm will come to her husband at the pass and she will be unable to hold the household together.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wanted to keep the household's property and children secure, so that her husband could hold the mountain pass without worrying about grain, livestock or the family at home.",
+    "She ran the house in order, managing the weaving room and stores so that guests and kinswomen would see the family as complete and dignified.",
+    "She kept peace among the women of the kin, mediating small disputes over marriage and ceremony so that no quarrel split the household."
+  ],
+  "Values": [
+    "Loyalty and watchfulness, since she believed a wife's duty is to guard the home and its people, and to keep everything steady while her husband is away.",
+    "Thrift and diligence, as she held that a family's prosperity comes from careful use of every measure of grain and cloth rather than from extravagance.",
+    "Endurance and dignity, because she believed a mistress of the house should not display household grievances before others."
+  ],
+  "Fears": [
+    "Harm reaching her husband at the pass while she lacks the strength to keep the household's property and children together, leaving the branch in decline.",
+    "Strife within the kin spreading into the women's quarters, where quarrels and jealousy would end the trust the family depends on."
+  ],
+  "SpeechStyle": "She speaks little and softly, often opening with figures about grain or household needs. In disputes she listens first, then brings the issue back to specifics. Before her husband leaves, she reminds him of every important matter.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

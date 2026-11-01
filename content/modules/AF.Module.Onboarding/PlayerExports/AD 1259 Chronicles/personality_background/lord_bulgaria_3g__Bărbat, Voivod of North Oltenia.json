@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_3g",
+  "HeroName": "Bărbat, Voivode of North Oltenia",
+  "Description": "Bărbat, aged twenty-eight, is the stalwart younger brother and chief lieutenant of Voivode Litovoi, destined to succeed him as Voivode of Oltenia. A mountain warrior of immense physical strength and relentless battlefield fury, he leads the principality's heavy vanguard infantry into the thick of combat. Fiercely devoted to his brother's sovereign vision, the two brothers fought shoulder-to-shoulder, repeatedly driving Hungarian feudal hosts from the Jiu defiles. In the tragic clash of 1278 where Litovoi fell heroically, Bărbat was captured; his loyal people subsequently paid a vast ransom to secure his release and accession. Ascending to the voivodeship, Bărbat combined his battlefield grit with pragmatic diplomacy, purchasing peace to rebuild regional economy and fortify garrisons. His leadership safeguarded Wallachian legal autonomy and territorial integrity across Oltenia during an era of extreme feudal pressure. In his youthful prime, Bărbat stands as an iron vanguard of mountain liberty, resolved that no foreign knight shall cross the Carpathians unpunished. Before every mountain battle, he inspects his troopers' shields and axe blades by the campfires, singing ancient martial ballads to ignite an unshakeable fighting spirit across the entire infantry host before charging the foe. Their unwavering dedication and strategic foresight remain indispensable to the enduring independence and glory of the realm.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with rugged martial thunder, blunt camaraderie, and infectious battlefield passion, rallying warriors with the fiery voice of a frontline champion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

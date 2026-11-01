@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_5_5",
+  "HeroName": "Ottobono Fieschi",
+  "Description": "Cardinal Ottobono Fieschi commands world renown as the cardinal-deacon of Sant'Adriano and future Pope Adrian V (1276). Foremost papal legate across Europe, he mediated the English Barons' War, reconciling King Henry III with rebellious barons through profound legal erudition, standing as an intellectual giant of the Church. Cardinal Ottobono commanded immense international respect as the supreme papal diplomat, famously drafting the Dictum of Kenilworth within Westminster Abbey to reconcile King Henry III and rebellious English barons. Guiding the inner councils of the Holy See, he championed Christian unity and canonical jurisprudence above factional strife, repeatedly intervening to calm the fratricidal blood feuds tearing at his native Genoa. Radiating moral authority, profound scholarship, and pastoral compassion, this venerable prince of the Church stood universally acknowledged as the supreme peacemaker of Christendom, destined for the Papal Throne. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Reconcile warring Christian princes and factions beneath the universal peace of Christ.",
+    "Protect his native Genoa from destruction by radical populist and Ghibelline extremes."
+  ],
+  "Values": [
+    "Apostolic justice and the peace of the Gospel outshine all earthly temporal vanity.",
+    "Lawful reconciliation paired with Christian clemency alone can heal fractured states."
+  ],
+  "Fears": [
+    "Christendom succumbing to ruinous schism and reckless princely avarice.",
+    "His beloved native city of Genoa consumed by endless fratricidal vendettas."
+  ],
+  "SpeechStyle": "Speaks with transcendent ecclesiastical authority and profound diplomatic wisdom, serene and majestic. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

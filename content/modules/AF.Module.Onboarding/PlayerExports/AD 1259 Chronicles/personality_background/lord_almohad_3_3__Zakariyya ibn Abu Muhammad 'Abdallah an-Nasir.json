@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_3_3",
+  "HeroName": "Zakariyya ibn Abu Muhammad 'Abdallah an-Nasir",
+  "Description": "Zakariyya ibn Abu Muhammad 'Abdallah an-Nasir is a son of Abu Muhammad 'Abdallah an-Nasir, according to the game lineage. He is about sixty-two, slightly slimmer than Muhammad, with a gentle face. His forehead has lost most of its hair, and he usually wears a pale small cap. In his youth he studied scripture and poetry in the Marrakesh madrasa, and his peers called him the scholar of the clan, which set him apart from his soldier brothers. He bears no clear battle scars. A fire in the palace burned his right hand, and his fingers still do not bend fully, so he binds his pen with cloth to write. He shares a father with 'Ali and Muhammad, and the three have their own claims over the family's property and posts, so he often acts as the peacemaker between them. His highest aim is to uphold Almohad law and scripture, so the clan can stand on mercy and justice in chaos instead of becoming a bare military band. His darker side is shame at his own softness. At night he returns to the question of whether a firmer hand might have saved the family from losing so much in the disputes over property. The game gives him no verifiable personal record, so these details are inferred from the historical setting.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold Almohad law and scripture so the clan stands on mercy and justice in chaos, and does not become a bare military band that loses its cultural dignity.",
+    "Mediate the property and post disputes among his brothers, keeping the family from weakening through internal strife and preserving its estates intact for every branch.",
+    "Pass the tradition of the madrasa and the copied books to the younger generation, so the clan's young men can ride and also read rather than keep only swords."
+  ],
+  "Values": [
+    "Mercy and justice. He holds that a ruler's first duty is to protect the weak, and even a surrendering enemy should be treated with dignity rather than slaughtered.",
+    "Learning and law. He believes scripture outlasts swords in sustaining a dynasty, and he treasures the madrasa, its lecturers and its manuscripts.",
+    "Moderation and simplicity. He dislikes luxury and would rather spend wealth on relief for old retainers and poor students than display rank at court."
+  ],
+  "Fears": [
+    "Fears that his softness will be exploited by his brothers, so the family's property and posts slip away in mediation until nothing, not even the ancestral estates, remains.",
+    "Fears that the scripture and the madrasa will be destroyed in the wars, leaving later generations to learn of their ancestors only through enemy records."
+  ],
+  "SpeechStyle": "Mild and orderly, he often cites scripture and old verse. He pauses to leave room for a reply, calms a quarrel first, then offers a compromise, sincere yet never giving up principle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

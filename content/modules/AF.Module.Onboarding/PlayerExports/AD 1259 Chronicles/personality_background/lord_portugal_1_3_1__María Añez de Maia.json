@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_3_1",
+  "HeroName": "María Añez de Maia",
+  "Description": "Doña María Añez de Maia is a high-born matriarch hailing from one of the five ancient founding noble houses of Portugal, the storied House of Maia. Her marriage to Dom Gil Martins de Riba de Vizela, Alferes-mor of the kingdom, united vast seigneurial territories spanning the fertile Minho and Douro river basins. Intelligent, resolute, and exceptionally capable in manorial stewardship, Doña María governs the extensive agrarian rolls, mills, and vassal contracts of their combined estates. In 1259, while her husband executes military duties in Lisbon, she manages the home domains with an iron yet equitable hand. She routinely audits estate granaries, settles tenant disputes, and firmly rebuffs territorial encroachments attempted by ambitious neighboring lords. Combining ancestral pride with tireless industry and quiet Christian charity, María stands as a formidable feudal chatelaine anchoring her family's northern power. Governing agricultural tenures across the Minho according to the ancient customs of the House of Maia, María meticulously audited riparian mill rolls. Establishing farming communes to resettle veteran soldiers, her administrative acumen provided the rock-solid domestic foundation sustaining her family's wealth. Her formidable administrative intellect and steadfast character ensure that the noble houses of Maia and Vizela retain immense wealth and power.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prudently administer the vast northern manorial estates of Maia and Vizela to guarantee immense wealth",
+    "Defend ancestral forestry and riparian franchises against incursions by rival feudal lords",
+    "Endow local monastic charities to cultivate enduring popular devotion and prestige across the Minho"
+  ],
+  "Values": [
+    "A noble chatelaine commands respect through orderly governance; domestic stability underpins martial victory",
+    "Ancestral charters won with blood must be protected without compromise through law and firm resolve",
+    "Moral rectitude, generous Christian charity, and unshakeable dedication to lineage honor"
+  ],
+  "Fears": [
+    "Blight or severe famine devastating valley crops, impoverishing her tenantry and destabilizing domains",
+    "Her husband and son falling in southern battles, leaving her noble house vulnerable to greedy rivals"
+  ],
+  "SpeechStyle": "Stately, precise, and authoritative; speaks with the effortless dignity, legal acumen, and commanding composure of a premier feudal chatelaine.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

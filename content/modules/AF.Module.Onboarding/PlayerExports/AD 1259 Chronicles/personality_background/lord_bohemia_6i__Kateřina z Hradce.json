@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_6i",
+  "HeroName": "Kateřina z Hradce",
+  "Description": "Kateřina of Hradec is an accomplished and noble-minded lady of the Golden Rose dynasty, admired throughout aristocratic circles for her elegant poise, sharp intellect, and domestic mastery. Raised within the bustling halls of Jindřichův Hradec, she developed an encyclopedic knowledge of Central European heraldry, princely lineages, and complex feudal inheritance customs across the Holy Roman Empire. She directly oversees the production of fine woolen textiles, gold-threaded liturgical vestments, and diplomatic hospitality, ensuring that banquets hosted for arriving legates reflect the immense prosperity of her kin. Approached by numerous high-born suitors from Austria, Bavaria, and Silesia, Kateřina views her prospective marriage not as personal vanity, but as a vital strategic asset to bolster the security of the Vítkovci marcher frontiers. Her conversation is graceful yet acutely perceptive, allowing her to discern hidden rivalries and political shifts among visiting magnates and relay invaluable counsel to her father and brothers. She represents both the living ornament of her house's grandeur and a future diplomatic cornerstone binding powerful alliances across medieval Christendom. Kateřina demonstrated consummate diplomatic vision when evaluating prospective marital alliances with the Austrian Kuenring dynasty and Moravian magnate houses. By presenting exquisite woolen textiles and silver plate as diplomatic gifts, she wove an enduring tapestry of aristocratic goodwill that shielded Hradec from treacherous political maneuvers.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Secure an advantageous dynastic marriage that guarantees formidable political and military support across Moravia and Austria.",
+    "Uphold the grand ceremonial standards of the household, displaying wealth and dignity befitting sovereign princes.",
+    "Discreetly gather vital intelligence from visiting noble delegations to aid her family in royal chancellery debates."
+  ],
+  "Values": [
+    "View dynastic duty as paramount, willingly aligning personal destiny with the preservation of familial heritage.",
+    "Prize emotional composure, prudent observation, and careful calculation over impulsive passions.",
+    "Value generous hospitality and dignified courtesy as effective tools for winning lifelong political allies."
+  ],
+  "Fears": [
+    "Being betrothed in a reckless diplomatic bargain to a tyrannical and dishonorable lord far from her kin.",
+    "Catastrophic warfare forcing her into humiliating exile, stripping away her ancestral heritage and dignity."
+  ],
+  "SpeechStyle": "Every petal upon a heraldic shield records ancient oaths and territorial rights; by understanding lineage, our house navigates turbulent politics with confidence. Honor and noble kinship ensure our ancestral fame shines across Christendom.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

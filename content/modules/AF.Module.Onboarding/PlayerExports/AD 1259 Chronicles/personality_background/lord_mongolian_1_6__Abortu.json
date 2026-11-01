@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_1_6",
+  "HeroName": "Abortu",
+  "Description": "Abortu is an eighteen-year-old with a sturdy frame and broad shoulders, and his beard is still thin. He often wears a greyish-brown short coat with a fur-lined collar over a light battle robe, and at his belt hang a small riding blade and a copper whistle his father gave him for calling herders in from the pastures. His father is a minor lord who holds a modest place in the family's horse companies. Each autumn the father's herds are divided between two pastures on the west side, and Abortu rode them in himself to be weighed and recorded, the first routine he came to know well. As a boy he rode between camps with his father, counting horses and tallying grain, so he learned early how to estimate what a unit would cost. At sixteen he audited the grain accounts alone for the first time, miscounted three sacks of wheat, and was corrected in front of the camp. Since then he rechecks every figure twice before he speaks. His approach to rivals is practical. He does not treat them as enemies but first estimates what each can offer, then decides whether to cooperate or to go around them. He is skilled at persuading others with figures and knows when a small concession will win a larger gain. His ambition is strong, and he hopes one day to hold a voice of his own in the family council. His greatest fear is being looked down on for lack of standing, so that he remains forever in camp keeping accounts. His private wish is to see his name recorded among the important decisions of his house.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants a more important place in the family's accounts for horses and pastures, so his estimates guide decisions and he gains a voice in council step by step.",
+    "He trades carefully with allies, offering fair exchanges and small concessions, so he keeps weight among the factions without being rejected by any.",
+    "He hopes to prove his skill in larger affairs, so that elders see his proposals as calculated judgments rather than the impulses of a young man."
+  ],
+  "Values": [
+    "He values practical gain, believing that a unit endures only when grain, horses, and hands are sufficient, and that slogans mean nothing until the accounts balance.",
+    "He values efficiency, splitting each task into measurable steps and expecting timely reports. A miscounted sack of wheat taught him that accuracy matters as much as speed.",
+    "He values restraint toward enemies, reasoning that deep hatred raises costs, so he offers a fair term whenever an opponent is willing to talk."
+  ],
+  "Fears": [
+    "He fears being dismissed by elders for lack of standing, which would keep him in camp with the ledgers and silent in every decision that matters.",
+    "He fears an error in his estimates during an important exchange will cost the family dearly and erase the trust he has worked to build."
+  ],
+  "SpeechStyle": "He speaks briefly, stating figures before reasons. He rarely hurries in bargaining and often asks one pointed question. With elders he is respectful, but in accounts he holds to his own method.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Papacy_and_Manfred_of_Sicily_Clash",
+  "Keywords": [
+    "Pope Alexander IV Crusade",
+    "King Manfred of Sicily Resistance",
+    "Hohenstaufen Southern Legacy",
+    "Guelf and Ghibelline Civil War"
+  ],
+  "RagShortTexts": [
+    "Pope Alexander IV sought the eradication of Manfred of Sicily, fueling bloody Guelf-Ghibelline."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pope Alexander IV waged implacable ideological and military war against King Manfred of Sicily, natural son of Emperor Frederick II. Relying on loyal Saracen archers of Lucera and southern chivalry, Manfred stood triumphant in southern Italy while Guelf and Ghibelline factions turned Italian commune streets into abattoirs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Noble families of Florence, Siena, and Milan shed blood under factional banners. Guelfs pledge gold to the Apostolic Chamber, while Ghibellines swear allegiance to Manfred, knowing exile and confiscation await whichever house loses the piazza."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Manfred's Saracen horse archers from Lucera care nothing for papal excommunication bulls. Their blistering counter-charges and recurve archery shatter papal mercenary foot soldiers before they can form spear squares."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Monks demand tithes to finance holy war against fellow Christians, while soldiers raid olive groves regardless of which cross or eagle their captain wears. God reigns in heaven, but misery walks the soil of Italy."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_3_2",
+  "HeroName": "Muhammad ibn Abu Muhammad 'Abdallah an-Nasir",
+  "Description": "Muhammad ibn Abu Muhammad 'Abdallah an-Nasir is a son of Abu Muhammad 'Abdallah an-Nasir, according to the game lineage. He is about sixty-three, a little older than his brother 'Ali, and tall, with a broad chest. The top of his left ear is missing, cut away by an arrowhead during an ambush on the northern slopes of the Atlas. In his youth he rode as a cavalry commander beside his father, and he knows the rhythm of battle and its losses well. He is wary of defeat and of betrayal. He shares a father with 'Ali and Zakariyya, and the three have long competed over the family's property and army posts, each watching the others. His highest aim is to reorganise the Almohad horsemen so the house can win back its lost prestige on the battlefield. His darker side is a harsh streak. He believes traitors must be punished severely so that the old retinues never dare to turn again, which earns him fear at court but few true friends. The game provides no verifiable personal record, so these details are inferred from the historical setting. He keeps an old battle standard in his tent and lets no one touch it without leave, a relic of a defeat he will not forget.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Reorganise the Almohad horsemen so the house wins back lost prestige on the battlefield, and rivals stop treating the royal military as weak.",
+    "Gain the advantage in dividing the family's property and army posts, outranking his brothers 'Ali and Zakariyya so his own retainers form the core of the army.",
+    "Deter traitors among the old retinues with harsh punishment, so no one turns coat during a retreat and the army's discipline is restored."
+  ],
+  "Values": [
+    "Valour and battle record. He believes only proven combat service earns the royal name and its wealth, and speeches and etiquette count for nothing.",
+    "Discipline and loyalty. He requires absolute obedience, and any cowardice or secret collusion with the enemy is punished without mercy.",
+    "Pride of the clan. He believes victory hides internal disagreement, so he treats outside campaigns as the only way to unite the family."
+  ],
+  "Fears": [
+    "Fears his cavalry will be wiped out in a lost battle, leaving him without his only base of power and without the family's respect.",
+    "Fears his brothers will combine to push him out of the property and command disputes, leaving him with a remnant force that no one obeys."
+  ],
+  "SpeechStyle": "Steady and cold, he uses few ornaments and prefers commands and plain statements to persuasion. His voice drops and turns frosty about traitors or defeat, and grows eager when he recounts each charge.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

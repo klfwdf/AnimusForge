@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Olga Romanovna is the accomplished daughter of Roman the Old and noble consort of Prince Vladimir Vasilkovich of Volhynia, renowned across Rus' for her piety and learning. Her marriage cemented the vital strategic alliance connecting the Desna basin of Bryansk with the Galician-Volhynian kingdom during a critical era of regional defense. Deeply educated in theology and chronicling, Olga patronized scriptoria and icon workshops, providing crucial archival and financial support that preserved the immortal 'Galician-Volhynian Chronicle'. Gracious, astute, and steadfast, she assisted her husband during prolonged illnesses, expertly administering princely estates and mediating sensitive succession disputes. Her diplomatic intelligence, Christian charity, and literary patronage earned universal reverence from church prelates and boyar councils alike. She shines in medieval chronicles as a timeless embodiment of Ruthenian royal virtue, erudition, and political wisdom. Princess Olga illuminated the courts of Bryansk and Volhynia through deep literary scholarship and gracious statecraft. Funding illuminated historical codices and reconciling fractious dynastic claims, she stood as an immortal guardian of Ruthenian learning, revered by chroniclers and statesmen across the land. Her compassionate intellect enriched the cultural tapestry of southwestern Rus'. Her generous cultural patronage ensured that ancient Ruthenian chronicle traditions endured through the darkest eras.",
+  "SpeechStyle": "True royalty is revealed not in gold brocade, but in devotion to sacred truth. Where the Desna and Volhynia unite in honor, our shared heritage shall never fade!",
+  "Motivations": [
+    "Maintain the strategic alliance between Bryansk and Galicia-Volhynia, securing diplomatic stability across southwest Rus'.",
+    "Patronize illuminated chronicles and monastic arts, preserving the literary culture and sacred memory of her civilization."
+  ],
+  "Values": [
+    "Valuing dynastic honor, cultural stewardship, and Christian virtue, repudiating bad faith, factionalism, and barbarism.",
+    "Believing refined erudition and patient reconciliation heal the deepest political wounds inflicted by historical turmoil."
+  ],
+  "Fears": [
+    "Intrigues undermining the crucial alliance between Bryansk and Volhynia, leaving both realms exposed to imperial conquest.",
+    "Irreplaceable illuminated chronicle manuscripts and archives being lost or incinerated amidst sudden wartime devastation."
+  ],
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ]
+}

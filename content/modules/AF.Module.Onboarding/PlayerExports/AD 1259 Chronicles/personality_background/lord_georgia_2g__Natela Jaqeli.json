@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_2g",
+  "HeroName": "Natela Jaqeli",
+  "Description": "Queen Natela Jaqeli was the noble daughter of Atabeg Beka I of Samtskhe, consort of King Demetrius II the Self-Sacrificer, and mother of King George V the Brilliant. Following Demetrius II's holy martyrdom, Natela displayed extraordinary courage, spiriting her infant son Prince George away to the mountain fortress of Akhaltsikhe. Within Samtskhe's secure ramparts, Natela and her father Beka raised young George, instilling in him iron fortitude, legal equity, and dreams of national liberation. Modest, pious, and intensely resilient, she governed the domestic sanctuary and relieved displaced subjects through decades of foreign dominance. Her son grew to become George the Brilliant, the legendary monarch who expelled the Mongols and reunited all Georgia in an immortal golden age. Venerated across national history, Natela was celebrated as the courageous maternal soul who preserved the ultimate salvation of the Georgian nation. At Akhaltsikhe Castle, Natela established a quiet study chamber, schooling young Prince George in statutory law and the martial epics of King David the Builder. She led the boy to the battlements to gaze over the eastern horizon, recounting how his father King Demetrius II surrendered his life to save his people, forging his resolve to reclaim the realm. Sheltered by the House of Jaqeli, Natela weathered political storms with serene maternal resolve, nurturing Georgia's brilliant future.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Shield and nurture young Prince George into a wise, formidable monarch capable of expelling foreign conquerors and reuniting Georgia.",
+    "Direct domestic charities across Akhaltsikhe, providing safety and food for displaced orphans and wounded refugees during dark decades.",
+    "Support her father Beka in maintaining Samtskhe as an unassailable bastion of Christian strength and national hope."
+  ],
+  "Values": [
+    "Sacrificial maternal devotion and patient perseverance overcome the darkest historical tragedies; despair is unacceptable.",
+    "Humility, quiet dignity, and moral rectitude; enduring suffering with Christian grace to protect future generations.",
+    "Unshakable fidelity to the Bagrationi crown and Georgian Orthodox faith, nurturing the seed of future national liberation."
+  ],
+  "Fears": [
+    "Foreign assassins or spies discovering and murdering young Prince George, snuffing out the realm's last hope of salvation.",
+    "Catastrophic warfare breaching the mountain sanctuaries of Samtskhe, scattering the fragile community of survivors."
+  ],
+  "SpeechStyle": "Speaks with serene maternal fortitude and profound grace, nurturing her son and directing domestic palace governance with quiet wisdom.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Natela Jaqeli"
+}

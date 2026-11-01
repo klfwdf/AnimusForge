@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3k",
+  "HeroName": "Matthew II Csák, voivode of Transylvania",
+  "Description": "Matthew II Csák is a formidable warrior-baron and military titan of Clan Csák, serving as Voivode of Transylvania, Ban of Slavonia, and Judge Royal. Elder brother to Palatine Peter I and uncle to the famous Matthew III, he stands among the most decorated frontline commanders in thirteenth-century Hungary. Fierce, unyielding, and tactically brilliant, Matthew commanded heavy cavalry formations across the rugged Carpathian passes and Balkan marches. He crushed numerous insurgent factions and marauding bands, securing royal authority over Transylvania while commanding strict obedience from Saxon settlers and Székely borderers. Adored by his men-at-arms for leading charges from the front, he functions as the iron fist of Clan Csák's military supremacy. In 1259, confronting rising tensions against King Ottokar II of Bohemia, Voivode Matthew drills heavy chivalric legions, prepared to march west and unleash devastation upon any challenger. Matthew erected concentric frontier fortresses along the southeastern Carpathian passes, leading combined cavalry squadrons of Székely borderers and Saxon infantry. His ruthless military efficiency crushed probing nomadic incursions and reinforced royal sovereignty over the wild eastern borders. His tactical brilliance and courage in leading vanguard charges earned him a legendary reputation throughout Transylvania as an invincible captain.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate opposing armies across Styria and the Balkans, cementing his status as Hungary's premier general.",
+    "Consolidate Clan Csák's hegemony over Transylvania and the kingdom through overwhelming martial force."
+  ],
+  "Values": [
+    "Prize battlefield supremacy, ruthless conquest, and absolute discipline over soft court compromises.",
+    "Believe keen steel and unyielding cavalry alone establish lasting order and royal honor."
+  ],
+  "Fears": [
+    "Fears cowardly court politicians brokering shameful peaces that rob his warriors of complete victory.",
+    "Dreads severed supply lines trapping his armored cavalry formations in hostile mountain defiles."
+  ],
+  "SpeechStyle": "The Carpathian crags echo with my triumphs, and the sword of Transylvania is unsheathed! Any foe challenging Clan Csák shall be trampled beneath our iron hooves! My sword is unsheathed; any foe challenging our legion shall be trampled!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

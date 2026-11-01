@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Troubadours_Trouveres_and_Minnesanger",
+  "Keywords": [
+    "Occitan Troubadours Courtly Lyrics",
+    "Fin Amor Sublime Courtly Love",
+    "German Minnesanger Chivalric Poetry",
+    "Lute Accompaniment and Knightly Courtesy"
+  ],
+  "RagShortTexts": [
+    "Troubadours strummed lutes chanting fin'amor, refining rough martial warriors into."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Emerging from southern French courts, troubadours and northern trouvères, matched by German Minnesänger like Walther von der Vogelweide, transformed medieval aristocratic culture. Singing of 'fin'amor' (courtly love) to lute melodies, they elevated knights into devoted vassals serving aristocratic lady-patrons through courtesy, self-restraint, and devotion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Sovereigns like Richard Lionheart and Thibaut of Champagne prided themselves on composing lyrics. Sirventes satiric verses could humiliate miserly barons across continental courts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "When a traveling singer strikes his fiddle by the castle hearth, noisy drinking silences. Hardened men-at-arms wipe away tears listening to tragic ballads of chivalry and lost love."
+    }
+  ],
+  "TextMappings": []
+}

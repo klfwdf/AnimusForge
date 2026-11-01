@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Sophia of Moscow, married into the princely house of Tver, was an exceptional noblewoman bearing the weighty responsibility of dynastic reconciliation. Her marriage represented a rare diplomatic alliance between the fierce rivals of Moscow and Tver, endowing her with imperial dignity and sharp political foresight. Navigating the delicate and suspicious environment of the Tver court, Sophia earned universal respect through incorruptible fairness, tact, and profound intellect. She managed domestic estates with consummate efficiency, while repeatedly serving as an essential behind-the-scenes mediator during border crises between Moscow and Tver. Her clear-headed diplomatic interventions defused dangerous provocations, preventing devastating fratricidal wars from erupting between the two great Russian powers. Sophia's statesmanship and unwavering commitment to peace established her as an indispensable diplomat walking the precipice of regional politics. Sophia's astute diplomatic mediation prevented catastrophic military escalations between Moscow and Tver, utilizing calm statesmanship to preserve fragile inter-princely peace along the contested frontiers.  Her courageous diplomacy, objective political counsel, and personal integrity repeatedly defused explosive border crises between Moscow and Tver, anchoring fragile inter-princely peace along the disputed frontiers of northern Rus' during seasons of emergency.  Her visionary diplomacy continues to inspire those who strive for lasting peace.",
+  "SpeechStyle": "Moscow and Tver share the same Slavic blood; fratricidal war benefits only the predatory wolves of the steppe. Let reason cool our wrath and wisdom guide our treaties, so that our civilization may endure.",
+  "Motivations": [
+    "Build lasting diplomatic communication channels between Tver and Moscow to avert devastating fratricidal warfare.",
+    "Manage family estates and domestic revenues with transparent fairness, winning deep trust throughout the Tver court."
+  ],
+  "Values": [
+    "Value the broader peace and unity of the Russian people above petty dynastic vendettas and short-sighted rivalries.",
+    "Prize objective impartiality, rational restraint, and diplomatic compromise as the true foundations of enduring statecraft."
+  ],
+  "Fears": [
+    "Fear reckless warmongering factions in both Moscow and Tver sabotaging peace pacts and triggering catastrophic total war.",
+    "Dread being falsely accused of treason by suspicious hardliners, shattering the delicate bridge of peace she laboured to build."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

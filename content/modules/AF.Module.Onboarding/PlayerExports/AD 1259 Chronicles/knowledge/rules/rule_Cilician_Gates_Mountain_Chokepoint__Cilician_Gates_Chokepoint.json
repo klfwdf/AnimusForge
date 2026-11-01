@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Cilician_Gates_Mountain_Chokepoint",
+  "Keywords": [
+    "Cilician Gates Chokepoint",
+    "Taurus Mountains Gorge",
+    "Anatolia Levant March Pass",
+    "Cilician Armenian Fortress Defile"
+  ],
+  "RagShortTexts": [
+    "The Cilician Gates defile through the Taurus Mountains formed the sole army pass into Syria."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Cilician Gates form a narrow mountain defile carving through the Taurus Mountains, serving as the sole military conduit connecting the Anatolian plateau with the Levant. Kingdom of Cilician Armenia commands this gateway through perched crag castles, where modest garrisons can throttle imperial hosts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Neither Rum Seljuk sultans nor Mongol tumens can traverse the Taurus without negotiating treaties with King Hethum I. At its narrowest breach, only a single wagon passes between towering limestone precipices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Marching through the Gates feels like entering a stone tomb. Damp stones slip beneath iron-shod hooves while icy gusts roar down the cliffs. A few boulders dropped from above will trap an entire baggage train."
+    }
+  ],
+  "TextMappings": []
+}

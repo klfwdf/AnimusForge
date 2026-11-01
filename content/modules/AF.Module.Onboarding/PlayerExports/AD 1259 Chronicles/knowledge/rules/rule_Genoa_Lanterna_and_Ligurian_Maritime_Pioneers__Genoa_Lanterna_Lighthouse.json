@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Genoa_Lanterna_and_Ligurian_Maritime_Pioneers",
+  "Keywords": [
+    "Genoa Lanterna Lighthouse",
+    "Ligurian Crag Seaport",
+    "St George Merchant Consortium",
+    "Black Sea Caffa Trade Route"
+  ],
+  "RagShortTexts": [
+    "Genoa's harbor, guarded by the Lanterna lighthouse, directed bold maritime voyages to the."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wedged between Ligurian coastal crags and deep waters, the Republic of Genoa forged a daring maritime tradition. Guarded by the monumental Lanterna lighthouse, its fleets sailed beyond Gibraltar and the Levant. Noble clans (Doria, Fieschi, Spinola) pioneered venture-capital shipping syndicates and established trading colonies in Caffa on the Black Sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Factional vendettas between Guelph and Ghibelline families turn city towers into armed citadels. Yet abroad, Genoese galleys fight with predatory ferocity, sealing the 1261 Byzantine pact to shatter Venice's Aegean empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ligurian seamen are reckless corsairs who scale snapping rigging in gale-force winds. In deck-boarding melees with pavises and heavy cutlasses, they strike like sea wolves."
+    }
+  ],
+  "TextMappings": []
+}

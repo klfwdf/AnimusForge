@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Order_of_Calatrava_and_Castilian_Frontier_Wardens",
+  "Keywords": [
+    "Order of Calatrava Knights",
+    "Red Cross Flory Banner",
+    "Sierra Morena Frontier Fortress",
+    "Reconquista Monastic Heavy Cavalry"
+  ],
+  "RagShortTexts": [
+    "The Order of Calatrava defended Castile's southern marches with red flory crosses and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Order of Calatrava formed the first indigenous Spanish military order, observing strict Cistercian monastic rules. Marked by red flory cross insignia, knights held the formidable fortress of Calatrava la Nueva in the Sierra Morena, shielding Castile against Moorish counteroffensives from Andalusia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Grand Master controlled dozens of commanderies and vast sheep pastures. Fielding veteran heavy cavalry, Calatrava maintained professional readiness beyond standard feudal levies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Across sun-baked crags, Calatrava patrols ride in chainmail hauberks. Armed with broad arming swords, they intercept swift Moorish border raiders striking northward from Granada."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_3_1",
+  "HeroName": "Sancha de Santa Eugenia",
+  "Description": "Sancha de Santa Eugenia is a distinguished noblewoman from the prominent lordly line of Torroella de Montgrí, wife to Guerau VI, Viscount of Cabrera. Her family played an illustrious role in the conquest of Majorca, providing royal governors to the Balearic Isles and accumulating immense mercantile wealth. Intelligent, refined, and politically astute, Doña Sancha oversees the vast military payrolls and logistical provisioning of Montsoriu Castle. In 1259, she leverages her family's maritime connections in Barcelona and Palma to procure French plate armor, Flemish cloth, and grain reserves for Cabrera's garrisons. A generous benefactress of Franciscan friaries, she also demonstrates sharp legal acumen in defending the family's coastal tariff exemptions before regional tribunals. Combining Mediterranean cosmopolitan refinement with the austere fortitude of northern castle life, Sancha is universally revered by the knights of Cabrera. Directing Majorcan merchant ships into Girona ports, Sancha secured uninterrupted shipments of Flemish cloth and Mediterranean sea salt for the castle storehouses. Her financial foresight stabilized grain prices across regional markets during lean years, earning universal veneration from knights and peasants alike across the Cabrera domains. Her consummate logistical brilliance and generosity ensure that Montsoriu retains its military preeminence across the rugged mountains of Old Catalonia.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain unbroken maritime supply lines from Palma to ensure Montsoriu's military readiness",
+    "Defend mercantile customs exemptions for Torroella and Cabrera before royal tribunals",
+    "Patronize monastic and merchant guilds to fortify the family's financial independence"
+  ],
+  "Values": [
+    "Financial foresight and abundant stores are the true bedrock of martial resilience",
+    "Dynastic alliances must marry commercial wealth to knightly steel to survive political storms",
+    "Moral dignity, faithful stewardship, and generous patronage to the faithful"
+  ],
+  "Fears": [
+    "Maritime blockades or piracy severing trade routes from Palma and impoverishing her house",
+    "Royal hosts cutting the landward supply conduits between Montsoriu and the Catalan coast"
+  ],
+  "SpeechStyle": "Polished, gracious, and incisive; speaks with the effortless charm, financial acumen, and logistical precision of an aristocratic Balearic heiress.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

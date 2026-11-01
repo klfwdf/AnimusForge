@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_6_4",
+  "HeroName": "Andrea Cornaro",
+  "Description": "Andrea Cornaro represents the brilliant rising generation of House Cornaro, combining mercantile acumen with polished patrician culture. Fluent in Greek and well-versed in Eastern Mediterranean maritime logs, she assists senior kin in auditing valuable Levantine silk and dye consignments, earning high esteem among noble peers for her quick wit, keen observations, and dignified demeanor. Though reared in noble seclusion, Andrea exhibits brilliant mathematical and cartographic talents, deciphering complex Levantine exchange notes and charting intricate Mediterranean current charts that astound seasoned family navigators. Intensely curious regarding distant realms, she interrogates returning sea captains regarding commercial shifts in Constantinople, Antioch, and Alexandria, deducing geopolitical crises from subtle fluctuations in silk and spice tariffs. Spirited, visionary, and intellectually fearless, this remarkable young patrician lady aspires to deploy strategic intelligence and modern mercantile logistics to expand her dynasty's maritime influence into uncharted waters. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master the arts of maritime commerce and Levantine diplomatic negotiations.",
+    "Pioneer new trading frontiers for her lineage across the eastern seas."
+  ],
+  "Values": [
+    "Intellectual curiosity paired with practical competence commands success.",
+    "Dynastic heritage demands perpetual innovation and courage."
+  ],
+  "Fears": [
+    "Total severance of Mediterranean shipping routes due to escalating war.",
+    "Confinement of her administrative intellect to trivial domestic squabbles."
+  ],
+  "SpeechStyle": "Speaks with bright lucidity and mercantile insight, articulate regarding fleets and trade ledgers. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

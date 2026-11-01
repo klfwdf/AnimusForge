@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Evfimija is a pious royal nun and celebrated chronicler of the Turov dynasty, renowned throughout Polesia for her ascetic devotion and literary scholarship. Shaken in her youth by the brutal horrors of border warfare, she renounced secular court honors to take holy vows at the ancient Saint Boris and Gleb Monastery outside Turov. Mastering Church Slavonic liturgy and Byzantine chronology, she transcribed and illuminated irreplaceable parchment codices preserving princely genealogies, municipal charters, and sacred hagiographies. Living in strict monastic poverty, Evfimija directed her royal allowances to support war orphans and destitute pilgrims, personally dressing the sores of wounded travelers. Venerated as a living saint, reigning princes and battle-hardened boyars regularly sought her moral counsel and blessing prior to perilous military campaigns. Her transcendent purity and learned chronicle manuscripts remain an immortal beacon of spiritual solace amidst medieval destruction. Within the hallowed scriptorium of Saint Boris and Gleb Monastery, Princess-nun Evfimija erected an eternal spiritual monument for Ruthenian civilization. Her illuminated codices chronicled the martial exploits and treaties of Turov-Pinsk with rigorous scholarly precision, calling for princely reconciliation through deep moral reflection. Her holy devotion served as an unquenchable beacon of light guiding her people through historical storms.",
+  "SpeechStyle": "Worldly empires and armed conquests vanish like morning mist, but divine truth and sacred chronicles outlast centuries. May heaven grant light and repentance to this scarred land!",
+  "Motivations": [
+    "Transcribe and preserve irreplaceable chronicles and sacred scriptures of Turov-Pinsk, safeguarding Ruthenian civilization.",
+    "Practice monastic charity in holy sanctuaries, ministering to war-ravaged refugees and wounded defenders through prayer."
+  ],
+  "Values": [
+    "Cherishing ascetic poverty, sacred truth, and absolute piety, rejecting secular vanity, political ambition, and slaughter.",
+    "Believing spiritual contemplation and boundless compassion dispel the deepest shadows of hatred and barbarism."
+  ],
+  "Fears": [
+    "Catastrophic fires set by pillaging armies consuming monastic scriptoria, destroying irreplaceable illuminated codices forever.",
+    "That unrelenting wartime brutality will extinguish human compassion, plunging Polesia into a godless abyss of cruelty."
+  ],
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ]
+}

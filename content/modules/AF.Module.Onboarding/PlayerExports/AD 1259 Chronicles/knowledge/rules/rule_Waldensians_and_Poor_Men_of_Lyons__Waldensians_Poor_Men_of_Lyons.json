@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Waldensians_and_Poor_Men_of_Lyons",
+  "Keywords": [
+    "Waldensians Poor Men of Lyons",
+    "Peter Waldo Voluntary Poverty",
+    "Vernacular Scripture Anti Purgatory",
+    "Alpine High Valley Secret Synods"
+  ],
+  "RagShortTexts": [
+    "Waldensians embraced apostolic poverty and vernacular Bibles, driven into clandestine."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Founded by wealthy merchant Peter Waldo who gave his fortune to the poor, the Poor Men of Lyons rejected clerical monopolies. Insisting on vernacular Bible translations and universal preaching rights, they denied purgatory and papal indulgences, surviving severe papal bans by retreating into the Alpine valleys of Piedmont."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Unlike Cathar gnostics, Waldensians remained orthodox Trinitarians. Itinerant pastors called 'Barbes' disguised themselves as travelling peddlers, memorizing Gospels to preach in rustic farm kitchens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Behind barred shutters in high mountain hamlets, a peddler unrolls scrap parchment to read the Beatitudes in the common tongue, offering spiritual solace without ecclesiastical fees."
+    }
+  ],
+  "TextMappings": []
+}

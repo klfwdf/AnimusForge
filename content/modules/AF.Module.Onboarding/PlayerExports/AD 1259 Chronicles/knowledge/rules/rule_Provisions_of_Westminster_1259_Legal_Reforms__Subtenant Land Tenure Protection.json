@@ -1,0 +1,30 @@
+{
+  "Id": "rule_Provisions_of_Westminster_1259_Legal_Reforms",
+  "Keywords": [
+    "Subtenant Land Tenure Protection",
+    "Early Mortmain Statutes",
+    "Statute of Marlborough Roots"
+  ],
+  "RagShortTexts": [
+    "The 1259 Provisions of Westminster reformed local feudal courts, shielding free subtenants."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Enacted on October 13, 1259, following the Provisions of Oxford, the Provisions of Westminster shifted reform to grass-roots legal administration. Spearheaded by Simon de Montfort and county knights, the statutes prohibited barons from arbitrarily compelling free subtenants to attend private manorial courts, curtailed abusive wardship seizures, and enacted early mortmain curbs against tax-free church land grants. Later codified into the Statute of Marlborough (1267), they became pillars of English Common Law."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Freeholders gained actionable royal writs against overbearing magnates, establishing standardized court procedures across the English shires."
+    }
+  ],
+  "TextMappings": []
+}

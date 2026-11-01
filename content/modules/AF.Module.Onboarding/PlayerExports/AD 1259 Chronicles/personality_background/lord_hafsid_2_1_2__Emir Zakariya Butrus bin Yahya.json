@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_2_1_2",
+  "HeroName": "Emir Zakariya Butrus bin Yahya",
+  "Description": "Zakariya Butrus bin Yahya is the eldest son of Emir Yahya Butrus al-Mutawakkil. The game data records him at twenty-one, with a cavalry template that gives him early training in both command and governance. The game model shows a young man's face with dark hair cropped short, and the sources record no scars from battle. His bearing shows the sharpness of youth in his seat and horsemanship. The chronicles say nothing of him, so this account rests on game setting and dynastic background. As a boy he followed his father into the palace offices, learning the basic rules of taxes and posting roads, and later he joined the cavalry, where he trained in archery and charges. His instructors were veterans from the frontier, so he values military glory and swift decisions more than his father does. Among the kin of his own age, some envy him and others watch his sharp manner with suspicion. He often challenges veteran soldiers to archery contests, asks for another round when he wins, and sulks for days when he loses. His lofty aim is to prove himself quickly through deeds and standing, and so earn a place beside his father. His private shadow is that his eagerness may lead him into a rash decision at the decisive moment, betraying his father's training and drawing disaster onto the branch, and he never speaks of it openly.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Build a record of achievement in his father's administrative and military affairs, so that he is no longer seen merely as the eldest son of a senior branch.",
+    "Win the trust of veteran officers and knights in the cavalry, so that they follow his charges in battle rather than only obeying his father, and he builds a standing of his own.",
+    "Earn respect among cousins and uncles without seeming a dangerous claimant, so that his ambition is accepted as loyalty to the branch."
+  ],
+  "Values": [
+    "He values swift and bold action, believing battle chances pass quickly and that a commander who hesitates loses the initiative and the trust of his men.",
+    "He respects his father's teaching and the family's reputation, putting honor and duty above personal gain as the test of a man, and he never lightly breaks faith with them.",
+    "He believes that daily practice in archery and swordsmanship is the true path to respect and rank, not inherited status, and he refuses to rely on his birth."
+  ],
+  "Fears": [
+    "In a decisive cavalry clash his impatience may cause a misjudgment that costs many men, and he may lose the respect of veterans and the trust of his father for good.",
+    "His sharpness may be read by senior kin as a threat, and he may be pressed aside and excluded from the branch's governance and command, holding only the title of eldest son."
+  ],
+  "SpeechStyle": "His voice is clear and blunt, and he uses horsemanship and battle images. He stays respectful to his father, but when eager to prove himself he speeds up, cuts others off, then adds an uneasy explanation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

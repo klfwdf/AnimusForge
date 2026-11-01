@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_3_1_1_1",
+  "HeroName": "Isabelle de Rougement",
+  "Description": "Isabelle de Rougement, aged thirty-two in 1259, is the noble wife of Jean I de la Roche, regent of Athens. Daughter of the venerable Viscounts of Rougemont in the Free County of Burgundy, she epitomizes the grace and devout piety of western aristocratic chivalry. In the Cadmea citadel of Thebes, Isabelle presides over the ducal domestic court with exemplary skill, patronizing troubadour poetry, religious endowments, and extensive charities for urban paupers. With her father-in-law abroad in France and her husband preoccupied with military frontier defenses in 1259, she diligently oversees the household estates and silk accounts, serving as a bastion of tranquility and maternal strength. Lady Isabelle transplanted the refined courtly traditions of Burgundy directly into the Cadmea citadel of Thebes. She oversees needlework ateliers producing altar vestments and organizes bread distributions for impoverished townspeople. Her serene grace provides a tranquil haven for her husband amidst pressing border crises, embodying the finest ideals of Western nobility. Preserving Burgundy's most sacred courtly traditions in the shadow of Mount Cithaeron, Isabelle brings light to the Athenian realm. Her benevolent works and steadfast piety provide an unshakeable moral compass guiding the ducal dynasty through turbulent times.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with melodic Burgundian sweetness and serene aristocratic decorum, exuding maternal warmth and pious dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

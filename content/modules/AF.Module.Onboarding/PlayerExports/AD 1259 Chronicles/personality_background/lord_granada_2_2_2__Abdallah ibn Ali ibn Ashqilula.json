@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_2_2",
+  "HeroName": "Abdallah ibn Ali ibn Ashqilula",
+  "Description": "Abdallah ibn Ali ibn Ashqilula is the capable eldest son and heir of senior lord Abu al-Hasan Ali, governing the pivotal frontier fortress of Baza at forty-one years of age. A seasoned military commander who mirrors his father's iron discipline and strategic patience, Abdallah directs the heavy cavalry squadrons guarding the eastern borders facing Christian Murcia. He personally supervised the reinforcement of Baza's stone curtain walls, cisterns, and defensive moats, turning the city into an impregnable bastion. Meticulous and legally minded in civil governance, he commands deep respect from local tribal elders and caravan merchants alike. While nominally deferential to the Nasrid throne, Abdallah fiercely defends the judicial and military autonomy of his lineage, recognized as the unshakeable iron successor to the lordship of Guadix. Governor Abdallah's rigid military standards, tactical wisdom, and iron determination turn Baza into an unbreachable shield guarding the eastern approaches against all invasion. His tactical competence and unyielding vigilance establish Abdallah as an indispensable commander safeguarding the territorial integrity of the realm. His tactical competence and unyielding vigilance establish Abdallah as an indispensable commander safeguarding the territorial integrity of the realm. His profound grasp of mountain topography and fortification engineering makes Governor Abdallah an unyielding barrier against Christian aggression.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To fortify the defensive network of Baza and Guadix, sealing off eastern invasion routes from Castile.",
+    "To smoothly inherit his father's domain, securing the unassailable hegemony of his house."
+  ],
+  "Values": [
+    "Impregnable ramparts and iron military order are the only truths in war; complacency is suicide.",
+    "Defending every span of ancestral territory is the sacred burden of an eldest son."
+  ],
+  "Fears": [
+    "A surprise outflanking offensive isolating Baza and cutting off supplies from Guadix.",
+    "Internal royal squabbles draining garrisons and opening the eastern frontier to invasion."
+  ],
+  "SpeechStyle": "Speaks with gravelly, measured soldierly clarity, delivering tactical assessments with unshakeable conviction. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

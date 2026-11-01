@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_4",
+  "HeroName": "Erzsébet of Hungary, Duchess of Lower Bavaria",
+  "Description": "Erzsébet of Hungary is the accomplished daughter of King Béla IV and Queen Maria Laskarina, Duchess of Lower Bavaria through her marriage to Duke Henry XIII of Wittelsbach. Her high-profile union represented a masterstroke of King Béla's western diplomacy, intended to counterbalance Bohemian ambitions along the upper Danube. At her ducal court in Landshut, Elizabeth won widespread renown for her administrative prudence, cultural sophistication, and generous donations to Bavarian abbeys. Maintaining close ties to Buda, she coordinated cross-border diplomacy to secure Bavarian military goodwill whenever Austrian or Bohemian threats loomed. By 1259, with tensions escalating over Styria, Elizabeth actively negotiates between her husband's council and her father's court, ensuring vital western support for the Hungarian crown. Elizabeth regulated river customs and negotiated commercial pacts with German mercantile guilds, expanding trade between Bavaria and Hungary. Her administrative diligence and decisive counsel secured paramount authority within her husband's ducal council at Landshut. She facilitated the dispatch of seasoned Bavarian crossbowmen and heavy horse to reinforce Hungarian garrisons during critical frontier flare-ups. Her decisive counsel preserved western stability, ensuring that friendly German knights guarded common borders against Bohemian incursions across strategic Danube valleys.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Solidify the military alliance between Lower Bavaria and Hungary, checking Bohemian encroachment.",
+    "Magnify Árpád prestige across German lands while nurturing capable heirs to the Wittelsbach inheritance."
+  ],
+  "Values": [
+    "Balance devotion to her Hungarian homeland with loyal duty to Bavaria, honoring treaties and realism.",
+    "Value pragmatic statecraft over reckless military adventurism detached from logistics."
+  ],
+  "Fears": [
+    "Fears Bohemia's wealth consolidating control over Austria, exposing Hungary's western flank to collapse.",
+    "Dreads internal Wittelsbach inheritance feuds fracturing Bavarian martial unity."
+  ],
+  "SpeechStyle": "The Danube binds the destinies of Bavaria and Hungary. However arrogantly Bohemian knights posture, our iron alliance shall make them rue the day! Bohemian ambitions shall be dashed to pieces!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

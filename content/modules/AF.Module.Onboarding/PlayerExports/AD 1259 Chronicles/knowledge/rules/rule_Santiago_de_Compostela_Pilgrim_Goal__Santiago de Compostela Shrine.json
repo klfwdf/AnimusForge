@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Santiago_de_Compostela_Pilgrim_Goal",
+  "Keywords": [
+    "Santiago de Compostela Shrine",
+    "Apostle Saint James Tomb",
+    "Scallop Shell Pilgrimage Way",
+    "Galician Archbishopric Seat"
+  ],
+  "RagShortTexts": [
+    "Santiago de Compostela marked the culmination of the pilgrimage way, enshrining the relics."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Santiago de Compostela stood as Western Christendom's paramount pilgrimage destination alongside Rome. Enshrining the relics of Saint James the Greater, its majestic Romanesque basilica welcomed weary pilgrims carrying scallop shells across Europe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "priest",
+          "notable"
+        ]
+      },
+      "Content": "Vast pilgrim hospices and imperial immunities granted the Archbishops of Compostela tremendous feudal and spiritual sovereignty in Galicia."
+    }
+  ],
+  "TextMappings": []
+}

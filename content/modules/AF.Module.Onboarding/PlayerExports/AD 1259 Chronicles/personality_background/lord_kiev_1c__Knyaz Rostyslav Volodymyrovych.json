@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Knyaz Rostyslav Volodymyrovych is the eldest son and designated heir of Volodymyr IV, celebrated across southern Rus' as a daring, resolute military commander and vigilant frontier guardian. Trained in arms from his youth, Rostyslav held the strategic northern fortress of Ovruch and secured key tributaries of the Dnipro, repeatedly repelling aggressive incursions by nomad raiding warbands. Inheriting the martial vigor of the Smolensk Rostislavichi, he shared harsh rations and camp life with his retinues, mastering heavy infantry phalanx tactics and dynamic cavalry flanking maneuvers. Politically, he staunchly enforced his father's centralized defense initiatives, curbing unruly boyars and revitalizing urban militias and grain stockpiles throughout the Kievan heartland. Confronting unpredictable geopolitical perils, he coordinated intelligence networks with Volhynian and Suzdalian allies, establishing an alert early-warning cordon. He is widely regarded by veterans and townsfolk alike as the indispensable champion destined to restore the grand-ducal glory of Kyiv. During his long vigil guarding the northern gateway at Ovruch, Prince Rostyslav forged his personal retinue into a relentless military strike force. Familiar with every hidden marsh trail and dense pine forest across Polesia, he routinely led daring night raids against vulnerable enemy baggage trains, cutting off hostile supply routes. His decisive tactical aggression transformed the northern march into an impenetrable protective shield for the Kievan heartland.",
+  "SpeechStyle": "Our sabers are honed keen and our shield walls stand unbroken! Any invader attempting to cross the Dnipro within my watch shall find only a swift, merciless grave upon this soil!",
+  "Motivations": [
+    "Guard the fortress of Ovruch and vital river routes, drilling elite forces to withstand sudden steppe invasions.",
+    "Modernize Kievan garrisons and fortresses, upholding his ancestral heritage to restore grand-ducal leadership."
+  ],
+  "Values": [
+    "Prized unwavering obedience, chivalric courage in battle, and loyalty to arms-brothers, abhorring cowardice and treason.",
+    "Believing iron discipline, tactical precision, and resolute bravery are the sole guarantees of survival in catastrophic wars."
+  ],
+  "Fears": [
+    "That hostile invasion forces will bypass frontier cordons through surprise maneuvers, falling upon an exposed capital.",
+    "The betrayal or paralysis of wavering confederate princes, abandoning his vanguard troops without reinforcements."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_6_2",
+  "HeroName": "Pedro Álvarez de las Asturias",
+  "Description": "Pedro Álvarez de las Asturias is the brilliant heir of Don Alvaro and one of the most politically formidable figures of the younger Castilian nobility. Holding the prestigious office of King's High Mayordomo (Mayordomo del Rey), he possesses intimate knowledge of royal court administration, treasury mechanisms, and the delicate levers of feudal patronage. Commanding, handsome, and highly accomplished in chivalric arms, his marriage to Doña Sancha Rodríguez of the almighty House of Lara solidified an unshakeable political alliance spanning from the Cantabrian peaks to central New Castile. Keenly aware that Alfonso X's obsession with the Holy Roman Empire is hurtling the monarchy toward financial and political ruin, Don Pedro quietly positions himself alongside Prince Sancho and the dissident grandees, skillfully safeguarding the hereditary privileges of Asturias. Combining highland martial tenacity with consummate courtly cunning, Pedro is widely regarded across the realm as a premier statesman destined to shape the future of Castile. Serving as Mayordomo of the King, Pedro masterfully directs lavish royal court ceremonies while secretly channeling critical intelligence back to his northern allies. Anticipating the inevitable dynastic fracture of the realm, he maneuvers discreetly alongside Prince Sancho and the Lara magnates, poised to seize supreme political regency when the crown stumbles.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Masterfully navigate court rivalries to protect Asturian feudal immunities and the family succession",
+    "Align with the House of Lara and rebel princes to seize dominant regency powers in the coming crisis",
+    "Consolidate northern military forces to secure undisputed control over the northern realms"
+  ],
+  "Values": [
+    "True leadership anticipates the tempest and commands the tide; blind obedience to folly is ruinous",
+    "Dynastic survival and legitimate power eclipse ephemeral royal statutory edicts",
+    "Honor covenants forged with mighty baronial allies, asserting dominance through strength"
+  ],
+  "Fears": [
+    "Covert palace intrigues being uncovered, provoking sudden royal arrest and territorial confiscation",
+    "Baronial allies collapsing into selfish factionalism, shattering the coalition on the verge of victory"
+  ],
+  "SpeechStyle": "Polished, persuasive, and commanding; speaks with the effortless charm of a seasoned royal minister backed by feudal steel.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

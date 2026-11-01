@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Yurij Yaroslavich, son of Grand Prince Yaroslav, is a renowned martial champion leading the heavy cavalry forces of Suzdal. Armored in double-layered ring mail and bearing the ancestral battle-lance, he was tempered through frontier campaigns across the snowy taiga. Yurij commands the elite grand-ducal guard, patrolling the exposed northern and eastern forest corridors shielding the Vladimir heartland. In numerous clashes with hostile raiding warbands, he routinely leads mounted charges from the front rank, inspiring his lancers with audacious courage. Despite his youthful martial ferocity, he shares every hardship with his common troops around the campfire, demanding ironclad discipline on the march. Dedicated to upholding his dynasty's military renown, Prince Yurij stands as an unyielding warrior guarding the sacred approaches to Vladimir.  Prince Yurij's heavy cavalry lancers drilled tirelessly amidst the northern taiga, executing lightning counter-charges that intercepted hostile scouting columns and preserved the peaceful agricultural clearings of Suzdal from devastation.  His legendary mounted charges across the snowy wilderness, tactical daring in dense forests, and relentless pursuit of hostile raiders established him as the beloved champion and unyielding iron fist of Suzdal's frontline defenses against all foreign enemies.  He remains a loyal champion protecting the ancient honor of Suzdal.",
+  "SpeechStyle": "A knight's glory is forged in blood and iron! While my standard flies over Suzdal, no invader shall cross into Vladimir. Draw your swords and follow me into the breach!",
+  "Motivations": [
+    "Lead elite heavy cavalry sweeps across frontier forest corridors to secure the realm and build martial renown.",
+    "Safeguard crucial transport routes along the Klyazma River, consolidating fortified outposts against hostile incursions."
+  ],
+  "Values": [
+    "Value heroic battlefield audacity and martial integrity above treacherous scheming and hollow flatteries.",
+    "Believe that a strong sword and unwavering loyalty are the only reliable protectors of peace."
+  ],
+  "Fears": [
+    "Fear overextending a mounted pursuit into marshy ravines and falling into concealed archer crossfires.",
+    "Dread the spread of defeatist appeasement at court, undermining the army's martial spirit."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ]
+}

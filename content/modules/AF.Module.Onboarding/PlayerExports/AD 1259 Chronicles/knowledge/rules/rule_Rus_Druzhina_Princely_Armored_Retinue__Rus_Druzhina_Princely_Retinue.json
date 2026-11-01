@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Rus_Druzhina_Princely_Armored_Retinue",
+  "Keywords": [
+    "Rus Druzhina Princely Retinue",
+    "Conical Gilded Helm and Mail Hauberk",
+    "Broad Double Edged Slavic Battleaxe",
+    "Novgorod and Vladimir Boyar Guard"
+  ],
+  "RagShortTexts": [
+    "Rus Druzhina boyars served princely retinues with conical iron helms, mail, and heavy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Druzhina formed the intimate warrior brotherhood and political council surrounding Rus princes. Composed of senior boyars and seasoned junior retainers, they wore riveted mail coats and pointed conical helms, wielding broad Slavic axes alongside lances to counter both Western knights and steppe nomads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Serving as princely councillors in the Duma, senior druzhinniki administered land revenues (kormlenie). Their unbreakable loyalty anchored Alexander Nevsky's defensive triumphs against Livonian crusaders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "These northern veterans possess massive physical frames beneath fur-lined mantles. Swinging two-handed bearded axes with crushing force, their melee charges splinter shield-walls effortlessly."
+    }
+  ],
+  "TextMappings": []
+}

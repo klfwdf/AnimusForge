@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Mortimer_Lords_of_Wigmore",
+  "Keywords": [
+    "House of Mortimer Wigmore",
+    "Welsh Marcher Mortimers",
+    "Ludlow Wigmore Strongholds",
+    "Mortimer Border Lords"
+  ],
+  "RagShortTexts": [
+    "The Mortimers anchored the Welsh Marches from Wigmore and Ludlow, serving as England's."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ruling Wigmore and Ludlow, Roger Mortimer commanded the lethal vanguard of the Welsh March. Hardened by relentless border clashes against Llywelyn ap Gruffudd, the Mortimers fielded disciplined cavalry and brutal archers across the western frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Marcher privilege afforded the Mortimers private baronial warfare rights, rendering their castles impregnable fortresses of realpolitik."
+    }
+  ],
+  "TextMappings": []
+}

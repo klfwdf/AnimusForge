@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5d",
+  "HeroName": "Rathold II Rátot",
+  "Description": "Rathold II Rátót is a veteran knightly commander and senior count of Clan Rátót, proudly bearing the name of the clan's Norman founding patriarch. Steeped in ancestral chivalric traditions, Rathold is known for his steadfast battlefield composure, strict military discipline, and intimate knowledge of northern mountain passes. He repeatedly led armored cavalry squadrons to repel cross-border raids originating from Poland and Moravia, earning the deep trust of border communities. Dedicated to clan solidarity and chivalric education, he established tilt-yards and sword academies within his castles, personally training younger generations in combat tactics. In 1259, confronting rising tensions across Central Europe, Rathold garrisons Nógrád Castle, inspecting signal beacons and maintaining constant defensive readiness. Rathold drilled heavy cavalry squadrons in shock combat maneuvers throughout the mountain keeps of Nógrád, personally inspecting barding, lances, and crossbows. His strict discipline and frontline bravery commanded unquestioning fidelity from his garrison retainers. He pledged his life and sword to protect Clan Rátót's northern march, resolving to defend every pass against foreign aggression, repelling hostile raiders with crushing heavy lance charges and disciplined archery volleys, frontier skirmishes, and border ambuscades, winning the deep gratitude of the realm and crown.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the mountain defiles of Nógrád, securing Clan Rátót's landed patrimony and martial honor.",
+    "Train younger kinsmen into fearless heavy knights, preserving ancestral chivalric traditions."
+  ],
+  "Values": [
+    "Hold knightly honor, iron discipline, and absolute clan loyalty as sacred, scorning cowardice.",
+    "Prize authentic warrior courage and combat mastery over hollow court pretension."
+  ],
+  "Fears": [
+    "Fears surprise attacks breaching mountain passes and exposing peaceful valleys to devastation.",
+    "Dreads an outbreak of horse plague crippling his cavalry squadron's tactical mobility."
+  ],
+  "SpeechStyle": "The sword of my ancestor Rathold rings in my grasp, and the mountains of Nógrád stand like iron! Any invader trespassing our passes shall face the true Norman fury! Norman steel never rusts; trespassers in Nógrád shall perish!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

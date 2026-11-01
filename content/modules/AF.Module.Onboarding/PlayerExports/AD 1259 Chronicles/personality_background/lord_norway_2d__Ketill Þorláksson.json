@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2d",
+  "HeroName": "Ketill Þorláksson",
+  "Description": "Ketill Þorláksson was an illustrious Lawman (Lögsögumaður), respected chieftain, and foremost legal scholar of high medieval Iceland. In 1259, standing upon the Law Rock (Lögberg) at Thingvellir, Ketill recited and interpreted the complex statutes of the Grágás law codex, arbitrating fierce inter-clan disputes with legendary impartiality. Witnessing the catastrophic decay of the ancient Commonwealth into murderous feud warfare, he recognized that statutory stability could only be restored through cohesive statutory reform aligned with the Norwegian crown. He formed a crucial judicial alliance with Gissur Jarl, helping draft legal compromises that secured the civil rights of Icelandic freemen while facilitating the transition toward royal governance. A master of forensic arbitration, Ketill was renowned for resolving seemingly intractable blood feuds through statutory compensation rather than sword-strokes. His intellectual integrity and steadfast commitment to statutory equity made him one of the most venerated judicial architects in Icelandic history. From the Law Rock at Thingvellir, Ketill recited and harmonized customary Icelandic statutes with the emerging royal codes, resolving dozens of entrenched multi-generational blood feuds through equitable restitution. Facing the drawn swords of bellicose chieftains without flinching, his calm moral authority compelled arrogant magnates to submit to statutory law. His lifelong devotion to statutory equity earned him an immortal reputation as one of the greatest jurists in Scandinavian legal history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with formal statutory gravitas and forensic clarity, citing customary law codes with the measured precision of a veteran Lawman.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

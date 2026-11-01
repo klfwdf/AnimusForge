@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Rolandina_Surgical_Textbook_and_Cauterization",
+  "Keywords": [
+    "Rolandina Surgical Treatise",
+    "Salernitan Cautery Hemostasis",
+    "Medieval Trepanning Cranial Care",
+    "Humoral Battlefield Dressing"
+  ],
+  "RagShortTexts": [
+    "Roland of Parma's Rolandina formalized wound debridement, hot iron cautery, and cranial surgery."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Roland of Parma's Chirurgia Rolandina established standard surgical practice across Bologna and Montpellier around 1250. Drawing from Salernitan and Arabic traditions, it codified aggressive arterial cauterization with glowing iron probes during amputations, along with trepanning instruments for skull depressions and wine washes for arrow extraction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Operating under humoral doctrines, surgeons regarded 'laudable pus' as natural bodily purgation. A master chirurgeon must know vascular pathways intimately, lest unskillful extraction of barbed bolts sever arterial junctions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The field surgeon's glowing cautery iron terrifies soldiers more than enemy axes. Strong sergeants hold your thrashing limbs while red iron hisses into your stump; the agony is blinding, but it stops the bleeding."
+    }
+  ],
+  "TextMappings": []
+}

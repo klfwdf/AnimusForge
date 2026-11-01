@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_4_1_3",
+  "HeroName": "Medina Hanif ibn Bakr Abd al-Wahid",
+  "Description": "Medina Hanif ibn Bakr Abd al-Wahid is the youngest daughter of Bakr Hanif and Sanaa. The game data records her at three, with a diplomatic template, and as a small child she has a soft temper and a curious mind. The game model shows a little girl's round face with short dark hair, and no scars are recorded. Her marks are a cloth doll and a thin silver chain she often wears. The chronicles say nothing of her, so the account below rests on game setting and dynastic background. She is the youngest child of the house and is made to laugh by the camp wives, and she learns to run by chasing after her elder brother Hassan. She likes to follow her mother Sanaa among the tents and watch her tend the sick, and she likes to share her doll with the other children of the camp. At first she is shy of strangers, but a sweet or a kind word soon wins her over. Once she gave her silver chain to a crying young servant boy, and when asked, she would only say that he was cold. Her lofty aim is to make everyone around her happy, so that everyone gathers round to laugh with her. Her private shadow is the fear that if she cries, her father and mother will be thrown into confusion, and may even have to leave the camp because of her, and she does not want to trouble them.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Follow her mother Sanaa among the camp's sick and children, learning who needs help and sharing her toys so that everyone can laugh together.",
+    "Play with her elder brother Hassan, learning to chase, run, and share, making friends among the camp children, and speaking up when he teases her.",
+    "Stay quietly at her father Bakr's side when he returns to camp, so that he sees how sensible and well-behaved she is and is not distracted by her crying."
+  ],
+  "Values": [
+    "She treasures the warmth of being with others, believing that a smile or an embrace makes people happier than any gift, and that people remember them for it.",
+    "She values the company of her family, feeling that the world is safe when her father, mother, and brother are near, and she grows uneasy when someone leaves.",
+    "She loves to share, believing that letting other children play with her doll makes everyone happy, which is the best thing of all, and she never feels she has lost anything."
+  ],
+  "Fears": [
+    "When she cries, her father and mother may be thrown into confusion, and may even have to leave the camp because of her, so she tries hard to hold back her tears.",
+    "She may wander lost in the camp, unable to find her mother or brother, and sit alone crying before a strange tent, unable even to explain the way home."
+  ],
+  "SpeechStyle": "Her voice is soft and sweet, with very short sentences and repeated words. She coaxes her mother, is competitive with her brother, and is shy with strangers at first. Once she knows someone, she tugs their sleeve and talks without stopping.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

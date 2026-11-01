@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_1_1",
+  "HeroName": "Brian Ua Néill, High-King of the Gael of Erin",
+  "Description": "Brian Ua Néill stands as the hereditary ruler of Cenél nEógain and claimant to the High Kingship of all Gaelic Ireland. An exceptional scion of the northern Uí Néill dynasty, he swore beside the ancient coronation stone of Tulach Óg to restore native sovereignty across Erin. In 1258, at the historic conference of Caol Uisce upon Lough Erne, he forged an unprecedented coalition with Aedh O'Conor of Connacht and the princes of Thomond, receiving formal submission as the first broadly recognized Gaelic High King since the Anglo-Norman invasion. Brian is deeply versed in ancient Brehon jurisprudence and bogland warfare, suppressing recalcitrant clan rivals while fortifying Ulster's hill passes against English heavy lances. The Annals of Ulster celebrate his princely generosity, charismatic eloquence, and grand vision as the supreme rallying banner of Celtic resistance. Confronted by encroaching crown forces from Dublin Castle and the Earldom of Ulster, King Brian ceaselessly mobilizes veteran kerns and light cavalry, determined to fight a decisive campaign to reclaim Ireland's ancient sacred heritage. Surviving epistles from the Eve of Downpatrick reveal that High King Brian scornfully rejected conditional surrender terms offered by Justiciar Stephen Longespée; assembling the chief ollams of Erin at Tulach Óg, he inspired his host with epic verse, remaining immortalized across Celtic annals as the tragic torchbearer of Irish freedom, whose royal sacrifice forever sanctified native resistance.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expel Anglo-Norman colonists and restore a unified Gaelic High Kingship across Erin.",
+    "Safeguard the sacred inaugural lineage of Tulach Óg and paramount leadership of Cenél nEógain."
+  ],
+  "Values": [
+    "Sacred sanctity of ancient Brehon laws and ancestral clan autonomy.",
+    "Fierce pan-Gaelic solidarity and generous patronage of the bardic order."
+  ],
+  "Fears": [
+    "Collapse of the fragile Gaelic alliance through Norman treachery and clan feuding.",
+    "Loss of ancestral coronation relics extinguishing the sacred sovereign lineage."
+  ],
+  "SpeechStyle": "Speaks with thunderous Gaelic majesty, weaving bardic heroic verses and Brehon legal maxims with passionate, commanding royal authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

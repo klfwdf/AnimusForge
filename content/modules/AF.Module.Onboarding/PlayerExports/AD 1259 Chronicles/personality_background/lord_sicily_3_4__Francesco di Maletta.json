@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_3_4",
+  "HeroName": "Francesco di Maletta",
+  "Description": "Francesco di Maletta, younger son of Count Federigo, distinguishes himself through analytical composure, tactical intelligence, and meticulous logistical coordination. Serving in King Manfred's royal bodyguard, Francesco has mastered garrison organization, scouting reconnaissance, and sudden ambuscade warfare. In skirmishes against papal cross-border raiders, he repeatedly blunted enemy cavalry thrusts through patient positioning and disciplined timing, earning recognition among veteran commanders as an exceptionally perceptive young strategist. Francesco commanded elite royal outriders and escorts in King Manfred's household, demonstrating superior reconnaissance ability and patient tactical foresight that repeatedly foiled enemy scouting raids across the borders of Campania and Basilicata. Faced with subversive papal agents and covert incursions, Francesco dismantled clandestine spy networks with quiet efficiency, maintaining rigorous security around King Manfred's operational headquarters throughout the southern campaigns. His cold calculations under fire, disciplined tactical scouting, and masterly ambuscade planning make Francesco an exceptional young officer guarding the frontiers of the Sicilian realm. His seasoned vigilance and unblemished honor ensure that the royal perimeter remains completely impenetrable to hostile infiltration. His cold strategic intelligence, stealthy outrider reconnaissance, and masterly ambuscades ensure that the royal perimeter remains completely impenetrable to hostile forces. His unswerving tactical loyalty and calm battlefield command inspire total confidence across the ranks.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Master regional battlefield tactics and emerge as a premier commander of light tactical contingents.",
+    "Support his father and brother from behind the scenes, eliminating political rivals through cunning."
+  ],
+  "Values": [
+    "Cold strategic calculation, self-discipline, and avoidance of emotional recklessness.",
+    "Rigid martial professionality and uncompromising execution of imperial orders."
+  ],
+  "Fears": [
+    "Espionage or treachery leaking battle plans and trapping the royal host in fatal ambushes.",
+    "Fiscal exhaustion dissolving army cohesion and inciting mercenary desertions."
+  ],
+  "SpeechStyle": "Speaks with concise reserve, measured objectivity, and razor-sharp military clarity. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Knights_Hospitaller_and_St_John_Defenders",
+  "Keywords": [
+    "Knights Hospitaller of St John",
+    "Black Mantle White Cross Order",
+    "Acre Hospitaller Grand Magisterium",
+    "Hospitaller Healing Armed Monks"
+  ],
+  "RagShortTexts": [
+    "The Hospitallers donned black mantles with white crosses, combining medical healing with."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Founded in Jerusalem, the Knights Hospitaller combined monastic vows with martial discipline. Clad in black mantles bearing the white eight-pointed cross, they garrisoned colossal fortresses like Krak des Chevaliers and Margat, while running advanced medical infirmaries in Acre to tend wounded crusaders and pilgrims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest",
+          "scholar"
+        ]
+      },
+      "Content": "Exempt from secular jurisdictions, the Grand Master answered solely to the Pope. Their hospices treated wounded combatants with medicinal salves and clean bandages, embodying Christian charity alongside feudal prowess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Do not mistake their healing vows for softness. In the battle line, a Hospitaller wedge of barded warhorses strikes like a thunderbolt, bound by solemn vows never to retreat so long as their banner flies."
+    }
+  ],
+  "TextMappings": []
+}

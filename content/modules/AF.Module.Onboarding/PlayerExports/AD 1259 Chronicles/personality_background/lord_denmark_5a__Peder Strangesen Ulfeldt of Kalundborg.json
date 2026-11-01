@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_5a",
+  "HeroName": "Peder Strangesen Ulfeldt of Kalundborg",
+  "Description": "Sir Peder Strangesen Ulfeldt of Kalundborg, Castellan of Kalundborg Fortress and High Royal Counselor, stood as one of the preeminent magnates governing mid-thirteenth-century Denmark. Descended from the distinguished Ulfeldt lineage, Peder was intimately entwined with the legendary Hvide affinity through his mother. By marrying Lady Ingeborg, daughter of the famed crusader Esbern Snare, Peder acquired lawful mastery over Kalundborg Castle, which dominated the Great Belt maritime corridor between Zealand and Jutland. A steadfast champion of the monarchy under King Christoffer I and Queen Regent Margaret Sambiria, Peder fortified Kalundborg's stone battlements, deep-water quays, and catapult towers, repelling German naval incursions and Slavic piratical raids, celebrated across the Baltic littoral as an unyielding royalist bastion. The five-towered Church of Our Lady and stone defensive ring built under Peder's direction at Kalundborg stood as masterpieces of medieval fortification. When Slavic sea-raiders and rebel flotillas attempted to blockade the Great Belt, Peder led royal war galleys into close combat, decimating enemy ships with catapult artillery and armored boarding parties. An incorruptible administrator, he suppressed maritime brigandage, protected Hanseatic shipping lanes, and ensured the economic vitality of the western straits, acclaimed throughout the Baltic littoral as the indomitable guardian of Denmark's maritime threshold.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the fortress and harbor of Kalundborg to guarantee safe passage across the Great Belt for royal armies.",
+    "Advise the crown council to crush secessionist plots orchestrated by dissident barons and German princes."
+  ],
+  "Values": [
+    "Reveres castle defense and unwavering royal fealty as supreme knightly duties, guarding the maritime crossroads of Denmark.",
+    "Champions martial fortitude and upright honor, scorning double-dealing courtiers who exploit civil strife."
+  ],
+  "Fears": [
+    "Dreads an overwhelming naval blockade by hostile fleets severing Kalundborg from mainland reinforcement."
+  ],
+  "SpeechStyle": "Speaks with booming maritime resonance and commanding clarity, his natural authority forged amidst storm and siege.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Jutta Eriksdatter of Denmark, third daughter of King Eric IV, remains one of the most enigmatic and rebellious royal figures of Scandinavian annals. In her youth, she was placed under the protection of the church, co-founding the Dominican Priory of Saint Agnes in Roskilde with her sister Agnes and serving as its prioress. Gifted in theology but possessed of an untamable, passionate nature, Jutta found monastic seclusion suffocating. In 1271, she dramatically cast off her veil and fled to the Swedish court of her sister, Queen Sofie, where she embarked on a scandalous affair with King Valdemar Birgersson that shocked Catholic Europe and contributed to Valdemar's eventual overthrow. Returning to Denmark, Jutta retired to her hereditary estates, remembered in northern romance and chronicles as a royal rebel who defied ecclesiastical conventions for passion. Living out her later years composing scaldic verse in her rural manors, Jutta shattered ecclesiastical dogmas through her passionate defiance, her romantic rebellion and refusal to surrender her spirit immortalized in medieval balladry as an enduring legend of free will. Rejecting monastic confinement for personal freedom, Jutta's romantic defiance and tragic passion captured the imagination of Scandinavia, celebrated in chronicle romances as a symbol of free agency.",
+  "SpeechStyle": "Speaks with vibrant, defiant intensity and poetic wit, her outspoken words cutting through sanctimonious decorum.",
+  "Motivations": [
+    "Break free from the suffocating ascetic strictures of monastic enclosure to pursue emotional and personal freedom.",
+    "Assert her secular land rights as Eric IV's daughter, preventing church prelates from appropriating her private domains."
+  ],
+  "Values": [
+    "Values passionate authenticity and personal autonomy above rigid institutional dogma, unswayed by hypocritical condemnation.",
+    "Champions radiant emotional vitality, scorning pious pretenses in favor of living without compromise or fear."
+  ],
+  "Fears": [
+    "Terrified of forcible re-incarceration in a monastic cell, stripped of freedom and sunlight by ecclesiastical judges."
+  ],
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 1
+    }
+  ]
+}

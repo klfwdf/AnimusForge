@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_2",
+  "HeroName": "Megas Doux Leonardo Navigajoso, Lord of Lemnos",
+  "Description": "Megas Doux Leonardo Navigajoso, aged fifty-eight in 1259, is the Grand Duke of the Latin Empire and hereditary Lord of Lemnos. A distinguished Venetian patrician, he has governed this pivotal island guardian of the Hellespont for nearly three decades. Holding the imperial Byzantine court title granted by the Latin crown, Leonardo acts as the senior statesman bridging the Venetian maritime empire and the desperate court of Emperor Baldwin II. Shrewd, diplomatic, and vastly experienced, he fortified Lemnos with stone redoubts and ensured that merchant convoys transiting toward Constantinople remained protected. In 1259, sensing the imminent collapse of the northern Latin front, Leonardo mobilizes his sons and garrison resources, standing as the grand elder guardian of the maritime straits. Having witnessed three decades of Mediterranean conflict, Megas Doux Leonardo bears the gravitas of a veteran statesman. Recognizing that isolated Lemnos cannot hold indefinitely on courage alone, he coordinates tireless diplomatic appeals to Venice and the Holy See. Pouring a lifetime of naval lore into his island redoubts, he stands as the wise elder guardian of the imperial straits. A venerable veteran of Mediterranean naval warfare, Megas Doux Leonardo defends the straits with unmatched strategic foresight. His diplomatic connections and fortified island redoubts remain an indispensable cornerstone shielding the Latin Empire from maritime destruction.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with measured Venetian gravity and profound strategic vision, authoritative and unruffled by political turbulence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

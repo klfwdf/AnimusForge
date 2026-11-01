@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_5b",
+  "HeroName": "Ursina de Gorichia",
+  "Description": "Ursina de Gorichia, aged forty in 1259, hails from the illustrious comital House of Gorizia (Görz/Mainharding), holding sway across Friuli, Istria, and Carniola, and serves as the aristocratic consort to Stjepan 'Babonega' I. Her prestigious marriage bridges the Slavic warrior lineage of the Babonić with the refined courtly diplomacy of the Holy Roman Empire's southeastern marchlands. Regal, astute, and pious, Ursina oversees the extensive estates, cellar reserves, and textile workshops of Castle Steničnjak. In 1259, amid turbulent clashes between Hungarian dynasts and northern Italian factions, Ursina maintains vital correspondence with her comital kin in Görz and ecclesiastical contacts in Aquileia. Her sharp political intelligence and dignified council provide her husband with invaluable strategic foresight, reinforcing the Babonić dynasty's stature across the frontier. Lady Ursina presides over Castle Steničnjak with imperial Gorizian elegance, managing extensive domestic cellars while maintaining active ties with ecclesiastical prelates. Astutely monitoring diplomatic shifts across Italy and Germany, she sends regular intelligence reports that guide Babonega's regional military deployments. At the crossroads of Slavic and imperial feudal worlds, this dignified countess provides the Babonić dynasty with invaluable strategic counsel. Her sharp political foresight and comital poise provide her husband with vital intelligence, cementing the Babonić dynasty's authority across the borderlands.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with composed comital grace and ecclesiastical polish, her calm, measured voice conveying profound insight into diplomacy and realm governance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

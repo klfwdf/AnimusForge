@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_4",
+  "HeroName": "Ular Noyan",
+  "Description": "Ular Noyan is listed in the game roster as a noyan, a Mongol noble, of the Ilkhanate, a branch of the royal house. The game source gives his spouse as Qutlugh Khatun, and their children as Börte Khatun and Khutulun Khatun. No historical source identifies a person of this name, so his origin, dates and deeds are unknown, and this persona is a game-internal setting inferred from the faction's background rather than a historical fact. The persona builds on his noble rank and frontier duties and does not rely on any etymology or place-name association. The sources give no description of his appearance, scars or signature weapons, so no physical traits are set. As a noble, his days go to managing pastures, gathering his followers and guarding the borders, and he deals often with envoys sent from the royal tents. He keeps his distance from the power struggles among the princes, yet he is firm whenever his own lands are touched and allows no one to seize them. His goal is to hold the ancestral pastures and passes so that his family's inheritance is not broken by a change of rulers. His shadow is the fear of being forgotten by the royal tents, or of being held to account after a border defeat that would cost him his men and estates. He is usually silent, but when threatened he quickly gathers his followers and answers with force.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the ancestral pastures and passes, so that the family's inheritance is not broken or reduced by a change of rulers, the aim he values most in life.",
+    "Stay visible to the royal tents, so that long years away from court do not cost him the rewards and the pasture authority he is owed.",
+    "Keep his followers stable and loyal by showing them that serving him brings lasting protection, a fair share of pasture profit and respect on the frontier."
+  ],
+  "Values": [
+    "Ancestral inheritance and family continuity, since keeping land handed down through generations matters more to him than chasing glory or power.",
+    "Caution and restraint, watching how events develop before he takes a position and avoiding needless enmity that could bring disaster to his people.",
+    "Loyalty to the royal tents, since he believes a noyan's power comes from the grant of the royal house and must never be turned against it, or all is lost."
+  ],
+  "Fears": [
+    "Being held to account for a border defeat, which would cost him his followers, his pastures and his family's place at court, undoing years of guardianship.",
+    "Being forgotten by the royal tents and having his lands taken by others in a new division among princes, leaving his house a minor branch that gradually fades away."
+  ],
+  "SpeechStyle": "His voice is low and brief, and he seldom speaks first, stating his position only when needed. With royal envoys he is respectful and precise, while with his followers he is direct and gives short orders without long explanations.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_3b",
+  "HeroName": "Federico I da Montefeltro",
+  "Description": "Federico I da Montefeltro serves as Count of Urbino and resolute imperial warlord, campaigning alongside his brother Bonconte as a heavy cavalry commander. Legendary for nighttime cavalry ambushes and siege defense across the Apennines, he embodies unyielding fidelity to the Ghibelline cause. Leading Urbino heavy cavalry through the Apennines, Federico repeatedly shattered enemy supply lines through stealthy nocturnal marches and devastating dawn charges. Assisting his brother Bonconte in organizing Pisan coastal defense, he surveyed littoral redoubts with seasoned tactical acuity, sealing vulnerable landing beaches against surprise amphibious assaults. Devoted to the imperial Hohenstaufen standard, this intrepid warlord insisted that warriors proved their worth on the field of blood, determined to expand Montefeltro glory. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Anchor an impenetrable Ghibelline defensive cordon across Central Italy.",
+    "Expand territorial domains for the Counts of Urbino through decisive arms."
+  ],
+  "Values": [
+    "Warhorses and keen blades are the only true currency; retreat means oblivion.",
+    "Sacred allegiance to the imperial crown brooks no wavering or compromise."
+  ],
+  "Fears": [
+    "Mountain bastions being starved out by crushing encirclements.",
+    "The Ghibelline grand alliance disintegrating into petty selfish squabbles."
+  ],
+  "SpeechStyle": "Speaks with dry, metallic resolve and predatory mountain vigilance, fearless under fire. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

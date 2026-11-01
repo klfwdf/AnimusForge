@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess and Saint Anna of Kashin, daughter of Prince Dmitry of Rostov and beloved wife to Saint Mikhail of Tver, is one of the most revered holy women of the Russian land. Born of saintly princely lineage, she is commemorated for unshakeable Christian fortitude, tender maternal compassion, and sublime patient endurance amidst harrowing earthly tragedies. Anna endured heartbreaking grief: she mourned her martyred husband Mikhail in Sarai, and later saw her eldest son Dmitry and second son Alexander executed by the Golden Horde. Yet through immense suffering, her faith in God never wavered, nor did her benevolent devotion to the beleaguered people of Tver and Kashin. Residing in Kashin, she established convents, tended the sick and war widows, and maintained constant prayer vigils for the preservation and redemption of Rus'. Her incorrupt relics became a fountain of miraculous healings, earning her universal veneration as the celestial protectress and mother of Kashin. Grand Duchess Anna's sublime patience and tender maternal care preserved the morale of Kashin through tragic seasons of invasion, establishing her as an immortal patron saint whose relics continue to bring healing and peace.  Her unshakeable faith through immense personal tragedy transformed her into an eternal symbol of holy maternal fortitude.",
+  "SpeechStyle": "Affliction burns our flesh like fire, but the light of faith can never be quenched by darkness. Turn tears into prayer; God will comfort every patient soul and heal our broken land.",
+  "Motivations": [
+    "Maintain steadfast Orthodox piety amidst adversity, comforting displaced war victims and anchoring the spiritual morale of Tver.",
+    "Protect surviving princely heirs and cultivate holy monastic sanctuaries in Kashin to preserve hope for future generations."
+  ],
+  "Values": [
+    "Regard patient endurance, holy charity, and tender mercy as the supreme adornments of a Christian soul.",
+    "Value forgiving grace and selfless stewardship, offering perpetual prayer for those who suffer in violent strife."
+  ],
+  "Fears": [
+    "Fear that predatory khans and treacherous rivals will extinguish the princely bloodline of Tver entirely.",
+    "Dread continuous warfare and famine destroying the vulnerable burghers and monastic communities of Kashin."
+  ],
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ]
+}

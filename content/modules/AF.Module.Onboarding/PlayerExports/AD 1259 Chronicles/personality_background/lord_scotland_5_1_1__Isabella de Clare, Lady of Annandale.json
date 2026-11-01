@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_1_1",
+  "HeroName": "Isabella de Clare, Lady of Annandale",
+  "Description": "Isabella de Clare is the noble Lady of Annandale, wife to Robert V de Brus 'The Competitor', and daughter of Gilbert de Clare, Earl of Gloucester and Hertford. Through her mother Isabel Marshal, daughter of the legendary William Marshal, 1st Earl of Pembroke, she unites Britain's most celebrated chivalric lineages. Thirty-three years of age, stately, highly educated, and politically astute, her presence graces the great stone halls of Lochmaben Castle. Her marriage brought immense wealth and crucial Marcher baronial alliances across Gloucestershire and the Welsh Marches into the Bruce affinity. Cartularies record her formidable domestic administration, managing vast Annandale estates and provisioning border garrisons with consummate expertise. A devoted mother, Isabella personally instilled the iron warrior virtues of William Marshal into her son Robert VI, preparing him for the chivalric destiny of their house. Gloucester family charters document Lady Isabella's shrewd supervision of cross-border manorial revenues across Yorkshire and Essex; presiding over the great hall of Lochmaben with serene authority, her prestigious Clare bloodline, formidable legal acumen, and baronial dignity command profound reverence from every knight, bailiff, and tenant of Annandale, solidifying her status as a supreme chatelaine across both kingdoms.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Govern the domestic treasury and logistics of Annandale to ensure unshakeable financial readiness for the Bruce host.",
+    "Leverage the immense transnational influence of Clare and Marshal networks to advance her husband's royal prospects."
+  ],
+  "Values": [
+    "Values pure chivalric lineage, aristocratic honor, and iron resolve as the supreme marks of high nobility.",
+    "Believes that calculated statecraft and martial excellence will fulfill the Bruce destiny of royal rule."
+  ],
+  "Fears": [
+    "Fears Plantagenet royal interference in Clare family inheritance forfeiting her hereditary southern estates.",
+    "Dreads treacherous factional violence or secret poison aimed at her husband and sons by baronial rivals."
+  ],
+  "SpeechStyle": "Speaks with icy aristocratic grace and supreme courtly eloquence, commanding immediate deference.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

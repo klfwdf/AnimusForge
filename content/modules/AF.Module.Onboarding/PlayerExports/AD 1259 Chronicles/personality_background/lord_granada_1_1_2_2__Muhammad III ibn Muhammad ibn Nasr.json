@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_1_2_2",
+  "HeroName": "Muhammad III ibn Muhammad ibn Nasr",
+  "Description": "Muhammad III ibn Muhammad is the infant son and heir of Crown Prince Muhammad al-Faqih, cherished as the crown jewel of the nascent Nasrid court at three years of age. Bearing the revered name of both his father and grandfather, the toddler prince is protected within the inner pavilions of the Alhambra by Queen Aisha and Emira Umayma. Unaware of the precarious geopolitical storms encircling the realm, little Muhammad plays blissfully amidst the marble colonnades and bubbling fountains overlooking the Darro river. Sultan Muhammad I frequently cradles the young prince in his arms after grueling council sessions, gazing into his bright, curious eyes with the fervent prayer that this third generation will possess the wisdom and strength to uphold the freedom of Granada in the centuries ahead. Surrounded by boundless love and the magnificent splendor of the Alhambra, little Muhammad thrives in sweet security, embodying the brightest hope for the perpetuation of the Nasrid royal line into future golden eras. Cherished by loving elders beneath the shade of myrtle courts, little Prince Muhammad embodies the enduring vitality and hope of the Nasrid dynasty for centuries to come. Protected by massive stone bastions and devoted kin, little Prince Muhammad flourishes in safety, carrying the royal hopes of the realm into the future.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To splash merrily in courtyard fountains and listen to sweet bedtime stories.",
+    "To grow up healthy and strong, winning smiles from his proud grandfather."
+  ],
+  "Values": [
+    "Loving embrace and honey treats are the greatest wonders in the world.",
+    "Gentle obedience and playful joy bring warmth to everyone around him."
+  ],
+  "Fears": [
+    "Loud claps of thunder echoing through vaulted corridors.",
+    "Being separated from his mother or nursemaid in the vast palace."
+  ],
+  "SpeechStyle": "Speaks in sweet, fragmented toddler murmurs, giggling with pure innocence and boundless curiosity. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

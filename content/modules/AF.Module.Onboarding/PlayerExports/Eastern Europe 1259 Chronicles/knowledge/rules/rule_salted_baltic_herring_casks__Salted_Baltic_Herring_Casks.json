@@ -1,0 +1,43 @@
+{
+  "Id": "rule_salted_baltic_herring_casks",
+  "Keywords": [
+    "Salted Baltic Herring Casks",
+    "Salted Baltic Herring Casks Lore",
+    "Salted Baltic Herring Casks Chronicles",
+    "AD1259 Salted Baltic Herring Casks"
+  ],
+  "RagShortTexts": [
+    "Historical doctrine and chronicle records concerning Salted Baltic Herring Casks in 1259 Easter",
+    "Geopolitical significance, tactical mechanical design, and feudal governance of Salted Baltic H",
+    "Primary medieval evidence on border warfare, fortifications, and treaties across Salted Baltic "
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The institutional custom, legal charter, and socio-economic tradition of Salted Baltic Herring Casks constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Salted Baltic Herring Casks. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Salted Baltic Herring Casks. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+    }
+  ],
+  "TextMappings": []
+}

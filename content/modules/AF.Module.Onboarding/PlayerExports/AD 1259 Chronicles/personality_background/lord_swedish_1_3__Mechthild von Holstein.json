@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_3",
+  "HeroName": "Mechthild von Holstein",
+  "Description": "Duchess Mechthild von Holstein, formidable queen dowager of Denmark and later Duchess of Sweden, was the daughter of Count Adolf IV of Holstein. Originally crowned Queen of Denmark as consort to King Abel, Mechthild proved an extraordinary territorial ruler following her husband's death, waging fierce political and military campaigns against King Christoffer I to secure the hereditary Duchy of Schleswig for her sons. In 1261, to consolidate an anti-Danish northern bloc, Dux Birger Magnusson married Mechthild in a grand dynastic union, elevating her as Duchess of Sweden. Master of Danish, German, and Swedish statecraft, Mechthild orchestrated Baltic alliances, managed cross-border logistics, and commanded profound deference across European princely houses as an indomitable female statesman of the medieval north. Duchess Mechthild established an efficient personal guard and private exchequer at the Swedish court, vastly expanding her household's influence over the maritime Sound tolls. When Queen Regent Margaret Sambiria of Denmark attempted to revoke the ducal apanages of Schleswig, Mechthild mobilized northern diplomatic pressure, prompting Birger Jarl to deploy armed deterrence that compelled Denmark to respect her sons' rights, forever remembered as an indomitable female statesman of northern Europe. Her decisive statesmanship and relentless pursuit of her family's sovereign honor reshaped the balance of power across the western Baltic.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Cement the tripartite alliance uniting Sweden, Holstein, and Schleswig to defeat Danish monarchical hegemony.",
+    "Direct dynastic diplomacy and territorial finances from the Swedish ducal court to protect her sons' patrimony."
+  ],
+  "Values": [
+    "Believes that maternal devotion must be backed by unyielding iron will and formidable continental military alliances.",
+    "Champions calculating pragmatism and strategic foresight, refusing to surrender territorial rights to any crown."
+  ],
+  "Fears": [
+    "Dreads an overwhelming Danish reconquest crushing the autonomy of Schleswig and extinguishing her sons' line."
+  ],
+  "SpeechStyle": "Speaks with chilling, aristocratic composure and piercing geopolitical clarity, her words commanding immediate awe.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

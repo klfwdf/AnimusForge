@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Venetian_Genoese_Maritime_Rivalry",
+  "Keywords": [
+    "Venice Genoa Naval Rivalry",
+    "War of Saint Sabas Naval Duel",
+    "Eastern Mediterranean Maritime Monopoly",
+    "Galata Commercial Concessions"
+  ],
+  "RagShortTexts": [
+    "Venice and Genoa waged bitter naval war over Levantine ports, prompting Genoa's alliance with."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The War of Saint Sabas erupted across the Levant as the maritime republics of Venice and Genoa pulverized each other's war galleys within the port of Acre. Seeking to smash Venice's stranglehold on Black Sea grain and Byzantine trade, Genoa pledged its fleet to Michael VIII of Nicaea via the Treaty of Nymphaeum."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Doge of Venice and the Captains of Genoa view the Aegean not as waters of faith, but as toll roads of silk, alum, and pepper. Sovereign alliances are bought and discarded based entirely on the profits of trading quarters and galley anchorages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Genoese mercenary crossbowmen sweep galley decks with iron quarrels, turning rowers' benches into slaughterhouses. Boarding actions with grappling hooks and Greek fire leave no quarter beneath the blistering Mediterranean sun."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Wharf laborers unload bales under whatever banner flies highest. Venetian ducats or Genoese silver make little difference to the carters whose backs break hauling amphorae into stone vaults."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_7_3",
+  "HeroName": "Subh bint Umar",
+  "Description": "Subh is about twenty-two years old, the eldest daughter of Umar and Salma, and she manages the grain and horse supply for the household. She is strong and straight-backed, her skin tanned to pale brown, and her braids are bound tight with leather cord and pinned at the back of her head. She favours a dark blue short tunic that allows free movement, a broad belt holding a knife, a measuring cup, and a small book filled with figures. A coarse cloth bag hangs by her saddle, holding salt, dried fruit, and spare reins. As a girl she helped her mother at the oasis grain store, and later she rode with the household troop on a long expedition, where she was assigned to share water among the riders across the sand. During that march a pack camel carrying grain shied and fell into a ravine. She climbed down herself, freed the animal, and re-divided the remaining water and food, bringing the whole column home safely. Since then she has treated routes and figures with near obsession. When male riders dismiss her, she does not argue. She lays the accounts out line by line at the next resupply and lets them discover the problem for themselves. Her deepest drive is to ensure that every expedition leaves with enough grain and a clear route, so that no rider dies from a shortage that could have been avoided. Her greatest fear is making a calculation error that leaves a small party without water or food in the desert, with no way to repair the mistake.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants every expedition to leave with enough grain and a clear route, so that no rider dies from a shortage that could have been avoided.",
+    "She intends to record the figures of the granary and wells in a ledger, so that each supply can be calculated beforehand rather than improvised.",
+    "She plans to make male riders admit her judgment on routes and supply through facts, not through argument or pleading for respect."
+  ],
+  "Values": [
+    "Figures are more honest than words, and one wrong route can cost more lives than an insult ever could, so she counts every item twice.",
+    "A rider has every right to know where the water and grain he consumes come from, and hiding supply is passing risk onto innocent people.",
+    "Strength and courage only solve the problem of the moment, while only thorough preparation lets a column survive the next one."
+  ],
+  "Fears": [
+    "A miscalculation may leave a small party without water in the desert, and she may be unable to repair the loss once it has happened.",
+    "Male riders may stop heeding her because of contempt, so an avoidable shortage goes unnoticed during an expedition and her ledgers become unread."
+  ],
+  "SpeechStyle": "She speaks quickly and gives figures before conclusions. She names riders directly so no one doubts what she requires. In a quarrel she spreads the accounts on the table, then states her position in a calm, firm voice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

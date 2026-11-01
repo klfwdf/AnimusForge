@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_4_6",
+  "HeroName": "Ragnhild Erlandsdotter",
+  "Description": "Lady Ragnhild Erlandsdotter, venerated matriarch of Uppland, was a central figure within the Finsta kinship network and a close ancestral relative to the future Saint Birgitta. Born into the paramount justiciar family of Tiundaland, Ragnhild possessed deep juristic insight and profound Christian piety. During the perilous aftermath of the Folkung uprisings when royal confiscations threatened Finsta, Ragnhild leveraged her extensive ties with the diocesan chapter and moderate barons to preserve her family's ancestral titles. She lavishly endowed nunneries, supervised agrarian output, and maintained emergency peasant relief, her formidable resilience preserving her lineage's honor through the storm of royal wrath. Ragnhild systematically cataloged ancestral parchment charters and judicial scrolls at Finsta, deploying unassailable legal documentation to rebuff predatory confiscation claims by royal bailiffs following the rebellions. Leveraging canonical jurisprudence before the Archbishop of Uppsala, she placed key manors under monastic sanctuary charters, safeguarding a landed foundation for her descendants. Her masterly political discernment and immovable fortitude preserved her lineage's heritage through the darkest tribulations, commanding the lasting veneration of the Swedish aristocracy. Her unshakeable devotion to the honor of her ancestral house ensured that the legacy of Finsta endured through turbulent political storms.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Negotiate with royal and ecclesiastical authorities to prevent the total forfeiture of Finsta's ancestral charters.",
+    "Endow diocesan priories and relief hospices, building deep moral and spiritual legitimacy for her kinship network."
+  ],
+  "Values": [
+    "Believes patient endurance, juristic wisdom, and moral rectitude far surpass impetuous martial vengeance.",
+    "Reveres divine justice and feudal statutory order, dedicating her remaining years to rebuilding family security."
+  ],
+  "Fears": [
+    "Dreads total royal attainders revoking Finsta's charters and casting her remaining kin into perpetual exile."
+  ],
+  "SpeechStyle": "Speaks with slow, monumental composure and impenetrable dignity, her measured words forged through great trials.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

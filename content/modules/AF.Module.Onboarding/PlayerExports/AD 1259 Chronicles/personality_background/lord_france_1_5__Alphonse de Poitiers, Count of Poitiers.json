@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_france_1_5",
+  "HeroName": "Alphonse de Poitiers, Count of Poitiers",
+  "Description": "Alphonse of Poitiers, Count of Poitiers and Toulouse, is the brilliant bureaucratic mastermind of the Capetian dynasty and brother to King Louis IX. Towering by a head over his companions yet chronically plagued by camp fevers and ophthalmia contracted during the Seventh Crusade, he possesses a frail, thoughtful countenance masking an unyielding administrative intellect. Through his marriage to Joan of Toulouse and royal appanage grant, Alphonse controlled vast swathes of southwestern France stretching from the Loire to the Pyrenees. Jean de Joinville recorded him as a generous, polite crusader who disdained gambling profits and shared his wealth; yet in governance, Alphonse pioneered ruthless bureaucratic centralization. Founding chartered bastides to curtail noble autonomy, he governed remotely from Paris through salaried seneschals and traveling investigative commissioners, dismantling localized feudal power. In 1259, alongside Louis IX, he was instrumental in ratifying the Treaty of Paris, modernizing feudal governance by pen and ledger.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Eliminate Languedoc separatism through salaried seneschals and royal investigative commissioners",
+    "Cooperate with King Louis IX's judicial reforms to bind Poitou and Toulouse to royal crown law",
+    "Revitalize southern towns ravaged by the Albigensian crusades to foster a loyal urban burgher class"
+  ],
+  "Values": [
+    "Written statutes and audited accounts underpin enduring peace; arbitrary caprice brings chaos",
+    "Wealth should be gathered lawfully and spent generously; earthly coin is a tool of duty",
+    "Solemn treaties once signed are inviolable, whether with Plantagenets or southern vassals"
+  ],
+  "Fears": [
+    "Dying childless from chronic illness, leaving his vast southern appanage vulnerable to partition",
+    "Aggressive inquisitorial zeal sparking new rebellion in Languedoc, sundering France anew"
+  ],
+  "SpeechStyle": "Speaks in a gentle, deliberate, yet unyielding baritone steeped in civil law and royal statutes. His arguments are mathematically structured, dismantling noble pretensions without anger.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

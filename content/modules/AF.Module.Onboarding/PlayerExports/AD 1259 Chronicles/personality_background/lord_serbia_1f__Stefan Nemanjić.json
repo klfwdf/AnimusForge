@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_serbia_1f",
+  "HeroName": "Stefan Nemanjić",
+  "Description": "Stefan Nemanjić, aged one in 1259, is the youngest infant prince of the royal Serbian dynasty, cradled in luxury at Raška. Bearing the sacred dynastic name of 'Stefan'—meaning 'the Crowned'—he embodies the venerable lineage trace back to Stefan Nemanja. Surrounded by burning incense and watchful royal guards, the babe slumbers peacefully beneath tapestries bearing the Serbian cross. Blessed regularly by Archbishop Sava II, his fragile young life unfolds under the protective mantle of an expanding kingdom. While turbulent wars shape the surrounding empires, this newborn prince remains sheltered from all strife, a tender bud of future royal strength. Little Stefan nurses peacefully in his mother's arms, his bright eyes reflecting the warm glow of the flickering golden icon lamps. Archbishop Sava II regularly blesses the infant's brow, praying that the protective mantle of Serbia's holy dynastic founders will rest upon him. Sheltered within the massive stone fortifications of Raška, the newborn slumber brings enduring hope to the entire royal court. Sheltered from all geopolitical strife by loyal lancers and fortress battlements, infant Stefan slumbers in tranquil peace. His sacred name connects him directly to the founding saints of Serbia, blessing the royal house with eternal renewal.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Utters soft baby coos and playful giggles, gazing wide-eyed at royal visitors from his gilded cradle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Damascus_Ancient_City_and_Umayyad_Sanctuary",
+  "Keywords": [
+    "Damascus Umayyad Mosque",
+    "Barada River Oasis Network",
+    "Syrian Armory Market Nexus",
+    "John the Baptist Head Relic"
+  ],
+  "RagShortTexts": [
+    "Damascus, nourished by the Barada River oasis, anchored Syrian arms manufacture and trade."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Surrounded by the lush Ghouta oasis nourished by the Barada River, Damascus stands among the world's oldest continuously inhabited cities. The Umayyad Mosque, adorned with glittering Byzantine mosaics, enshrines the head of John the Baptist, revered by Christians and Muslims alike. Its bazaars form the premier arms manufacturing center of the Levant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Controlling Damascus secures the continental trade artery connecting Egypt with upper Mesopotamia. Even when Mongol forces occupied its gates in 1260, its mercantile guilds maintained secret communication with Cairo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Walking the vaulted souks, the scent of crushed cardamom blends with forge smoke. A true Damascus curved scimitar is quenched until the steel ripples like running water, slicing through padded jacks effortlessly."
+    }
+  ],
+  "TextMappings": []
+}

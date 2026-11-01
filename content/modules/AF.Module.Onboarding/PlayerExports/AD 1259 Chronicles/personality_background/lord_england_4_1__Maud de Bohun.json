@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_4_1",
+  "HeroName": "Maud de Bohun",
+  "Description": "Maud de Bohun is the accomplished daughter of Humphrey de Bohun, 2nd Earl of Hereford and Lord High Constable of England. Tall, elegant, and possessed of razor-sharp intellect, Maud carries the proud martial heritage of the Marcher lords with natural poise. Raised within the mountain fortresses of Brecon and the cultured manors of Essex, she mastered estate auditing, feudal charters, and surgical wound dressings. During her father's frequent absences commanding border armies, Maud managed domestic castle accounts and coordinated diplomatic receptions for visiting barons. In 1259, as England teeters on the brink of civil war over the Provisions of Oxford, Maud actively oversees the rationing of grain and military munitions across the family estates. She monitors intelligence reports regarding Prince Llywelyn's aggressive incursions across the Welsh border, providing sober, perceptive assessments to her warrior kin. Devoted to her father's honor and the constitutional liberties of the realm, she stands as an indispensable domestic pillar of the House of Bohun. In the stone council chamber of Brecon, she manages detailed loan registers and agricultural rents, regularly donating wool and grain to local priories. Maud frequently reminds her younger siblings to maintain vigilant discretion, personifying the flawless dignity, profound faith, and political wisdom expected of Bohun noblewomen.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assist her father in managing the Bohun estates across Hereford and Essex, ensuring flawless wartime logistics",
+    "Maintain diplomatic bridges among Marcher noble houses to fortify the family's frontier bastions",
+    "Shield local church foundations and tenants from the devastating pillage of encroaching civil strife"
+  ],
+  "Values": [
+    "A noble daughter must shield the realm with courage, displaying no faltering weakness before gathering war",
+    "Rigorous domestic order and full granaries sustain armies; meticulous stewardship is the bedrock of power",
+    "Uphold feudal law and ancestral honor; never permit foreign rebels to despoil family lands"
+  ],
+  "Fears": [
+    "Welsh hosts exploiting English civil war to overrun Brecon Castle and pillage the family estates",
+    "Her beloved father and brothers falling in battle, subjecting the House of Bohun to royal attainder"
+  ],
+  "SpeechStyle": "Speaks with clear aristocratic cadence, refined dignity, and measured authority. Her commands are crisp and logically organized, commanding immediate respect while maintaining courtly charm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

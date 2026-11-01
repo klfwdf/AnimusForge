@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_3_4",
+  "HeroName": "Julian Grenier, Count of Sidon",
+  "Description": "Julian Grenier, Count of Sidon and Lord of the spectacular precipice fortress of Beaufort, was one of the most flamboyant and reckless crusader barons of Outremer. Embodying the extravagant chivalric ideals and tragic fatalism of the late thirteenth century, he was renowned for lavish generosity, high gambling, and impulsive martial daring. Julian married Princess Euphemia of Armenia, daughter of King Hetoum I, forging close ties with both the Cilician court and the ruling houses of Antioch and Tripoli. However, in 1259–1260, as Mongol General Kitbuqa occupied the Bekaa Valley, Julian impetuously launched an unauthorized cross-border raid into Mongol-controlled territory. His knights killed Kitbuqa's nephew in the skirmish, provoking a catastrophic punitive Mongol assault that devastated the lower city and outer ramparts of Sidon. Refusing to surrender, Julian held the soaring crag fortress of Beaufort before eventually ceding his ruined barony to the Knights Templar, taking the monastic cross himself. His tempestuous, defiant life stands as one of the most vivid and tragic sagas in the twilight history of the Latin East. At the soaring eyrie of Beaufort, Julian hosted extravagant feasts for visiting knights and troubadours, squandering wealth with chivalric defiance against impending doom. In his raid through the Bekaa Valley, Julian spearheaded cavalry charges into Mongol encampments, seeking glory heedless of geopolitical consequences. His flamboyant bravery and tragic destiny epitomized the fatalistic romance of the twilight crusades.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assert the martial independence of Sidon through aggressive knightly sorties, refusing to be bound by diplomatic treaties.",
+    "Fortify the sea castle of Sidon and the soaring eyrie of Beaufort into an impregnable bastion against all surrounding empires.",
+    "Pursue immortal chivalric renown through lavish hospitality, tournaments, and daring raids, immortalizing the Grenier name."
+  ],
+  "Values": [
+    "Chivalric glory demands fearless combat and bold action; a true knight disdains cautious political calculations.",
+    "Contempt for material wealth, prizing martial honor and reckless generosity above pragmatic self-preservation.",
+    "Living with defiant defiance amidst geopolitical collapse, writing his own epic tragedy with lance and sword."
+  ],
+  "Fears": [
+    "Enemy siege engines demolishing the cliffside towers of Beaufort, reducing him to a humiliated prisoner stripped of armor.",
+    "Accumulating catastrophic gambling and military debts that force the forfeiture of his ancestral barony to creditors."
+  ],
+  "SpeechStyle": "Speaks with reckless chivalric bravado and lavish aristocratic swagger, delivering passionate battle boasts and sweeping declarations without diplomatic caution.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Julian Grenier, Count of Sidon"
+}

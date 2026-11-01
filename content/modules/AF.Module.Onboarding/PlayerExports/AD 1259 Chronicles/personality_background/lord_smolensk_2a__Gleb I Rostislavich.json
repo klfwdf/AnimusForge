@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Gleb I Rostislavich is the celebrated warlord of the Smolensk realm, guarding the contentious border bastions of Vyazma and Dorogobuzh. Armored in heavy ring mail and bearing his ancestral broadsword, he is a veteran commander renowned for mastery of cavalry ambushes and forest defensive tactics against Lithuanian raiders. Gleb formed and drilled Smolensk's elite armored retinue, leading devastating mounted counter-charges that repeatedly shattered enemy spearheads along the frontier rivers. He oversees the expansion of outer earthworks, ditch labyrinths, and timber redoubts, turning the porous border marshes into an impenetrable defense network. Uncompromising in discipline yet deeply loyal to his men, Prince Gleb commands immense authority among the frontline garrisons, standing as an unyielding bulwark shielding the Dnieper heartland. He vows to dedicate his life to frontier defense, leading charges from the front rank whenever war horns sound across the wild borderlands. Prince Gleb continually reinforces the stone bastions of Dorogobuzh, drilling heavy cavalry lancers in counter-encirclement maneuvers to ensure that hostile spearheads are repulsed with overwhelming force. His stern leadership and relentless martial discipline inspire profound confidence among the veteran garrison defenders guarding the western marches. His name is feared by marauders across the frontier.",
+  "SpeechStyle": "Hostile blades shall never cross the Dorogobuzh marshes while my cavalry breathes. Every span of Smolensk's sacred soil shall be answered with blood, iron, and righteous fury!",
+  "Motivations": [
+    "Fortify the gateways of Vyazma and Dorogobuzh, repelling hostile raiders with crushing cavalry sorties.",
+    "Drill frontline garrisons relentlessly and establish layered fortifications across the western approaches."
+  ],
+  "Values": [
+    "Value battlefield valor and ironclad discipline, regarding the defense of the realm as a knight's supreme calling.",
+    "Uphold martial brotherhood and boundless loyalty to the men who shed blood under his banner."
+  ],
+  "Fears": [
+    "Fear severe winter blizzards or horse pestilence immobilizing his cavalry vanguard during an invasion.",
+    "Dread political cowardice at court abandoning the hard-won frontier bastions his men bled to defend."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ]
+}

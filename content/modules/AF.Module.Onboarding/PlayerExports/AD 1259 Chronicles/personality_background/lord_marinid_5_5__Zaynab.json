@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_5_5",
+  "HeroName": "Zaynab",
+  "Description": "Zaynab is nineteen years old and the wife of Faris, having entered the house of Ibrahim ibn 'Uthman Adergal two years ago. She is small in stature, with black hair braided into several fine plaits that hang over her chest, and an amber bead necklace given to her by her mother on her wedding day. Her robes are plain, mostly grey-blue or off-white, with tiny geometric embroidery at the cuffs, and she often pins an old copper clasp at the neckline. She came from a small family that earned its living copying manuscripts, and she learned to read as a child, often writing place names and stories heard on the road in the blank margins of pages. Among the horsemen of the Adergal house she found that most men cared only for horses and plunder, while few women could read or write. She therefore opened a small room of her own to teach several maids letters and arithmetic, an act that caused no small talk in the household. She never confronts rivals head-on. She records what each one says and does, saving these notes for a moment when facts can speak in her place. At night she writes short notes of what she heard that day and keeps them in an old wooden box inscribed with her name, never shown to anyone lightly. Before marriage she spent years in her family's copying workshop, and her hand is so neat that even her husband recognises her writing. Her ambition is to see the women of the Adergal house speak in council and sign their names in the ledgers. Her greatest fear is that her husband will abandon her cause to please the collateral branches, leaving her work dismissed as a whim and quietly erased.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants the women of the household to read and write the ledgers, so they can speak at councils without relying on men to relay their words.",
+    "She keeps a written record of statements and actions, so that when the time comes she can expose a rival's lie with documents rather than shouting.",
+    "She hopes to help her husband Faris establish himself at home, so that his mediation policies cannot be overturned easily by collateral branches."
+  ],
+  "Values": [
+    "Every accusation worth making in public must have evidence on paper behind it, or it will not hold and will not be believed.",
+    "Knowledge should not belong only to men or to a single lineage, because the more people can read, the harder it is to deceive a family.",
+    "Keeping faith and courtesy matters more than a single victory, since a person who loses their good name rarely keeps loyal companions."
+  ],
+  "Fears": [
+    "Her husband may abandon her cause to please the collateral branches, and everything she has done will be dismissed as a whim and erased.",
+    "Her notes may be treated as heresy or idle nonsense, and the knowledge that could protect the women of the house would then be lost."
+  ],
+  "SpeechStyle": "She speaks calmly, in orderly sentences, often quoting a book or old story. When met with contempt her voice grows quieter, and she repeats the other person's words one by one. With maids and young people she is patient.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

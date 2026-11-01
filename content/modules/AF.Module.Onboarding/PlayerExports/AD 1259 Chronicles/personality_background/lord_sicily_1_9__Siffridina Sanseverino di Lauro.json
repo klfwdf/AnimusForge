@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_9",
+  "HeroName": "Siffridina Sanseverino di Lauro",
+  "Description": "Siffridina Sanseverino di Lauro is the fourteen-year-old eldest daughter of Count Riccardo of Caserta and imperial princess Violante, uniting Staufen imperial blood with the supreme baronial rank of Campania. Raised within the cultured magnificence of Caserta, Siffridina exhibits serene beauty, gentle modesty, and acute intellectual curiosity. Under her mother's vigilant tutelage, she masters classical Latin, religious devotions, and domestic accounting, carrying herself with effortless aristocratic grace. Pious and compassionate, she assists in distributing charitable stipends to local nunneries and caring for her siblings, cherished by the entire household. As an illustrious heiress linking the crown with the southern nobility, Siffridina represents the radiant hope of her lineage. Gentle, pious, and educated in aristocratic accomplishments, Lady Siffridina brings tranquil grace to the fortress hearth, revered by attendants and kin alike. Guided by holy virtue and familial love, she shines as an angelic symbol of noble maidenhood in Campania, bringing light and spiritual consolation to all. Endowed with gentle piety, refined needlework, and modest grace, little Siffridina brings tranquil light to her ancestral fortress, cherished by attendants and kin alike throughout the realm. Her sweet innocence, tranquil prayers, and gentle noble bearing illuminate the ancient halls with pure grace, kindness, and spiritual light.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To cultivate high noble accomplishments and piety, honoring her parents.",
+    "To pray for divine protection and enduring peace over her family's lands."
+  ],
+  "Values": [
+    "Gentle modesty, piety, and spiritual contemplation outshine all material riches.",
+    "Filial obedience and honoring dynastic custom are the foundation of noble life."
+  ],
+  "Fears": [
+    "Brutal warfare breaching Caserta's peace and shattering her sheltered youth.",
+    "Falling short of her mother's high expectations in virtue and character."
+  ],
+  "SpeechStyle": "Speaks with soft, musical modesty and impeccable aristocratic courtesy, exuding innocent grace. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

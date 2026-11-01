@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_6",
+  "HeroName": "Aléxios Kavallários",
+  "Description": "Aléxios Kavallários (Kaballarios), cousin of Emperor Michael VIII, was an extraordinarily bold and aggressive cavalry commander who held high imperial offices including Megas Tzaousios and Domestikos tes Trapezes. Despite his privileged imperial bloodline, Alexios shunned the tranquil comforts of the palace, spending his life in heavy armor leading frontline shock cavalry squadrons across Macedonia, Thrace, and Thessaly. At the Battle of Pelagonia in 1259, he rode at the vanguard of the imperial cataphract wedges, breaking through the armored ranks of Frankish chivalry through raw ferocity and superior horsemanship. Highly charismatic, demanding, and fearless under fire, he cultivated ferocious esprit de corps among his troopers. His illustrious career would culminate in heroic sacrifice at the Battle of Neopatras, where he fell fighting against overwhelming odds. Alexios personified the aggressive martial spirit of the restored empire, proving that Roman nobility was forged in the fire of frontline combat. Across the rugged crests of Macedonia and Thrace, Alexios constructed tactical cavalry camps, training his cataphracts to execute tight wedge charges over broken ground. Courageous and tempestuous, he charged into the thickest melee wielding a two-handed battle-axe, personally turning the tide of numerous desperate skirmishes. Even in his final stand at Neopatras, surrounded by overwhelming numbers, Alexios fought with suicidal ferocity, immortalizing his name across the Balkans as a paragon of Roman martial chivalry.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice is intense, thunderous, and electrifying, carrying the unstoppable momentum of a frontline cavalry captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

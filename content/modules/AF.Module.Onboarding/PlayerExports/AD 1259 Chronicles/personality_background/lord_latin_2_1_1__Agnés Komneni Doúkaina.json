@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_2_1_1",
+  "HeroName": "Agnés Komneni Doúkaina",
+  "Description": "Agnés Komnene Doukaina (known in Morea as Anna), aged thirty-five in 1259, is the daughter of Despot Michael II of Epirus and Princess consort of Achaea to Guillaume II de Villehardouin. Carrying the august imperial blood of the Komnenos and Doukas dynasties, she was wed in 1258 to cement the fateful tripartite anti-Nicaean coalition, bringing southern Thessalian estates as her dowry. Gracious, highly educated, and devoutly Orthodox, she commands respect from both Frankish barons and native Greeks at the court of Kalamata. Yet in 1259, torn between loyalty to her father and duty to her husband, she dreads the explosive mistrust festering between Epirote and Latin commanders as they march toward Pelagonia. A bearer of sacred Byzantine imperial blood, Agnes moves through the Frankish court of Kalamata like a proud, solitary violet. Praying daily in her Orthodox chapel, she comforts destitute commoners with compassionate charity. Caught in the treacherous crossfire between her husband and her Epirote kin, she employs subtle courtly eloquence to mediate tensions and preserve her family from annihilation. Reconciling her Orthodox heritage with her Latin crown, Princess Agnes remains an indispensable mediator in a divided realm. Her graceful diplomacy and charitable works earn her the enduring gratitude of both Greek peasants and Frankish barons across Morea.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with soft, elegant Byzantine courtliness, employing ornate rhetorical graces while subtly navigating treacherous familial politics.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

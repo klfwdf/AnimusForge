@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_5",
+  "HeroName": "Kōnstantînos II Torníkios, Sevastokrátor of Nicaea",
+  "Description": "Kōnstantînos II Torníkios, elevated as Sevastokrátor, stood as the senior patriarch of the illustrious Tornikios dynasty, whose noble Armenian and Georgian princely ancestry had enriched the Byzantine military aristocracy since the 10th century. In the fateful year of 1259, as Michael VIII consolidated imperial control following the regency crisis, Constantine's decisive political endorsement secured the allegiance of powerful Anatolian landed magnates. Master of frontier defense along the Sangarios River basin, he fortified stone castella and organized localized border militias to repel aggressive raids by Seljuk Turcoman horsemen. Constantine embodied the aristocratic virtues of chivalric honor, administrative prudence, and strategic restraint, avoiding erratic palace factions while ensuring steady supplies and recruits flowed to the European frontline. His diplomatic seniority and unblemished repute rendered him an indispensable elder statesman whose steadfast guidance bolstered the throne. Along the Sangarios River frontier, Constantine II erected granite castella and fortified bridgeheads, patrolling treacherous mountain defiles in heavy chainmail. Comprehending the tactical habits of Seljuk raiders, he rigged gorges with concealed rockfalls and ballista ambushes, consistently decimating encroaching warbands. Within imperial councils, this senior aristocrat upheld statutory traditions, resolving bitter feud disputes among landed magnates through unimpeachable equity, serving as the eastern bastion of the realm.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice is resonant, solemn, and measured, commanding profound respect through decades of military experience and aristocratic gravity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

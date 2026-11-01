@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Livonian_Sword_Brothers_and_Baltic_Crusade",
+  "Keywords": [
+    "Livonian Brothers of the Sword",
+    "Red Sword and Red Star Surcoat",
+    "Riga Bishop Daugava Fortresses",
+    "Battle of Saule 1236 Aftermath"
+  ],
+  "RagShortTexts": [
+    "The Sword Brothers merged into the Teutonic Order after Saule, waging ruthless campaigns in."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Originally founded by Bishop Albert of Riga bearing red swords and crosses on white mantles, the Sword Brothers were annihilated at Saule in 1236. Reconstituted as the Livonian branch of the Teutonic Order, they garrisoned Cēsis and Riga along the Daugava River, contesting Baltic forests against pagan tribes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "Tensions between the Archbishop of Riga and the Livonian Landmeister divided coastal policies. Yet despite heavy battlefield defeats, the Order absorbed fresh crusaders from Westphalia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sub-zero Baltic blizzards freeze chainmail to human flesh. Fighting Samogitian axemen over frozen river ice means instant death if a horse cracks through into black water."
+    }
+  ],
+  "TextMappings": []
+}

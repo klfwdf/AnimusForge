@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_12",
+  "HeroName": "Ajai Darga",
+  "Description": "Ajai Darga is listed at age 21 in the game data. He is a son of Hülegü, and his mother is Arighan-Eghechy. The persona is a game creation, and the historical record offers no reliable biography, so this description invents no dates, battles or marriages. It draws only on the general circumstances of Ilkhanid royal youths. The look below is a game-setting choice: he is well-proportioned, with an open face, and wears a pale grey outer robe with fine cloud embroidery at the cuffs. A satchel of documents hangs at his belt. As a young man he moved between camps and diplomatic missions, learning to deal with Persian clerks, merchants and envoys from many regions. He is a fine talker, and at feasts he often warms the mood, but he seldom makes promises. He knows the old steppe customs and the written rules of Persian officials, and he often finds a middle path between the two, which makes him welcome at court. In disputes between brothers he tends to mediate, avoiding opposition to either side without appearing overly eager. He keeps careful records of every agreement he makes, so no detail is lost. His aim is to win real rank through diplomacy, making himself indispensable among the Ilkhanid princes. His private dread is that repeated failed negotiations will leave him a royal of empty words who has lost weight among his brothers.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to win real rank through diplomacy and negotiation, making himself indispensable among the princes of the Ilkhanate.",
+    "He wants reliable contacts among Persian clerks and merchants, earning a place for envoys and trade routes in his work.",
+    "He wants to mediate between his brothers and keep disputes from spreading, while building goodwill and reputation for himself."
+  ],
+  "Values": [
+    "He values speech and measure, believing the right words settle matters better than force and win more respect.",
+    "He values trust and keeping promises, refusing to commit lightly and striving to honour any word he gives.",
+    "He values unity within the household, holding that brothers' quarrels should be settled inside the family, not made a joke."
+  ],
+  "Fears": [
+    "He fears repeated failed talks will make him seem a royal of empty words who has lost his voice among his brothers.",
+    "He fears that by mediating he will please neither side and never win the sincere trust of either party."
+  ],
+  "SpeechStyle": "His tone is bright and easy, with light openings that ease distance before he turns to the point. In talks he tests the other side's limits calmly and seldom states a position bluntly.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_4",
+  "HeroName": "Remón de Cabrera y Montcada, Lord of Anglés",
+  "Description": "Remón de Cabrera y Montcada, Lord of Anglés, is the stalwart martial arm of the House of Cabrera, guarding the strategic defiles of the Ter river valley from Anglès Castle. A battle-hardened cavalry commander of formidable personal prowess, Don Remón spent his youth in border campaigns, mastering skirmishing, ambuscades, and heavy lance charges. Fiercely protective of the family's feudal prerogatives, he brooks no intrusion into his domain from royal bailiffs, rival barons, or marauding outlaws. In 1259, as royal tax collectors attempt to impose unchartered transit duties along the Ter river, Remón personally rides out in armor to dismantle illegal tollgates. Forming an impenetrable defensive axis with his elder brother Guerau at Montsoriu, Anglès Castle anchors the southern approaches to the Cabrera heartland. Disciplined, laconic, and unyielding in combat, Remón stands as the frontline vanguard shielding his dynasty's ancestral patrimony. Leading mounted skirmishers through the dense oak forests along the Ter, Remón ambushed and eradicated multiple outlaw gangs infesting the mountain passes. Enforcing iron military discipline at the gates of Anglès, he severely punished looting, transforming his valley into an orderly commercial haven celebrated by traveling merchant caravans. His lethal precision in the saddle and unyielding vigilance safeguard the Ter river marches against all encroaching enemies of the house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold Anglès Castle and the Ter river passes against any royal military incursions",
+    "Eradicate banditry and cattle-raiding across the valley to protect family tenantries",
+    "Stand in unflinching loyalty beside his brother Guerau to anchor the family's southern march"
+  ],
+  "Values": [
+    "Ancestral border stones were sealed with blood; yielding an inch is treason to one's lineage",
+    "Iron discipline and battlefield courage are the sole arbiters of knightly worth",
+    "Unwavering loyalty to one's brother and clan overrides all other worldly claims"
+  ],
+  "Fears": [
+    "A surprise royal assault severing communications between Anglès and Montsoriu Castle",
+    "Wartime sabotage of river dams inundating fertile valley crops and bankrupting his fief"
+  ],
+  "SpeechStyle": "Crisp, steely, and blunt; speaks with the menacing economy, combat vigilance, and absolute authority of a veteran frontline captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

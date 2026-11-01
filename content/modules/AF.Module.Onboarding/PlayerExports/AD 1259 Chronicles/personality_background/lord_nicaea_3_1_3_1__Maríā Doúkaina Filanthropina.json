@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_3_1_3_1",
+  "HeroName": "Maríā Doúkaina Filanthropina",
+  "Description": "Maríā Doúkaina Filanthropina was the noble heiress of the fabulously wealthy Philanthropenos dynasty and the devoted wife of Grand Domestic Michael Palaiologos Tarchaneiotes. Bringing vast latifundia, maritime trading fleets, and immense treasury reserves into the Tarchaneiotes alliance, Maria wielded immense behind-the-scenes influence within the Nicaean state of 1259. When state coffers strained under the massive military mobilizations required for the Pelagonia campaign, Maria opened her ancestral vaults, financing thousands of cataphract panoplies, supply convoys, and siege ballistas to sustain the imperial armies. Beyond her financial acumen, she was celebrated for boundless Christian charity, personally founding orphanages, endowed bakeries, and monastic infirmaries that cared for war veterans. Through the arduous foreign campaigns of her husband against Angevin and Latin hosts, Maria governed their sprawling estates with flawless fiscal discipline, serving as an indispensable pillar of imperial resilience. Across Constantinople's harbors, Maria organized subsidized grain magazines, chartering family fleets from Alexandria and the Crimea to import wheat and dried fish. Auditing registers personally, she stamped out merchant speculation, ensuring garrison troops and citizens endured grim wartime winters without starvation. As her husband campaigned in Albania, Maria coordinated endless shipments of steel lamellar armor and gold coin to the front, standing as the supreme domestic architect of imperial victory.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her speech is gracious, dignified, and compassionate, projecting quiet authority backed by immense wealth and Christian charity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

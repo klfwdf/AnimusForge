@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_2_2_c",
+  "HeroName": "Robert I",
+  "Description": "Robert of Artois-Champagne (Robert I) is the fiery eighteen-year-old second son of Prince Henry and Blanche of Artois, named in honor of his maternal grandfather, the legendary Count Robert I of Artois. Endowed with his family's signature audacity, razor-sharp tactical cunning, and restless combat energy, young Robert excels in mountain skirmishing, cavalry ambushes, and irregular warfare across the Pyrenean defiles. Less concerned with tournament formalities than practical lethality, he commands light cavalry outriders, enforcing ruthless order along frontier passes. Fearless, aggressive, yet deeply obedient to his mother Blanche, Robert serves as the swift, lethal enforcement arm of the dynasty, ready to strike down any feudal rebellion threatening royal authority. Fearless, aggressive, and master of mountain guerrilla sorties, Robert guards the rugged Pyrenean defiles with lethal efficiency, serving as the swift enforcement arm of his house. His relentless outriders and tactical audacity strike terror into border marauders, keeping the alpine passes safe from hostile invasion. Fearless in combat and ruthless in defense of royal prerogatives, Robert remains the most formidable enforcer safeguarding the alpine passes of the realm, commanding absolute obedience and unhesitating devotion from his mountain cavalry outriders at all times.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To dominate the Pyrenean passes through aggressive warfare, crushing all brigandage and revolt.",
+    "To execute his family's will with absolute ruthlessness, eliminating political threats."
+  ],
+  "Values": [
+    "Only battlefield victors define justice; hesitation and misplaced mercy invite destruction.",
+    "Dynastic commands are supreme; a soldier achieves the objective by any means necessary."
+  ],
+  "Fears": [
+    "Suffering a catastrophic mountain ambush that wipes out his loyal outriders.",
+    "Being sidelined from military command during crucial dynastic campaigns."
+  ],
+  "SpeechStyle": "Speaks with curt, icy efficiency, biting directness, and an unyielding soldierly edge that commands instant obedience. He speaks with measured chivalric eloquence, serene authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

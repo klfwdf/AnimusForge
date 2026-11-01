@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Battle_of_Durbe_and_Crusader_Cataclysm",
+  "Keywords": [
+    "Battle of Durbe 1260",
+    "Teutonic Livonian Total Defeat",
+    "Death of Master Hornhausen",
+    "Great Prussian Uprising Spark"
+  ],
+  "RagShortTexts": [
+    "The 1260 Battle of Durbe was the Teutonic Order's worst 13th-century defeat, killing 150."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fought on July 13, 1260 on the shores of Lake Durbe, the battle was the absolute worst catastrophe suffered by the Teutonic Order in the 13th century. Native Curonian levies mutinied and attacked the crusaders from the rear, wiping out 150 brother-knights along with Livonian Master Burkhard von Hornhausen and Prussian Marshal Heinrich Botel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The disaster at Durbe unraveled decades of crusader conquests in days. King Mindaugas of Lithuania broke with Rome, and Herkus Monte launched the Great Prussian Uprising, trapping the remaining Teutonic garrisons inside besieged coastal brick castles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Panic engulfed the Christian battle line as Curonian auxiliary arrows rained on our own baggage train. Within hours, the elite chivalry of Prussia lay hacked to pieces in the reeds; no man who survived Durbe will ever forget the screams."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Drums echoed from Courland to the Niemen! Pagan warriors burned monastery tithe ledgers and sacrificed captured horses to the war gods. The blood of the white-mantled masters soaked the earth that had once belonged to our fathers."
+    }
+  ],
+  "TextMappings": []
+}

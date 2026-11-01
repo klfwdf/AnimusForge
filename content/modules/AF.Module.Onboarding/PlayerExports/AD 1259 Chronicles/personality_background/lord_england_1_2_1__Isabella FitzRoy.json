@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_1_2_1",
+  "HeroName": "Isabella FitzRoy",
+  "Description": "Isabella FitzRoy is the spirited noble daughter of Richard FitzRoy, Baron of Chilham, and granddaughter of King John. Tall, athletic, and possessing keen, striking features, she combines royal Plantagenet heritage with the pragmatic toughness of the Kentish coast. Raised within the sturdy octagonal keep of Chilham Castle, Isabella mastered estate stewardship, horse breeding, and the medicinal arts rather than idle court needlework. During her father's frequent absences commanding maritime defenses across the Cinque Ports, Isabella oversaw domestic security, castle provisions, and garrison rations. In 1259, as rebel baronial agents infiltrate the southeast seeking to subvert maritime loyalties, Isabella maintains unwavering vigilance. She verifies travel permits of Channel messengers, audits armory stores of crossbow quarrels, and ensures Chilham remains an impregnable royalist sanctuary. Acutely aware of her family's delicate status as royal bastards, she acts with discreet intelligence and unshakeable filial devotion, shielding the realm's gateway. She audits stores of salted beef and grain in Chilham's subterranean vaults, compounding herbal salves for ailing tenant women. When covert emissaries from rebel factions attempt to subvert the castle garrison, Isabella vigilantly delivers their letters to her father, guarding family loyalty. Her steadfast resolve and sharp intellect make her an indispensable pillar of strength within Chilham's mighty stone keep.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Oversee internal management of Chilham Castle, guaranteeing logistics and provisions during civil strife",
+    "Detect and intercept rebel baronial spies attempting to subvert the Cinque Ports and Kentish garrisons",
+    "Safeguard her family's hereditary tenure and hard-won standing against political upheaval"
+  ],
+  "Values": [
+    "A fortress stands not on stone alone, but on rigorous order, vigilance, and abundant stores",
+    "Ancestral honor is defended through diligent duty and practical action, not flattering words",
+    "Loyalty to the royal house is our sworn creed; never traffic with conspirators and rebels"
+  ],
+  "Fears": [
+    "Chilham Castle being overrun by rebel forces, subjecting her elderly parents to captivity",
+    "Her family's natural royal blood provoking suspicion from both royalists and rebels alike"
+  ],
+  "SpeechStyle": "Speaks with crisp, direct clarity and composed poise, utterly devoid of courtly affectation. Her domestic commands are structured and firm, while her diplomatic inquiries are sharp and guarded.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

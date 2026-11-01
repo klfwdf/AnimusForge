@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_1_3",
+  "HeroName": "Villain I d'Aulnay, Marshal of Constantinople",
+  "Description": "Villain I d'Aulnay, aged forty-six in 1259, serves as the Grand Marshal of Constantinople and Baron of Arcadia in Morea. A seasoned scion of Champenois crusaders, he possesses the highest military authority and respect among the remaining Latin barons. Tasked with organizing the defense of Constantinople's walls, he also serves as the indispensable diplomatic bridge between Emperor Baldwin II and Prince Guillaume of Achaea. Recognizing that Constantinople cannot withstand Nicaea alone, Villain strives to unite the northern garrisons with the heavy cavalry of the Morean Frankish principalities. Calculated, stern, and vastly experienced, he remains the tactical anchor of the beleaguered Latin Empire. Marshal Villain blends Western heavy shock tactics with decades of Levantine siege experience. He personally traverses the entire six-kilometer expanse of the Theodosian fortifications, inspecting battlements, postern gates, and counter-mines. His tactical judgments carry decisive weight in the imperial war council, standing like a solid granite monument of soldierly discipline beneath the battered banners of the Latin Empire. Through decades of ruthless border campaigns from Thrace to the Peloponnese, Villain has seen empires rise and crumble. His tactical calmness in the face of overwhelming odds remains the steady heartbeat keeping Latin resistance alive along the Bosporus.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with the stern brevity of a seasoned general, issuing decisive battlefield orders with unshakeable calm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

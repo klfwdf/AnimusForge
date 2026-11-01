@@ -1,0 +1,30 @@
+{
+  "Id": "rule_Battle_of_Durbe_and_Great_Prussian_Uprising",
+  "Keywords": [
+    "Herkus Monte Prussian Uprising",
+    "Samogitian Ambush Livonian Defeat",
+    "Battle of Pokarwis 1261 Teutonic"
+  ],
+  "RagShortTexts": [
+    "In 1260 at Durbe, a disastrous crusader defeat triggered the Great Prussian Uprising under."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On July 13, 1260, the Battle of Durbe devastated crusading leadership, with Samogitians slaying 150 knights. The shock ignited the Great Prussian Uprising (1260–1274). Led by Herkus Monte—a Natangian noble educated in German warfare at Magdeburg—indigenous Baltic tribes annihilated Teutonic field armies at Pokarwis (1261), levelling colonial settlements and besieging the Order inside isolated coastal stone fortresses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Monte turned European siege and cavalry tactics against their masters, posing the gravest existential threat in the Order's history."
+    }
+  ],
+  "TextMappings": []
+}

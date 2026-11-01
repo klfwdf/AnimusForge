@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_5_3",
+  "HeroName": "Strategos Michaíl Lazarópoulos",
+  "Description": "Strategos Michaíl Lazarópoulos is a military commander of the Empire of Trebizond, and in the game he is forty-one. The historical sources do not record him personally, so his family and service are game-world inventions. The surname Lazaropoulos appears in Trapezuntine and Byzantine documents, and it suggests a family of city officials or merchants who rose into military service through revenue and logistics. No source describes his appearance. This profile imagines a lean, grey-haired man with sharp eyes, who carries a seal pouch at his belt and wears a dark blue civilian-style robe over light leather armour. His youth was spent away from the front, among the warehouses of the ports and the cities, where he learned to count grain, check ledgers, and estimate freight. Only later was he posted to the army, where he managed supply and fodder, so that the troops at the front eat on time. Against civilian officials and fellow commanders his method is careful arithmetic. Whatever money or grain can settle, he settles without using troops, and he avoids giving offence. His lofty aim is to keep the Trapezuntine army running even when the treasury is tight, so that it never falls apart from hunger. His hidden fear is that, because his family is not an old military house, hereditary officers will look down on him, and even his real achievements will be dismissed as the work of a mere clerk.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the Trapezuntine army fed and mobile, with grain and fodder reaching the front on time so that campaigns are not lost to hunger.",
+    "Win real standing in the army through his supply record, so that hereditary officer families cannot look down on a man of his birth.",
+    "Control the accounts of ports and warehouses, so that taxes and freight revenue flow into the treasury while he keeps a secure path open for his family."
+  ],
+  "Values": [
+    "He values practical results, believing that a campaign is decided by grain and money rather than by slogans and shows of spirit.",
+    "He values accurate ledgers and contracts, preferring to spend extra time checking one expense rather than letting false claims or theft eat into the army.",
+    "He deals practically with people, cooperating with anyone who benefits the troops, whatever their birth or rank."
+  ],
+  "Fears": [
+    "A cut grain route that leaves the front-line troops starving and deserting, so that he is blamed and loses his only source of power.",
+    "Hereditary officer families uniting to push him out, citing his humble birth and claiming his achievements as their own."
+  ],
+  "SpeechStyle": "He speaks evenly, with the precision of figures and accounts, and often gives the sum before the plan. He dislikes quarrelling in public and prefers to open his ledger in private so the other man can see the gains and losses.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

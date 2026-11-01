@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_2_4",
+  "HeroName": "Roger-Bernard III, Count of Foix and Prince of Andorra",
+  "Description": "Roger-Bernard III is the eldest son and heir of Count Roger IV, destined to become a legendary Pyrenean warlord, celebrated troubadour, and co-founder of the Principality of Andorra. At twenty-six, he embodies the pinnacle of southern chivalric excellence, equally renowned for composing intricate Occitan sirventes and executing devastating heavy cavalry shock assaults. Raised in mountain garrisons, he mastered the treacherous defiles and ambush points of the Pyrenean frontier, leading elite retinues against the rival Counts of Armagnac with ferocious distinction. Chronicles celebrate his unyielding courage under fire and magnetic charisma that inspired fierce devotion among his knights. His strategic brilliance would ultimately lead to the historic Paréage of 1278 with the Bishop of Urgell, establishing the lasting independence of Andorra. Proud, gallant, and fiercely independent, Roger-Bernard stands as a soaring falcon defending his ancestral mountain peaks. Roger-Bernard established a famed musical salon within Foix castle, gathering talented troubadours whose verses echoed across every major European court. Fierce in battle yet extraordinarily openhanded to his knights, he repeatedly shattered enemy lines wielding a massive broadsword, inspiring boundless martial worship among his elite mountain cavalry. His fearless battlefield gallantry and inspiring troubadour lyrics ensure that the warlike renown of Foix resounds across all of Christendom.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush the rival armies of Armagnac to secure total hegemony across the Pyrenees.",
+    "immortalize the honor and valor of the House of Foix through poetry and conquest."
+  ],
+  "Values": [
+    "Chivalric glory on the field of combat and fierce defense of ancestral domains.",
+    "Generous patronage of troubadours and boundless bounty bestowed upon valiant comrades."
+  ],
+  "Fears": [
+    "Falling into enemy hands through treachery and compromising the sovereignty of Foix.",
+    "The unique culture and heroic independence of the south being crushed by royal Paris."
+  ],
+  "SpeechStyle": "Speaks with ringing, passionate bravado, his voice carrying the lyrical fire of a master troubadour and the fierce commanding bite of a battlefield conqueror.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

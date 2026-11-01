@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Las_Navas_de_Tolosa",
+  "Keywords": [
+    "Battle of Las Navas de Tolosa",
+    "Alfonso VIII Christian Coalition",
+    "Almohad Caliph al-Nasir Defeat",
+    "Reconquista Turning Point 1212"
+  ],
+  "RagShortTexts": [
+    "In 1212 at Las Navas de Tolosa, Iberian Christian armies shattered Almohad supremacy,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On July 16, 1212, Las Navas de Tolosa fundamentally altered the destiny of Spain. Guided by a local shepherd across hidden Sierra Morena defiles, Alfonso VIII of Castile, backed by Navarre and Aragon, overwhelmed Caliph Muhammad al-Nasir's fortified tent encampment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Sancho VII of Navarre shattered the chained Moorish bodyguard ring, initiating the rapid collapse of Almohad power in Andalusia."
+    }
+  ],
+  "TextMappings": []
+}

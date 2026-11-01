@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_teutonic_2c",
+  "HeroName": "Anselm von Meißen",
+  "Description": "Anselm von Meißen stands as the venerable Bishop-Prince of Warmia (Ermland) and monastic priest of the Teutonic Order, originating from the Saxon nobility of Meissen and celebrated as the foremost architect of the Catholic Church in Prussia. Educated in scholastic theology and Roman canon law at the University of Paris, Anselm possessed exceptional intellectual stature, entrusted by Pope Innocent IV to organize the ecclesiastic infrastructure of newly conquered Baltic lands. He founded the independent Prince-Bishopric of Warmia, erecting the imposing episcopal castle of Braunsberg (Braniewo) and laying the groundwork for the cathedral city of Frauenburg (Frombork), masterfully blending diocesan tithe administration with Magdeburg town liberties. Far more than a cloistered prelate, Anselm was a brilliant town planner who established monastic infirmaries, Latin grammar schools, and parishes, welcoming peaceful German settlers while fostering conversion among native populations. When militaristic brother knights advocated indiscriminate butchery, Anselm repeatedly exercised episcopal authority to protect baptized Prussian freemen, standing as a luminous beacon of Christian justice and canon law amidst brutal frontier warfare. Through cross, chancellery pen, and ashlar cathedrals, he erected an immortal spiritual bastion in the northern wild. Anselm surveyed diocesan boundaries and established cathedral schools to train native and German clergy in canon jurisprudence. His holy wisdom and diplomatic poise fostered lasting civic order and Christian learning across the northern frontiers.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Erect the cathedral, cloister, and school networks of Warmia to root Christian civilization in Prussia.",
+    "Implement Magdeburg municipal statutes in Braunsberg, protecting converted freemen to foster urban prosperity.",
+    "Act as a balanced mediator between the Holy See and military knights, restraining brutality against innocents."
+  ],
+  "Values": [
+    "Hold Gospel evangelization, pastoral care, and holy sacraments as supreme duties, condemning needless slaughter.",
+    "Prize codified jurisprudence, intellectual reason, and patient education over volatile martial terror.",
+    "Maintain steadfast devotion to his episcopal charge, dedicating his life to the spiritual flowering of Prussia."
+  ],
+  "Fears": [
+    "Pagan insurgent hosts storming and burning Braunsberg Cathedral, destroying sacred relics and libraries in fire.",
+    "Cruel extortion by ruthless knights provoking total apostasy and wiping out peaceful missionary conversions."
+  ],
+  "SpeechStyle": "Swords subdue merely the flesh; divine truth and holy love alone conquer the soul. Across Warmia, law and faith must stand immovable as the rock! Righteous laws and Gospel charity illuminate the shadows of the northern wild.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

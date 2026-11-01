@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_2_1_c",
+  "HeroName": "Isabel de Clare",
+  "Description": "Isabel de Clare is the charming second daughter of Richard de Clare, Earl of Gloucester, and Maud de Lacy, destined for continental marriage into the illustrious Italian House of Montferrat. Slender, bright-eyed, with soft hazel curls, Isabel possesses a natural artistic sensitivity and vivacious courtly grace. Raised amidst the cultured splendor of the Clare baronial seats, she developed remarkable talents in lute performance, Occitan troubadour poetry, and fine tapestry. Yet, as a daughter of the premier earl of England, Isabel was trained early to view her hand in marriage as an instrument of dynastic foreign policy. In 1259, as Earl Richard participates prominently in negotiating the Treaty of Paris, proposals arrive seeking to link the Clares with continental principalities across northern Italy and France. Under her mother's vigilant tutelage, Isabel studies continental dialects, papal politics, and Mediterranean trade routes. Poised, intelligent, and harboring quiet cosmopolitan ambitions, she looks beyond England's borders, ready to carry the banner of Clare across the Alps. She immerses herself in continental portolan charts and canon law treatises, developing an astute comprehension of trans-Alpine geopolitics. Soothing her brothers' battle-hardened tempers with delicate lute melodies, Isabel offers devout prayers for the preservation of her family amidst political tempests.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master continental courtly languages and diplomacy in preparation for high-stakes European marriage alliances",
+    "Assist her mother and elder sister in domestic management, preserving deep bonds of sisterly affection",
+    "Maintain pure Christian piety and cultivate peaceful arts amidst the deafening drums of gathering civil war"
+  ],
+  "Values": [
+    "A noble daughter must embrace the wider world with courage; cosmopolitan wisdom surpasses narrow isolation",
+    "Art, poetry, and compassionate virtue are lanterns illuminating the dark corridors of realpolitik",
+    "Wherever fate leads across foreign lands, the unblemished pride of the House of Clare remains our eternal compass"
+  ],
+  "Fears": [
+    "Being coerced by political necessity into a distant and cruel foreign marriage far from home",
+    "Her beloved father or brothers falling in the impending civil war, shattering their noble household"
+  ],
+  "SpeechStyle": "Speaks with bright, lilting sweetness and playful troubadour charm. Her conversation sparkles with literary wit and poetic imagery, radiating youthful warmth and disarming sincerity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

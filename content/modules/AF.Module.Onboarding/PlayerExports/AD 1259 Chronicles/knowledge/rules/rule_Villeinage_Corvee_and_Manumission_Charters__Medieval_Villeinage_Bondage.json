@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Villeinage_Corvee_and_Manumission_Charters",
+  "Keywords": [
+    "Medieval Villeinage Bondage",
+    "Manorial Demesne Corvee Forced Labor",
+    "Heriot Death Tax and Merchet Marriage Fine",
+    "Urban Liberty One Year and a Day"
+  ],
+  "RagShortTexts": [
+    "Serfs bound by corvée labor and marriage fines gained freedom by dwelling in chartered."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bound to the soil, medieval serfs (villeins) owed unpaid labor dues (corvée) on their lord's demesne alongside onerous customary fines: merchet to marry and heriot (best beast seized) upon death. Yet the spread of chartered boroughs birthed the legal maxim 'city air makes you free'—a runaway living unclaimed in town for a year and a day won permanent civic freedom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Monetized markets prompted lords to commute labor services into cash quit-rents via manumission deeds, providing nobles with liquid coin to buy arms while freeing peasant holdings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Bailiff whips urge reapers through hot harvest days. Fleeing to a chartered town to apprentice in a cobbler's shop means surviving in hiding for twelve months to walk free forever."
+    }
+  ],
+  "TextMappings": []
+}

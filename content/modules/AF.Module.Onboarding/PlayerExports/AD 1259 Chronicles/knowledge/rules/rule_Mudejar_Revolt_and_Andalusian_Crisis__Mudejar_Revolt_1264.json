@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Mudejar_Revolt_and_Andalusian_Crisis",
+  "Keywords": [
+    "Mudejar Revolt 1264",
+    "Andalusian Muslim Insurgency",
+    "Fall of Jerez and Murcia",
+    "James of Aragon Intervention"
+  ],
+  "RagShortTexts": [
+    "In 1264 Mudejar Muslims revolted across Andalusia and Murcia, secretly backed by Granada."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Triggered in 1264 by Alfonso X's forced deportations, the Mudéjar population of Andalusia and Murcia rose in a massive, coordinated rebellion secretly stoked by Muhammad I of Granada and Marinid volunteers. Christian garrisons at Jerez were massacred and Murcia slipped from royal control."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Overwhelmed by simultaneous uprisings, Alfonso X appealed to James I of Aragon, whose seasoned forces subdued Murcia. The revolt permanently ended Castilian tolerance, inaugurating the widespread expulsion of Muslims from southern lands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The uprising was ferocious: midnight daggers in town garrisons followed by merciless counter-punitive cavalry sweeps through rebel villages. No quarter was given on either side beneath the blazing Andalusian sun."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Thousands of Mudéjar peasant families fled along mountain trails toward the safety of Granada with whatever they could carry on donkey-back. Century-old irrigated fields fell barren as northern Christian settlers arrived."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_6_3_c",
+  "HeroName": "Jon Gunnarrson Bolt",
+  "Description": "Sir Jon Gunnarsson Bolt was a dynamic young knight, equestrian commander, and the eldest son and heir of Sir Gunnar Bolt. In 1259, Jon was already distinguishing himself within the royal cavalry host, commanding mounted contingents patrolling the frontier borders of southeastern Norway. Inheriting his father's imposing physique and martial prowess, he excelled in heavy lance shock tactics and sword combat, winning high honors in chivalric tourneys. Resolute, demanding, yet deeply protective of his men, he forged his household retainers into a formidable strike force characterized by rigid discipline and tactical cohesion. As the designated heir to the Bolt estates, he engaged actively in district administration, mastering estate accounts and legal disputations at regional tings. His chivalric charisma, operational vigor, and strategic focus marked him as a key figure destined to elevate the Bolt dynasty to higher national prominence. During numerous border skirmishes near the Göta River, Jon fought at the forefront of his lancers, using precise cavalry charges to repel trespassing raiders and capture opposing commanders. He directed rigorous daily drills in forced marches and archery for newly mustered recruits, enforcing strict discipline and fostering exceptional esprit de corps. Embodying his family's fierce martial tradition, he stood ever vigilant to defend every league of Norwegian sovereign soil.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with crisp martial precision, youthful chivalric confidence, and sharp strategic focus, projecting natural command presence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jon Gunnarrson Bolt"
+}

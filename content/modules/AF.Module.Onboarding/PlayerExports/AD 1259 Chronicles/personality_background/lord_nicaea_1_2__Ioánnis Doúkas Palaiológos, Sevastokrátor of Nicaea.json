@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_2",
+  "HeroName": "Ioánnis Doúkas Palaiológos, Sevastokrátor of Nicaea",
+  "Description": "Ioánnis Doúkas Palaiológos, invested as Sevastokrátor and later Despot, stood as the brilliant military sword of his brother Emperor Michael VIII and the undisputed martial champion of the Nicaean army. Renowned for his tactical genius, strict discipline, and unmatched valor in heavy cavalry combat, John commanded total devotion across imperial regiments and foreign auxiliary banners alike. His crowning glory came in the autumn of 1259 at the monumental Battle of Pelagonia, where he held supreme command against the combined invasion forces of Michael II of Epirus, King Manfred of Sicily, and Prince William II of Villehardouin of Achaea. Employing fluid Fabian tactics, nocturnal cavalry feints, and coordinated horse-archery ambushes executed by Cuman horsemen, John decisively outmaneuvered the proud Frankish knights, routing the enemy army and capturing Prince William himself along with thirty high-ranking barons. This crushing victory demolished Latin hegemony in Greece and directly enabled the recapture of Constantinople in 1261. At Pelagonia, John personally oversaw the construction of defensive abatis and concealed pit traps across marshy defiles, holding his archers in rigid reserve. When the horns sounded the counter-offensive, the Sebastokrator unsheathed his heavy steel spathion and led imperial cataphract wedges in a devastating hammer blow that shattered the Frankish chivalric line. Enforcing draconian battlefield discipline while rewarding valor with princely estates, John earned the fearsome title of the 'Roman War God' across Latin Outremer.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice rings with soldierly authority and battlefield precision, calm and resolute under fire as he issues decisive tactical orders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

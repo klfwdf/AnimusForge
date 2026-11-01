@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Truce_of_God_and_Peace_of_God_Pacts",
+  "Keywords": [
+    "Peace of God Pax Dei Movement",
+    "Truce of God Treuga Dei Mandate",
+    "Weekend Feudal Combat Prohibition",
+    "Sanctuary Protection for Peasants and Clergy"
+  ],
+  "RagShortTexts": [
+    "The Truce of God halted feudal feuds from Thursday to Monday, protecting church sanctums."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "To restrain predatory private feuds, the Church promulgated the Peace of God (Pax Dei) and Truce of God (Treuga Dei). Knights swore upon holy relics never to attack unarmed clergy, pilgrims, peasants, or draft oxen. Warfare was forbidden from Thursday evening (commemorating the Last Supper) through Monday morning and throughout Lent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Bishops gathered feuding barons on open fields, demanding solemn oaths of pacification. Breaching the Truce brought immediate anathema, laying early foundations for civilian immunity in warfare."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "When parish bells toll on Thursday dusk, serfs breathe relief. Within the consecrated boundary of the churchyard cemetery, armed retainers dare not unsheathe swords without fearing divine judgment."
+    }
+  ],
+  "TextMappings": []
+}

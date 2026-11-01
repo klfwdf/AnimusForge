@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_1_2",
+  "HeroName": "Hug V d'Empúries",
+  "Description": "Hug V d'Empúries (future Count of Empúries, 1269–1277) is the fiery, ambitious eldest son and designated heir of Count Ponç IV and Countess Teresa. Carrying the combined martial heritage of Catalan crusaders and Castilian magnates, Don Hug is an accomplished knight of relentless energy and tactical daring. Gaining early renown in amphibious skirmishes against Genoese privateers in the Balearic Sea, he embodies the aggressive maritime ethos of his house. In 1259, as co-ruler of the county's military forces, his marriage to Sibila de Palau brought the hereditary claims and wealth of the Viscounty of Bas under his command. Deeply suspicious of the crown's bureaucratic encroachment, Hug drills companies of lethal Almogavar skirmishers at Castelló, prepared to defend his patrimony by the sword. Charismatic, fearless, and fiercely loyal to his vassals, young Hug prepares to steer Empúries through the turbulent tides of the Mediterranean. Drilling fierce Almogavar skirmishers upon the beaches of the Gulf of Roses, Hug V perfected amphibious landings and lightning javelin volleys. Proud and unyielding, he stood prepared to unleash his war galleys against any fleet disputing his fishing rights, emerging as the undisputed champion of the young northern chivalry. Fearless in combat and fiercely loyal to his vassals, young Hug prepares to lead Empúries into an era of bold maritime supremacy.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate the inheritance of Empúries and fully assimilate Bas into a fortified stronghold",
+    "Build an elite maritime strike fleet at Roses to dominate coastal trade lanes",
+    "Establish himself as the supreme martial leader of the Catalan noble league"
+  ],
+  "Values": [
+    "A true lord must lead from the front; martial daring and unyielding will inspire absolute fidelity",
+    "Not a single foot of ancestral land shall be yielded; defend feudal rights with the lance",
+    "Chivalric brotherhood and uncompromising defense of one's sworn followers"
+  ],
+  "Fears": [
+    "A combined royal and foreign naval raid incinerating the war galleys anchored at Roses",
+    "His impetuous actions precipitating a premature war that brings royal ruin upon Empúries"
+  ],
+  "SpeechStyle": "Fiery, crisp, and impassioned; speaks with the dynamic vigor, restless ambition, and knightly swagger of a daring young heir.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

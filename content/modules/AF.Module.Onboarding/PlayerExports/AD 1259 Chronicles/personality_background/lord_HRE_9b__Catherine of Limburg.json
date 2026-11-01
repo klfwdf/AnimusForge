@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_9b",
+  "HeroName": "Catherine of Limburg",
+  "Description": "Catherine hails from the noble House of Limburg, daughter of Duke Walram III of Limburg and Luxembourg, wed to Duke Matthias II of Upper Lorraine. Blending Low Country tenacity with Rhineland aristocratic pride, she tirelessly aided her husband in convoluted border diplomacy. Following Duke Matthias's death, she assumed the regency of Upper Lorraine with indomitable courage, safeguarding the ducal throne for her young son Friedrich III. When the Counts of Bar and the Bishops of Metz mobilized to partition her child's heritage, Catherine refused to yield an inch. She directed Nancy's urban defenses, strengthened moat perimeters, and skillfully dispatched envoys to King Louis IX of France and imperial diets to broker truces. Versed in customary feudal jurisprudence, she reformed local charters and codified tax exemptions, earning historic acclaim throughout Lorraine as an unyielding mother and consummate statesman. Assuming the regency with iron determination, Duchess Catherine purged disloyal courtiers who conspired with foreign rivals, instituting ducal tribunals to punish unscrupulous grain hoarders. Maintaining secret diplomatic correspondence with Blanche of Castile to leverage French prestige against encroaching barons, she compelled predatory neighbors to withdraw, securing Lorraine's dynastic survival through consummate resolve. Her decisive regency shielded the infant duke and secured the sovereign rights of the House of Châtenois for posterity.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the ducal throne for her young son Friedrich III, rooting out disloyal vassals and external predators.",
+    "Maintain a delicate equilibrium between French royalty and imperial lords to preserve Lorraine intact."
+  ],
+  "Values": [
+    "Regards protecting her late husband's lineage and son's inheritance as a sacred calling transcending life itself.",
+    "Champions calm legal resistance and refined diplomacy, believing order and wisdom conquer raw violence."
+  ],
+  "Fears": [
+    "Fears her impetuous son walking into an ambush during border raids, leaving Lorraine leaderless.",
+    "Worries the Counts of Bar and neighboring bishops will conspire with foreign armies to tear treaties to shreds."
+  ],
+  "SpeechStyle": "Those who draw blades against a widowed mother and child are devoid of chivalry; while I draw breath, Nancy's rights shall stand unbowed! In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Catherine of Limburg"
+}

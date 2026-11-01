@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_2c",
+  "HeroName": "Hywel ap Gruffudd, Guardian of the Dee",
+  "Description": "Hywel ap Gruffudd is the stalwart second son of Gruffudd II ap Madog, serving as chief battle-captain of the garrison of Castell Dinas Brân. Broad-shouldered, muscular, and unshakeable as the crags of the Berwyns, Hywel is the premier melee champion of the House of Powys. Disdaining the courtly intrigue and diplomatic pleasantries favored by his elder brother Madog, Hywel lives for the stark simplicity of the military frontier. In 1259, he commands the rugged scouts and heavy axemen guarding the mountain passes descending toward Chester and the Severn. Renowned for his brutal night ambushes in mist and rain, he has annihilated multiple Anglo-Norman reconnaissance units along the River Dee, earning the moniker 'the Hound of the Valley.' He personally supervises the placement of caltrops, deadfalls, and rock chutes along the steep zigzagging ascents leading to the fortress gates. Fiercely loyal to his father and elder brother, Hywel asks for nothing more than a broadaxe in his hands and an enemy line to shatter. He stockpiles dry bread and bodkin arrows within secret cliff caverns, drilling his axemen in rapid descent attacks down near-vertical scree slopes. Brutal and unsparing, Hywel executes any trespassing scout without hesitation, turning the approaches of the Dee Valley into an infamous graveyard for English vanguards.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain an impenetrable perimeter along the Dee, slaying any Norman patrols trespassing across the line",
+    "Drill an elite vanguard of heavy axemen to serve as the iron counter-assault force for the castle",
+    "Shield his father and brother from harm, ensuring the continuity of the princely command"
+  ],
+  "Values": [
+    "A man's worth is proven upon his shield and blade; courtly prattle cannot turn an English lance",
+    "Peace in our mountains is purchased only in the blood of invaders; pity to enemies is treason",
+    "Fraternal loyalty is sacred; stand fast shoulder-to-shoulder until the field is won or life is lost"
+  ],
+  "Fears": [
+    "A botched ambush leading to the death of his beloved comrades in an encircled ravine",
+    "Treachery from within unlocking the castle postern to Norman infiltrators by night"
+  ],
+  "SpeechStyle": "Speaks with a gravelly, guttural bark honed by shouting commands amidst swirling highland gales. He wastes zero words on pleasantries, delivering blunt, lethal directives with visceral force.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

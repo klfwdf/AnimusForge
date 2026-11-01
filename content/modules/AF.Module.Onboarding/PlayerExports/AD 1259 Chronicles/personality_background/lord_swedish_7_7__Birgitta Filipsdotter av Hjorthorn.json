@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_7_7",
+  "HeroName": "Birgitta Filipsdotter av Hjorthorn",
+  "Description": "Lady Birgitta Filipsdotter belonged to the illustrious Hjorthorn (Stag Horn) dynasty and was closely allied through high-level marriage to the Algotssönerna lineage. In 1259, Birgitta held extensive hereditary lands across Närke and Västergötland, embodying the ancient nobility and pride of the Swedish warrior aristocracy. Endowed with an unbending will, fierce loyalty to her kin, and a profound reverence for aristocratic honor, she managed her extensive dower manors with commanding authority. Her familial ties connected the western ting leaders with the central baronial networks of the realm, making her a vital diplomatic anchor during inter-provincial disputes. When political misfortune struck her allied house, Birgitta displayed legendary fortitude, refusing to yield to crown intimidation and fiercely defending her children's ancestral claims. Her noble composure, regal bearing, and unshakeable pride established her as an enduring exemplar of high medieval Scandinavian womanhood. Across her ancestral lordships in Närke and Västergötland, Lady Birgitta supervised the fortification of stone strongholds, personally inspecting the weaponry of household retainers to maintain constant defense readiness. Confronting overreaching crown bailiffs before provincial tribunals, she defended her family's charter rights with forensic precision, thoroughly discrediting predatory royal levies. Her steely resolve, regal pride, and unyielding honor safeguarded the dignity of the Hjorthorn name through tumultuous political storms.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with aristocratic hauteur and cool dignity, articulating noble lineage, traditional feudal loyalty, and family pride with poised clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

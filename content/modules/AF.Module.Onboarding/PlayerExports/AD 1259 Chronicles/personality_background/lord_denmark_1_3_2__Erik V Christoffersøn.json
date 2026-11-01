@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "King Erik V Christoffersøn of Denmark, known in chronicle history as Erik Klipping (the Clipped or Blinking), ascended the contested throne at age ten under the fierce regency of his warrior mother, Margaret Sambiria. After enduring capture at Lohede and imprisonment in Brandenburg during his youth, Erik assumed personal rule determined to reassert royal authority over rebellious churchmen and aristocratic oligarchs. Persistent warfare against Schleswig, Norway, and German princes drained royal coffers, compelling him to debase the silver coinage (clipping) to fund armies. Facing organized baronial resistance, Erik was coerced in 1282 at Vordingborg to sign Denmark's first constitutional charter (Håndfæstning), legally obligating the monarch to summon regular parliamentary assemblies (Danehof). In 1286, his turbulent reign ended in bloody conspiracy when he was murdered in Finderup Barn, receiving fifty-six fatal stab wounds. Enduring imprisonment and financial exhaustion, King Eric reformed army levies and established the historic precedent of parliamentary Danehof assemblies, his tragic assassination in Finderup Barn igniting the painful constitutional evolution of the Danish realm. Weathering captivity, financial ruin, and baronial rebellion, King Eric's turbulent reign established the historic foundation of parliamentary governance in the Danish kingdom, remembered for his unbending efforts to maintain royal authority.",
+  "SpeechStyle": "Speaks with curt, brooding intensity and guarded suspicion, his direct royal commands carrying an edge of volatility.",
+  "Motivations": [
+    "Reassert sovereign taxation and judicial authority, reclaiming royal lands and castles seized by barons and bishops.",
+    "Maintain military parity against Schleswig and Norway, avenging the humiliation of his youthful imprisonment."
+  ],
+  "Values": [
+    "Believes centralized royal supremacy is the only safeguard of national peace, viewing baronial councils with suspicion.",
+    "Embraces pragmatic fiscal and military maneuvers, holding that state survival justifies drastic emergency measures."
+  ],
+  "Fears": [
+    "Haunted by the dread of betrayal from his own retainers, terrified of falling to sudden conspiratorial assassination."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ]
+}

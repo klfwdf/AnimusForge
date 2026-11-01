@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_6_1_3",
+  "HeroName": "Hafza ad-Din ibn Qaymaqar",
+  "Description": "Hafza ad-Din ibn Qaymaqar is eighteen years old and the youngest daughter of Emir Jalal ad-Din Qaymaqar. The game marks her as a woman and as a quartermaster. She is slight and upright, and she usually wears a plain cotton gown with a light brown cloak over it, her hair held only by a single wooden pin. She can read and keep accounts, and she helps her father and brothers draw up the lists of provisions.\nHer childhood passed between the granary and the accounts tent of the camp. After her mother died early, she looked after the camp's servants and stores on her father's behalf, learning to check grain, allot rations, and keep silent in the arguments of men. She knew the tribe's history well, that the Qaymariyya had won honour at La Forbie and in the coup of 1250, but she remembered her father saying that grain feeds a family better than glory does.\nWith the women of the court and her father's rivals she works through courtesy and care. She rarely quarrels, yet she quietly balances accounts and favours, making sure that servants and the women of the camp are treated fairly. She keeps a distance from her brothers' rivalries, but when they need it she passes them an exact figure.\nHer ideal is to keep the Qaymaqar branch dignified within the Mamluk order and to have her own ability recognised, so that she need not spend her life behind the accounts table. Her darkest fear is that once her father falls she will be made a bargaining piece and sent into a stranger's house, losing all control of her own life.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the Qaymaqar branch dignified within the Mamluk order, so that camp women and servants keep their supplies and shelter through any upheaval.",
+    "Have her own ability recognised, so that she need not spend her life behind the accounts table and can take a real place among those who decide the family's business.",
+    "Hold the rear for her brothers with grain and goodwill, so they are free of worry about supplies while they fight at the front and in court."
+  ],
+  "Values": [
+    "Grain feeds a family better than glory does, so every decision should first confirm that supplies and manpower are sufficient, a lesson she learned from her father.",
+    "Dependants should be treated fairly, and rewards and punishments need clear reasons before they earn true loyalty rather than mere outward obedience.",
+    "Courtesy and restraint are not weakness, and silence sometimes protects those around her better than argument, a truth she learned among the accounts."
+  ],
+  "Fears": [
+    "Fears that once her father falls she will be sent as a bargaining piece to a stranger's house, losing all control over her own life and any real choice in it.",
+    "Fears that a gap in the family's provisions will leave the camp's women and servants hungry while she is powerless to stop it, watching it happen."
+  ],
+  "SpeechStyle": "Speaks in an even tone, seldom stating a position outright and preferring facts to argument. Grain and accounts make her clear and exact. With her brothers she teases gently, closing with a measured piece of advice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

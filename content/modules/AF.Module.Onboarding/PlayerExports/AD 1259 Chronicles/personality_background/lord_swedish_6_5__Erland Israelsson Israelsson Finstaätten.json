@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_6_5",
+  "HeroName": "Erland Israelsson Finstaätten",
+  "Description": "Sir Erland Israelsson was a stalwart knight, trusted bailiff, and provincial legal assessor belonging to the respected Finsta family in Uppland. In 1259, Erland was responsible for the military readiness and fortresses shielding the family's extensive woodland and agricultural manors. Distinguished by his austere lifestyle, strict personal code of honor, and tireless work ethic, he maintained exceptional discipline among his household infantry and rural levies. His meticulous stewardship of regional granaries and water-powered mills ensured his territories remained resilient against harsh famines and wartime blockades. In provincial legal tribunals, Erland was renowned for his unwavering adherence to traditional precedents, fearlessly protecting humble freemen from feudal exploitation. His steadfast loyalty to the lineage of Finsta and his dependable administrative vigilance established him as an essential bedrock of stability in Svealand. Across the Finsta bailiwick, Sir Erland established a cohesive network of stone beacon towers and mounted patrols, tirelessly guarding dense forested defiles against border bandits and outlaw bands. During critical sowing and harvest seasons, he prohibited troops from imposing on rural populations, loaning draft oxen and watermills to tenant farmers to ensure agricultural prosperity. Combining unyielding martial vigilance with benevolent civic care, he stood as an impenetrable shield safeguarding the frontier settlements of Svealand.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks in a steady, measured, and unpretentious tone, presenting logistical reports and defensive strategies with laconic precision.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

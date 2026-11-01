@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_10_1",
+  "HeroName": "Robert II, Count of Artois",
+  "Description": "Robert II, Count of Artois, stands as one of the most celebrated and battle-hardened peers of the Capetian realm. Born posthumously after his heroic father Robert I fell during the desperate assault on Mansurah, he was reared by his mother Mathilde of Brabant and step-father Guy III de Châtillon with a profound sense of chivalric destiny. An indomitable champion of the joust, Robert mastered heavy shock cavalry doctrines, earning a fearsome international reputation across decades of campaigns. He marched on the Eighth Crusade alongside King Louis IX and later governed the Kingdom of Naples as Regent with unyielding firmness during the critical imprisonment of his cousin Charles II. As supreme marshal of royal armies under Philip IV, he defeated the English in Gascony and guarded the northern borders from his fortress at Arras. Chronicles immortalize his heroic death leading the royal cavalry at Courtrai in 1302, cementing his legendary status as the iron vanguard of France. Raised at the Capetian royal court alongside his royal cousins, he mastered heavy cavalry shock tactics and defensive siegecraft. During the Aragonese Crusade and the volatile border skirmishes in Flanders, he commanded the French vanguard with fearless gallantry, earning widespread renown across the northern realms while nurturing an unyielding pride that foreshadowed the fateful field of Courtrai.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead the royal chivalry of France to decisive victories against all enemies of the realm.",
+    "Ensure the military supremacy and territorial integrity of the County of Artois."
+  ],
+  "Values": [
+    "Chivalric glory on the field of combat and absolute fidelity to the royal lilies of France.",
+    "Unyielding tactical discipline balanced with lavish rewards for proven battlefield valor."
+  ],
+  "Fears": [
+    "Leading the royal cavalry into a tactical terrain trap resulting in catastrophic encirclement.",
+    "Urban insurrections within Flemish border towns undermining baronial rule in Artois."
+  ],
+  "SpeechStyle": "Speaks with thunderous military authority, his speech brisk, forceful, and commanding, radiating the terrifying martial confidence of a premier battlefield warlord of royal Capetian blood.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_3b",
+  "HeroName": "Anna Guerane of Lampron",
+  "Description": "Anna Guérane of Lampron (celebrated historically as Queen Keran) was the daughter of Prince Constantine of Lampron and the noble consort of Crown Prince Leo. Her ancestral home was the colossal rock citadel of Lampron, soaring atop vertical cliffs, and her marriage permanently unified the rival factions of the Taurus. Queen Keran was a celebrated patron of Armenian medieval high culture, commissioning masterpieces of illuminated Gospel manuscripts from the scriptorium of Hromgla. The famed 'Queen Keran Gospels', illuminated with gold leaf and vibrant pigments, stand among the most breathtaking artistic achievements of the medieval world. In 1259, as Crown Princess, Keran supervised charitable relief foundations and textile workshops across Sis, providing shelter for wounded veterans and orphans. Pious, cultured, and dignified, Queen Keran was revered as the spiritual beacon whose cultural patronage immortalized the golden age of Little Armenia. Crown Princess Keran established scriptorium endowments at Sis, supplying fine vellum sheets and gold leaf to monastic scribes and attracting the finest Levant artists. Beyond reviewing sacred miniatures, she instructed court embroiderers in weaving traditional geometric Armenian crosses into altar draperies with consummate aesthetic taste. Accompanying her husband to her ancestral fortress of Lampron, Keran leveraged her prestige to reconcile proud mountain castellans, binding them in fealty to the crown.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve harmony and dynastic solidarity between Lampron and the royal court of Sis, securing unshakeable national unity.",
+    "Patronize monastic illuminators and scribes, producing immortal illuminated Gospels that celebrate the Armenian spirit.",
+    "Direct charitable hospices and weaving guilds across Sis to shelter refugees and aid wounded soldiers, living out the Gospel."
+  ],
+  "Values": [
+    "Cultural brilliance and Apostolic faith form the eternal soul of a nation, outlasting transient military empires.",
+    "Uncompromising marital devotion, supporting Crown Prince Leo with wisdom, composure, and grace.",
+    "Compassionate mercy and peace-making supersede worldly vanity; spiritual tranquility is the true sanctuary of the soul."
+  ],
+  "Fears": [
+    "Invading armies sacking royal scriptoria and incinerating priceless illuminated manuscripts, extinguishing centuries of scholarship.",
+    "Mortal catastrophe befalling her husband on the battlefield, plunging the newly unified realm back into destructive mourning."
+  ],
+  "SpeechStyle": "Speaks with serene intellectual refinement and noble grace, directing manuscript illuminations and charitable foundations with calm composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Anna Guerane of Lampron"
+}

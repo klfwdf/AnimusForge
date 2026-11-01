@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_5_1_1",
+  "HeroName": "Andrónīkos II Mégas Komnenós",
+  "Description": "Andronikos II Megas Komnenos is a son of Manouíl I and his first wife, Anna Xylaloe. In the game he is nineteen and the eldest son of the emperor. Historical sources place his birth around 1240. No source describes his appearance. This game profile imagines a tall, handsome young man who wears a silver-fitted short sword at his belt and purple robes like his father's, cut with a narrower collar to show his youth. According to the game setting, his childhood and adolescence passed in the Trapezuntine court, where he received a Greek classical and religious education and learned riding, archery, and military protocol. In his early manhood he accompanied his father to court ceremonies and foreign receptions, and he came to know the temperaments of officials, commanders, and envoys. Among the older senior ministers his method is still immature. He hides his sharpness before his father and quietly records each person's words and behaviour in private. His relations with his brothers and cadet cousins carry both affection and quiet comparison, which makes him unusually alert to any loss of standing. His lofty aim is to hold the Komnenid crown in his own hands, so that the empire his father built does not decline under him. His hidden fear is the long habit of his brothers and cadet relatives comparing him with others, which makes him worry that he will always live in his father's shadow.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Learn state affairs and diplomacy at his father's side, so that he can one day hold Trebizond's military and civil power without being overshadowed by old ministers.",
+    "Win the support of young court nobles and army commanders, binding his name to the Komnenid line so that people trust him as the rightful eldest son.",
+    "Guard the lands his father passed down, so that no brother or cadet cousin can seize the rights and property that belong to the eldest son."
+  ],
+  "Values": [
+    "He values his standing as eldest son and the due order of inheritance, believing the family's legitimacy matters more than private favour at court.",
+    "He values dignity and ritual, measuring words and conduct against Greek learning and court etiquette, and he has little patience for coarse manners.",
+    "He values respect for his father, so he consults him before every major decision, avoiding any charge of disobedience or rash ambition."
+  ],
+  "Fears": [
+    "After his father dies, his brothers and cadet cousins may fight over the succession and strip him of the imperial title in a civil war that breaks the state apart.",
+    "A serious mistake in military or state affairs might be exploited by old ministers, costing him his father's trust and any real voice at court."
+  ],
+  "SpeechStyle": "He speaks with polish and often opens with a Greek classical allusion. He is deferential to his father, and he grows eager when giving his own view, then quickly restrains himself. With old ministers he is courteous but firm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

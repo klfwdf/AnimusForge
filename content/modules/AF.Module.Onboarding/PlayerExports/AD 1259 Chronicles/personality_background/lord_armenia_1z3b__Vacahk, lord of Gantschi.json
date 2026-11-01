@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z3b",
+  "HeroName": "Vacahk, lord of Gantschi",
+  "Description": "Vahka was the hereditary lord of the impregnable cliff-top fortress of Vahka (Gantschi), soaring above the northern defiles of the Taurus Mountains. Vahka Castle, perching upon sheer vertical limestone precipices, commanded the ancestral cradle where early Armenian princes first consolidated their mountain baronies. Lord Vahka was a fierce exponent of high-altitude ambuscade, rolling rock barrages, and massed composite archery, commanding hardy mountaineer sergeants. Whenever hostile raiders attempted to force the serpentine mountain defiles, Vahka launched devastating counter-strikes from the crags, turning ravines into killing grounds. In 1259, observing mounting war clouds, Vahka stockpiled massive stone boulders, timber ramparts, and naphtha cauldrons along his sheer ramparts. Fierce, unbending, and fiercely loyal to King Hethum, Vahka was revered throughout the Taurus as the ferocious eagle who guarded the alpine gateway. At Gantschi, Vahka excavated cavernous cisterns and armory workshops, storing tens of thousands of armor-piercing arrows and pitch cauldrons. He drilled mountain infantry in rope-ladder descents and cliffside maneuvers along vertical bluffs, forging sergeants who moved like agile mountain leopards. When howling blizzards shrouded the Taurus passes, Vahka sat atop his eagle tower drinking fiery mountain spirits, gazing down upon the defiles and swearing that no foe would breach his threshold.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold the dizzying crags of Vahka and the Gantschi defiles, crushing enemy raiding columns within sheer alpine gorges.",
+    "Drill and lead rugged mountain mountaineer sergeants into an elite shock infantry regiment at home in icy cliffs.",
+    "Guard the ancestral cradles of Armenian kingship with unswerving feudal loyalty to the royal banner of Hethum."
+  ],
+  "Values": [
+    "Indomitable alpine warrior spirit; death on the battlements is preferable to shameful surrender.",
+    "Fierce, unshakeable brotherhood with his mountain soldiers, sharing rations and danger on the highest parapets.",
+    "Direct martial forthrightness, scorning political intrigue and cowardice."
+  ],
+  "Fears": [
+    "Treachery betraying secret cliff-paths to enemy infiltrators, compromising the unassailable fortress from the rear.",
+    "Exhaustion of cistern water and artillery boulders during a grueling, multi-month alpine encirclement."
+  ],
+  "SpeechStyle": "Speaks with rugged alpine ferocity and martial bravado, shouting tactical commands and inspiring mountaineer levies with fiery defiance.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Vacahk, lord of Gantschi"
+}

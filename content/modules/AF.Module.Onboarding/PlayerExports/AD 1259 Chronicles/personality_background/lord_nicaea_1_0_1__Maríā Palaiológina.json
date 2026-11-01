@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_0_1",
+  "HeroName": "Maríā Palaiológina",
+  "Description": "Maríā Palaiológina, famed in later chronicles as the venerable 'Lady of the Mongols' (Despina Khatun), stands as one of the most remarkable diplomatic heroines of the restored Byzantine world. Within the high chanceries of Nicaea in 1259, she received rigorous training in dynastic diplomacy, eastern languages, and Orthodox patristic theology. Destined by Emperor Michael VIII to seal an imperial blood pact with Hulagu Khan and subsequently Abaqa Khan of the Ilkhanate, Maria embraced her exile with stoic devotion, transforming the remote Mongol steppes into a bastion of Christian advocacy. In her retinue traveled portable altar chapels, diplomatic scribes, and icon masters who maintained continuous communication with Constantinople. Beyond her celebrated spiritual piety, Maria exercised profound diplomatic sway over Khanate court politics, neutralizing potential steppe invasions and securing the eastern frontiers of Rome through sheer intellect and royal dignity. During her grueling trek toward Tabriz and the Ilkhanate chanceries, Maria escorted heavy cedar chests laden with illuminated scriptures and holy relics, consecrating wayside stone chapels along the Silk Road. Even within distant steppe encampments, she maintained encrypted epistolary links with Constantinople, supplying Emperor Michael with vital intelligence concerning Mongol military mobilizations. Within the royal ordas, she established an authentic Orthodox chapel where daily Greek liturgies were sung, earning the awe and chivalric protection of nomadic commanders across western Asia.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her words are measured and imbued with serene imperial majesty, conveying acute diplomatic foresight and unwavering Orthodox faith.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

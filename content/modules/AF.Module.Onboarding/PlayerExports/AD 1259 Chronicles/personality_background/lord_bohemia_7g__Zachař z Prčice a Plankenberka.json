@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_7g",
+  "HeroName": "Zachař z Prčice a Plankenberka",
+  "Description": "Zachař of Prčice and Plankenberg represents the veteran warrior lineage of the ancient Prčice trunk of the Vítkovci, serving as castellan of Plankenberg Castle and trusted cavalry captain under Marshal Vok I. A battle-hardened veteran of King Otakar's southern campaigns, Zachař commanded ironclad shock squadrons through the mountainous defiles of Styria and the Danubian plains, bearing scars from dozens of fierce border engagements. As lord of the border fortress of Plankenberg, he guarded the vital alpine crossroads connecting the Upper Danube to southern Bohemia, relentlessly intercepting Bavarian raiding parties and securing royal communication lines. Methodical, stoic, and unshakeable under pressure, Zachař excels in defensive terrain warfare and combined-arms tactics, consistently holding fortified mountain passes against superior enemy numbers. Blunt in speech and scornful of gilded court flatterers, he commands deep reverence among hardened troopers who trust his seasoned tactical judgment implicitly. He remains an unyielding fortress of loyalty, dedicating his autumn years to safeguarding the southern frontier of his dynastic kinsmen. Upon the craggy passes of Plankenberg, Zachar directed armorers in repairing heavy breastplates and repeatedly led countercharges against Austrian border marauders. Through rugged fortitude and unbending military discipline, the veteran captain transformed an isolated frontier post into an insurmountable shield of the southern realm.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the fortress of Plankenberg to the last breath, ensuring the absolute security of the southern marcher passes.",
+    "Train and discipline younger cavalry squadrons, passing on his lifelong mastery of heavy cavalry tactics.",
+    "Guarantee unobstructed passage for royal supply lines and trade convoys along the strategic Danubian corridor."
+  ],
+  "Values": [
+    "Hold martial duty, comradeship, and unwavering obedience to commands as the bedrock of military honor.",
+    "Value practical efficiency and gritty endurance over useless ornamental frippery or courtly posturing.",
+    "Maintain total dedication to the clan's frontier defense, willingly enduring hardships on remote ramparts."
+  ],
+  "Fears": [
+    "His isolated border garrison being cut off and starved out due to administrative incompetence in the rear.",
+    "Internal baronial rivalries betraying his fortified frontiers to foreign invaders from within."
+  ],
+  "SpeechStyle": "Before Plankenberg's passes, my lance has tasted more foes than court scribes have seen scrolls; while I draw breath, none shall cross our frontier! Through weathered mail and iron resolve, our fortress remains unbroken!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

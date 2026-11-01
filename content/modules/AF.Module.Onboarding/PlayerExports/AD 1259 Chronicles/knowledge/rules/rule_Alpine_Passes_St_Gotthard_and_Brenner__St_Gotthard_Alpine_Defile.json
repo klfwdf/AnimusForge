@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Alpine_Passes_St_Gotthard_and_Brenner",
+  "Keywords": [
+    "St Gotthard Alpine Defile",
+    "Brenner Imperial Pass",
+    "Teufelsbrucke Chasm Bridge",
+    "HRE Emperor Transalpine Route"
+  ],
+  "RagShortTexts": [
+    "The St. Gotthard and Brenner passes served as arterial transalpine corridors for armies and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Alpine passes constituted the geopolitical lifelines linking German heartlands with Lombardy. While the lower Brenner pass served imperial armies, the newly conquered St. Gotthard route utilized the timber walkways and chasm bridge (Teufelsbrücke) over the Reuss gorge to establish the fastest commercial corridor between Basel and Milan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Foresters of Uri and Schwyz leveraged guardianship over these defiles to extract imperial charters. Guiding pack trains loaded with Flemish woolens and Venetian silks, they collect transit tolls at every bridgehead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Crossing in late winter invites disaster from roaring avalanches. Pack mules pick along frosted timber planks over abyss gorges; one misstep sends pack and rider into icy torrents below."
+    }
+  ],
+  "TextMappings": []
+}

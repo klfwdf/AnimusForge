@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_8_1",
+  "HeroName": "Johan Johansson Ängel",
+  "Description": "Sir Johan Johansson Ängel was a preeminent Swedish magnate, royal councilor, and head of the immensely wealthy and influential Ängel family. In 1259, Sir Johan held vast landed lordships across Östergötland and Uppland, commanding one of the largest private retinues of armored knights in the realm. Possessing deep dynastic roots intimately entwined with the ecclesiastical hierarchy—his kinsman Folke Johansson Ängel occupying the archbishopric of Uppsala—Johan exercised formidable influence over royal policy. A master of court diplomacy and strategic baronial alignment, he skillfully defended aristocratic prerogatives against the encroaching centralism of the Bjälbo regency. Johan fortified his administrative seats with modern stone masonry, turning his estates into self-sufficient political strongholds capable of withstanding prolonged sieges. Proud, far-sighted, and intensely conscious of his lineage's exalted destiny, he was universally acknowledged as one of the true kingmakers of thirteenth-century Sweden. Across Östergötland, Sir Johan erected hydraulic blast furnaces and armor workshops, introducing advanced chainmail weaving and sword-smithing techniques to equip his private cavalry brigade. At the royal council of magnates, his commanding eloquence repeatedly blocked unilateral war taxation decrees, fiercely upholding the constitutional veto of the baronial assembly. Uniting formidable martial strength with visionary statecraft, he stood as an immovable pillar of high aristocratic sovereignty in thirteenth-century Sweden.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with aristocratic hauteur and authoritative weight, combining imperial court polish with the calculated coolness of a master politician.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

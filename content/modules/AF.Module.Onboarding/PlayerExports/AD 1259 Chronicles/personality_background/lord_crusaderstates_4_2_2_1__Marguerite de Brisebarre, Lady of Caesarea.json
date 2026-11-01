@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_4_2_2_1",
+  "HeroName": "Marguerite de Brisebarre, Lady of Caesarea",
+  "Description": "Marguerite de Brisebarre was the hereditary Lady of Caesarea, inheriting one of the premier baronies of Outremer, married to John l'Aleman. Her ancient lineage had played a central role in Frankish history since the First Crusade, commanding deep respect within the High Court of Jerusalem. Following King Saint Louis IX's massive refortification of Caesarea's ramparts, Marguerite meticulously managed the castle's internal food logistics and hospices. In 1259, as escalating border raids displaced hundreds of coastal farming families, Marguerite established emergency kitchens offering daily bread rations. Possessing comprehensive knowledge of rural canal irrigation and crop yields, she ensured abundant grain stockpiles for the defending knightly garrison. Her compassionate charity and resilient domestic stewardship provided John with an unshakeable partnership in governing their exposed coastal barony. Within the inner bailey, Marguerite founded hospices providing daily barley loaves and milk for war orphans, earning veneration as a compassionate mother of her people. While her husband campaigned along frontier marches, she autonomously directed estate tithes and fortress supply chains with remarkable administrative acumen. Her pious benevolence and resolute domestic leadership made Caesarea a celebrated haven of Christian peace. Her enduring generosity and steadfast Christian faith earned her the universal devotion of every peasant and soldier within the barony.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve the hereditary patrimony of the Brisebarre family in Caesarea against external usurpation and hostile siege.",
+    "Maintain emergency grain reserves and monastic hospices in Caesarea to protect tenant families from famine and dislocation.",
+    "Support her husband in domestic governance while nurturing their sons to become honorable knightly defenders of Outremer."
+  ],
+  "Values": [
+    "A noble lady's virtue is the beacon of dynastic honor; justice and maternal benevolence secure the steadfast devotion of her people.",
+    "Reverence for Christian scripture, dedicating aristocratic privilege to the tangible relief of the impoverished and war-torn.",
+    "Prudent foresight and domestic vigilance, guarding the sacred ancestral inheritance through serene, unshakeable wisdom."
+  ],
+  "Fears": [
+    "Caesarea's citadel falling to a sudden storming by Mamluk forces, leading to the desecration of ancestral Christian chapels.",
+    "Her young sons being captured in border skirmishes, suffering brutal enslavement in the distant slave markets of Cairo."
+  ],
+  "SpeechStyle": "Speaks with serene noble warmth and seasoned domestic authority, directing castle charities and estate ledgers with gracious, measured composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Marguerite de Brisebarre, Lady of Caesarea"
+}

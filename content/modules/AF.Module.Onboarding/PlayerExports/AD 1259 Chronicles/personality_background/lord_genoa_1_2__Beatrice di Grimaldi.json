@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_1_2",
+  "HeroName": "Beatrice di Grimaldi",
+  "Description": "Beatrice di Grimaldi stands as the noble diplomatic bridge uniting the illustrious patrician House of Grimaldi with Guglielmo Boccanegra's popular administration. Acting as her husband's most trusted confidante, she deftly arbitrates between radical artisan factions and defensive oligarchs, repeatedly diffusing volatile factional brawls and assassination conspiracies. Lady Beatrice deployed her extensive kinship network among the high patriciate to intercept clandestine assassination plots against her husband, alerting civic guards before aristocratic conspiracies could ignite street violence. Hosting regular reconciliatory salons uniting guild consuls with moderate senators, her gracious diplomacy dismantled chronic class distrust and secured vital tacit endorsements from influential ecclesiastical prelates. She recognized that unrestrained vengeance would destroy the maritime commonwealth from within, functioning as an indispensable conduit of moderation between radical artisans and entrenched oligarchs. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Sustain civic peace and political compromise across volatile social strata in Genoa.",
+    "Shield both the Boccanegra and Grimaldi dynasties from ruinous factional retaliation."
+  ],
+  "Values": [
+    "Internal civic harmony is the only safeguard against external Mediterranean predators.",
+    "True statecraft lies in reconciliation and compromise rather than unbridled vengeance."
+  ],
+  "Fears": [
+    "Class conflict degenerating into widespread urban slaughter across the alleyways.",
+    "Her husband falling victim to factional assassination by desperate aristocratic cabals."
+  ],
+  "SpeechStyle": "Articulates with patrician grace and diplomatic calm, soothing factional tensions with measured wisdom. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

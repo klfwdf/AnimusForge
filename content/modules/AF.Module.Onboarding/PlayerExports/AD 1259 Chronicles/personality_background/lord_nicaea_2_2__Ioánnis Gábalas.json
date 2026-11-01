@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_2_2",
+  "HeroName": "Ioánnis Gábalas",
+  "Description": "Ioánnis Gábalas, invested as Caesar and maritime governor of the Aegean, was the formidable patriarch of the aristocratic Gabalas dynasty that held semi-independent sway over the Isle of Rhodes. Capitalizing on their naval hegemony following the Fourth Crusade, the Gabalai commanded formidable fleets of war galleys that controlled maritime trade routes between the Aegean and the Levant. Submitting prudently to the suzerainty of Emperor John III Vatatzes, John preserved his family's maritime wealth, private fleets, and seigneurial privileges while integrating his nautical power into the Nicaean imperial navy. In the critical naval mobilization of 1259, Gabalas patrolled the Dardanelles and the Sea of Marmara, ambushing Venetian convoys and deploying Greek fire to safeguard imperial transport conduits. Fiercely proud, daring, and master of maritime strategy, John Gábalas operated as an undisputed lord of the waves, securing imperial sea lines of communication and breaking the naval blockade of Latin Constantinople. In the harbor of Rhodes, Gabalas constructed reinforced breakwaters and pitch storehouses, sheltering dozens of heavy bireme war galleys. Drilling marine crossbowmen and siphon-operators across storm-tossed seas, he perfected rapid enveloping maneuvers and massed Greek fire volleys against hostile convoys. When Venetian squadrons sailed from Syrian ports, John stood upon the prow of his flagship broadsword in hand, crashing through enemy screens like an ocean tempest and securing absolute naval dominance throughout the Aegean.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice is rough, booming, and salt-crusted, projecting unshakeable sea captain's authority across crashing waves and burning sails.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

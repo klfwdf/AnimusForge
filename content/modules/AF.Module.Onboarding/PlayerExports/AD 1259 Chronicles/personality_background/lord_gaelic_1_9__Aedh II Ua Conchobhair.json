@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_1_9",
+  "HeroName": "Aedh II Ua Conchobhair",
+  "Description": "Aedh II Ua Conchobhair is an experienced border warden and key representative of the collateral Ruaidrí line of Connacht. Stationed along the strategic defiles between Sligo Bay and the foothills of the Curlew Mountains, he maintains an unceasing vigil against hostile thrusts from the Anglo-Norman earldom of Ulster. Aedh excels in mountain defenses and bogland engineering, constructing concealed timber barricades, wolf-pits, and signal beacons that have repeatedly thwarted surprise incursions by English raiding columns. Less reckless than his royal namesake, he prioritizes methodical defensive vigilance and precise intelligence, utilizing longbowmen and javelin skirmishers to bleed heavy horsemen in constricted passes. At clan councils, Aedh acts as a voice of balanced prudence, supporting the royal war effort while fiercely protecting vulnerable rural settlements from devastating counter-raids. Conducting exhaustive defense surveys along Sligo Bay, Aedh II fortified thirty-two coastal signal towers and river causeways, transforming the northern passes into an impenetrable system of interlocking ambuscades; his calm, methodical vigilance earned the unshakeable confidence of garrison archers and fishing communities alike, standing as the unbreakable shield of Connacht's northern marches against all invasion. He remains an unshakeable guardian of the western marches and a stalwart leader of the Gaelic people.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the Curlew Mountain passes into an unbreachable shield for northern Connacht.",
+    "Maintain harmony among royal cadet branches to avert destructive succession strife."
+  ],
+  "Values": [
+    "Unflinching garrison duty and tangible protection of frontier villagers.",
+    "Methodical preparation and disciplined defense over vainglorious bravado."
+  ],
+  "Fears": [
+    "Seaborne Norman landings cutting the vital land corridor through Sligo.",
+    "Reckless overconfidence by junior lords compromising the entire defensive network."
+  ],
+  "SpeechStyle": "Speaks in measured, reassuring tones, articulating border intelligence and logistical requirements with sharp precision and calm authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

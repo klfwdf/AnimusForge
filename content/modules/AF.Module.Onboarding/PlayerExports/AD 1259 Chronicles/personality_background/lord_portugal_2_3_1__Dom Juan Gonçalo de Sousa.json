@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_3_1",
+  "HeroName": "Dom Juan Gonçalo de Sousa",
+  "Description": "Dom Juan Gonçalo de Sousa (João Gonçalo) is the capable eldest son and principal heir of Gonçalo Garcia, Lord of Barroso and Neiva. Raised amidst the vast wealth and fortified castles of northern Portugal, Don Juan unites his father's strategic ambition with acute mercantile acumen and cavalry prowess. Having successfully defended wealthy family trading caravans along the Douro from organized bandit raids, he established an early reputation for lethal combat decisiveness. In 1259, actively assisting in governing the mountain fortresses of Barroso and auditing coastal salt revenues at Neiva, he commands immense authority among the younger chivalry. Composed, calculating, and formidable in bearing, he effortlessly navigates aristocratic assemblies at Coimbra. Prepared to deploy raw steel and immense gold to preserve his birthright, young Juan stands as the vigilant guardian of his family's colossal empire. Guarding wealthy trade flotillas traversing the Tagus and Douro rivers, Dom Juan deployed vigilant scouts to neutralize river pirate ambuscades. Decisive, shrewd, and fiercely ambitious, he stood fully prepared to employ vast gold and sharp steel to preserve the monumental wealth of the House of Barroso. His sharp financial intellect, ruthless determination, and martial vigilance ensure that Juan stands fully prepared to defend the colossal fortunes of Barroso.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Inherit and expand the immense estates of Barroso and Neiva, securing absolute economic dominance",
+    "Maintain an elite private cavalry troop equipped with the finest plate to guard commercial lifelines",
+    "Cultivate cross-border political alliances to expand the influence of the House of Sousa across Iberia"
+  ],
+  "Values": [
+    "Gold and steel are inseparable; wealth sustains soldiers, and arms protect wealth; master both to rule",
+    "Pragmatic ruthlessness and strategic timing are paramount; weakness invites immediate destruction",
+    "Unwavering loyalty to the House of Sousa, defending lineage greatness with relentless determination"
+  ],
+  "Fears": [
+    "Royal crown officials blockading his trade flotillas, strangling the financial revenues of his house",
+    "A surprise baronial assault compromising his fortresses, threatening his legitimate succession"
+  ],
+  "SpeechStyle": "Calculated, cool, and commanding; speaks with the financial precision, chilling confidence, and strategic economy of a prime dynastic heir.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

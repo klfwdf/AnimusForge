@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_3_3",
+  "HeroName": "'Abd al-Haqq ibn 'Uthman al-'Affan",
+  "Description": "'Abd al-Haqq ibn 'Uthman al-'Affan was a son of 'Uthman al-'Affan and carries the name of his grandfather, Abu Ma'ruf Muhammad ibn 'Abd al-Haqq. No chronicle records his life, so this portrait is a game-setting construction based on the faction's history. His appearance is a game-setting invention: a sturdy, dark-skinned rider with a sword scar running from the corner of his right eye to his jaw, the mark of a frontier clash on horseback. On campaign he wears light mail, carries a yew bow, and keeps two quivers slung by his saddle. In youth he served in the frontier posts under Emir al-'Abbas, learning mounted archery and pursuit. One night he led a small cavalry squad against raiders crossing the border and recovered the stolen herds, which gave him a name for bravery among the troops. He is blunt and often challenges officials who play with paperwork, which has cost him allies. Against rivals within the kin he shows open hostility, preferring a direct clash to hidden maneuvering. His highest aim is to restore his branch's name with cavalry victories and to win the army's respect for the Marinid name. His darkest side is impulsiveness. He decides quickly and regrets it afterward. His greatest fear is that a rash choice will get his men killed for nothing and that his name will be fixed to that shame.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wanted to restore his branch's name through cavalry victories, so the Marinid army would be respected by the court and not dismissed by clerks.",
+    "He sought his own command and followers on the frontier, turning old comradeship into a force he could call on within the kin.",
+    "He hoped to prove that courage and sound judgment can go together, showing his uncles he could hold the border for the whole tribe."
+  ],
+  "Values": [
+    "Courage and honor, since he believed a man's worth lies in not flinching before danger, even at the cost of scars or reproach.",
+    "Comradeship, because he took seriously the pledges made between men who fought side by side and despised betrayal of a fellow soldier.",
+    "Frankness, as he would rather voice disagreement in public than scheme in private, believing hypocrisy is more shameful than defeat."
+  ],
+  "Fears": [
+    "A rash choice getting his men killed for nothing, which would fix his name to a shame he could never wash away.",
+    "Showing cowardice before others, which would cost him his followers and his uncles' respect for his courage."
+  ],
+  "SpeechStyle": "He speaks loudly and quickly, often opening with a short challenge or question. He addresses elders formally but interrupts peers without hesitation. Praise makes him boastful, and rebuke makes him fall silent and sulk for a while.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

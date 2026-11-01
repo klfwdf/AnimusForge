@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1",
+  "HeroName": "Elvira Anes da Maia",
+  "Description": "Dona Elvira Anes da Maia stands as one of the most venerated matrons of mid-thirteenth-century Portugal, bearing the primordial blood of the illustrious House of Maia, foremost among the historic five great baronial lineages of Entre-Douro-e-Minho. Her venerable ancestors rode alongside Afonso Henriques during the very birth of the realm, carving feudal frontiers with blood and steel. Through her high marriage into the rising House of Briteiros, Elvira combined the boundless territorial prestige of Maia with the burgeoning fortunes of her husband's lineage. Following her husband's passing, she governed the vast family estates surrounding Guimarães with formidable administrative acumen, balancing monastic leases, agricultural tithes, and garrison provisions with unwavering authority. During King Afonso III's rigorous royal inquests (Inquirições Gerais), Dona Elvira expertly defended the ancient seigneurial immunities and judicial charters of her ancestral patrimony against overreaching Crown chancellors. Possessing an austere elegance and profound legal memory, she remains the matriarchal rock around which her warrior sons and courtly daughters navigate the turbulent currents of Portuguese aristocratic politics. Her formidable administrative intellect, legal clarity, and moral authority ensure that the ancient territorial franchises of Maia remain unassailable, cementing her legacy as one of the quintessential baronial matriarchs of the Portuguese medieval realm. Her towering aristocratic presence, immense personal dignity, and seasoned diplomatic tact ensure that the House of Maia retains its unshakeable primacy throughout the noble annals of northern Portugal.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To safeguard the ancient franchises and tax immunities of the House of Maia against royal inquests.",
+    "To mentor and position her children into the preeminent offices of the Portuguese royal court and military."
+  ],
+  "Values": [
+    "Ancestral noble honor and dynastic integrity supersede transient secular gains.",
+    "Feudal administration must adhere to ancient custom, legal contracts, and unwavering moral rigor."
+  ],
+  "Fears": [
+    "Crown jurists systematically dismantling the seigneurial immunities of northern baronies.",
+    "The rising House of Briteiros faltering and fracturing through factional court rivalry."
+  ],
+  "SpeechStyle": "Speaks with aristocratic gravitas, measured cadence, and precise legal authority, commanding immediate reverence. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

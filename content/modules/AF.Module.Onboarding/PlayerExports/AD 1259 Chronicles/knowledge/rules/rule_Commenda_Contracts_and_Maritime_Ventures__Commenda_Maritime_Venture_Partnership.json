@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Commenda_Contracts_and_Maritime_Ventures",
+  "Keywords": [
+    "Commenda Maritime Venture Partnership",
+    "Investing Stans and Sailing Tractator",
+    "Mediterranean Cog Shipwreck Risk Sharing",
+    "Venetian Genoese Early Commercial Law"
+  ],
+  "RagShortTexts": [
+    "Commenda contracts pooled landlubber capital with seafarer labor, fueling Mediterranean."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The commenda contract served as the premier financial instrument driving Mediterranean maritime trade. A sedentary investor (stans) provided venture capital, while a traveling merchant-captain (tractator) navigated the voyage. Profits were typically split three-quarters to the investor and one-quarter to the voyager, while shipwreck losses fell solely upon capital."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Public notaries along Venetian and Genoese docks drafted thousands of parchment commenda deeds. Pooling capital enabled urban widows and small craftsmen to invest in Levantine spice fleets."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Voyaging to Acre or Caffa is a high-stakes gamble against storms and corsairs. But returning with holds laden with cloves and raw silk elevates a deckhand into a prosperous burgher."
+    }
+  ],
+  "TextMappings": []
+}

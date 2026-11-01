@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Vasilko Danilovich is the heir of Pinsk and frontier marshal of the Polesian marshes, feared across borderlands as a ruthless, brilliant swamp guerilla commander. Raised amidst shallow dugout skiffs and dense reed beds, he mastered aquatic ambushes, underwater navigation, and lethal skirmish archery while fighting in waist-deep mud. Vasilko led the elite 'Polesian Otter Guard'—veteran trappers and rivermen clad in light water-resistant hides, armed with barbed javelins, composite recurve bows, and fire arrows. Operating under cover of morning river fogs, his warriors routinely ambushed Lithuanian marauders attempting to penetrate the marshlands, drowning heavy vanguard cavalry in treacherous quagmires. Fierce, vigilant, and intensely loyal to his men, Vasilko personally directed the construction of armored river barges and concealed defensive palisades. Hailed by comrades as the 'Otter of Polesia', he serves as the sharpest vanguard blade defending the southern river approaches. Stationed at the marshland crossroads where the Pina meets the Pripyat, Prince Vasilko perfected the art of amphibious warfare. Sharing cold camp rations with his amphibious scouts, he knew every submerged sandbar and reed bed, routinely executing daring night attacks that cut enemy mooring ropes and threw raiding armies into chaos. His fearless ferocity forged a legendary reputation that struck dread into any invader daring to venture into the wetlands.",
+  "SpeechStyle": "Step into Polesia, and you play by the river's law! Your heavy plate armor is nothing but an iron coffin in our quagmires! Turn back, or our barbed shafts shall pin you to the mud!",
+  "Motivations": [
+    "Command light skiff flotillas and ambush retinues to choke key riverpasses, annihilating raiding warbands without mercy.",
+    "Forge a veteran marshland reconnaissance corps, securing tactical dominance for Pinsk throughout regional frontier wars."
+  ],
+  "Values": [
+    "Prized preemptive aggression, terrain exploitation, and unshakeable brotherhood, disdaining rigid and unimaginative tactics.",
+    "Believing ruthless combat efficiency and wilderness mastery alone ensure survival against vastly superior imperial foes."
+  ],
+  "Fears": [
+    "Hostile scouts discovering secret navigable channels and pontoon paths, neutralizing his ambush advantage through counter-encirclement.",
+    "Losing his irreplaceable vanguard boatmen and trappers in frozen quagmires, blunting his house's sharpest military edge."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_3_2",
+  "HeroName": "Eisibél Ní Domaill",
+  "Description": "Eisibél Ní Domaill is Queen of West Bréifne and a distinguished daughter of the powerful Uí Dhomhnaill (O'Donnell) dynasty of Tír Chonaill (Donegal). Her marriage cemented an essential strategic partnership between Bréifne and the maritime warlords of the northwest, securing the western flank of northern Ireland against English encirclement. Raised along the wild, windswept Atlantic headlands of Donegal, Eisibél possesses an open-hearted magnanimity, sharp intellect, and aristocratic courage. Presiding over the lake halls of Lough Allen, she introduced advanced coastal preservation methods and expanded the kingdom's storehouses, while establishing dedicated hospices for wounded clan warriors. A devout benefactress of monastic houses, she actively sponsors manuscript illuminators and provides generous shelter to displaced rural families. In times of supreme tension, she remains King Domhnall's most steadfast confidante, infusing the shadowy island stronghold with grace and resilience. Maintaining secure courier routes through the mountain passes between Tyrconnell and Bréifne, Queen Eisibél personally ensured the passage of church delegates and medical supplies through enemy lines; presiding over island councils amidst howling Atlantic gales, her regal fortitude commands profound reverence from every lakeside chieftain and common fisherman alike. Her noble leadership ensures that the lake fortress remains resilient and hopeful.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the vital alliance between Bréifne and the O'Donnells of Donegal.",
+    "Expand island hospices and winter granaries to shield clansfolk from war."
+  ],
+  "Values": [
+    "Noble dynastic fidelity and open-handed Christian benevolence.",
+    "Cultivating family harmony and inter-clan solidarity amidst harsh isolation."
+  ],
+  "Fears": [
+    "English fleet blockades cutting sea communications with her kin in Donegal.",
+    "Prolonged siege cutting off lake supplies and sparking pestilence upon the crannogs."
+  ],
+  "SpeechStyle": "Speaks with melodic coastal clarity, blending Atlantic warmth with serene aristocratic dignity that calms heated baronial tempers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

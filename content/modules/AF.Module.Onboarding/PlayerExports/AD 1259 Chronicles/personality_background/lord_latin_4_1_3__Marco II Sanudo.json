@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_1_3",
+  "HeroName": "Marco II Sanudo",
+  "Description": "Marco II Sanudo, aged thirty-seven in 1259, is the eldest son and designated heir of Duke Angelo I Sanudo of Naxos. A formidable Venetian corsair and naval commander, he spent his youth mastering the winds and currents of the Cyclades. Aggressive, fearless, and tactically brilliant on the quarterdeck, Marco commands the primary ducal galley fleet. Having proved his naval prowess during the Euboeote wars, he now faces an escalating threat as Nicaean squadrons push into the Aegean. In 1259, Marco patrols the vital passages between Milos, Naxos, and Santorini with relentless zeal. Hungry for martial renown and uncompromising in authority, he stands ready to succeed his aging father as the undisputed lord of the Archipelago. Marco radiates the lethal aura of a seasoned naval captain, bearing faded saber scars from fierce boarding actions across the Aegean. Despising courtly hesitation, he relies on aggressive galley ramming tactics to crush trespassing warships. Sharing coarse sailor's rations with his rowers, he commands near-fanatical devotion from his crews, serving as the spearhead of Latin sea power. Fierce, unyielding, and battle-tested on turbulent seas, Marco commands the ducal war galleys with indomitable fury. He patrols the island passes day and night, determined to destroy any Byzantine naval force daring to challenge Sanudo supremacy.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Commands with thunderous naval authority, fierce and impatient with hesitation, driving his captains with iron discipline.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

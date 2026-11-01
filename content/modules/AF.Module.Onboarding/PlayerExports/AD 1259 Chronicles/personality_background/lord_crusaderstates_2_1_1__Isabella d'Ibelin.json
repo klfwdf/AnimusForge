@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_2_1_1",
+  "HeroName": "Isabella of Ibelin, Queen of Cyprus",
+  "Description": "Isabella of Ibelin was the daughter of Guy of Ibelin, Constable of Cyprus, and the queen consort to Hugh III of Lusignan, binding Outremer's foremost baronial family to the throne. Her marriage served as a landmark political reconciliation, successfully defusing decades of tension and intermittent armed conflict between the royal court and the Ibelin faction. Educated by Latin scholars in Nicosia, she was deeply versed in courtly literature, devotional theology, and the complex fiscal accounting of royal sugar estates and feudal tolls. In 1259, while Hugh III traveled relentlessly to review coastal garrisons and fortify military road systems, Isabella governed the royal household with poise. She generously patronized Dominican and Cistercian foundations across Cyprus, endowing safe hospices for noble refugee widows fleeing mainland conflicts in Antioch and Syria. Her tact, benevolent charity, and dynastic prestige made her an essential pillar of domestic stability during a pivotal epoch for the crusader realm. At Nicosia Cathedral, Isabella established an endowed foundation caring for war orphans, distributing clothing and silver coin to displaced families fleeing the Syrian mainland. When baronial disputes threatened court harmony, Isabella intervened with soothing maternal grace, pacifying fierce dynastic feuds. Her pious majesty elevated the prestige of the crown, anchoring the kingdom's social fabric in an age of turmoil.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve the vital political alliance between the Lusignan crown and the House of Ibelin to support King Hugh's reign.",
+    "Oversee royal treasuries and charitable hospices in Cyprus, providing safe refuge for displaced Christian families.",
+    "Nurture and instruct the royal children in statecraft and piety, securing the dynastic future of the Cypriot monarchy."
+  ],
+  "Values": [
+    "Belief that a queen must govern with compassion and moral grace, soothing fierce political rivalries to ensure stability.",
+    "Devotion to Christian piety, transforming royal resources into charitable salvation for the destitute and war-ravaged.",
+    "Composed fortitude and long-term foresight, safeguarding royal dynastic interests against factional intrigue."
+  ],
+  "Fears": [
+    "Her young sons meeting death in naval engagements against corsairs, plunging the kingdom into an inheritance crisis.",
+    "A sudden foreign invasion sacking the prosperous port cities of Cyprus, reducing decades of royal prosperity to ash."
+  ],
+  "SpeechStyle": "Speaks with graceful royal poise and composed aristocratic dignity, receiving foreign envoys and noble petitioners with serene, measured authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Isabella of Ibelin, Queen of Cyprus"
+}

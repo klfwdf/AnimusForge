@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_2_2",
+  "HeroName": "Catherine Birgersdotter av Bjelbo",
+  "Description": "Lady Catherine Birgersdotter of Bjelbo, paramount royal princess of Sweden, was the eldest daughter of Dux Birger Magnusson and Princess Ingeborg, and sister to Kings Valdemar and Magnus. Embodying the exalted lineage of Saint Eric and Danish royalty, Catherine stood as a prized diplomatic figure in Baltic dynastic politics. In 1259, Birger Jarl orchestrated her marriage to Prince Siegfried I of Anhalt-Zerbst to forge strategic alliances with the North German princes of the Holy Roman Empire. Fluent in Swedish, German, and Latin, Princess Catherine flourished within the court of Anhalt, serving as an indispensable diplomatic intelligence conduit between Scandinavia and the Empire. She endowed Saxon priories and arbitrated princely disputes, honored across both cultures as a noble ambassador of peace. Princess Catherine facilitated scholarly and cultural exchanges between Scandinavian chroniclers and German jurists, transforming Zerbst into an influential bridge connecting intellectual currents across the Baltic Sea. Whenever commercial or maritime toll disputes erupted between the Swedish crown and Hanseatic merchant leagues, Catherine intervened through diplomatic memorandums, defusing naval tensions on behalf of her royal brothers. Her moral rectitude, intellectual poise, and gracious statesmanship won the lasting admiration of the Saxon nobility.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Strengthen political and commercial bonds between the North German princely courts of the Empire and Sweden.",
+    "Uphold the royal prestige of the Bjelbo dynasty abroad, supporting her royal brothers across the Baltic Sea."
+  ],
+  "Values": [
+    "Reveres dynastic duty and diplomatic sacrifice, believing that a princess must serve as an enduring bridge between realms.",
+    "Champions courtly discretion, refined erudition, and moral poise in foreign courts to elevate her homeland's honor."
+  ],
+  "Fears": [
+    "Dreads naval blockades severing communication with her homeland and fratricidal feuds destroying her brothers."
+  ],
+  "SpeechStyle": "Speaks with melodious multilingual fluency and courtly distinction, her gracious words carrying diplomatic weight.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

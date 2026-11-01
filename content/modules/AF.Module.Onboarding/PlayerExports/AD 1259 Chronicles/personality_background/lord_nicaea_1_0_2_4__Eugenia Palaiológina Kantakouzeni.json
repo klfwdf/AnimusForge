@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_0_2_4",
+  "HeroName": "Eugenia Palaiológina Kantakouzeni",
+  "Description": "Eugenia Palaiológina Kantakouzene played a pivotal behind-the-scenes role in integrating steppe nomadic military power into the Byzantine imperial apparatus. As the youngest daughter of John Kantakouzenos and Irene Eulogia, Eugenia was wed to Syrgiannes, a prominent Cuman chieftain baptized into Orthodoxy who brought thousands of elite light horsemen into imperial service. Through this crucial matrimonial pact, Emperor Michael VIII secured an indispensable equestrian strike force ahead of the campaigns for Pelagonia and Constantinople. Eugenia demonstrated exceptional cultural tact and administrative grace, bridging the divide between proud steppe chieftains and the rigid etiquette of the Nicaean court. She fostered an enduring loyalty among Cuman veterans, ensuring their reliable deployment along hostile frontiers. Her son, Syrgiannes Palaiologos, would inherit her aristocratic pride and martial heritage to become one of the most brilliant and volatile generals of the 14th century. Across her ancestral estates in southern Macedonia, Eugenia maintained expansive horse paddocks and blacksmithing forges, distributing steel sabers and reinforced saddles to Cuman cavalry squadrons. Revering their ancestral steppe customs, she frequently visited nomadic encampments to dispense supplies, grain, and medicinal wines, earning deep veneration from tribal elders. Under her benevolent oversight, thousands of fearsome horse archers remained fiercely devoted to the Palaiologan banner, executing devastating vanguard strikes against frontier invaders.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her voice is gentle and diplomatic, demonstrating patient understanding that easily reconciles proud steppe warriors with court protocol.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

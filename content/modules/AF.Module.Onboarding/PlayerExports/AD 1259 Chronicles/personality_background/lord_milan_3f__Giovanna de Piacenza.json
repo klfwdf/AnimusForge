@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3f",
+  "HeroName": "Giovanna de Piacenza",
+  "Description": "Giovanna de Piacenza, born into the ancient patriciate of Piacenza, was the wife of Martino della Torre. Master of regional commerce and finance, she governed Milan's home front with resolute steel during the Cassano campaign, suppressing domestic aristocratic plots. Giovanna enforced draconian wartime price controls and grain rationing in Milan, confiscating black-market hoarding to maintain civic tranquility while her husband fought at the front. Endowing hospices for war orphans in Milan, she led noblewomen in sewing uniforms and bandages for militia guards, earning immense reverence through unflagging wartime leadership. Exemplifying patrician fortitude, Giovanna secured Milan's municipal citadel during perilous field campaigns, personifying the indomitable courage of Lombard matriarchs. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure the municipal palace and armories while her husband battles at the front.",
+    "Coordinate supply lines with Piacenza, funneling grain and coin to pay field armies.",
+    "Cement Torriani prestige among the guilds, personifying steadfast civic leadership."
+  ],
+  "Values": [
+    "Believes home front security wins wars, demanding swift execution for seditious cabals.",
+    "Holds marital solidarity and mutual courage as the foundation of dynastic triumph."
+  ],
+  "Fears": [
+    "Visconti conspirators exploiting rumors of defeat to seize Milanese gates in an urban coup.",
+    "Catastrophic disaster on the Adda leaving her isolated amidst hostile factions."
+  ],
+  "SpeechStyle": "Speaks with icy authority and decisive resolve, maintaining total administrative control. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Nasrid_Dynasty_and_Alhambra_Red_Citadel",
+  "Keywords": [
+    "Nasrid Red Banner of Victory",
+    "Muhammad I Ibn al Ahmar Emir",
+    "Alhambra Red Citadel Construction",
+    "There is No Victor but God Motto"
+  ],
+  "RagShortTexts": [
+    "The Nasrid dynasty founded the Emirate of Granada, building the Alhambra under the motto."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Founded by Muhammad I Ibn al-Ahmar, the Nasrid dynasty ruled the Emirate of Granada—the final Islamic bastion on the Iberian Peninsula. Emblazoned with red banners, they commenced construction of the magnificent Alhambra atop Sabika Hill, inscribing every arch with the dynasty's motto: 'There is no victor but God' (Wa lā ghāliba illā Allāh)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Muhammad practiced masterly survival diplomacy, paying annual tributary parias to Castile and even supplying auxiliary horsemen to preserve his mountainous emirate from conquest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "artisan"
+        ]
+      },
+      "Content": "Refugee scholars, tile-makers, and botanists transformed Granada's Albayzín into an intellectual hub, embellishing Alhambra courtyards with intricate arabesques and canal gardens."
+    }
+  ],
+  "TextMappings": []
+}

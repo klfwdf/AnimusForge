@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_1_1_2",
+  "HeroName": "Gutkeled nembeli László",
+  "Description": "Gutkeled nembeli László is the valiant son of Miklós II, representing the energetic third generation of the Gutkeled dynasty. Raised amidst horse stables and tilt-yards, he developed formidable prowess in shock cavalry combat and close-quarters melee. Blunt, fearless, and eager for glory, László disdains tedious court protocol, dedicating his energies to arms inspection, horse breeding, and scouting patrols. He proved his mettle during punitive raids into Bosnian mountain ravines, where his sharp vigilance repeatedly dismantled enemy ambuscades. By 1259, as war clouds gather over the western march, László commands mobile scouting detachments along the upper Drava reaches, guarding alpine foothills with relentless zeal. László led elite mounted scouts through dense alpine woodlands, mastering rapid encircling maneuvers and ambush tactics against foreign spies. His relentless pursuit of hostile scouting detachments blunted border raids and secured strategic mountain trails along the upper Drava. His personal courage in frontline skirmishes inspired fierce devotion among the younger knights sworn to the Gutkeled banner. His daring equestrian raids struck fear into neighboring bandit chieftains, establishing an unshakeable reputation for frontier valor across the march, winning the deep respect of senior bannerets and feudal lords and regional castellans.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win battlefield renown in impending western clashes, validating his warrior heritage before the realm.",
+    "Defend Drava frontier garrisons with unyielding ferocity, exterminating hostile incursions."
+  ],
+  "Values": [
+    "Prize reckless valor and front-line daring, treating cowardice as an unforgivable stain upon honor.",
+    "Value martial brotherhood and tactical discipline among his mounted retainers."
+  ],
+  "Fears": [
+    "Fears diplomatic appeasement robbing him of martial glory on the battlefield.",
+    "Dreads being trapped and captured by overwhelming enemy forces during frontier patrols."
+  ],
+  "SpeechStyle": "The battle-neigh of my charger is my command! Our blades thirst for combat; any raider trespassing our march shall find only a shallow grave! These mountains are our domain; trespassers will never escape our spears!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

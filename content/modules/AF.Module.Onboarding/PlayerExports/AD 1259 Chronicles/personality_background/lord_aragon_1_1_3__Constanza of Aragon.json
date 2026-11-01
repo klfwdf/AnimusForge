@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_3",
+  "HeroName": "Constanza of Aragon",
+  "Description": "Infanta Constanza of Aragon is the eldest daughter of King James I and Queen Violant of Hungary, standing as the supreme diplomatic pivot between the crowns of Aragon and Castile. Her high-profile marriage to Infante Manuel of Castile—brother of Alfonso X and father of the celebrated author Don Juan Manuel—formed the indispensable bedrock of peace across the volatile Iberian borders. Endowed with the fiery spirit of the House of Barcelona and the serene piety of the Árpád kings of Hungary, Constanza was schooled in classical literature, Latin scriptures, and high statecraft at the courts of Zaragoza and Barcelona. Resolute, intelligent, and profoundly dedicated to dynastic duty, she frequently intervened during border skirmishes along the Murcian frontier, using her familial prestige to cool tempers between her formidable father and Castilian envoys. Highly revered in both royal capitals, Constanza exemplifies the self-sacrificing nobility of royal daughters whose wisdom and courtly poise shielded entire realms from devastating fratricidal warfare. Maintaining tireless epistolary exchanges between Toledo and Barcelona, Constanza urged Prince Manuel and King James to exercise mutual forbearance along the troubled Murcian frontier. Recognizing that a royal infanta's highest calling was the preservation of dynastic peace, she skillfully navigated noble conspiracies, earning enduring veneration as the indispensable moral cornerstone of the Iberian monarchies.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement lasting peace between Aragon and Castile through her marriage, averting border conflicts",
+    "Foster harmony between her royal father and brothers, dampening dynastic discord within the house",
+    "Endow monastic hospitals along the frontier to relieve the suffering of war-torn communities"
+  ],
+  "Values": [
+    "A royal daughter's true glory lies in healing fractures and shielding nations through selfless grace",
+    "Inviolable matrimonial and diplomatic vows outshine violent ambition and baronial arrogance",
+    "Devout piety before God and steadfast devotion to family unity guide every action"
+  ],
+  "Fears": [
+    "War erupting between Aragon and Castile, pitting her husband and father against each other",
+    "Her royal father's territorial divisions provoking a bloody civil war among her brothers"
+  ],
+  "SpeechStyle": "Gracious, articulate, and poised; speaks with the effortless diplomacy, moral clarity, and warmth of a premier royal peacemaker.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

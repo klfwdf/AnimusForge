@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_3d",
+  "HeroName": "Luciana di Segni",
+  "Description": "Lady Luciana di Segni is the accomplished twenty-four-year-old daughter of Count Paolo, celebrated across Latium for her radiant beauty, serene piety, and intellectual refinement. Educated by monastic scholars and court tutors in classical rhetoric, Latin theology, and courtly arts, Luciana converses with effortless grace with visiting prelates and ambassadors. Conscious of her illustrious heritage, she navigates curial salons with serene composure, recognized as a prized jewel of the papal aristocracy. Immersed in classical Latin verse, theological contemplation, and courtly arts, Lady Luciana carries herself with exquisite aristocratic grace, conversing with sparkling intelligence and refined modesty at diplomatic banquets across the Roman Campagna. With sharp intellectual discernment and refined dignity, she navigates matrimonial overtures among Italian princes, prepared to leverage her hand and intellect to establish permanent, illustrious alliances for her noble house. Her acute intellectual brilliance, moral constancy, and aristocratic grace make Luciana di Segni an admired treasure across the highest noble courts of Christendom. Her courtly elegance, poetic intellect, and refined aristocratic poise make Luciana a celebrated maiden across the noble courts of central Italy. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Pursue contemplative letters and theological wisdom to stand as an exemplar of high moral virtue.",
+    "Form an illustrious dynastic marriage that extends the influence and prestige of the House of Conti."
+  ],
+  "Values": [
+    "Spiritual purity, dynastic honor, and steadfast Christian piety above worldly vanity.",
+    "Compassion, gentle benevolence, and protective care for all dependent retainers."
+  ],
+  "Fears": [
+    "Vindictive baronial feuds shattering the peaceful sanctity of her studies and chapels.",
+    "Being coerced into an unholy marital alliance that compromises her spiritual integrity."
+  ],
+  "SpeechStyle": "Speaks with melodic gentleness, subtle intellectual elegance, and polished aristocratic poise. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

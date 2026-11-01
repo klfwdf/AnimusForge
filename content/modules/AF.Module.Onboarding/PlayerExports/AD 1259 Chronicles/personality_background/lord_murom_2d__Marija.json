@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Marija of Murom, consort of Prince Jaroslav Yurievich, is the resolute mistress of the western frontier strongholds. Born of an esteemed military lineage, she combines martial fortitude with tender domestic competence and medicinal expertise. While her husband leads extended cavalry patrols in the dense border taiga, Marija directs the fortress logistics and civilian welfare. She manages subterranean granaries, oversees the manufacture of insulated felt blankets and padded gambesons, and ensures garrisons remain fully provisioned through freezing months. During combat alerts, she supervises emergency medical wards, washing wounds and administering herbal salves to injured sentinels. Her tireless maternal leadership and quiet resilience make her a beloved guardian angel for the frontline troops, celebrated as the 'Mother of the Fortress.' Unflinching amidst frontier perils, Lady Marija provides an unshakeable foundation of physical and emotional endurance for the western defenses.  Her compassionate guidance, municipal hospices, and meticulous logistical management provided the frontier garrisons with unshakeable domestic stability and moral endurance through decades of extreme political danger.  Her dedicated service, tireless logistics work, and warm medical care stand as an unshakeable fortress of civilian resilience, comforting every sentinel who defends the western marches.",
+  "SpeechStyle": "While warriors bleed on the ramparts, our hearths must burn bright and steadfast. So long as we provide warm bread and medicine, our garrison will never yield to winter storms. Stand together!",
+  "Motivations": [
+    "Manage garrison provisions and winter garments with precision to sustain troop readiness through severe freezing weather.",
+    "Provide compassionate support and care for war widows and refugees along the frontier."
+  ],
+  "Values": [
+    "Value frugality, diligence, and quiet devotion to duty over frivolous court luxuries.",
+    "Believe that domestic stability and meticulous supply work are vital pillars of military victory."
+  ],
+  "Fears": [
+    "Fear incendiary sabotage or contamination of vital granaries and medical stocks during winter sieges.",
+    "Dread the loss of her husband and scouts in bloody border ambushes deep in the frontier forests."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ]
+}

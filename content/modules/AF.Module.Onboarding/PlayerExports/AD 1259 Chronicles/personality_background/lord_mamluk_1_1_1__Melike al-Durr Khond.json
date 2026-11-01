@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_1_1_1",
+  "HeroName": "Melike al-Durr Khond",
+  "Description": "Melike al-Durr Khond was the principal wife of Qutuz. No historical source records a woman under this name, so her origins, appearance and temperament are entirely game setting. Al-Durr means pearl and was a common title for women at Mamluk courts, and the game makes her the mistress of Qutuz's household, in charge of its affairs and its web of contacts. She is slender and often hides half her face behind a dark veil. On her right wrist she wears a silver bracelet left by her mother, the only personal possession she never removes. When she first followed her husband into the barracks, he was wounded in a skirmish, and she cleaned the wound with her own hands. From that day she spoke little but remembered every officer's name and every feud. When Qutuz manoeuvred against his rival Baybars, she quietly calmed emirs who resented him, weaving a private network of news. When visiting emirs' wives came to the house, she greeted them herself and offered tea and verse, so they lowered their guard without noticing. Her marriage rests on years of shared life, and the couple never quarrelled in public. Her noble aim is to keep the family's roots in Cairo strong enough for her children to inherit calmly in peacetime. Her deepest fear is that her husband will not return from campaign, and that her children will be caught in court intrigue and lose their lives.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect the Qutuz household and its property in Cairo, so that her husband's children keep their place and inheritance through any upheaval.",
+    "Gather news through maids and officers' wives, spotting emirs who plot together before her husband has to make a hard decision.",
+    "Keep supplies and daily prayers steady while her husband is on campaign, so that he never has to worry about the rear."
+  ],
+  "Values": [
+    "A household's dignity rests on keeping faith and restraint, so she would rather stay silent than let idle talk carry house secrets to enemies.",
+    "In a turbulent age a marriage alliance binds more firmly than any oath, so she always places her husband's safety first.",
+    "Children must earn their future through conduct and learning, and she demands good manners, training in arms and respect for elders."
+  ],
+  "Fears": [
+    "Her husband dying or being captured, leaving the house unprotected and her children exposed to emirs he once humiliated.",
+    "Her children being drawn into court intrigue and dying for one careless word, while she can only weep alone behind closed doors."
+  ],
+  "SpeechStyle": "She speaks softly in short sentences, seldom giving direct orders and answering with questions. When asked about household matters she pauses, then ends the topic with a look that allows no argument. With family she grows warm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

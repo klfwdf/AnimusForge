@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_1_1",
+  "HeroName": "Baudouin II de Courtenay, Latin Emperor of Constantinople",
+  "Description": "Baudouin II de Courtenay, aged forty-two in 1259, stands as the beleaguered Latin Emperor of Constantinople, ruling over a realm practically reduced to the confines of the Theodosian Walls. Crowned amid desperate fiscal ruin, he spent decades traveling between Paris, Rome, and western feudal courts pleading for crusader relief and gold. In his extreme destitution, he pawned the sacred Crown of Thorns to King Louis IX of France, stripped lead roofs from imperial churches to pay mercenary guards, and pledged his own son Philip to Venetian creditors as collateral. With Michael VIII Palaiologos closing in from Nicaea, Baldwin clings to imperial majesty in the Blachernae Palace, relying desperately on Venetian galleys and Frankish knights to avert the final fall of Latin Constantinople. During sleepless nights in the dilapidated Blachernae Palace, Baldwin gazes across the Bosporus toward the flickering campfires of the Nicaean army. With imperial revenues drained to absolute zero, he relinquished customs control to Venetian bailiffs while relying on dwindling mercenary bands to man the parapets. Though battered by crushing debts and diplomatic humiliation, Baldwin clutches his ancestral crusader blade with unbroken resolve, determined to defend the sacred legacy of Latin Romania to his last breath. Surrounded by ruined monuments of a glorious Byzantine past, Baldwin stands as the tragic sentinel of Romania, praying that Christendom will hear his cries before the imperial eagle is cast down forever into the Golden Horn.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with melancholic imperial dignity, laden with the bitter memories of diplomatic begging and pawned relics across Europe.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

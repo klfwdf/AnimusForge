@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5l",
+  "HeroName": "Chuta",
+  "Description": "Chuta is the noble chatelaine and wife of Master of the Horse Reynold II Rátót, governing equestrian manors across Nógrád. Born into an ancient Magyar chivalric family, she possesses spirited resilience, practical intelligence, and keen knowledge of horse-breeding logistics. Chuta oversees the daily operations of expansive cavalry studs, saddle-smithies, and grain reserves, ensuring that warhorses receive prime veterinary care and nutrition. Generous and approachable, she distributes warm winter cloaks and hearty rations to stable hands, squires, and grooms, earning universal devotion across the manors. In 1259, amidst heavy military mobilization, Chuta directs the manufacture of leather barding and equestrian gear, standing as an indispensable logistical guardian for her husband's hosts. Chuta directed the manufacture of durable leather barding and equestrian tack, collaborating with skilled veterinarians to preserve warhorse health. Her meticulous domestic oversight and resilient spirit provided a dependable logistical anchor for her husband's mounted regiments. Beloved by stable hands and knights alike, she ensured that the war-chargers of Clan Rátót remained in peak physical condition, stamina, and battle readiness for heavy combat and crushing cavalry shock charges on the active frontline of battle against any foreign invaders who dare threaten Hungary.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard clan equestrian studs, ensuring flawless horse and gear supplies for her husband's regiments.",
+    "Promote benevolent domestic governance, winning deep affection from estate retainers and burghers."
+  ],
+  "Values": [
+    "Hold wifely fidelity, industrious dedication, and practical competence as supreme virtues.",
+    "Value spirited martial fortitude, convinced meticulous domestic logistics ensure victory."
+  ],
+  "Fears": [
+    "Fears bitter mountain blizzards or equine sickness harming prized warhorse breeding stock.",
+    "Dreads her husband falling in violent cavalry combat, leaving the family without its defender."
+  ],
+  "SpeechStyle": "Our granaries are full and our warhorses magnificent! With equestrian gear perfected, the heavy knights of Rátót shall ride to invincible triumph! Our warhorses are primed; the cavalry of Rátót rides to invincible glory!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

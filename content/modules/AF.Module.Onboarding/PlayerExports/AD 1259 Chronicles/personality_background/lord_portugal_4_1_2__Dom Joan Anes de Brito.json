@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_4_1_2",
+  "HeroName": "Dom Joan Anes de Brito",
+  "Description": "Dom Joan Anes de Brito is the premier heir and foremost military commander of the House of Brito, serving at thirty-seven years of age as a battle-hardened royal knight and marcher castellan. Inheriting his father Alfonso's uncompromising martial discipline, Dom Joan won glory during the climactic campaigns against Moorish bastions in the south, repeatedly distinguishing himself in close-quarters cavalry charges. A master of lance formations and combined arms tactics, he directs the garrison watches of several key frontier fortresses guarding northern transit routes. His alliance with Dona Madalena de Costa connected his inland barony to thriving coastal trade conduits, securing steady provisioning. Resolute, fair, and uncompromising on the practice field, Dom Joan staunchly supports royal measures for defensive readiness, recognized as the iron successor who will lead clan_portugal_4 into the future. Exhibiting supreme tactical competence, rigid discipline, and steadfast royal fidelity, Dom Joan Anes de Brito stands fully prepared to lead clan_portugal_4 into an era of martial triumph and expanded regional influence. Dom Joan's uncompromising military standards, strategic foresight, and iron loyalty to the Crown establish him as one of the paramount commanders of the northern frontiers. His tactical acumen, rigid martial standards, and unwavering loyalty to the Crown establish Dom Joan as an indispensable defender of the kingdom.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To command and expand the fortified bastions of Brito, ensuring absolute regional security.",
+    "To spearhead royal campaigns as a frontline shock captain, winning hereditary military offices for his lineage."
+  ],
+  "Values": [
+    "Iron military discipline is the only path to triumph; unbridled courage without order is suicidal.",
+    "Unflinching execution of feudal duty to King and clan is the sacred creed of the knight."
+  ],
+  "Fears": [
+    "Lax discipline in his border garrisons inviting sudden, catastrophic enemy penetration.",
+    "Armed rebellion tearing northern nobility apart, forcing impossible divided loyalties."
+  ],
+  "SpeechStyle": "Speaks with stern, metallic authority, issuing orders with razor precision and total martial conviction. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

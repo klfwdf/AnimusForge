@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_4_7",
+  "HeroName": "Fatyan bint Abdallah",
+  "Description": "Fatyan bint Abdallah was a daughter of 'Uthman Adergal and Safiyya, and belongs to the 'Uthman Adergal branch. No record of her survives, so this portrait is a game-setting construction based on the faction's history. Her appearance is a game-setting invention: a lithe, clear-eyed young woman whose black hair is braided into one thick plait down her back, with a small silver ring in her right ear. She wears a short tunic and trousers for riding and carries a slender leather pouch at her belt with a small knife for hoof work and strips of cloth. From girlhood she learned to break and tend horses beside her brother Abu Rabi' Sulayman, and among the girls of her age her riding stood out. She has no famous military record, but during a herd move she led a small band of horses over a mountain pass without losing a beast, which earned her a measure of respect among the kin. She deals with rivals bluntly and dislikes indirect talk. When faced with injustice she confronts the wrongdoer to his face. Her highest aim is to show that women can master horses and roads too, so that the girls of the family need not be confined to the women's quarters. Her darkest side is her sharp edge. She is overconfident and often overrides others with her own judgment, leaving people both admiring and wary of her. Her greatest fear is that her own recklessness will injure the herd or a companion on a mountain road, and that she will be unable to bear the responsibility.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wanted to show that women can master herds and roads as well, so that the girls of the family would not be confined to the women's quarters.",
+    "She sought to build her authority through herd moves and grazing, so that animals and riders would follow her direction willingly.",
+    "She shared the work of the horse herd with her brother and passed the skills of breaking and tending horses on to younger members of the family."
+  ],
+  "Values": [
+    "Courage and frankness, since she believed matters should be said to a face and done in the open, and evasion is more contemptible than failure.",
+    "Self-reliance and action, as she held that a person's worth must be proven by their own hands rather than by another's protection.",
+    "Responsibility and loyalty, because she owed the herd and her companions a duty, and would bear the consequences of her mistakes herself."
+  ],
+  "Fears": [
+    "Her own recklessness injuring the herd or a companion on a mountain road, leaving her unable to carry the responsibility and losing everyone's trust.",
+    "The kin denying women's ability, so that the broader life she fought for dissolves in a single idle remark and she is pushed back into the women's quarters."
+  ],
+  "SpeechStyle": "She speaks directly, often opening with a plain question that demands a clear answer. With her brother she is close and teasing. With elders she is respectful but never servile. Faced with injustice she confronts the offender.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

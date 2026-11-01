@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_7_1_a",
+  "HeroName": "Albrecht II von Wettin",
+  "Description": "Albrecht II, the eldest heir of Margrave Heinrich III, earned the historic sobriquet 'the Degenerate' for his volatile passions and unruly temper. His prestigious match with Margaret of Sicily, daughter of Emperor Frederick II, filled him with boundless pride in his imperial Hohenstaufen lineage. Fiery, stubborn, and desperately impatient to emerge from his father's imposing shadow, Albrecht repeatedly provoked border skirmishes across Thuringian marshes, squandering immense treasure on extravagant tournaments and favored companions. On the battlefield, however, his physical bravery was beyond dispute; he charged at the vanguard with thunderous fury, crushing enemy lines in person. Contemptuous of subtle compromise, he burns to grasp direct dominion over the Wettin patrimony, determined to enforce his dynastic rights through sheer lancepoint dominance and unyielding aristocratic disdain. Launching aggressive cavalry raids across the Thuringian borders, Albrecht treated insubordinate castellans with brutal severity, indifferent to the grievances of monastic chroniclers whose fields suffered under his sorties. Lavishing immense wealth upon hunting entourages and mercenary captains, he dismissed cautious counselors, fiercely determined to carve his personal dominion across Saxony in fire and blood. His fierce ambition and untamed spirit continue to cast a towering martial shadow over the marches of Thuringia and Meissen.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Pressure his father into granting him full jurisdictional and fiscal authority over Thuringia as primary heir.",
+    "Achieve overwhelming martial triumphs on the battlefield to silence court critics of his fierce demeanor."
+  ],
+  "Values": [
+    "Worships raw martial strength and imperial bloodline privileges, disdaining diplomatic compromise.",
+    "Believes only an audacious, unyielding ruler can seize the richest spoils during the imperial Interregnum."
+  ],
+  "Fears": [
+    "Fears his father altering the succession in old age to grant wealthy Meissen to younger, compliant siblings.",
+    "Dreads papal excommunication over domestic scandals, making him an outcast among German princes."
+  ],
+  "SpeechStyle": "Imperial Staufen blood flows in my veins! Any dotard who seeks to curb my lawful inheritance shall taste cold iron! In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Albrecht II von Wettin"
+}

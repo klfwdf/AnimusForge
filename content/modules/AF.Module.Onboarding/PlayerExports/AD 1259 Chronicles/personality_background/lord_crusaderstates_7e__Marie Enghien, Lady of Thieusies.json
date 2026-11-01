@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_7e",
+  "HeroName": "Marie d'Enghien, Lady of Thieusies",
+  "Description": "Marie d'Enghien, Lady of Thieusies, originated from the distinguished comital nobility of Hainaut, intimately allied with the House of Brienne. Governing prosperous agricultural estates along the Scheldt River basin, her family combined ancient chivalric honor with formidable landed wealth. Educated in monastic chanceries at Tournai, Marie possessed exceptional expertise in customary feudal accounting and property jurisprudence. In 1259, responding to acute distress calls from the Latin East, Marie established specialized workshops producing bandages and uniforms for Outremer. She regularly remitted silver subsidies to Templar and Hospitaller commanderies throughout Flanders, sustaining the crusading logistical chain. Modest, devout, and administratively sharp, Marie stood as an exemplary patroness whose quiet piety supported the distant frontiers of Outremer. Descended from eminent nobility in the Low Countries, Marie d'Enghien unified substantial territorial wealth with exceptional administrative capability as Countess of Brienne. Within the manorial estates of Brienne, she established streamlined accounting systems for granaries, textile weaving mills, and watermills, maintaining overflowing reserves through turbulent times. Whenever Count John attended royal parliamentary sessions in Paris, Marie governed baronial affairs autonomously with forensic discernment and unblemished justice. Furthermore, she endowed regional hospices, standing as an admirable paragon among feudal noblewomen.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Administer the grain revenues and watermills of Thieusies with forensic discipline, maintaining abundant familial liquidity.",
+    "Promote charitable collections across Hainaut and Flanders to supply medical goods and silver subsidies for the Holy Land.",
+    "Educate her household in chivalric honor and pious duty, preserving the alliance between Enghien and Brienne for generations."
+  ],
+  "Values": [
+    "Frugal self-discipline and moral rectitude are the true foundations of noble life; wealth must be consecrated to good works.",
+    "Unyielding fidelity to Christian covenants, providing a peaceful domestic sanctuary amidst surrounding worldly violence.",
+    "Prizing practical charitable relief over courtly vanity, cultivating quiet spiritual serenity through generous beneficence."
+  ],
+  "Fears": [
+    "Feudal warfare ravaging Hainaut and destroying Thieusies, terminating her ability to finance overseas crusader hospices.",
+    "The final catastrophic fall of Acre resulting in the massacre of Christian Outremer, rendering decades of almsgiving futile."
+  ],
+  "SpeechStyle": "Speaks with quiet aristocratic grace and meticulous administrative wisdom, directing estate accounts and religious benefactions with poised, thoughtful dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Marie d'Enghien, Lady of Thieusies"
+}

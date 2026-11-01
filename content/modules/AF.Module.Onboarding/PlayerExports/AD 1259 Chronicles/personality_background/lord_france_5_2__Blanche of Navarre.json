@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_5_2",
+  "HeroName": "Blanche of Navarre, Duchess of Brittany",
+  "Description": "Blanche of Navarre is the Duchess consort of Brittany, daughter of King Theobald I of Navarre and Countess Agnes of Beaujeu. At thirty-three, she unites the proud royal heritage of Navarre with the sophisticated literary culture of the Counts of Champagne. Her marriage into the House of Dreux brought vast financial subsidies and vital Pyrenean alliances to Brittany, softening the abrasive edges of her husband's centralizing campaigns. Renowned for profound Catholic piety, Duchess Blanche founded the celebrated Cistercian Abbey of Notre-Dame de la Joie at Hennebont, providing sanctuary to lepers, poor pilgrims, and orphans. While Duke Jean campaigned, Blanche governed the ducal seat at Nantes with serene competence, auditing bailiff accounts and adjudicating baronial disputes with remarkable equity. Beloved across the duchy for her boundless benevolence, she is an indispensable moral anchor. Duchess Blanche cultivated a medicinal botanical garden at Hennebont Abbey, directing pious nuns in compounding herbal salves to treat winter fevers and frostbite among coastal peasantry. Gentle, dignified, and remarkably insightful, her equitable arbitration of rural water grievances won the adoration of commoners as the holy light of Armorica. Her unshakeable spiritual devotion and gentle administrative hand continue to safeguard the moral and social fabric of coastal Brittany across times of war.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Advance monastic endowments and poor relief to secure divine favor for Brittany.",
+    "Reconcile tensions between the Duke and local bishoprics to preserve regional peace."
+  ],
+  "Values": [
+    "Selfless Christian charity and active protection of the vulnerable across the realm.",
+    "Fidelity to sacred marital indentures and harmonious preservation of dynastic unity."
+  ],
+  "Fears": [
+    "Escalating conflict with the papacy bringing an interdict upon the duchy.",
+    "Foreign warfare destroying her beloved Abbey of Notre-Dame de la Joie at Hennebont."
+  ],
+  "SpeechStyle": "Speaks with serene, saintly gentleness and pristine courtly eloquence, her words conveying profound theological wisdom, maternal warmth, and baronial majesty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

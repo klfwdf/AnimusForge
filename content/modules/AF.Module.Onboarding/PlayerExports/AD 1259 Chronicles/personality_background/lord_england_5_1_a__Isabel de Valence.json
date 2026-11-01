@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_5_1_a",
+  "HeroName": "Isabel de Valence",
+  "Description": "Isabel de Valence is the highborn eldest daughter of William de Valence and Joan de Munchensi, betrothed to John de Hastings, 1st Baron Hastings. Possessing refined aristocratic beauty, dark luminous eyes inherited from her Poitevin ancestors, and the stately poise of the Marshals, Isabel commands immediate admiration. Raised amidst the turbulent grandeur of Goodrich Castle, she grew up at the center of the political tempest pitting her foreign father against native English barons. Educated in French courtly literature, Latin script, and diplomatic protocol, Isabel developed remarkable emotional poise under pressure. In 1259, as hatred toward the Lusignans reaches a boiling point across London and Oxford, her prospective alliance with the Hastings dynasty represents a vital bridge reconnecting her controversial family to the moderate English baronage. Assisting her mother in maintaining castle accounts and managing communications with continental kinsmen, Isabel stands as a calm, dignified symbol of dynastic resilience, prepared to navigate the brewing storm with quiet courage. Within Goodrich's solar, she helps her mother catalog confidential diplomatic rolls from Paris and Rome, examining feudal inheritance statutes in both realms. Her unfailing modesty, quick intellect, and courtly refinement disarm hostility toward the Lusignans, displaying the remarkable poise and serene fortitude of a highborn Anglo-Norman lady.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement a powerful alliance with the House of Hastings, anchoring her beleaguered family within the English peerage",
+    "Assist her mother in managing Goodrich Castle's domestic affairs, preserving dignity and order amidst siege threats",
+    "Shield her younger siblings from the virulent political hatred directed against their Poitevin heritage"
+  ],
+  "Values": [
+    "A lady's true nobility shines brightest amidst adversity; calm poise easily shatters malice and slander",
+    "Dynastic survival transcends personal desires; forging calculated marriage alliances is a sacred duty",
+    "Maintain vigilance and strategic clarity; only intelligence ensures survival in an arena of wolves"
+  ],
+  "Fears": [
+    "London mobs sacking their suburban manors and subjecting her mother and sisters to imprisonment",
+    "Her father being ambushed and slain by rebel assassins while traversing the English Channel"
+  ],
+  "SpeechStyle": "Speaks with soft, elegant Anglo-Norman French, exquisite manners, and guarded reserve. Even when provoked by hostile baronial slights, she responds with flawless diplomatic poise that disarms malice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

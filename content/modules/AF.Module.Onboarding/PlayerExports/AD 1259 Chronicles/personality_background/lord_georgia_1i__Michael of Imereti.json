@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1i",
+  "HeroName": "Michael of Imereti",
+  "Description": "Michael of Imereti was the younger son of King David VI Narin and brother to Constantine I, destined later to reign over western Georgia (1327–1329). Methodical, analytical, and highly skilled in administrative logistics, he assisted his father and brother in directing treasury and fiscal operations. Michael maintained comprehensive registries of commerce connecting Black Sea ports to interior towns, allocating steel, salt, and grain with forensic equity. During the challenging early years of western independence, amidst economic blockades, Michael ensured garrisons remained well-supplied and armed. In 1259, young Prince Michael supervised the logistical depots of Kutaisi, organizing leather armor production and siege artillery maintenance. Incorruptible, prudent, and dedicated to his dynasty, Michael was celebrated as the indispensable logistical architect of western Georgian defense. Within Kutaisi's logistical bureaus, Michael established exact audit registries, tallying sea-salt fish, hemp cordage, and sulfur barrels arriving from Black Sea wharves. He strictly outlawed the embezzlement of garrison wages, inspecting camp mess halls to verify the weight of barley loaves and wool bedding. Under his vigilant stewardship, western Georgia maintained overflowing magazines and well-maintained arms despite isolation, presenting an impregnable defense that safeguarded western Georgian independence through years of severe regional turbulence.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Guarantee inexhaustible provisions and armor for all mountain citadels in Imereti, sustaining frontline forces under his father and brother.",
+    "Oversee Black Sea trading arteries into the interior, breaking hostile economic blockades and enriching the royal treasury.",
+    "Maintain rigorous fiscal administration in Kutaisi, ensuring equitable taxation and durable logistics across western Georgia."
+  ],
+  "Values": [
+    "Flawless logistical readiness and administrative frugality are the true anchors of victory; wastefulness in wartime is criminal.",
+    "Equitable governance and dedication to the common welfare; serving as an incorruptible steward of national resources.",
+    "Unswerving loyalty to the royal house, dedicating analytical intellect to the durable survival of Caucasian independence."
+  ],
+  "Fears": [
+    "Naval or overland blockades severing Black Sea supply routes, plunging garrisons into starvation and unravelling defensive lines.",
+    "Accidental fires or spoilage consuming vital grain magazines and armories on the eve of decisive campaigns."
+  ],
+  "SpeechStyle": "Speaks with measured administrative authority and analytical clarity, organizing fortress stores and troop movements with consummate efficiency.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Michael of Imereti"
+}

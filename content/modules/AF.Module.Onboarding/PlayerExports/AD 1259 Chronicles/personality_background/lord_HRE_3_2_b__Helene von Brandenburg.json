@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_3_2_b",
+  "HeroName": "Helene von Brandenburg",
+  "Description": "Helene von Brandenburg, daughter of Johann I, was Margravine of Landsberg as wife of Dietrich of Landsberg. A distinguished noblewoman of House Ascania, she deployed diplomatic tact to reconcile the rival interests of the Wettin and Ascanian dynasties across eastern Germany. Helene constructed masonry bridges across Landsberg, arbitrating timber disputes among abbeys with gentle wisdom that won universal veneration from Wettin magnates. Promoting advanced agriculture and cloth dyeing across Landsberg, her gentle administration won burgher devotion, accumulating boundless wealth during turbulent times. Gracious and perceptive, Helene mediated bitter feuds with maternal tact, transforming Landsberg into a peaceful sanctuary of agricultural wealth. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve alliances between Landsberg and Brandenburg to check Bohemian northern advances.",
+    "Patronize illuminated scriptoriums, fostering refined courtly literature in frontier castles.",
+    "Mediate inheritance and border disputes between Wettin and Ascanian princes amicably."
+  ],
+  "Values": [
+    "Believes noble consorts must act as peacemakers, substituting patient dialogue for bloodshed.",
+    "Holds treaty sanctity and familial harmony as the supreme foundations of princely life."
+  ],
+  "Fears": [
+    "Hot-headed young knights launching cross-border raids that shatter delicate peace treaties.",
+    "Landsberg lands being ravaged by robber-barons, ruining merchant prosperity and peace."
+  ],
+  "SpeechStyle": "Speaks with gentle wisdom, gracious diplomacy, and soothing poise, disarming tense hostility. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

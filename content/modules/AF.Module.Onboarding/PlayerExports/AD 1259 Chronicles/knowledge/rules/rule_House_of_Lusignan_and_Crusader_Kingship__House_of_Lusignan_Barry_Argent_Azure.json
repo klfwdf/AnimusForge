@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Lusignan_and_Crusader_Kingship",
+  "Keywords": [
+    "House of Lusignan Barry Argent Azure",
+    "Kingdom of Cyprus Crusader Crown",
+    "Jerusalem Succession Dispute",
+    "Levantine Maritime Crossroads"
+  ],
+  "RagShortTexts": [
+    "The House of Lusignan governed Cyprus, pressing claims to the embattled crown of Jerusalem."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Originating from Poitou, the House of Lusignan secured the Kingdom of Cyprus following the Third Crusade, bearing arms of blue and silver bars. With Hohenstaufen heirs distant in Germany, Lusignan princes like Hugh III pressed direct maternal claims before Acre's Haute Cour to rule as Kings of Jerusalem."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Cyprus formed an island breadbasket and sugar monopoly funding Outremer's defenses, though rival claims by Charles of Anjou and local baronies complicated royal authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "In Famagusta and Nicosia wharves, Lusignan liveries welcome returning knights. Shielded from desert raids, Cyprus serves as a secure staging post for Levantine crusaders."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lord Abel Abelsøn of Langeland, youngest son of King Abel and Mechthild von Holstein, held strategic dominion over the island of Langeland in the Great Belt waterway. Serving as the maritime sentinel shielding his elder brothers' continental domains, Abel played an indispensable logistical and naval defense role. Shrewd, dependable, and highly observant, he commanded irregular island flotillas that exploited shallow shoals and treacherous straits to repeatedly repel royal Danish amphibious invasion forces. Abel systematically developed Langeland's lucrative Baltic herring fisheries and salt markets, providing his family's anti-royalist alliance with a constant stream of liquid silver. His fortified towers along the Great Belt transformed his island domain into an unbreachable maritime lock securing the maritime flanks of Schleswig. Fortifying naval anchorages and stone bastions across Langeland, Abel utilized the lucrative herring trade and salt tariffs to finance his family's armed resistance, revered across the Baltic archipelagos as the vigilant silver guardian of the Great Belt straits. Controlling maritime chokepoints and extracting vast revenues from Baltic fisheries, Abel provided the vital silver lifeline that sustained his family's defiance against royal aggression, securing the island approaches against all seaborne assaults with steadfast nautical vigilance and tactical resolve.",
+  "SpeechStyle": "Speaks with unhurried nautical calm and logistical precision, his direct words grounded in tactical common sense.",
+  "Motivations": [
+    "Defend the hereditary sovereignty of Langeland, utilizing treacherous maritime straits to repel royal Danish naval invasions.",
+    "Expand Baltic herring fisheries and maritime commerce to supply the Abelsøn dynastic cause with steady silver and arms."
+  ],
+  "Values": [
+    "Holds fraternal solidarity as the bedrock of survival, believing unified family resistance alone secures patrimonial freedom.",
+    "Champions pragmatic fiscal prudence and defensive vigilance, recognizing that liquid silver and fortified straits ensure victory."
+  ],
+  "Fears": [
+    "Fears royal Danish war fleets penetrating coastal mists to isolate Langeland, severing supply lines to continental Schleswig."
+  ],
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ]
+}

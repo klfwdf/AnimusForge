@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Mamluk_Ascendancy_and_Ain_Jalut_Eve",
+  "Keywords": [
+    "Mamluk Ascendancy 1259",
+    "Eve of Ain Jalut Battle",
+    "Qutuz and Baibars Leadership",
+    "Cairo Slave Guard Shock Force"
+  ],
+  "RagShortTexts": [
+    "Mamluk Sultan Qutuz and General Baibars marshaled their slave-soldier corps to face the Mongol."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In Cairo, the Bahri Mamluks—warriors forged from Kipchak slave stock—wielded supreme sovereignty. Sultan Saif ad-Din Qutuz beheaded Hulagu's envoys and allied with the ruthless commander Rukn al-Din Baibars, assembling the supreme professional shock army of Islam to stand against the Mongols."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The slave-soldiers of Cairo demand complete submission and colossal war taxes. Qutuz has confiscated baronial bullion across Egypt, declaring that any nobleman withholding coin from the holy defense will forfeit both fortune and head."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A Mamluk heavy cavalryman trains relentlessly in the furusiyya: loosing heavy armor-piercing arrows at full gallop before crashing in with two-handed maces. Their iron discipline rivals the Mongol tumens themselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "The tax collectors emptied our granaries, but folk along the Nile keep silent. If the Mamluk steel breaks in Syria, the riders who slaughtered Baghdad will drink our water and burn our fields."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z3",
+  "HeroName": "Biatr",
+  "Description": "Biatr was a noble matron of the Hetoumid house, presiding over productive vineyards, olive groves, and pasture estates in the Taurus valleys. Resolute, patient, and thoroughly dedicated to domestic governance, she systematically supervised seasonal agricultural cycles, presses, and grain mills. Amidst continuous frontier turbulence and refugee migrations into the mountain valleys, Biatr managed estate resources with exceptional frugality. She organized regular supply convoys carrying smoked cheese, dried fruits, and flour to border garrisons guarding northern mountain passes. In 1259, anticipating prolonged military campaigns across the Syrian front, Biatr excavated subterranean grain vaults and wool weaving workshops. Modest, practical, and dependable, Biatr was beloved by tenant farmers and soldiers as an indispensable domestic bedrock of the realm. Biatr instituted rigorous inspection protocols for all manorial grain stores, personally auditing every bushel of wheat and barrel of vintage wine in the cellar books. She treated tenant peasants and arriving refugees with benevolence, waiving burdensome levies during lean years and providing seed grain and draft oxen to revive cultivation. Within the inner domestic halls, Biatr spun wool and managed household stewards with tireless diligence, her steadfast domestic presence continually anchoring her family's enduring economic resilience across wartime crises.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Ensure bumper agricultural yields and full granaries, keeping mountain garrisons supplied with durable rations.",
+    "Provide food and weaving employment for displaced refugees fleeing border warfare, fulfilling duties of Christian hospitality.",
+    "Safeguard ancestral farmland and livestock against brigandage, securing an unshakeable logistical foundation for her house."
+  ],
+  "Values": [
+    "Tireless domestic labor, strict agrarian stewardship, and practical charity are the true bulwarks against famine.",
+    "Fair treatment of peasants and shepherds; thriving communities build unbreakable national resilience.",
+    "Modest self-discipline and steadfast dedication to duty amidst historical crises."
+  ],
+  "Fears": [
+    "Marauding cavalry burning golden wheat fields and orchards, starving frontline garrisons into surrender.",
+    "Severe frosts or droughts devastating mountain harvests, leaving the population vulnerable to famine and pestilence."
+  ],
+  "SpeechStyle": "Speaks with composed modesty and domestic authority, managing agricultural harvests and fortress provisions with quiet, reliable diligence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Biatr"
+}

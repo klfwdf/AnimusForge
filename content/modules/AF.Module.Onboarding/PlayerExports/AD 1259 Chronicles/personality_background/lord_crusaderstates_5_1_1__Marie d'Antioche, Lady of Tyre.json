@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_5_1_1",
+  "HeroName": "Maria of Antioch, Lady of Toron and Tyre",
+  "Description": "Maria of Antioch-Armenia was the daughter of Prince Raymond-Roupen of Antioch and the lawful hereditary Lady of the prestigious Barony of Toron. Uniting the royal bloodlines of the House of Poitiers and the Rubenid dynasty of Armenia, she brought the vast estates of Upper Galilee into her marriage with Philip of Montfort. Educated in feudal jurisprudence and courtly letters in Antioch and Sis, Maria possessed profound insight into the complex claims governing Outremer's thrones. Within the palatial seaside court of Tyre, Maria directed domestic administration and diplomatic receptions, skillfully augmenting her husband's baronial ascendancy. In 1259, as saracen raids harried inland agricultural estates, Maria efficiently organized the evacuation of rural Christian tenants to the safety of Tyre. Proud, brilliant, and regal, she served as Philip's most trusted political partner and the unassailable legal cornerstone of the Montfort patrimony. At Tyre Castle, Maria supervised the victualing and equipment ledgers for hundreds of armored knights, ensuring the coastal garrison remained fully supplied through prolonged blockades. She arbitrated civic disputes between foreign merchant communities and local tenant farmers with fairness, commanding universal respect. Her royal dignity and maternal resilience made her Philip's most trusted partner in governing their great maritime realm.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the lawful hereditary titles of Toron and Tyre, preserving the royal prestige of her Poitevin-Armenian lineage.",
+    "Establish municipal granaries and refugee shelters within Tyre to protect Christian subjects fleeing inland devastation.",
+    "Counsel her husband Philip while preparing her son John I to inherit and govern their vast feudal domain with wisdom."
+  ],
+  "Values": [
+    "The sacred dignity of royal blood must never be compromised; ancestral feudal titles must be defended with iron resilience.",
+    "Devotion to Christian piety and maternal duty, governing her people with impartial justice to secure divine protection.",
+    "Cultivating political wisdom and far-reaching foresight, navigating court intrigues with dispassionate serenity."
+  ],
+  "Fears": [
+    "The inland stronghold of Toron capitulating to a protracted Mamluk siege, extinguishing their ancestral seat in Galilee.",
+    "Her husband Philip falling victim to political assassination, plunging their expansive barony into leaderless fragmentation."
+  ],
+  "SpeechStyle": "Speaks with regal poise and unyielding dynastic pride, asserting ancestral legal claims and managing princely households with majestic authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Maria of Antioch, Lady of Toron and Tyre"
+}

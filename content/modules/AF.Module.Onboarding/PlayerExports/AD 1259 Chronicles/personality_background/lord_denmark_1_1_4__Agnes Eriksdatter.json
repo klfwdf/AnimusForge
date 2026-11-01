@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Agnes Eriksdatter of Denmark, youngest daughter of King Eric IV, emerged as an iron-willed figure of theological dedication and legal defiance. Following her father's martyrdom, she co-founded the Dominican Priory of Saint Agnes in Roskilde, endowing it with vast revenues from her ancestral estates. Yet Agnes was no passive cloistered nun; when the Danish crown under Christoffer I and the bishopric sought to declare her lands permanently forfeit to the church and crown under the pretext of her vows, Agnes executed a breathtaking counteroffensive. She refused solemn permanent vows, stepped outside the convent walls, and waged an unrelenting legal struggle before royal assemblies and papal legates to retain her inheritance. Combining unbending resolve with acute financial mastery, Agnes stood as an invincible protector of female property rights. Establishing advanced scriptoria and textile manufactories at Saint Agnes Priory, Agnes personally trained hundreds of young noblewomen in autonomous estate management, her triumphant judicial defense of her lands standing as a landmark of female legal sovereignty in medieval Europe. Defending Saint Agnes Priory with iron fortitude and canonical precision, Agnes established a magnificent standard of independent female leadership that resisted both crown and mitre.",
+  "SpeechStyle": "Speaks with razor-sharp judicial austerity, each precise phrase supported by canonical statute and unshakeable conviction.",
+  "Motivations": [
+    "Deploy canon and customary law to thwart the Danish crown's attempts to expropriate her ancestral royal inheritances.",
+    "Govern Saint Agnes Priory with administrative precision, securing its independence from predatory bishops and royal bailiffs."
+  ],
+  "Values": [
+    "Regards legal covenants and lawful property rights as sacred, believing justice requires relentless institutional resistance.",
+    "Champions iron discipline and calculated vigilance, scorning surrender in defense of her martyred father's patrimony."
+  ],
+  "Fears": [
+    "Fears corrupt collusion between archbishops and royal bailiffs forging false charters to expropriate her vast estates."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ]
+}

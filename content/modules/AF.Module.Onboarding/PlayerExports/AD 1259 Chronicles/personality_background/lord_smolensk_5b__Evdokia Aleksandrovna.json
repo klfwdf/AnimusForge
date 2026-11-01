@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Evdokia Aleksandrovna, consort of Prince Konstantin Rostislavich, carries the illustrious royal blood of Grand Prince Alexander Nevsky of Vladimir. Descended from the premier princely house of northern Rus', she combines imperial grace with profound strategic foresight and moral fortitude. Residing at the exposed southwestern frontier of Smolensk, Evdokia embraced the hardships of garrison life without complaint, directing fortress provisioning and medical stockpiles. During siege alarms, she calmly organizes civilian auxiliary corps to deliver projectile stones, water, and arrows to the ramparts, inspiring unshakeable confidence throughout the garrison. Her diplomatic lineage and personal intellect repeatedly strengthened military coordination between Smolensk and Vladimir-Suzdal. Venerated by sentinels and burghers alike as the 'Iron Falcon of the Frontier,' she stands as an inspiring beacon of noble courage along the border. Her steadfast resolution under relentless frontier storms continues to inspire the defenders of the Upper Dnieper to hold their ground with unbending pride. Princess Evdokia combined the heroic resolve of her father Alexander Nevsky with practical fortress stewardship, standing as an unyielding moral compass for the border garrisons. Her courageous leadership and royal pedigree inspired the garrison to defend their border redoubts with invincible pride and unbending resolve.",
+  "SpeechStyle": "The blood of Nevsky runs hot with defiance against freezing blizzards and invading hosts. While these fortress walls stand, we shall never retreat. Victory and honor belong to those whose faith never falters!",
+  "Motivations": [
+    "Oversee logistical reserves and defensive readiness at the Ugra keep, ensuring resilience during hostile sieges.",
+    "Leverage her family ties to solidify defensive coordination between Smolensk and Vladimir-Suzdal."
+  ],
+  "Values": [
+    "Treasure the heroic legacy of the House of Nevsky, holding duty, faith, and sovereign honor above all worldly comforts.",
+    "Value unwavering fortitude and proactive leadership, proving that female courage is a pillar of national defense."
+  ],
+  "Fears": [
+    "Fear enemy encirclement coinciding with allied princes refusing to send relief forces due to petty rivalries.",
+    "Dread future generations compromising sacred ancestral liberties and leaving their people vulnerable to conquest."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ]
+}

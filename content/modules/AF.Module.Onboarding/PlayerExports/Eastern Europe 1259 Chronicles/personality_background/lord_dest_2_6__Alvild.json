@@ -1,0 +1,44 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_dest_2_6",
+  "DisplayName": "Alvild",
+  "HeroName": "Alvild",
+  "Description": "Alvild is a prominent 13th-century commander and feudal magnate within the Danish-dominated feudal baronies of the Duchy of Estonia, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
+  "Background": "Alvild is a prominent 13th-century commander and feudal magnate within the Danish-dominated feudal baronies of the Duchy of Estonia, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
+  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 1
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "generous",
+      "Strength": 1
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
+    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
+    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+  ],
+  "Values": [
+    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
+    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
+    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+  ],
+  "Fears": [
+    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
+    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+  ]
+}

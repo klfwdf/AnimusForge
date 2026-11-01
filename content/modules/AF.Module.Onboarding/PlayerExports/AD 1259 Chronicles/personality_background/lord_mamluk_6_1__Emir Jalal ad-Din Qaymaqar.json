@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_6_1",
+  "HeroName": "Emir Jalal ad-Din Qaymaqar",
+  "Description": "Emir Jalal ad-Din Qaymaqar is forty years old and head of the Qaymaqar branch. The game names his three children as Bengü, Alara, and Hafza, and marks Hafza as a woman. The data gives no wife and no appearance, so those details follow period convention. The game marks him as a quartermaster. He is quiet, speaks slowly, and prefers ledgers to grand speeches.\nThe name Qaymaqar traces to the Qaymariyya, a Kurdish tribe that was a major military force under the late Ayyubids and early Mamluks. In 1239 its leader Nasir al-Din became viceroy of Damascus. In 1244 its men marched south with al-Salih Ayyub and defeated a Syrian and Crusader army at La Forbie. In 1250 they helped the Mamluks seize power in Cairo. Jalal ad-Din learned early that the tribe's standing depended on backing the right side in each upheaval.\nAgainst rivals at court his method rests on supplies and camp administration. He quietly rewards or restrains opponents by controlling tents and provisions, and seldom declares himself in public. Tribal history records that in 1258 a member of the tribe joined Baybars, a tribal event serving here only as background.\nHis ideal is to keep the Qaymaqar branch in its fiefs and rank within the Mamluk order, and to give all three children a future. His darkest fear is that the tribe's old accounts will be reopened. Its women were sent to Egypt after Aleppo fell in 1260, and if that is pursued, the family may be branded traitors and purged.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the Qaymaqar branch in its fiefs and rank within the Mamluk order, so no wrong choice in an upheaval costs the family its lands.",
+    "Secure a future for all three children, so they build their own standing in the army or at court rather than rely on the tribe's old name.",
+    "Remain even-handed in supplies between rival factions, so the family keeps grain and manpower to command in the new regime."
+  ],
+  "Values": [
+    "Choosing the right side matters more than courage, so in every upheaval he first sees who controls the grain before taking a stand, a lesson repeated across decades.",
+    "Clear accounts are the root of all trust, and the allocation of camp and provisions must rest on visible reasons to win obedience from the men.",
+    "Members of the tribe should support one another, even when they stand in rival camps, and keep a thread of kinship and contact that is never cut."
+  ],
+  "Fears": [
+    "Fears the tribe's old accounts will be reopened, with the flight of women to Egypt after Aleppo fell in 1260 used to brand the family traitors.",
+    "Fears a wrong choice of side will cost the Qaymaqar branch its fiefs, leaving his children with no footing at all in the new regime."
+  ],
+  "SpeechStyle": "Speaks slowly with restraint, backing each point with ledgers and precise supply figures. He talks of politics through grain and manpower, rarely of ideals. With rivals he stays flat, pressing them with one exact question.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

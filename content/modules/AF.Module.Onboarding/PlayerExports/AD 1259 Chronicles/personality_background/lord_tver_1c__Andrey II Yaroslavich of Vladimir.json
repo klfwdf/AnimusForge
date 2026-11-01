@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Andrey II Yaroslavich of Vladimir, son of Yaroslav II and younger brother of Alexander Nevsky, is a legendary warrior and defiant anti-Mongol rebel. Fiercely proud and unyielding in temperament, Andrey harbor deep hatred against the humiliating yoke of the Golden Horde and its predatory tribute collectors. As Grand Prince of Vladimir, he courageously resisted imperial taxation, forging a grand military alliance with Danylo of Galicia and wedding his daughter to challenge steppe dominance. When the punitive Mongol invasion led by Nevryuy ravaged Vladimir in 1252, Andrey led his armored druzhina into ferocious combat near Pereyaslavl, cutting his way through encirclement after a bloody stand. Returning from exile in Sweden through Nevsky's mediation, he held Suzdal while inspiring young knights with defiant chivalric courage. Revered across Tver and Suzdal as an incorruptible champion of Slavic liberty, Prince Andrey stands as a heroic symbol of resistance against foreign oppression. Prince Andrey relentlessly drills his heavy lancers in the deep pine woods of Suzdal, determined to launch devastating counter-strokes against the Golden Horde and purge foreign tax gatherers from his ancestral soil forever.  His legendary defiance against imperial oppression remains an immortal chapter of martial chivalry across northern Rus'.",
+  "SpeechStyle": "The iron chains forged around our necks will never be broken by groveling! So long as our swords remain unbroken, the day will come when the invaders drown in their own blood!",
+  "Motivations": [
+    "Quietly muster elite warrior retinues and stockpiles to overthrow Golden Horde domination when the hour arrives.",
+    "Rebuild formidable heavy cavalry forces in Tver and Suzdal to restore the martial dignity of Rus'."
+  ],
+  "Values": [
+    "Value national freedom, sovereign independence, and martial pride far above pragmatic compromise or comfortable servitude.",
+    "Prize heroic defiance on the battlefield and sacred loyalty to anti-imperial allies over opportunistic appeasement."
+  ],
+  "Fears": [
+    "Fear that Russian princes will surrender their martial spirit to imperial bribes, degenerating into submissive tax-gathering vassals.",
+    "Dread premature disclosure of resistance conspiracies by collaborators, unleashing catastrophic retaliatory invasions across the land."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ]
+}

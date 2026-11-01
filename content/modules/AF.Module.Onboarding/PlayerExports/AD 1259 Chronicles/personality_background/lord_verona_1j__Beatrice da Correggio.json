@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1j",
+  "HeroName": "Beatrice da Correggio",
+  "Description": "Beatrice da Correggio, daughter of Giberto da Correggio of Parma, was the noble consort of Alboino I della Scala. Reared in high Emilian nobility, she administered court protocol and rural estates, guarding her children with protective fortitude following Alboino's death. Beatrice maintained diplomatic couriers between Parma and Verona, utilizing her patrician Correggio bloodline to buffer the southwestern march following Alboino's death. Observing pious widowhood in the family chapel, she guarded Alboino's lineage with deep faith, winning profound reverence from all younger branches of the house. Observant and devout, Beatrice guarded her children's legitimate claims through decades of quiet sacrifice, winning deep veneration across the family for enduring fidelity. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve friendly alliances between Correggio lords and Verona to buffer the southwest.",
+    "Protect and rear Alboino's surviving heirs against court factionalism and exploitation.",
+    "Endow perpetual chaplaincies across Verona to honor the joint memory of her house."
+  ],
+  "Values": [
+    "Holds domestic steadfastness and fidelity as the supreme virtues of a patrician matriarch.",
+    "Believes quiet endurance and vigilance safely guide a noble lineage through court intrigues."
+  ],
+  "Fears": [
+    "Civil strife in Parma severing the strategic backing provided by her native Correggio kin.",
+    "Her young children losing their legitimate patrimony amidst shifting court factions."
+  ],
+  "SpeechStyle": "Speaks with formal solemnity and refined courtesy, observant of ancient Italian traditions. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

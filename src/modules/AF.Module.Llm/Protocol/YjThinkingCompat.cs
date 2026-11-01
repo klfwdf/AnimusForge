@@ -41,9 +41,11 @@ internal static class YjThinkingCompat
 		return text.StartsWith("gemini-", StringComparison.OrdinalIgnoreCase);
 	}
 
-	private static bool IsGemini37FlashHigh(string modelName)
+	private static bool RejectsDisabledEffort(string modelName)
 	{
-		return (modelName ?? string.Empty).Trim().StartsWith(Gemini37FlashHighModelPrefix, StringComparison.OrdinalIgnoreCase);
+		string model = (modelName ?? string.Empty).Trim();
+		return model.StartsWith(Gemini37FlashHighModelPrefix, StringComparison.OrdinalIgnoreCase)
+			|| model.StartsWith("gemini-3.8-flash-high", StringComparison.OrdinalIgnoreCase);
 	}
 
 	public static bool TryApply(JObject payload, string apiUrl, string modelName, bool thinkingEnabled, string effort, out string thinkingMode)
@@ -55,12 +57,11 @@ internal static class YjThinkingCompat
 		}
 
 		string selectedEffort = NormalizeEffort(effort);
-		if (IsGemini37FlashHigh(modelName)
+		if (RejectsDisabledEffort(modelName)
 			&& (!thinkingEnabled
-				|| string.Equals(selectedEffort, DuelSettings.ReasoningEffortNone, StringComparison.OrdinalIgnoreCase)
-				|| string.Equals(selectedEffort, DuelSettings.ReasoningEffortMinimal, StringComparison.OrdinalIgnoreCase)))
+				|| string.Equals(selectedEffort, DuelSettings.ReasoningEffortNone, StringComparison.OrdinalIgnoreCase)))
 		{
-			// 3.7-flash-high 会拒绝 none/minimal；关闭思考时也不发送伪造的 disabled 字段，直接走纯请求。
+			// Known 3.7/3.8 flash-high endpoints reject none. Omit controls and use provider defaults; this does not guarantee reasoning is disabled.
 			payload.Remove("thinking");
 			payload.Remove("output_config");
 			payload.Remove("reasoning_effort");
@@ -83,10 +84,10 @@ internal static class YjThinkingCompat
 	private static string NormalizeEffort(string effort)
 	{
 		string text = (effort ?? string.Empty).Trim().ToLowerInvariant();
+		if (text == "minimal") return DuelSettings.ReasoningEffortLow;
 		switch (text)
 		{
 		case DuelSettings.ReasoningEffortNone:
-		case DuelSettings.ReasoningEffortMinimal:
 		case DuelSettings.ReasoningEffortLow:
 		case DuelSettings.ReasoningEffortMedium:
 		case DuelSettings.ReasoningEffortHigh:

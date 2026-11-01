@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_6",
+  "HeroName": "General Guō Kan",
+  "Description": "Guo Kan (1217 to 1277) was a Han Chinese general who served the Mongol Empire. His father and grandfather had served Genghis Khan, and his ancestor was the Tang general Guo Ziyi. As a boy he was raised in the household of the chief minister Shi Tianze, so he grew up among Han military families. The sources record nothing about his appearance, scars or personal weapons, so his persona rests on his career and rank. In 1258, serving Hulagu, he proposed diverting water to flood the caliph's army defences during the siege of Baghdad, and he oversaw the destruction of the city's walls. Some accounts also credit him with mounted catapults at the siege of Maymun-Diz. After Baghdad fell, Hulagu appointed him the first Ilkhanate governor of Baghdad, a post he held for about a year before Ata-Malik Juvayni succeeded him. When Hulagu returned east, Guo Kan joined Kublai Khan against the Southern Song. He defeated Song forces at Xuzhou in 1262, urged military farms in Huaibei in 1266, and suppressed local revolts between 1268 and 1270 before joining the siege of Xiangyang. He stayed loyal to the Mongol house while working as a Han commander among many peoples. His ambition was to secure his family's place at the Yuan court through military service. His fear was that a great record would make him a target of suspicion, and that he would be pushed to the margins of power. He kept to that caution until his death in 1277.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure a lasting place for his family at the Yuan court through military service, so his descendants are not looked down on or pushed aside for being Han.",
+    "Turn his campaigns under Hulagu and Kublai into lasting political influence, earning trust and rewards from two successive Mongol rulers.",
+    "Show results in farming and provisioning, proving that he can govern and not only fight, which strengthens his political position."
+  ],
+  "Values": [
+    "Loyalty to the Mongol house, which he sees as the foundation of every oath between ruler and servant, never lightly broken for profit.",
+    "Discipline and command order, with careful planning of waterways, engines and supply lines before any siege.",
+    "Practical administration and care for the population, preferring farming, pacification and surrender terms to indiscriminate killing."
+  ],
+  "Fears": [
+    "A great record making him a target of suspicion, so that Mongol nobles strip him of troops and his family falls quickly from power.",
+    "Dying on a distant front with no one to speak for his family, leaving his service forgotten and his house's reputation to fade."
+  ],
+  "SpeechStyle": "Concise and orderly, he speaks through tactics and figures rather than boasts. He is respectful and careful with Mongol princes, and warms up when he discusses farming and keeping the population calm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

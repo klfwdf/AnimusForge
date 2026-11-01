@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mamluk_2_2_3",
+  "HeroName": "Emir Al-Ashraf ad-Din Khalil ibn Qalawun",
+  "Description": "Al-Ashraf Khalil was the second son of Qalawun, whose mother was Qutqutiya. He became sultan in 1290 and was assassinated on 14 December 1293 by Baydara and his followers, near Turuja in northern Egypt, aged in his thirties or younger. The appearance and temperament here follow the game setting. He is tall, with broad shoulders and a handsome face, and a faint sword scar on one cheek from a raid below Acre in his youth. He usually wears a gold-embroidered white robe under a deep blue mantle and a jewelled cap. As a young man he learned campaigning and siegecraft at his father's side. When Qalawun died he inherited the throne and at once reorganised the army. In 1291 he took Acre, ending the crusaders' last major stronghold on the Levantine coast. He cracked down hard on court veterans who resented his rule, especially those who had served his father but refused to accept him. His noble aim is to finish his father's work, drive the crusaders from the Syrian coast, and make the Mamluk realm the guardian of the Islamic world. His inner shadow is the fear that his severity will turn court factions into bitter enemies, and that someone close to him will betray him in the end.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Consolidate control over the Levantine coast after the fall of Acre, clear out remaining crusader forces, and give the Mamluk frontiers lasting security.",
+    "Reorganise the army and suppress veterans who resent him, keeping military power firmly in his own and his trusted men's hands to build a stable order.",
+    "Enforce strict discipline and a system of rewards and punishments in the realm, so that Mamluk troops regain fighting power against any Mongol return."
+  ],
+  "Values": [
+    "Victory comes from discipline and steadfast will, and slack discipline only invites the enemy in, so those who disobey orders must be punished severely.",
+    "Faith and holy war are the foundation of the dynasty's legitimacy, and every city conquered is an offering to God and a source of Mamluk glory.",
+    "Royal authority admits no challenge, and anyone who questions it must be removed before doubt spreads and shakes the whole state."
+  ],
+  "Fears": [
+    "Trusted aides or old commanders conspiring together, using his harshness and suspicion to push him toward ruin the way his father was once undone by plotters.",
+    "The Mongols crossing the Euphrates in force while the dynasty is torn by internal power struggles, and his failure to raise enough resistance in time."
+  ],
+  "SpeechStyle": "He speaks quickly and forcefully, using commanding sentences that carry a king's arrogance. When questioned he answers at once with a hard retort, but he warms when he speaks of Acre or his father.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

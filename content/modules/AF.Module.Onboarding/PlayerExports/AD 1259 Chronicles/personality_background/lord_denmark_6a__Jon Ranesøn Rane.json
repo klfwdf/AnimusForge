@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_6a",
+  "HeroName": "Jon Ranesøn Rane",
+  "Description": "Sir Jon Ranesøn Rane of Gjorslev, senior knight and patriarch of the prominent Rane lineage, held sway across southeastern Zealand and neighboring Falster. Serving as royal chamberlain and High Bailiff under King Christoffer I and the young King Eric V, Sir Jon commanded extensive landed estates, coastal fisheries, and fortified manors. Amidst the turbulent baronial rebellions stirred by Archbishop Jakob Erlandsen, Jon deployed his armed retainers to garrison coastal inlets, preventing pirate incursions and securing maritime couriers between Copenhagen and the southern isles. A stern adherent of feudal law, he commanded immense authority at regional assemblies, enforcing peace with unyielding discipline, acclaimed across Zealand as an immovable pillar of royalist order. Sir Jon transformed the coastal reaches surrounding Gjorslev into an impregnable defensive line, constructing earthworks and stone watchtowers to repel seaborne marauders. When rebel cavalry from Roskilde marched south to incite uprisings, Jon mobilized his armored retainers, sealing river crossings and driving the insurrectionists from the province. Enforcing draconian discipline, he punished looters with the gallows, earning profound respect from local merchants and yeomen. Sir Jon's iron resolve and incorruptible loyalty to the Estridsen crown established an enduring legacy of martial security across southeastern Zealand.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Garrison the coastline of southeastern Zealand to protect maritime supply lanes and royal couriers.",
+    "Elevate the courtly standing of the Rane dynasty, securing honorable appointments and land grants for his sons."
+  ],
+  "Values": [
+    "Regards military discipline and strict obedience to feudal obligations as the bedrock of knightly honor.",
+    "Upholds royal statutory law and sworn fealty, scorning opportunistic barons who prioritize selfish ambition over peace."
+  ],
+  "Fears": [
+    "Dreads hostile coalitions blockading the southern sounds and cutting off his estates from the royal capital."
+  ],
+  "SpeechStyle": "Speaks with gravelly, stentorian authority, his clipped phrases demanding immediate compliance and martial rigor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

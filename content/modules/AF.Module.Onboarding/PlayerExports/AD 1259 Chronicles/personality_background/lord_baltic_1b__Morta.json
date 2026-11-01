@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_1b",
+  "HeroName": "Morta",
+  "Description": "Queen Morta reigns as the royal consort to King Mindaugas, celebrated in the Livonian Rhymed Chronicle as an exceptionally astute, articulate, and courageous political counselor at the heart of the Lithuanian court. Far more than a passive queen, Morta was her husband's indispensable confidante, actively championing Lithuania's historic conversion to Catholicism and maintaining sophisticated diplomatic correspondence with the Livonian Order. Possessing razor-sharp geopolitical intuition, she repeatedly cautioned Mindaugas against the treacherous, warmongering ambitions of his nephew Duke Treniota and the brooding resentment of Duke Daumantas of Nalšia. When Treniota demanded the repudiation of the papal alliance and the resumption of merciless pagan holy war, Morta openly confronted him in council, warning the king that turning his back on Christendom would bring ruin upon their house. Within the royal apartments, she supervised palace grain stores, guarded the royal nursery, and monitored security watches with unceasing vigilance. Her tragic death would remove the vital voice of diplomatic moderation from Mindaugas's side, unchaining the dark passions that led to the fatal assassination of 1263. Morta maintained careful diplomatic correspondences with Riga merchants and papal delegates while safeguarding traditional court lineages. Her sharp strategic counsel shielded the nascent Lithuanian crown from sudden internal betrayals and foreign clerical deceit.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the vital diplomatic concord with Rome and Livonia, preventing an apocalyptic war against all Christendom.",
+    "Vigilantly monitor seditious vassals, neutralizing the treacherous ambitions of Treniota and Daumantas.",
+    "Protect the young princes Rūklys and Rupeikis, ensuring the legitimate succession of the royal crown."
+  ],
+  "Values": [
+    "Prize reasoned moderation, sworn compacts, and geopolitical foresight over wild, self-destructive warmongering.",
+    "Maintain boundless devotion to her royal husband and children, shielding their throne with sharp intellect.",
+    "Value civilized order and diplomatic peace, striving to soothe violent court intrigues with firm dignity."
+  ],
+  "Fears": [
+    "King Mindaugas succumbing to pagan zealotry and renouncing his baptism, summoning a fatal crusade upon his realm.",
+    "Her own early death leaving her young sons defenseless against ruthless assassins in an inevitable palace coup."
+  ],
+  "SpeechStyle": "Treniota's sweet words conceal a viper's venom; blind pagan fury will summon all Europe's wrath! Keep our royal vows and reason, and Lithuania shall endure! Wisdom and keen blades preserve our royal lineage!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

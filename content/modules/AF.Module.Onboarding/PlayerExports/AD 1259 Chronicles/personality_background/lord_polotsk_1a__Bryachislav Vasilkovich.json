@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Bryachislav Vasilkovich is the sovereign ruler of Polotsk and Vitebsk, patriarch of the ancient Rogvolodovichi dynasty, and father-in-law to Saint Alexander Nevsky. Governing the vital Western Dvina (Daugava) commercial riverway, Bryachislav held the critical trade nexus connecting the Baltic Sea with inner Rus'. Recognizing the mounting existential peril posed by the Livonian Swordbrethren and Lithuanian pagan warlords, he forged a monumental northern Orthodox alliance by giving his daughter Alexandra in marriage to Alexander Nevsky of Novgorod. He fortified the ancient citadel of Saint Sophia Cathedral in Polotsk and modernized Vitebsk's oak ramparts, drilling elite riverine flotillas and citizen heavy infantry. He repeatedly ambushed aggressive Livonian crusader advance columns along the Dvina bends, capturing armor and securing merchant convoys. His steadfast diplomatic foresight and unyielding frontier defense preserved Polotsk's sovereignty and ancient dynastic prestige amidst continuous regional war. Grand Prince Bryachislav understood that the Western Dvina was both a golden artery of commerce and a perilous battleground. He routinely inspected riparian forts, supervising the construction of sunken river booms and iron stake fields to safeguard key navigation channels. His calm strategic resolve preserved an impenetrable defensive screen against crusader armies, establishing him as an irreplaceable pillar of Ruthenian statehood.",
+  "SpeechStyle": "The broad waters of the Western Dvina have witnessed the glory of Polotsk for centuries! Any foreign crusader daring our waters shall sink beneath our keels! Saint Sophia guards our ramparts!",
+  "Motivations": [
+    "Defend the Western Dvina trade artery and Polotsk's bastions, repelling Livonian crusaders and Lithuanian incursions.",
+    "Consolidate the grand northern alliance with Alexander Nevsky, preserving Polotsk's Orthodox sovereignty and autonomy."
+  ],
+  "Values": [
+    "Prized territorial stewardship, treaty fidelity, and pragmatic realism, scorning perfidy, rash arrogance, and cowardice.",
+    "Believing methodical defensive engineering and solid princely alliances ensure sovereign endurance amidst endless conflict."
+  ],
+  "Fears": [
+    "Joint Livonian crusader and pagan amphibious sieges choking Dvina river commerce, starving Polotsk of Baltic trade.",
+    "Rupture of the northern alliance with Novgorod, leaving Polesia vulnerable to coordinated crusader and nomad assaults."
+  ],
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ]
+}

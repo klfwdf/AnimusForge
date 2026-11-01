@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_1_2",
+  "HeroName": "Muhammad ibn Ashqilula",
+  "Description": "Muhammad ibn Ashqilula is the eighteen-year-old son and primary heir to Emir Abu Muhammad, currently commanding elite mounted retainers guarding the approaches to Málaga. Tall, muscular, and steeped in the martial traditions of Arjona, young Muhammad spent his youth drilling in mounted archery, composite lance charges, and heavy scimitar combat. Fiery, proud, and fiercely devoted to his clan's autonomy, he yearns to prove his battlefield mettle against Christian borderers or rival factions. Having already led sorties to crush mountain bandits and intercept hostile scouts, he possesses a ruthless battlefield streak and unwavering martial confidence. Highly conscious of the friction between his dynasty and the Nasrid Sultan, Muhammad advocates for unyielding strength, standing as the sharpest and most aggressive young blade of the Banu Ashqilula. Driven by an insatiable hunger for glory and unmatched ferocity in the saddle, young Muhammad rides toward his martial destiny with unshakeable courage, determined to elevate his clan above all rivals. Young Muhammad's martial audacity and relentless discipline ensure that the heavy cavalry of Málaga remains the most feared force in southern Iberia. Young Muhammad's martial audacity and relentless discipline ensure that the heavy cavalry of Málaga remains the most feared force in southern Iberia. His tactical sharpness, physical vigor, and chivalric ambition establish young Muhammad as a natural warlord destined for greatness.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To achieve stunning battlefield triumphs, proving his clan's cavalry is the supreme martial power of Andalusia.",
+    "To inherit the emirate of Málaga and expand his family's marcher hegemony."
+  ],
+  "Values": [
+    "Raw martial dominance and sharp steel dictate destiny; mercy to foes is foolish weakness.",
+    "The honor of the clan is non-negotiable; insult invites immediate and ruthless retribution."
+  ],
+  "Fears": [
+    "His family submitting meekly to central royal tyranny and forfeiting its martial freedom.",
+    "Wasting his prime in dull garrison watches without carving an immortal military legend."
+  ],
+  "SpeechStyle": "Speaks with fiery arrogance, ringing conviction, and aggressive martial certainty, projecting dangerous youthful intensity. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

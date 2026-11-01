@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Yuri Vladimirovich is the valiant eldest son of Prince Vladimir of Dubrovitsa, leading frontline cavalry vanguards along the strategic Horyn River valley. Trained in arms from early youth, Yuri mastered the devastating lance charges and heavy saber fencing of Ruthenian armored knights, excelling in rapid flanking counter-offensives. He commanded Dubrovitsa's elite mounted retinue, patrolling the perilous borderlands where deep Polesian woodlands open onto southern prairie meadows. Fierce, outspoken, and fearless, Yuri instituted battlefield drills requiring cavalrymen to instantly reform into interlocking heavy infantry shield walls if their warhorses were felled. During savage border skirmishes, he routinely spearheaded assaults into the dense core of enemy formations, fighting on despite grievous wounds and inspiring fanatical devotion. Hailed by veteran levies as the 'Fury of the Horyn', Yuri serves as the striking iron fist shielding the fortress of Dubrovitsa. Patrolling the river crossings and dense pine forests of the Horyn, Prince Yuri led Dubrovitsa's elite armored cavalry with whirlwind ferocity. Master of the mounted lance charge and close-quarters saber melee, he spearheaded rapid interceptions against hostile scouts, repelling border incursions with unyielding martial fury. His courageous presence established him as the stalwart military champion of the southern gate.",
+  "SpeechStyle": "Grip your lances tight and charge! This is the sacred soil of our Rurikid ancestors, and no pagan raiders shall tread upon it! Forward with me, shatter their battlelines and sweep them away!",
+  "Motivations": [
+    "Lead heavy cavalry retinues across the Horyn River approaches, executing thunderous frontal assaults to destroy invaders.",
+    "Carve glorious military renown for the Monomakh dynasty in combat, winning recognition as Polesia's premier frontline champion."
+  ],
+  "Values": [
+    "Prized warrior ferocity, chivalric honor, and unyielding defense of homeland, scorning cowardice and covert deceit.",
+    "Believing true martial glory is forged through audacious courage, cold steel, and decisive leadership on the open battlefield."
+  ],
+  "Fears": [
+    "Armored cavalry falling into concealed quagmires or deadly arrow ambushes during pursuit, losing his finest mounted retainers.",
+    "Being captured alive through tactical rashness, bringing dynastic dishonor and strategic vulnerability upon Dubrovitsa."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ]
+}

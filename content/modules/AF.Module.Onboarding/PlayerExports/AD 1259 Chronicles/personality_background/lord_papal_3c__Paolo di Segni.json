@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_3c",
+  "HeroName": "Paolo di Segni",
+  "Description": "Lord Paolo di Segni is the energetic thirty-one-year-old eldest son and heir of Segni, celebrated for his martial vigor and equestrian excellence. Reared in the militant atmosphere of the papal barony, Paolo combines intimate knowledge of Latium's rugged terrain with aggressive heavy cavalry shock tactics. Frequently serving as vanguard captain for the allied Guelph forces, he commands his men-at-arms with strict discipline and conspicuous personal bravery, eager to expand his clan's military glory across Italy. Young Paolo trained rigorously in mounted shock combat and mountain warfare from early youth, campaigning alongside his father to protect territorial borders and crushing local baronial rebellions with conspicuous personal courage at the vanguard of the cavalry. Burning with knightly zeal and aggressive tactical instinct, Paolo leads his cavalry into the thick of battle, determined to preserve his family's martial honor and expand their ancestral holdings across central Italy. His terrifying cavalry charges, strict battlefield discipline, and unswerving martial fidelity ensure that Paolo di Segni remains dreaded by every hostile captain across the southern marches. Driven by fearless audacity and chivalric pride, he is destined to carve his legend upon the battlefield and lead his knights to glorious victory. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defeat Ghibelline cavalry forces on the battlefield to establish his renown as a premier papal general.",
+    "Inherit and expand the county of Segni, elevating the martial stature of the House of Conti."
+  ],
+  "Values": [
+    "Chivalric valor, tactical audacity, and relentless courage at the head of his armored lances.",
+    "Sacred fealty to the Roman pontiff and filial devotion to the dynastic honors of his house."
+  ],
+  "Fears": [
+    "Leading his cavalry squadrons into fatal mountain ambushes and squandering veteran troops.",
+    "Diplomatic truces freezing military campaigns and depriving him of opportunities for renown."
+  ],
+  "SpeechStyle": "Speaks with bold martial confidence, sharp battlefield directness, and chivalric enthusiasm. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

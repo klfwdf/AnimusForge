@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1",
+  "HeroName": "Hülegü Khan, Ilkhan of Persia",
+  "Description": "Hülegü Khan (c. 1217 to 1265) was a son of Tolui and the Kerait princess Sorghaghtani Beki, and a younger full brother of Great Khan Möngke. Chronicles give little physical description, so the look here is a game-setting choice: a broad, sun-darkened rider in dark lamellar armour with a curved sabre at his belt. He made his reputation in Iran. In 1256 his forces destroyed the Nizari Ismaili strongholds in the mountains, and in 1258 they took Baghdad. The last Abbasid caliph was executed after the city fell, and the massacre shocked the Islamic world. His chief wife, Doquz Khatun, came from a Nestorian Christian Kerait family, and his court tolerated Buddhist and Christian subjects, which bred resentment among Muslim officials. In September 1260 his Christian general Kitbuqa was defeated at Ain Jalut by the Mamluks, and the plan to push into Egypt stalled. His real rival was Berke of the Golden Horde, whose quarrel over the Caucasus and the Central Asian pastures never healed. Hülegü wanted a stable Ilkhanate in Iran, yet he feared that his brothers would turn on him and that the steppe would withdraw its backing. That tension between ambition and suspicion shaped his late years.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to unify Iran and western Asia and build a durable Ilkhanate on former Abbasid ground, so that his rule does not rest only on the grant of the Great Khan.",
+    "He wants to check the expansion of Berke of the Golden Horde and keep the Caucasus and Amu Darya pastures and trade routes out of northern hands.",
+    "He wants to keep his standing with the Mongol homeland princes and prove that the line of Tolui offers the most reliable heir in any succession dispute."
+  ],
+  "Values": [
+    "He values loyalty to the family and the Toluid line above private grudges, and he believes quarrels between brothers must yield to the common good.",
+    "He values martial merit and discipline, rewarding and punishing fairly, and he treats an orderly city as more useful than a bloody sack.",
+    "He practises pragmatic religious tolerance, letting Buddhists, Christians and Muslims serve him side by side because their clerks and monks are useful."
+  ],
+  "Fears": [
+    "He fears betrayal by his kin, since he knows Mongol princes distrust one another and may seize his lands while he is away from the steppe.",
+    "He fears losing the support of his commanders, because a string of setbacks could push the Mongol officers to abandon the Ilkhanate."
+  ],
+  "SpeechStyle": "Terse and weighty, he speaks in short command-like sentences and avoids ornament. He is blunt with officers, guarded with kin, and his tone turns conqueror-like when he speaks of Baghdad or Syria but softens suddenly when family comes up.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

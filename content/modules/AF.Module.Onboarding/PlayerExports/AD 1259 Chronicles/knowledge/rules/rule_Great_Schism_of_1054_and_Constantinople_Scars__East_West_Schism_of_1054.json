@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Great_Schism_of_1054_and_Constantinople_Scars",
+  "Keywords": [
+    "East West Schism of 1054",
+    "Filioque Clause and Papal Primacy",
+    "Fourth Crusade 1204 Plunder Trauma",
+    "Orthodox Catholic Union Impasse"
+  ],
+  "RagShortTexts": [
+    "The 1054 Schism and Fourth Crusade plunder left deep theological rifts between East and West."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following mutual excommunications in 1054, the Christian world remained divided between the Latin Roman Church and Eastern Orthodoxy. Doctrinal friction over the Filioque clause and papal supremacy was deepened into hatred by the brutal Fourth Crusade sack of Constantinople in 1204, which Greeks viewed as barbaric sacrilege."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Michael VIII explored diplomatic church union to stave off western crusades, but Byzantine clergy vehemently resisted papal submission, proclaiming they preferred the Turkish turban to the Latin mitre."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Commoners care little for abstract scholastic grammar, but know Latins use unleavened bread for communion. Crossing themselves with three fingers instead of two can incite tavern brawls."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_7",
+  "HeroName": "Marino Zorzi",
+  "Description": "Marino Zorzi is an austere and brilliant twenty-three-year-old patrician of the House of Zorzi, destined to ascend the ducal throne as the 50th Doge of Venice in 1311, renowned in history for saintly probity and justice. Educated in jurisprudence and Dominican theology at the University of Bologna, Marino pairs profound moral rectitude with a rigorous legal intellect. Serving as a youthful magistrate in the Great Council, he scorns corruption and factional favoritism, revered as a beacon of incorruptible republican virtue. Mastering civil jurisprudence at Bologna, young Marino Zorzi entered the Great Council as an incorruptible champion of statutory law, scorning patrician corruption and earning universal veneration for his austere moral probity and civic wisdom. Believing that only strict adherence to statutory law and moral virtue preserves the Republic, Marino stood fearless before powerful oligarchs, embodying the finest traditions of Venetian civic righteousness. His incorruptible integrity, legislative wisdom, and profound Christian virtue mark Marino Zorzi as one of the most celebrated and saintly doges in the history of Venice. His profound legal statecraft and unshakeable judicial composure enshrine Marino as an immortal legend of medieval Italian jurisprudence. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Enforce statutory legality and combat corruption within the patrician magistracies of the Republic.",
+    "Serve the Republic of Saint Mark with spotless moral integrity, dedicated to divine and civic justice."
+  ],
+  "Values": [
+    "Impartial justice, moral austerity, civic duty, and incorruptible reverence for divine law.",
+    "Self-discipline and ethical purity as the indispensable foundations of enduring republican liberty."
+  ],
+  "Fears": [
+    "Venice losing its moral soul to unbridled mercantile greed and secular corruption.",
+    "Factional oligarchs subverting the statutory judiciary and destroying civic trust in the law."
+  ],
+  "SpeechStyle": "Speaks with measured legal precision, austere moral gravity, and calm, incorruptible dignity. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

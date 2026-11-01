@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Burgos_Gothic_Capital_of_Castile",
+  "Keywords": [
+    "Burgos Castilian Capital",
+    "Burgos Gothic Cathedral Spire",
+    "El Cid Heritage Burgos",
+    "Mesta Wool Transhumance Burgos"
+  ],
+  "RagShortTexts": [
+    "Burgos served as Castile's historic capital and wool hub, celebrated for its soaring Gothic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Burgos stood as the historic royal seat of Castile and legendary cradle of El Cid. Commanding the high plains of Old Castile, its gleaming white Gothic cathedral watched over central wool convoys organized by the Mesta sheep-farming guild."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "merchant"
+        ]
+      },
+      "Content": "Northern Basque ports funneled Burgos wool convoys to Flanders, enriching Castilian royalty with unyielding customs gold."
+    }
+  ],
+  "TextMappings": []
+}

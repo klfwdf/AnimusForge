@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_5_4",
+  "HeroName": "{almohad_lord_de_vicente_4}Alfonso",
+  "Description": "Alfonso is a son of Vicente Bellvis, according to the game lineage. He is about thirty-one, sturdy, with short golden hair and fair skin, and his shoulders are broad from years of practising the lance on horseback. His baptismal name is drawn directly from names common in the Castilian and Aragonese royal houses, which shows that from birth he was placed in the Christian noble lineage, quite unlike his father's early identity. He was trained as a knight and is known at the Aragonese court for his eager and combative nature, often sparring with younger nobles on the tiltyard. The game gives him no specific battles and no verifiable historical record, so his situation must be inferred from the setting: a young knight raised within a Christian court, who knows little of the family's old history and longs to win the house a new reputation through deeds of arms. His highest aim is to earn a respectable place for the family through his own sword and horse, proving that the Bellvis name is more than something his father borrowed. His darker side is a vague resentment toward his father's past. He senses that the family's standing rests on a secret that cannot be spoken, and he is therefore wary of anyone who raises old matters.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Earn a respectable place for the family through his own sword and horse, proving the Bellvis name is more than an identity his father borrowed.",
+    "Make friends among powerful nobles and knights at the Aragonese court, seeking a higher title and office that will steady the family's reputation.",
+    "Win steady victories in tournaments and campaigns, so that his peers do not look down on him and the king takes notice of his service."
+  ],
+  "Values": [
+    "Honour and valour. He believes a knight's worth shows on horseback and in the front line, not in an old family history or a hidden origin.",
+    "Loyalty to the crown. He sees fidelity to the king of Aragon as a knight's duty, and he trusts that loyalty will bring fair reward and honour.",
+    "Standing among peers. He values his dignity in front of friends and rivals, and any public slight provokes an immediate reply."
+  ],
+  "Fears": [
+    "Fears that the family's old secret will be exposed, so his fellow knights at court pull away and his hard-won network and reputation are lost.",
+    "Fears that a defeat in a tournament or battle will destroy the honour he has built, so that he never recovers his place among the nobility."
+  ],
+  "SpeechStyle": "Quick and direct, his tone is warm and eager, and he often cites tournaments and deeds of arms as examples. When old matters arise he falls silent and turns to horsemanship or court news, betraying a young knight's touchy pride.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

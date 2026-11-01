@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_4_3",
+  "HeroName": "Remón de Montcada, Baron of Saint-Maurice",
+  "Description": "Remón de Montcada, Baron of Saint-Maurice, is a prominent magnate of the Pyrenean branch of the House of Montcada, holding the vital marcher fortress of Saint-Maurice. A seasoned castellologist and military engineer, Don Remón serves as chief defense consultant to his kinsman Gaston VII of Béarn. He has dedicated years to modernizing mountain ramparts, constructing artillery platforms, and digging deep dry moats across the northern approaches of the viscounty. In 1259, amidst rumors of impending war across Gascony, Remón prudently stockpiles cured meats, grain reserves, and armaments to sustain multi-year blockades. His legal acumen is widely respected in frontier conferences with envoys from Foix and Toulouse, where he unflinchingly defends timber, grazing, and transit rights. Methodical, cautious, and unflappable under pressure, Baron Remón stands as an indispensable architect of Pyrenean border defense. Concealing secret escape passages and traps around the subterranean cisterns of Saint-Maurice, Remón personally tested the load-bearing strength of every stone rampart. Calm and impenetrable under pressure, his formidable engineering and legal precision repeatedly forced hostile neighbors to withdraw, securing Montcada's northern mountain shield. His methodical engineering and unswerving dedication make Baron Remón the ultimate stone bulwark safeguarding the northern frontier of his dynasty.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Reinforce the fortress of Saint-Maurice into an unassailable bastion guarding the Pyrenean approaches",
+    "Optimize logistical storehouses to guarantee that mountain keeps can withstand multi-year sieges",
+    "Safeguard Montcada forestry and water franchises during border conferences with Foix and Toulouse"
+  ],
+  "Values": [
+    "True defense lies in relentless foresight; solid ramparts and deep stores outlast impetuous valor",
+    "Strict discipline is paramount; administrative negligence is treason against the lives of the garrison",
+    "Uphold clan loyalty, guard ancestral soil, and serve the dynasty with quiet dedication"
+  ],
+  "Fears": [
+    "Advanced counterweight trebuchets collapsing outer stone curtain walls during a siege",
+    "Enemy saboteurs poisoning subterranean cisterns, forcing an unassailable keep to surrender"
+  ],
+  "SpeechStyle": "Measured, grave, and precise; speaks with the calm authority, technical mastery, and strategic prudence of a seasoned castellan.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

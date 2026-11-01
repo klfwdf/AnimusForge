@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Bordeaux_Capital_of_Aquitaine",
+  "Keywords": [
+    "Bordeaux Gascon Capital",
+    "Aquitaine Claret Wine Fleet",
+    "Garonne River Bordeaux Charters",
+    "English Crown Customs Lifeline"
+  ],
+  "RagShortTexts": [
+    "Bordeaux anchored English Gascony, funneling lucrative claret wine fleets across the Bay of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bordeaux anchored English Plantagenet dominion in continental Gascony. Dominating the Garonne, huge autumn fleets transported claret wine to England under royal convoys, securing baronial privileges and prosperous municipal liberty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "artisan"
+        ]
+      },
+      "Content": "English customs revenues depended directly upon Bordeaux vintage yields, binding civic burghers inextricably to the crown of England."
+    }
+  ],
+  "TextMappings": []
+}

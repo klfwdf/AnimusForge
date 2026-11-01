@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_6_1_1",
+  "HeroName": "Ákos nembeli Ernye, Vovoide of Transylvania",
+  "Description": "Ákos nembeli Ernye, historically celebrated as Ban Ernye, is one of Hungary's greatest military heroes and supreme barons, serving as Ban of Severin, Voivode of Transylvania, and Judge Royal. Belonging to the ancient Ákos clan, Ernye achieved immortality at the catastrophic Battle of Mohi in 1241, where he heroically surrendered his own warhorse to save the fleeing King Béla IV, fighting in the rearguard to preserve his sovereign's life. Rewarded with Diósgyőr Castle and paramount state offices, Ernye became the king's most intimate confidant and battle captain. He led royal campaigns across Austria and repelled multiple Mongol reconnaissance incursions along the eastern Carpathian passes. A master of shock cavalry combat and defensive castle construction, Ban Ernye commands universal devotion from the realm's chivalric orders. In 1259, as dynastic rifts widen and Bohemian armies posture along the western border, Ernye stands ready to wield his sword once more to defend Saint Stephen's crown. Ernye fortified Diósgyőr Castle with double curtain walls and deep dry moats, personally inspecting ballistas and arrow magazines for siege defense. His legendary valor at Mohi and subsequent victories in Austria cemented his status as King Béla's most trusted comrade-in-arms. He maintained strict garrison readiness across Transylvania, prepared to lead thunderous cavalry charges to preserve the integrity of the realm.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Repay King Béla IV's supreme trust with unswerving battlefield devotion, crushing all rebellion.",
+    "Establish Diósgyőr Castle as an impregnable royal fortress, exalting Clan Ákos throughout history."
+  ],
+  "Values": [
+    "Hold knightly oaths, sacrificial loyalty to the king, and martial valor as supreme sacred principles.",
+    "Prize unyielding bravery and brotherhood in arms, prepared to die in defense of the realm."
+  ],
+  "Fears": [
+    "Fears the aged king dying in anguish from fratricidal civil war, leaving a fractured kingdom.",
+    "Dreads another apocalyptic steppe invasion breaching the Carpathian passes to repeat Mohi."
+  ],
+  "SpeechStyle": "The mud of Mohi was drenched in my blood, and the granite of Diósgyőr stands witness to my loyalty! So long as I draw breath, no foe shall threaten Saint Stephen's throne! Diósgyőr stands firm; no foe shall threaten our king!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

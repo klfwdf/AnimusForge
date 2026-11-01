@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Ghent_Cloth_Guild_Commune",
+  "Keywords": [
+    "Ghent Cloth Guild Republic",
+    "Gravensteen Castle Ghent",
+    "Urban Pike Militia Ghent",
+    "Weavers and Fullers Guilds"
+  ],
+  "RagShortTexts": [
+    "Ghent formed a sprawling manufacturing commune whose armed textile militias checked."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Positioned at the Scheldt-Leie confluence, Ghent was a dense textile metropolis governed by powerful weaver and fuller syndicates. Even from the imposing stone keep of Gravensteen, counts treaded warily around disciplined urban pike militias."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "artisan",
+          "soldier"
+        ]
+      },
+      "Content": "The municipal alarm bell Roeland summoned thousands of burghers armed with heavy pikes, transforming guild workshops into an impenetrable civic army."
+    }
+  ],
+  "TextMappings": []
+}

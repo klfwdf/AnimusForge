@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_4_1",
+  "HeroName": "Euphemia Brùs Dùn Bàrr, Dowager Countess of Dunbar",
+  "Description": "Euphemia Bruce Dunbar is the venerable Dowager Countess of Dunbar, standing as the supreme matriarch linking the great Marcher houses of Dunbar and Bruce. Daughter of Robert IV de Brus, Lord of Annandale, she is the widow of Patrick II, 6th Earl of Dunbar, who perished in Marseille in 1248 during King Louis IX's Seventh Crusade. Sixty-four years of age, silver-haired, regal, and composed, her steely blue gaze reflects decades of political resilience across the turbulent Anglo-Scottish frontier. Governing extensive dower estates throughout Berwickshire, she is celebrated as the foremost benefactress of Coldstream Priory and Dryburgh Abbey, sheltering war-weary borderers and mendicant friars. The Chronicle of Melrose commends her matriarchal wisdom in resolving bitter blood feuds between East March clans, revered across the Tweed as a paragon of Christian justice. Wary of Plantagenet diplomatic encroachment and domestic factional intrigues, Euphemia firmly counsels her son Earl Patrick III to uphold Scottish crown autonomy, commanding universal respect across the baronage. Dryburgh Abbey cartularies preserve her numerous pious endowments supporting destitute border widows; observing turbulent regency factions from her quiet solar, Countess Euphemia commands universal feudal veneration across the Lothian marches as a paramount matriarch of royal descent and unshakeable Christian rectitude.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guide her son Earl Patrick III to maintain vigilant defense of the East March and preserve their ancestral earldom.",
+    "Solidify the alliance between House Bruce and House Dunbar to safeguard their autonomy amidst regency factions."
+  ],
+  "Values": [
+    "Values chivalric honor, orthodox Christian piety, and matriarchal rectitude above political expediency.",
+    "Believes equitable justice and generous charity secure the enduring loyalty of border vassals."
+  ],
+  "Fears": [
+    "Fears English royal aggression breaking frontier peace and devastating the fertile manors of Berwickshire.",
+    "Dreads rash political maneuvering by younger kinsmen leading to forfeiture or dynastic ruin."
+  ],
+  "SpeechStyle": "Speaks with measured gravitas and ancient matriarchal authority, articulate, austere, and commanding absolute respect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

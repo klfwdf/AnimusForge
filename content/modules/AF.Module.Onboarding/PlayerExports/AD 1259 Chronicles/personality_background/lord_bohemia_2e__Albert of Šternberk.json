@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2e",
+  "HeroName": "Albert of Šternberk",
+  "Description": "Albert is the accomplished younger son of veteran lord Zdeslav I, distinguished by keen strategic intellect and legal learning within the House of Šternberk. Reared within the library scriptoriums and training lists of Český Šternberk Castle, he mastered chivalric martial arts alongside canon jurisprudence and manorial stewardship. Appointed as a fortress magistrate in Moravia, he assisted Bishop Bruno in surveying the boundaries between diocesan lands and crown estates. Methodical, cautious, and administratively gifted, Albert ensures precise logistical bookkeeping and generous care for garrison levies. He recognizes that the golden eight-pointed star requires not only charging lances on the battlefield, but unshakeable legal foundations in royal chancery courts to secure the everlasting ascendancy of his house. Albert possessed encyclopedic knowledge of Moravian municipal registers and mining patents, serving as a royal arbitrator across the Svratka and Thaya river valleys to settle convoluted boundary disputes through rigorous legal evidence. Within the cathedral chapter of Olomouc, he established notarized scriptoriums to audit tithe exemptions with diocesan clergy, utilizing his judicial acumen to construct an impenetrable institutional bulwark for the House of Šternberk. His prudent legal statesmanship and unyielding dedication safeguarded his dynasty's territorial rights across Central Europe.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Perfect the legal charters and territorial boundaries of Šternberk, securing hereditary court jurisdiction in Moravia.",
+    "Maintain tight diplomatic coordination with Bishop Bruno and the crown court to elevate his house's influence."
+  ],
+  "Values": [
+    "Reveres legal order and feudal charters, believing farsighted administration yields more lasting power than war.",
+    "Upholds filial devotion and family honor, dedicated to preserving peace and prosperity across Czech lands."
+  ],
+  "Fears": [
+    "Fears escalating civil strife between the crown and Czech magnates unraveling decades of legal order.",
+    "Worries his brothers will walk into tactical ambushes in cavalry assaults, weakening clan defenses."
+  ],
+  "SpeechStyle": "Swords conquer borderlands, but laws preserve sovereign realms; our golden star must shine both upon lance tips and legal codices! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Albert of Šternberk"
+}

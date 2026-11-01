@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Guzman_Castilian_Magnates",
+  "Keywords": [
+    "House of Guzman Castile",
+    "Guzman el Bueno Castilian",
+    "Tarifa Siege Guzman",
+    "Andalusian Reconquista Guzman"
+  ],
+  "RagShortTexts": [
+    "The Guzmán lineage rose along the Andalusian frontier, forging a mighty noble house."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Forged in the fires of the Reconquista, the House of Guzmán earned immense estates around Seville and Cadiz. Embodying chivalric valor under Alfonso Pérez de Guzmán, they fortified the Strait of Gibraltar against Marinid invasions from Morocco."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Commanding veteran border horsemen and lucrative Atlantic tuna fisheries, the Guzmáns acted as Castile's unyielding southern shield."
+    }
+  ],
+  "TextMappings": []
+}

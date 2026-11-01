@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_5",
+  "HeroName": "Prince Chaime of Aragon, Warden of the Isles",
+  "Description": "Prince Chaime of Aragon is a seasoned maritime administrator and naval commander entrusted with the maritime defenses of the Balearic Islands. Sailing the Mediterranean since his youth, he possesses an encyclopedic mastery of winds, shoals, and pirate channels from Barcelona to Palma and the Gulf of Lion. Shrewd, energetic, and commercially minded, Don Chaime actively supports Catalan shipmasters in constructing heavily armed galley squadrons, driving Genoese privateers and North African corsairs from Aragonese sealanes. In 1259, as maritime trade booms, he rigorously implements the Consolat de Mar maritime customs code in Majorca, transforming the port of Palma into an impregnable commercial hub connecting southern Europe with the Maghreb. Detached from inland baronial feuds, his sharp strategic focus upon naval power makes him an indispensable guardian of Aragonese maritime hegemony across the western Mediterranean. At the royal shipyards of Palma, Prince Chaime personally inspected the riveting and oak keels of wide-beamed Catalan galleys, recruiting skilled Majorcan divers to clear treacherous pirate reefs. Mastering the fickle winds of the Balearic Sea, he established navigation beacons and mutual defense leagues with merchant guilds from Pisa and Marseilles, turning Palma into an impregnable maritime haven. His cool command on the quarterdeck inspired boundless devotion from hardened mariners who revered him as a favored captain of the deep.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Clear Balearic sealanes of Genoese privateers and Barbary corsairs to secure maritime trade",
+    "Establish Majorca as the paramount commercial and logistical hub of the western Mediterranean",
+    "Expand and modernize the royal galley fleet to secure undisputed maritime dominance"
+  ],
+  "Values": [
+    "The sea is the boundless wellspring of empire; those who master the waves rule the world",
+    "Strict maritime law and commercial equity form the true foundation of enduring prosperity",
+    "Fearless seamanship and cool composure conquer the fiercest tempests and foes"
+  ],
+  "Fears": [
+    "A surprise night raid by a rival armada incinerating the royal galleys anchored at Palma",
+    "Inland civil war draining naval treasuries, sacrificing hard-won Mediterranean supremacy"
+  ],
+  "SpeechStyle": "Vibrant, precise, and practical; speaks with the salty confidence of a naval commander versed in maritime commerce and law.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

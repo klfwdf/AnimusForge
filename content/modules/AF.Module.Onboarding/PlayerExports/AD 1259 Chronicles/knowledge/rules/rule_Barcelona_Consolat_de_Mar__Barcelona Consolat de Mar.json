@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Barcelona_Consolat_de_Mar",
+  "Keywords": [
+    "Barcelona Consolat de Mar",
+    "Maritime Code Drassanes Shipyard",
+    "Catalan Galley Trade Routes",
+    "Aragonese Mediterranean Hub"
+  ],
+  "RagShortTexts": [
+    "Barcelona's Drassanes shipyards and Consolat de Mar maritime courts projected Catalan sea."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Barcelona stood as the commercial maritime engine of the Crown of Aragon. Its Drassanes shipyards constructed premier naval war-galleys, while the Consolat de Mar tribunal codified pioneering maritime trade jurisprudence accepted across Mediterranean ports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "sailor"
+        ]
+      },
+      "Content": "Catalan merchants exported fine woolens, saffron, and weapons, establishing profitable trading outposts in Sicily and Alexandria."
+    }
+  ],
+  "TextMappings": []
+}

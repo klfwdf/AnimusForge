@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Morosini_Venetian_Patriciate",
+  "Keywords": [
+    "House of Morosini Venice",
+    "Doge Lineage Morosini",
+    "Fourth Crusade Patriarch Morosini",
+    "Levantine Trade Dominance"
+  ],
+  "RagShortTexts": [
+    "The Morosini patricians provided Venetia with doges and the first Latin Patriarch of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ranked among the apostolic founding houses of Venice, the Morosini provided illustrious doges, admirals, and the first Latin Patriarch of Constantinople. Their deep-keeled galley fleets dominated trade lanes from Candia to Acre."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "In the Great Council of Venice, a Morosini speech could pivot naval subsidies and declare embargoes against Byzantine ports."
+    }
+  ],
+  "TextMappings": []
+}

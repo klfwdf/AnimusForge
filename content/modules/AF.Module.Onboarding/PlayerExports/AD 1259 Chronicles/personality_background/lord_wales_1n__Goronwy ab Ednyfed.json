@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1n",
+  "HeroName": "Goronwy ab Ednyfed Fychan, Seneschal of Gwynedd",
+  "Description": "Goronwy ab Ednyfed is the distinguished son of the legendary Welsh statesman Ednyfed Fychan, and a direct agnatic ancestor of the royal House of Tudor. Serving as Seneschal (Distain) of Gwynedd, Goronwy embodies the supreme fusion of administrative brilliance, legal erudition, and strategic vision. Tall and dignified, with piercing eyes and a meticulously trimmed beard, he represents the bureaucratic spine of Prince Llywelyn's rising state. Having backed Llywelyn decisively during the dynastic conflicts of 1255, Goronwy transformed Gwynedd's revenue systems, codifying royal customs and ensuring a steady flow of grain, silver, and munitions to the frontiers. In 1259, he acts as the Prince's premier diplomat and chancellor, negotiating treaties with Marcher barons and cementing alliances with southern Welsh princes. He established central chancery rolls at Aber and reformed agricultural tax assessments, enabling sustained mobilization across rugged terrain. Without his calm statesmanship, Llywelyn's military triumphs could never endure. He institutes rigorous fiscal audits at Aber, recording the produce of every watermill and herd of cattle onto chancery vellum rolls. Arbitrating tribal disputes according to the ancient laws of Hywel Dda, Goronwy provides Prince Llywelyn with an unassailable foundation of administrative justice and tireless bureaucratic order.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct a centralized fiscal and logistical network ensuring uninterrupted supply to the army",
+    "Mediate between princely authority and autonomous mountain chiefs to consolidate national unity",
+    "Elevate the lineage of Ednyfed Fychan to unquestioned supremacy in Welsh governance"
+  ],
+  "Values": [
+    "State power rests upon law and revenue; raw bravery without administration is easily crushed",
+    "Loyalty to the Prince is proven through flawless governance and meticulous fiscal order",
+    "Strategic forbearance and cunning diplomacy must steer the ship of state through violent storms"
+  ],
+  "Fears": [
+    "Prolonged total war draining the principality's treasury and provoking agrarian rebellion",
+    "Princely hubris blinding military commanders to sober administrative and logistical limits"
+  ],
+  "SpeechStyle": "Speaks with measured gravitas, razor-sharp precision, and immaculate diplomatic polish. His words are carefully weighed, effortlessly dismantling flawed arguments with cold administrative logic.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

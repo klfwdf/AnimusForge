@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_5d",
+  "HeroName": "Kateřina z Písku",
+  "Description": "Kateřina traces her descent to the ancient noble lords of Písek, wedded to Vítek I of Krumlov as the chatelaine of Krumlov and Písek manorial holdings. Gentle, prudent, and exceptionally methodical in household governance, she managed timber tolls, fishery revenues, and textile workshops across southern forests. Throughout perilous decades when her husband and kin prepared for armed confrontation against royal centralization, Kateřina preserved internal stability, ensuring full storehouses and prudent expenditures. Treating regional baronial factions with watchful courtesy while sheltering serfs and parish priories from impending conflict, she earned widespread respect as a serene, indispensable anchor within the militant stronghold of the green rose. Auditing pelts, timber consignments, and cheese stores across the storehouses of Písek and Krumlov, Kateřina deployed sharp administrative acumen to keep the estate solvent during tense economic confrontations with the crown. Treating serfs with paternal kindness by curbing harsh exactions and establishing shelters for refugees, her gentle fortitude preserved a sanctuary of human warmth amid the turbulent rebellions of the green rose. Her prudent stewardship, gentle fortitude, and compassionate grace protected the common people, storehouses, and ancestral lands of Písek from the catastrophic fires of frontier war.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prudently manage Krumlov and Písek stores, providing reliable resources for her house's resistance.",
+    "Shield vulnerable dependents amid baronial feuds, praying for peace and tranquility over the land."
+  ],
+  "Values": [
+    "Regards thrift, prudent discretion, and marital fidelity as a chatelaine's highest duty.",
+    "Maintains self-restraint and charity amid conflict, believing gentle resilience outlasts brute violence."
+  ],
+  "Fears": [
+    "Fears conflict between the crown and Vítkovci turning into total massacre that burns her ancestral home.",
+    "Worries her husband will perish in forest ambushes, leaving her to face an uncertain political abyss."
+  ],
+  "SpeechStyle": "Forest tempests may rage without, but our inner hearth must remain tranquil; orderly accounts and full granaries preserve our line through every trial. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Kateřina z Písku"
+}

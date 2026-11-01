@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Gascon_Feudal_Homage_and_Treaty_of_Paris_Ratification",
+  "Keywords": [
+    "Treaty of Paris Ratification 1259",
+    "Henry III Liege Homage to Louis IX",
+    "Duchy of Aquitaine Fief Terms",
+    "Plantagenet Renunciation of Normandy"
+  ],
+  "RagShortTexts": [
+    "In December 1259, Henry III performed liege homage to Saint Louis IX, sealing the Treaty of Paris."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On December 4, 1259, King Henry III of England performed liege homage to King Louis IX of France in Paris, ratifying the Treaty of Paris. Henry formally surrendered historic ancestral claims to Normandy, Anjou, Maine, and Poitou, holding Gascony as a peer of France, establishing uneasy peace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "English barons chafed at their sovereign kneeling before the French king. Yet Saint Louis exhibited chivalric generosity, granting neighboring fiefdoms in Limousin and Quercy to ensure honorable reconciliation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "With royal seals affixed in Paris, vineyard workers along the Garonne find respite from pillaging. English wool convoys move through French fair towns without fear of border arrest."
+    }
+  ],
+  "TextMappings": []
+}

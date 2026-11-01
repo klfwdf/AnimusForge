@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_2b",
+  "HeroName": "Thomasse de La Roche-Bernard",
+  "Description": "Thomasse de La Roche-Bernard is the esteemed Viscountess of Rohan, daughter of the powerful maritime baronial house controlling the mouth of the Vilaine river. Thirty-four years of age, she unites the robust maritime courage of her kin with consummate domestic intellect. Presiding over the court at Josselin Castle, Thomasse personally oversees timber rights, watermill leases, and seasonal fair tolls, substantially boosting the financial reserves of House Rohan. Highly respected for her firm judgment, she manages domestic defense and logistics during her husband's frequent political confrontations with the Duke, impartially resolving disputes among sub-vassals. Generously endowing rural hospices connected to Bon-Repos Abbey, she is widely revered as an indispensable pillar of stability across central Brittany. Lady Thomasse leveraged her family's maritime holdings along the Vilaine estuary to establish thriving salt and wine trade routes for Rohan. Her meticulous supervision of castle provisioning and charitable hospital foundations made her universally revered across the viscounty. Her astute oversight of coastal revenues and charitable dispensaries ensures that the populace regards her as a benevolent guardian of baronial peace, wealth, and Christian charity throughout the realm. Her wise economic patronage ensures that regional fairs and river markets flourish continuously, enriching both baronial coffers and common folk throughout the territory.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain robust treasury reserves and food supplies to sustain the house through political storms.",
+    "Preserve domestic tranquility and support her husband in securing baronial primacy."
+  ],
+  "Values": [
+    "Ensuring uninterrupted coastal commerce to guarantee financial strength and food security.",
+    "Benevolent protection of monastic foundations and the destitute to uphold Christian virtue."
+  ],
+  "Fears": [
+    "Maritime raiders or English privateers blockading coastal ports and severing trade lifelines.",
+    "Severe crop failures triggering famine that disperses estate peasantry and undermines baronial revenue."
+  ],
+  "SpeechStyle": "Speaks with clear, melodic composure and formidable baronial precision, balancing practical business acumen with aristocratic graciousness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

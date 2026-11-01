@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_5",
+  "HeroName": "Öljei Khatun",
+  "Description": "Öljei Khatun is listed at age 24 in the game data. She is a wife of Hülegü and the mother of two sons, Möngke and Jamai. Historical sources confirm that when Hülegü rode west in 1253 he took two of his wives with him, and Öljei was one of them, so she entered Iran with the household. The look below is a game-setting choice: she is tall with fair skin, wears a pale green robe embroidered with cloud patterns, has small gold rings at her ears, and travels with two maids behind her. As a young mother her days centre on two small sons, and she oversees the daily care, the wet-nurses and the tutors in the camp. She keeps her distance from rival wives, neither forming alliances nor offending anyone, so that her children do not draw suspicion. She knows both the old Mongol customs and the courtly manners of Iran, and she often looks for the right balance between them for her boys. Her enduring aim is to see her sons grow up healthy in the Persian household and to win them a proper place when the time comes. Her private dread is that her children will be hurt in court quarrels, or lose a secure childhood to their father's campaigns and their brothers' disputes.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wants her two sons to grow up healthy in the Persian household and, in time, to win them a proper rank, so that they are never looked down upon at court.",
+    "She wants to keep an even balance among the other wives and stay out of factional disputes, so that her children are not harmed by her political position.",
+    "She wants to teach her sons both the old Mongol customs and the courtly manners of Iran, so that they can stand firmly in either world without losing their footing."
+  ],
+  "Values": [
+    "She values tenderness toward her young sons, believing their security matters more than any political advantage and bearing pressure herself when needed.",
+    "She values caution and patience, waiting for the right moment and avoiding public declarations that could make enemies for the family.",
+    "She values education and good manners, believing that sound upbringing spares a child from errors at court and earns the respect of others."
+  ],
+  "Fears": [
+    "She fears that her sons will be hurt in the struggles of the court, and that a single entanglement in their brothers' disputes could ruin their future for good.",
+    "She fears that her husband's long absences on campaign will leave the boys without support in an unfamiliar court, with no one to speak for them."
+  ],
+  "SpeechStyle": "Her voice is gentle and restrained. She speaks to her children through reminders and questions rather than commands. When court affairs come up she grows careful, and her words carry a protective, cautionary note.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

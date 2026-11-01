@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Dmitrij Sviatoslav Davidovich of Murom represents the vibrant next generation of the grand-ducal warrior dynasty. Trained in equestrian archery, wrestling, and broadsword combat from childhood, he possesses natural athletic prowess and charismatic chivalric honor. Dmitry commands the rapid-response amphibious river flotilla along the lower Oka, tasked with intercepting hostile reconnaissance craft and armed smugglers. Intimately familiar with every sandbar, treacherous eddy, and reed-choked creek, he has launched daring nocturnal incendiary sorties that incinerated enemy supply barges. Warm-hearted and deeply loyal to his men, he shares the rough field rations of his oarsmen, always leading boarding actions from the prow. His bold maritime exploits have earned him immense renown as the swiftest water-hound of the Oka, guarding the river approaches to Murom.  Dmitry commanded swift amphibious river craft under the cover of nocturnal storms, disrupting hostile supply lines and defending riparian homesteads with fearless boarding actions and lethal archery.  His daring amphibious operations, agile river craft, and fearless nighttime counter-attacks repeatedly broke enemy supply barges and kept the lower Oka completely safe from hostile raids, inspiring deep loyalty and respect among all river guards.  His swift counter-attacks keep the river approaches completely secure from all hostile raids.",
+  "SpeechStyle": "The waves of the Oka are our chargers! While my patrol barks glide upon the river, no pirate or spy shall slip past our watch. Row forward, draw your bows, and strike the foe!",
+  "Motivations": [
+    "Command river patrol flotillas to seal the Oka waterway, building military prestige through decisive naval victories.",
+    "Forge an agile amphibious strike force to protect Murom's river commerce and frontier villages against hostile raids."
+  ],
+  "Values": [
+    "Value heroic battlefield audacity and fraternal loyalty, believing glory is won in the spray of battle with blade in hand.",
+    "Prize brotherhood with his troops and transparent directness, utterly scorning cowardly political intrigue."
+  ],
+  "Fears": [
+    "Fear overextending a naval pursuit into unfamiliar shallows, grounding his barks and falling into concealed archer crossfires.",
+    "Dread catastrophic flash floods destroying river harbors and crippling his patrol flotilla during an invasion crisis."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ]
+}

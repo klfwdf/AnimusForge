@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_1",
+  "HeroName": "Raibeart V de Brùs, Lord of Annandale",
+  "Description": "Robert V de Brus, 5th Lord of Annandale, historically renowned as 'The Competitor', is a paramount Anglo-Scottish magnate and the grandfather of King Robert the Bruce. Forty-four years of age, leonine, broad-chested, and commanding, his piercing gaze projects the formidable aura of a rightful claimant to the throne. Through his mother Isobel of Huntingdon, daughter of Prince David, Earl of Huntingdon (brother to King William the Lion), Robert possesses an unassailable hereditary claim to the Scottish Crown. Ruling from the massive water-girt fortress of Lochmaben in Annandale, while holding extensive lordships across Yorkshire and Essex, he served as Chief Justice of the King's Bench in England and a primary Scottish regent. John of Fordun records that in 1238, King Alexander II formally designated Robert as his recognized heir presumptive before the assembled parliament of Scone. Astute, resolute, and commanding thousands of heavy cavalry, Robert vigilantly counters Comyn factional supremacy, determined to vindicate his dynasty's royal birthright. The Chronicle of Guisborough lauds Lord Robert as the supreme benefactor of Augustinian canons and an unyielding pillar of Anglo-Scottish jurisprudence; governing Lochmaben Castle with commanding regal majesty, his formidable diplomatic gravity and princely lineage keep both the courts of Westminster and Edinburgh in awe.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify Annandale and drill heavy horse to vindicate the Bruce dynasty's royal claim to the Scottish throne.",
+    "Outmaneuver the rival Comyn affinity in high statecraft across Westminster and Edinburgh to secure supreme influence."
+  ],
+  "Values": [
+    "Holds royal Dunkeld blood, feudal legality, and his lawful claim as heir presumptive as supreme sacred truths.",
+    "Values imperial strength, judicial mastery, and strategic farsightedness above petty baronial compromise."
+  ],
+  "Fears": [
+    "Fears Comyn monopoly over the young king leading to political proscription and dispossession of Bruce titles.",
+    "Dreads an intractable Anglo-Scottish war forcing the forfeiture of his vast dual-kingdom estates."
+  ],
+  "SpeechStyle": "Speaks with thunderous regal authority and profound judicial precision, commanding awe and absolute obedience.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

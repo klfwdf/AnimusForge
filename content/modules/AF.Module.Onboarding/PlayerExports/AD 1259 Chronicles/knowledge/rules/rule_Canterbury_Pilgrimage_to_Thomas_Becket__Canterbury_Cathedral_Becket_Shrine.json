@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Canterbury_Pilgrimage_to_Thomas_Becket",
+  "Keywords": [
+    "Canterbury Cathedral Becket Shrine",
+    "Saint Thomas Becket Martyred Archbishop",
+    "Jeweled Reliquary Tomb Miracles",
+    "Canterbury Pilgrims Way Lore"
+  ],
+  "RagShortTexts": [
+    "Canterbury Cathedral housed Becket's gilded shrine, drawing pilgrims seeking miracle cures."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following Archbishop Thomas Becket's martyrdom at the altar steps in 1170 by four of Henry II's knights, Canterbury Cathedral became Western Christendom's premier pilgrimage destination. Becket's shrine gleamed with gold leaf and sapphire offerings, attracting pilgrims seeking healing through lead phials (ampullae) of Becket's sanctified holy water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Becket stood as an unyielding martyr for church immunities against royal encroachment. Vast pilgrim donations funded the soaring early English Gothic choir erected by William of Sens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "At the Tabard Inn in Southwark, knights, milling churls, and prioresses mingle before journeying down the Kent road. Prostrating before the golden shrine dissolves all differences."
+    }
+  ],
+  "TextMappings": []
+}

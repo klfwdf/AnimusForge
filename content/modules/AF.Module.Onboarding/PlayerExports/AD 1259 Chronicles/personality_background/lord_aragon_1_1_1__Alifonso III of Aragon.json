@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_1",
+  "HeroName": "Infante Alfonso of Aragon",
+  "Description": "Infante Alfonso of Aragon is the eldest son and designated heir of James I by his first wife, Eleanor of Castile. Universally recognized by the conservative Aragonese nobility as the legitimate successor to the crown of Aragon, Alfonso embodies the traditional feudal integrity of the inland realm. A solemn, legalistic prince of proven battlefield courage, he campaigned alongside his royal father in Valencia and capably governed royal assizes in Zaragoza. His prestigious marriage to Constanza of Montcada was intended to bridge the contentious divide between the Aragonese interior and the Catalan maritime nobility. Yet by 1259, Alfonso's inheritance is gravely threatened by the king's overt favoritism toward the sons of his second wife, Violant of Hungary. As royal wills are repeatedly redrafted to carve out independent principalities for Infantes Peter and James, Alfonso stands vigilantly at the head of the Aragonese Corts, fiercely defending indivisible primogeniture and ancestral fueros against the looming partition of the monarchy. From his princely chancery within the Aljafería Palace of Zaragoza, Alfonso immerses himself in Visigothic jurisprudence and the ancient fueros of Aragon. Fully aware of the rising court influence wielded by his younger half-brothers, he diligently rallies inland prelates and monastic orders while personally inspecting Pyrenean border garrisons, resolved with unbending knightly rectitude to defend the lawful primogeniture of his royal birthright.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend indivisible primogeniture against the king's repeated partition plans",
+    "Marshal the Aragonese nobility in Zaragoza to guarantee an unchallengeable royal succession",
+    "Maintain the territorial integrity and balance between the realms of Aragon and Catalonia"
+  ],
+  "Values": [
+    "Lawful primogeniture is the sacred cornerstone of the realm; dividing crowns brings civil doom",
+    "A king must rule beneath the law and uphold ancestral oaths sworn before his vassals",
+    "Martial honor requires selfless discipline, moral rectitude, and adherence to duty"
+  ],
+  "Fears": [
+    "Infante Peter launching a military coup backed by royal favor to usurp his rightful throne",
+    "Failing health claiming his life before he can secure the undivided succession of the crown"
+  ],
+  "SpeechStyle": "Solemn, articulate, and unbending; speaks with the measured gravitas of a jurist prince defending lawful primogeniture.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

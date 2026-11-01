@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_1f",
+  "HeroName": "Rizzardo IV da Camino, Lord of Treviso",
+  "Description": "Rizzardo IV da Camino reigns as the martial Lord of Treviso and vital northern ally to Pisa, son of the celebrated Gherardo da Camino and cited in Dante's Divine Comedy. Renowned for shock cavalry warfare and lavish chivalric patronage, he anchors an essential northern alliance protecting Pisan interests. Commanding the elite heavy cavalry of Treviso, Rizzardo swept across the Venetian plain, overwhelming rival city-state militias with thunderous mounted charges and unyielding field aggression. Lavishing gold upon chivalric tournaments, poets, and military engineers, he fortified Treviso with modern bastions while honoring his strategic defensive treaties with Pisan and Tuscan allies. Bold and imperious, this warlord lived by the sword, scornful of cowardly compromises and resolved to expand his family's seigneurial dominance across northern Italy through victory. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand the territorial supremacy and chivalric glory of House da Camino.",
+    "Fulfill military alliances with the Visconti to shatter common enemies in open field."
+  ],
+  "Values": [
+    "A true prince earns immortality through lavish generosity and invincible arms.",
+    "Chivalric brotherhood and sworn pacts brook no betrayal."
+  ],
+  "Fears": [
+    "Falling victim to treacherous assassination before completing his conquests.",
+    "His northern domains being surrounded and strangled by rival leagues."
+  ],
+  "SpeechStyle": "Speaks with bold martial swagger and open-handed seigneurial magnificence, decisive in battle. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

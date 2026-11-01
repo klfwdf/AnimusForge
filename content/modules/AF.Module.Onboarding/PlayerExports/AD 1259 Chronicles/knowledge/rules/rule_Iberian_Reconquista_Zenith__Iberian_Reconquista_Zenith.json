@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Iberian_Reconquista_Zenith",
+  "Keywords": [
+    "Iberian Reconquista Zenith",
+    "Post Las Navas Expansion",
+    "Alfonso X and James the Conqueror",
+    "Al-Andalus Muslim Retreat"
+  ],
+  "RagShortTexts": [
+    "Castile and Aragon seized Cordoba, Seville, and Valencia, driving Islamic power into mountain."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the watershed victory at Las Navas de Tolosa, the Reconquista surged across Andalusia. Fernando III and Alfonso X of Castile reclaimed Cordoba and Seville, while James I of Aragon conquered Valencia and Majorca, shrinking Islamic dominion to a single mountainous redoubt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Castilian hidalgos and the Military Orders of Santiago and Calatrava divided vast repartimientos of olive orchards and wheat plains. Frontier commanderies anchor Christian sovereignty across the Sierra Morena."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Frontier cavalry patrol the arid badlands armed with light lances and javelins, honed by generations of swift razzia skirmishes. Minarets topped with bells proclaim that the age of the Caliphs is extinguished."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Settlers trek south from northern hills with ox-carts to reclaim fallow lands under royal fueros. Danger of Moorish raids remains, but the promise of freehold land and tax exemptions outweighs the perils."
+    }
+  ],
+  "TextMappings": []
+}

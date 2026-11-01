@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Canterbury_Primatial_See",
+  "Keywords": [
+    "Canterbury Primatial See",
+    "Thomas Becket Martyr Shrine",
+    "Canterbury Tales Pilgrimage Path",
+    "Ecclesiastical Immunity Papal Legate"
+  ],
+  "RagShortTexts": [
+    "Canterbury anchored the spiritual head of the English Church, revered for Saint Thomas."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Canterbury held spiritual supremacy over the realm under the Archbishop of Canterbury, Primate of All England. Enriched by countless pilgrimages to Thomas Becket's golden shrine, the cathedral priory formed an autonomous ecclesiastical powerhouse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "priest",
+          "scholar"
+        ]
+      },
+      "Content": "The Archbishop alone possessed ancient rights to crown English kings, asserting canon law immunities against intrusive royal writs."
+    }
+  ],
+  "TextMappings": []
+}

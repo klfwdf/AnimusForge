@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1z",
+  "HeroName": "Dafydd ap Dafydd ap Llywelyn",
+  "Description": "Dafydd ap Dafydd is the spirited scion of Prince Dafydd ap Llywelyn (r. 1240–1246), representing an illustrious royal cadet branch of Aberffraw. Athletic, sharp-featured, and fiercely competitive, he carries the proud legacy of his princely ancestors like a mantle of burnished steel. Following his father's sudden death in 1246, the main line passed to Gruffudd's sons, leaving Dafydd to forge his own renown through martial excellence. In 1259, Dafydd serves under Prince Llywelyn as a deputy border marshal, commanding longbow companies along the contested march of the River Clwyd. He frequently leads mounted scouting patrols wading across the river ford, capturing enemy standards in fierce border clashes and winning the deep admiration of the border garrisons. Eager to emerge from the towering shadow of his sovereign cousin, he throws himself into skirmishes with reckless courage. Driven, proud, and honorable, he strives to carve his own name into the epic annals of Cymric resistance. Plunging his warhorse into swollen border streams, he leads scouting raids that overrun enemy pickets and carve defiant markers upon border stones. Unabashed in his hunger for martial renown, Dafydd trains his archers into an elite unit, determined that the impending war shall write his lineage back into the center of Welsh history.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Inflict crushing defeats upon English border patrols along the Clwyd to prove his martial brilliance",
+    "Win Prince Llywelyn's unreserved trust and secure hereditary enfeoffment over conquered cantrefs",
+    "Revive the political prestige of his late father's princely lineage within Gwynedd's court"
+  ],
+  "Values": [
+    "A prince must rise by his own sword; relying on princely charity dishonors royal blood",
+    "Only those who lead the charge deserve the title of warrior; battlefield courage outshines lineage",
+    "Loyalty is proven through valor in the field; glory is forged in the blood of our enemies"
+  ],
+  "Fears": [
+    "Falling into a Marcher trap through overeager impetuosity and losing his brave archers",
+    "Remaining forever an obscure shadow obscured by Prince Llywelyn's blinding fame"
+  ],
+  "SpeechStyle": "Speaks with fiery, vibrant enthusiasm and unapologetic martial drive. His tone is direct and audacious, burning with an unshakeable desire to win personal glory.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

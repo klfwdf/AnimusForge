@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Akritai_Byzantine_Border_Guerilla_Rangers",
+  "Keywords": [
+    "Akritai Byzantine Border Rangers",
+    "Anatolian Mountain Frontier Marches",
+    "Tax Exempt Borderland Militia",
+    "Anti Turkmen Nomad Incursion Screen"
+  ],
+  "RagShortTexts": [
+    "The Akritai borderers held tax-free military lands, fighting Seljuk nomads across Anatolian."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Akritai were hereditary border guards who preserved the Byzantine frontier in Anatolia. Under Emperor John III Doukas Vatatzes, their tax-free military smallholdings were revitalized along the mountain passes. Armed with bows, side-swords, and light peltasts, they checked roving Turkmen nomadic raids."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Songs recounting the mythic exploits of Digenes Akritas inspired these border families. So long as the Nicaean crown respected their fiscal immunities, they held the Anatolian ramparts impenetrable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ]
+      },
+      "Content": "Akritai mountain rangers blend seamlessly into limestone scrub. Waiting days beside canyon springs in reversible fleece coats, they drop rockslides upon intruding nomad horsemen."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_1",
+  "HeroName": "Basileús Michaíl VIII Palaiológos, Emperor of Nicaea",
+  "Description": "Basileús Michaíl VIII Palaiológos stands as the supreme architect of the Byzantine Restoration and one of the most formidable statesmen of the Middle Ages. Boasting pedigree from the imperial houses of Komnenos, Doukas, and Angelos, Michael rose through relentless martial merit, commanding frontier armies against the Seljuks and Latins with daring brilliance. Seizing the regency following the assassination of George Mouzalon in 1258, he had himself crowned co-emperor alongside child-emperor John IV Laskaris. In 1259, Michael orchestrated the masterstroke at the Battle of Pelagonia, shattering the grand coalition of Epirus, Manfred of Sicily, and Prince William II of Villehardouin of Achaea. Two years later, on July 25, 1261, his general Alexios Strategopoulos liberated Constantinople, ending the fifty-seven-year Latin usurpation and restoring the Roman Empire. A master of continental diplomacy, Michael outmaneuvered the Papacy through the Council of Lyons, secured alliances with Genoa and the Mongols, and covertly funded the Sicilian Vespers to utterly crush the invading crusade of Charles of Anjou. Michael VIII rebuilt Constantinople's sea ramparts and imperial naval dockyards, laboring relentlessly to reform provincial treasuries and reorganize elite Varangian regiments. Confronting Angevin invasion fleets, he funneled massive gold subsidies to Peter III of Aragon and Sicilian rebels, igniting the Sicilian Vespers that shattered Charles of Anjou's crusade in a single night. On the battlefield, Michael donned double-plated cataphract mail to lead decisive charges, forging the ultimate golden hour of Byzantine restoration.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "His voice commands the room with imperial thunder and chilling tactical calculation, radiating supreme authority and sovereign ambition.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Welsh_Spearmen_and_Mountain_Guerillas",
+  "Keywords": [
+    "Welsh Mountain Spearmen",
+    "Snowdonia Crag Guerillas",
+    "Welsh Light Javelin and Long Spear",
+    "Anti Norman Marcher Resistance"
+  ],
+  "RagShortTexts": [
+    "Welsh tribesmen armed with long ash spears and javelins ambushed Anglo-Norman cavalry in."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Amidst the mist-shrouded defiles of Snowdonia, Welsh native clans waged tenacious mountain defense. Armed with long ash spears and light throwing darts, unarmored skirmishers lured heavy Anglo-Norman cavalry into treacherous peat bogs, pinning armored knights under lethal flanking ambushes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "Prince Llywelyn ap Gruffudd harnessed clan loyalty to check Marcher lord incursions. Bound by ancient Celtic customs, these spearmen defended ancestral hills with fierce mountain pride."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Heavy warhorses founder in Welsh bogs up to their hocks. Horn signals echo off granite crags before spearmen lunge from bracken thickets, thrusting into armpits before vanishing back into the fog."
+    }
+  ],
+  "TextMappings": []
+}

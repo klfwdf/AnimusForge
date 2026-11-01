@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_2_0_1",
+  "HeroName": "Agnés de Bruyéres",
+  "Description": "Agnés de Bruyéres, aged forty-nine in 1259, is the venerable matriarch of the Barony of Karytaina in the Peloponnese, kin to the celebrated knight Geoffroi de Bruyéres. Hailing from a distinguished Champenois crusader lineage, she came to Morea in her youth and witnessed firsthand the brutal subjugation and fortification of the Greek highlands. Resolute, proud, and administratively gifted, Agnés manages the baronial finances, granaries, and feudal levies with iron discipline. As Prince Guillaume mobilizes the chivalry of Achaea for the fateful 1259 northern campaign, Agnés harbors deep misgivings regarding treacherous alliances with Greek despots, striving tirelessly to safeguard her mountain fortress and family heritage. Within her windswept highland stronghold in Arkadia, Lady Agnés governs the baronial estates with masculine firmness and meticulous precision. She enforces feudal charters without mercy, stockpiling iron arrowheads and grain whenever campaign rumors stir. Her commanding presence ensures that the barony of Karytaina remains an impregnable mountain redoubt capable of weathering any regional political storm. From her fortified hall overlooking the Alpheios, Lady Agnés balances baronial ledgers while commanding the respect of Frankish knights. Her sharp counsel and unyielding resolve ensure that the house of Bruyéres remains an enduring power in the feudal history of Morea.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with the austere authority of a proud crusader matriarch, stressing baronial pedigree, prudence, and feudal law.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

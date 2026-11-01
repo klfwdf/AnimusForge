@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_3",
+  "HeroName": "Otto III, Margrave of Brandenburg",
+  "Description": "Otto III, Margrave of Brandenburg of House Ascania, ruled jointly with his brother Johann I for over thirty years. Co-founder of Berlin and Spandau, he advanced eastern German colonization toward the Oder, combining juristic statesmanship with heavy cavalry prowess. Otto III fortified Berlin and Spandau with masonry bastions, exempting arriving pioneer craftsmen from feudal corvée labor to spark rapid urban commerce along the Spree. Establishing German municipal law across Ascanian domains, he elevated Brandenburg from a marshy frontier into a leading electoral principality within three decades. Weathering decades of frontier campaigns, Otto III established an enduring legacy of civic law, urbanization, and brotherhood across eastern Germany. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cooperate with his brother Johann I to expand municipal defenses and urbanization in Berlin.",
+    "Defend Ascanian territorial claims against King Ottokar II of Bohemia in Silesian marches.",
+    "Sponsor Cistercian monastic clearings, establishing orderly German town-law across new lands."
+  ],
+  "Values": [
+    "Holds brotherly fidelity and joint rule as the unshakeable bedrock of dynastic expansion.",
+    "Believes fortified burghs and urban craft commerce secure lasting peace in conquered marches."
+  ],
+  "Fears": [
+    "Slavic Pomeranian or Polish border raids sacking newborn frontier colonies and churches.",
+    "Future partition disputes among Ascanian heirs fracturing their territorial conquests."
+  ],
+  "SpeechStyle": "Speaks with pragmatic gravity and administrative clarity, projecting pioneer authority. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

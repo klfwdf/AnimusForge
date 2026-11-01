@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_3_1_2_1",
+  "HeroName": "Maríā Tarchaneiótissa",
+  "Description": "Maríā Tarchaneiótissa was the refined and quietly resolute daughter of the distinguished general John Tarchaneiotes, inheriting the stern virtues of one of the empire's premier military dynasties. Reared across fortified manors in Thrace during the historic year of 1259, Maria blended the stoic courage of a soldier's daughter with the scholarly cultivation of a Byzantine aristocrat. Fluent in literary Greek and ecclesiastical texts, she assisted her father in cataloging logistics tables, correspondence, and estate ledgers. When her father embraced the cause of the Arsenite traditionalists against the imperial religious union, Maria provided steadfast sanctuary within the family estates, sheltering dissident monks and funding rural chapels away from court surveillance. Reserved, devout, and unshakeable in her convictions, she prioritized familial honor and spiritual purity over court vanity, standing as a quiet guardian of Orthodox tradition amidst political turmoil. In her Thracian scriptorium, Maria transcribed hundreds of patristic folios in elegant Greek cursive, binding them in embossed leather. Facing imperial purges, she smuggled dissident theological tracts through hostile checkpoints sewn within garment linings, organizing secret supply convoys of grain and olive oil to Mount Athos. With unshakeable piety, she sheltered the persecuted, her serene grace blooming like a fragrant lily that comforted countless beleaguered souls amidst civil turmoil.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her voice is gentle, modest, and composed, reflecting quiet moral fortitude and unwavering spiritual devotion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

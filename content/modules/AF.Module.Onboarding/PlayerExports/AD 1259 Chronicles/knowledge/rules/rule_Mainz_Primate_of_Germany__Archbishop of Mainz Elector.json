@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Mainz_Primate_of_Germany",
+  "Keywords": [
+    "Archbishop of Mainz Elector",
+    "Primate of Germany Mainz",
+    "Rhine River Tolls Mainz",
+    "Imperial Conclave Convener"
+  ],
+  "RagShortTexts": [
+    "The Archbishop of Mainz reigned as Primate of Germany and senior Imperial Elector,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mainz commanded the confluence of the Main and Rhine rivers. Holding the dignity of Primate of Germany, its Prince-Archbishop served as Arch-Chancellor of the Holy Roman Empire, possessing the constitutional monopoly to summon electors for imperial conclaves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "Heavily fortified red sandstone walls guarded strategic toll barriers that enriched the archiepiscopal treasury during interregnum power struggles."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Plantagenet_and_Baronial_Struggle",
+  "Keywords": [
+    "House of Plantagenet Three Lions",
+    "Henry III Westminster Reconstruction",
+    "Plantagenet Angevin Legacy",
+    "Magna Carta Baronial Parliament Dispute"
+  ],
+  "RagShortTexts": [
+    "The Plantagenet crown balanced continental Angevin ambitions with parliamentary baronial."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Founded by Geoffrey of Anjou and emblazoned with three golden lions passant guardant, the House of Plantagenet retained the rich Duchy of Aquitaine. Henry III invested lavishly in rebuilding Westminster Abbey, yet lavish patronage to Poitevin and Savoyard kin triggered the 1258 baronial rebellion enforcing the Provisions of Oxford."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Dynastic tensions mounted between the crown and Simon de Montfort's baronial party. Prince Edward rallied shire knights to preserve royal prerogative against oligarchical restriction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Manor courts collect grain tithes whether the King or baronial council rules. Yet rumors spread of armed levies mustering along the Welsh marches, heralding renewed civil strife."
+    }
+  ],
+  "TextMappings": []
+}

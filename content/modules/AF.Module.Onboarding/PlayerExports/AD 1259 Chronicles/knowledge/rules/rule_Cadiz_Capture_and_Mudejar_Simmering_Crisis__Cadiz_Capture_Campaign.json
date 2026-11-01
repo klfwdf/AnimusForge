@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Cadiz_Capture_and_Mudejar_Simmering_Crisis",
+  "Keywords": [
+    "Cadiz Capture Campaign",
+    "Jerez Protectorate Agreement",
+    "Mudejar Secret Conspiracies",
+    "Alfonso X Atlantic Outlet"
+  ],
+  "RagShortTexts": [
+    "Castile's push toward Cádiz and Jerez ignited covert Mudéjar coordination backed by Granada."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Around 1259, Alfonso X of Castile pursued aggressive expansion toward the Atlantic coast, aiming to secure Cádiz and placing Jerez under protectorate garrisoning. Fearing total encirclement, Muhammad I of Granada covertly supplied arms and messages to Mudéjar populations under Castilian rule, sparking coordinated rebellion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Securing Cádiz delivers an Atlantic naval haven commanding the Straits of Gibraltar. Yet in Jerez, nominally compliant Mudéjar townsmen await the Sultan's signal to expel the royal garrison."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Moorish smiths keep bellows pumping through the night, converting pruning hooks into spearpoints. Heavy Castilian tithes on olive presses have pushed common folk past breaking point."
+    }
+  ],
+  "TextMappings": []
+}

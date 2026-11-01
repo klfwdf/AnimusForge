@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Anya of Murom, consort of Prince Yuri Davydovich, is a noble matriarch celebrated for regal grace and resolute administrative competence. Imbued with deep Orthodox piety and courtly discipline, she directed the grand-ducal household while her husband commanded border garrisons in the field. Anya managed the fortress granaries, weapons storage, and medicinal reserves, personally supervising the manufacture of wool coats and frostbite salves. During border alarms, her calm composure dispelled panic among townspeople, organizing volunteer logistics brigades to supply arrows and defensive ammunition to the battlements. She generously endowed the Transfiguration Monastery and municipal almshouses, extending maternal benevolence to war orphans and wounded sentinels. Her steadfast loyalty, organizational efficiency, and quiet fortitude make her an indispensable domestic pillar ensuring the resilience of Murom.  Her diligent management of underground granaries and medical supplies ensures that outlying border garrisons remain well-fed, warm, and battle-ready throughout grueling winter blockades.  Her steadfast loyalty, calm supervision of fortress ammunition, extensive underground food storage, and compassionate care for wounded defenders provided the Murom garrison with an unshakeable domestic anchor, profound security, and emotional strength through decades of relentless frontier alarms.  Her steadfast courage and maternal love continue to inspire the entire garrison.",
+  "SpeechStyle": "While warriors bleed in the freezing winds, our hearths behind the walls must provide an unshakeable shelter. Every sentinel must have warm bread and clothes. Stand united to preserve the peace of Murom!",
+  "Motivations": [
+    "Oversee domestic finances and logistical storehouses in Murom, guaranteeing absolute readiness during prolonged sieges.",
+    "Promote civic charity and survivor pensions, fostering deep solidarity between common townspeople and the princely crown."
+  ],
+  "Values": [
+    "Hold domestic devotion, faithful duty, and Christian piety as sacred guiding principles of noble life.",
+    "Value steadfast patience, quiet resilience, and empathetic grace over panic and arrogant self-importance."
+  ],
+  "Fears": [
+    "Fear saboteurs poisoning water cisterns or burning granaries, crippling fortress defenses during winter blockades.",
+    "Dread her husband falling in fierce mounted charges, leaving the army and principality without its martial leader."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

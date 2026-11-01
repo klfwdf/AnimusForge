@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Bouvines_1214",
+  "Keywords": [
+    "Battle of Bouvines 1214",
+    "Philip II Augustus Triumphs",
+    "King John Otto IV Defeat",
+    "Flemish Imperial Coalition Broken"
+  ],
+  "RagShortTexts": [
+    "In 1214 at Bouvines, Philip II Augustus vanquished an Anglo-Imperial coalition, solidifying."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fought on July 27, 1214, Bouvines secured Capetian dominance in Europe. Philip II Augustus marshaled communal citizen militias alongside feudal heavy cavalry, shattering Emperor Otto IV and the Count of Flanders in ferocious hand-to-hand combat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "citizen"
+        ]
+      },
+      "Content": "The victory forced King John to grant Magna Carta at Runnymede and established Paris as the political sun of Western Europe."
+    }
+  ],
+  "TextMappings": []
+}

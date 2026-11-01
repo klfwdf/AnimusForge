@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Provisions_of_Oxford_and_Barons_War",
+  "Keywords": [
+    "Provisions of Oxford 1258",
+    "Simon de Montfort Baronial Revolt",
+    "Council of Fifteen Magnates",
+    "Early English Parliament Emergence"
+  ],
+  "RagShortTexts": [
+    "The 1258 Provisions of Oxford subjected Henry III to a baronial council, sparking Simon de."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Enacted in 1258 after Henry III's ruinous financial gambits for the crown of Sicily, the Provisions of Oxford forced the King to surrender administrative power to a council of fifteen barons led by Simon de Montfort, establishing thrice-yearly Parliaments to oversee the Crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Simon de Montfort champions the reform of the realm under sworn communal oath, asserting that the Crown must govern by the counsel of its natural peers. Royalist lords denounce the Council of Fifteen as baronial tyranny usurping anointed royal prerogative."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "White crosses adorn the tunics of Montfortian knights fortifying the Tower of London. Common squires and burgesses have been summoned to council halls; the power to wield steel in England is no longer royal privilege alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Magnates quarrel over charters in Latin, while village bailiffs still levy heriot and tallage. A hungry serf knows little of councils; if the lords take their fight to the open fields, it is our thatched roofs that burn."
+    }
+  ],
+  "TextMappings": []
+}

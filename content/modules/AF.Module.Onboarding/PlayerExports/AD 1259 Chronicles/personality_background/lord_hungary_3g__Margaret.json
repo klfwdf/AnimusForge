@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3g",
+  "HeroName": "Margaret",
+  "Description": "Margaret is the esteemed noble chatelaine and wife of Count Mark I Csák of Hont, commanding widespread reverence across Upper Hungary. Hailing from an ancient northern Magyar noble house, her marriage reinforced Clan Csák's landed hegemony along the Ipeľ river basin. Austere, diligent, and administratively gifted, Margaret oversees the complex agricultural economy of highland manors, managing granaries, vineyards, and livestock herds with formidable precision. While her husband commands frontier garrisons, she single-handedly maintains castle logistics, audits estate ledgers, and preserves rural law and order. She generously patronizes local Benedictine chapels, distributing grain and woven cloaks to impoverished tenant families. In 1259, as military mobilization gathers momentum, Margaret directs the stockpiling of winter armor and rations, standing as an unyielding domestic pillar of her dynasty. Margaret instituted standardized milling and textile spinning operations throughout the manors along the Ipeľ river, rigorously auditing grain stockpiles and agricultural tools. During freezing winters, she personally directed the boiling of medicinal infusions and distributed woolen mantles to garrison soldiers. Her compassionate domestic stewardship transformed regional castles into unshakeable sanctuaries of logistics and civilian welfare, earning the enduring gratitude of her people and tenant families across the northern march.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve peace and prosperity across family manors in Hont, ensuring ample supplies for garrison forces.",
+    "Promote Christian benevolence, winning the heartfelt devotion of regional burghers and tenants."
+  ],
+  "Values": [
+    "Hold prudent stewardship, wifely loyalty, and protection of tenantry as supreme callings.",
+    "Believe gentle charity and steady discipline weather the harshest storms of life."
+  ],
+  "Fears": [
+    "Fears wartime devastation spreading into Hont, destroying productive agricultural villages.",
+    "Dreads winter blizzards isolating mountain outposts and cutting off essential garrison supplies."
+  ],
+  "SpeechStyle": "Our manors along the Ipeľ flourish in peace, and our granaries stand full. With home affairs well-ordered, the banner of Csák shall fly high forever! Our manors along the Ipeľ flourish; the banner of Csák flies high forever!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

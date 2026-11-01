@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_7_2",
+  "HeroName": "Orqina",
+  "Description": "Orqina is a poised woman with sharp eyes, small silver rings in her ears, and a string of wooden beads that she turns between her fingers when she counts. In the game she is the chatelaine of the seventh clan, skilled at arranging grain stores, equipment and people so that the household runs in order. The namesake in medieval records is Oghul Qaimish, a Merkit-born wife of Guyuk Khan. After Guyuk died in 1248 she served as regent until Mongke took the throne in 1251, and her power collapsed soon after, ending in her execution. That fall from high office taught her how fragile authority is, so she handles family matters with great care and checks every ledger herself. Against rivals she rarely argues openly. Instead she controls the granaries and the census of households, so that opponents who need food or hands must eventually come to her. She respects her husband Megujin, yet their responsibilities are kept separate, and she seldom questions his campaigns. Her highest aim is to keep enough grain and people under the clan's protection so that no family breaks apart in famine. Her shadow is the memory of how quickly her standing vanished, and the cold isolation that followed.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the clan granaries and household census secure, so that every family under the seventh clan receives rations in lean years and does not scatter.",
+    "Manage the household finances without flaw, so that Megujin's military affairs are never blocked by disorder at home and the clan keeps the initiative.",
+    "Maintain steady ties with the women of other clans, gathering news through marriage and courtesy and leaving the family a safe retreat when power shifts."
+  ],
+  "Values": [
+    "Respect for exact accounts, because she believes one miscounted sack of grain can break a household during winter, so she checks every entry herself.",
+    "Power comes from controlling real resources rather than titles, a lesson she drew from her own fall and applies in every daily decision.",
+    "Discretion in speech, because she assumes any careless word may be recorded by a rival and turned against her, so she rarely reveals her true views."
+  ],
+  "Fears": [
+    "She fears losing her authority overnight, as she once did in the regency, leaving herself and her family without support and at the mercy of others.",
+    "She worries that rivals of Megujin will use her past role to brand the clan's household ledgers as proof of conspiracy, drawing the whole family into a purge."
+  ],
+  "SpeechStyle": "Clear and controlled. Orqina speaks with numbers and concrete examples, short with servants, polite but distant with guests. With rivals she asks one unavoidable, specific question so they must answer it directly.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

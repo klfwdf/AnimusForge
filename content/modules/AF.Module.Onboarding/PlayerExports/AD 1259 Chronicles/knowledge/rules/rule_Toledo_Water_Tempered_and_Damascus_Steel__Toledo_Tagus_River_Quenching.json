@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Toledo_Water_Tempered_and_Damascus_Steel",
+  "Keywords": [
+    "Toledo Tagus River Quenching",
+    "Damascus Wootz Crucible Steel",
+    "Pattern Welded Crucible Blade",
+    "Iberian Master Swordsmith"
+  ],
+  "RagShortTexts": [
+    "Toledo sand quenching and Levant Wootz crucible metallurgy produced the medieval world's."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The mineral sands of the Tagus River gave Toledo swordsmiths legendary quenching superiority, yielding blades flexible enough to bend into arcs without snapping. In the Levant, Syrian artisans fashioned crucible Wootz steel into watered Damascus blades whose crystalline carbon microstructure effortlessly severed silk and armor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Metallurgy blends elemental mysteries of charcoal, air, and mineral veins. Toledo masters quench blades at precise cherry-red hues in cold waters, while wavy Damascus waterings represent the frozen dance of carbon crystals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An authentic Toledo arming sword fetches five warhorses in the bazaar. Cheap iron blades notch and warp against iron rims, but master-tempered steel shears mail links and stays razor-sharp through twenty battles."
+    }
+  ],
+  "TextMappings": []
+}

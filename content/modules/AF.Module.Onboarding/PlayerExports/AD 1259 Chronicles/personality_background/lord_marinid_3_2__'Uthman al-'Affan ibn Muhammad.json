@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_3_2",
+  "HeroName": "'Uthman al-'Affan ibn Muhammad",
+  "Description": "'Uthman al-'Affan ibn Muhammad was a full brother of Emir al-'Abbas, both sons of Abu Ma'ruf Muhammad ibn 'Abd al-Haqq and Zeyneb al-Mariniyya. No chronicle records his life, so this portrait is a game-setting construction based on the faction's history. His appearance is a game-setting invention: a lean man whose finger joints are thick from years of holding a pen, with ink often lingering under his nails, and a small silver ring in his left ear that marks a scholarly, ascetic family. In youth he studied law and poetry at a Fez teaching hall. Because he mediated disputes well, the kin entrusted him with cases over fields and debts in a tent market outside the town. His most praised ruling divided the use of a well between two rival distant branches, and the peace held for a decade. Against enemies he does not intimidate. He quotes legal rules and precedents until the other side confesses its fault, believing a reasoned verdict defeats force. His highest aim is to make Marinid justice and contracts respected by ordinary people, so that fairness becomes the foundation of the dynasty. His darkest side is stubbornness. He treats his verdicts as the only right answer, and when they are overturned he broods for long periods and can hold grudges against people he once trusted. His greatest fear is that his fairness will be bent by the powerful and turned into a tool that endorses the strong.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wanted Marinid justice and contracts to earn respect from ordinary people, so fairness would be the foundation of the dynasty.",
+    "He settled field and water disputes among the kin with legal rules and precedents, so feuds would not harden into bloodshed.",
+    "He kept his verdicts independent, insisting on facts and legal reasoning even under pressure from men of influence."
+  ],
+  "Values": [
+    "Legal reasoning and precedent, since he believed the order of a dynasty rests on rules that can be checked again and again.",
+    "Learning and integrity, because he held that a scholar's character must show in judgment, and greed would destroy the court's credibility.",
+    "Restraint and deliberation, as he preferred delay to a hasty judgment, which earned him the respect of ordinary people."
+  ],
+  "Fears": [
+    "His fairness being bent by men of power into a tool that endorses the strong, turning his lifelong reputation into a joke overnight.",
+    "A ruling being overturned and his long resentment turning into hatred of people he once trusted, leaving a permanent rift."
+  ],
+  "SpeechStyle": "He speaks calmly and often opens by citing a legal rule or precedent before pressing for facts. He treats both sides evenly but shows disgust at false witness, and closes with a brief verdict.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_1_3",
+  "HeroName": "Infante Fadrique of Castile",
+  "Description": "Infante Fadrique of Castile is the daring, cosmopolitan, and fiercely ambitious younger brother of Alfonso X. Frustrated by royal marginalization in his youth, Fadrique embarked upon a dramatic mercenary career abroad, serving King Manfred of Hohenstaufen in southern Italy and campaigning extensively across the Mediterranean and North Africa. Commanding elite cavalry companies in Sicily and Tunisia, he acquired ruthless tactical cunning, financial independence, and a deep familiarity with Italian high politics. Upon returning to Castile, he brought veteran retainers and vast prestige, holding significant estates in southern Andalusia. Yet Fadrique's relationship with Alfonso remains toxic and distrustful; viewing the king's German imperial obsession as ruinous folly, the infante maintains covert ties with Aragonese diplomats and dissident grandees. Calculating, fearless, and experienced in the darker arts of statecraft, Fadrique looms as one of the most formidable dynastic rivals within the Castilian royal house—a figure of perpetual suspicion to the crown. Tempered in the merciless wars of Sicily and North Africa, his cold, hawklike gaze sees through every courtly pretension. Feigning deference toward Alfonso X, he weaves an intricate web of mercenaries and informants between Seville and Toledo, poised like a coiled viper in the shadows to strike the moment the crown stumbles into civil catastrophe.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify his military stronghold in Andalusia against preemptive royal suppression",
+    "Cultivate secret alliances with Aragon and Italian allies to exploit royal vulnerabilities",
+    "Expand private revenues and cavalry retainers along the turbulent southern frontier"
+  ],
+  "Values": [
+    "Steel and gold command true fealty; fraternal blood offers no shield against royal envy",
+    "Cunning and decisive opportunism govern the fortunes of princes and empires",
+    "Strike only when the advantage is total; retreat without hesitation when traps close"
+  ],
+  "Fears": [
+    "Royal assassins or secret arrest warrants ambushing him within a royal stronghold",
+    "Fickle baronial allies abandoning him at the critical hour of open rebellion"
+  ],
+  "SpeechStyle": "Sharp, incisive, and cynically worldly; speaks with the cold authority of an Italian condottiere seasoned in Mediterranean warfare.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

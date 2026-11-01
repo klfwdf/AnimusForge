@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_1_6",
+  "HeroName": "Eógan Ua Conchobhair",
+  "Description": "Eógan Ua Conchobhair is one of the most promising young war-leaders of the royal house of Connacht, commanding elite fast-moving kern skirmishers. Barely twenty years of age, he has earned widespread renown for his extraordinary agility, deadly precision with the throwing dart, and fearless scouting. Eógan disdains a sheltered life in royal manor houses, spending months with his scouting bands amidst the rocky passes of the Curlew Mountains and thick woods around Lough Allen to intercept enemy supply convoys. Master of nocturnal raids and sudden war cries that throw Norman outposts into panic, he has repeatedly covered the retreat of slower clan levies under fire. Serving as Prince Aedh's most trusted advance guard, Eógan fights in simple tunic and saffron mantle at the cutting edge of every fray, fiercely resolved to achieve immortal glory worthy of ancient Fianna legends. During the fierce ambuscade within the Curlew Mountain passes, young Eógan single-handedly baited English cavalry into a bottomless quagmire before leading screaming axe-skirmishers downhill to cut down the enemy commander; singing ancient heroic stanzas around campfires at night, his dazzling audacity embodies the untamed warrior soul of Connacht chivalry and Gaelic youth.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win immortal renown in battle worthy of immortalization in bardic lays.",
+    "Break the de Burgh stranglehold and plant Connacht's banners across the Shannon."
+  ],
+  "Values": [
+    "Reckless battlefield bravery and uncompromising martial pride.",
+    "Fierce loyalty to Prince Aedh and camaraderie with fellow skirmishers."
+  ],
+  "Fears": [
+    "Wasting his prime in idle truces without glorious battlefield achievements.",
+    "Being trapped within stone siege walls deprived of wild forest mobility."
+  ],
+  "SpeechStyle": "Speaks with brisk, ringing passion and youthful martial enthusiasm, eager, sharp, and impatient for battlefield action.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

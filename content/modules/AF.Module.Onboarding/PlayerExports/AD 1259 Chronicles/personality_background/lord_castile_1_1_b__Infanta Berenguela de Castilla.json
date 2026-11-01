@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_1_1_b",
+  "HeroName": "Infanta Berenguela de Castile",
+  "Description": "Infanta Berenguela of Castile is the devout eldest daughter of Alfonso X and Queen Violante, named after her illustrious great-grandmother Queen Berengaria of Castile. Originally betrothed to Louis of France, the eldest son of Saint Louis, the young prince's untimely death in 1260 led Berenguela to reject the transactional nature of dynastic marriages. Choosing a life of solemn contemplation and spiritual authority, she entered the royal Cistercian Abbey of Santa María la Real de Las Huelgas in Burgos—the paramount pantheon and privileged sanctuary of the Castilian monarchy. Within the abbey's cloistered yet politically potent walls, Berenguela exercises immense moral and administrative influence. Las Huelgas enjoys ecclesiastical immunity and lordship over numerous towns, allowing the princess-nun to sponsor hospitals, patronize sacred illumination manuscripts, and provide impartial counsel to her royal kin. Detached from courtly intrigues yet deeply revered across Castile, Berenguela remains a steadfast spiritual guardian and trusted confidante to her royal parents and siblings. Within the serene cloistered galleries of Las Huelgas Abbey, she offers ceaseless intercessory prayers for the royal house while overseeing extensive monastic estates to distribute grain relief during harsh famines. Her sublime spiritual authority compels even the proudest Castilian magnates to sheath their blades and bow in reverent submission before her counsel.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Offer ceaseless intercession and prayer for the spiritual salvation of the royal dynasty",
+    "Protect the ecclesiastical liberties, artistic treasures, and tombs of Las Huelgas Abbey",
+    "Serve as a holy, impartial refuge to heal bitter grievances among her royal kin"
+  ],
+  "Values": [
+    "Spiritual devotion and holy contemplation endure long after earthly empires crumble",
+    "Mercy, charity, and care for the afflicted represent true Christian sovereignty",
+    "Family reconciliation requires personal humility and divine grace"
+  ],
+  "Fears": [
+    "Brutal civil war violating the sanctity and historic sepulchers of Las Huelgas",
+    "Her brothers sinking into unrepentant fraternal slaughter and divine retribution"
+  ],
+  "SpeechStyle": "Serene, contemplative, and spiritually profound; speaks in tranquil, scriptural cadence that brings calm and moral clarity to secular disputes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

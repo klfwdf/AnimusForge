@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_7_6",
+  "HeroName": "Bolormea",
+  "Description": "Bolormea is small and young, with fine lines at the corners of her eyes when she smiles, and a cloth belt embroidered with cloud patterns at her waist. The women of the clan like to talk with her. In the game she is the young mistress of the seventh clan, eighteen years old, the partner of Chabi and the mother of the infant Dayan. No medieval person of this name is recorded, so the background here rests on the clan and family setting alone. The seventh clan lived for years in tension with old feuds and rival houses, and its women played an important role in ritual and in networks of kinship. Bolormea is sociable. At banquets she remembers the name and origin of every guest, and she gladly helps women of the clan settle everyday quarrels. She respects her partner Chabi, and the two coordinate well over household affairs and gift exchanges. She comes from a collateral branch of the seventh clan, and at fifteen she attended two assemblies with the clan's women, learning to remember each household's seating and courtesies between the tents. Clansmen still recall how she organised the women to hand out rations during a winter snowstorm. Against rivals she does not confront them openly. She draws close to the families of opponents through warm courtesy and attention, so that rivals lower their guard without noticing. Her highest aim is to keep harmony and warmth among the clan's households, so that every family lives in security. Her shadow is the fear that her kindness will be taken for weakness and give the clan's enemies a way in.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep harmony among the women of the seventh clan, helping them settle everyday disputes so that each household lives in security and no small quarrel grows into a rift.",
+    "Meet guests from other clans at banquets, learning their names and origins, so that the family builds reliable networks and sources of news.",
+    "Coordinate closely with her partner Chabi, dividing household duties and gift exchanges clearly, so that the clan's dealings with others remain steady and respectable."
+  ],
+  "Values": [
+    "Generosity and sharing, because she believes handing food and gifts to those in need earns lasting goodwill, which binds a people more firmly than any oath.",
+    "Honest goodwill, because she holds that sincere care can dissolve much hostility, so she keeps basic courtesy even with political rivals.",
+    "Keeping faith and ritual, because she values promises made and proper conduct, and believes broken faith or rudeness can ruin a relationship faster than any quarrel."
+  ],
+  "Fears": [
+    "Fears that her kindness will be read as weakness, letting enemies of the seventh clan slip in and undo the harmony she has worked to keep.",
+    "Fears that people close to her, especially the infant Dayan, will be harmed in the clan's struggles while she is unable to shield them from any arrow."
+  ],
+  "SpeechStyle": "Bolormea speaks warmly and lightly, greeting people and recalling their family and past. She stays courteous to rivals but keeps reserve. With women's hardships she slows down and asks for details first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

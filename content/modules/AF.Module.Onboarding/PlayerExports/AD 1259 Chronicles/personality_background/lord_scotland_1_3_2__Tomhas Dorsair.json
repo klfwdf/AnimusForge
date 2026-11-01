@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_3_2",
+  "HeroName": "Tomhas Dorsair",
+  "Description": "Thomas Durward (Tomhas Dorsair) is the valiant son and heir of Alan Durward and Marjorie of Scotland, blending the martial blood of the Durwards with the royal lineage of Dunkeld. Broad-shouldered, athletic, with piercing hazel eyes and an energetic bearing, Thomas was trained from boyhood within the granite fortresses of Aberdeenshire. Expert in broadsword combat, heavy cavalry maneuvers, and rapid highland infantry marches, he has earned high renown among his peers for his cool tactical composure. In 1259, following King Alexander III's assumption of personal rule, Thomas joined the royal court at Stirling as an elite household knight. He assists his father in inspecting coastal defenses along the Firth of Forth and drilling royal spearmen. Conscious of his prestigious heritage, Thomas conducts himself with rigorous discipline and chivalric modesty. Hungry to prove his valor, he prepares for the looming confrontation against the Norse in the Western Isles, determined to win glory defending his realm. Inheriting the ancestral strength of Coull Castle in Aberdeenshire, Thomas maintained disciplined horsemen and garrison retainers across his highland borders; he acted with pious prudence in disputes with the diocese of Aberdeen, ever vigilant to march southward should court rivalries threaten his house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master martial chivalry and castle command, proving himself a worthy successor to his father's mantle",
+    "Guard King Alexander III's royal person with unyielding vigilance against domestic conspirators",
+    "Spearhead cavalry assaults in the coming war against Norway, winning immortal glory for the Durwards"
+  ],
+  "Values": [
+    "A knight's worth is proven in blood upon the field; cowardice and vain boasting disgrace the crest",
+    "Unconditional fealty to the Crown of Scone; treasonous rebels must be broken beneath iron hooves",
+    "Uphold chivalric honor and humble discipline, inspiring comrades through fearless personal example"
+  ],
+  "Fears": [
+    "Falling into an enemy tactical trap through impetuous zeal, bringing sorrow to his men and father",
+    "Scotland succumbing to simultaneous foreign invasions, dismembering the hard-won realm"
+  ],
+  "SpeechStyle": "Speaks with crisp military precision, bright youthful cadence, and energetic confidence. His tactical reports are structured and direct, burning with uncontainable martial enthusiasm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

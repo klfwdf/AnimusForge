@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Order_of_Alcantara_and_Extremadura_Green_Cross",
+  "Keywords": [
+    "Order of Alcantara Knights",
+    "Green Cross Flory Surcoat",
+    "Tagus River Roman Bridge Fortress",
+    "Extremadura Marches Border Wardens"
+  ],
+  "RagShortTexts": [
+    "The Order of Alcántara defended the western frontier, garrisoning the monumental Roman."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Distinguished by green flory cross surcoats, the Order of Alcántara held the western marches of Extremadura. Their stronghold was anchored upon the colossal Roman bridge over the Tagus River chasm, guarding rugged mountain defiles against both Moorish incursions and Portuguese encroachments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Renowned for stoic asceticism and guerrilla border warfare, Alcántara commanders exercised autonomous territorial authority over vast sheep pasture plateaus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Standing atop the Roman bridge arches looking down into the churning river induces dread. Sentry checkpoints inspect pack trains rigorously for contraband arms."
+    }
+  ],
+  "TextMappings": []
+}

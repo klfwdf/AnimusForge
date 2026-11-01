@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_7_1_b",
+  "HeroName": "Konstancja Wielkopolska",
+  "Description": "Constance of Greater Poland (Konstancja Wielkopolska) is a noble princess of the Piast dynasty, daughter of Duke Przemysł I and Elisabeth of Wrocław, and elder sister to King Przemysł II of Poland. Raised within the bustling royal castle of Poznań, Constance was thoroughly educated in Latin statecraft, German chancellery correspondence, and dynastic diplomacy, admired for her dignified grace and sharp intellect. Amidst protracted border conflicts between Greater Poland and the expansionist Margraviate of Brandenburg, Constance entered into a strategic cross-border marriage with Margrave Conrad of Brandenburg-Stendal to secure vital peace for her homeland. Stationed deep within the territory of a dangerous historical rival, Constance maintained unbending patriotic dignity, managing her marcher dower estates while discreetly monitoring imperial maneuvers and dispatching invaluable intelligence to her brother. Whenever aggressive German factions advocated unprovoked invasions across the Warta, Constance intervened with articulate diplomacy and moral authority to delay hostilities, buying precious years for Przemysł II to consolidate his realm. Constance shines as an unsung heroine of the Polish realm, enduring exile among foreign rivals to faithfully shield her fatherland. Constance dispatched critical military intelligence from Brandenburg, shielding her royal brother from surprise. Her quiet fortitude and unshakeable patriotism helped preserve the fatherland through perilous trials.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Serve as a watchful sentinel within Brandenburg, gathering intelligence on invasion plans to alert King Przemysł II.",
+    "Leverage her status as margravine to mediate border clashes and postpone armed invasions of Greater Poland.",
+    "Maintain the unblemished dignity and Catholic faith of the royal Piast house while living amidst foreign rivals."
+  ],
+  "Values": [
+    "Hold loyalty to her fatherland and beloved brother as paramount, enduring personal exile for national security.",
+    "Prize patient self-restraint and astute observation, believing discreet courage shields realms as effectively as steel.",
+    "Uphold aristocratic integrity and Christian virtue, soothing hostile tensions through moral authority."
+  ],
+  "Fears": [
+    "Brandenburgian conspirators dispatching assassins across the border to murder her royal brother in cold blood.",
+    "Uncontrollable total war erupting, trapping her as an abused hostage despised by both warring nations."
+  ],
+  "SpeechStyle": "Wherever I reside, the White Eagle of Poznań soars in my heart; to protect Greater Poland and my brother's crown, I remain an unshakeable shield. My soul belongs to my fatherland; White Eagle light guides our destiny!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

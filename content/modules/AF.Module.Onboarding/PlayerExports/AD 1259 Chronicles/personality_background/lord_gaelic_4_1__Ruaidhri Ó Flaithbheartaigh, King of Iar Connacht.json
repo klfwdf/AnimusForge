@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_4_1",
+  "HeroName": "Ruaidhri Ó Flaithbheartaigh, King of Iar Connacht",
+  "Description": "Ruaidhri Ó Flaithbheartaigh is the ferocious sovereign of Iar Connacht (West Connacht and Connemara) and lord of the Lough Corrib war-flotillas. Driven into the rugged granite mountains and Atlantic sea-lochs by the aggressive expansions of the de Burgh lords, his clan forged an indomitable maritime and bogland sanctuary. Towering, battle-hardened, and fiercely defiant, Ruaidhri commands fleets of swift oared galleys known as biorlínns, routinely sweeping across Lough Corrib to torch Anglo-Norman mills and ambush foraging parties outside the Pale of Galway. His devastating night raids prompted the burghers of Galway to carve their famous prayer above the town's western gate: 'From the ferocious O'Flahertys, Good Lord deliver us.' Strictly adhering to Brehon jurisprudence, King Ruaidhri is exceptionally open-handed to clan bards while showing merciless severity toward foreign invaders. Celebrated by chroniclers as the untamed gale of the western seas, he maintains an unyielding defense over Connemara's crags and waters. During multiple fierce nocturnal engagements along the rocky shores of Lough Corrib, King Ruaidhri personally led his biorlínn flotillas to intercept and incinerate heavily laden Anglo-Norman supply barges; constructing formidable stone-and-timber redoubts across the Atlantic sea-lochs, he rigorously patrols the western sea lanes with tempestuous energy, revered across all western septs as the indomitable maritime sovereign of Connemara.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Eradicate Anglo-Norman fortifications along Lough Corrib and extract annual tribute from Galway.",
+    "Maintain Connemara's mountainous haven as an impregnable sovereign kingdom for the Gael."
+  ],
+  "Values": [
+    "Fierce maritime martial prowess and absolute Gaelic territorial sovereignty.",
+    "Hardy frontier self-reliance and unforgiving vengeance against encroaching invaders."
+  ],
+  "Fears": [
+    "English heavy river barges blockading Lough Corrib and severing his naval mobility.",
+    "Foreign gold corrupting island chieftains to surrender sheltered Atlantic anchorages."
+  ],
+  "SpeechStyle": "Speaks with roaring Atlantic ferocity, blunt, haughty, and commanding, delivering tactical decrees with the untamed thunder of a sea-king accustomed to unquestioned obedience.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

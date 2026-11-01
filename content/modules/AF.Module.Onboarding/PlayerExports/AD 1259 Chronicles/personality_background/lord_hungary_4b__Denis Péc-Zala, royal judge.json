@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_4b",
+  "HeroName": "Denis Péc-Zala, royal judge",
+  "Description": "Denis Péc-Zala is a revered legal titan and senior baron of the Péc dynasty, serving as Judge Royal (Országbíró) and Ispán of Zala. A master of codified royal decrees and ancient Magyar customary jurisprudence, Denis was pivotal in restoring civic order across the realm after the Mongol invasion. Renowned for his unbending impartiality, Denis boldly ruled against predatory magnates who attempted to dispossess lesser gentry and freeholding burghers. Leading his knightly bailiffs, he arrested notorious robber-barons, earning universal acclaim across Transdanubia as an incorruptible champion of justice. He established charter archives in Zala Castle, institutionalizing standard land titling and cadastral surveys. In 1259, amidst partisan turmoil between king and prince, Denis steadfastly preserves judicial neutrality, defending statutory law against oligarchic intimidation. Denis convened regular county judicial diets across Transdanubia, personally hearing peasant grievances and overturning unlawful baronial land encroachments. His unbending enforcement of royal decrees restored civil stability and legal order throughout the realm, commanding universal reverence. His upright judicial administration and incorruptible character established him as an enduring constitutional pillar of medieval Hungarian jurisprudence, commanding universal reverence across the entire kingdom, protecting civic liberties and Christian equity throughout all corners of Hungary.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold supreme judicial authority and equitable judgment, protecting gentry and peasant land rights.",
+    "Institutionalize lawful governance across Zala, establishing Clan Péc as the embodiment of justice."
+  ],
+  "Values": [
+    "Hold judicial equity, sacred legality, and unyielding truth as supreme convictions.",
+    "Value incorruptible public service, convinced impartial justice is the cornerstone of the state."
+  ],
+  "Fears": [
+    "Fears civil war shattering codified law, plunging Hungary into predatory feudal lawlessness.",
+    "Dreads corruption tarnishing the judiciary and destroying the people's faith in royal justice."
+  ],
+  "SpeechStyle": "The majesty of royal law shall never be violated, and the scales of Zala bow to no tyrant! Anyone who tramples justice shall face absolute judgment! Royal law is absolute; the scales of Zala shall never bend before tyrants!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_4_3",
+  "HeroName": "John I, Count of Sponheim-Starkenburg",
+  "Description": "John I, Count of Sponheim-Starkenburg, ruled from the fortified citadel of Starkenburg overlooking the Moselle. Methodical and astute, he guarded family vineyards and fortress tolls, balancing the ambitions of the Archbishop of Trier and the Count Palatine with seasoned diplomacy. John I expanded the vaulted wine cellars of Starkenburg above the Moselle, stockpiling provisions to ensure his river stronghold could withstand years of hostile blockade. Preserving unbending neutrality along the lower Moselle, he protected the ancestral vine-lands of Starkenburg through commercial treaties as a wise and steady lord. Guiding his house through turbulent storms with cautious neutrality, John I preserved Starkenburg as a prosperous and fortified sanctuary on the Moselle. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the stone ramparts of Starkenburg along the Moselle to withstand protracted sieges.",
+    "Protect lucrative hillside vineyards and river quays to fill family vaults with wine tolls.",
+    "Preserve cautious neutrality between the Archbishop of Trier and the Palatinate counts."
+  ],
+  "Values": [
+    "Believes thick castle walls and solvent coffers secure small principalities against ruin.",
+    "Measures ducal success by vineyard harvests and citizen peace, practicing frugal statecraft."
+  ],
+  "Fears": [
+    "The Archbishop of Trier besieging Starkenburg and severing Moselle trade corridors.",
+    "Free-booting robber-knights ravaging the rural vills that sustain his wine treasuries."
+  ],
+  "SpeechStyle": "Speaks with quiet caution and practical agrarian realism, prudent, guarded, and shrewd. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

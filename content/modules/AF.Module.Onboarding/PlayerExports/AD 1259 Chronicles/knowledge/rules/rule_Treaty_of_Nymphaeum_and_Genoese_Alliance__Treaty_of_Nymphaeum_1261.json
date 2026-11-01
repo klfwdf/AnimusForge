@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Treaty_of_Nymphaeum_and_Genoese_Alliance",
+  "Keywords": [
+    "Treaty of Nymphaeum 1261",
+    "Michael VIII Genoese Pact",
+    "Galata Black Sea Monopoly",
+    "Shattering Venetian Naval Primacy"
+  ],
+  "RagShortTexts": [
+    "The 1261 Treaty of Nymphaeum traded Galata commercial rights for Genoese naval war fleets."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Concluded in March 1261, the Treaty of Nymphaeum bound Michael VIII Palaiologos with the Republic of Genoa. Genoa pledged up to fifty war galleys to crush Latin and Venetian fleets, in exchange for exclusive duty-free trading quarters in Galata and absolute commercial hegemony across the Black Sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Michael VIII executed a masterclass in balance-of-power diplomacy: ceding trading privileges across the Golden Horn to incite Genoese naval fury against Venice, securing the naval shield needed to liberate Constantinople."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Genoese galley crossbowmen man the rowing benches with iron discipline. When the Nicaean signal flares ignite across the Bosporus, Genoese ram-irons will sink every Venetian merchant cog in the straits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Greek caïque rowers watch red-cross banners multiply along the shoreline. Italian merchants drive hard bargains, but if Genoese steel drives the Latin usurpers into the Aegean, our families will feast under our true Emperor."
+    }
+  ],
+  "TextMappings": []
+}

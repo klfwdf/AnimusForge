@@ -1,0 +1,31 @@
+{
+  "Id": "rule_York_Metropolis_of_the_North",
+  "Keywords": [
+    "York Minster Primacy",
+    "Governor of the North York",
+    "Ouse River Walls York",
+    "Clifford Tower York Castle"
+  ],
+  "RagShortTexts": [
+    "York served as the ecclesiastical and military guardian of northern England, controlling."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "York anchored royal authority throughout the North of England beneath the soaring towers of York Minster. Guarding strategic Ouse river traffic, Clifford's Tower and stone defenses provided staging garrisons against Scottish incursions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "The Archbishop of York commanded massive ecclesiastical revenues, supplying grain and border levies for royal border defenses."
+    }
+  ],
+  "TextMappings": []
+}

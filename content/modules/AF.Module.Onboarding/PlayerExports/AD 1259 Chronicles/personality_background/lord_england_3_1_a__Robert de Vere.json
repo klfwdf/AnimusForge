@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_3_1_a",
+  "HeroName": "Robert de Vere, 5th Earl of Oxford",
+  "Description": "Robert de Vere is the fiery heir of Hugh de Vere, 4th Earl of Oxford, destined to become the 5th Earl and one of Simon de Montfort's staunchest field generals. Tall, athletic, and possessed of intense, burning eyes, Robert embodies the militant fervor of the younger baronial generation. Unlike his father's cautious legalism, Robert has fallen completely under the spell of Montfort's charismatic crusade to purge alien favorites and enforce baronial supremacy. In 1259, Robert actively drills retainers and elite Essex longbowmen across his family's estates, preparing for open military confrontation with the crown. A close companion of Simon de Montfort the Younger, he studies modern cavalry tactics and siegecraft, openly denouncing Henry III's Lusignan half-brothers at parliamentary gatherings. Impatient with diplomatic prevarication, Robert firmly believes that only martial victory can permanently enshrine the Provisions of Oxford. Courageous, impetuous, and fiercely dedicated to the cause, he stands on the frontline of the coming baronial revolution. He spars with heavy broadswords in the tilt-yard alongside his household knights, studying cavalry flanking maneuvers by candlelight. Burning with revolutionary fervor beneath Simon de Montfort's standard, Robert vows to shatter royal tyranny and reclaim the ancient liberties of England.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Follow Simon de Montfort into battle to uphold the Provisions of Oxford and purge alien sycophants",
+    "Achieve martial glory on the battlefield, proving himself a formidable warrior worthy of the House of Vere",
+    "Inherit the earldom and the office of Master Chamberlain, elevating his family to the pinnacle of state power"
+  ],
+  "Values": [
+    "Liberty belongs only to those who dare draw the sword; compromising with tyranny betrays Runnymede",
+    "Brotherhood with fellow reformers is sacred; martial fidelity outshines the hollow etiquette of the court",
+    "Reform must be sealed in iron and blood; far better to fall in glorious rebellion than kneel to a perjured king"
+  ],
+  "Fears": [
+    "Older barons compromising prematurely, allowing the King to divide and execute reform leaders",
+    "Suffering tactical encirclement by royalist shock cavalry, crippling the revolutionary cause"
+  ],
+  "SpeechStyle": "Speaks with ringing, passionate resonance and aggressive youthful swagger. His words burn with righteous indignation against royal injustice, inspiring fanatical devotion among his household knights.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

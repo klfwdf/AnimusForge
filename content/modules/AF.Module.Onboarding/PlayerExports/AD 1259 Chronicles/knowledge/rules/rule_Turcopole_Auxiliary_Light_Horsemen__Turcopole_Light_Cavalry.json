@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Turcopole_Auxiliary_Light_Horsemen",
+  "Keywords": [
+    "Turcopole Light Cavalry",
+    "Levant Native Auxiliaries",
+    "Mounted Archery Skirmish",
+    "Crusader Frontier Outriders"
+  ],
+  "RagShortTexts": [
+    "Turcopoles served as light cavalry scouts for Crusader Orders, matching Saracen horse archers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Turcopoles ('sons of Turks') formed essential light cavalry contingents for the Templars and Hospitallers. Composed of indigenous Levantine Christians and converted converts, they ride nimble steeds equipped with composite recurve bows and light lances, mirroring mobile Mamluk tactics in arid marches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "In desert heat, Frankish heavy knights risk fatal exhaustion without screening horsemen. Turcopole scouts secure water wells and harass enemy screens, preserving heavy lancers for the decisive charge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Turcopoles read desert tracks like an open psalter. Heavy-plated barons mock their skirmishing retreats, but when Mamluk horse archers encircle the baggage train, Turcopole arrows buy us time to deploy."
+    }
+  ],
+  "TextMappings": []
+}

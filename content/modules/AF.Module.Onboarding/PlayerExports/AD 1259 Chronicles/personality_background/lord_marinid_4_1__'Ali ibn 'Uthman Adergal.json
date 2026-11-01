@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_4_1",
+  "HeroName": "'Ali ibn 'Uthman Adergal",
+  "Description": "'Ali ibn 'Uthman Adergal was a son of 'Uthman Adergal and a full brother of 'Umar, Abu Rabi' Sulayman and Ibrahim. His wife is Raha. No chronicle records his life, so this portrait is a game-setting construction based on the faction's history. His appearance is a game-setting invention: a stocky man with an old rope-rub mark on his neck, a slightly lower right shoulder from years of carrying packs, and a grey-brown wool jacket. A heavy iron water flask hangs at his belt, and he always looks at the ground before he steps. In youth he served at the family's garrison in a southern mountain pass, learning to watch the road, record travelers and check water sources. This made him careful and steady. He won no great victories, but he never failed his watch, and so he became known among the kin as dependable and sober. He rarely joins kinship quarrels and speaks only on matters within his own duty. His highest aim is to hold the family's post in the mountain pass, leaving descendants a road they can rely on. His darkest side is conservatism. He follows routine and resists change, so the younger generation often sees him as slow. His greatest fear is a lapse in his watch that lets raiders or enemies slip through the pass, leaving him to bear every consequence.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "He wanted to hold the family's post in the mountain pass, keeping the road and water in family hands so that descendants have a route to depend on.",
+    "He kept precise records of garrison traffic and headcounts, so that the family and the court could check the grounds for every passage.",
+    "He kept a clear division of duty among his brothers, so that the garrison's responsibilities would not blur into rivalry and weaken the pass."
+  ],
+  "Values": [
+    "Duty and reliability, since he believed a guardian's worth lies in delivering what is assigned on time, even when no one notices.",
+    "Caution and written record, because he held that everything should be written down and checked, so there is proof when things go wrong.",
+    "A clear division of labor in the family, as he believed that when each branch knows its task the kin does not lose its base to internal strife."
+  ],
+  "Fears": [
+    "A lapse in his watch that lets raiders or an enemy force slip through the pass, leaving him to answer for the whole loss.",
+    "Feuds within the kin spreading to the garrison, with brothers competing for power until the pass loses unified command and the post falls."
+  ],
+  "SpeechStyle": "He speaks slowly and often pauses before answering, as if checking facts. He asks subordinates for specifics and confirms actions and times one by one. When he is unsure, he says so plainly rather than promising what he cannot deliver.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_4_4",
+  "HeroName": "Maria Morosini",
+  "Description": "Lady Maria Morosini is the compassionate twenty-two-year-old younger daughter of the House of Morosini, renowned for gentle humility, devout piety, and selfless charity. Directing family hospices and alms funds in the Santa Croce district, Maria distributes bread and relief funds to the families of shipyard laborers and wounded sailors. Unmoved by worldly ambition or ostentation, her warm presence and serene benevolence soothe the anxieties of her powerful brothers, cherished by all. Lady Maria directly supervises the olive oil mills, vintage vineyards, and grain storehouses across the Morosini feudal estates in Candia and Dalmatia, holding overseas bailiffs to impeccable accounting standards. Intimately familiar with the strict quotas imposed by the Venetian Grain Office, she orchestrates the timely dispatch of merchant carracks laden with thousands of bushels of wheat before autumn storms shut down the Adriatic shipping corridors. Through her shrewd fiscal stewardship and opportunistic agrarian purchases during wartime disruptions, she preserved and expanded her family's colonial revenues, cementing House Morosini's status as a preeminent commercial powerhouse. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Devote her resources to relieving the impoverished shipyard workers and orphans across Venice.",
+    "Pray ceaselessly for the safety and spiritual well-being of her seafaring brothers on campaign."
+  ],
+  "Values": [
+    "Christian charity, spiritual humility, and selfless service over material wealth and pride.",
+    "Living with simplicity and grace, dedicated to healing the wounded souls of a war-torn world."
+  ],
+  "Fears": [
+    "Naval casualties leaving countless widows and orphans to starve in the lagoon parishes.",
+    "Severe wartime inflation and grain shortages causing catastrophic bread riots in Venice."
+  ],
+  "SpeechStyle": "Speaks with gentle melodious warmth, sincere Christian modesty, and deep compassionate grace. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lady Liuba, senior castellan of the Gorodets princely household, has served two generations of Rurikid rulers with unswerving diligence and technical mastery. Descended from a loyal retainer lineage, she possesses intimate knowledge of every subterranean vault, granary ledger, and secret armory within the royal compound. Taciturn and endowed with extraordinary mathematical memory, Liuba calculates quarterly provisions for thousands of garrison horsemen and mounts within moments. During punishing winter blockades, her rigorously managed rationing protocols and hidden secondary food caches saved the citadel from famine. Extremely vigilant, she screens household servants with razor-sharp scrutiny, uncovering multiple subversive plots by rival scouts to poison municipal wells. Shunned by vanity, Liuba operates as the indispensable administrative spine of the court. Managing household ledgers and covert supply reserves with mathematical flawlessness, Liuba sustained fortress operations through harrowing sieges, her decades of incorruptible service and discreet vigilance earning the profound trust of successive sovereigns. Her flawless ledgers, sharp vigilance, and incorruptible loyalty preserved the logistical heartbeat of the citadel, proving that meticulous service is the true foundation of sovereign strength across generations of bitter struggle, unrelenting hardship, unyielding courage, and dynastic triumph against overwhelming external adversity.",
+  "SpeechStyle": "Speaks with quiet, low-pitched sobriety, each word measured and supported by exact figures, commanding respectful obedience.",
+  "Motivations": [
+    "Manage strategic grain and military stores with ledger precision, ensuring fortress logistics never fail during winter blockades.",
+    "Screen all castle servants and external retinues rigorously, neutralizing foreign spies to protect the grand princely household."
+  ],
+  "Values": [
+    "Believes unwavering duty, discretion, and frugality form the foundation of service, guarding the logistical heart of the realm.",
+    "Maintains absolute fidelity and secret-keeping toward the royal house, despising disloyalty and administrative negligence."
+  ],
+  "Fears": [
+    "Dreads the infiltration of corrupted traitors within the inner court, compromising defensive secrets and ruining the dynasty."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_8_1_b",
+  "HeroName": "Mathilde von Habsburg",
+  "Description": "Mathilde is the eldest daughter of Rudolf I of Habsburg, uniting her mother Gertrud's regal poise with her father's sharp political acumen. Reared within the ancestral castles of Aargau, she was tutored from youth in the complex heraldic genealogies and shifting pacts of German nobility. Destined to serve as a pivotal diplomatic pillar in the Habsburgs' ascent, she would marry Duke Ludwig II 'the Strict' of Upper Bavaria, exercising tremendous influence as Duchess of Bavaria and Countess Palatine of the Rhine to bridge the two southern dynasties. Eloquent, observant, and politically astute, Mathilde reads the hidden intentions of foreign envoys with effortless grace. Aware that her lineage and marital alliances anchor the fragile balance between Swabia and Bavaria, she maintains unblemished aristocratic majesty, zealously guarding the expanding prestige of the imperial House of Habsburg. Tutored in imperial legal codices and Latin theology within the great halls of Aargau, Mathilde grasped the territorial implications, toll exemptions, and dynastic succession clauses behind every noble marriage. In delicate parleys with foreign ambassadors, her poised diplomacy remained unshakeable, zealously defending her father's sovereign dignity and preparing to hoist the Habsburg banner across the grandest courts of Christendom. Her regal composure and keen intellect positioned her as an indispensable diplomatic arbiter across the high courts of Germany.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Cultivate diplomatic standing for her house across princely courts through impeccable courtly conduct.",
+    "Establish an unassailable regency and consort status in her future Bavarian marriage to protect Habsburg interests."
+  ],
+  "Values": [
+    "Regards dynastic prestige and pristine lineage as inviolable principles, favoring tact over rash conflict.",
+    "Values calm self-restraint, refusing to let superficial vanity compromise her family's noble name."
+  ],
+  "Fears": [
+    "Fears being marginalized as a disposable pawn if geopolitical priorities shift away from her marital domain.",
+    "Worries that sudden imperial rifts between Habsburg and Wittelsbach might plunge her into an agonizing dilemma."
+  ],
+  "SpeechStyle": "Princely banquets conceal sharper blades than any battlefield; true majesty lies in discerning every rival's secret design with a serene smile. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Mathilde von Habsburg"
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_2_3_1",
+  "HeroName": "Jutta von Kleve, Duchess of Limburg",
+  "Description": "Jutta von Kleve, daughter of Count Dietrich V of Cleves, was Duchess of Limburg as wife of Walram IV. Hailing from the lower Rhine, she managed chancery dispatches and court revenues, steering Limburg's alliances across Lower Lorraine with seasoned political discernment. Jutta supervised tax chanceries in Limburg, leveraging Cleves maritime rights along the lower Rhine to recruit armories of blacksmiths for ducal wartime defense. Anticipating dynastic extinction, she mediated between Cleves and Brabant, seeking honorable legal settlements to shield Limburg's people from catastrophic succession wars. Gifted with diplomatic foresight, Duchess Jutta navigated dynastic storms to preserve her subjects from destruction during the twilight of House Limburg. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Mobilize Cleves mercantile and naval power along the Rhine to protect Limburg's northern flank.",
+    "Audit river tolls along the Meuse to furnish constant munitions and wages for the ducal army.",
+    "Guard against premature foreign conspiracies aimed at seizing the Limburg ducal succession."
+  ],
+  "Values": [
+    "Believes vigilant caution and calculated diplomacy form the true shield of smaller states.",
+    "Holds treaty fidelity and diligent statecraft as essential pillars of dynastic survival."
+  ],
+  "Fears": [
+    "Her husband perishing in border skirmishes, leaving Limburg to be torn apart by rivals.",
+    "Trade routes linking Cleves and Limburg being severed by marauding robber-knights."
+  ],
+  "SpeechStyle": "Speaks with cautious clarity and Rhenish mercantile sharpness, observant and composed. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

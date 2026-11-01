@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Granada_Alhambra_Nasrid_Citadel",
+  "Keywords": [
+    "Granada Alhambra Red Citadel",
+    "Nasrid Last Muslim Kingdom",
+    "Sierra Nevada Waters Albayzin",
+    "Castilian Gold Tribute Vassal"
+  ],
+  "RagShortTexts": [
+    "Granada defended the last Islamic redoubt in Iberia from the red hill-fort of the Alhambra."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Granada flourished as the last independent Muslim bastion in al-Andalus under the Nasrids. Framed by the snowy Sierra Nevada, the red fortress of the Alhambra commanded irrigation networks, silk looms, and steep mountain approaches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "scholar"
+        ]
+      },
+      "Content": "Regular gold coin tributes paid to Castile bought uneasy peace, allowing light jinete cavalry to patrol frontier defiles."
+    }
+  ],
+  "TextMappings": []
+}

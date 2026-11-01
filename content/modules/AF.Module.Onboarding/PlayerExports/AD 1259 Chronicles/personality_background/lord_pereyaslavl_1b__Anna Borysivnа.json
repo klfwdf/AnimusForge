@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Anna Borysivna of Pereyaslavl, hailing from the prestigious princely lineage of Chernigov, commands the vital domestic and administrative lifeblood of this battered frontier citadel. In an era darkened by continuous raids and extortionate Mongol levies, she assumed direct stewardship over the municipal granaries, armor-weaving quarters, and the cathedral infirmary. Understanding that a spoiled food cache or an uncontained epidemic could extinguish the garrison as swiftly as nomadic cavalry, Anna personally inspected rye reserves and compounded herbal remedies for wounded sentries. When haughty emissaries from the Golden Horde demanded tribute, she received them in the great hall with dignified composure, delivering precisely audited silver ingots and prime pelts without sacrificing dynastic honor. Her steely resolve earned universal boyar respect; during siege alarms, she appeared atop the inner gatehouse, her steadfast presence embodying resilience. Beside the venerable cathedral, she established communal botanical gardens and military infirmaries, mobilizing local noblewomen to weave cold-weather garments and protect hundreds of war orphans from winter starvation. Revered by clergy and commoners alike as the steadfast guardian angel of this beleaguered outpost, her unshakeable moral strength preserved domestic cohesion throughout the darkest years of the Tatar yoke.",
+  "SpeechStyle": "Speaks with quiet dignity and serene clarity, her words carefully measured and infused with aristocratic authority and compassionate resolve.",
+  "Motivations": [
+    "Manage granaries and textile workshops with absolute precision so the border fortress withstands harsh winters and siege isolation.",
+    "Shelter war orphans and displaced southern refugees, revitalizing local civic order and artisanal crafts around the monastic sanctuaries."
+  ],
+  "Values": [
+    "Reveres Christian compassion and stoic fortitude, regarding the defense of ordinary folk from famine as a sacred dynastic obligation.",
+    "Champions meticulous order and austere discipline, abhorring frivolous indulgence in favor of resilient borderland survival."
+  ],
+  "Fears": [
+    "Dreads the destruction of civic food stores by saboteurs, leaving soldiers and starving townsfolk helpless against winter sieges."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ]
+}

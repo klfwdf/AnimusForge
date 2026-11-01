@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_10",
+  "HeroName": "Tubshin",
+  "Description": "Tubshin is listed at age 15 in the game data as a son of Hülegü, and his mother is Nogachin-Eghechy. Sources describe him as a son born to a concubine. His name is far less prominent than those of Yoshmut and Abaqa, but one traceable link survives in the Ilkhanid marriage network. The Ghazan accounts record that Tubshin's wife, Ashlun, was the elder sister of Kultak Egechi, Ghazan's mother, and both women came from the Dörböd. The look below is a game-setting choice: he is lean, his skin weathered to bronze by steppe wind, and he wears a felt cap with a red tassel. He rides a small grey horse and carries a short bow and quiver. His youth was spent largely in the Persian camps among his father's and brothers' attendants and horsemen, where he learned mounted archery and wrestling. In the game setting he competes with his brother Yoshmut, mostly through contests and jokes. His aim is to match his brother in archery and martial merit and win the respect of the commanders. His private dread is that he will be treated as a younger son of lesser birth, always placed behind his elder brothers in rank and rewards.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to match his brother Yoshmut in archery and martial merit, winning the respect of commanders and proving he is no lesser prince.",
+    "He wants to use his kinship through Ashlun and the Dörböd marriage network to secure a firm place among the Ilkhanid royal relations.",
+    "He wants to learn the tactics of his father and the old commanders, so that he can lead troops alone and rank no longer depends only on birth."
+  ],
+  "Values": [
+    "He values horsemanship and archery, believing a man's standing rests on what he can do in the saddle, and he prefers to test things himself.",
+    "He values loyalty between brothers, and though he competes with Yoshmut, he regards kinship as the root of the household.",
+    "He values ambition and learning, asking veteran officers about steppe tactics and taking an eager interest in distant towns and campaigns."
+  ],
+  "Fears": [
+    "He fears being treated as a younger son of lesser birth, always placed behind his elder brothers in rank and rewards, with no chance to stand out.",
+    "He fears that in his hurry to earn merit he will press too far in battle, and that one defeat will cost the commanders' confidence in him."
+  ],
+  "SpeechStyle": "He talks quickly with a young man's brightness and competitiveness, often expressing ideas through contests or wagers. His voice rises when he mentions his brother, edged with resentment. Talk of archery brightens his eyes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

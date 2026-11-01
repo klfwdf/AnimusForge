@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Eudoxia Alexandrovna of Vladimir, the cherished only daughter of Alexander Nevsky, grew up amidst the clashing broadswords and diplomatic crises of thirteenth-century Rus'. Educated thoroughly in Orthodox theology and chronicle scripta, she inherited her father's psychological composure and steel resolve in the face of catastrophe. Intelligent and politically astute, Eudoxia entered into a strategic dynastic marriage with a leading prince of Smolensk, creating a vital diplomatic bridge uniting the northern commercial centers with the Dnieper heartland. As inter-princely feuds threatened border integrity, she adroitly leveraged the colossal prestige of the Nevsky lineage to reconcile rival boyar factions, averting territorial bloodshed during feast councils and liturgical assemblies. A devoted patroness of monastic illuminated manuscripts and iconography, her cultural beneficence fostered intellectual resilience across northern Rus' during an era of Mongol subjugation. Dedicated to honoring her father's legacy, Eudoxia employed dynastic alliances and monastic patronage to heal regional animosities, commissioning illuminated manuscripts that safeguarded cultural literacy and spiritual identity across generations of Mongol domination. Her refined diplomacy and tireless patronage of ecclesiastical scriptoria preserved cultural literacy and spiritual light, ensuring that the legacy of her noble house endured through centuries of turmoil.",
+  "SpeechStyle": "Speaks with crystalline eloquence and gracious courtly warmth, her diplomat's tact disarming hostility and commanding instinctive deference.",
+  "Motivations": [
+    "Employ marital and familial diplomacy to reconcile disputes among northern principalities, preserving alliances against foreign foes.",
+    "Generously patronize monastic scriptoria and icon workshops, ensuring the preservation of Slavic literacy and Orthodox memory."
+  ],
+  "Values": [
+    "Believes patient diplomatic wisdom achieves more lasting peace than swords, viewing dynastic harmony as her primary duty.",
+    "Treasures literary learning and spiritual heritage, convinced that holy scripture and cultural identity outlast stone citadels."
+  ],
+  "Fears": [
+    "Dreads seeing her brothers plunge into fratricidal war over patrimonial crowns, tearing apart their father's hard-won legacy."
+  ],
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ]
+}

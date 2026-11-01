@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Commander Vasilko of the Moscow Kremlin guard stands as the premier military champion and fiercely loyal bodyguard of Prince Daniil. Raised alongside the young prince in the rugged frontier settlement, Vasilko swore an unshakeable oath to defend his master and city to the last breath. Possessing a colossal, bear-like physique, he wields a massive two-handed broadaxe with devastating mastery. In defense of Moscow's earthen and timber palisades against lawless raiders, he famously held a collapsed breach single-handedly, cleaving opposing chieftains and inspiring his militia. Vigilant and pragmatic, Vasilko instituted interlocking abatis barriers and stone fall-traps along access roads while running mounted river patrols across the Moskva basin to intercept foreign spies. Taciturn and resolute, his armed presence at the Kremlin gates is an eternal symbol of security. Standing with his broadaxe before the Kremlin gates like an immovable bastion of iron, Vasilko repelled overwhelming raiders in brutal close-quarters combat, his sacrificial valor establishing an immortal benchmark of soldierly fidelity. Gripping his massive battleaxe, he repelled countless raiders from the Kremlin stockade, his unbending valor and fierce fidelity inspiring generations of Muscovite guardsmen to defend their sacred ground without fear, compromise, or retreat.",
+  "SpeechStyle": "Speaks with a deep, rumbling baritone like rolling thunder, his words sparse and uncompromisingly authoritative.",
+  "Motivations": [
+    "Defend the timber citadel of Moscow and the princely family to the death, repelling invading princely hosts and raiders.",
+    "Establish heavily guarded watchposts along river narrows to eliminate forest outlaws and protect arriving farming caravans."
+  ],
+  "Values": [
+    "Holds feudal loyalty and soldierly honor above life itself, believing that sworn vows must be kept with blood and steel.",
+    "Reveres martial prowess, stoic discipline, and straightforward courage, despising deceit and viewing his axe as true justice."
+  ],
+  "Fears": [
+    "Dreads failing his post during a critical siege breach and allowing harm to reach the prince, regarding defeat as disgrace."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ]
+}

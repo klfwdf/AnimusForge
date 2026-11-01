@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_7_6",
+  "HeroName": "Rörik Algotsson",
+  "Description": "Sir Rörik Algotsson was an affable, chivalrous knight and adventurous younger brother of the prominent Algotssönerna clan. In 1259, Rörik spent much of his time traversing the frontier territories between Sweden and Norway, forging durable friendships among border knights, timber merchants, and forest rangers. Renowned for his open-handed generosity, vibrant wit, and instinctive mastery of light cavalry skirmishing, he was beloved by his men, whom he treated as brothers-in-arms. Though largely detached from the cutthroat political intrigue of the royal court, Rörik was fiercely loyal to his lineage, standing ready to ride to the defense of his brothers at a moment's notice. During the family's subsequent exile in Norway, his easy charisma and martial competence earned the Algotssönerna a warm reception and landed honors under King Haakon's service. His courage and optimistic resilience made him a universally admired figure in the turbulent borderlands of Scandinavia. Riding freely across the rugged fjords of Norway and the border mountains of Sweden, Sir Rörik deployed his brilliant skirmishing and scouting skills to smash predatory bandit bands. Renowned for his open-handed generosity, he distributed royal rewards equally among his comrades and destitute exiles, winning universal admiration across Scandinavian equestrian brotherhoods. His gallant chivalry, infectious optimism, and fearless steel earned him an enduring reputation as the most beloved knight-errant of the northern frontier.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with gregarious charm, warm camaraderie, and infectious humor, recounting border tales and knightly exploits with lively enthusiasm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

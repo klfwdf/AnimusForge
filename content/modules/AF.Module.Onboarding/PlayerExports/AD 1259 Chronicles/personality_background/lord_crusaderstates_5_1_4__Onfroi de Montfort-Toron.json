@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_5_1_4",
+  "HeroName": "Humphrey of Montfort, Lord of Tyre",
+  "Description": "Humphrey of Montfort was the younger son of Philip of Montfort and Maria of Antioch-Armenia, later succeeding his brother as Lord of Tyre during Outremer's twilight. Hardened from adolescence in border skirmishes across Upper Galilee, he possessed exceptional tactical discipline and formidable personal prowess with the broadsword. In 1259, as Mamluk raiding columns pressed dangerously close to Toron and the outskirts of Tyre, young Humphrey was entrusted with the citadel guard and siege artillery. He engineered layered obstacle lines and caltrop fields safeguarding Tyre's vulnerable southern land gates, rigorously drilling garrison archers in volley discipline. Modest in his personal habits and living alongside common men-at-arms, Humphrey earned deep affection throughout the fortress city for his vigilant leadership. Pledging his sword to defend the Montfort banner to his dying breath, Humphrey stood as an incorruptible military pillar of late crusader Outremer. Along the wind-swept reaches of Tyre Bay, Humphrey commanded naval coastal escorts, repeatedly repelling corsair flotillas attempting to plunder maritime shipping. He frequently visited fishing hamlets to understand popular hardship, petitioning his father to remit burdensome taxes following poor fishing seasons. Resolute, unpretentious, and brave, he embodied the finest virtues of an honorable crusader commander.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify Tyre's artillery battlements and defensive lines to perfection, barring Mamluk forces from breaching the peninsula.",
+    "Serve as an incorruptible vanguard and rearguard officer under his father, defending the Montfort hegemony across southern Outremer.",
+    "Drill the garrison crossbowmen and sergeants in unyielding defensive tactics, forging an elite force capable of enduring heavy sieges."
+  ],
+  "Values": [
+    "Battlefield mastery demands relentless preparation and iron discipline; complacency on the frontier leads to instant ruin.",
+    "Uncompromising duty to his lineage and crusader vows, holding the battlements against impossible odds with steadfast fortitude.",
+    "Leading by personal example and sharing soldierly hardships, commanding the absolute, selfless loyalty of his men-at-arms."
+  ],
+  "Fears": [
+    "A catastrophic conflagration sweeping Tyre's defensive magazines, exposing the garrison to slaughter in the open.",
+    "The sudden death of his father and elder brother leaving the crumbling crusader state entirely upon his shoulders."
+  ],
+  "SpeechStyle": "Speaks with steady martial composure and authoritative precision, discussing fortress defense and tactical counters to cavalry charges with crisp professionalism.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Humphrey of Montfort, Lord of Tyre"
+}

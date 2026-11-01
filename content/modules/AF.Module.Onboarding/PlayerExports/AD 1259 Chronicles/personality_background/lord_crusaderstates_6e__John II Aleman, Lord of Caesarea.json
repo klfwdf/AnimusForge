@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_6e",
+  "HeroName": "John II l'Aleman, Lord of Caesarea",
+  "Description": "John l'Aleman, of the prominent Germanic dynasty in Outremer, became Lord of Caesarea through his strategic marriage to the hereditary heiress Marguerite de Brisebarre. Governing the historic seaside city founded by Herod and fortified by King Louis IX, Caesarea stood as the vital bastion securing the coastal corridor between Acre and Jaffa. Combining Germanic knightly ferocity with Frankish seigneurial diplomacy, John directed major engineering repairs along Caesarea's sea-walls, dry moats, and harbor jetties. In 1259, as predatory Mamluk reconnaissance squadrons raided the surrounding maritime plains, John personally led aggressive counter-sorties through coastal dunes. Within the High Court of Acre, he fiercely championed mutual defense pacts among the coastal baronies while securing naval transport subsidies from Cyprus. Generous to his retainers and relentlessly vigilant, John served as an indispensable bulwark guarding the vulnerable midriff of the Latin Kingdom. John II l'Aleman blended rigorous Germanic military discipline with seasoned Frankish feudal command, leading Caesarea's veteran infantry to repulse frontier incursions. He personally surveyed coastal shallows and river crossings between Caesarea and Acre, establishing an interconnected beacon network and rapid equestrian scouting posts. In the High Court of Acre, his incisive legal arguments staunchly defended the autonomy of frontline coastal baronies. Cool-headed, strategically gifted, and brave under fire, John stood as an indispensable anchor of crusader defense.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the coastal walls and concentric moats of Caesarea as an unyielding frontline barrier against Egyptian armies.",
+    "Lobby the High Court of Acre to coordinate mutual defense treaties among coastal baronies to prevent piecemeal defeat.",
+    "Maximize harbor customs and agricultural revenues from Caesarea to maintain elite companies of armored crossbowmen."
+  ],
+  "Values": [
+    "Territorial stewardship is a sacred duty; a lord must defend his battlements with sword in hand against saracen invasion.",
+    "Governing knights and commoners with strict, impartial justice, inspiring unshakeable solidarity throughout his barony.",
+    "Prizing practical military valor over hollow political rhetoric, devoting his sword to the preservation of Christian Outremer."
+  ],
+  "Fears": [
+    "Mamluk sappers detonating explosive subterranean mines beneath Caesarea's seawalls, opening catastrophic breaches.",
+    "The High Court of Acre failing to dispatch emergency naval reinforcements, abandoning Caesarea to hopeless starvation."
+  ],
+  "SpeechStyle": "Speaks with robust martial vigor and seigneurial authority, issuing defensive directives for the coastal plains with bold, decisive eloquence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "John II l'Aleman, Lord of Caesarea"
+}

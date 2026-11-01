@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lady Evelina of Gorodets, daughter of a premier mercantile and boyar lineage, rose to become a formidable patroness and controller of the Middle Volga riverine trade networks. Endowed with razor-sharp commercial intuition regarding commodities and silver bullion fluctuations, Evelina transformed her family's freight enterprise into a sprawling shipping and warehousing syndicate. She linked the Baltic Hanseatic networks of Novgorod with the Volga Bulgar markets and Caspian trade posts, managing substantial exports of forest furs, honey, beeswax, and imported textiles that channeled vast wealth into Gorodets. Evelina adroitly leveraged commercial loans and grain contracts to cement alliances with influential regional boyars, ensuring her voice carried sovereign weight in civic councils. Protecting her river fleets with heavily armored guards, her contractual integrity and decisive leadership earned her acclaim as an uncrowned queen of northern commerce. Pioneering transcontinental trade arteries linking northern forests with southern markets, Evelina released emergency grain reserves during devastating famines, her visionary entrepreneurship and munificent philanthropy celebrated in chronicle records as an inspiring legend. Her vast trade networks and emergency grain relief sustained thousands through seasons of hardship, her visionary enterprise forever celebrated in northern merchant chronicles as a model of courageous leadership.",
+  "SpeechStyle": "Speaks with crisp rapidity and incisive clarity, cutting directly to core financial stakes with disarming aristocratic poise.",
+  "Motivations": [
+    "Monopolize riverine docks and warehousing concessions along the Middle Volga, securing trade arteries down to the Caspian Sea.",
+    "Equip a heavily armed river flotilla to eradicate river pirates, guaranteeing unhindered transit for valuable commercial cargoes."
+  ],
+  "Values": [
+    "Believes commercial integrity and hard silver are the ultimate levers of power, holding that capital governs political outcomes.",
+    "Champions bold enterprise and agile innovation, scorning timid conservatism in favor of seizing market dominance."
+  ],
+  "Fears": [
+    "Dreads total wartime blockades freezing Volga shipping, causing warehouses to decay and triggering financial ruin."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ]
+}

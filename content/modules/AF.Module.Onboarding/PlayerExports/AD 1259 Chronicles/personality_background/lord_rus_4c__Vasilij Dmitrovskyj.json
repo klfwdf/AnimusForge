@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Vasilij Dmitrovskyj of Dmitrov stands as the stalwart military warden guarding the strategic Yakhroma River navigation corridor connecting the Upper Volga basin with the rising principality of Moscow. Commanding a heavily fortified fortress surrounded by formidable earthen dykes and wet moats, Vasilij enforces iron control over riparian commerce, inspecting every cargo barge and passenger vessel. Rigorous and unbending, he mastered waterborne fortification architecture, raising multi-tiered timber-and-stone bastions equipped with bolt-throwers and defensive galleries along both riverbanks to establish an interlocking kill-zone. On multiple occasions, his garrison repelled opportunistic rival princely detachments attempting to infiltrate upstream, securing his citadel as an unbreachable choke-point guarding the Muscovite and Vladimir heartlands. Securing every sluice gate and riparian gallery along the Yakhroma River with unbending vigilance, Vasilij forged the garrison of Dmitrov into an impenetrable lock, shielding the northern approaches of Moscow and Vladimir with resolute military discipline. Enforcing unyielding security over water gates and river fortresses, his strict military vigilance guarded the Yakhroma corridor, protecting the heartland from flanking incursions and establishing an enduring standard of territorial defense that preserved regional sovereignty and civil peace through long years of relentless war and siege.",
+  "SpeechStyle": "Speaks with a deep, metallic resonance like dropping iron bars, his rigid commands enforcing unquestioned obedience.",
+  "Motivations": [
+    "Secure the Yakhroma River water corridor with an unbreachable fortress network, protecting the heartland from flanking incursions.",
+    "Suppress riverine smuggling and illicit weapons trade, enforcing strict customs levies to swell the public treasury."
+  ],
+  "Values": [
+    "Believes territorial vigilance and strict rule of law are paramount, holding that holding key gateways shields innocent millions.",
+    "Champions methodical vigilance and unflagging security, scorning complacency in favor of iron-clad border discipline."
+  ],
+  "Fears": [
+    "Dreads sabotage of the river dykes and sluice gates by enemy infiltrators, inundating the fortress and destroying defensive moats."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_2",
+  "HeroName": "Bruno von Schauenburg, Bishop of Olmutz",
+  "Description": "Bruno von Schauenburg, Prince-Bishop of Olomouc, stands as one of the preeminent ecclesiastical statesmen and military strategists of Central Europe, serving as the indispensable chief chancellor and strategic architect of King Přemysl Otakar II. Governing the Moravian see of Olomouc for nearly four decades, he orchestrated extensive German colonization across northern Moravia, founding fortified market towns such as Kroměříž and drafting the feudal pacts that legally secured Austria and Styria for the Bohemian Crown. Far from a secluded prelate, Bruno rode in heavy mail at the head of episcopal cavalry on Prussian Crusades, and deployed decisive tactical counter-charges at the Battle of Kressenbrunn to rout Hungarian and Cuman hosts. Mastering the intricate diplomacy dividing the Papacy, Hohenstaufens, and imperial electors with razor-sharp intellect, he serves as the towering intellectual pillar underpinning the entire Iron and Golden Empire. Integrating episcopal revenues with crown taxation, Bishop Bruno constructed an unyielding defensive cordon anchored by Mikulov and Kroměříž, permanently checking Polish raids into Moravia. Maintaining regular correspondence with the Curia in Rome, he deployed profound canonical jurisprudence to demolish rival electoral propaganda, furnishing King Otakar with immense credit and unshakeable legitimacy as the kingdom's preeminent diplomatic architect. His brilliant diplomatic intellect and military foresight secured Bohemia's imperial ascendancy across Europe.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct unshakeable legal and theological defenses for King Otakar, shattering Habsburg diplomatic coalitions.",
+    "Advance urbanization and fortress construction across Moravia, establishing a bulwark against eastern foes."
+  ],
+  "Values": [
+    "Believes in the trinity of rigorous legal contracts, cold realism, and overwhelming military deterrence.",
+    "Regards the establishment of an ordered Christian commonwealth as the supreme ideal of statecraft."
+  ],
+  "Fears": [
+    "Fears King Otakar's overweening hubris leading to reckless overextension on decisive battlefields.",
+    "Worries a hostile papal bull could declare an interdict against Olomouc during the imperial crisis."
+  ],
+  "SpeechStyle": "Parchment charters delineate provinces, but charging lances preserve sovereign realms; in serving King and Cross, wisdom and steel must unite. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Bruno von Schauenburg, Bishop of Olmutz"
+}

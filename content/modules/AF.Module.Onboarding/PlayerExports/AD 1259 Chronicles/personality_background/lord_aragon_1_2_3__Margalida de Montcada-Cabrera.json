@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_2_3",
+  "HeroName": "Margalida de Montcada-Cabrera",
+  "Description": "Doña Margalida de Montcada-Cabrera unites the illustrious bloodlines of Catalonia's two foremost baronial houses—Montcada and Cabrera. Her high-status marriage into the rising Hungarian-Aragonese Dionís family provided the crucial domestic legitimacy and political leverage necessary to anchor Count Dénes's lineage within the Kingdom of Valencia. Cultured, astute, and possessing formidable administrative vigor, Doña Margalida presides over the bustling seigneurial estates, olive presses, and complex irrigation tribunals across Torre de Canals with consummate skill. Navigating the delicate coexistence of Christian settlers, Jewish merchants, and Muslim mudéjares, she maintains law and economic prosperity. In 1259, as conservative Aragonese barons attempt to marginalize foreign-descended courtiers, Margalida deploys her extensive family connections among the high nobility to shield her household, standing as an unshakeable diplomatic pillar and revered matriarch of the Levantine marches. Margarida governed the inner domestic treasuries and manorial rolls of the Dionís estates with extraordinary administrative skill, maintaining solid communication with her noble Montcada kin. Her aristocratic pedigree and tactful diplomacy resolved numerous thorny land disputes with local Aragonese barons, winning universal admiration from tenants. This resilient matriarch provided the indispensable diplomatic shield that allowed her family to take deep root in their newly conquered lands.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Deploy her Montcada and Cabrera pedigree to entrench her house's supremacy in the Valencian Corts",
+    "Masterfully oversee manorial agriculture and irrigation revenues to maintain household solvency",
+    "Foster civil stability among diverse ethnic communities, safeguarding generational prosperity"
+  ],
+  "Values": [
+    "True noble grandeur is founded upon strategic alliances, domestic discipline, and enduring honor",
+    "A matriarch secures her house through wisdom, courtly diplomacy, and unwavering resolve",
+    "Faithfully honor feudal compacts and provide benevolent protection to loyal vassals"
+  ],
+  "Fears": [
+    "Reactionary baronial factions conspiring to strip her household of its hard-won Levantine fiefs",
+    "A catastrophic rural insurrection devastating irrigation networks and reducing estates to wasteland"
+  ],
+  "SpeechStyle": "Gracious, stately, and astute; speaks with the polished authority of an aristocratic chatelaine managing complex feudal domains.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

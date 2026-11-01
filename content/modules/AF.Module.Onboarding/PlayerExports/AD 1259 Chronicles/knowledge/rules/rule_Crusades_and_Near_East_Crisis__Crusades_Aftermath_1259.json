@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Crusades_and_Near_East_Crisis",
+  "Keywords": [
+    "Crusades Aftermath 1259",
+    "Outremer Territorial Decline",
+    "Acre Coastal Bastion",
+    "Kingdom of Jerusalem Remnants"
+  ],
+  "RagShortTexts": [
+    "In 1259 Crusader states clung to coastal forts, navigating between Mongol terror and Mamluk power."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In AD 1259, nestled between the failure of the Seventh Crusade and the shadow of the Eighth, Outremer withered into a string of fortified coastal garrisons anchored at Acre and Tyre. Strangled between Hulagu's devastating Mongol march and the surging Mamluk sultanate of Cairo, the Frankish barons struggled merely to preserve their maritime footholds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The barons of Jerusalem and the masters of the Temple and Hospital harbor no illusions of reconquering Holy Zion alone. Preserving our sea walls at Acre, husbanding Italian shipping revenue, and keeping precarious neutrality while Tartars and Saracens butcher one another represents our sole hope of survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Between Saracen horse arches and rumors of pagan Mongol riders who pile skulls into mountains, our crossbowmen sleep in mail. Outremer is no longer a land of glory; it is a butcher's yard waiting for the spark to ignite."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Frankish lords pray to their saints while our olive groves burn under foreign hooves. When horsemen ride through, it matters little whether they carry cross, crescent, or nine-tailed yak standards—the harvest is trampled all the same."
+    }
+  ],
+  "TextMappings": []
+}

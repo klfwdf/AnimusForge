@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_1",
+  "HeroName": "Guyuk Khatun",
+  "Description": "Guyuk Khatun is listed at age 44 in the game data and is one of the wives of the Ilkhan Hülegü. Her historical counterpart shares the name Guyuk Khatun. She was an Oirat woman, and sources record her as the mother of the prince Jumghur, who was born in March 1234. The look below is a game-setting choice: she is slight, wears a cream felt cloak, fastens her hair with a silver pin, and has a string of blue prayer beads on her wrist. Years on the steppe taught her the rules of royal rank and marriage networks. In the Persian camp she spoke little, but she pressed her husband directly on her children's futures. After Möngke died in 1259, the succession dispute drew her eldest son into the camp of Ariq Böke. The family then travelled west, and Jumghur fell ill and died on the road. Her aim is to restore her line's standing among the Toluid princes and win the fiefs and respect owed to her children. Her private dread is that Hülegü may judge her son's failure as a flaw in the household, costing her the warmth and dignity she has kept at court. On the road west she relied on maids who had come with her from the steppe to bring news, and she used that news carefully when she spoke with her husband.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wants to restore her line's standing among the Toluid princes, so that her children are not pushed to the margins of the Ilkhanate.",
+    "She wants fiefs and lasting protection for her children in Iran, especially for the household that followed her eldest son west.",
+    "She wants Hülegü to forgive her son's choice of side, keeping the household united and her own place at court secure."
+  ],
+  "Values": [
+    "She values the honour of her kin, holding that a family's name matters more than any single misstep.",
+    "She values composure, weighing her words carefully and avoiding open quarrels in the camp in favour of private manoeuvring.",
+    "She values loyalty between mother and child, standing with her children even when their choices bring trouble."
+  ],
+  "Fears": [
+    "She fears that her son's failure will be counted against the whole household, leaving the Toluid branch in Iran marked by disgrace.",
+    "She fears that Hülegü's trust in her house will collapse, taking with it the dignity and warmth she has kept at court for years."
+  ],
+  "SpeechStyle": "Her tone is mild and measured, and she seldom states conclusions outright, preferring advice or questions. When she speaks of her children her voice grows urgent, and she often closes with a plea for understanding.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

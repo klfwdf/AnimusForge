@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4a2",
+  "HeroName": "Leopold II. of Sanneck",
+  "Description": "Leopold II of Sanneck, aged thirty-nine in 1259, is the brother and military co-commander of Conrad I, serving as the martial sword of the House of Sanneck. While Conrad manages intricate diplomatic ties and feudal treaties, Leopold commands the garrison castles and the hardened cavalry retainers along the Savinja defiles. Clad perpetually in mail and surcoat, he patrols the rugged forested marches separating Styria, Carinthia, and the Slovene borderlands. In 1259, as marauding mercenaries and roving robber-barons exploit the power vacuum left by the Babenberg succession struggle, Leopold maintains unyielding vigilance. He has personally repelled multiple border incursions and predatory skirmishers, safeguarding regional mills, trade wagons, and rural tithes. Resolute, fearless, and intensely loyal to his kin, Leopold represents the stalwart knightly bedrock that preserves the autonomy of Žovnek against superior foreign hosts. Leopold II excels in both heavy cavalry battlefield tactics and alpine fortress engineering, serving as the master builder of the Savinja defensive perimeter. Sharing rations with his mailed lancers, he punishes predatory robber-barons while lavishly rewarding faithful border sentries. Facing the flames of the Styrian succession war, this iron commander stands shoulder-to-shoulder with his brother, carving out an independent domain with steel. Resolute and unyielding, Leopold stands as an incorruptible iron bulwark in the Savinja valley, safeguarding regional stability with battlefield prowess.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with the blunt brevity and loud clarity of a battlefield commander, focused on military preparedness, patrol routes, and martial readiness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Duchess Daryna Dmitrovskaya of Dmitrov, revered benefactress of the Yakhroma river valley, embodies Christian benevolence and civic resilience along the northern marchlands. Hailing from an esteemed line of pious boyars, Daryna dedicated her life to municipal relief, cathedral administration, and orphanage care within the fortress city. When war displaced rural populations throughout northern Rus', she mobilized municipal resources to expand communal hospices, established free infirmaries to compound herbal medicines for wounded veterans, and distributed seed grain and tools to impoverished tenant farmers during springtime shortages. Deeply literate, she patronized the historic Monastery of Saints Boris and Gleb, sheltering scholarly monks and safeguarding precious chronicle codices. Her serene moral compassion transformed an austere garrison town into a sanctuary of hope. Dedicating her life to municipal charities and the preservation of irreplaceable monastic chronicles, Daryna sheltered scholars and comforted the afflicted, her radiant moral dignity inspiring generations of borderland citizens to endure with faith and honor. Restoring sacred monasteries, sheltering fleeing scholars, and dispensing food to the poor, her noble compassion made her the revered mother and protectress of Dmitrov, radiating Christian charity, gentle solace, and unshakeable grace throughout dark decades of conflict.",
+  "SpeechStyle": "Speaks with soft, resonant gentleness and profound empathy, her gracious words carrying an aura of compassionate maternal dignity.",
+  "Motivations": [
+    "Expand municipal hospices and medical dispensaries, providing relief and dignity to wounded veterans and destitute families.",
+    "Sponsor the restoration of Saints Boris and Gleb Monastery, protecting refugee monks and preserving irreplaceable chronicle codices."
+  ],
+  "Values": [
+    "Believes deeply in the gospel commandments of charity and mercy, viewing the succor of the weak as her ultimate princely calling.",
+    "Treasures literary heritage and faith, holding that keeping the embers of knowledge alive allows a civilization to rise from ashes."
+  ],
+  "Fears": [
+    "Dreads catastrophic fires consuming the ancient monastic scriptorium, turning irreplaceable historical codices into ash."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1h",
+  "HeroName": "Alboino I della Scala",
+  "Description": "Alboino I della Scala, son of Alberto I and elder brother of Cangrande I, ruled as co-Signore of Verona and Imperial Vicar under Henry VII. Methodical and prudent, his administrative and juristic brilliance complemented Cangrande's battlefield aggression to inaugurate their golden age. Alboino organized an unshakeable fiscal chancery in Verona, auditing river tolls along the Adige to furnish limitless treasury reserves for territorial expansion. Auditing tax rolls and adjudicating river disputes with incorruptible impartiality, he governed the chancery while Cangrande led field armies, cementing their golden era. Methodical and farsighted, Alboino governed civil affairs from the chancery, fueling Cangrande's sweeping conquests to engineer the Scaliger dynasty's greatest golden age. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Administer Verona's treasury, granaries, and public works to fund Cangrande's frontline campaigns.",
+    "Codify municipal jurisprudence, establishing equitable civil courts and mercantile tax tribunals.",
+    "Diffuse aristocratic discontent to consolidate hereditary Scaliger rule across the commune."
+  ],
+  "Values": [
+    "Believes solvent treasuries and codified laws are the indispensable anchors of martial glory.",
+    "Holds fraternal trust sacred, content to govern from the chancery while elevating his brother."
+  ],
+  "Fears": [
+    "Cangrande's impetuous tactical daring leading him into an inescapable enemy encirclement.",
+    "Wartime fiscal burdens provoking destructive insurrections among urban guilds."
+  ],
+  "SpeechStyle": "Speaks with juristic lucidity and fiscal realism, measured, persuasive, and calm. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

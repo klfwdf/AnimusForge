@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_2",
+  "HeroName": "Alaxandair III mac Alaxandair, King of Scots",
+  "Description": "Alexander III, King of Scots, is one of the most beloved and victorious monarchs in Scottish history, whose reign ushered in the realm's legendary 'Golden Age.' Tall, athletic, with piercing hazel eyes and golden-brown hair, Alexander carries himself with natural sovereign majesty and youthful vitality. Crowned at Scone at the tender age of seven upon the Stone of Destiny, he spent his youth as a political hostage between the rival factions of Comyn and Durward. Yet Alexander developed extraordinary fortitude early; when married to King Henry III's daughter Margaret in 1251, the ten-year-old king famously and fearlessly rejected his royal father-in-law's demands for homage for Scotland, declaring he had come to wed, not surrender his kingdom's sovereignty. In 1259, as he reaches his eighteenth year, Alexander assumes full personal rule, dismantling the overbearing regency councils and unifying fractious clans. With iron resolve, he codifies royal law, reconciles northern magnates, and fixes his strategic gaze upon the Western Isles held by King Haakon IV of Norway. A master of statecraft and fearless general in the making, he steers his nation toward supreme independence and glory. John of Fordun records how at Scone the crowned boy was acclaimed by a Gaelic bard tracing his royal lineage; as he matures, Alexander is resolved to cast off regent factions and assert direct royal authority across the western isles.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate absolute personal rule, eradicating baronial factionalism and centralizing royal justice",
+    "Safeguard Scottish sovereignty, maintaining armed neutrality while repudiating English claims of suzerainty",
+    "Build coastal fleets and fortify western strongholds to reclaim the Hebrides and Isle of Man from Norway"
+  ],
+  "Values": [
+    "The King of Scots answers to God alone; the sacred Stone of Scone shall never bow to foreign monarchs",
+    "A monarch's glory lies in impartial justice and sheltering commoners; the rule of law ends tribal slaughter",
+    "Not an island of the realm shall remain in foreign chains; liberate ancestral isles through fearless war"
+  ],
+  "Fears": [
+    "Disaffected baronial factions colluding with foreign crowns to launch another regency coup",
+    "A simultaneous pincer invasion by Norway from the sea and Plantagenet armies from the south"
+  ],
+  "SpeechStyle": "Speaks with ringing youthful authority, clear resonance, and magnetic royal charisma. His commands are decisive and inspiring, blending sharp judicial fairness with ironclad sovereign determination.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

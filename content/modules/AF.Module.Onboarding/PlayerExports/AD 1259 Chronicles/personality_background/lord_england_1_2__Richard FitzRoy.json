@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_1_2",
+  "HeroName": "Richard FitzRoy, Baron of Chilham",
+  "Description": "Richard FitzRoy, Baron of Chilham, is the battle-hardened illegitimate eldest son of King John, and elder half-brother to King Henry III. Broad-shouldered and weathered like Kentish flint, his craggy face bears the honorable scars of arrows taken during the French invasion of 1216–1217. During that apocalyptic First Barons' War, Richard fought with legendary ferocity, securing the English coast and orchestrating naval defenses at Dover and Sandwich that saved the infant Henry III's crown from Prince Louis of France. Rewarded with Chilham Castle in Kent, he anchored royal security across the Cinque Ports. In 1259, though advanced in years, Richard remains an unshakeable military anchor for the Plantagenet crown in the southeast. Deeply troubled by his half-brother's administrative blunders and the rising tide of baronial insurrection under Montfort, Richard refuses to abandon the royal house. Garrisoning Chilham and reinforcing Channel watchtowers with disciplined crossbowmen, he stands vigilant over the Straits of Dover, an immovable guardian of his father's bloodline. Clad in chainmail, he ascends the chalk cliffs of Dover to inspect beacon towers, coaching young squires in drawing heavy crossbows against sea gales. Monitoring every foreign vessel entering the Straits, this grizzled veteran stands resolved to keep Kent an unassailable bastion of royal legitimacy.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the Strait of Dover and Kentish coastal bastions securely for the Plantagenet crown",
+    "Defend royal legitimacy against Montfortian rebels and protect his half-brother King Henry III",
+    "Manage his Chilham barony, drilling his kin and crossbow garrisons in amphibious defense"
+  ],
+  "Values": [
+    "A natural son owes his lifeblood to the royal house; absolute loyalty is an unyielding cuirass",
+    "Dover is the lock and key of England; if the coast falls, foreign invasion overruns the realm",
+    "Action surpasses empty words; an honorable commander never vacillates for political expediency"
+  ],
+  "Fears": [
+    "A coordinated naval and land assault by Montfortian rebels capturing the Cinque Ports",
+    "Fratricidal civil war tearing the Plantagenet realm apart and deposing his father's lineage"
+  ],
+  "SpeechStyle": "Speaks with a gruff, gravelly baritone forged on stormy sea decks. He despises courtly sycophancy, issuing brief, uncompromising commands that brook no argument from subordinates.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

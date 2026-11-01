@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_9_3",
+  "HeroName": "Guibert de Rodez, Master of Arms of Carlat",
+  "Description": "Guibert de Rodez is the paternal uncle of Count Hugues IV and the veteran castellan of Carlat, standing as the senior military commander of the County of Rodez. At forty-seven, he has campaigned in full harness for over three decades across the southern ranges, his scarred, weathered face bearing testimony to a lifetime of combat. Perched atop the formidable basalt plateau of Carlat, Guibert directs the training of the county's elite mountain crossbowmen and dismounted knights. An absolute master of mountain ambuscades, defile defense, and counter-siege operations, he repeatedly crushed roving bands of routiers and predatory mercenaries entering the Cévennes, guaranteeing safe transit along high passes. Blunt, fearless, and passionately loyal to his nephew, Guibert serves as the indispensable military anchor safeguarding the ancestral sovereignty of Rodez. At Carlat, Guibert positioned heavy torsion ballistas upon the basalt cliffs, completely sealing the narrow valley approaches below. Unmarried and wedded solely to his sword, his rhythmic boot-steps along the parapets inspired instantaneous discipline, standing as the eternal warrior heart of the County of Rodez. His unyielding tactical vigilance and veteran command presence guarantee that the fortress of Carlat stands as an impassable sentinel guarding the ancient borders of Rouergue.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Forge an elite mountain strike force of disciplined crossbowmen and armored cavalry.",
+    "Protect Count Hugues IV and crush any hostile incursions into the lands of Rouergue."
+  ],
+  "Values": [
+    "Martial courage and absolute feudal fidelity as the supreme principles of an honorable knight.",
+    "Strict military justice combined with fierce brotherly loyalty to his soldiers."
+  ],
+  "Fears": [
+    "Sentry negligence during mountain fogs allowing enemy commandos to seize a defile.",
+    "Suffering incapacitating illness that deprives him of the strength to lead his men in battle."
+  ],
+  "SpeechStyle": "Speaks with gravelly, battle-hardened bluntness, his words sharp, tactical, and stripped of courtly flattery, commanding immediate obedience through sheer warrior gravitas.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

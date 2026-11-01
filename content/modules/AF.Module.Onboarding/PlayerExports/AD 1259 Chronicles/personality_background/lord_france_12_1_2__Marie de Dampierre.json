@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_1_2",
+  "HeroName": "Marie de Dampierre, Lady of Flanders",
+  "Description": "Marie de Dampierre is the eldest daughter of Count Guy and Countess Mahaut de Béthune, destined to marry Count William of Jülich. At eleven, she is reared in the opulent comital palaces of Bruges and Ghent, educated in Latin liturgies, chivalric poetry, and tapestry needlework. Intelligent, modest, and naturally observant, Marie frequently attends her mother's charitable audiences, learning the traditional duties of high noble stewardship. Her future marriage would establish a vital diplomatic conduit linking the Flemish county with the imperial princes of the Rhineland. Surrounded by loving siblings in the grand halls of Flanders, she displays an innocent grace and sweet courtly demeanor that endears her to all who visit the court. Her harmonious court fostered fruitful alliances between the Rhineland princes and the lords of the Low Countries. Her marriage into the County of Jülich anchored Dampierre influence along the lower Rhine and Meuse rivers. Trained in high courtly manners and diplomatic tact, she worked tirelessly to resolve jurisdictional quarrels and ensure unhindered riverine trade for regional merchants. Her serene mediation earned her lasting respect among the contentious nobility of the Rhineland, Brabant, and Flanders. Her diplomatic poise helped maintain cross-border stability between rival imperial counties and Flemish principalities.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master courtly etiquette and sacred literature to honor her family in a future marriage.",
+    "Comfort her parents with filial affection and care for her younger siblings in the keep."
+  ],
+  "Values": [
+    "Pious Christian virtue, modesty, and respectful deference to parents and church.",
+    "Cherishing domestic harmony and loyalty to the proud heritage of her noble kin."
+  ],
+  "Fears": [
+    "Violent urban revolts breaching the castle gates and separating her from her parents.",
+    "Being sent to a distant, hostile foreign court far from the comforting halls of Flanders."
+  ],
+  "SpeechStyle": "Speaks with sweet, youthful purity and courtly politeness, her words soft, articulate, and carrying the innocent charm and modest reverence of an educated noble maiden.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

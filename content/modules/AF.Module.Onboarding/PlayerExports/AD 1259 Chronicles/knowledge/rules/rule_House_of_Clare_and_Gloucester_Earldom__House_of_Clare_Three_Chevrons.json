@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Clare_and_Gloucester_Earldom",
+  "Keywords": [
+    "House of Clare Three Chevrons",
+    "Earl of Gloucester and Hertford",
+    "Welsh Marcher Lord Bastion",
+    "Richard de Clare Political Pivot"
+  ],
+  "RagShortTexts": [
+    "The House of Clare bore three red chevrons, commanding vast Welsh marches as Earls of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Displaying three red chevrons on gold, the House of Clare held the earldoms of Gloucester and Hertford alongside extensive Welsh Marcher lordships. Earl Richard de Clare stood as principal arbiter during the baronial reform movement of 1258, balancing between royal allegiance and Simon de Montfort's faction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Fielding private retainers equal to royal divisions, Clare's political decisions held the balance of power during the Second Barons' War."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Across Gloucestershire manors, Clare bailiffs maintain rigorous estate ledgers. When Welsh raiders strike across the Severn, chevron-clad riders hunt them down without quarter."
+    }
+  ],
+  "TextMappings": []
+}

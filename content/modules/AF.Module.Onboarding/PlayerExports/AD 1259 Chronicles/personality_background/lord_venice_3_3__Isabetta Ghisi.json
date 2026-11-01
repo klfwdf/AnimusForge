@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_3_3",
+  "HeroName": "Isabetta Ghisi",
+  "Description": "Lady Isabetta Ghisi is the spirited twenty-two-year-old daughter of Baron Geremia, blending Venetian patrician elegance with the wild, sun-drenched independence of the Aegean isles. Fluent in Greek and Venetian, Isabetta is an accomplished equestrian, archer, and navigator of coastal waters. Navigating matrimonial alliances among the Frankish princes of Achaea and the lords of the Archipelago with sharp discernment, she aspires to wield autonomous authority across the maritime frontier. Reared amidst fortified Cycladic sea towers and the intricate diplomatic protocol of Venetian bailiffs, Isabetta speaks fluent Greek, Venetian, and Frankish French, navigating the layered courtly rivalries of the Crusader Levant with consummate grace. She actively assists her lineage by maintaining an extensive correspondence with the Lombard triarchs of Negroponte and the ducal court of Athens, channeling crucial commercial intelligence and fleet movements into her family's private ledgers. Fully cognizant of her aristocratic responsibilities, she perceives diplomacy and dynastic matrimony as vital weapons, forging enduring pacts that secure the Ghisi maritime baronies against imperial Byzantine retaliation and rival Venetian patrician factions. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure an illustrious dynastic alliance among the Latin crusader states to expand family hegemony.",
+    "Master galley navigation and fortress defense to stand as a capable feudal ruler in times of crisis."
+  ],
+  "Values": [
+    "Personal autonomy, martial audacity, and fierce dynastic pride over passive obedience.",
+    "The bold pioneering spirit of maritime crusaders who carve their destiny upon the waves."
+  ],
+  "Fears": [
+    "Being coerced into a stifling arranged marriage to an uninspired lagoon bureaucrat in Venice.",
+    "Being captured by Barbary corsairs or Byzantine warships during an Aegean island transit."
+  ],
+  "SpeechStyle": "Speaks with bright, sunlit confidence, seafaring frankness, and aristocratic Mediterranean pride. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Anna Vasilkovna is an accomplished noble scion of the ancient Rogvolodovichi lineage of Polotsk, distinguished for integrity and civic leadership. Raised amidst the administrative courts of Vitebsk and Polotsk, she mastered legal customs, scriptorium archives, and municipal fiscal accounts. Anna oversaw salt and iron transit revenues along the lower Dvina wharves, earning deep respect from merchant guilds for her incorruptible impartiality. During military emergencies, she financed soup kitchens and emergency infirmaries, sheltering displaced peasant families fleeing border raids. She personally directed convent volunteers in preparing winter compresses and field bandages, displaying calm organizational resolve under pressure. Her moral rectitude and unbending defense of municipal law establish her as the beloved 'Mirror of the Dvina'. Princess Anna oversaw the bustling wharves of lower Polotsk with incorruptible fairness and administrative diligence. She protected fair market prices, resolved guild disputes, and financed soup kitchens for war refugees, earning the deep love of burghers and oarsmen as the moral mirror of the Western Dvina. Her firm oversight of municipal granaries and honest market arbitration prevented speculative price spikes during wartime famines, anchoring public faith and civic order in the grand-ducal justice and integrity of Polotsk.",
+  "SpeechStyle": "Ledgers permit not a single deceit, and justice demands absolute integrity. Equitable laws and honest charity build the true bedrock of our realm! Heaven bless our people!",
+  "Motivations": [
+    "Administer Dvina customs and municipal logistics, maintaining food price stability and abundant stores during sieges.",
+    "Promote charitable relief programs across the river basin, sheltering displaced war orphans to uphold dynastic justice."
+  ],
+  "Values": [
+    "Valuing incorruptible integrity, equitable justice, and civic charity, scorning corruption, extortion, and arrogance.",
+    "Believing transparent governance and compassionate administration alone command popular loyalty amidst dark times."
+  ],
+  "Fears": [
+    "Prolonged hostile sieges exhausting municipal grain reserves, driving peaceful citizens into starvation and panic.",
+    "Corrupt bailiffs embezzling emergency food stockpiles for personal gain, fatally undermining the city's defensive stamina."
+  ],
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ]
+}

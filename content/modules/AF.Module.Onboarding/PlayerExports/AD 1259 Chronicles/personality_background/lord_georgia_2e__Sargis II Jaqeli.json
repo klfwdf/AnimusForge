@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_2e",
+  "HeroName": "Sargis II Jaqeli",
+  "Description": "Sargis II Jaqeli (historically celebrated as Beka I Jaqeli) was the son of Atabeg Sargis I, supreme ruler, legislator, and general of Samtskhe. Inheriting his father's battlefield ferocity, Beka unified it with extraordinary legislative intellect and far-sighted diplomatic statecraft. During his glorious reign (1285–1306), he codified the definitive 'Law Code of Beka-Aghbugha', establishing equitable statutory jurisprudence across the south. He repeatedly repulsed Turkoman raids, while marrying his daughters to Emperor Alexios II of Trebizond and King Demetrius II of Georgia. In 1259, as a brilliant young commander under his father's tutelage, Beka directed the construction of forward artillery towers around Akhaltsikhe. Just, generous, and strategically gifted, Beka I was universally venerated as the architect of Samtskhe's golden age of independence and law. At Akhaltsikhe, Beka I Jaqeli instituted an open judicial tribunal bench, arbitrating disputes between feudal lords and shepherds according to codified statute law. He subsidized iron and silver mining across Meskheti, attracting master armorers and scholars that enriched the principality. In intricate diplomatic negotiations with Trebizond and regional powers, Beka balanced chivalric strength with legal statesmanship, elevating Samtskhe to unprecedented territorial and political zenith, securing regional stability and autonomy throughout the southern Georgian highlands.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Elevate the sovereign glory of Samtskhe, codifying statutory law to establish enduring equity and prosperity across the southern Caucasus.",
+    "Lead Meskhetian cataphract armies to repel Anatolian Turkoman incursions, securing Akhaltsikhe with impenetrable defenses.",
+    "Weave strategic marital alliances with Trebizond and the royal Bagrationi house, securing broad geopolitical depth for his realm."
+  ],
+  "Values": [
+    "Codified statutory justice and equitable rule of law are the true foundations of state power; despotism is barbaric.",
+    "Harmonious synthesis of martial supremacy and legislative brilliance; governing subjects with magnanimity and forensic wisdom.",
+    "Unshakable devotion to the Caucasian homeland and Orthodox faith, dedicating his life to shielding mountain independence."
+  ],
+  "Fears": [
+    "Anatolian conquerors exploiting Caucasian civil friction to pillage Meskhetian estates, tearing down centuries of legal order.",
+    "Future heirs neglecting codified laws and martial vigilance, unravelling the golden age of Samtskhe from within."
+  ],
+  "SpeechStyle": "Speaks with patriarchal legislative authority and strategic wisdom, formulating law codes and mountain defenses with forensic clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Sargis II Jaqeli"
+}

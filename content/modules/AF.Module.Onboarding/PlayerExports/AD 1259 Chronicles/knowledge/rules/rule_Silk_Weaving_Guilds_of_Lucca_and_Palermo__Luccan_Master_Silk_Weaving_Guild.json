@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Silk_Weaving_Guilds_of_Lucca_and_Palermo",
+  "Keywords": [
+    "Luccan Master Silk Weaving Guild",
+    "Palermo Royal Tiraz Textile Palace",
+    "Gold Threaded Damask Brocade",
+    "Medieval Sumptuary Law Restrictions"
+  ],
+  "RagShortTexts": [
+    "Lucca and Palermo produced gold-woven silks and damasks that draped European kings and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mastery of sericulture distinguished Lucca in Tuscany and the royal tiraz workshops of Palermo in Sicily. Employing drawloom technology, artisans combined fine Byzantine raw silk with spun gold thread to weave figured damasks and samite brocades emblazoned with griffins and lions for coronation robes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A bolt of gold brocade fetched prices equivalent to a warhorse. Monarchs promulgated sumptuary statutes to restrict silk wearing strictly to high nobility, curbing merchant pretension."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "artisan"
+        ]
+      },
+      "Content": "Inside Luccan guild compounds, secret draft-loom patterns are closely guarded under pain of exile. Unwinding cocoons in copper cauldrons requires delicate touch to spin unbroken filament."
+    }
+  ],
+  "TextMappings": []
+}

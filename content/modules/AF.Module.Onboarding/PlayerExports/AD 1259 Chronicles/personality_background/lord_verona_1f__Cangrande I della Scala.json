@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1f",
+  "HeroName": "Cangrande I della Scala",
+  "Description": "Cangrande I della Scala, known as 'The Great', was Lord of Verona and Imperial Vicar across the Veneto. The supreme military genius of his age, he conquered Vicenza, Padua, and Treviso, leading the Italian Ghibellines; Dante hailed him as a cherished patron and dedicated Paradiso to him. Cangrande unleashed lightning cavalry sorties to capture Vicenza and Padua, shattering hostile phalanxes through relentless tactical daring that established total Scaliger supremacy. Leading decisive cavalry charges at Padua, his battlefield genius snatched victory from disaster, planting the Scaliger ladder banner over every major citadel across the Veneto. Charismatic and untamable, Cangrande stood as Italy's supreme chivalric warlord, unifying the Veneto through fiery audacity and immortalized in Dante's greatest poetry. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Unify the Veneto under Scaliger iron through lightning cavalry offensives and tactical brilliance.",
+    "Welcome Emperor Henry VII as Imperial Vicar to restore legitimate imperial authority over Italy.",
+    "Shelter Dante and Europe's finest luminaries, cementing his chivalric glory in eternal verse."
+  ],
+  "Values": [
+    "Believes fearless battlefield aggression and princely generosity are the two wings of greatness.",
+    "Holds personal bravery and sharing hardships with troopers as the true essence of a warlord."
+  ],
+  "Fears": [
+    "Sudden illness or poison striking him down before his grand unification of the Veneto is complete.",
+    "Venetian naval power and finance blockading the Adriatic to throttle Verona's access to the sea."
+  ],
+  "SpeechStyle": "Speaks with charismatic thunder, soaring confidence, and infectious chivalric laughter. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

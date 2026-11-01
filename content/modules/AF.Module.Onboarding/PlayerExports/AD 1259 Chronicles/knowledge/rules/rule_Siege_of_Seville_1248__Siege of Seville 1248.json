@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Siege_of_Seville_1248",
+  "Keywords": [
+    "Siege of Seville 1248",
+    "Ramon Bonifaz Castilian Fleet",
+    "Guadalquivir Pontoon Cut",
+    "Saint Ferdinand III Seville"
+  ],
+  "RagShortTexts": [
+    "In 1248, Ferdinand III subdued Seville through a 16-month combined naval and terrestrial."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Spanning sixteen grueling months from 1247 to 1248, the Siege of Seville showcased masterclass amphibious strategy. Castilian Admiral Ramón de Bonifaz drove reinforced northern cogs up the Guadalquivir to ram and sever the vital Triana pontoon bridge, starving the defenders into surrender."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "sailor"
+        ]
+      },
+      "Content": "The capture of Seville transferred the crown of Andalusian urban wealth irrevocably into the hands of Ferdinand III."
+    }
+  ],
+  "TextMappings": []
+}

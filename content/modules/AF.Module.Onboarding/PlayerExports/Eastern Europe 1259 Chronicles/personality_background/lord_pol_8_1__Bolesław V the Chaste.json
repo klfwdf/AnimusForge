@@ -1,0 +1,68 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_pol_8_1",
+  "DisplayName": "Bolesław V the Chaste",
+  "HeroName": "Bolesław V the Chaste",
+  "Description": "Bolesław V the Chaste (1226–1279), High Duke of Poland and Prince of Kraków and Sandomierz, is a pious and ascetic sovereign reigning over a realm shattered by the horrors of the Second Mongol Invasion of 1259. Bound alongside his Hungarian consort Kinga by a solemn vow of perpetual chastity, he governs through prayer, devout patronage of monasteries, and municipal reform—having granted the historic Magdeburg Rights to Kraków in 1257. Yet his reign is defined by tragedy: as general Boroldai's devastating Mongol tumens breach the Vistula defenses, slaughter forty-nine Dominican friars at Sandomierz, and reduce Kraków to smoldering ruins, Bolesław is forced to flee into the Carpathian heights of Hungary. Haunted by the childhood trauma of Legnica and the cries of his captive subjects dragged toward Sarai, he channels every ounce of revenue from the Wieliczka salt mines into stone fortifications and the defense of Roman Catholic christendom against pagan and steppe devastation.",
+  "Background": "Bolesław V the Chaste (1226–1279), High Duke of Poland and Prince of Kraków and Sandomierz, is a pious and ascetic sovereign reigning over a realm shattered by the horrors of the Second Mongol Invasion of 1259. Bound alongside his Hungarian consort Kinga by a solemn vow of perpetual chastity, he governs through prayer, devout patronage of monasteries, and municipal reform—having granted the historic Magdeburg Rights to Kraków in 1257. Yet his reign is defined by tragedy: as general Boroldai's devastating Mongol tumens breach the Vistula defenses, slaughter forty-nine Dominican friars at Sandomierz, and reduce Kraków to smoldering ruins, Bolesław is forced to flee into the Carpathian heights of Hungary. Haunted by the childhood trauma of Legnica and the cries of his captive subjects dragged toward Sarai, he channels every ounce of revenue from the Wieliczka salt mines into stone fortifications and the defense of Roman Catholic christendom against pagan and steppe devastation.",
+  "SpeechStyle": "Speaks in a soft, solemn whisper weighed down by ascetic remorse; frequently pauses to gaze upon his crucifix, addressing listeners with liturgical gravity and sorrow.",
+  "PersonalSpeechStyle": "Speaks in a soft, solemn whisper weighed down by ascetic remorse; frequently pauses to gaze upon his crucifix, addressing listeners with liturgical gravity and sorrow.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Rebuild the shattered walls of Kraków using the vast silver revenues of the Wieliczka salt mines",
+    "Ransom thousands of Christian captives seized along the Vistula by Boroldai's Mongol tumens",
+    "Preserve Piast sovereign supremacy over rival dukes of Masovia and Silesia under papal benediction"
+  ],
+  "Values": [
+    "Earthly crowns are but vanity; absolute chastity and penance alone can expiate the sins of a suffering realm",
+    "A true sovereign must weep for his butchered flock and never bow to pagan or infidel extortion",
+    "The ancient laws of Poland must stand firm even when every wooden borough is consumed by wildfire"
+  ],
+  "Fears": [
+    "Permanent subjugation by the Golden Horde leading to the complete extinction of the Seniorate dynasty",
+    "Betrayal and territorial cannibalization by predatory Piast kinsmen during the post-invasion recovery"
+  ]
+}

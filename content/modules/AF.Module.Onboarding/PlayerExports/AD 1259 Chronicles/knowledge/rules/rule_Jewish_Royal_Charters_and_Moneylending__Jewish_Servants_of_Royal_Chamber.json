@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Jewish_Royal_Charters_and_Moneylending",
+  "Keywords": [
+    "Jewish Servants of Royal Chamber",
+    "Usury Prohibition Scholastic Ban",
+    "Pawn Credit and Vellum Bond Chirographs",
+    "Jewish Quarters and Yellow Felt Badges"
+  ],
+  "RagShortTexts": [
+    "Protected as royal property to provide credit, medieval Jewish communities faced harsh."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Because Christian canon law strictly forbade usury, Jewish communities filled the crucial credit vacuum under the legal status of 'servants of the royal chamber'. Monarchs across England, France, and Iberia granted charters of protection to tax Jewish moneylending heavily, while enforcing humiliating badges mandated by the Lateran Councils."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Barons and abbots financed castles and cathedrals with Jewish credit lines. Yet during rebellions like Montfort's uprising, baronial mobs frequently stormed Jewish archives to incinerate debt bonds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "artisan"
+        ]
+      },
+      "Content": "Enclosed within urban quarters, Jewish yeshivas cultivated advanced arithmetic, law, and medicine. Jewish court physicians translated Greco-Arabic medical treatises, attending monarchs across Europe."
+    }
+  ],
+  "TextMappings": []
+}

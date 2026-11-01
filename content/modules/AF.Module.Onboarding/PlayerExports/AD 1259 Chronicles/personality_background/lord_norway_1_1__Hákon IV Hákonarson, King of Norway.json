@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_1_1",
+  "HeroName": "Hákon IV Hákonarson, King of Norway",
+  "Description": "King Hákon IV Hákonarson was the celebrated architect of medieval Norway's golden age, reigning over an expansive maritime empire that stretched across the North Atlantic. In 1259, ruling from his monumental stone hall in Bergen, Hákon commanded the undisputed allegiance of mainland lordships while incorporating Iceland and Greenland under Norwegian suzerainty through decisive statecraft. Having crushed the century-long civil strife between Birkebeiner and Bagler factions in his youth, he centralized administrative power, promulgated uniform royal codes, and modernized the realm's chivalric culture. His court welcomed envoys from Castilian kings, Holy Roman emperors, and the Papacy, fostering a flourishing renaissance of translation that introduced Continental Arthurian romances into Old Norse literature. A master naval strategist, he assembled the formidable Leidang leid-fleet of multi-oared drakkar warships, maintaining iron security along arctic and western sea lanes. His commanding charisma, diplomatic vision, and relentless nation-building immortalized him as one of the towering monarchs in Scandinavian history. King Hákon personally commanded the formidable royal Leidang war-fleet across the stormy waters of the North Sea and the Shetland archipelago, displaying supreme seamanship reminiscent of ancient Norse sea-kings. At the monumental Nidaros Cathedral in Trondheim, he celebrated solemn translations of Saint Olav's sacred relics, unifying spiritual authority and temporal kingship to elevate Norway's international prestige to its historical zenith. His unbending will, diplomatic mastery, and far-reaching legal reforms cemented his enduring renown as the preeminent monarch of high medieval Scandinavia.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with majestic sovereign authority and sagacious poise, blending the ancient heroism of Norse sagas with refined Continental courtliness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

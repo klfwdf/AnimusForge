@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_2z",
+  "HeroName": "Perna Caetani",
+  "Description": "Lady Perna Caetani is the venerable sixty-four-year-old matriarch of the House of Caetani in Anagni, commanding universal reverence across the Roman Campagna. Having weathered over half a century of curial upheavals and baronial warfare, Perna witnessed her house rise from local castellans to the pinnacle of apostolic power. Possessing encyclopedic knowledge of noble genealogical alliances and legal traditions, she serves as an indispensable oracle of wisdom and moral anchor for her ambitious kin. Having witnessed half a century of curial upheavals, venerable Lady Perna provides invaluable genealogical and diplomatic counsel to her ambitious descendants, serving as an irreplaceable moral anchor within the great halls of Anagni. Her profound wisdom, serene piety, and maternal charity surround Lady Perna with deep reverence, guiding her kin through crises with the tranquil stoicism of an antique Roman patrician. Her serene dignity, encyclopedic knowledge, and pious prayers illuminate the ancient fortress halls of Anagni with perpetual grace, wisdom, and spiritual consolation. Cherished by her noble descendants and attendants alike, Lady Perna represents the venerable wisdom, continuity, and peaceful promise of her house. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve ironclad unity and mutual loyalty among all branches of the burgeoning Caetani clan.",
+    "Offer ceaseless prayers and charitable alms to secure divine favor for her ambitious descendants."
+  ],
+  "Values": [
+    "Christian piety, family harmony, and moral rectitude as the true secrets of lasting greatness.",
+    "Reverence for ancestral traditions, inner equanimity, and graceful stoicism amidst crises."
+  ],
+  "Fears": [
+    "Unbridled hubris and reckless ambition provoking catastrophic downfall for her descendants.",
+    "Fratricidal factional violence consuming the brilliant youth of her household."
+  ],
+  "SpeechStyle": "Speaks with serene maternal wisdom, antique Roman gravitas, and the profound insight of a long life. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

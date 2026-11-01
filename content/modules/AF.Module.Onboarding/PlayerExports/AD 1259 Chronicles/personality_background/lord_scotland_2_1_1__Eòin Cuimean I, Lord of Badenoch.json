@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_2_1_1",
+  "HeroName": "Eòin Cuimean I, Lord of Badenoch",
+  "Description": "John I Comyn, Lord of Badenoch (known as 'the Red Comyn'), is the supreme chieftain of Clan Comyn and one of the most formidable magnates in Scottish history. Broad-shouldered, barrel-chested, with a bristling auburn beard and chilling, calculating eyes, John inherited the immense political mantle of his uncle Walter Comyn. Throughout the turbulent 1250s, he spearheaded the ultra-baronial Comyn faction, famously orchestrating the midnight coup at Kinross in 1257 that seized the youthful King Alexander III and expelled the Anglophile party of Alan Durward. In 1259, with Alexander III asserting his personal majority and curbing regency oligopolies, John executes a strategic retreat to his vast highland bastions. From Ruthven Castle in Badenoch and Lochindorb, he controls immense territorial wealth, private armies of highland galloglass, and judicial courts spanning the north. Fiercely nationalist yet relentlessly ambitious for his clan, John remains an indispensable yet dangerous colossus standing at the right hand of the Scottish throne. Master of Ruthven and uncrowned lord of the Grampians, the elder Comyn governed the realm with haughty tenacity; in parleys with English envoys at Berwick, he bluntly repudiated any foreign claim of overlordship, guarding the autonomous rights of the Scottish realm.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve Clan Comyn's entrenched supremacy within the royal council and military command under Alexander III",
+    "Prevent the revival of the Anglophile Durward faction, blocking King Henry III from manipulating Scottish affairs",
+    "Fortify Lochindorb and Ruthven castles, maintaining an unassailable bastion against centralizing royal encroachments"
+  ],
+  "Values": [
+    "The might of Clan Comyn is the true anchor of Scottish liberty; royal authority without baronial steel is hollow",
+    "Preemptive action determines political survival; hesitation and weak sentimentality invite total destruction",
+    "Clan solidarity and ancestral tenure transcend all; defend the dominance of Badenoch by any means necessary"
+  ],
+  "Fears": [
+    "King Alexander III forging alliances with southern magnates to dismantle Clan Comyn's palatine lordships",
+    "Plantagenet royal armies invading the realm, stripping his clan of its hard-won feudal supremacy"
+  ],
+  "SpeechStyle": "Speaks with deep, gravelly gravitas, measured cadence, and chilling authority. His words are slow and deliberate, dripping with geopolitical realism that silences lesser lords with sheer force of will.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

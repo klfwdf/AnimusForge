@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Hospitaller_Infirmary_and_Leper_Lazar_Houses",
+  "Keywords": [
+    "Hospitaller Grand Infirmary",
+    "Acre Saint John Field Care",
+    "Saint Lazarus Leper House",
+    "Crusader Battlefield Triage"
+  ],
+  "RagShortTexts": [
+    "The Knights Hospitaller ran advanced hospitals in Acre, providing clean linens, surgery,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In Acre, the Knights Hospitaller operated vast infirmaries accommodating over a thousand patients. Combining Byzantine sanitation and Islamic pharmacopeia, they enforced daily linen changes, ventilated wards, nourishing meat broths, and systematic triage. Afflicted crusaders were cared for by the allied Order of Saint Lazarus in specialized lazar facilities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Even noble knights afflicted with leprosy rode into combat under the green cross of Saint Lazarus. The memory of King Baldwin IV of Jerusalem sanctified their suffering as holy trial rather than shame."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Black-mantled Hospitallers tend penniless pilgrims as if serving the Lord Himself. A fever-stricken camp follower receives clean water, fresh bread, and compassionate nursing denied by his own village elders."
+    }
+  ],
+  "TextMappings": []
+}

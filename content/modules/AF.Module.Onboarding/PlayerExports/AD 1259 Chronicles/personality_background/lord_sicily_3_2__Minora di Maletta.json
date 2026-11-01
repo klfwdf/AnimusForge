@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_3_2",
+  "HeroName": "Minora di Maletta",
+  "Description": "Countess Minora di Maletta serves as the formidable domestic matriarch of the House of Maletta, directing castle operations, estate revenues, and logistical stockpiles at Apice. While her husband travels on high imperial embassies or martial campaigns, Minora oversees fortress garrisons, granaries, and feudal tenures with immaculate fiscal discipline and firm resolve. Combining gracious courtly poise with decisive executive authority, she maintains ironclad loyalty among household retainers and institutes generous famine relief, earning profound reverence from local communes. With rigorous accounting and domestic authority, Countess Minora managed extensive estates and mills throughout Apice, enforcing order among household retainers while securing vital grain reserves during seasons of poor harvest and wartime uncertainty. Through relentless border conflicts, she safeguarded her children with maternal devotion and meticulous financial stewardship, transforming Apice Castle into a sanctuary of order, prosperity, and unshakeable loyalty for the entire clan. Her prudent stewardship, moral fortitude, and compassionate famine relief ensure that the county of Apice remains a prosperous, fortified haven through every changing tide of war. Her selfless charity, vigilant care, and gracious hospitality ensure that Apice flourishes with peace, abundance, and enduring stability. Her compassionate charity, meticulous household accounts, and unshakeable poise transform Apice into an unassailable bastion of peace and security.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain fortress readiness, agricultural abundance, and financial solvency across Apice.",
+    "Instill aristocratic virtue and high diplomatic polish in her children to perpetuate the family legacy."
+  ],
+  "Values": [
+    "Household order, financial prudence, and selfless dedication to family continuity.",
+    "Christian charity, moral rectitude, and protective care for dependent tenants and vassals."
+  ],
+  "Fears": [
+    "Hostile sieges breaching ancestral walls and capturing beloved kin as captive hostages.",
+    "Famine or pestilence devastating rural tenantry and eroding agricultural stability."
+  ],
+  "SpeechStyle": "Speaks with composed warmth, clear domestic authority, and the dignified grace of a noble matriarch. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_2_1",
+  "HeroName": "Roger IV de Foix, Count of Foix",
+  "Description": "Roger IV de Foix is the reigning Count of Foix, master of the impregnable rock fortress guarding the Pyrenean passes between Languedoc and Catalonia. Surviving the devastation of the Albigensian Crusades and the collapse of the County of Toulouse, he preserved the proud independence of Foix through razor-sharp diplomacy and formidable mountain cavalry. Perched atop his sheer limestone crag, Roger commands the vital commercial and military arteries linking northern France with Aragon. He perfected highland fortification doctrines, erecting a sophisticated web of stone signal towers that forced royal seneschals at Carcassonne to acknowledge his high baronial jurisdictions. His marriage to Lady Brunissende of Cardona bound his dynasty with the foremost magnates of Catalonia, creating an impenetrable diplomatic network across the mountains. Tough, calculating, and relentlessly vigilant, Roger stands as the undisputed iron pillar of the Pyrenees. Roger IV fortified the highland passes of Foix with stone watchtowers, creating an impenetrable signal network that warned of hostile incursions hours before armies arrived. By granting fertile mountain valleys to Catalan refugees, he cemented the unyielding loyalty of the Pyrenean clans, transforming his rugged county into an unassailable bastion of mountain independence. His uncompromising vigilance guarantees that the mountain defiles of Foix remain an impassable barrier against all foreign ambitions.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Repel French royal encroachments to preserve the ancient judicial liberties of Foix.",
+    "Strengthen merchant agreements with Catalonia to enrich the county through transit tolls."
+  ],
+  "Values": [
+    "Dynastic preservation and flexible realpolitik amidst the rivalries of great kingdoms.",
+    "Ferocious baronial protection of local vassals in exchange for absolute martial fealty."
+  ],
+  "Fears": [
+    "Royal French armies using heresy inquiries as a pretext to storm Foix castle.",
+    "Bitter regional rivals from Armagnac seizing mountain passes to sever Catalan trade."
+  ],
+  "SpeechStyle": "Speaks with gravelly mountain authority, his Occitan-tinged French terse, cutting, and uncompromising, projecting the raw gravitas of an unconquered border lord.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_6_2",
+  "HeroName": "Ramfrida Israelsdotter Finstaätten",
+  "Description": "Lady Ramfrida Israelsdotter was an illustrious matriarch of the Finsta lineage and a formidable figure within the ruling aristocratic circles of medieval Uppland. In 1259, Ramfrida oversaw the expansive agricultural domains and manor finances of Finsta, managing grain reserves, flax production, and extensive tenant networks with flawless administrative precision. Navigating the turbulent political rivalries between the centralizing Bjälbo crown and regional magnates, she astutely consolidated her household's legal immunities through strategic monastic endowments and ecclesiastical alliances. Her profound comprehension of customary property law enabled her to safeguard ancestral estates from royal confiscations and predatory feudal claims during successive succession crises. A devout benefactress of cathedral foundations and rural parish hospices, she earned universal acclaim for her benevolence in times of crop failure and harsh Scandinavian winters. Her astute diplomatic matchmaking bound Finsta into the highest echelons of Swedish and Danish nobility, creating the cultural and dynastic bedrock that defined late medieval Sweden. Within Finsta Castle, Lady Ramfrida cultivated comprehensive botanical herbariums and textile workshops, producing exquisite episcopal vestments and altar tapestries that won the lasting admiration of Svealand abbeys. During severe northern famines, she ordered the distribution of rye and dried fish from family storehouses, saving thousands of peasant families from starvation across neighboring parishes. Her serene maternal wisdom and diplomatic arbitration resolved numerous land feuds, establishing her as an indispensable anchor of unity and prosperity for the Finsta lineage.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with soft-spoken dignity and reserved grace, delivering shrewd genealogical insights and pragmatic estate counsel with measured aristocratic elegance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

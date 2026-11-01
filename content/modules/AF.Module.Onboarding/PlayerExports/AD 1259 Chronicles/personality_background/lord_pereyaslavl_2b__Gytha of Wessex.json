@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Duchess Gytha of Wessex, daughter of King Harold Godwinson—the last Anglo-Saxon king of England—fled to Scandinavia following the Battle of Hastings before her historic marriage to Vladimir Monomakh. Bringing the refined courtly heritage of Anglo-Saxon royalty, Latin literacy, and Norse maritime tenacity to Pereyaslavl, Gytha played an indispensable role in shaping princely statecraft along the Rus' marches. While Monomakh conducted campaigns across the steppe, Gytha managed royal domains, patronized monasteries, and endowed hospitals for the poor with celebrated devotion. Mother to Grand Prince Mstislav the Great and ancestor to generations of European monarchs, she wove English royal blood into the Rurikid dynasty. Her piety, cosmopolitan wisdom, and steadfast spirit bridged the North Sea with Eastern Europe, celebrated in chronicle lore as a noble queen of cross-continental renown. Utilizing her substantial royal resources, she sponsored scholars traveling to Western scriptoria, infusing Latin jurisprudence, Scandinavian statecraft, and monastic medicine into the Danubian and Dnieper borderlands. Her cross-continental perspective, regal poise, and deep maternal devotion permanently refined the courtly culture of medieval Rus', bridging northern and eastern European civilizations with enduring spiritual grace, learned compassion, unshakeable dynastic courage, and sublime cultural and moral magnificence.",
+  "SpeechStyle": "Speaks with soft, aristocratic elegance and a melodic foreign cadence, blending Saxon royal poise with deep Christian piety.",
+  "Motivations": [
+    "Introduce Anglo-Saxon and Scandinavian cultural and legal traditions, enriching the intellectual horizons of the court.",
+    "Support Monomakh's governance and nurture her children to perpetuate the intertwined glory of Wessex and Rurikid dynasties."
+  ],
+  "Values": [
+    "Cherishes ecumenical Christian piety and active charity, finding spiritual purpose in founding hospices and supporting the afflicted.",
+    "Treasures dynastic resilience and noble dignity, believing that stoic grace overcomes the bitterest blows of exile and tragedy."
+  ],
+  "Fears": [
+    "Fears the return of devastating warfare obliterating her sanctuary, forcing her children into tragic displacement."
+  ],
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ]
+}

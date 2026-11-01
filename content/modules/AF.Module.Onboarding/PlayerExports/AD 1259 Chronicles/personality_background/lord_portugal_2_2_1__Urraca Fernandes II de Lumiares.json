@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_2_1",
+  "HeroName": "Urraca Fernandes II de Lumiares",
+  "Description": "Doña Urraca Fernandes II de Lumiares is a high-born noblewoman from the prominent northern House of Lumiares, wife to Dom Fernão Garcia de Sousa, Lord of Gouveia. Carrying the proud bloodline of Portugal's founding nobility, Doña Urraca possesses acute legal intellect, diplomatic tact, and extraordinary skill in manorial management. While her husband exercises military command over the Beira passes, she oversees the extensive granaries, hydraulic mills, and vassal contracts of Gouveia Castle. In 1259, as crown inquests challenge baronial privileges, her rigorous documentation and legal acumen successfully preserve the family's tax-exempt estates. Methodical yet deeply compassionate, she maintains charitable shelters for mountain refugees and orphans, earning the heartfelt reverence of her people. Combining courtly elegance with pragmatic fortitude, Countess Urraca serves as the unshakeable domestic anchor of her dynasty. Auditing grain storehouses and alpine wool yields within Gouveia Castle, Lady Urraca ensured the mountain citadel could withstand prolonged blockades without hardship. Opening her granaries to feed starving mountain refugees during severe famines, her maternal wisdom earned the everlasting reverence of garrison knights and tenantries alike. Her consummate organizational skill, famine relief, and legal defense of seigneurial franchises make Lady Urraca a revered pillar of Gouveia Castle.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prudently manage castle storehouses and Douro estates to guarantee continuous economic security",
+    "Deploy rigorous legal defenses against royal crown judges to preserve her family's franchises",
+    "Endow monastic hospices to cultivate deep popular loyalty and moral authority across the region"
+  ],
+  "Values": [
+    "Orderly domestic management and full storehouses are the indispensable bedrock of martial strength",
+    "Combine firm justice with genuine mercy; protecting the weak is a sacred duty of high nobility",
+    "Frugal industry, unwavering marital fidelity, and patient reliance upon divine grace"
+  ],
+  "Fears": [
+    "Catastrophic alpine floods destroying mountain mills and triggering severe agricultural famine",
+    "Royal crown officials annexing the seigneurial jurisdiction of Gouveia by arbitrary decree"
+  ],
+  "SpeechStyle": "Stately, precise, and authoritative; speaks with the effortless composure, legal clarity, and dignified warmth of a formidable feudal chatelaine.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

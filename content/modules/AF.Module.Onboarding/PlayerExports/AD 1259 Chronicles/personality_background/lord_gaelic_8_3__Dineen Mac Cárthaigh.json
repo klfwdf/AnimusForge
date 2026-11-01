@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_8_3",
+  "HeroName": "Dineen Mac Cárthaigh",
+  "Description": "Dineen Mac Cárthaigh is the veteran military councilor of Clan MacCarthy, directing mountain kern logistics across the highlands of Desmond. Thirty-eight years old, reticent, steely, and immensely experienced, he has campaigned across Kerry and Cork for over two decades alongside King Finghin. Stationed along the strategic defiles of the River Maine and Kenmare Bay, Dineen knows every hidden goat-track, treacherous morass, and cavern redoubt in southwest Ireland. Master of concealed mountain camps, signal beacon networks, and nocturnal raids, he has repeatedly detected approaching Anglo-Norman sweep operations in advance, guiding Gaelic forces to encircle trapped enemy columns. Highly revered by frontline fighters for his unflinching composure under fire, Dineen serves as Finghin's indispensable tactical advisor, anchoring the southern war-host with deep military wisdom. Constructing concealed observation posts and beacon towers across the headlands of Kenmare Bay, Dineen repeatedly ambushed encroaching feudal raiding columns, guiding royal forces to encircle trapped adversaries; his razor-sharp tactical foresight and seasoned battlefield wisdom form the indispensable strategic bedrock upon which Clan MacCarthy thrives. His tactical genius ensures that the mountain redoubts of Desmond remain impregnable to foreign conquest, protecting the freedom and sovereign heritage of south Munster against all foreign usurpers.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain absolute control over the mountain defiles of Munster to ensure tactical mobility.",
+    "Provide seasoned counsel to his young royal kinsmen to defeat Anglo-Norman fortresses."
+  ],
+  "Values": [
+    "Steely battlefield pragmatism and exhaustive topographical intelligence.",
+    "Devoted counsel to young royal heirs and incorruptible defense of the realm."
+  ],
+  "Fears": [
+    "Young princes overreaching in pursuit and being crushed on open ground.",
+    "River defense lines collapsing, exposing hidden storehouses and camps."
+  ],
+  "SpeechStyle": "Speaks in low, gravelly tones of seasoned military pragmatism, concise, sharp, and focused entirely on terrain analysis and surgical ambush tactics.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

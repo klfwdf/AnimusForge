@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_3_1_1",
+  "HeroName": "Emir Abu Ahmad Hashim ibn Gamal Abd-Allah",
+  "Description": "Abu Ahmad Hashim ibn Gamal Abd-Allah is the eldest son of Ismail Gamal. The game data records him at thirty-six, with strong cavalry and command skills, and the template of a knightly commander. The game model shows an adult man's face with a short beard, and no scars are recorded in the sources or game data. He is always seen with his cavalry armor and a short sword inlaid with silver. The chronicles say nothing of him, so the account below rests on game setting and dynastic background. As a young man he learned the family's finances and estate management from his father, then trained in the cavalry of the camps, becoming a man of both military and financial experience. Before each campaign he checks every saddle and rein himself and leaves nothing to others. He has two sons with his wife Jaida. The elder, Ahmad, and the younger, Sulayman, were both taught archery and the rules of defense by his own hand. In the struggle among the royal kin, he is more willing than his father to use force to establish his authority, though on major matters he still follows his father's counsel. His lofty aim is to keep the branch's cavalry and revenues advancing together, so that the family can protect itself in turbulent times. His private shadow is the fear that his pride will cloud his judgment, and that open conflict will slowly wear away the trust between father and son.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Lead the branch's cavalry and garrisons, so that the family's force can protect its lands and trade routes without relying on others.",
+    "Bring his sons Ahmad and Sulayman on campaigns and into governance, so that both gain practical experience in war and administration.",
+    "Assert his authority by force in the kin's quarrels, so that other branches do not slight him, while staying aligned with his father on major matters."
+  ],
+  "Values": [
+    "He believes force is the foundation of a family's self-defense, and in danger one should protect kin and property through action rather than words.",
+    "He values loyalty and obedience between father and son, believing that a family stays united through consistent judgment rather than competing opinions.",
+    "He honors the knight's oath, holding that a spoken promise must be fulfilled through deeds, without ambiguity."
+  ],
+  "Fears": [
+    "His pride may cloud his judgment, and a clash may cost him the best of his cavalry, so that he loses the trust of his father and his men.",
+    "The growing rift between father and son may split the branch, dragging his authority and his sons' future into the quarrel."
+  ],
+  "SpeechStyle": "His voice is low and firm, and he speaks briefly, often ending with an image of battle lines or horsemanship. He rarely argues with his father, is strict but fair with his men, and is too demanding with his sons at times.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

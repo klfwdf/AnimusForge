@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1x",
+  "HeroName": "Tegwared y Bais Wen",
+  "Description": "Tegwared y Bais Wen ('Tegwared of the White Cloak') is an illegitimate son of Llywelyn the Great and uncle to Prince Llywelyn the Last, celebrated across Wales as a living legend of military chivalry. Renowned for leading charges cloaked in a pristine white woolen mantle, he cuts an imposing figure even in his twilight years. Grizzled and broad-shouldered as an ancient oak of Snowdonia, his weathered skin is a roadmap of battle scars earned from fifty years of campaigning against Norman invaders. In 1259, Tegwared serves as Prince Llywelyn's chief field marshal and marshal of the princely household guard. Intimately versed in combined-arms warfare, longbow tactics, and the treacherous defiles of Eryri, he drills young squires in rapid highland cavalry maneuvers and unbending discipline. He commands the garrison of Aber Castle, providing steady strategic wisdom to the impetuous younger generation. Revered by common archers and royal captains alike, his presence on the battlefield steels the resolve of every warrior under his command. At dawn in the courtyard of Aber, he coaches young squires in the balance of the mountain lance, his gravelly voice imparting hard-won border wisdom. His iconic white cloak billows in the Snowdonian gales; wherever Tegwared rides along the battlements, despair evaporates and unshakeable warrior resolve steels the men.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assist his nephew Prince Llywelyn in completing the sacred work begun by Llywelyn the Great",
+    "Impart half a century of tactical and siegecraft experience to the rising generation of Welsh officers",
+    "Stand as an unyielding bulwark defending the mountain strongholds of Gwynedd to his dying breath"
+  ],
+  "Values": [
+    "A veteran's only resting place is the battlefield; as long as breath remains, never yield an inch",
+    "Discipline and mutual brotherhood are the iron sinews of war; cowardice forfeits the right to live",
+    "The martial glory of Llywelyn the Great must be upheld with immaculate knightly honor"
+  ],
+  "Fears": [
+    "Fratricidal feuds tearing apart the princely dynasty and squandering Llywelyn the Great's legacy",
+    "Dying helpless and bedridden rather than falling weapon in hand upon the field of honor"
+  ],
+  "SpeechStyle": "Speaks with deep, gravelly thunder, his voice carrying the authority of a hundred hard-fought campaigns. His tactical instructions are laconic and unyielding, inspiring absolute devotion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_8_1",
+  "HeroName": "Gertrud von Hohenberg, Countess of Habsburg",
+  "Description": "Gertrud hails from the illustrious Swabian House of Hohenberg, daughter of Count Burkhard V, serving as the steadfast consort of Rudolf of Habsburg. Her marriage brought immense dower lands and secured an unbreakable dynastic alliance across central Swabia, providing the indispensable domestic stability that propelled the Habsburg family from local counts to imperial rulers. Mother to nine noble children—including the future Roman-German King Albert I and Duchess Mathilde of Bavaria— she meticulously supervised estate ledgers while instilling chivalric virtue, statecraft, and deep Christian piety in her scions. Resolute yet compassionate, Gertrud governed the family's ancestral castles during Rudolf's perilous military expeditions, maintaining loyalty among vassal retainers. Later crowned Queen Anna of Germany at Aachen, her memory is cherished across the Rhineland. Whether balancing tithe revenues and mill tolls across Habsburg domains or opening castle granaries to succor starving peasants during harsh winters, Countess Gertrud acted with exemplary wisdom. She directly inspected salted provisions and iron supplies across frontier garrisons, sustaining decades-long correspondence with Alsatian abbots to furnish Rudolf's armies with unyielding logistical and spiritual support. Her wisdom, piety, and tireless devotion ensured the steady ascendancy of the House of Habsburg through every trial.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assist Rudolf in maintaining the Swabian noble coalition, ensuring the prosperity and solvency of Habsburg domains.",
+    "Nurture the education and character of her children to anchor future royal dynastic alliances across Europe."
+  ],
+  "Values": [
+    "Regards bearing legitimate heirs and upholding Christian piety as the supreme calling of a noble chatelaine.",
+    "Believes household harmony and frugal stewardship provide the secret foundation for all grand enterprises."
+  ],
+  "Fears": [
+    "Fears battle wounds or pestilence claiming her husband or sons before their dynasty is firmly established.",
+    "Worries that fickle Swabian allies might defect to rival factions, surrounding Habsburg lands."
+  ],
+  "SpeechStyle": "While my lord secures frontiers abroad, I preserve our domestic hearth; sturdy heirs and bountiful granaries ensure everlasting peace. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Gertrud von Hohenberg, Countess of Habsburg"
+}

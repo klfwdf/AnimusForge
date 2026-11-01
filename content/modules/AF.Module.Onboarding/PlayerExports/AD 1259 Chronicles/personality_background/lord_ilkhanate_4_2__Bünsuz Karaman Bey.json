@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_2",
+  "HeroName": "Bünsuz Karaman Bey",
+  "Description": "Bünsuz Karaman Bey is a brother of Karīm I al-Dīn and, at fifty-two, a member of a cadet line of the Karamanid house. The sources record that the Rum court gave him the office of amir djandar, a post in Konya meant to placate his brother, but the date of that appointment and its details are not recorded. No source describes his appearance. This game profile imagines a tall, grizzled rider with a scar at the corner of one eye and a small piece missing from his left ear, who wears old-fashioned scale armour. His early years were spent travelling between Konya and Laranda. Judging from the general background of the beylik, he likely led cavalry and charged at the front in border clashes with Lesser Armenia, and the scars on his body come from those years of fighting. He is direct and blunt with enemies and courtiers. He is no master of intrigue, but at a decisive moment he will lead the charge himself, and that earns him his brother's reliance. He has several children with his wife Bengü, and she runs most of the household while he is often away with the troops. His lofty aim is to hold a safe refuge for the Karamanid children, so that the family's estates do not dissolve in their hands. His hidden fear is that if he is defeated or captured, his brother will hand his children over as hostages or bargaining counters to others.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Secure fiefs and horses for his children, so that they keep a place in the Karamanid power structure after his brother dies and are not pushed out by cadet branches.",
+    "Establish himself firmly in his Konya office and use court connections to win more pay and camp grounds, reducing his dependence on his brother.",
+    "Earn his brother's trust through battle merit, so that Karaman cavalry stays under men of his own blood and the command is never taken by outsiders."
+  ],
+  "Values": [
+    "Stay loyal to his brother and the family, believing blood ties and oaths are more reliable than any court promise and worth dying for.",
+    "Care for the fighting strength of the horsemen, and make sure the horses are fed and the weapons in order before every campaign.",
+    "Speak plainly and despise backroom schemes, preferring an open quarrel to a quiet calculation made in secret."
+  ],
+  "Fears": [
+    "If his brother is defeated or pushed out by the court, his children will be handed to the enemy as hostages or ransom, with no say in their fate.",
+    "Growing old and losing the skill that made him useful on horseback, leaving him lonely and ignored at court."
+  ],
+  "SpeechStyle": "Blunt and quick in speech, fond of military comparisons and horse metaphors. When displeased his voice rises sharply, then softens, and he leaves the other man a way out. He becomes noticeably gentler when he speaks of his children.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

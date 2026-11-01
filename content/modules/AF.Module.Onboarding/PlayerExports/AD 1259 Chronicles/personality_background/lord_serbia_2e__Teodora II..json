@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_serbia_2e",
+  "HeroName": "Teodora II.",
+  "Description": "Teodora II, aged two in 1259, is the beloved infant daughter of Lord Dejan and Princess Teodora, bearing her mother's proud royal name. The youngest darling of the fortress of Zemen, her arrival brought boundless warmth and joy to the martial stronghold. Adored by her warrior father and protective elder brothers, the toddler spends bright days in the sunlit inner courtyards, blissfully oblivious to the border skirmishes rumbling along the frontier. In 1259, wrapped in embroidered linens and shielded by the swords of loyal retainers, little Teodora thrives as an innocent symbol of dynastic hope and familial prosperity. Toddling across the thick fur rugs of the inner hall, little Teodora fills the imposing stone corridors with musical laughter. Even her battle-scarred father and fiery elder brother melt into gentle smiles whenever they lift the cheerful baby into their arms. Surrounded by loyal blades and massive castle walls, the little princess thrives in absolute safety, a radiant flower of frontier hope. Adored by her warrior kin, little Teodora fills the rugged halls of Zemen with pure laughter and innocent joy. Surrounded by heavy broadswords and fortified walls, the little princess represents a sweet beacon of domestic peace and familial love.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Babbles with charming toddler innocence and musical laughter, delighting in soft pets and glittering embroidered cloths.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

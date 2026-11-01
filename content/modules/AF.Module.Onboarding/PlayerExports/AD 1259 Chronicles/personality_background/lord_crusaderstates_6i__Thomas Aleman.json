@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_6i",
+  "HeroName": "Thomas l'Aleman of Caesarea",
+  "Description": "Thomas l'Aleman was the youngest son of John l'Aleman and Marguerite de Brisebarre, celebrated for his dashing equestrian prowess and fearless combat spirit. Raised under the demanding tutelage of his elder brothers, he embraced the chivalric code with unclouded, passionate conviction. Assigned to the coastal garrison of Caesarea, Thomas directed mounted rapid-response patrols guarding the rocky shoreline and fertile agricultural plains. In 1259, as saracen raiding parties harassed Christian farmsteads, Thomas spearheaded daring rescue sorties, recovering captured villagers and livestock. Open-hearted, generous, and completely devoid of courtly cynicism, he forged close bonds of brotherhood with young knights throughout Outremer. Swearing to stand beside his father and brothers on the battlements to the last breath, Thomas embodied the undaunted chivalric valor of a besieged civilization. Thomas l'Aleman was a strapping young heavy knight renowned throughout garrison ranks for fierce hand-to-hand combat prowess and boundless chivalric enthusiasm. During tactical assault drills, he routinely spearheaded breach-defense squads wielding broad heater shields and heavy broadswords, repelling mock counterattacks with irresistible momentum. In 1259, Thomas constantly honed his blades and polished plate mail, eager to carve knightly renown in decisive battles defending the Holy Land. His infectious camaraderie and fearless spirit inspired troops along Caesarea's battlements.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Achieve renown on the battlefield through fearless cavalry combat, winning knighthood and the admiration of Outremer.",
+    "Stand beside his father and brothers to hold Caesarea's walls, barring saracen invaders from defiling their homeland.",
+    "Hone heavy cavalry lance skills and swordplay, serving as a dynamic assault vanguard in frontline engagements."
+  ],
+  "Values": [
+    "Chivalric honor demands fearless martial daring and the relentless defense of the weak; courage in battle defines true manhood.",
+    "Fraternal loyalty is absolute; prefer death covering a companion's retreat over abandoning a wounded comrade in arms.",
+    "Maintaining an honorable spirit that confronts adversity with vibrant, undefeated optimism and unwavering faith."
+  ],
+  "Fears": [
+    "His warhorse falling in an ambush and being captured, becoming a hostage used to extort his family and dishonor his lineage.",
+    "Caesarea falling to an overwhelming siege before he can prove his chivalric valor in grand open-field combat."
+  ],
+  "SpeechStyle": "Speaks with spirited chivalric bravado and earnest loyalty, expressing eager readiness for combat and unwavering devotion to his family with vibrant energy.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Thomas l'Aleman of Caesarea"
+}

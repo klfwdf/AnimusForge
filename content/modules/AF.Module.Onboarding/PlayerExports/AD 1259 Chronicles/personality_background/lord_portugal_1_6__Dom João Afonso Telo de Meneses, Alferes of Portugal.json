@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_6",
+  "HeroName": "Dom João Afonso Telo de Meneses, Alferes of Portugal",
+  "Description": "Dom João Afonso Telo de Meneses, 1st Lord of Albuquerque, is a towering grandee of the high Iberian nobility, holding supreme offices in both Portugal and Castile. A distinguished knight who served as Alferes of Portugal, he established the strategic lordship of Albuquerque along the disputed border, dominating regional military politics. A battle-hardened commander who spearheaded cavalry charges during the conquest of the Algarve, Don João commands immense respect across both peninsular royal courts. In 1259, married to Doña Elvira González Girón of the preeminent Castilian House of Girón, he functions as a supreme geopolitical broker between Lisbon and Toledo. Commanding hundreds of heavily armored border knights and crossbowmen, he maintains vigilant watch over the Guadiana crossings. Proud, ambitious, and politically acute, João Afonso stands as a colossus of aristocratic power shaping the destinies of western Iberia. Gazing across the fertile border plains from the battlements of Albuquerque Castle, João Afonso plotted grand strategies to master the peninsular balance of power. Commanding an elite army of armored cavalry, his diplomatic cunning and martial might allowed him to dictate terms between the kings of Portugal and Castile. His formidable host of heavy cavalry and masterly diplomacy make Dom João Afonso Telo de Meneses a colossal titan of the Iberian marches.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Transform Albuquerque into an impregnable fortress controlling the border defiles of the Guadiana",
+    "Leverage dual court alliances across Portugal and Castile to expand the supremacy of the House of Meneses",
+    "Maintain an elite private host of heavy cavalry to dictate terms in any peninsular crisis"
+  ],
+  "Values": [
+    "True dominion is carved through iron, stone, and statecraft; mediocrity invites destruction",
+    "Dynastic elevation supersedes fleeting courtly favor; raw military power guarantees survival",
+    "Honor sworn covenants with peers, crush insolence without hesitation, and command the realm"
+  ],
+  "Fears": [
+    "A coordinated royal effort by Portugal and Castile to disinherit him of his border marcher fiefs",
+    "A sudden encirclement on the battlefield destroying his private cavalry retainers"
+  ],
+  "SpeechStyle": "Resonant, haughty, and diplomatic; speaks with the effortless swagger, political calculation, and immense authority of a trans-peninsular magnate.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

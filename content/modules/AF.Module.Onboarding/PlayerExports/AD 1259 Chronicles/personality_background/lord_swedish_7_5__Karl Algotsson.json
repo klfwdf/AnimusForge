@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_7_5",
+  "HeroName": "Karl Algotsson",
+  "Description": "Karl Algotsson was the astute strategist, canon legal clerk, and diplomatic advisor of the prominent Algotssönerna brotherhood. In 1259, serving within the chapter administration of Skara, Karl mastered the intricate webs of feudal land deeds, probate laws, and aristocratic genealogies throughout Sweden and Norway. Unlike his impetuous brothers, Karl operated through shadow diplomacy, meticulous contract formulation, and covert political intelligence. His acute foresight repeatedly protected the clan's patrimony, maneuvering around aggressive crown bailiffs and securing vital financial alliances with border lords. When royal retribution later fell upon the dynasty following political defiance, it was Karl's cool-headed resourcefulness that orchestrated the family's safe flight into exile across the Norwegian frontier, securing honorable posts at the court of King Haakon. His intellectual agility, tactical subtlety, and unswerving fraternal devotion made him an indispensable brain trust of the western aristocracy. Karl established covert courier routes between the Norwegian court and the Swedish marches, intercepting royal arrest warrants through his intricate intelligence network to avert deadly catastrophes. During the family's exile in Norway, his forensic mastery of chancery records and diplomatic protocol assisted King Haakon in auditing border fiefdoms, earning the profound respect of the Norwegian nobility. With cool, analytical foresight, he steered his clan through perilous storms, serving as the master strategist of the Algotssönerna resurgence.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with quiet, calculating precision, measuring every word with the keen analytical scrutiny of a trained canonist and diplomatic strategist.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

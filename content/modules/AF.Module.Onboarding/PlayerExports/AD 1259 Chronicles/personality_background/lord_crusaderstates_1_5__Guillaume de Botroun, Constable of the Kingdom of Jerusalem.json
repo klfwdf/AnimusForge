@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_1_5",
+  "HeroName": "Guillaume de Botroun, Constable of Jerusalem",
+  "Description": "Guillaume de Botroun, hailing from the venerable Frankish line holding the maritime lordship of Botroun between Tripoli and Beirut, served as the High Constable of the Kingdom of Jerusalem. Entrusted with direct command over royal garrison forces, watchtowers, and mercenary stipends across Acre, he functioned as the indispensable military executive of Outremer. In 1259, as the destructive factional strife of the War of Saint Sabas paralyzed Acre, Guillaume personally deployed armored royal sergeants to enforce curfews and secure vital municipal gates. With Mamluk vanguard scout squadrons frequently probing the agricultural suburbs of the capital, he systematically refurbished the double curtain walls and mounted torsion ballistas. Intimately familiar with the defensive vulnerabilities of every coastal redoubt along the Levantine littoral, he constantly lobbied the High Court to unite feudal levies behind centralized military command. A stern, incorruptible officer of unyielding resolve, Guillaume stood as the vigilant military guardian ensuring the survival of the beleaguered crusader capital. Guillaume personally inspected the watchtowers and ballista platforms flanking the English Tower of Acre, imposing ironclad discipline upon garrison watch rotations. When armed street fighting erupted between Italian mercantile quarters, Guillaume led royal sergeants into the fray, arresting ringleaders and restoring commercial tranquility. His unyielding devotion to military order rendered him the formidable constable defending the crusader capital.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Strengthen the concentric walls, deep dry moats, and stone-throwing artillery defending the crusader capital of Acre.",
+    "Crush street violence between Genoese and Venetian factions in Acre, enforcing the absolute authority of royal constables.",
+    "Establish standardized tactical doctrines uniting the military orders for joint counter-offensives against Mamluk invasions."
+  ],
+  "Values": [
+    "Iron discipline and absolute obedience to military command are the only weapons capable of saving the Kingdom of Jerusalem.",
+    "Uncompromising duty to royal office, dedicating every waking hour to the vigilance and structural integrity of the capital.",
+    "Impartial justice that suppresses factional bias in favor of absolute military solidarity against common existential threats."
+  ],
+  "Fears": [
+    "Treachery from mercantile factions opening a sea gate or sally port to besieging saracens, destroying Acre from within.",
+    "Mamluk sappers severing Acre's aqueducts and burning suburban grain magazines, causing the city to capitulate to thirst."
+  ],
+  "SpeechStyle": "Speaks with authoritative martial composure and surgical precision, issuing garrison deployments and reviewing defensive battlements with unbending discipline.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Guillaume de Botroun, Constable of Jerusalem"
+}

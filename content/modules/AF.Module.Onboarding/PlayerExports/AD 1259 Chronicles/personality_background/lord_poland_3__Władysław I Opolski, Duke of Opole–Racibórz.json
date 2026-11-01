@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_3",
+  "HeroName": "Władysław I Opolski",
+  "Description": "Władysław I Opolski rules as Duke of Opole and Racibórz, the master of Upper Silesia whose sovereign territories commanded the vital Moravian Gate—the premier strategic corridor connecting the Danubian basin with northern Poland. A statesman of consummate intellect, unshakeable poise, and diplomatic dexterity, Władysław adeptly balanced intricate rivalries between the Bohemian crown of Přemysl Otakar II, the Hungarian kingdom of Béla IV, and competing Polish Piast princes. His marriage to Euphemia of Greater Poland anchored his house in regional alliances, allowing him to navigate the violent Austro-Bohemian succession wars without seeing his ancestral domains ravaged by foreign armies. Władysław erected formidable stone ramparts around Opole, Racibórz, and Cieszyn, introducing cutting-edge silver and lead smelting technologies and establishing thriving urban markets regulated by Magdeburg statutes. A devout patron of Dominican and Franciscan cloisters, he enriched monastic foundations while maintaining an incorruptible court chancellery. Like a master chess grandmaster seated at the crossroads of Central Europe, Władysław's calculated prudence preserved Upper Silesian independence and prosperity through tumultuous decades. Władysław erected a network of stone castles across Upper Silesia, strictly regulating customs checkpoints along the Bohemian and Polish frontiers. His profound statecraft guaranteed decades of uninterrupted economic prosperity and baronial sovereignty for his fortunate subjects.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Control transit tolls through the Moravian Gate, extracting massive commercial revenues from cross-border trade.",
+    "Maintain delicate diplomatic equilibrium between Bohemia, Hungary, and Poland, preventing vassalage to any power.",
+    "Expand silver, lead, and iron metallurgy across Upper Silesia to forge Opole into an unshakeable economic stronghold."
+  ],
+  "Values": [
+    "Prioritize practical strategic realism and calculated diplomacy over reckless emotional militarism.",
+    "Prize precise treaty negotiations and dynastic marriages to achieve objectives impossible by steel alone.",
+    "Uphold absolute baronial responsibility for the peace, wealth, and survival of his Upper Silesian subjects."
+  ],
+  "Fears": [
+    "Imperial armies forcing their way through the Moravian Gate, turning his peaceful duchy into a smoking battleground.",
+    "Mining unrest or vassal insurrections undermining castle garrisons and inviting foreign intervention."
+  ],
+  "SpeechStyle": "The keys of the Moravian Gate rest within Opole's grasp! Hotheads find early graves; calculating the grand balance of empires alone preserves our people. Prudence and calculated alliances alone secure enduring peace for Opole.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

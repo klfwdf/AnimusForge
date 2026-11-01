@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Pskov_Krom_Trinity_Citadel",
+  "Keywords": [
+    "Pskov Krom Stone Kremlin",
+    "Holy Trinity Cathedral Pskov",
+    "Veche Republic Pskov Assembly",
+    "Teutonic Defense Northern Shield"
+  ],
+  "RagShortTexts": [
+    "Pskov Krom fortified the confluence of the Velikaya and Pskova, standing as a bulwark."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pskov Krom dominated a limestone headland at the confluence of the Velikaya and Pskova rivers. Governing via an outspoken civic assembly (Veche), this frontier merchant republic served as the frontline Orthodox shield repelling Livonian Order crusader incursions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "citizen",
+          "soldier"
+        ]
+      },
+      "Content": "Backed by Saint Trinity Cathedral, armed citizen militias manned massive stone bastions, repelling siege ladders with relentless resolve."
+    }
+  ],
+  "TextMappings": []
+}

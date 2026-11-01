@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_2",
+  "HeroName": "Dom Paio Peres Correia, Grand-Master of the Order of Santiago",
+  "Description": "Dom Paio Peres Correia (1205–1275) is universally celebrated as the supreme crusader general of thirteenth-century Iberia and the legendary Grand Master of the Order of Santiago. A titan of chivalric warfare from southern Portugal, his tactical genius in rapid cavalry maneuvers and siegecraft drove the Islamic powers completely out of Lower Alentejo and the Algarve. Leading the Knights of Santiago, he captured impregnable bastions including Silves, Tavira, and Cacela, hailed across Christendom as the 'Sword of the Reconquista.' By 1259, governing from the formidable fortress-convent of Mértola along the Guadiana river, Correia commands an elite host of armored crusader knights and veteran frontier scouts. Equally revered by King Afonso III of Portugal and King Alfonso X of Castile, he orchestrates regional defensive pacts to suppress Mudejar insurrections across the southern marches. Uncompromising in faith, spartan in life, and undefeated in open combat, Paio Peres Correia stands as the immortal embodiment of holy martial honor. Living austerely within stone quarters inside the fortress of Mértola, Grand Master Correia personally led dawn cavalry patrols along the turbulent Guadiana crossings. A master of lightning flanking maneuvers and siege artillery, the legendary warrior vowed that the cross of Santiago should forever shield Christian Iberia against Islamic invasion. His legendary valor, unbending discipline, and tactical brilliance ensure that Dom Paio Peres Correia shines forever in the annals of crusader history.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the fortress network of the Order of Santiago to permanently bar Islamic reconquest",
+    "Enforce monastic discipline and combat excellence to maintain the premier knightly order of Iberia",
+    "Maintain military cohesion between Portugal and Castile against common pagan threats"
+  ],
+  "Values": [
+    "A crusader's sword belongs to Christ; laying down one's life to shield the faithful is supreme honor",
+    "Iron discipline and inviolable chivalric oaths are the sole armor against battlefield terror",
+    "Uphold holy vows unto death, execute justice without fear, and protect the weak without reward"
+  ],
+  "Fears": [
+    "Christian kings squabbling in fratricidal civil wars, leaving southern ports open to Marinid invasion",
+    "Worldly wealth and corruption undermining the spartan purity and combat discipline of his knights"
+  ],
+  "SpeechStyle": "Thunderous, gravelly, and commanding; speaks with the battlefield brevity, steely authority, and spiritual gravitas of a legendary crusader grand master.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

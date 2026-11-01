@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Judicial_Combat_Trial_by_Battle",
+  "Keywords": [
+    "Trial by Battle Judicial Combat",
+    "Divine Judgement Ordeal",
+    "Duel Gauntlet Defiance",
+    "Sacred Ordeal Champion Oath"
+  ],
+  "RagShortTexts": [
+    "When human evidence fails, feudal courts sanctioned judicial duels where God would grant."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In feudal jurisprudence, when treason or capital accusations lack conclusive witnesses, courts sanction Trial by Battle. Contestants swear upon holy relics disclaiming witchcraft before clashing within the roped champ clos. Providence is presumed to crown the righteous; defeat denotes divine condemnation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An armiger defends ancestral honor with sword and mace. A noble may retain a professional champion to contest the lists, but should his proxy yield, the principal shares the perjury and the hangman's noose."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Commoners face judicial combat too, but magistrates forbid us arming swords. We must fight in linen smocks with quarterstaves and leather bucklers until one yields or perishes in the dirt."
+    }
+  ],
+  "TextMappings": []
+}

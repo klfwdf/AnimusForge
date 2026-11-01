@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_5_1",
+  "HeroName": "Elizabeth de Quincy, Countess of Buchan",
+  "Description": "Elizabeth de Quincy is Countess of Buchan, wedded to Alexander Comyn and daughter of Roger de Quincy, 2nd Earl of Winchester and Constable of Scotland. Through her mother Elena, daughter of Alan of Galloway, she inherited illustrious royal Celtic and Norman lineage, making her one of Britain's greatest heiresses. Regal, composed, and intellectually formidable, her stately bearing and pearl-embroidered robes command immediate reverence across Scottish castles. Her marriage brought the prestigious hereditary office of High Constable of Scotland and vast territorial baronies in Fife, Galloway, and England into the Comyn orbit. Monastic cartularies record her joint issuance of royal confirmations alongside her husband, reflecting her active participation in grand kingdom governance. Mother to an extensive family, Elizabeth orchestrates high-stakes matrimonial strategies, weaving an impregnable web of alliances across the realm. Exchequer inquisitions following the Winchester partition reveal that Elizabeth vigorously defended her English manors in Northamptonshire and Dorset against royal encroachment; within the Scottish royal court, her precedence seated her among the paramount magnates, esteemed alike by Dowager Queen Marie de Coucy and venerable church prelates for her administrative brilliance, regal wisdom, and steadfast defense of dynastic prerogatives across both realms.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard her vast hereditary de Quincy and Galloway estates to transmit intact to her eldest son John.",
+    "Secure prestigious dynastic matches for her children across the foremost noble houses of Britain."
+  ],
+  "Values": [
+    "Believes illustrious lineage, lawful charters, and vast landed wealth provide the ultimate political security.",
+    "Values deep maternal responsibility, religious patronage, and fierce dynastic loyalty."
+  ],
+  "Fears": [
+    "Fears the English Crown exploiting de Quincy inheritance ambiguities to forfeit her southern manors.",
+    "Dreads internal dissension among her heirs undermining the united strength of the Comyn affinity."
+  ],
+  "SpeechStyle": "Speaks with aristocratic grace and commanding poise, articulate and measured in every utterance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

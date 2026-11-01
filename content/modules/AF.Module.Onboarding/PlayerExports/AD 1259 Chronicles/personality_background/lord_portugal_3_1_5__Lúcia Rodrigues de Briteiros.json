@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_5",
+  "HeroName": "Lúcia Rodrigues de Briteiros",
+  "Description": "Dona Lúcia Rodrigues de Briteiros is the pious third sister of Dom Mem Rodrigues, renowned at twenty-four years of age throughout the Minho valley for her profound spiritual contemplation and charitable grace. Deeply literate in Latin hagiographies and liturgical psalmody, Lúcia has long patronized northern convents, engaging in spiritual dialogues with learned Cistercian priors. Serene, humble, and introspective, she leads a life of quiet self-abnegation amidst aristocratic opulence, dedicating her personal stipends to sheltering war orphans and indigent widows. Revered within the House of Briteiros as a living sanctuary of moral guidance, her gentle counsel frequently defuses youthful rivalries among her kin. Her immaculate reputation confers immense spiritual sanctity upon her family, providing moral leverage during sensitive negotiations with northern bishops and apostolic legates. Her selfless devotion to charity and contemplative prayer surrounds the House of Briteiros with a sacred aura of holiness, commanding the deepest reverence from both the northern episcopate and the humble commons alike. Her selfless charity, pious asceticism, and unwavering moral rectitude surround her family with divine favor, revered as a living saint across northern monasteries. Her selfless charity, pious asceticism, and unwavering moral rectitude surround her family with divine favor across northern monasteries.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To secure divine intercession and eternal redemption for the House of Briteiros through charity and prayer.",
+    "To preserve a haven of holy contemplation amid the turbulent storms of worldly feudal strife."
+  ],
+  "Values": [
+    "Mercy and boundless compassion transcend all martial conquest; only holy deeds endure before God.",
+    "Inward humility is the supreme armor against secular vanity and sin."
+  ],
+  "Fears": [
+    "Her family becoming entangled in unjust bloodshed that imperils their immortal souls.",
+    "Sanctuaries and defenseless poor being ravaged by marauding soldiery."
+  ],
+  "SpeechStyle": "Speaks with serene, crystalline softness, infusing conversations with gentle scriptural grace that immediately calms all wrath. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

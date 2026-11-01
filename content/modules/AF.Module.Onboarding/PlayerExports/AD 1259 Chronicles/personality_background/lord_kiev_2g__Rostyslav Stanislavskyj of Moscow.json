@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Rostyslav Stanislavskyj of Moscow is a far-sighted boyar diplomat and merchant magistrate linking the courts of Kyiv and the emerging northern bastion of Moscow. Leveraging his family's mercantile connections in Podil, he pioneered vital commercial waterways linking the Dnipro, Oka, and Moskva rivers, transporting northern timber and furs southward in exchange for salt and iron. Shrewd, geographically literate, and perceptive, Rostyslav recognized the strategic defensive value of dense northeastern taiga forests against steppe horse archers, advocating close military coordination between Kyiv and Moscow. His articulate diplomacy forged mutual aid treaties between northern princely courts and Kievan boyar councils, securing critical shipments of yew wood, bows, and tar for the capital's defense. During delicate negotiations with Golden Horde officials at Sarai, he represented Ruthenian merchant interests, skillfully moderating extortionate tribute burdens. He stands as an indispensable geopolitical envoy uniting the fractured principalities of medieval Rus'. Traversing the hazardous waterways connecting Kyiv and Moscow, diplomat Rostyslav operated with exceptional strategic vision and persuasive eloquence. Recognizing the vital synergy between northern timberlands and southern urban bastions, he organized naval supply convoys laden with yew staves, pig iron, and wheat to reinforce Kyiv's defenses. His fearless negotiations at the court of Sarai shielded merchant convoys from crushing exactions, preserving crucial economic corridors across fragmented Rus'.",
+  "SpeechStyle": "The Oka and Dnipro rivers flow as one bloodline! Northern forests and southern ramparts must stand united; keep trade flowing and Rus' shall never perish beneath foreign yoke!",
+  "Motivations": [
+    "Secure commercial waterways connecting Kyiv, the Oka basin, and Moscow, channeling northern munitions to the capital.",
+    "Conduct pragmatic diplomacy between Sarai and Rus' princes, mitigating tributary extortion to safeguard Ruthenian commerce."
+  ],
+  "Values": [
+    "Valuing broad strategic vision, commercial fidelity, and diplomatic flexibility, scorning petty isolationism and tribal bigotry.",
+    "Believing integrated trade arteries and inter-regional solidarity empower the fractured Rus' lands to survive common perils."
+  ],
+  "Fears": [
+    "Hostile steppe warbands severing vital river transit arteries, strangling merchant convoys and starving frontline garrisons.",
+    "Arbitrary repudiation of trade compacts by the Golden Horde, unleashing catastrophic raids upon merchant communities."
+  ],
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ]
+}

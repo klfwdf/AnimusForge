@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_4_1_2",
+  "HeroName": "Guy II Embriaco, Lord of Gibelet",
+  "Description": "Guy II Embriaco was the eldest son of Lord Enrico I and Isabella of Ibelin, standing as one of the most fiercely independent baronial figures in the twilight of Outremer. Reared within the seaward battlements of Gibelet, he combined the vast maritime wealth of his Genoese patrilineage with the indomitable chivalric pride of the House of Ibelin. Intensely defiant and battle-ready, Guy developed an early, unyielding hostility toward any attempt by the Counts of Tripoli to encroach upon his fief's ancestral liberties. In 1259, perceiving the geopolitical vulnerabilities of the Latin coast, Guy aggressively expanded his private knightly retinues and armed galley squadrons. He forged an iron alliance with the Knights Templar, laying the groundwork for his famous and tragic feud against Count Bohemond VII of Tripoli in defense of Gibelet's autonomy. Fierce, unyielding, and driven by fierce familial honor, Guy risked the total destruction of his house to uphold the sovereign independence of his ancestral sea castle. From the ramparts of Gibelet, Guy directed the construction of armored patrol galleys equipped with iron rams, keeping vigilant watch over northern sea approaches. He personally led daily endurance marches for his household knights through steep mountain ravines, instilling ferocious esprit de corps and battle-readiness. Fiercely defiant and unbending, he swore to defend the sovereign independence of his ancestral sea castle to the last drop of blood.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the absolute autonomy of Gibelet against the overlordship of the Counts of Tripoli, repelling all encroachments.",
+    "Forge a permanent military pact with the Knights Templar to field elite naval and heavy cavalry strike forces.",
+    "Expand his private commercial fleet across the Mediterranean, securing independent dynastic power for his lineage."
+  ],
+  "Values": [
+    "A baron's sovereignty is defended with cold steel and stone artillery; submission to overbearing counts is worse than death.",
+    "Fierce, uncompromising retributive justice; any incursion into Gibelet will be met with merciless and relentless retaliation.",
+    "Pursuit of fearless chivalric glory, dedicating his life to preserving his ancestral patrimony as an unfettered sovereign domain."
+  ],
+  "Fears": [
+    "Suffering defeat against overwhelming forces from Tripoli, facing dungeon execution while watching Gibelet fall.",
+    "Treachery from allied military orders abandoning Gibelet at the critical moment, leaving his garrison isolated."
+  ],
+  "SpeechStyle": "Speaks with fierce martial fervor and defiant aristocratic pride, expressing uncompromising resolve regarding feudal autonomy and territorial disputes.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Guy II Embriaco, Lord of Gibelet"
+}

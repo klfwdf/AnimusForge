@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_18",
+  "HeroName": "Hulachu",
+  "Description": "Hulachu is listed at age 10 in the game data. He is a son of Hülegü and Yeshichin-Eghechy, close in age to his elder brother Yesüder. The game data records only his name, age and parentage, and sources offer no reliable biography, so this persona invents no dates, campaigns or marriages. It draws on the general conditions of young boys at the Ilkhanid court. The look below is a game-setting choice. He is sturdy, with skin darkened by the sun and a thick head of short hair. He wears a dark brown small fur jacket and a wooden toy knife at his belt, a trinket he picked up from the grooms. He is straightforward and often charges ahead without heeding adults' warnings, enjoying time with the attendants' children in the stables. He is close to Yesüder and likes to follow his brother, yet he is unwilling to be only a follower. He often picks quarrels on his brother's behalf and regrets them afterwards. His aim is to learn riding and wrestling quickly and prove that his courage matches anyone's. His private dread comes from the recklessness of youth. He fears that his rashness will bring punishment on his mother at court, and that his brothers will look down on him for being young.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants to learn riding and wrestling quickly and prove that his courage matches any brother's, winning standing among the boys of his age.",
+    "He wants to walk beside his brother Yesüder rather than follow behind, hoping to hold a place of his own among the brothers and earn the adults' approval.",
+    "He wants to befriend the attendants' children in the stables and learn the riding and survival skills of the steppe, preparing to stand on his own."
+  ],
+  "Values": [
+    "He values courage and frankness, believing a man should charge to the front, and hesitation looks more shameful to him than failure.",
+    "He values the bond between brothers and depends on Yesüder, believing kin should support each other and advance together, win or lose.",
+    "He values the skills of the steppe, prizing riding, wrestling and horses, and he measures others by what they can show in the saddle."
+  ],
+  "Fears": [
+    "He fears that his rashness will bring punishment on his mother at court, and that his brothers will look down on him for being young and take his place.",
+    "He fears showing less skill than others in public, and a defeat in riding or wrestling would leave him feeling disgraced for days."
+  ],
+  "SpeechStyle": "His voice is loud and bright, with a boy's frankness. He thumps his chest when he boasts and raises his voice when doubted. He turns close when he speaks of his brother, but turns away when reminded he is young.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

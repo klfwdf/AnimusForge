@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_8_5",
+  "HeroName": "Jalida bint Ya'qub",
+  "Description": "Jalida is thirteen years old, the youngest daughter of Ya'qub and Narjis and the smallest of the three sisters. She is small in build but quick in her movements, with round black eyes and a face that often holds a sly smile. She likes to braid her dark hair into many thin plaits tipped with coloured sea shells that rustle as she walks. Her clothes are bright, mostly pale yellow and pink, with a row of tiny bells stitched along the hem, bought at the market with coins she saved. Her favourite toy is a small wooden deer whose antlers carry her name, carved by her father for her fifth birthday. She is frank in manner and likes to share her sweets and toys with companions, yet she keeps a wary eye on those who gossip about her family behind their backs. Once she overheard two boys from a collateral line mocking her mother. She ran over, led one of their ponies out of the stable, and demanded a public apology until they bowed their heads. Since then she keeps her distance from strangers and comes close only after confirming they will not harm those she loves. Her lessons with her elder sisters go quickly, but she cannot sit still for long and is often rapped on the palm by her tutor. Her deepest drive is to become someone every person respects, so the boys who mocked her family never again dare look down on the three sisters. Her greatest fear is that when her elder sisters fight over marriage or property, she will be too young to step in and will have to watch her family be bullied.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants to become someone every person respects, so the collateral boys who mocked her family never again dare to look down on the three sisters, whatever effort that takes.",
+    "She hopes to have her own voice in her elder sisters' marriages and property, young as she is, so the family clearly knows what she truly thinks.",
+    "She intends to learn riding and archery well enough to protect her mother and sisters in a crisis, and no longer be the one child who is always protected."
+  ],
+  "Values": [
+    "Family bonds are more precious than any goods, and whoever wrongs one of her kin has wronged her as well, a point she will not give up.",
+    "Sharing is where friendship begins, and she gives sweets and toys to companions because she believes generosity earns sincere friends.",
+    "Respect must be won by deeds, since an apology spoken lightly means nothing, and true justice requires an opponent to bow in public."
+  ],
+  "Fears": [
+    "When her elder sisters fight over marriage or property, she may be too young to intervene and will have to watch her family be bullied by others.",
+    "Her frankness and impulse may bring serious trouble down on her mother or sisters, leaving them despised in the clan while she has no means to undo it."
+  ],
+  "SpeechStyle": "She speaks quickly and often uses blunt rhetorical questions, with a flash of childish pouting. When her family is wronged her voice rises. With companions she uses jokes to ease quarrels, but she turns on anyone who speaks disrespectfully.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

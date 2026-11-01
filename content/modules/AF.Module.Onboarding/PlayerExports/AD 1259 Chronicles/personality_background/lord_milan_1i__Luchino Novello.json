@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1i",
+  "HeroName": "Luchino Novello",
+  "Description": "Luchino Novello Visconti, son of Luchino and Isabella Fieschi, was declared rightful heir in youth before being displaced by ambitious cousins. Combining Genoese naval resilience with Milanese chivalry, he campaigned through northern Italian diplomacy to reclaim his patrimony. Luchino Novello drilled in horsemanship and heavy swordsmanship during bitter exile across Tuscany and Venice, guarding his father's gilded signet and maintaining a disciplined chivalric retinue. Conducting tireless legal appeals before Tuscan communes and the Holy See, he authenticated succession charters to proclaim his inalienable sovereign birthright over Milan to all Europe. Tempered by bitter exile, young Luchino Novello concealed righteous vengeance within his breast, sharpening his chivalric mettle to demand historical justice for his disinherited house. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Vindicate his undisputed legitimacy as rightful heir to Luchino's sovereign Signoria.",
+    "Rally Fieschi kin and papal leagues to contest usurpation by his triumvir cousins.",
+    "Maintain a loyal retinue of veteran knights, awaiting strategic shifts in Milan."
+  ],
+  "Values": [
+    "Maintains that blood legitimacy and sealed covenants outlast temporary military usurpation.",
+    "Values calculated patience and vigilant caution as the supreme virtues of exiled princes."
+  ],
+  "Fears": [
+    "Assassins hired by Milan's ruling triumvirs slitting his throat in foreign exile.",
+    "Generations forgetting his father Luchino's historic conquests and legitimate line."
+  ],
+  "SpeechStyle": "Speaks with guarded courtesy and somber nobility, reflecting the pride of an exiled heir. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

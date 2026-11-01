@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_3_e",
+  "HeroName": "Mahmud Islambek",
+  "Description": "Mahmud Islambek is twenty, the youngest child of Biniki Islambek I and Kameriye Malhun, with an elder brother Ahmad Sanjar and an elder sister Emetullah Rabia. He is of average height, and his complexion looks pale from long hours reading beside the stables, with gentle, attentive eyes. A thin old cut on the little finger of his left hand came from broken pottery when he was a child, reaching into a cupboard for his mother's honey jar. He usually wears a plain grey-blue robe, and a small whistle carved from bone hangs at his neck, traded from an old craftsman of a neighbouring tribe. His interest lies not in horses or trade but in collecting the stories and songs of the steppe, especially verses about tribal migrations and old heroes, and he often writes the songs he has heard onto sheepskin at night, line by line. He envies his elder brother's cavalry dreams yet thinks little of them, believing real strength comes from people's hearts, not from weapons. He is closest to his sister, often speaking up for her before their father and standing by her when others gossip. His ambition is to record the songs and genealogy of the Islambek family in full, so that later generations will know how this branch of the Turks made their home on the steppe. His deepest fear is that the family will fall apart in a struggle, leaving no one willing to sing the songs and keep the genealogy he laboured to record, so that they fade with the years.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Record the songs and genealogy of the Islambek family in full, so that later generations will know how this branch of the Turks took root on the steppe.",
+    "Collect neighbouring peoples' stories and heroic verses, comparing migration routes and legends to give the family a useful historical memory.",
+    "Keep the peace between his elder brother and his father, using song and story to ease household quarrels so that the family does not split apart over property."
+  ],
+  "Values": [
+    "Loyalty and gratitude, treasuring the family's blood and the kindness of his elders, and refusing to turn his back on kin whatever others say.",
+    "Learning and patience, believing that an old verse can cross generations if someone is willing to copy it carefully and record it line by line.",
+    "Harmony and tolerance, holding that real strength comes from people's hearts, and preferring to yield in a quarrel rather than see kin turn blades against one another."
+  ],
+  "Fears": [
+    "The family splitting apart in a struggle, leaving no one to sing the songs or keep the genealogy he laboured over, so that everything fades with the years.",
+    "His elder brother's cavalry dreams dragging the household into a war it cannot turn back from, where his verses and records would count for nothing against weapons."
+  ],
+  "SpeechStyle": "Speaks gently and not quickly, often quoting a verse or old song. Affectionate with his sister, mainly persuasive with his brother and reluctant to argue. His eyes brighten at the steppe's stories.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

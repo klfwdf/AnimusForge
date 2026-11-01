@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Transitional_Coat_of_Plates_Armor",
+  "Keywords": [
+    "Coat of Plates Transition",
+    "Mail and Iron Plate Lining",
+    "13th Century Plate Armor",
+    "Riveted Breast Protection"
+  ],
+  "RagShortTexts": [
+    "The 13th-century coat of plates riveted shaped iron plates inside leather to counter heavy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Faced with crushing warhammers and heavy crossbow bolts, traditional mail hauberks proved inadequate. Armourers developed the coat of plates: overlapping iron plates riveted within a stout canvas or leather surcoat. This hybrid defence absorbed concussion while preserving torso mobility, paving the path toward full plate harness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Armourers in Milan and Nuremberg now craft tailor-fitted plates beneath rich velveteen shells. Gilded rivets trace heraldic motifs across the chest, combining chivalric prestige with vital protection against direct missile strikes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A mace strike through plain mail shatters ribs without cutting the skin. But with shaped iron plates riveted over your chest, a spear point skates right off. That leather-and-iron vest makes all the difference in a breach."
+    }
+  ],
+  "TextMappings": []
+}

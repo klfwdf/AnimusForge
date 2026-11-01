@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1b",
+  "HeroName": "Alberto I della Scala",
+  "Description": "Alberto I della Scala, brother and heir of Mastino I, ruled as Signore of Verona. Following his brother's assassination, he consolidated hereditary lordship with iron resolve, defeating hostile coalitions and constructing fortresses, siring renowned rulers Bartolomeo and Cangrande. Alberto erected fortified stone embankments along the rushing Adige, instituting disciplined infantry drills and establishing swift mounted patrols to guard all municipal frontiers. Crushing hostile Guelf sieges with ruthless martial discipline, he executed the traitors responsible for his brother's murder, cementing hereditary Scaliger dominion over northern Italy. Forged of iron resolve, Alberto recognized that survival required martial force and strict justice, building an unshakeable shield that anchored Scaliger supremacy for generations. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Eradicate factional conspirators behind his brother's assassination to secure hereditary rule.",
+    "Fortify the Adige riverbanks with masonry bastions, turning Verona into an unassailable bastion.",
+    "Educate his sons Bartolomeo, Alboino, and Cangrande in chivalric arms and humane letters."
+  ],
+  "Values": [
+    "Believes overwhelming martial deterrence and strict civic statutes tame Italian magnates.",
+    "Holds dynastic succession sacred, striking down any challenge to the Scaliger banner."
+  ],
+  "Fears": [
+    "Papal coalitions laying siege to Verona and severing transalpine trade along the Adige.",
+    "His sons turning upon one another in destructive fratricidal wars after his death."
+  ],
+  "SpeechStyle": "Speaks with chilling command and decisive authority, brookng no insubordination. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

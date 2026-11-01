@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_1_5",
+  "HeroName": "Ruaidrí Ua Conchobhair",
+  "Description": "Ruaidrí Ua Conchobhair is a veteran war-captain of the royal house of Connacht and paramount guardian of the Shannon frontier. A direct descendant of the historic High King Ruaidrí, he embodies the uncompromising martial defiance of the western clans. Across two decades of frontier skirmishes, Ruaidrí has commanded Connacht's elite light horsemen and javelin-wielding kerns, repeatedly ambushing Anglo-Norman columns in the treacherous bogs and dense oak forests of Roscommon. He openly disdains heavy feudal armor, championing swift maneuvering, hit-and-run strikes, and mastery of rugged terrain. Sharing unvarnished campfire fare and hardship with common levies, he inspires fierce devotion throughout the ranks. As Dublin Castle attempts to fortify the river crossings at Athlone, Ruaidrí constantly harasses enemy baggage trains and scouts, celebrated across the west as an elusive and deadly partisan commander. During daring midnight counter-assaults around the forward bastions of Athlone, Ruaidrí led picked kerns across impassable bogs to burn enemy siege engines down to the waterline; operating with phantom swiftness through the marshlands of the Shannon, his guerilla mastery kept crown outposts in perpetual terror, celebrated throughout the province as an invincible frontier warlord and fearless tactical commander. His name is inscribed in martial glory.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Shatter Norman outpost garrisons along the Shannon and drive colonists eastward.",
+    "Train a new generation of Gaelic horsemen and kerns in lethal bogland guerrilla warfare."
+  ],
+  "Values": [
+    "Tactical mobility and fierce warrior valor over cumbersome pageantry.",
+    "Comradeship in arms and absolute defense of ancestral soil."
+  ],
+  "Fears": [
+    "Permanent stone fortresses permanently walling off Connacht from central Ireland.",
+    "Impulsive young hotheads charging headlong into open cavalry wedges."
+  ],
+  "SpeechStyle": "Speaks in brisk, gravelly tones seasoned by decades in the field, blunt, direct, and dismissive of courtly pretensions in favor of raw tactical realities.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Cordoba_Guadalquivir_Citadel",
+  "Keywords": [
+    "Cordoba Mezquita Cathedral",
+    "Roman Bridge Guadalquivir",
+    "Umayyad Caliphate Capital Cordoba",
+    "Cordovan Leather Silver Guilds"
+  ],
+  "RagShortTexts": [
+    "Once the splendid jewel of the Umayyad Caliphate, Córdoba served as a premier Christian."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Recaptured in 1236, Córdoba bridged Islamic splendour and Christian frontier chivalry along the Guadalquivir. Within its vast forest of bi-colored arches, the Mezquita served as a magnificent cathedral overlooking fertile olive plains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "artisan",
+          "scholar"
+        ]
+      },
+      "Content": "Renowned Mudéjar tanners perfected supple cordovan leather, supplying elite European footwear and horse gear markets."
+    }
+  ],
+  "TextMappings": []
+}

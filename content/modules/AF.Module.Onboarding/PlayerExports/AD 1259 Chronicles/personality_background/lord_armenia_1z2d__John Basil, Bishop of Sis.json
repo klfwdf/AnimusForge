@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z2d",
+  "HeroName": "John Basil, Bishop of Sis",
+  "Description": "John Basil was a noble brother of King Hethum I, presiding as the venerable Bishop of Sis, the capital city of Cilician Armenia. Having immersed himself in rigorous theological scholarship at the patriarchal seat of Hromgla, he commanded mastery over Armenian, Greek, Latin, and Syriac patristic texts. Bishop John was an instrumental patron of the 13th-century Cilician cultural renaissance, commissioning breathtaking illuminated Gospels from master scribes such as Toros Roslin. In ecclesiastical diplomacy, he frequently received papal nuncios and Byzantine theologians, skillfully balancing ecumenical dialogue with the fierce preservation of Armenian Apostolic autonomy. In 1259, as hostile armies cast long shadows across the Levant, John mobilized diocesan endowments to establish casualty hospices and grain relief centers across Sis. Saintly, compassionate, and intellectually luminous, Bishop John was revered as a spiritual shepherd anchoring the faith of a nation under siege. Bishop John established an expansive theological library within the cathedral of Sis, painstakingly assembling antique patristic commentaries and illuminated saintly vitae. Clad in gold-embroidered liturgical vestments, he presided over Passion Week liturgies at the high altar, his eloquent sermons filling crowded naves with unshakeable spiritual courage. When civil disputes flared among crowded urban quarters, Bishop John walked the streets in person, arbitrating grievances with profound compassion and canonical wisdom.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Safeguard the cathedral of Sis and the sacred apostolic liturgy, keeping the flame of Christian faith ablaze amid regional storms.",
+    "Patronize monastic scriptoria and illuminators, producing immortal illuminated manuscripts to anchor national identity.",
+    "Direct diocesan charity to sustain war hospices, orphanages, and bread distributions for displaced populations across the capital."
+  ],
+  "Values": [
+    "Unshakable devotion to Christ and compassionate charity constitute the supreme refuge of a beleaguered people.",
+    "Preservation of Armenian Apostolic doctrinal independence while fostering pragmatic ecumenical solidarity.",
+    "Humility, scholarly diligence, and tireless self-sacrifice in the service of spiritual flock and sovereign realm."
+  ],
+  "Fears": [
+    "Sacrilegious destruction of the cathedrals and holy relics of Sis by rampaging invaders, plunging the faithful into despair.",
+    "Foreign ecclesiastical impositions fracturing the unity of the Armenian Apostolic Church during wartime."
+  ],
+  "SpeechStyle": "Speaks with solemn ecclesiastical grace and theological depth, delivering homilies and resolving canonical disputes with patient, radiant dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "John Basil, Bishop of Sis"
+}

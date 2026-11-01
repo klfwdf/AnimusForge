@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Antioch_Crusader_Bastion_and_Orontes_Line",
+  "Keywords": [
+    "Antioch Silpius Mountain Citadel",
+    "Orontes River Iron Bridge",
+    "House of Bohemond Principality",
+    "Northern Crusader Outremer Gate"
+  ],
+  "RagShortTexts": [
+    "Antioch perched upon Mount Silpius with massive wall towers guarded northern Outremer."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Established during the First Crusade by Bohemond I, the Principality of Antioch crowns the Orontes River valley beneath Mount Silpius. Its perimeter is defended by hundreds of masonry towers and the fortified Iron Bridge. Under Bohemond VI, allied with Cilician Armenia, it stands as Outremer's northern bastion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Holding both Antioch and Tripoli, Bohemond VI commanded singular chivalric prestige. To shield his frontiers against Mamluk expansion, he accepted vassalage to Mongol Hulagu, drawing his lands into high-stakes imperial conflict."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The ramparts climb steep mountain crags where sentries appear like ravens. Without traitors opening a sally port from within, assaulting Antioch head-on is madness against plunging boulders."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Baghdad_Sack_Aftermath_and_Tigris_Calamity",
+  "Keywords": [
+    "Baghdad Fall Aftermath 1258",
+    "House of Wisdom Destruction",
+    "Abbasid Caliphate Extinction",
+    "Tigris Ink and Blood River"
+  ],
+  "RagShortTexts": [
+    "Hulagu's sack of Baghdad in 1258 extinguished the Abbasid Caliphate, ending the Islamic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In February 1258, Hulagu Khan destroyed Baghdad, slaughtering hundreds of thousands and trampling Caliph Al-Musta'sim. The House of Wisdom was sacked, its priceless philosophical and scientific codices thrown into the Tigris until the waters ran black with ink and crimson with blood, collapsing Mesopotamia's ancient canal networks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Five centuries of Islamic scholarship drowned in days. Surviving scholars carried scorched folios to Cairo, weeping at the extinction of classical Arabic and Persian learning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The destruction of Baghdad shattered the Caliphal axis of the Islamic world. Mamluk sultans subsequently installed exiled Abbasid survivors in Cairo as titular figureheads to legitimize war against the Mongols."
+    }
+  ],
+  "TextMappings": []
+}

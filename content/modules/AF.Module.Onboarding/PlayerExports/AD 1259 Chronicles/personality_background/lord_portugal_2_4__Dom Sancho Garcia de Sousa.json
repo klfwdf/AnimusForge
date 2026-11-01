@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_4",
+  "HeroName": "Dom Sancho Garcia de Sousa",
+  "Description": "Dom Sancho Garcia de Sousa is an esteemed veteran knight-commander and senior magnate of the House of Sousa, holding extensive manorial tenures along the Douro. A battle-hardened veteran who campaigned with Afonso III during the pacification of the southern marches, Don Sancho combines battlefield gravitas with legislative wisdom. Commanding fortified manors and agricultural estates in the central provinces, he is renowned across the realm for strict discipline and judicial fairness. In 1259, as royal crown inquests test baronial solidarity, Sancho utilizes his senior standing to reconcile domestic baronial disputes, uniting the northern nobility behind legal resistance. Leading a veteran company of armored lances, he guards strategic communication corridors connecting Coimbra with the Douro valley. Measured, incorruptible, and respected by both royal justices and high prelates, Sancho Garcia stands as an anchor of noble stability. Overseeing agricultural improvements and irrigation works across his Douro manors, Dom Sancho mediated bitter feuds among regional magnates with seasoned gravitas. Understanding that dynastic survival required baronial solidarity, he fiercely upheld ancient fueros in crown councils, universally revered as an incorruptible elder statesman. His seasoned gravitas, diplomatic wisdom, and unwavering baronial integrity make Dom Sancho an incorruptible guardian of the House of Sousa.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the domestic estates and defense outposts along the Douro, securing familial stability",
+    "Mediate baronial disputes to preserve a unified noble coalition capable of resisting royal overreach",
+    "Mentor young chivalric heirs in discipline, honor, and tactical prudence to safeguard the lineage"
+  ],
+  "Values": [
+    "A true lord rules with equity, patience, and cool resolve; steady foresight preserves dynasties",
+    "Discipline and chivalric fidelity are the backbone of knighthood; neglect of duty is dishonor",
+    "Uncompromising integrity, faithful service to sworn kin, and steadfast defense of the realm"
+  ],
+  "Fears": [
+    "Factional greed fracturing the baronial alliance, allowing royal inquests to dismantle noble charters",
+    "Famine or sudden armed conflict devastating Douro farmsteads, impoverishing his people"
+  ],
+  "SpeechStyle": "Solemn, resonant, and measured; speaks with the unshakeable gravitas, diplomatic prudence, and battlefield authority of a senior knightly councilor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

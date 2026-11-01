@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_3e",
+  "HeroName": "Rita of Sarvandikar",
+  "Description": "Rita of Sarvandikar was a royal daughter of King Hethum I and Queen Isabella, wed to the hereditary lord of the strategic bastion of Sarvandikar. Sarvandikar Castle perched dramatically upon soaring ridges of the Amanus Mountains, guarding the Syrian Gates and the high passes leading from Aleppo into Cilicia. Naturally reserved, intelligent, and methodical, Rita directed estate granaries, armories, and alpine water cisterns with exemplary diligence. Acutely aware that her fortress was the premier defensive shield protecting the royal plain from Syrian incursions, she fortified precipitous mountain trails with pitfalls and ballistas. In 1259, as hostile skirmishers probed the eastern approaches, Rita commanded interior logistics calmly, ensuring frontier sergeants remained well-fed and vigilant. Modest, watchful, and steadfast, Rita was cherished along the eastern marches as the vigilant guardian of the Syrian Gates. At Sarvandikar, Rita personally guarded the fortress keys and treasury registries, maintaining flawless tallies of every cistern and granary on the summit. She enforced a vigilant watch schedule, requiring cliff sentries to sound alpine horns every two hours to confirm security along sheer precipices. Throughout long winter blizzards, Rita frequently climbed the wind-swept watchtowers to deliver hot broth and sheepskin mittens to shivering sentinels, inspiring deep devotion across her garrison.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold the dizzying crags of Sarvandikar and the Syrian Gates, halting any hostile incursions originating from Syrian deserts.",
+    "Supervise high-altitude granaries and weapon stores, guaranteeing the fortress garrison can withstand protracted blockades.",
+    "Maintain acute beacon surveillance across the Amanus peaks, transmitting immediate early warning of enemy troop concentrations."
+  ],
+  "Values": [
+    "Quiet dedication to duty, meticulous defensive preparation, and vigilant austerity are the true shields of border strongholds.",
+    "Fulfilling frontier responsibilities with serene inner fortitude and strict discipline amidst regional war.",
+    "Unwavering dynastic loyalty to the royal house of Sis, standing as an unyielding sentinel over the eastern horizon."
+  ],
+  "Fears": [
+    "An unexpected breakthrough at the Syrian Gates permitting enemy cavalry to bypass frontier defenses and pillage the royal plain.",
+    "Cistern failure or water contamination depriving the alpine garrison of drinking water during a punishing siege."
+  ],
+  "SpeechStyle": "Speaks with quiet alpine composure and watchful restraint, managing frontier pass defense registers and fortress supplies with meticulous care.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Rita of Sarvandikar"
+}

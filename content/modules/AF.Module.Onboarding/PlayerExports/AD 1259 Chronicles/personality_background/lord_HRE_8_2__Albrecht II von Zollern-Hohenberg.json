@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_8_2",
+  "HeroName": "Albrecht II von Zollern-Hohenberg",
+  "Description": "Albrecht II, Count of Hohenberg-Rottenburg, stands as the steadfast brother-in-law and closest martial comrade of Rudolf of Habsburg. Commanding the strategic Neckar valley from his Swabian strongholds, he led the formidable chivalric levies of Hohenberg, acting as an unbreakable shield for Rudolf's territorial consolidations throughout three decades of turmoil. Renowned for candid honor and rigorous military discipline, Albrecht personally spearheaded numerous cavalry counter-offensives, shattering rebel coalitions across the Upper Rhine and enforcing princely peace (Landfrieden) with unsparing vigilance. Unflinchingly loyal to his sworn word, he charges at the front rank in full mail whenever danger threatens, destined to serve as Rudolf's most trusted corps commander in the climactic imperial campaigns that secured the Austrian duchies. Patrolling the rugged defiles around Rottenburg in full harness, Albrecht II ruthlessly eradicated highwaymen and robber knights, earning renown as a righteous guardian of merchants throughout the Neckar basin. When border skirmishes flared with imperial bishops, he led his armored retainers to seize decisive mountain redoubts, anchoring Rudolf's strategic maneuvers in southwestern Germany. His steadfast brotherhood with Rudolf of Habsburg forged an indomitable coalition that anchored imperial stability throughout the turbulent Upper Rhine marches and the heart of Swabia.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Defend Neckar sovereignty and commercial revenues, assisting Rudolf of Habsburg in subduing Swabian rivals.",
+    "Elevate Hohenberg's voice in imperial reform councils, securing hereditary comital honors and imperial immediacy."
+  ],
+  "Values": [
+    "Regards chivalric oaths and battlefield honor as non-negotiable principles, despising opportunistic treason.",
+    "Believes in fraternal camaraderie, willing to shed his last drop of blood for the shared allied cause."
+  ],
+  "Fears": [
+    "Fears Hohenberg's manpower and treasury being exhausted by constant campaigns, leaving lands vulnerable to bishops.",
+    "Worries widespread peasant unrest or famine in Swabia could shatter local logistical bases."
+  ],
+  "SpeechStyle": "The honor of Swabian knights is forged in iron; while Hohenberg's banner flies, the flank of Habsburg shall never waver! In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Albrecht II von Zollern-Hohenberg"
+}

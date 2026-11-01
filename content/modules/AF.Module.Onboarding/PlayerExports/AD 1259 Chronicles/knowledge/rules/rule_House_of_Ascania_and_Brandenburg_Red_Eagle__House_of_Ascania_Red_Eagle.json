@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Ascania_and_Brandenburg_Red_Eagle",
+  "Keywords": [
+    "House of Ascania Red Eagle",
+    "Albrecht the Bear Ostsiedlung Legacy",
+    "Havel and Spree River Stone Castles",
+    "Germanic Baltic Slavic Frontier March"
+  ],
+  "RagShortTexts": [
+    "The Ascanian margraves carried the Red Eagle, transforming Brandenburg's Slavic forests."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing the soaring Red Eagle on argent, the House of Ascania established the Margraviate of Brandenburg. Descended from Albert the Bear, co-rulers John I and Otto III drove eastern colonization (Ostsiedlung) through marshes along the Spree and Havel, overseeing the rise of Berlin and Cölln."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Holding the hereditary imperial office of Arch-Chamberlain, Ascanian margraves commanded electoral status, pushing the Holy Roman Empire's northeastern border toward the Oder River."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ]
+      },
+      "Content": "Pioneer settlers arriving from Westphalia fell ancient oaks to ditch peat bogs, incentivized by Ascanian charters granting five years of exemption from feudal tithes."
+    }
+  ],
+  "TextMappings": []
+}

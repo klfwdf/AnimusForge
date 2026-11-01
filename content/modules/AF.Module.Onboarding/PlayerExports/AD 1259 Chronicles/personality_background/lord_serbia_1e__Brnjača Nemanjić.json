@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_serbia_1e",
+  "HeroName": "Brnjača Nemanjić",
+  "Description": "Brnjača Nemanjić, aged two in 1259, is the cherished infant child of King Stefan Uroš I and Queen Helen. Carrying the prestigious combined bloodlines of the South Slavic Nemanjić royalty and Western French nobility, the young royal spends serene days within the secure inner chambers of the palace at Raška. Cherished by doting nurses and adored by elder brothers Dragutin and Milutin, Brnjača's infant world is enveloped in soft embroidered silks and maternal lullabies. Unaware of the ferocious power politics of the thirteenth-century Balkans, the royal child embodies innocent continuity, blessed by the prayers of court chaplains as a precious jewel in the crown of a prospering kingdom. Beneath the marble arches of Raška palace, little Brnjača gazes delightfully at vibrant lilac blossoms blooming across the courtyards. Royal guardsmen and attending nuns smile warmly upon the cheerful child, viewing the infant as a divine symbol of peace and dynastic continuity. Bathed in warm candlelight and maternal affection, the royal child thrives in tranquil safety under heavenly protection. Surrounded by the watchful care of nurses and royal kin, little Brnjača thrives within the secure palace chambers of Raška. The sweet child brings innocent joy to a court vigilant against external war, radiating fragile beauty and hope.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Babbles with charming toddler sweetness, laughing delightedly at bright silks and gentle nursery songs.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

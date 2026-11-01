@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Elena of Bryansk, consort of Prince Vasily of Kashin, was a noble daughter of Grand Prince Roman of Bryansk from the distinguished Chernigov dynasty. Imbued from youth with deep Orthodox piety and regal discipline, she was renowned across the Upper Volga for refined elegance, astute judgment, and administrative capability. In Kashin, Elena became an indispensable co-ruler alongside her husband, directing court affairs and managing vast municipal resources. Working in harmonious concert with her mother-in-law Saint Anna of Kashin, she supervised charitable hospices, subsidized local craft guilds, and endowed monastic churches. During Vasily's prolonged diplomatic journeys to the Golden Horde, Elena governed the fortress of Kashin with firm resolve, inspecting granaries, maintaining civic tranquility, and deterring opportunistic hostile raids. Her dignified leadership and generous philanthropy established her as a cherished matriarch anchoring peace across the eastern Tver marches. Princess Elena oversaw municipal provisions and fortress maintenance with incorruptible diligence, establishing emergency food stores and soup kitchens that cushioned the population against the harsh trials of siege.  Her compassionate guidance, municipal hospices, and meticulous logistical management provided the fortress of Kashin with unshakeable domestic stability and moral endurance through decades of extreme political danger.",
+  "SpeechStyle": "A citadel's peace rests not merely upon sharp spears, but on honest governance and united hearts. So long as we guard our granaries and families, we shall withstand every storm under God's grace.",
+  "Motivations": [
+    "Oversee domestic finances and food stockpiles in Kashin, ensuring absolute fortress readiness during crises.",
+    "Maintain strong political ties between Kashin and the House of Bryansk to secure valuable regional allies."
+  ],
+  "Values": [
+    "Hold Christian devotion, family honor, and compassionate stewardship as sacred duties of noble womanhood.",
+    "Value steadfast composure and meticulous preparation over impulsive panic during seasons of political peril."
+  ],
+  "Fears": [
+    "Fear her husband falling victim to political treachery in Sarai, leaving Kashin vulnerable to predatory neighbors.",
+    "Dread sudden pestilence or catastrophic urban fires ravaging the bustling workshops and homes of Kashin."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

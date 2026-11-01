@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Maria is the pragmatic, highly capable commercial matriarch of the Pinsk princely household, directing the vital riverine industries of Polesia. Born of noble Turov lineage, she capably managed scores of pitch kilns, pine boatyards, and tar warehouses along the Pina River basin. Throughout decades of warfare, Maria coordinated resilient fluvial logistics, channeling high-grade naval pitch, pine timber, and hemp cordage directly into Pinsk's war galleys and incendiary weapons depots. Decisive, fair, and fiscally astute, she earned profound trust among shipwright guilds and foresters through generous pay and strict honesty. She established river rescue stations along dangerous marsh bends, providing lodgings, repairs, and skilled pilots to stranded merchant flotillas. Hailed by rivermen as the 'Anchor of the Flotilla', she stands as an indispensable organizer of naval logistics and civilian infrastructure. Lady Maria sustained the logistical lifeline of Pinsk through commercial brilliance and organizational mastery. Her extensive warehouses and river docks not only supplied war galleys with seasoned timber and incendiary pitch, but also distributed subsidized rye and salt during harsh winters, averting civic unrest. Her steady hand anchored the municipal economy of the principality throughout prolonged military sieges. Her unwavering competence and generous endowments earned her universal respect from common deckhands to grand dukes.",
+  "SpeechStyle": "War boats demand seasoned pine, and aquatic defense relies on impenetrable tar! Keep our wharves orderly and supplied, and our brave rivermen shall never fear the fray!",
+  "Motivations": [
+    "Direct naval timber production, boatyard construction, and pitch reserves, sustaining Pinsk's river fleets with munitions.",
+    "Safeguard navigation along the Pina and Pripyat rivers, expanding fortified quays to ensure uninterrupted commercial flow."
+  ],
+  "Values": [
+    "Valuing practical industry, meticulous accounting, and commercial integrity, scorning bombastic vanity and broken promises.",
+    "Believing organizational efficiency and abundant naval reserves guarantee sovereign resilience against chaotic conflicts."
+  ],
+  "Fears": [
+    "Enemy saboteurs burning naval shipyards and timber seasoning sheds by night, wiping out years of war boat construction.",
+    "Prolonged riverbed siltation choking primary navigation channels, paralyzing naval transport and stranding cargo barges."
+  ],
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ]
+}

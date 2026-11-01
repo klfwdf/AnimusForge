@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Sicilian_Crown_Contest_and_Papal_Feud",
+  "Keywords": [
+    "Sicilian Crown Contest 1259",
+    "Manfred of Hohenstaufen",
+    "Papal Fiefdom Claim",
+    "Sicilian Feudal Sovereignty"
+  ],
+  "RagShortTexts": [
+    "Manfred of Hohenstaufen defies papal excommunication over Sicily, sparking multi-power conflict."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1259, Manfred of Hohenstaufen wears the Sicilian crown despite papal condemnation. Pope Alexander IV actively seeks a foreign royal champion to claim the Sicilian fiefdom and eradicate Hohenstaufen imperial bloodlines, fueling intense Ghibelline and Guelph strife across Italy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The crown of Sicily commands rich grain harvests and vital maritime straits. Rome looks toward Charles of Anjou to seize the realm, but Manfred's Saracen archers and Swabian heavy horse will not surrender the throne lightly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "There is endless work for sellswords in Apulia and Sicily. Papal coin weighs the same as imperial gold, but veterans know better than to face Manfred's heavy lancers without deep pike formations."
+    }
+  ],
+  "TextMappings": []
+}

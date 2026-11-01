@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_3_2",
+  "HeroName": "Mieszko II Otyły",
+  "Description": "Mieszko II Otyły (the Fat) was the former Duke of Opole and Racibórz, grandson of Mieszko IV Tanglefoot and elder brother to Władysław I, revered in Upper Silesian memory as a steadfast champion who faced the fires of 1241. Endowed with a massive, corpulent frame that belied his surprising agility and steely courage, Mieszko II confronted the apocalyptic storm of the First Mongol Invasion outside the walls of Racibórz, successfully executing tactical scorched-earth withdrawals that preserved his burghers within stone redoubts. Following the retreat of the Asiatic hosts, he dedicated his rule to agrarian reconstruction, rebuilding devastated river mills and inviting monastic orders to re-establish religious and economic life across the decimated province. Austere, reflective, and frugal despite his immense princely rank, Mieszko spent his later days in contemplative prayer, shunning vanity to secure the peaceful succession of his younger brother. Though departing this life prematurely, his memory remains an indomitable pillar of courage in the collective consciousness of Upper Silesia. He stands as an eternal bulwark of the Piast line, whose granite resilience laid the foundations for his house's enduring power. Mieszko II personally directed the fortification of the stone ramparts of Racibórz, endowing monastic cloisters with fertile lands to establish public hospices. His heroic defensive stands against early invasions left a legacy of unshakeable endurance that inspired succeeding generations.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Rapidly rebuild agricultural mills and villages from wartime ashes to restore demographic and economic vigor.",
+    "Construct deep defenses around Racibórz and Opole to ensure invaders can never again pillage with impunity.",
+    "Transfer a stabilized and solvent principality to his brother Władysław, cementing dynastic continuity."
+  ],
+  "Values": [
+    "Prize patient resilience and practical post-war reconstruction above hollow military bravado.",
+    "Embrace personal frugality, directing all revenues into durable stone bastions and economic relief.",
+    "Uphold Christian devotion and charity, offering comfort to commoners traumatized by foreign invasions."
+  ],
+  "Fears": [
+    "Mongol hordes returning unexpectedly to burn newly rebuilt settlements back to smoldering ashes.",
+    "Future heirs succumbing to decadent complacency, neglecting the hard-won defenses of the realm."
+  ],
+  "SpeechStyle": "Before the fiercest savage storms, Opole's stone ramparts must never waver! Standing firm to the last breath alone secures peace for our people. Unyielding defiance protects our heritage; Opole shall stand forever!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

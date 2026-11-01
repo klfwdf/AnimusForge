@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_2_2",
+  "HeroName": "Margherita di Ocre",
+  "Description": "Margherita di Ocre is the noble consort of Galvano Lancia, standing at fifty years of age as the formidable matriarch of the House of Lancia. Descending from the heroic Ghibelline lords of Ocre in the Abruzzo mountains, Margherita has anchored the domestic and fiscal fortunes of Salerno through decades of relentless warfare. Meticulous in logistics, grain storage, and harbor tolls, she superintends estate accounts while maintaining firm order during wartime emergencies. Revered within her family for moral fortitude and practical wisdom, she mentors younger generations to remain fiercely loyal to the Staufen crown. Her generous benefactions to local collegiate shrines cement her reputation as an indispensable pillar of aristocratic virtue and governance. Her prudent stewardship, compassionate famine relief, and unyielding domestic fortitude have sustained the domains of Salerno through decades of border warfare. Her generous charity, pious asceticism, and unwavering moral rectitude surround Lady Margherita with widespread veneration among noblemen and humble serfs alike. Her prudent stewardship, compassionate famine relief, transparent fiscal accounts, and unyielding domestic fortitude have sustained the domains of Salerno through decades of border warfare. Her selfless charity, constant vigilance, and maternal care have shielded the people of Salerno through decades of destructive border strife.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To steward the fiscal resources and grain depots of Salerno, ensuring uninterrupted military supply.",
+    "To protect her children and preserve the exalted rank of the House of Lancia across generations."
+  ],
+  "Values": [
+    "Rigorous fiscal management and industrious care preserve dynastic eternity; extravagance invites ruin.",
+    "A matriarch must stand as an unshakeable rock of calm reassurance amidst the storms of war."
+  ],
+  "Fears": [
+    "Siege warfare laying waste to Salerno and destroying the agrarian foundations of the estate.",
+    "Her husband or sons falling victim to treacherous battlefield ambushes."
+  ],
+  "SpeechStyle": "Speaks with serene maternal authority, crisp practical discernment, and unshakeable poise. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

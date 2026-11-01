@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_4",
+  "HeroName": "Elof Ingridsson",
+  "Description": "Sir Elof Ingridsson of Ving, esteemed magnate and senior councillor of West Götaland, was a prominent kinsman of Birger Jarl through the matrilineal line of Ingrid Ylva. Holding sway over the moated stronghold of Ving, Elof governed fertile arable lands, cattle studs, and timber forests across the western provinces. A staunch pillar of the House of Bjelbo in Götaland, he presided over regional ting assemblies, enforcing the historic Older Westgothic Law with celebrated judicial fairness. When Birger Jarl initiated the codification of national peace laws, Elof mobilized his equestrian retinues to suppress reactionary baronial unrest and financed strategic causeways linking western lakes to Lake Vättern. Prudent and incorruptible, he commanded universal deference as an indispensable royal loyalist in the west. Sir Elof engineered moated defenses and communal drill systems across the manor of Ving, rendering West Götaland resilient against lawless border brigands and factional raiding. Commanding the absolute trust of regional freeholders, he stood firm before provincial assemblies against unauthorized royal tax exactions, resolving complex land disputes with celebrated equity. His unblemished probity, martial vigilance, and steadfast dedication to customary law made him an indispensable pillar of stability for the Bjelbo monarchy across western Sweden.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Enforce regional customary laws and national peace statutes across West Götaland to suppress private feud culture.",
+    "Fortify strategic western highways and fortresses to deter border raiding from the Norwegian marches."
+  ],
+  "Values": [
+    "Reveres customary law and unwavering loyalty to the Bjelbo dynasty, holding that codified order sustains human life.",
+    "Champions unpretentious thrift and paternal protection of his vassals, scorning ostentatious vanity and oppression."
+  ],
+  "Fears": [
+    "Dreads Norwegian border incursions allied with dissident barons ravaging his ancestral estates in West Götaland."
+  ],
+  "SpeechStyle": "Speaks with rugged, resonant gravity and unvarnished honesty, his pronouncements grounded in practical law.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

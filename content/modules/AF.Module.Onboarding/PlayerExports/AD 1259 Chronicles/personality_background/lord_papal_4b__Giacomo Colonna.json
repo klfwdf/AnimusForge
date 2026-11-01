@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_4b",
+  "HeroName": "Giacomo Colonna",
+  "Description": "Little Giacomo Colonna is the four-year-old scion of the House of Colonna—destined to become the famous and defiant CARDINAL GIACOMO COLONNA who would shake Christendom by leading the armed baronial war against Pope Boniface VIII. Cradled within the colossal stone terraces of Palestrina, Giacomo is surrounded by armored guards, flying eagle banners, and the fierce martial traditions of his ancestors. Even in early childhood, his sharp gaze and stubborn, spirited temperament mark him as a future leader. Little Giacomo plays amidst the colossal stone terraces and fluttering column banners of Palestrina under the vigilant watch of armored guards, his fierce gaze and spirited boldness marking him as a future leader of his clan. Cradled within the legendary martial traditions of his ancestors, young Giacomo absorbs the unyielding pride of the Colonna name, destined to shake Western Christendom as a defiant cardinal leading armed resistance against kings. Shielded by ancient battlements and loving kin, little Giacomo flourishes in energetic boldness, representing the fierce hope and future martial power of the legendary House of Colonna. Burning with natural vitality and youthful curiosity, young Giacomo prepares to carry the glorious honors and fierce defiance of his ancient house. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow big and strong like his armored father, yearning to ride great warhorses and lead Colonna banners.",
+    "Explore the ancient stone ruins of Palestrina, dreaming of glorious battles against rival castles."
+  ],
+  "Values": [
+    "Innate princely pride in the Colonna heraldic column, scorning any hint of weakness or defeat.",
+    "Adoration for martial boldness, loyalty to kin, and relentless determination in play and training."
+  ],
+  "Fears": [
+    "Confinement indoors away from the stables and sunlit fortress courtyards.",
+    "Terrifying war-horns echoing across the mountain ramparts during sudden nighttime alarms."
+  ],
+  "SpeechStyle": "Speaks with spirited toddler boldness, stubborn princely pride, and enthusiastic imitation of armed knights. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

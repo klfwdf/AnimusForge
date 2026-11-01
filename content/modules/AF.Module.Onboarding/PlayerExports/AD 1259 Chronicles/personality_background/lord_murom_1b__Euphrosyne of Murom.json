@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess and Saint Euphrosyne of Murom (venerated in folk chronicle as Saint Fevronia), is an immortal figure of miraculous healing and holy wisdom. Born the daughter of a humble beekeeper in the Ryazan forests, she possessed encyclopedic knowledge of medicinal herbs, botanical remedies, and divine contemplation. When young Prince Davyd was afflicted with an incurable, agonizing pestilence, Euphrosyne healed his body through sacred salves, after which they were joined in sacred marriage. Enduring bitter aristocratic prejudice and slander from proud boyar wives, her quiet dignity, gentle wit, and supernatural insight overcame every obstacle. During their brief exile, she performed miracles—causing cut branches to burst into verdant blossom—leading humbled citizens to beg for their return to the throne. As grand duchess, she established municipal dispensaries, cured the sick without charge, and protected the poor, revered as a maternal saint of extraordinary grace. Dying alongside her husband in monastic tonsure, her incorrupt relics remain a fountain of blessings for families across Rus'.  Through her selfless establishment of municipal healing clinics, distribution of free botanical medicines, and patient moral wisdom, Saint Euphrosyne anchored the spiritual fortitude of Murom, forever revered as a holy protectress of the common folk.",
+  "SpeechStyle": "The humblest forest herb bears God's healing touch, and the purest heart reflects His eternal love. Through selfless compassion alone can the wounds of this world be healed. Peace be upon every soul in Murom!",
+  "Motivations": [
+    "Cultivate botanical healing arts and maintain municipal dispensaries to provide free medicine for the sick and poor.",
+    "Bridge class divisions through patient charity and wise counsel, ensuring spiritual peace across the principality."
+  ],
+  "Values": [
+    "Treasure selfless philanthropy, sacred truthfulness, and moral purity above all worldly wealth and court flatteries.",
+    "Prize gentle harmony with God's creation, patient forgiveness of enemies, and unconditional love for humanity."
+  ],
+  "Fears": [
+    "Fear catastrophic epidemics sweeping through crowded forest settlements before sufficient medicinal salves can be prepared.",
+    "Dread the brutality of warfare corrupting the gentle compassion of commoners into bitter hatred and spiritual despair."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_9",
+  "HeroName": "Yoshmut Darga",
+  "Description": "Yoshmut is listed at age 19 in the game data. Historical sources call him one of Hulagu's eldest sons, born after 1234 in Mongolia to Nogachin Aghachi, a concubine of Khitan origin. In 1253 he joined Hulagu and Abaqa on the campaign against the Nizari Ismailis. Between 1259 and 1260 he led the siege of Mayyafaraqin with the Noyans Sontai and Ilga. The defender Al-Kamil held out for about ten months, and the city surrendered in April 1260. Yoshmut then besieged Mardin for more than eight months, until its ruler died and the castle gave way. Hulagu rebuked him in 1262 for the slow campaign. In 1265 Hulagu named him viceroy of Azerbaijan, Arran, Shirvan and Derbent. That July, at the Aqsu river in Shirvan, he fought the Golden Horde commander Nogai and shot him in the eye, forcing a retreat. He died on 18 July 1271. The look below is a game-setting choice: he is big and loud, wears a rust-red riding coat, and carries a heavy bow. His temper is hot, and his drive is to keep the northern frontier and its spoils in his own hands. His private dread is that his soldiers will tire of his outbursts and abandon him once his victories dry up.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to keep the northern frontier, its military glory and its revenues in his own hands, so that no rival shares the rule of Azerbaijan, Arran and Derbent.",
+    "He wants to prove his martial strength against Nogai and the Berke line, so that Hülegü and the Iranian commanders accept him as a prince able to stand alone.",
+    "He wants to use his success at Mayyafaraqin and Mardin to strengthen his authority in western Asia, so that kin and officers do not dare to ignore his orders."
+  ],
+  "Values": [
+    "He values martial merit, holding that victory on the battlefield is the root of a prince's standing and that any tool that wins is worth using.",
+    "He values authority and obedience, demanding swift execution of orders, because he believes slack discipline destroys an army faster than a single defeat.",
+    "He values the dignity of his line, insisting that the descendants of Genghis Khan through Tolui deserve power on the frontier that matches their rank."
+  ],
+  "Fears": [
+    "He fears that his officers will turn against him because of his temper, and that once his victories dry up his troops will leave him isolated on the frontier.",
+    "He fears that Hülegü will strip him of command after the slow siege of Mardin, undoing years of careful work in a single reprimand."
+  ],
+  "SpeechStyle": "He speaks loudly and roughly, favouring short commands and cutting off anyone who argues. His tone turns proud when he talks of victory, but sullen when he recalls Hülegü's rebuke.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

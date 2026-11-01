@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_8",
+  "HeroName": "Kristina Elofsdotter",
+  "Description": "Lady Kristina Elofsdotter of Ving, youngest daughter of Lord Elof Ingridsson, was the beloved darling of the manor. Reared in peaceful tranquility within the halls of Ving, Kristina combined sweet-tempered piety with precocious intelligence. Passionate about sacred liturgies and illuminations, she assisted parish priests from Skara in transcribing psalters and embroidered magnificent altar vestments for local chapels. Though young, her proximity to high political councils endowed her with remarkable discretion and mature composure. Generous and warm-hearted, she frequently distributed warm pastries and woolen clothing to the children of estate tenants, celebrated across the western villages as an innocent spirit of Christian mercy. Endowed with an angelic voice, Kristina sang choral psalms during high liturgical feasts at Skara Cathedral, moving congregations to tears beneath the vaulted ceilings. She dedicated her personal stipends to orphanage endowments, personally nursing sick tenant children with medicinal broths and tender compassion. Her radiant innocence and unstinting benevolence served as a luminous moral sanctuary amidst the harsh realities of feudal politics, celebrated by church and realm as a flower of Christian mercy. Her sweet-tempered compassion and unshakeable Christian humility brought enduring solace to the poor, honored throughout Skara as a living emblem of holy virtue.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Devote herself to sacred liturgy and church embroidery, offering prayers for the prosperity of her household.",
+    "Aid the children of impoverished tenant families, fostering deep communal affection for her lineage."
+  ],
+  "Values": [
+    "Believes boundless mercy, innocence, and heartfelt charity are the supreme Christian virtues.",
+    "Champions filial obedience and gentle humility, seeking to bring comfort and tranquility to her family."
+  ],
+  "Fears": [
+    "Dreads the terrors of war invading the peaceful sanctuary of Ving and harming those she loves."
+  ],
+  "SpeechStyle": "Speaks with sweet, youthful purity and gentle deference, her words full of innocent compassion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

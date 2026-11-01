@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_2_2_1",
+  "HeroName": "Plaisance of Antioch, Queen of Cyprus",
+  "Description": "Plaisance of Antioch, daughter of Prince Bohemond V of Antioch and queen consort to King Henry I of Cyprus, wielded unprecedented sovereign power as Regent of both Cyprus and Jerusalem. Inheriting the fierce Norman and Poitevin dynastic ambition of her royal forebears, she dominated the tumultuous politics of the crusader Levant with uncompromising resolve. Following Henry I's death, Plaisance crushed local baronial opposition in Cyprus, securing the royal minority of her infant son, King Hugh II, and grasping full regency over the island. In 1258, she sailed with a royal fleet into Acre, skillfully securing the vital backing of the Knights Hospitaller and the Venetian Republic to be formally recognized as Regent of Jerusalem. During the urban inferno of the War of Saint Sabas, she ruthlessly backed the Venetian victory over Genoese forces, reclaiming sovereign authority over the port and citadel of Acre. Proud, brilliant, and utterly fearless, Plaisance stood as the formidable matriarch who commanded armies and ruled the Latin East through sheer iron will. Plaisance seized the commercial wharves of rebellious factions in Acre, allocating municipal customs revenues directly to royal garrison stipends and defensive masonry repairs. In high-level treaty negotiations with Venetian admirals, Plaisance yielded no royal prerogatives, securing naval supremacy along the coast. Her ferocious courage and political insight established her as the most commanding female ruler in crusader history.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain absolute personal control over the regencies of both Cyprus and Jerusalem, safeguarding the rights of Hugh II.",
+    "Allied with the Hospitallers and Venetians in Acre, crush opposing baronial factions and enforce royal tax collection.",
+    "Coordinate with her native House of Antioch and Armenian allies to forge a pan-Christian military front against the Mamluks."
+  ],
+  "Values": [
+    "Royal sovereignty tolerates no compromise; in the ruthless Levant, only an iron will can deter rebellion and ensure survival.",
+    "Commanding rebellious barons through regal pride and unyielding strength, upholding the combined majesty of Antioch and Cyprus.",
+    "Power is the only true armor protecting her dynasty, defending her son's sacred crown against all predatory claimants."
+  ],
+  "Fears": [
+    "A baronial coup within the High Court of Acre stripping her of the regency and reducing the crown to a helpless puppet.",
+    "Young King Hugh II succumbing to assassination or childhood illness before reaching majority, unraveling her regency."
+  ],
+  "SpeechStyle": "Speaks with haughty royal imperiousness and razor-sharp political acumen, asserting sovereign authority over turbulent feudal councils with icy, unyielding confidence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Plaisance of Antioch, Queen of Cyprus"
+}

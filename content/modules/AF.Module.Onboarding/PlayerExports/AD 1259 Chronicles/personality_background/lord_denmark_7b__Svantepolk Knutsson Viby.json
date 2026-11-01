@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_7b",
+  "HeroName": "Svantepolk Knutsson Viby",
+  "Description": "Lord Svantepolk Knutsson of Viby, celebrated magnate and High Justiciar (Lagman) of Östergötland, was the son of Duke Knut of Blekinge and a Pomeranian duchess of the Samboride house. Uniting the illustrious bloodlines of the Danish royal house, Pomeranian rulers, and the Swedish Sverker dynasty, Svantepolk augmented his vast power by marrying Benedikta Sunesdotter. Establishing his seat at the great manor of Viby in Östergötland, he was elevated to High Justiciar, administering regional assemblies with forensic juristic mastery. Renowned for his deep erudition in both Jutlandic customary codes and Swedish provincial statutes, Svantepolk served as an indispensable diplomatic bridge between the Danish regency of Eric V and the ascendant Folkung dynasty in Sweden, venerated across the north as a monumental arbiter of law and peace. Svantepolk established vital posting stations and paved causeways across Östergötland, linking Lake Vättern with Baltic seaports to facilitate cross-border grain commerce for provincial freeholders. During the volatile civil feuds within the Swedish Folkung dynasty in the 1260s, Svantepolk convened regional assemblies at Skänninge Priory, wielding his unmatched oratorical jurisprudence to defuse armed clashes between rival ducal factions, revered by both Danish and Swedish monarchs as a transcendental pillar of interstate justice.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Administer customary and statutory laws with strict impartiality across Östergötland to preserve civil peace.",
+    "Govern the sprawling transnational estates of Viby to maintain his lineage's preeminent standing between Denmark and Sweden."
+  ],
+  "Values": [
+    "Believes that equitable, codified jurisprudence is the supreme foundation of human society, binding kings and vassals alike.",
+    "Champions judicious diplomacy and aristocratic self-restraint, scorning lawless violence in favor of institutional harmony."
+  ],
+  "Fears": [
+    "Dreads an all-out interstate war between Denmark and Sweden tearing apart the cross-border stability of his estates."
+  ],
+  "SpeechStyle": "Speaks with slow, deliberative juristic gravity, his citations of ancient provincial codes carrying immense judicial authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_2",
+  "HeroName": "Emir Sayf ad-Din Balban",
+  "Description": "Sayf ad-Din Balban is thirty-one years old and head of the Balban branch. His wife is Ardukin, and their two sons, Izz ad-Din and Faris ad-Din, are his heirs. He has a medium build and broad shoulders, and years in the saddle have thickened the knuckles of the hand that grips the reins. He wears a dark green riding coat over an iron-plated vest, with a curved sabre at his waist whose grip is wrapped in worn leather.\nHe came of age in the era of Baybars and Qalawun. After the Mamluk victory at Ain Jalut in 1260 the Mamluks regained control of Syria, and he watched slave soldiers rise to high command through battlefield service. He learned that military merit opens the road to office while court favour can be withdrawn at any time, so he takes each promotion one careful step at a time.\nAgainst rivals inside the court he works through calculation. He offers a benefit first and applies quiet pressure second, avoiding an open break unless no other choice remains. He respects Qalawun's authority but keeps his distance from the sultan's inner circle, so he can step back when the wind changes.\nHis ideal is to hold the Balban name firm within the Mamluk order, so his sons can build their own standing. His darkest fear is that one political storm will make him a scapegoat, stripping the family of its fiefs overnight.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the Balban fiefs secure through the shifting court after Baybars and Qalawun, so his two sons do not lose their lands in a change of power.",
+    "Forge firm alliances with senior emirs, so the next reshuffle of commands gives him heavier troops and a steadier camp.",
+    "Keep a measured distance from the Cairo court, so he can withdraw when the wind turns without being dragged into any faction's purge."
+  ],
+  "Values": [
+    "Put terms on the table and keep every promise once spoken, because only then will rivals believe in your weight and sincerity.",
+    "Military merit is the proper road to promotion, while court favour can be taken back at any time, so always keep a second move ready.",
+    "The family name outweighs any single gain, and no decision should cost the future of his children, even if he must bear some personal hardship."
+  ],
+  "Fears": [
+    "Fears being pushed forward as a scapegoat in a political quarrel, with the family's fiefs and property confiscated overnight.",
+    "Fears his sons will be isolated by his own errors, so that no one at court will speak up for the Balban family again."
+  ],
+  "SpeechStyle": "Speaks calmly, often giving a rival a way out before stating his terms. His tone flattens when court enemies are named, and he repeats promises until confirmed. With his sons he is warm but corrects them with proverbs.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

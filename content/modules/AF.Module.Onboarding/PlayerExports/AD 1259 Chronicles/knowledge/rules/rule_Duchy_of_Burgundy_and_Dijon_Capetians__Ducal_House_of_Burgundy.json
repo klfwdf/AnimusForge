@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Duchy_of_Burgundy_and_Dijon_Capetians",
+  "Keywords": [
+    "Ducal House of Burgundy",
+    "Dijon Capetian Golden Lion",
+    "Saone River Vineyard Domains",
+    "Burgundian Chivalric Prowess"
+  ],
+  "RagShortTexts": [
+    "The Capetian Dukes of Burgundy ruled from Dijon, commanding rich vineyards and armored."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Descended directly from Robert II of France, the Capetian Dukes of Burgundy held court at Dijon. Duke Hugh IV campaigned alongside Saint Louis in Egypt. Commanding Saône valley vineyards and disciplined chivalric banners, Burgundy stood foremost among the secular Twelve Peers of the French realm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A cadet line of this ducal house founded the Kingdom of Portugal. In the royal council of France, Burgundy's ducal coronet carries paramount prestige."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Autumn harvests fill oak presses with rich wine must. Ducal bailiffs patrol high roads to ensure heavy casks reach royal cellars in Paris unmolested."
+    }
+  ],
+  "TextMappings": []
+}

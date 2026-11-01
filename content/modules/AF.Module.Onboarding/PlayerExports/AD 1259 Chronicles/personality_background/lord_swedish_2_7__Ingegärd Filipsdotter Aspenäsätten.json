@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_2_7",
+  "HeroName": "Ingegärd Filipsdotter Aspenäsätten",
+  "Description": "Lady Ingegärd Filipsdotter of the Aspenäs clan, venerable matriarch and senior elder of the dynasty in Östergötland, was a prominent kinswoman of Lord Johan Filipsson. Having lived through multiple dynastic upheavals and violent transfers of power within the House of Bjelbo, Ingegärd possessed profound historical wisdom and moral authority. Residing at the ancestral seat of Aspenäs, she safeguarded the family's genealogical rolls, marriage covenants, and ecclesiastical immunities, venerated as the supreme counsellor of the clan. In moments of existential peril, her measured advice guided younger lords to temper impulsive wrath with political cunning. Generously patronizing diocesan nunneries, her aristocratic rectitude made her an immovable spiritual anchor for her lineage. Ingegärd personally supervised the family's charitable endowments and tithe dispensations, distributing grain to famished peasants during famine years and earning widespread veneration for her lineage. Possessing encyclopedic knowledge of regional history, she repeatedly checked rash impulses of vengeful youths in clan councils, steering her family toward peaceful constitutional supremacy. Living to an advanced age, she was venerated as the venerable matriarch of the Aspenäs dynasty. Her profound historical wisdom and moral authority preserved the unity of her lineage through generations of civil turmoil, remembered as an immortal pillar of her house.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Safeguard the ancestral charters, muniments, and genealogical codices of Aspenäs to preserve dynastic legitimacy.",
+    "Maintain solidarity among all cadet branches during external political storms, arbitrating internal disputes."
+  ],
+  "Values": [
+    "Reveres the survival and unblemished honor of her bloodline, believing true strength lies in patient fortitude across generations.",
+    "Champions long-term strategic caution, scorning rash bravado in favor of shielding the kin network from extinction."
+  ],
+  "Fears": [
+    "Dreads reckless impetuosity among the youth plunging the whole dynasty into total destruction and forfeiture."
+  ],
+  "SpeechStyle": "Speaks with slow, monumental serenity and ancient authority, her words carrying the accumulated wisdom of generations.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

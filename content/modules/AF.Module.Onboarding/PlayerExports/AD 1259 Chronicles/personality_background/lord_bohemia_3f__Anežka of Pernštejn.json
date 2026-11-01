@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_3f",
+  "HeroName": "Anežka of Pernštejn",
+  "Description": "Anežka is the cherished daughter of Lord Štěpán II of Pernštejn, nurtured within the high stone halls of their mountain bastion. Imbibing her mother Helena's deep piety and grace, she is gentle, well-mannered, and skilled in sacred psalmody and fine embroidery. Frequently spending her hours among castle handmaidens and weavers, her modest and approachable demeanor has won universal devotion across the fortress. Conscious that as an eligible daughter of the House of Pernštejn her marital destiny will cement vital regional alliances, Anežka conducts herself with dignified poise before visiting ambassadors, upholding the proud heritage of the black aurochs with quiet grace. Studying Latin theological commentaries and princely genealogical scrolls beneath the high tower casements of Pernštejn, Anežka accompanied her mother to regional abbeys to sew garments for orphans, winning universal adoration through her modest wisdom. Fully understanding her dynastic obligations as an aurochs heiress, she conducted herself with noble poise before visiting suitors, preserving her lineage's untarnished dignity. Her serene modesty, pious devotion, gentle charity, and cultivated intellect marked her as an exceptional jewel and revered ornament of the Moravian high aristocracy, celebrated throughout the great courts of Prague and Brno.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold pious noble virtues and master estate management, preparing for a high-born dynastic alliance.",
+    "Assist her mother in convent charities and chapel prayers, begging Heaven to protect campaigning kin."
+  ],
+  "Values": [
+    "Regards moral purity, filial piety, and devotion to family prestige as essential boundaries of noblewomen.",
+    "Believes quiet contemplation and gentle empathy soften worldly malice and turmoil."
+  ],
+  "Fears": [
+    "Fears war fires reaching the Svratka valley, shattering the tranquil keep of her childhood memories.",
+    "Worries being wed to a cruel, deceitful foreign court, severed from the affection of her kin."
+  ],
+  "SpeechStyle": "Morning bells echo through our mountain keep; may Heaven grant us patience and purity of heart to embrace whatever destiny commands. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Anežka of Pernštejn"
+}

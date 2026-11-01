@@ -1,0 +1,30 @@
+{
+  "Id": "rule_House_of_Visconti_Signoria_of_Milan",
+  "Keywords": [
+    "House of Visconti Milan",
+    "Biscione Serpent Heraldry",
+    "Ottone Visconti Archbishop"
+  ],
+  "RagShortTexts": [
+    "The Visconti brandished the child-devouring Biscione viper, battling the della Torre for."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Contesting dominion over Milan against the rival della Torre faction, the House of Visconti rallied behind Archbishop Ottone Visconti. Bearing the menacing Biscione—a viper devouring a child—they laid the groundwork for an enduring Lombard signoria built on unsparing statecraft."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Control over Saint Ambrose's basilica granted the Visconti immense spiritual revenue to hire mercenary crossbowmen and heavy cavalry."
+    }
+  ],
+  "TextMappings": []
+}

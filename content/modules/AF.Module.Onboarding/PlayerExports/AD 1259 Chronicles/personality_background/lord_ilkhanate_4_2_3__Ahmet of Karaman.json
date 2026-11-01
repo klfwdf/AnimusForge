@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_2_3",
+  "HeroName": "Ahmet of Karaman",
+  "Description": "Ahmet is a son of Bünsuz Karaman Bey and Bengü, and at seventeen he is one of the youngest men of his branch. The historical record does not mention him, and his name and origin are game-world inventions. Given the usual upbringing of cadet boys in court and cavalry circles, his prospects will depend largely on what he wins for himself. No source describes his looks. This profile imagines a lean, bright-eyed youth with skin tanned to honey colour by wind and sand, who carries a short bow with a leather-wrapped grip over one shoulder. He moved between Konya and the frontier. He rode with his father's horsemen and saw camp life, and at the court offices he overheard clerks discussing affairs of state. He is curious and bold, and often rides out alone without orders to look at nearby watchposts and river fords. Toward his cousins' arrogance and the snobbery of the court he is blunt, and he will confront an injustice on the spot. Afterwards he readily admits his fault. His lofty aim is to build a name in the army as his father did, through horsemanship and courage rather than through the rank of a royal cadet. His hidden fear is that his quick temper will lead to a reckless act that disgraces his mother and brothers and brings shame on the house once again.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win battle credit in archery and frontier patrols, so that people know his name was earned by his own courage and not handed to him by royal rank.",
+    "Learn the mountain roads and river crossings near Konya and the frontier, knowing which paths a horse can take and which invite an ambush.",
+    "Master his quick temper so that no reckless act drags his family down, and so that his mother, brothers, and father can trust him."
+  ],
+  "Values": [
+    "He values horsemanship and courage, believing a man should earn respect with his own saddle and bow rather than rely on birth.",
+    "He cares about right and fairness, stepping forward when the weak are bullied and scorning backroom tricks in favour of open confrontation.",
+    "He respects his mother's teaching, and after any mistake he goes to her first to confess before he sets about making amends."
+  ],
+  "Fears": [
+    "A reckless act that shames his father or brother, damages the family name, and leaves the house unable to hold its head up again.",
+    "Being treated as a useless royal cadet who can only follow other people's orders in camp and at court, with no path of his own."
+  ],
+  "SpeechStyle": "He speaks frankly and quickly, often breaking in before others finish. When excited his voice rises, but he soon lowers his head and admits fault. He grows very talkative about archery and the frontier.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_4_1_a",
+  "HeroName": "Eufemii Pomorska",
+  "Description": "Eufemia of Pomerelia reigns as a noble princess of the maritime Samboride dynasty, the accomplished daughter of Duke Świętopełk II the Great and Duchess Ermengard von Schwerin. Raised amidst the roaring sea gales and clashing armies of the Baltic coast at Gdańsk Castle, Eufemia developed deep familiarity with seafaring navigation, Latin chancellery letters, and North German merchant diplomacy. Her prospective marriage to Prince Jaromar II of Rügen established a vital maritime alliance connecting the Pomerelian mainland with the formidable island fleets of the Rani. Intelligent, resolute, and politically astute, Eufemia worked behind the scenes to secure naval transports and grain provisions for her father during grueling wars against the expanding Teutonic Order and hostile Danish fleets. A devout benefactress of coastal Cistercian abbeys and mariners' hospices, she distributed silver tithes to succor widows of sailors drowned in violent northern tempests. Within the castle household, she audited maritime customs rolls and coordinated diplomatic receptions, serving as an indispensable pillar of Samboride prestige. Her enduring diplomatic vision anchored valuable seafaring coalitions across the southern Baltic rim. Eufemia established coastal lighthouses and grain depots along the Vistula estuary to secure navigation. Her diplomatic foresight safeguarded sea convoys and anchored lasting alliances across the Baltic waters.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure a strategic cross-sea marriage with Rügen to field a formidable island fleet against Danish blockades.",
+    "Manage domestic maritime custom revenues to guarantee unbroken financial readiness for the ducal navy.",
+    "Safeguard her familial lineage amidst Baltic power struggles, winning neutral allies for Pomerelian sovereignty."
+  ],
+  "Values": [
+    "Hold maritime freedom and dynastic sovereignty as sacred, resisting foreign monopolies over the Vistula.",
+    "Prize calculated diplomatic patience and mutual alliances over volatile military gambles.",
+    "Revere Christian compassion, extending relief to common families ravaged by shipwrecks and war."
+  ],
+  "Fears": [
+    "A combined Danish and Teutonic naval blockade strangling Gdańsk bay and starving coastal strongholds.",
+    "Internal dynastic squabbles over customs revenues fracturing the defense of the Vistula estuary."
+  ],
+  "SpeechStyle": "The Baltic shipping lanes belong to our people; gales and crusader swords cannot shatter Gdańsk's resolves. Through wise alliances, Pomerelia rules the sea! The northern seas belong to the bold; through wisdom, Gdańsk reigns supreme!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

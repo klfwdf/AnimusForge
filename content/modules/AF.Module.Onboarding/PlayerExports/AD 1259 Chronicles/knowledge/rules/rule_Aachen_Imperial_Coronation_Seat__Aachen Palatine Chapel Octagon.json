@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Aachen_Imperial_Coronation_Seat",
+  "Keywords": [
+    "Aachen Palatine Chapel Octagon",
+    "Charlemagne Marble Throne",
+    "King of the Romans Coronation",
+    "Free Imperial City Aachen"
+  ],
+  "RagShortTexts": [
+    "Aachen served as the historic imperial coronation venue housing Charlemagne's sacred marble."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Aachen enshrined the imperial crown jewels and sacred memory of Charlemagne. Within the Palatine Chapel, elected German kings sat upon the Emperor's ancient marble throne to receive consecration from the Archbishop of Cologne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "As a Free Imperial City directly beneath the crown, Aachen's thermal waters and coronation charters enjoyed universal imperial protection."
+    }
+  ],
+  "TextMappings": []
+}

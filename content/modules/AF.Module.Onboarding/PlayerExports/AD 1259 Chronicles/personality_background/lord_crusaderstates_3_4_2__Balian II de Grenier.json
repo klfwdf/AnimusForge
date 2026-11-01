@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_3_4_2",
+  "HeroName": "Balian II Grenier, Titular Lord of Sidon",
+  "Description": "Balian II Grenier was the eldest son of Count Julian of Sidon and Princess Euphemia of Armenia, standing as the titular heir to the historic Lordship of Sidon. Having witnessed during his youth the catastrophic sack of his ancestral city and the subsequent mortgage of their castles to the Templars, he learned the bitter perils of martial recklessness. In stark contrast to his father's impulsive temperament, Balian cultivated disciplined reserve, guided by the prudent statecraft of his Armenian royal forebears. Following 1259, Balian worked diligently within the High Court of Acre and the chancery of the Knights Templar to resolve the staggering feudal debts burdening his patrimony. Uniting Frankish chivalric heritage with royal Armenian blood, he earned high distinction across Cyprus and the Levant for his measured judgment and unswerving integrity. Dedicated to restoring his lineage through patient diplomacy, Balian represented a resilient new generation striving to rebuild Outremer upon foundations of prudence. In the cavalry muster fields of Acre, Balian drilled rigorously alongside veteran Hospitallers, mastering defensive mountain warfare and shock counter-attacks. He cataloged surviving land deeds and harbor registers from Sidon, earning unanimous praise from royal judges for his administrative precision. Steadfast and patient, he stood prepared to answer every royal summons, dedicating his life to restoring his house's ancestral dignity.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Resolve the catastrophic financial debts encumbering his barony through lawful negotiation with the Knights Templar.",
+    "Perform exemplary feudal service in Cyprus and Outremer to secure fresh hereditary knight's fees for his descendants.",
+    "Maintain close familial alliance with the royal court of Cilician Armenia to anchor his house against geopolitical collapse."
+  ],
+  "Values": [
+    "Prudence and financial restraint are the indispensable lifeblood of noble longevity; rashness leads only to devastation.",
+    "Upholding chivalric honor and legal contracts through adversity, patiently restoring ancestral dignity through dutiful service.",
+    "Subordinating personal pride to collective dynastic survival, governing conduct with incorruptible ethical integrity."
+  ],
+  "Fears": [
+    "The Knights Templar permanently absorbing all residual Grenier feudal prerogatives, leaving his heirs disinherited.",
+    "A catastrophic Mamluk northern conquest extinguishing the Kingdom of Jerusalem, terminating all hope of dynastic recovery."
+  ],
+  "SpeechStyle": "Speaks with quiet noble maturity and pragmatic composure, discussing territorial defense and ancestral debts with thoughtful, disciplined precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Balian II Grenier, Titular Lord of Sidon"
+}

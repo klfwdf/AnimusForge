@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_7_6",
+  "HeroName": "Sukayna",
+  "Description": "Sukayna is about twenty-two years old and the wife of Abu Masal al-Rabat, the main figure in her branch for diplomacy and hospitality. She is tall and carries herself with poise. Her black hair is worn in one long plait tipped with a small silver bell that chimes softly when she moves. She favours deep purple robes trimmed in gold, with white wave patterns stitched at the cuffs by a friend of her husband's from the harbour. When she speaks she tilts her head slightly, and her gaze is bright without being pressing, so the listener feels heard. As a young woman she ran a spice shop with her father in the Rabat market. There she learned to bargain with merchants from many lands and to ease an angry buyer's temper with a well-timed joke. After marriage she hosted several feasts for the headmen of the coastal towns, using carefully chosen gifts and graceful speech to seat rival families at one table. A slim silver bangle on her wrist is the praise she earned at her first feast. Before each banquet she works out the kinship ties and old quarrels of every guest, and she weighs even a single seating with care. When the clan gossips against her husband's cavalry, she never answers face to face. She invites the critics to dinner and lets them change their minds over wine. Her deepest drive is to tie her husband's cavalry to the coastal trade routes, so the household rests on goodwill rather than walls alone. Her greatest fear is that one careless word will tear the web of obligations she has woven.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants her husband's cavalry and the coastal trade routes to depend on each other, so the household rests on goodwill and trust, not only on swords.",
+    "She intends to bring coastal headmen and merchants together through feasts and gifts, so old quarrels fade and rivals can negotiate at one table.",
+    "When clan gossip rises against the cavalry, she invites the critics to dinner, so they see the facts over wine and her husband keeps his standing."
+  ],
+  "Values": [
+    "Goodwill is a long-held asset. One graceful feast may earn a decade of trust, while a single careless word can end years of dealings overnight.",
+    "Speech should leave room for turning. A joke may ease anger, yet it may also ignite fresh resentment, so she weighs each sentence first.",
+    "Trust is rarer than profit, and every promise must be kept even at great cost, since coastal headmen will not trust her husband if she breaks her word."
+  ],
+  "Fears": [
+    "One careless remark may tear the web of obligations she has woven, and coastal headmen may again regard the branch with suspicion, cutting supplies.",
+    "Her husband may lose support within the clan, and her feasts and gifts may no longer buy back trust, ending the branch's diplomatic road for good."
+  ],
+  "SpeechStyle": "Her tone is warm and measured. She opens with a greeting, so others speak first about their trouble. On interests she slows down and uses comparisons. Faced with insult, she smiles and turns the talk with a joke.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

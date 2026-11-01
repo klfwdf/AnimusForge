@@ -1,0 +1,41 @@
+{
+  "Id": "rule_English_Longbow_Yeoman_Archers",
+  "Keywords": [
+    "English Longbow Yeoman Archers",
+    "Yew Heavy Warbow",
+    "Square Bodkin Armor Piercing Points",
+    "Welsh Marcher Tactical Doctrine"
+  ],
+  "RagShortTexts": [
+    "English yeomen wielding six-foot yew warbows rained armor-piercing bodkins across medieval."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Evolving along the Welsh Marches, the English yew warbow was mastered by freeholder yeomen trained from youth. Spanning over six feet with draw weights exceeding 100 pounds, these bows hurled square steel bodkin heads that pierced mail and padded arming doublets, revolutionizing field tactics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Prince Edward increasingly mobilized shire archers against rebellious barons. Loosing ten to twelve shafts per minute, massed archery arrays eroded the historic invulnerability of noble mounted charges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Drawing a warbow bends the archer's entire spine. When flights of goose-feathered shafts block out the sun with a deafening hiss, unbarded horses stumble and crash into bloodied confusion."
+    }
+  ],
+  "TextMappings": []
+}

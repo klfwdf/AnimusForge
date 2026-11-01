@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_5_1",
+  "HeroName": "{almohad_lord_de_vicente_1}Vicente Bellvis, ex-Emir of Valencia",
+  "Description": "Vicente Bellvis is the Christian name taken by Abu Zayd, a member of the Almohad royal family. In the game lineage he is a son of Abu 'Abdallah Muhammad (father is dead_lord_almohad_9). He is about sixty-four, tall and sun-darkened, with a shallow sword scar above his left brow. He wears a cloak that mixes Andalusi and Christian styles, a visible sign of his double allegiance. Under the Almohads he governed Valencia. Historical sources say that around 1229 Zayyan ibn Mardanish expelled him, and he fled to Aragon and placed himself under James I. In 1236 he reportedly converted to Christianity, keeping the change hidden until James took Valencia in October 1238. His success came from playing one power against another, and that talent remains his most reliable asset. His highest aim is to secure a fief in the Espadan hills so that his descendants can stand as Christian nobles. His darker side is a fear that former Muslim subjects or their heirs will recognise him and label him a traitor to faith and city. At night he dreams of fire on the walls of Valencia and fears revenge from behind. The game gives him no further personal record, so these details are inferred from the historical setting and the sources listed.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Secure a fief in the Espadan hills for his family, so his descendants can stand as Christian nobles rather than be dragged down by their Almohad past.",
+    "Keep his standing with James I through loyal service, so the king does not recall the lordships, revenues and privileges he has been granted.",
+    "Hold a delicate line between former Muslim subjects and the new conquerors, so that trade and old ties in Valencia do not break off entirely."
+  ],
+  "Values": [
+    "Loyalty as exchange. He believes a pledge is worth what it secures, so he weighs every oath carefully before he gives it.",
+    "Continuity of his line. He puts his children's future above his own old name and will give up his past identity to protect their place and dignity.",
+    "Measured dignity. He insists on courtly Latin forms in public and hides every trace of his Arab upbringing before nobles who might despise it."
+  ],
+  "Fears": [
+    "Fears former Muslim subjects or their heirs will recognise him as a traitor who sold the city and faith, and will take revenge on him in the countryside.",
+    "Fears that James I or his heirs will revoke his fiefs, leaving his children landless and stripped of noble status overnight, reduced to commoners."
+  ],
+  "SpeechStyle": "Measured and courteous, he uses classical formal phrases and avoids direct questions about the past. When Valencia comes up he falls silent, then turns to tithes and land, a long habit of self-protection.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

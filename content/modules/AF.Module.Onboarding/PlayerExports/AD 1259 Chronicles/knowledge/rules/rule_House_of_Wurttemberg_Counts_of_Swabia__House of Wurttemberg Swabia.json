@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Wurttemberg_Counts_of_Swabia",
+  "Keywords": [
+    "House of Wurttemberg Swabia",
+    "Stuttgart Stag Antler Crest",
+    "Ulrich I Expansion Wurttemberg",
+    "Swabian Ducal Inheritance"
+  ],
+  "RagShortTexts": [
+    "Ulrich I transformed the House of Württemberg from local Swabian counts into an assertive."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Capitalizing on the fall of the Hohenstaufens, Ulrich I of Württemberg seized crumbling Swabian ducal estates around Stuttgart and the Neckar valley. Flying three stag antlers on gold, the dynasty steadily forged a united southern German principality."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Württemberg retinues absorbed scattered imperial manors, imposing disciplined feudal taxes across fertile Swabian hills."
+    }
+  ],
+  "TextMappings": []
+}

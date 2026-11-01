@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_2_3",
+  "HeroName": "Birgitta Filipsdotter",
+  "Description": "Lady Birgitta Filipsdotter of Aspenäs, noblewoman of Östergötland, was the younger sister of Lord Johan Filipsson. Renowned for her tranquil demeanor and sincere Christian piety, Birgitta dedicated her life to religious endowments and medical charity. Amidst the gathering storm of civil warfare between her house and the crown, Birgitta directed her personal wealth into establishing infirmaries and convalescent hospices near Aspenäs, tending to wounded retainers and displaced freeholders with her knowledge of herbal medicine. While avoiding overt political confrontations, her selfless charity won deep affection and moral legitimacy for the Aspenäs lineage among local clergy and commoners, celebrated as an angel of mercy. Birgitta established secluded sanctuaries around Aspenäs to shelter war orphans and disabled veterans, administering medicinal salves and clean dressings to alleviate their agony. Her irreproachable sanctity commanded universal reverence from both royalist and rebel soldiers, ensuring her hospices remained unviolated even during the height of military crackdowns. Embodying pure Christian love, she quenched generational feuds, remembered as a saintly peacemaker across Östergötland. Her selfless ministry of mercy across the war-torn villages of Östergötland established an immortal testament of Christian grace that reconciled hostile factions and healed deep community wounds.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage infirmaries and medicinal hospices at Aspenäs to heal wounded soldiers and relieve peasant suffering.",
+    "Protect local monastic communities, securing ecclesiastical sympathy and spiritual protection for her kin."
+  ],
+  "Values": [
+    "Reveres Christian compassion and charitable healing, believing that divine grace outlasts all worldly kingdoms.",
+    "Champions peaceful conciliation and mercy, scorning the senseless spilling of Christian blood in political feuds."
+  ],
+  "Fears": [
+    "Dreads escalating political violence reaching her infirmaries and slaughtering helpless patients and monks."
+  ],
+  "SpeechStyle": "Speaks with soothing, gentle cadence and radiant warmth, her compassionate voice instilling immediate peace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

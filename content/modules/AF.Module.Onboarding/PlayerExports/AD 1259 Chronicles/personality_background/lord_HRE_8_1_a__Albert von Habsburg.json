@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_8_1_a",
+  "HeroName": "Albert von Habsburg",
+  "Description": "Albert stands as the eldest son and primary heir of Rudolf I, destined to reign as Roman-German King Albert I and Duke of Austria. Schooled from childhood in martial rigors, siege warfare, and feudal administration, he possesses a steel-willed, hawkish demeanor untouched by sentimentality. Accompanying his father across the Rhine and through harsh Swabian campaigns, Albert mastered shock cavalry tactics and fortress assault, commanding the profound respect and dread of veteran knights through his unyielding discipline and swift tactical insight. Fully attuned to his father's grand design for imperial ascendancy, he guards the Habsburg patrimony with fanatical vigilance. To any rival encroaching upon family domains, Albert answers with overwhelming, merciless force, already embodying the terrifying resolve of a sovereign destined to crush rebellious princes with an iron fist. Albert displayed an intense obsession with military engineering and swordplay, bivouacking in heavy hauberks alongside sworn knights in chilly border fortifications. Enforcing draconian field discipline that punished cowardice with instant death, he reduced rebellious vassal keeps through relentless siegecraft, demonstrating to the princes of the Holy Roman Empire that the young heir of Habsburg possessed a heart of unbending steel. His relentless discipline and unwavering resolve mark him as a fearsome heir destined to command the destiny of kings.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prove his military genius equal to his father's on the battlefield, commanding elite Habsburg cavalry squadrons.",
+    "Subjugate disgruntled regional lords around Swabia to pave the way for expansive imperial acquisitions."
+  ],
+  "Values": [
+    "Believes in iron discipline, absolute obedience, and overwhelming military deterrence to enforce order.",
+    "Regards defending hereditary rights and territorial expansion as supreme honors transcending personal comfort."
+  ],
+  "Fears": [
+    "Fears sustaining crippling injury in skirmishes before assuming full lordship, tarnishing his reputation.",
+    "Detests treacherous court intrigue, vowing to crush all two-faced conspirators with open steel."
+  ],
+  "SpeechStyle": "Hesitation spells ruin; weakness invites destruction. When Habsburg steel unsheathes, only unconditional submission can stay our hand! In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Albert von Habsburg"
+}

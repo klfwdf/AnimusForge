@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_3_3",
+  "HeroName": "Nils Björnsson",
+  "Description": "Sir Nils Björnsson, High Justiciar (Lagman) of Närke and knight banneret, was the eldest son and heir of Sir Björn Näf. Inheriting his father's juristic brilliance and martial vigor, Nils served in the military campaigns of Prince Magnus, subsequently ascending to the provincial justiciarship of Närke. Revered for his forensic mastery of customary statutes and royal edicts, Nils presided over regional ting assemblies with absolute impartiality. He commanded an elite retinue of armored horsemen that guarded the forested transit corridors connecting Svealand with Götaland, ruthlessly crushing border bandits and rebellious baronial outposts. Upholding the rule of law on the bench and the battlefield, Sir Nils stood as a paramount pillar of the new constitutional order. Sir Nils erected stone beacon redoubts and permanent cavalry stations along the river crossings of Närke, eradicating forest bandit dens that had plagued regional highways for decades and securing uninterrupted commercial traffic across Sweden. When dissident barons attempted to incite rural tax revolts, Nils attended peasant ting assemblies in person, dismantling rebellious rhetoric with forensic legal logic while displaying overwhelming military deterrence. His exceptional mastery of governance established Närke as a bastion of royal peace.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Enforce royal statutory law across Närke to suppress violent feuds and establish permanent judicial peace.",
+    "Command heavy cavalry patrols to safeguard vital transit highways connecting central Sweden with the south."
+  ],
+  "Values": [
+    "Reveres the impartial majesty of codified law and sworn duty to the realm, holding justice as the spine of society.",
+    "Champions decisive martial courage and incorruptible integrity, dedicating his blade to defending the vulnerable."
+  ],
+  "Fears": [
+    "Dreads reactionary baronial ambushes assassinating judicial magistrates and plunging Närke into lawless anarchy."
+  ],
+  "SpeechStyle": "Speaks with terse, commanding judicial authority, his resolute pronouncements reflecting an incorruptible legal mind.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

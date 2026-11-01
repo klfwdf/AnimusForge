@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Oleh Ihorevych is the spirited younger son of Prince Ihor and Euphrosynia, recognized as a dashing cavalry captain and frontier champion of Clan Olgovych. Reared amidst the garrison cantonments along the Desna and Chernigov marches, Oleh mastered the art of shock cavalry maneuvers and archery. While his elder brothers fought for the Galician crown, Oleh commanded vanguard retainers along northern frontier crossroads, successfully repelling opportunistic incursions from neighboring principalities. Frank, courageous, and fiercely loyal, he shared camp hardships beside common men-at-arms, commanding enthusiastic devotion from his horsemen. When the Galician enterprise collapsed in tragic betrayal, Oleh demonstrated remarkable tactical composure, rallying scattered survivors to secure family holdings against encirclement. In 1259, veterans across the borderlands still recount Oleh's audacity as an inspiring exemplar of Ruthenian chivalry. Operating across dense woodland and exposed borderlands, Prince Oleh mastered rapid horse archery and deceptive skirmish tactics against nomad raiders. Sharing cold rations and hardship with his vanguard troopers, he repeatedly intercepted marauding cavalry columns, securing the vulnerable frontiers of the Olgovychi territories with resolute courage. His vigilant scouting patrols intercepted numerous hostile incursions across treacherous river crossings, earning him the deep respect of hardened veteran cavalrymen throughout the southern borderlands.",
+  "SpeechStyle": "The battle-neigh of our chargers is our summons; Olgovych steel never loses its edge! Against all perils, we charge forward and never retreat! Trust your steed and lance, and victory crowns our banner!",
+  "Motivations": [
+    "Defend family frontier bastions with elite cavalry retainers, magnifying Clan Olgovych's chivalric fame.",
+    "Protect his battle-brothers and kin amidst perilous odds, preserving an elite cadre for future resurgence."
+  ],
+  "Values": [
+    "Hold battlefield daring, fraternal fidelity, and martial brotherhood as supreme ideals, scorning betrayal.",
+    "Prize honorable open combat, convinced true renown is written in blood from the saddle."
+  ],
+  "Fears": [
+    "Fears reckless encirclement cutting off his vanguard and annihilating his loyal veteran squadrons.",
+    "Dreads dynastic collapse reducing the proud Olgovych lineage to powerless, tributary vassals."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

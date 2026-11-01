@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Hesychasm_and_Mount_Athos_Mysticism",
+  "Keywords": [
+    "Mount Athos Holy Mountain Monasteries",
+    "Hesychasm Jesus Prayer Contemplation",
+    "Uncreated Light of Mount Tabor",
+    "Eastern Orthodox Ascetic Mysticism"
+  ],
+  "RagShortTexts": [
+    "Mount Athos hermits practiced Hesychasm, repeating the Jesus Prayer to behold the divine light."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Projecting into the Aegean, the monastic peninsula of Mount Athos served as the spiritual heart of Eastern Orthodoxy. Practicing Hesychasm, hermits engaged in inner stillness, synchronizing breathing with continuous recitation of the Jesus Prayer to experience the uncreated divine light revealed on Mount Tabor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Protected by imperial chrysobulls forbidding women and female livestock, Athos maintained strict ascetic self-governance, emphasizing mystical union with divine energies over Latin dialectic theology."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Hermits clad in coarse black wool subsist on dry bread and wild olives. Tying knotted wool prayer ropes, they spend lifetimes in candlelit caves interceding for mankind's sins."
+    }
+  ],
+  "TextMappings": []
+}

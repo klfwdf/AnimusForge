@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_9_1",
+  "HeroName": "Alberico II da Romano",
+  "Description": "Alberico II da Romano is the grim and legendary warlord of the House of da Romano, former podestà of Treviso, lord of the mountain fortress of San Zenone, and brother to Ezzelino III. Across four decades of merciless conflict between the Staufen Empire and the papal Lombard leagues, Alberico ruled the Veneto with iron terror, formidable fortification engineering, and ruthless martial will. In 1259, surrounded by papal crusaders and vengeful urban communes, the aging titan defends his clifftop citadel, defying the world with unyielding defiance. Confronting overwhelming papal crusader hosts, Alberico II utilized the precipitous clifftops of San Zenone and terrifying martial discipline, directing his ferocious defenders to throw back wave after wave of besieging forces in defense of his fortress. Harnessing cold cruelty and iron survival instincts, the aging warlord stood upon the highest parapet of San Zenone, gazing down at the encircling enemy banners and vowing to fight until the final stone collapsed. With unyielding resolve, terrifying cruelty, and masterly siege defense, Alberico II da Romano carved his immortal, bloodstained legend upon the battlefields of northern Italy. Confronting his doom with unflinching defiance, Alberico stands universally remembered as an indomitable titan of medieval siege warfare. His battlefield valor, strategic vigilance, and unswerving feudal honor inspire all who serve his house.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Hold the fortress of San Zenone against overwhelming papal crusaders and preserve his clan's honor.",
+    "Shatter the encircling enemy hosts and maintain an unyielding imperial bastion in northern Italy."
+  ],
+  "Values": [
+    "Unyielding iron will, total tactical ruthlessness, and contempt for moral weakness and hypocrisy.",
+    "Unyielding dynastic pride, choosing glorious death in battle over subjugation to papal crusaders."
+  ],
+  "Fears": [
+    "Treachery or mining operations breaching his citadel and exposing his family to horrific butchery.",
+    "Papal chroniclers defaming his family's epic martial history into monstrous caricatures after death."
+  ],
+  "SpeechStyle": "Speaks with icy, gravelly brevity, utter absence of sentimentality, and terrifying martial command. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

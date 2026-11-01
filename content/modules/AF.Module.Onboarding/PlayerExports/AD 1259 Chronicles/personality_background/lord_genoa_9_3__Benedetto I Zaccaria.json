@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_9_3",
+  "HeroName": "Benedetto I Zaccaria",
+  "Description": "Benedetto I Zaccaria stands as one of the supreme naval geniuses, diplomats, and empire-builders of the Middle Ages, Lord of Phocaea and Chios. Creator of the international alum monopoly, he served as Grand Admiral for Byzantium, Castile, and France, while delivering the decisive tactical blow that destroyed Pisa at Meloria in 1284. Benedetto orchestrated the international alum monopoly of Phocaea and conquered the island of Chios, founding an autonomous crusader principality while serving as Grand Admiral for the Byzantine Emperor. At the historic Battle of Meloria in 1284, commanding the Genoese reserve squadron, he executed a brilliant flanking maneuver that shattered the Pisan armada and decided the maritime mastery of the Western Mediterranean. Serving as supreme admiral for France, Castile, and Genoa alike, this legendary visionary synthesized industrial monopoly, naval genius, and global statecraft, standing as one of the greatest maritime titans in world history. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Establish undisputed Genoese global naval dominance through genius and industrial monopoly.",
+    "Found an enduring dynastic crusader principality across Chios and the Aegean archipelago."
+  ],
+  "Values": [
+    "True empire is the supreme synthesis of industrial monopoly, naval might, and statecraft.",
+    "A sovereign's vision must encompass the totality of the known maritime world."
+  ],
+  "Fears": [
+    "Petty domestic Genoese squabbles squandering the golden opportunity for world dominion.",
+    "Failing to permanently dismantle Venetian maritime fortresses across the Levant."
+  ],
+  "SpeechStyle": "Speaks with visionary geopolitical grandeur and tactical brilliance, born to command empires. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

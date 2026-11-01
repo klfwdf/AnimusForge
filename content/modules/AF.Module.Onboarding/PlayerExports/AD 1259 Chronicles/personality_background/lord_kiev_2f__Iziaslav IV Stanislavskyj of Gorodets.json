@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Iziaslav IV Stanislavskyj of Gorodets is an ambitious boyar lord and castellan commanding the strategic fortress of Gorodets along the lower Dnipro. Controlling vital river choke points and southeastern steppe approaches, his citadel serves as an indispensable sentinel guarding the waterborne approaches to Kyiv. Astute, opportunistic, and politically ruthless, Iziaslav played a prominent kingmaker role during turbulent grand-ducal succession crises from the 1230s through the 1250s. Leveraging his well-trained fortress garrison and river customs revenues, he skillfully maneuvered between King Danylo of Galicia, Vladimir-Suzdalian princes, and Mongol emissaries, securing near-autonomous privileges for his domain. Mastering balance-of-power diplomacy, he maintained formidable defenses at Gorodets, repeatedly turning back nomad incursions with disciplined archers. His calculating intellect and formidable regional power compel even reigning grand princes to treat him with utmost caution. Castellan Iziaslav IV transformed Gorodets into an unassailable bastion through meticulous military engineering and cold political foresight. He ringed the fortress with sunken river stakes, stone bastions, and elevated arrow towers, choking off naval passage and terrestrial raiding trails alike. Exploiting rivalries between competing empires, he converted his strategic redoubt into an autonomous regional powerhouse, commanding wary respect from friend and foe.",
+  "SpeechStyle": "The fortress of Gorodets commands the river throat! Neither western crusaders nor steppe riders pass my watch without my seal of toll. Power alone dictates truth in these wild times!",
+  "Motivations": [
+    "Maintain iron control over the Gorodets river crossing, expanding autonomous customs revenues and territorial sovereignty.",
+    "Preserve strategic independence amidst competing empires, maximizing political leverage while shielding his personal fief."
+  ],
+  "Values": [
+    "Valuing hard realpolitik, geopolitical equilibrium, and tangible power, rejecting naive idealism and rigid moralizing.",
+    "Believing calculated diplomacy backed by impregnable fortifications guarantees survival and absolute autonomy."
+  ],
+  "Fears": [
+    "An overwhelming combined siege by great regional empires, stripping his hard-won river privileges and annexing his keep.",
+    "Miscalculating delicate diplomatic maneuvers, alienating all major factions simultaneously and courting total destruction."
+  ],
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ]
+}

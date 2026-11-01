@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1f",
+  "HeroName": "Ricciarda of Saluzzo",
+  "Description": "Ricciarda of Saluzzo, daughter of Marquis Thomas II of Saluzzo, was the consort of Azzone Visconti. Reared in ancient Piedmontese nobility, she enriched the Milanese court by patronizing transalpine arts, literature, and chivalric culture with exquisite grace. Lady Ricciarda founded illuminated scholarly scriptoriums within the ducal court, introducing refined transalpine lyricism and chivalric culture to soften the austere military atmosphere of the Visconti Signoria. Fostering transalpine wool and grain commerce between Saluzzo and Milan, she protected merchant caravans through mountain defiles and elevated Visconti goodwill across Piedmont. Believing dynastic marriage was a sacred covenant of peace, she nourished the rising Visconti court with cultural refinement, earning boundless love as an exemplary consort. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement alliances between Milan and western Piedmont marquisates against Savoyard pressure.",
+    "Patronize illuminated scriptoriums and silk weavers to foster glorious civic arts in Milan.",
+    "Distribute grain and medicines to alleviate border refugee distress in Como."
+  ],
+  "Values": [
+    "Believes genuine nobility shines through compassionate relief and refined patronage.",
+    "Values marital harmony and inviolable treaty fidelity as pillars of public peace."
+  ],
+  "Fears": [
+    "Azzone's fragile health failing prematurely, plunging Milan into succession anarchy.",
+    "Her native Piedmont being overrun by aggressive Savoyard expansion."
+  ],
+  "SpeechStyle": "Speaks with melodious courtesy and courtly grace, reflecting transalpine nobility. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

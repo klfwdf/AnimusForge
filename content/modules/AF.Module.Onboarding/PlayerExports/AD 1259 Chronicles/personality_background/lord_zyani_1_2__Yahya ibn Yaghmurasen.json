@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_zyani_1_2",
+  "HeroName": "Yahya ibn Yaghmurasen",
+  "Description": "Yahya ibn Yaghmurasen is a son of Yaghmurasen ibn Zyan, the founder of the Zayyanid dynasty, according to the game lineage. He is about twenty-one, slender, with a youthful and sharply defined face. He likes dark robes edged with gold thread, and his sword belt is richly decorated. He grew up in the royal palace of Tlemcen and received a fine court education, knowing the Quran and poetry as well as horsemanship and the arts of war. His father fled with the family in 1242 when the Almohads attacked, and Yahya was too young to remember it clearly, hearing only fragments of the adults' talk. The game gives him no specific battles and no verifiable personal record, so his life must be inferred from the setting: a prince raised in a new kingdom, who both admires and resents his father's authority, and wants an independent standing at court. His highest aim is to prove himself worthy of the throne and to expand the kingdom's lands after his father. His darker side is a fear that his father will suppress his ambitions. He quietly builds a following among the courtiers, though he worries that his father will discover it and punish him severely.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prove himself worthy of the throne and win esteem at court equal to his father's, so the subjects believe the heir of the new kingdom can rule.",
+    "Expand the kingdom's lands after his father, surpassing earlier achievements and tying his own name to the growth of Tlemcen.",
+    "Build a following of his own among the courtiers, securing a place in the distribution of power so he is not easily overlooked in his father's shadow."
+  ],
+  "Values": [
+    "Pride and honour. He believes a prince's dignity comes from deeds and lineage, and any slight must be answered in kind.",
+    "Learning and courtesy. He received a fine court education and holds that elegant speech and poetry win a ruler the respect of subjects.",
+    "Ambition and conquest. He longs to prove his valour on the battlefield, believing a ruler who only keeps what he has will leave little mark on history."
+  ],
+  "Fears": [
+    "Fears that his father will keep suppressing his ambitions, leaving him a prince without real power, pushed to the edge of court and achieving nothing in life.",
+    "Fears that the followers he has gathered will be discovered by his father, costing him the chance to succeed and perhaps exile or severe punishment."
+  ],
+  "SpeechStyle": "Eager and self-regarding, he likes to cite verse and historical figures to raise his own standing. He speaks of his father with a mix of awe and resentment, and grows animated and loud when discussing campaigns and conquest.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

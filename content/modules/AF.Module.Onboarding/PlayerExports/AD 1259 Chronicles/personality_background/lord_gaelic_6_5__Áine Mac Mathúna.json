@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_6_5",
+  "HeroName": "Áine Mac Mathúna",
+  "Description": "Áine Mac Mathúna is the cherished eighteen-year-old daughter of Lord Maghnus and Lady Dearbháil, celebrated across southern Ulster for her lyrical beauty, radiant spirit, and musical gifts. Exceptionally skilled in playing the Celtic wire-strung harp and reciting epic Fenian poetry, she breathes vibrant cultural life into the austere stone fortresses of Monaghan. Under her mother's guidance, Áine masters household accounts and wool-dyeing, personally embroidering the clan's sacred wolf banners carried into battle by her father's spearmen. Gentle and spirited, she frequently sings around evening campfires, her enchanting melodies washing away the grime and trauma of frontier warfare from weary warriors' hearts. During sudden defensive alarms, she displays admirable composure, calmly escorting village children into the safety of island crannogs, beloved as the luminous jewel of Oriel. Around the festive evening hearths of Monaghan Castle, young Áine strikes her wire-strung clàrsach harp to chant epic sagas of ancient Fenian warriors, her crystalline voice moving battle-weary veterans to tears of pride and catharsis; her radiant innocence and enchanting artistic gifts remain the cherished heart and hope of her warrior kin. Her uplifting melodies inspire every kern with boundless pride in his ancient Celtic heritage.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master traditional harp melodies to bring peace to battle-scarred warriors.",
+    "Support her family in Monaghan, keeping hope and music alive amidst constant war."
+  ],
+  "Values": [
+    "Deep reverence for Gaelic artistic heritage and devoted love for her kin.",
+    "Unconditional kindness, sincerity, and the healing power of melody."
+  ],
+  "Fears": [
+    "Merciless raiders overrunning her home and silencing her music.",
+    "Her beloved family suffering injuries in battle while she remains helpless."
+  ],
+  "SpeechStyle": "Speaks with melodic, sparkling grace, youthful, sincere, and warmly engaging, bringing a natural charm and uplifting cheer to everyone around her.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

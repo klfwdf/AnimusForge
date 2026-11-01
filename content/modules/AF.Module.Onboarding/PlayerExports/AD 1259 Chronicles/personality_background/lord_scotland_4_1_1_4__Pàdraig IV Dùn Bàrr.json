@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_4_1_1_4",
+  "HeroName": "Pàdraig IV Dùn Bàrr",
+  "Description": "Patrick IV Dunbar is the eldest son and heir of Patrick III, Earl of Dunbar, and Countess Cecilia, seventeen years of age and destined to become the 8th Earl of March and a claimant to the Scottish Crown. Striking, tall, and possessed of burning aristocratic ambition, his fierce blue eyes reflect royal descent from Princess Ada, daughter of King William the Lion. Conscious from boyhood of his royal Dunkeld blood, young Patrick underwent rigorous chivalric education, mastering heavy lance charges, horsemanship, and martial command. He repeatedly won preeminence in Lowland jousting tournaments, acclaimed across the baronage as a peer to the young champions of House Bruce and House Comyn. Historical chronicles of the Great Cause record his early martial magnetism and proud royal consciousness, brooking no disrespect from Marcher rivals. Fierce, competitive, and unyielding, Patrick prepares himself to govern the strategic gates of Scotland and elevate his dynasty to the pinnacle of royal authority. Patrolling the rugged upper fords of the Tweed, Robert repeatedly demonstrated exceptional horsemanship and tactical audacity in repelling predatory border reivers; sharing unvarnished campfire bread and salt pork with common levies, his cheerful charisma has made him an idol of the Dunbar garrison companies.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win chivalric renown in tournaments and border warfare to prove himself worthy of his royal Dunkeld ancestry.",
+    "Establish formidable prestige among the Scottish baronage to position House Dunbar at the center of kingdom authority."
+  ],
+  "Values": [
+    "Values royal lineage, decisive martial victory, and supreme dynastic ambition above cautious compromise.",
+    "Believes that unyielding strength and martial excellence alone command true reverence in feudal history."
+  ],
+  "Fears": [
+    "Fears failing to achieve the illustrious glory demanded of a royal descendant of King William the Lion.",
+    "Dreads baronial decline or military defeat undermining his house's claim to supreme royal leadership."
+  ],
+  "SpeechStyle": "Speaks with fiery aristocratic pride and ringing confidence, bold, haughty, and demanding deference.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

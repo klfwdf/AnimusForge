@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_5_2",
+  "HeroName": "Philip II of Montfort, Lord of Castres",
+  "Description": "Philip II of Montfort was the eldest son of Philip of Montfort, Lord of Tyre, by his first French marriage, ruling as sovereign Lord of Castres in Languedoc. Inheriting the ferocious chivalric courage and iron administrative will of the Montfort dynasty, he achieved military distinction across France and Angevine Italy. Though based in his ancestral continental domains, Philip maintained continuous maritime communication and financial subsidies supporting his father's barony in Tyre. In 1259, as the Mamluk threat loomed over Outremer, Philip mustered companies of armored French knights and seasoned sergeants, preparing transport fleets for the Holy Land. He remitted substantial silver subsidies to the military orders in Acre while dispatching shipments of Milanese plate armor and crossbows to strengthen the defenses of Tyre. At Castres, he established extensive horse-breeding studs and agricultural granaries, ensuring a durable logistical pipeline capable of reinforcing overseas crusader strongholds. Brave, loyal, and devout, Philip stood as an indispensable continental pillar sustaining the beleaguered Christian states of the Eastern Mediterranean. Within the formidable citadel of Castres, Philip established permanent logistical depots and courier stations, maintaining ceaseless maritime dispatch routes connecting Marseille and Genoa. Whenever crusader emergencies flared in Outremer, he personally escorted bullion shipments and heavy armaments to Mediterranean docks, manifesting the resolute strategic vision of a premier French feudal lord.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the prosperity of Castres while channeling silver subsidies and knightly contingents to support his family in Tyre.",
+    "Lobby the French crown and papal curia to mobilize a general crusade uniting continental lords for the relief of Outremer.",
+    "Command an expeditionary force of armored Languedoc cavalry to the Levant, defending the sacred crusader kingdoms against invasion."
+  ],
+  "Values": [
+    "Chivalric honor finds its supreme purpose in sacrificing for the Holy Cross and the renown of the House of Montfort.",
+    "Unflinching fidelity to lineage covenants across vast distances, placing fraternal defense above personal ambition.",
+    "Strict military discipline and comradely leadership, sharing soldierly hardships to inspire unshakeable troop devotion."
+  ],
+  "Fears": [
+    "Tyre falling to Mamluk assault before his relief fleet arrives, destroying the achievements of his father and brothers.",
+    "Hostile neighboring baronies invading Castres during his eastern crusades, stripping his lineage of their continental patrimony."
+  ],
+  "SpeechStyle": "Speaks with robust French baronial gravitas and chivalric resolve, articulating military maneuvers and trans-Mediterranean crusading strategies with commanding authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Philip II of Montfort, Lord of Castres"
+}

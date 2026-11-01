@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Genoese_Crossbowmen_and_Pavise_Mercenaries",
+  "Keywords": [
+    "Genoese Mercenary Crossbowmen",
+    "Ligurian Pavise Tower Shield",
+    "Windlass Steel Span Crossbow",
+    "Mediterranean Galley Marine Archers"
+  ],
+  "RagShortTexts": [
+    "Genoese crossbowmen paired heavy steel arbalests with pavises, dominating European."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Genoese crossbowmen were Europe's premier ranged professionals, hired by French, Sicilian, and Byzantine monarchs. Operating in pairs, one soldier deployed a towering painted pavise shield into the ground while the crossbowman wound a heavy horn-and-wood composite arbalest, capable of piercing knightly mail at point-blank range."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Organized into disciplined companies under civic podestàs, Genoese mercenaries demanded gold coin upfront. On naval decks or siege works, their suppressive volleys decided naval engagements across the Mediterranean."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Winding the cranequin ratchets draws the bowstring under immense tension. When a square-headed steel quarrel snaps loose, it smashes through padded gambesons like dry firewood."
+    }
+  ],
+  "TextMappings": []
+}

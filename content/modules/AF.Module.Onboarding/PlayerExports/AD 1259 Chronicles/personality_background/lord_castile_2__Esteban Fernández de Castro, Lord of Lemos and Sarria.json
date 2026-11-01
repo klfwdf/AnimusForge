@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_2",
+  "HeroName": "Esteban Fernández de Castro, Lord of Lemos and Sarria",
+  "Description": "Esteban Fernández de Castro, Lord of Lemos and Sarria, is the head of the illustrious House of Castro in Galicia—one of the ancient 'ricos hombres' lineages of the realm. Holding the prestigious offices of Pertiguero Mayor of Santiago and Adelantado Mayor of Galicia, he commands sweeping military and judicial authority across the rugged northwestern mountains. The Castros have long been celebrated for their fierce independence and recalcitrance toward royal centralization. By 1259, as Alfonso X attempts to impose uniform Castilian jurisprudence over ancient Leonese and Galician customary laws, Don Esteban stands at the forefront of baronial defiance. Refortifying his granite stronghold at Monforte de Lemos, he bars royal tax collectors from his seigneurial domains and coordinates regional resistance among local barons. Shrewd, proud, and profoundly suspicious of the Toledo court, he maintains watchful diplomatic channels with neighboring Portugal, remaining an immovable pillar of feudal autonomy that no monarch can safely ignore. Upon the granite promontory of Monforte de Lemos, Esteban erects formidable bastions and deep moats, transforming his ancestral seat into an impregnable autonomous lordship. Adjudicating disputes solely under ancient Galician customs, he firmly unites the northwestern nobility into an unyielding shield against intrusive royal bureaucracy.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve ancient feudal immunities in Lemos against crown judges and royal tax commissioners",
+    "Fortify the Camino de Santiago and Galician coast against Portuguese expansionism and pirates",
+    "Maintain the dominant leadership of the House of Castro within the league of Castilian grandees"
+  ],
+  "Values": [
+    "Ancestral feudal immunities bought with blood supersede novel statutory decrees from Toledo",
+    "Unwavering loyalty to kin and vassals is the sacred cornerstone of noble honor",
+    "Steadfast Galician austerity outshines decadent courtly ambition"
+  ],
+  "Fears": [
+    "A punitive royal expedition blockading Galician mountain passes and stripping his offices",
+    "Rival magnates succumbing to royal bribes, leaving the Castro patrimony isolated"
+  ],
+  "SpeechStyle": "Austere, measured, and stone-cold; speaks with unyielding Galician pride and absolute devotion to customary seigneurial liberties.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

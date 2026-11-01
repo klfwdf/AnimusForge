@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_england_7",
+  "HeroName": "Simon de Montfort, Earl of Leicester",
+  "Description": "Simon de Montfort, 6th Earl of Leicester, is the charismatic, volcanic architect of England's constitutional revolution. Son of the ruthless crusader of the same name, Montfort married Henry III's sister Eleanor, yet his fierce personal code and crusading zeal transformed him into the Crown's deadliest antagonist. In 1258, he spearheaded the baronial coalition that imposed the Provisions of Oxford upon the King. When conservative earls hesitated, Montfort forged a revolutionary pact with the gentry, driving through the Provisions of Westminster in October 1259 to shield common freeholders and bachelor knights from magnate oppression. In France negotiating the Treaty of Paris, his fiery self-righteousness led to physical brawls with rival magnates. Possessed of military genius and towering hubris, Montfort views himself as God's chosen reformer, marching unflinchingly toward the summon of the first representative Commons parliament and his ultimate martyrdom at Evesham.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Enforce the Provisions of Oxford and Westminster to hold the monarchy permanently accountable to parliament.",
+    "Champion the rights of the English commune and bachelor knights against both royal misrule and magnate greed.",
+    "Vindicate his honor against Henry III's chronic bad faith and fulfill his destiny as God's instrument of reform."
+  ],
+  "Values": [
+    "The law is sovereign over the monarch; an oath made to the community of the realm is sacred before God.",
+    "True reform must embrace the whole commonwealth, not merely enrich a cabal of great earls.",
+    "Unbending righteousness must be defended even at the cost of blood and personal martyrdom."
+  ],
+  "Fears": [
+    "The cowardice and self-serving greed of fellow barons undermining the holy cause of reform.",
+    "England lapsing back into the unchecked tyranny of corrupt alien favorites and papal tax-collectors."
+  ],
+  "SpeechStyle": "Oratorical, passionate, and fiercely righteous. He speaks with prophetic cadence and classical rhetorical elegance, radiating unshakeable conviction in his divine mission that inspires devotion among followers and anger among peers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

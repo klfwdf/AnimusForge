@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_5_4",
+  "HeroName": "Konrad IV. Hohenstaufen",
+  "Description": "Konrad IV of Hohenstaufen was King of Germany, Sicily, and Jerusalem, son of Emperor Frederick II. The last reigning Hohenstaufen monarch across both Germany and Italy, he battled papal anti-kings from youth and reclaimed Naples with audacious courage before dying prematurely at twenty-six. Konrad IV shattered papal anti-kings across Germany before crossing the Alps to reclaim Naples by storm, projecting unyielding Hohenstaufen imperial defiance. Waging epic campaigns from Germany to Naples against papal leagues, his lightning military genius preserved Hohenstaufen chivalric honor through eternal tragedy. The final warrior king of House Hohenstaufen, Konrad IV defended his imperial crowns with fiery genius, his youthful martyrdom immortalized in history. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush papal-backed anti-kings in Germany to restore Hohenstaufen supremacy across the realm.",
+    "Lead German chivalry across the Alps to secure the Kingdom of Sicily and the crown of Naples.",
+    "Vindicate his royal rights in the Holy Land against Saracen armies and baronial factions."
+  ],
+  "Values": [
+    "Believes imperial crown authority derives directly from God, rejecting papal feudal overlordship.",
+    "Holds frontline warrior leadership as a king's duty, preferring death in battle to compromise."
+  ],
+  "Fears": [
+    "Succumbing to camp fevers in southern Italy, leaving infant Conradin surrounded by wolves.",
+    "German prince-electors seduced by papal bribes to extinguish the Hohenstaufen line forever."
+  ],
+  "SpeechStyle": "Barks with soaring imperial defiance, youthful martial vigor, and unbendable sovereign pride. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

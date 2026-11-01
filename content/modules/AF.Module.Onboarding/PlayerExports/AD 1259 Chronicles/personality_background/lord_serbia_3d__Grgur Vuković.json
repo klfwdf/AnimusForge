@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_3d",
+  "HeroName": "Grgur Vuković",
+  "Description": "Grgur Vuković, aged eight in 1259, is the eldest son of Lord Vuk Branković and Lady Mara, heir apparent of the House of Branković. Sturdy, serious-minded, and courageous, he mirrors the iron determination of his grandfather and the martial vigor of his father. Under seasoned castle instructors in Priština, Grgur practices mounted archery, swordplay, and shield maneuvers across the Kosovo fields. Instruction in Church Slavonic scripture and dynastic chronicles instills a profound sense of noble duty within him. In 1259, amidst war rumors, the young heir accompanies his father during troop reviews, observing heavy cavalry drills with keen fascination, determined to grow into a formidable defender of his ancestral patrimony. Grgur rides his spirited pony across the Priština parade grounds, executing swift turns and stops with admirable equestrian control. Looking up with deep pride at his father's battle armor, he endures grueling drills to temper his young body for future warfare. Understanding his future baronial responsibilities, the eldest son embraces chivalric discipline, determined to become a shield for his kin. Eager to match his father's battlefield renown, young Grgur embraces the rigors of knightly training on the parade grounds of Priština. His serious demeanor and equestrian skill promise an honorable future defending the territorial heritage of Kosovo.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with clear boyish vigor and earnest resolve, respectful to elders and passionately enthusiastic regarding knightly skills.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

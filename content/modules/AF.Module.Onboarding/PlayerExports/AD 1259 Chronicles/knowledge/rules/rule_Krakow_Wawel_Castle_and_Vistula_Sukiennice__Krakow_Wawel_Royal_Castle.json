@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Krakow_Wawel_Castle_and_Vistula_Sukiennice",
+  "Keywords": [
+    "Krakow Wawel Royal Castle",
+    "Vistula Cloth Hall Sukiennice",
+    "Tatar Sentry Trumpeter Legend",
+    "Polish Seniorate Fragmentation"
+  ],
+  "RagShortTexts": [
+    "Krakow on the Vistula, crowned by Wawel Castle, remained the ceremonial heart of Poland."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rising above the Vltava on a limestone bluff, Krakow served as Poland's senioral capital. Wawel Castle dominates Europe's largest marketplace, anchored by the Sukiennice Cloth Hall. Rebuilt after the devastating 1241 Mongol raid, its stone walls symbolized Piast continuity amidst ducal fragmentation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "The martyred Saint Stanislaus lies enshrined in Wawel Cathedral. Piast faithful believe that just as the martyr's severed limbs miraculously re-fused, fractured Polish duchies will one day reunite into a single kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Barges drift down the river loaded with salt from Wieliczka mines. Inside the Cloth Hall, villagers trade home-spun linen for Flemish wool, hoping the watchman's trumpet never again sounds the alarm of Tatar raiders."
+    }
+  ],
+  "TextMappings": []
+}

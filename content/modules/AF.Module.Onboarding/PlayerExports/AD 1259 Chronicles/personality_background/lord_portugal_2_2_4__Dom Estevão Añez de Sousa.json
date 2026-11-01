@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_2_4",
+  "HeroName": "Dom Estevão Añez de Sousa",
+  "Description": "Dom Estevão Añez de Sousa is the martial eldest son and heir of Dom Fernão Garcia, Lord of Gouveia, standing at the forefront of the younger generation of the House of Sousa. Trained from youth in heavy cavalry charges, horsemanship, and swordplay across the rugged heights of the Serra da Estrela, Don Estevão embodies the fiery warrior spirit of his lineage. He gained early combat renown commanding frontier reconnaissance patrols, ruthlessly clearing treacherous mountain defiles of bandit factions. In 1259, serving as second-in-command of the Gouveia garrison, he commands the deep loyalty and admiration of his knightly retinue. Direct, athletic, and fiercely competitive, he routinely triumphs in northern chivalric tournaments, acclaimed as a rising military star of Portugal. Thirsting for glory on grander battlefields, young Estevão prepares with boundless ambition to defend and expand his family's marcher domains. Drilling heavy lancers daily in shock assault tactics within the Gouveia tilt-yards, Estevão's ferocious swordplay earned the admiration of veteran captains. Brave, spirited, and burning for chivalric renown, the young heir prepared to lead the vanguard in grand holy crusades, immortalizing the martial honor of Gouveia. His ferocious combat prowess, tournament glory, and knightly ambition ensure that Estevão stands ready to lead the heavy cavalry of Gouveia into battle.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win glory in combat to prove himself worthy of succeeding as Lord of Gouveia and defender of Sousa",
+    "Drill his heavy cavalry squadrons into an invincible shock force capable of mastering any terrain",
+    "Forge strong chivalric brotherhoods with young noble heirs to anchor his house's military supremacy"
+  ],
+  "Values": [
+    "A warrior's true worth is proven at the point of the lance; cowardice is death to knightly honor",
+    "Iron discipline and unwavering loyalty to comrades-in-arms form the bedrock of martial leadership",
+    "Devotion to the House of Sousa, fearless courage under fire, and relentless pursuit of glory"
+  ],
+  "Fears": [
+    "Prolonged peacetime stagnation dulling his martial edge and denying him the crucible of combat",
+    "Leading his cavalry squadron into a catastrophic ambush, bringing slaughter upon his men"
+  ],
+  "SpeechStyle": "Vibrant, energetic, and commanding; speaks with the fiery candor, knightly swagger, and dynamic combat confidence of an ambitious young vanguard captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_8",
+  "HeroName": "Gómez González de Aza, Lord of Roa",
+  "Description": "Gómez González de Aza, Lord of Roa, is the venerable head of the ancient House of Aza along the fertile Duero river valley. Boasting an illustrious heritage—the mother of Saint Dominic of Guzmán was a daughter of this proud house—Don Gómez commands unmatched moral and religious authority across the ecclesiastical and municipal councils of central Castile. A veteran of King Saint Ferdinand's heroic crusades, the aging patriarch views Alfonso X's debasement of the currency and quixotic German imperial ambitions with profound sorrow and indignation. In 1259, when royal tax commissioners attempt to bypass traditional seigneurial assizes and seize revenues in Roa, Don Gómez forcefully denounces the crown's transgressions before the Cortes of Burgos. Refortifying the stone battlements of Roa and marshaling his veteran knightly retainers, he stands as a revered elder statesman of the Castilian nobility, defending traditional Christian fealty, municipal fueros, and noble liberties against royal absolutism. Before the soaring battlements of Roa Castle, Don Gómez stands in ancestral plate armor, swearing a sacred oath before assembled burghers and guildmasters. Denouncing the crown's violations of Christian fueros and ancient crusader sacrifices, his towering moral stature transforms the banner of Aza into an eternal symbol of righteousness and holy fealty.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve ancient seigneurial rights and judicial immunities in Roa against crown interference",
+    "Use his venerable stature in the Cortes to demand lower taxes and an end to imperial squandering",
+    "Endow Dominican monasteries and hospitals, perpetuating his house's legacy of sacred charity"
+  ],
+  "Values": [
+    "Royal sovereignty is legitimate only when aligned with divine justice and traditional covenants",
+    "True noble grandeur resides in unblemished piety, honorable sacrifice, and protection of the weak",
+    "Stand firm in righteousness; unyielding moral rectitude conquers all tyrannies"
+  ],
+  "Fears": [
+    "Royal recklessness plunging the realm into nationwide civil strife and papal interdict",
+    "Vandalous warfare desecrating the shrines and sacred monasteries of Saint Dominic in his fief"
+  ],
+  "SpeechStyle": "Resonant, solemn, and venerable; speaks with biblical gravity and the unflinching moral clarity of a crusader patriarch.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

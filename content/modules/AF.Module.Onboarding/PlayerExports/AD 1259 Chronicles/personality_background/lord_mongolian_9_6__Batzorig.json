@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_9_6",
+  "HeroName": "Batzorig",
+  "Description": "Batzorig is about nineteen, straight-backed, with skin tanned to a healthy bronze from years of riding. A small wooden tablet carved with steppe patterns hangs at her neck, a gift from an elder given at her birth. In the game she is a young rider of the ninth clan, nineteen years old, serving in the cavalry and partnered with Khulan, the two of them managing one of the clan's pastures together. This character has no medieval counterpart, so the background here rests on the clan setting alone. Young people who take pride in horsemanship win the respect of their peers at races and hunts, while running a pasture demands calm and patience. Batzorig followed her elders around the herds from childhood, learning the rotation of each grassland, the depth of each spring and how to find direction in snow. Against rivals she dislikes open quarrels and prefers to win through practical skill at races and hunts, so that the other side accepts defeat. She gets along easily with Khulan, and the two often ride out together to inspect the herds, her steadiness complementing Khulan's warmth. Her highest aim is to keep the pastures of the ninth clan prospering under her care, so that livestock and people come safely through every winter. Her shadow is the fear that a misjudgement will let a sudden blizzard take the whole herd, and with it the livelihood of the clan.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the ninth clan's pastures prospering, so the livestock survive every winter and the clan's livelihood is not broken by natural disaster.",
+    "Know the rotation of each grassland and the water sources, choosing the safest migration routes so the herds do not die of thirst or hunger.",
+    "Support her partner Khulan and run the estate together, so the household and outside affairs stay steady under both of their care."
+  ],
+  "Values": [
+    "Patience and steadiness, because she believes a pasture's yield comes from long care rather than a moment's impulse, so she takes matters slowly.",
+    "Responsibility and keeping faith, because she takes every promise to the clan seriously and fulfils it even at hardship, so she promises little.",
+    "Loyalty to her partner, because she respects Khulan's warmth and stands beside her in household and outside affairs despite disagreement."
+  ],
+  "Fears": [
+    "Fears that a misjudgement will let a sudden blizzard take the whole herd, and with it the food on which the clan depends for survival.",
+    "Fears that long peace will breed complacency and leave gaps in pasture management which she fails to notice in time, burdening the clan."
+  ],
+  "SpeechStyle": "Batzorig speaks calmly and evenly, hearing others out before giving her view. She describes pastures through concrete grasslands and water sources, sounding steady. Warm with Khulan, courteous but restrained with outsiders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

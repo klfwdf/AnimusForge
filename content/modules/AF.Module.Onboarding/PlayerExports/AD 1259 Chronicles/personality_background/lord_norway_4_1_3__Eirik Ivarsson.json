@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_4_1_3",
+  "HeroName": "Eirik Ivarsson",
+  "Description": "Sir Eirik Ivarsson was a steadfast knight, disciplined commander, and dutiful son of Baron Ívarr of Skedjuhof. In 1259, Eirik held military command over the inland strongholds and forest passes shielding the Romerike approaches from regional brigandage. Distinguished by his austere lifestyle, laconic speech, and methodical attention to military drill, he forged his garrison levies into one of the most reliable infantry and archer brigades in eastern Norway. While his younger brother Jon Raud sought high political influence at the royal court, Eirik dedicated his life to territorial defense, fortress engineering, and local justice. His unshakeable loyalty to his father and brothers provided an essential bedrock of martial stability upon which the wider Sudrheim dynasty flourished. Respected by knights and common soldiers alike for his courage under arms and strict fairness, he was a model of high medieval Scandinavian chivalry. While inspecting watchtowers and river ferries throughout the Oslo fjord, Eirik led mounted scout patrols to eradicate forest brigands, establishing a rapid beacon network across the border. He studied siege fortification and heavy spear tactics under veteran royal castellans, distinguishing himself in military exercises and earning the crown's confidence. His unswerving martial fidelity prepared him to answer every call of King Haakon and Prince Magnus to defend the realm's peace.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with measured military sobriety, disciplined precision, and modest demeanor, focusing on tactical defense and logistical duty.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Eirik Ivarsson"
+}

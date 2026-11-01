@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_3_2_a",
+  "HeroName": "Otto IV von Brandenburg",
+  "Description": "Otto IV von Brandenburg, known as 'Otto with the Arrow', son of Johann I, was an indomitable knight and minnesinger. Surviving an arrowhead lodged in his skull for an entire year while commanding field battles, he defeated archbishops and rival dukes across northern Germany with legendary courage. Otto IV charged at the head of his lancers with an arrowhead lodged in his skull, storming archiepiscopal toll fortresses along the Elbe with legendary, fearless audacity. Overhauling tactical doctrines to integrate crossbow volleys with cavalry shock, he conquered despite overwhelming odds, celebrated across Germany as an indomitable knight-poet. Bearing an arrowhead in his skull without flinching, Otto with the Arrow fused chivalric poetry with frontline fury, living as an unforgettable knightly legend. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Break the archiepiscopal blockade of Magdeburg to dominate the strategic middle Elbe.",
+    "Lead mounted shock charges, immortalizing his frontline heroics in celebrated Minnesang verses.",
+    "Crush Pomeranian invasions of the Uckermark to preserve Ascanian territorial integrity."
+  ],
+  "Values": [
+    "Believes a true warrior despises death; battle scars and lodged arrowheads are supreme badges of honor.",
+    "Holds chivalric poetry and immortal martial renown as life's only worthwhile pursuits."
+  ],
+  "Fears": [
+    "His skull wound causing sudden paralysis in mid-battle, denying him glorious combat victory.",
+    "Ecclesiastical anathemas from corrupt archbishops stripping his sovereign knightly fiefs."
+  ],
+  "SpeechStyle": "Barks with wild chivalric defiance, booming laughter, and poetic fire, inspiring total courage. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

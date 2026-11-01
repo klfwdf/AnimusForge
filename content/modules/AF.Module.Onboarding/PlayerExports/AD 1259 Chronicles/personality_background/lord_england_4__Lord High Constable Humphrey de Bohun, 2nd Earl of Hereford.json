@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_4",
+  "HeroName": "Lord High Constable Humphrey de Bohun, 2nd Earl of Hereford",
+  "Description": "Humphrey de Bohun, 2nd Earl of Hereford and 1st Earl of Essex, holds the supreme hereditary military office of Lord High Constable of England. Massive, imposing, with bristling iron-grey whiskers and chilling falcon eyes, his scarred brow bears testament to half a century of relentless border warfare. A titan of the Anglo-Welsh Marches, Earl Humphrey spent decades defending the Severn Valley and Brecon against Cymric princes. Alienated by Henry III's fiscal incompetence and favoritism toward alien courtiers, the Constable threw his monumental prestige behind the baronial reform movement in 1258, serving on the Council of Fifteen that took control of the kingdom. In 1259, as ideological rifts divide Montfort from moderate barons, Humphrey maintains an armed vigil from his border castles, determined to enforce the Provisions of Oxford while checking Llywelyn ap Gruffudd's territorial incursions. As supreme marshal of royal hosts, his word commands absolute obedience among knights and barons, an iron pillar of traditional English feudalism. He establishes relay beacon fires along the Severn and interrogates captured Welsh scouts to discern enemy battle plans in the highland mist. Resting his scarred hand upon his broadsword atop the battlements of Brecon, this veteran marshal stands ready to defend his barony and office in blood.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Enforce the Provisions of Oxford as Lord High Constable, permanently expelling alien courtiers from state governance",
+    "Hold the Welsh Marches against Prince Llywelyn's aggressive incursions, protecting the Bohun barony of Brecon",
+    "Force Henry III to abide by Magna Carta, preventing total constitutional collapse and chaotic bloodletting"
+  ],
+  "Values": [
+    "The Constable's baton is the measure of the realm's martial power; arms and law must serve ancient custom",
+    "A perjured king forfeits divine authority; barons taking up arms to restore justice fulfill a sacred feudal duty",
+    "A Marcher warlord's honor is forged in blood; no foreign courtier or highland rebel shall despoil our borders"
+  ],
+  "Fears": [
+    "The King launching a treacherous counter-coup backed by papal absolution and foreign mercenaries",
+    "The Marcher defense line collapsing due to civil infighting, surrendering the Severn to Welsh conquest"
+  ],
+  "SpeechStyle": "Booms with thunderous, gravelly authority like war horns echoing across a gorge. His commands are blunt, ironclad, and devastatingly direct, silencing quarrelsome barons with the raw power of supreme martial command.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

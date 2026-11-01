@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_9a",
+  "HeroName": "Matthias II, Duke of Upper Lorraine",
+  "Description": "Matthias II, scion of the ancient House of Châtenois, rules as sovereign Duke of Upper Lorraine across strategic borderlands. Positioned in the contested frontier between the German Realm and Capetian France, bordering Champagne, Bar, and Alsace, Matthias spent his reign fiercely defending ducal autonomy against aggressive neighbors and the imperial prince-bishops of Metz, Toul, and Verdun. Initially a loyal military captain under Emperor Frederick II, he campaigned in Lombardy and won distinction in alpine mountain warfare. However, as Hohenstaufen fortunes waned under papal anathemas, he pragmatically reconciled with Pope Innocent IV and anti-king William of Holland, sparing Nancy and the ducal heartland from devastating ruin. A battle-hardened knight of formidable resolve, Matthias expanded the fortifications of Nancy and kept the Lorrainese chivalry in fighting readiness, standing as a formidable warrior sentinel on the western march of the Holy Roman Empire. Answering provocations from the bishops of Metz and Toul, Matthias II fortified the mountain passes of the Vosges, dispatching heavy cavalry to demolish illicit bandit keeps along ducal borders. Expanding the stone ramparts and arrow loops of Nancy, he attracted armorers from Flanders and the Rhineland to forge tempered plate mail, defending every league of Lorrainese soil against French royal encirclement. His resolute leadership preserved the ducal authority of Upper Lorraine intact against surrounding feudal predators.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Repel Capetian French and Champagne infiltration into western Lorraine, reclaiming keeps seized by Metz bishops.",
+    "Strengthen Nancy's fortress perimeters, securing the Châtenois dynasty's undisputed hereditary sovereignty."
+  ],
+  "Values": [
+    "Believes extreme pragmatism and flexibility are essential for survival between warring giants.",
+    "Views the chivalric prowess of Lorraine's knights as the fountainhead of family glory, refusing to become a puppet."
+  ],
+  "Fears": [
+    "Fears France utilizing feudal suzerainty and dynastic marriages to gradually swallow Lorraine's independence.",
+    "Dreads prolonged imperial chaos leaving Lorraine isolated against episcopal leagues."
+  ],
+  "SpeechStyle": "Lorraine is steel upon the anvil, with France to our west and the Empire to our east; only a firm grip on the sword secures our survival! In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Matthias II, Duke of Upper Lorraine"
+}

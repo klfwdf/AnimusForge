@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Constantinople_Recovery_and_Latin_Fall",
+  "Keywords": [
+    "Eve of Constantinople Recovery",
+    "Terminal Fall of Latin Empire",
+    "Baudouin II Pawned Relics",
+    "Byzantine Empire Renaissance 1261"
+  ],
+  "RagShortTexts": [
+    "Between 1259 and 1261 Latin Emperor Baldwin II pawned crown relics to Venice as Nicaea."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Latin Empire of Constantinople was reduced to an impoverished perimeter within the Theodosian Walls. Baldwin II pawned the True Cross and Crown of Thorns to Venetian bankers and burned palace rafters for firewood, living in terror of the day Nicaea would shatter his hollow reign."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Behind dilapidated bastions, Baldwin II rules over weed-choked piazzas. After Pelagonia, Pope Alexander IV cannot summon another crusade, and Venetian galleys cannot forever blockade the Golden Horn against imperial destiny."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Garrisons atop the Golden Gate are starving, their wages unpaid for months. Across the strait, Nicaean bonfires burn bright; one lax watch or one unlatched sally port, and the double-headed eagle will reclaim the ramparts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Greek townsfolk whisper beneath Hagia Sophia of ancient prophecies. The Latin heretics looted our sacred vessels, but true Orthodox liturgy shall soon echo beneath the great golden dome once more."
+    }
+  ],
+  "TextMappings": []
+}

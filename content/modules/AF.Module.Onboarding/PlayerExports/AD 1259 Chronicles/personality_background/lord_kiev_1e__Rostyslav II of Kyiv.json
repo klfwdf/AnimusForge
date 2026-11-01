@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Rostyslav II of Kyiv (Rostislav Rurikovich) is the eldest son of Grand Prince Rurik Rostislavich, having held the grand-ducal throne of Kyiv and the principality of Torchesk during intense dynastic competition. Renowned for diplomatic dexterity and resilient political survival, he navigated the chaotic succession wars of early thirteenth-century Rus' with consummate statecraft. His historic marriage in 1189 to Verkhuslava, daughter of Vsevolod the Big Nest of Vladimir-Suzdal, forged an epochal alliance that secured precious decades of stability for southern Rus'. He prioritized the codification of municipal customs and protected merchant caravans traveling between the Baltic and Black seas, revitalizing the bustling Podil commercial district. Skilled at balancing alliances against nomadic Cuman incursions and rival princely coalitions, Rostyslav proved adept at turning precarious political tides into durable truces. His enduring stature as a senior custodian of Kievan grand-ducal legitimacy remains deeply respected across the realm. Rostyslav II understood that true sovereign power rested upon equitable laws and steady commercial vitality. He reformed urban market tariffs in Podil, standardized trade weights, and invited foreign merchant guilds to establish permanent quarters along the Dnipro. In grand-ducal councils, his calm, authoritative statesmanship mediated fractious disputes among warring cousins, securing precious interludes of peace that allowed Kyiv to rebuild its shattered ramparts and replenish municipal granaries.",
+  "SpeechStyle": "Statecraft is like chess, where reckless anger brings only ruin. Balance the mighty princes of north and south, preserve the rule of law, and Kyiv shall endure every gathering storm!",
+  "Motivations": [
+    "Safeguard the supreme legitimacy of the Kievan throne, leveraging calculated alliances to balance ambitious regional princes.",
+    "Restore mercantile vitality and maritime transit across the Dnipro, returning ancient Kyiv to economic and cultural splendor."
+  ],
+  "Values": [
+    "Cherishing geopolitical equilibrium, adherence to legal customs, and prudent patience, disdaining volatile adventurism.",
+    "Valuing dignified monarchical wisdom and restrained diplomacy, believing enduring peace is won through steady resolve."
+  ],
+  "Fears": [
+    "The betrayal of mutual treaties by reckless northern or southern princes, plunging the land into devastating civil war.",
+    "The permanent loss of ancient Kievan charters, legal chronicles, and historical archives beneath chaotic wartime conflagrations."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ]
+}

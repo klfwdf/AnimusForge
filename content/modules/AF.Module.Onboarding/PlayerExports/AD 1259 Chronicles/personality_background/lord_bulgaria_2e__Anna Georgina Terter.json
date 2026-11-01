@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_2e",
+  "HeroName": "Anna Georgina Terter, Queen consort of Serbia",
+  "Description": "Anna Georgina Terter, aged five, is the second daughter of George Terter I, destined to become Queen consort of the formidable Serbian King Stefan Uroš II Milutin. Belonging to the prestigious Cuman-Bulgarian royal dynasty of the Terterobichi, she inherits the spirited intelligence and resilient character of her martial line. Surrounded by the constant clamor of Balkan border warfare, she was early recognized as the premier diplomatic bridge binding Bulgaria with the Nemanjić dynasty of Serbia. Her subsequent marriage to King Milutin in 1284 cemented a crucial pan-Slavic Orthodox alliance, shielding both realms against external aggression. Within the royal chambers of Skopje and Ras, Queen Anna earned widespread acclaim for her intellectual charm, cultural patronage, and political diplomacy. She consistently championed brotherhood between Serbs and Bulgarians, mitigating border friction and securing commercial prosperity across the central Balkans. Anna represents the delicate yet indomitable spirit of dynastic statecraft, transmuting childhood vulnerability into an enduring legacy of peace and prestige. Under the guidance of royal tutors, she quickly masters the languages and ceremonial customs of neighboring Balkan realms, winning widespread affection through her bright curiosity, charming laughter, and gracious demeanor. Their unwavering dedication and strategic foresight remain indispensable to the enduring independence and glory of the realm.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with bright, delightful childish melody and lively curiosity, asking insightful questions about distant realms with charming innocence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

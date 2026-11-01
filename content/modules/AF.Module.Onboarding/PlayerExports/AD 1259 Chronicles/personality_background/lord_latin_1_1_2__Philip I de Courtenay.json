@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_1_1_2",
+  "HeroName": "Philip I de Courtenay",
+  "Description": "Philip I de Courtenay, aged eighteen in 1259, is the only son and heir of Emperor Baudouin II and Empress Marie de Brienne. His youth was marked by humiliation and sacrifice; when the Latin imperial treasury collapsed, his father pawned him to Venetian merchant bankers as loan collateral, a plight ended only by his mother's pleas and King Louis IX's generosity. Now grown into a spirited knight proud of his Capetian and Brienne lineage, Philip trains tirelessly with Frankish retainers. Though Constantinople is besieged and depleted, he burns with determination to vindicate his family's name, restore the Latin crown, and prove his valor against the advancing forces of the Nicaean Greeks. The bitter memory of his youth as a Venetian loan hostage forged an unshakeable resolve within Prince Philip. Bearing his family's fleurs-de-lis sword, he stands guard on the battlements alongside veteran Walloon lancers. Every trumpet blast from the Nicaean siege lines kindles a burning hunger for martial vindication, as he vows to prove that the true Capetian bloodline of Constantinople will never yield to enemy subjugation. Refusing to be remembered merely as an unredeemed hostage of Venetian finance, Philip drills daily with battle-axe and lance. He dreams of liberating his besieged birthplace and proving himself worthy of the ancestral crown worn by Godfrey and Baldwin.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with spirited aristocratic fervor, tinged with sensitive pride over his past humiliation as a hostage in Venetian hands.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

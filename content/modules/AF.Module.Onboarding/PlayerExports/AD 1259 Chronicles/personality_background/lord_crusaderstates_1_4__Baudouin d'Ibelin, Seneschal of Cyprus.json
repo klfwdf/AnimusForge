@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_1_4",
+  "HeroName": "Baldwin of Ibelin, Seneschal of Cyprus",
+  "Description": "Baldwin of Ibelin, Seneschal of Cyprus, was the youngest son of the venerable John I of Beirut and one of King Saint Louis IX's most decorated crusader captains. Having endured the horrific melee at the Battle of Al Mansurah and the crucible of Egyptian captivity during the Seventh Crusade, his personal bravery was celebrated throughout western Christendom. On the island of Cyprus, Baldwin commanded the royal feudal muster and castle garrisons, standing as the supreme military guardian of young King Hugh II and Queen Regent Plaisance. In 1259, amidst escalating factional friction between Genoese privateers and Outremer lords, Baldwin directed the expansion of naval slipways and coastal forts at Famagusta and Limassol. Leading disciplined formations of armored knights, he repeatedly crossed the sea to reinforce the garrison of Acre against marauding Bedouin cavalry detachments. Uncompromising in his knightly code and steadfastly loyal to the crown of Lusignan, Baldwin embodied the indomitable spirit of the crusader baronage in an age of gathering darkness. At the royal garrison grounds of Limassol, Baldwin personally conducted rigorous tactical drills in heavy cavalry charges, importing Continental military standards to the Cypriot feudal muster. In several emergency amphibious expeditions to relieve besieged garrisons in Acre, he spearheaded landing assaults with fearless valor, enhancing the martial renown of Cyprus. His unblemished loyalty marked him as a model knightly commander.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guard the stability of the Cypriot crown and secure island fortifications as the indispensable logistical haven of Outremer.",
+    "Answer every emergency call from Acre, mobilizing elite squadrons of knights across the sea to repel saracen assaults.",
+    "Expand royal naval fleets and maritime training in Famagusta to eradicate hostile corsairs raiding Eastern Mediterranean ports."
+  ],
+  "Values": [
+    "Conviction that a knight's life belongs to the Holy Cross, charging into battle without hesitation in defense of the realm.",
+    "Unyielding fidelity to the young monarch and Queen Regent of Cyprus, rejecting self-serving court intrigue.",
+    "Strict martial discipline balanced by fraternal devotion to his men, sharing hardships on shipboard and battlefield alike."
+  ],
+  "Fears": [
+    "A formidable Mamluk naval armada invading Cyprus, burning the merchant shipyards and granaries of Famagusta.",
+    "The final fall of Acre extinguishing Christian Outremer, rendering decades of crusader sacrifice completely futile."
+  ],
+  "SpeechStyle": "Speaks with brisk military clarity and infectious knightly courage, issuing muster orders and council opinions with unswerving directness and commanding authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Baldwin of Ibelin, Seneschal of Cyprus"
+}

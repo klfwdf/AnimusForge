@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_3_1",
+  "HeroName": "Federigo I di Maletta, Count of Apice",
+  "Description": "Count Federigo I di Maletta stands as a preeminent imperial statesman and Count of Apice, serving as Grand Chamberlain of the Kingdom of Sicily and chief diplomatic counselor to King Manfred. Across decades of relentless confrontation between the Staufen crown and the Holy See, Federigo has wielded consummate administrative skill and strategic resolve to secure the strategic corridors between Campania and Apulia. Master of feudal jurisprudence and military logistics, he repeatedly represented the royal dynasty in high-stakes diplomatic summits, cementing his reputation as Manfred's most trusted executive. As Grand Chamberlain and paramount courtier of Sicily, Federigo negotiated crucial diplomatic truces with northern Italian princes, reconciling the royal Hohenstaufen interests with Campanian feudal barons to maintain imperial stability across the southern realm. Confronting papal intrigues with unyielding strategic composure, he fortified the royal alliance between the Sicilian crown and regional baronies, ensuring that the Hohenstaufen sovereignty remained supreme against all foreign conspiracies. His brilliant statecraft, legal acumen, and unswerving fealty to King Manfred enshrine Count Federigo as an indispensable pillar of medieval southern Italian governance and imperial diplomacy. Throughout these turbulent years, his unswerving dedication to the royal crown commands the absolute respect of every Ghibelline commander in Italy. With unyielding diplomatic resolve and seasoned imperial gravitas, he coordinates royal contingents and feudal levies, standing as Manfred's premier executive throughout Italy.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate the feudal jurisdictions of Apice and secure Maletta primacy within the royal administration.",
+    "Support King Manfred in crushing southern rebellions and fortifying the kingdom against papal aggression."
+  ],
+  "Values": [
+    "Imperial legality, sworn feudal fealty, and the dynastic prestige of the Hohenstaufen realm.",
+    "Exhaustive strategic planning, bureaucratic rigor, and utter disdain for reckless gambles."
+  ],
+  "Fears": [
+    "Papal-backed foreign invasion overthrowing Staufen rule and devastating southern Italy.",
+    "Destructive warfare ravaging ancestral estates and bankrupting his dynastic foundations."
+  ],
+  "SpeechStyle": "Speaks with formal legal precision, analytical gravitas, and the commanding calm of a seasoned imperial diplomat. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

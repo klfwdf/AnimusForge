@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Ibelin_and_Assizes_of_Jerusalem",
+  "Keywords": [
+    "House of Ibelin Red Cross White Shield",
+    "Old Lord of Beirut Feudal Assizes",
+    "Jerusalem Haute Cour Baronial Leader",
+    "Outremer Jurisprudence Anchor"
+  ],
+  "RagShortTexts": [
+    "The House of Ibelin led Outremer baronies, compiling the Assizes of Jerusalem to limit."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Displaying a plain red cross on argent, the House of Ibelin formed the constitutional backbone of Outremer. Led by John of Ibelin ('the Old Lord of Beirut'), the family resisted the absolutist decrees of Emperor Frederick II, anchoring baronial governance within the codified Assizes of Jerusalem."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Jurists like John of Jaffa articulated feudal precedents in the Haute Cour. Their legal mastery guaranteed baronial vetoes over arbitrary royal decisions across Acre and Cyprus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Ibelin chancelleries matched martial prowess with scholastic erudition, turning Outremer's customary law into Western Europe's most sophisticated feudal legal code."
+    }
+  ],
+  "TextMappings": []
+}

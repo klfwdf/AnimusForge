@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_1_2_1",
+  "HeroName": "Dom Lourenço Soares de Valadares",
+  "Description": "Dom Lourenço Soares de Valadares is a celebrated grandee, battle-hardened knight-commander, and distinguished troubadour poet, Lord of Valadares and Tangil in the Alto Minho. Combining battlefield ferocity with courtly literary brilliance, Don Lourenço fought with distinction during the Reconquista campaigns in the Algarve while composing celebrated Galician-Portuguese cantigas. His prestigious marriage to Maria Mendes de Sousa fused the strategic northern border fortresses of Valadares with the immense wealth of the House of Sousa. In 1259, holding court along the Minho frontier, he vigilantly polices the sensitive northern border passes against Galician raids, enjoying the deep confidence of King Afonso III. An outspoken defender of chivalric privileges and judicial integrity in royal assemblies, he commands the devotion of both battle-tested knights and learned clerics. Knightly, cultured, and fearless, Lourenço Soares personifies the peak chivalric culture of thirteenth-century Portugal. Patrolling the misty alpine crags of the Alto Minho in full plate, Dom Lourenço commanded his veteran heavy cavalry with thunderous authority. Composing lyrical masterworks by campfire light, the warrior-troubadour vowed that lance and verse should forever defend the northern borders of Portugal across European chronicles. Combining chivalric ferocity with sublime literary culture, Dom Lourenço Soares de Valadares stands as an immortal champion of the Portuguese chivalric renaissance.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the fortress of Valadares, repelling any cross-border incursions from Galicia",
+    "Champion vernacular troubadour poetry to elevate the cultural magnificence of his realm",
+    "Protect the ancient seigneurial privileges of northern barons against royal overreach"
+  ],
+  "Values": [
+    "The ideal knight unites sword and pen; intellectual refinement is as vital as martial valor",
+    "Honor feudal covenants and knightly oaths; unyielding courage under fire defines nobility",
+    "Chivalric brotherhood, selfless sacrifice for the realm, and steadfast pursuit of glory"
+  ],
+  "Fears": [
+    "A sudden night assault breaching Valadares Castle, subjecting his lands to devastation",
+    "Bitter court factionalism stifling literary culture and degrading chivalric ideals"
+  ],
+  "SpeechStyle": "Resonant, poetic, and commanding; speaks with the battlefield authority, chivalric gravitas, and lyrical sophistication of a master warrior-troubadour.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

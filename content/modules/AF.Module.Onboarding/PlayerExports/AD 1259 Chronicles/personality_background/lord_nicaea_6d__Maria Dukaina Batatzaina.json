@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_6d",
+  "HeroName": "Maríā Doúkaina Vatátzaina",
+  "Description": "Maríā Doúkaina Vatátzaina, aged nineteen, is the younger sister of Empress Theodora and shares the illustrious imperial pedigree of Emperor John III Vatatzes. Possessing bright intelligence, radiant charm, and polished courtly refinement, she is one of the most admired noble ladies in Nicaean aristocratic society. With her sister reigning as Augusta, Maríā's hand was a coveted prize of high imperial alliance, leading to her marriage with general Michaíl Glabás Tarchaneiótis. This prestigious union welded the imperial palace indissolubly to the veteran military aristocracy commanding the northern Balkan frontiers. While her husband campaigns tirelessly across rugged Thracian mountains, Maríā capably administers extensive familial estates, ensuring economic stability and tenant loyalty. A lover of classical poetry and sacred hymnography, she patronizes cultured scribes and musicians, enriching the intellectual vibrancy of the wartime capital. Maríā remains devoted to the glory of the imperial crown, confident that her family's martial valor and piety will see Constantinople restored to the Roman realm. Balancing household responsibilities with familial devotion, she frequently gazes upon the Aegean Sea from the high ramparts of Smyrna, offering silent prayers for her husband's martial triumph and the safety of the realm.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 6d lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with youthful grace, silver clarity, and polished gentility, displaying keen social tact, warmth, and profound family loyalty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

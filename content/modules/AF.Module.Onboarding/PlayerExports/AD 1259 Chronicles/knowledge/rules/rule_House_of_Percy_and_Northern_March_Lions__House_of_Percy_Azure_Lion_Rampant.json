@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Percy_and_Northern_March_Lions",
+  "Keywords": [
+    "House of Percy Azure Lion Rampant",
+    "Northumberland Border Marches",
+    "Alnwick Castle Stone Redoubt",
+    "First Bulwark Against Scottish Raids"
+  ],
+  "RagShortTexts": [
+    "The House of Percy guarded the Northumbrian border from Alnwick, holding the Scottish frontier."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Guarding the barren marches of Northumberland, the House of Percy bore a blue lion rampant on gold. Centered upon Alnwick Castle, the Percys operated autonomous northern frontier defenses against Scottish incursions, hardened by constant border skirmishes along the River Tweed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Exercising Marcher liberties, Percy wardens enforced immediate cross-border reprisal raids, largely detached from southern court intrigues in Westminster."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sub-zero Northumbrian winds whistle through Alnwick arrow-slits. Sentries sleep in mail hauberks, ready to mount warhorses at the first beacon flare."
+    }
+  ],
+  "TextMappings": []
+}

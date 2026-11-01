@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Treaty_of_Nymphaeum_and_Genoese_Byzantine_Pact",
+  "Keywords": [
+    "Pact of Nymphaeum 1261",
+    "Genoese Byzantine Anti Venetian Pact",
+    "Pera Galata Quarter Concessions",
+    "Black Sea Duty Free Trade"
+  ],
+  "RagShortTexts": [
+    "In 1261, Nicaea allied with Genoa against Venice, granting extensive trade concessions."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In March 1261, Michael VIII Palaiologos signed the Treaty of Nymphaeum with the Republic of Genoa. To dismantle Venetian naval dominance over Latin Constantinople, Nicaea granted Genoa total customs exemptions across the Aegean and Black Sea, alongside commercial quarters in Galata, in exchange for naval blockades."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "A desperate bargain swapping fiscal sovereignty for naval swords. While Genoese galleys aided the imperial return, the fortified warehouses of Galata would eventually swallow the empire's customs revenues."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Michael VIII recognized the hazards of welcoming Genoa, yet recapturing the imperial capital outweighed commercial caution. Genoese naval power neutralized Venice at the critical hour."
+    }
+  ],
+  "TextMappings": []
+}

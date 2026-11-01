@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_2_1_b",
+  "HeroName": "Bolko I Surowy",
+  "Description": "Bolko I Surowy (the Strict) rules as Duke of Jawor and Świdnica, the brilliant second son of Bolesław II Rogatka, celebrated in medieval chronicles as an extraordinary military architect and unyielding defender of Silesian sovereignty. Possessing formidable geopolitical vision, Bolko recognized that the expanding Bohemian Přemyslid Empire posed an existential threat to the Silesian duchies across the Sudeten mountain passes. To safeguard his frontiers, he masterminded the construction of an impregnable ring of mountain stone citadels, including the colossal cliffside strongholds of Książ (Fürstenstein), Bolków, and Grodno, incorporating revolutionary concentric defenses. In civil governance, Bolko was unsparing and incorruptible, ruthlessly hanging bandits, stamping out administrative fraud, and granting lucrative mining monopolies that turned Świdnica into a flourishing center of metalcraft and commerce. When King Václav II of Bohemia compelled neighboring Silesian princes to swear feudal homage as crown vassals, Bolko stood completely alone, defiantly refusing to bend the knee to Prague. He remains the legendary 'King of the Sudetes,' an unshakeable sentinel whose stone ramparts preserved the proud independence of the Piast bloodline. Bolko engineered subterranean escape saps and counterweight drawbridges within the crags of Książ, creating a masterpiece of European military architecture. His unbending resolve turned the Sudeten mountain passes into an impassable graveyard for encroaching Bohemian imperial armies.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Erect an impenetrable chain of stone castles across the Sudeten passes to halt Bohemian conquest in its tracks.",
+    "Transform Świdnica into a heavily fortified metropolis, minting center, and commercial hub to guarantee military funds.",
+    "Uphold the unyielding sovereign independence of Jawor-Świdnica while rival Silesian princes succumb to vassalage."
+  ],
+  "Values": [
+    "View iron discipline, defensive masonry, and uncompromising justice as the pillars of national survival.",
+    "Prize uncompromising sovereignty, refusing to bend the knee or sacrifice an inch of ancestral territory to foreign crowns.",
+    "Harness rugged mountain topography and structural engineering to create lethal defensive choke points."
+  ],
+  "Fears": [
+    "Overwhelming Bohemian imperial armies mounting prolonged sieges that isolate and batter down his mountain citadels.",
+    "His brother Silesian princes completely capitulating to Prague and assisting foreign armies in crushing his realm."
+  ],
+  "SpeechStyle": "The Sudeten crags are the executioner's block for Bohemian greed; before my citadels, leave your surrender or leave your corpses! Świdnica never kneels! The crags of Książ stand unbroken; Świdnica never bows to foreign crowns!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

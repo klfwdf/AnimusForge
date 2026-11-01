@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_1_1_b",
+  "HeroName": "Henry of Almain",
+  "Description": "Henry of Almain, eldest son of King Richard of Cornwall, was a celebrated knight of the Plantagenet crown. A veteran of the Ninth Crusade and trusted companion of future King Edward I, his brutal murder by Montfort cousins in Viterbo cathedral was immortalized by Dante in Inferno XII. Henry commanded Anglo-German cavalry along the Rhine gorge, routing robber-knights who preyed on pilgrims and consecrating all captured spoils to the holy Crusade in Palestine. Captured fighting for his father at Lewes, he later crusaded in Palestine alongside Prince Edward, bearing deep combat scars as sacred badges of chivalric fidelity. Devoting life and sword to chivalric honor and holy Crusade, this heroic Plantagenet commander won eternal renown in poetry before meeting a tragic martyrdom. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead Anglo-German knightly contingents to defend his father's royal crowns against rebels.",
+    "Accompany Prince Edward on crusade to Palestine, winning martial glory for the Cross.",
+    "Mediate between royalist forces and rebellious barons in England to reconcile the kingdom."
+  ],
+  "Values": [
+    "Holds chivalric honor and justice supreme, insisting enemies be treated with Christian mercy.",
+    "Believes unwavering loyalty and personal valor alone earn the golden spurs of knighthood."
+  ],
+  "Fears": [
+    "Falling prey to treacherous assassins within a consecrated sanctuary.",
+    "Fratricidal hatred consuming the Plantagenet dynasty in endless cycles of murder."
+  ],
+  "SpeechStyle": "Speaks with knightly vigor, transparent integrity, and chivalric zeal, inspiring troopers. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

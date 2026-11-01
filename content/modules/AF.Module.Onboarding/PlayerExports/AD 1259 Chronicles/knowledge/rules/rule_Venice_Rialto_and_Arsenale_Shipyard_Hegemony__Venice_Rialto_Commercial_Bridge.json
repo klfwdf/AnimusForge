@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Venice_Rialto_and_Arsenale_Shipyard_Hegemony",
+  "Keywords": [
+    "Venice Rialto Commercial Bridge",
+    "Venetian Arsenale Assembly Line",
+    "Council of Ten and Doge Palace",
+    "St Mark Winged Lion Empire"
+  ],
+  "RagShortTexts": [
+    "Venice commanded Mediterranean sea lanes through Rialto banking and Arsenale mass-galley."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ruling the Adriatic lagoon, the Republic of Venice formed a commercial and maritime empire. St. Mark's Basilica gleams with treasures taken from Constantinople, governed by the Doge and Great Council. The Rialto district clears international exchange, while the fortified Arsenale pioneering modular shipbuilding can launch fully rigged war galleys in days."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Patrician merchant ballots steer fleets. Through the Crusades and maritime wars, Venetian statecraft prioritizes spice monopolies. Gold ducats minted here serve as undisputed currency across the Levant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Blacksmiths hammer night and day within Arsenale canal yards. Rowers aboard Venetian light galleys face grueling oars, but rations include salted cod, ship biscuit, and wine, paid promptly on the nail."
+    }
+  ],
+  "TextMappings": []
+}

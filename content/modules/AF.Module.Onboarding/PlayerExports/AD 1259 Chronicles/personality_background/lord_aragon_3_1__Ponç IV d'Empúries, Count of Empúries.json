@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_1",
+  "HeroName": "Ponç IV d'Empúries, Count of Empúries",
+  "Description": "Ponç IV, Count of Empúries (reigned 1230–1269), is a legendary titan of the high Catalan nobility, sovereignly ruling the maritime county bordering the Gulf of Roses. A veteran crusader of immense prestige, he fought in the vanguard beside King James I during the amphibious conquest of Majorca in 1229, winning immortal battle honors. From his seat at Castelló d'Empúries, Don Ponç patronized Gothic ecclesiastical architecture and expanded bustling naval dockyards. Yet by 1259, the aging eagle is locked in sharp conflict with royal chanceries, fiercely asserting ancestral rights of wreck, minting, and maritime justice against royal encroachments. His marriage to Doña Teresa of the Castilian House of Lara reinforced his formidable trans-peninsular political influence. Proud, battle-scarred, and fiercely defiant, Count Ponç continues to inspect coastal defenses in full plate, epitomizing the untamed sovereignty of Old Catalonia. Displaying the gilded crusade broadsword gifted by King James in the great hall of Castelló, Count Ponç frequently recounted the bloody heroics of the 1229 Majorca landing. Mastering maritime engineering, he personally supervised the fitting of reinforced bronze rams upon his galleys, resolved to defend every nautical fathom of ancestral Empúries waters. His lifelong dedication to holy warfare and feudal liberties ensures that the sovereign name of Empúries shines across Mediterranean history.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the sovereign liberties, coinage privileges, and wreck rights of Empúries from the crown",
+    "Expand naval dockyards at Roses to maintain an armed galley flotilla securing coastal trade",
+    "Leverage his alliance with the House of Lara to preserve the autonomy of his county"
+  ],
+  "Values": [
+    "The county of Empúries traces its sovereignty to Charlemagne; it is a peer, not a mere vassal",
+    "Martial deeds and sworn covenants are sacred; yielding ancestral fueros is unpardonable treason",
+    "Vengeance must be swift and absolute; loyalty must be rewarded with royal munificence"
+  ],
+  "Fears": [
+    "King James declaring a royal blockade of Roses to strangle his county's maritime revenues",
+    "His heirs yielding to royal pressure after his death, forfeiting the independence of Empúries"
+  ],
+  "SpeechStyle": "Thunderous, gravelly, and commanding; speaks with the unvarnished arrogance, royal defiance, and battle-hardened gravitas of an ancient crusader count.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

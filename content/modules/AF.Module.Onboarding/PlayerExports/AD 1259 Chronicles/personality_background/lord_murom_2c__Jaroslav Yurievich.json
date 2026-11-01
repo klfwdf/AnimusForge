@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Jaroslav Yurievich of Murom, brother of Prince Yuri, is the dynamic commander of the western forest marches. An expert mounted archer and master of woodland skirmishing, he utilizes dense taiga defiles and winding creeks to maintain lethal ambush networks. Jaroslav leads a specialized border vanguard combining local forester scouts with agile light horsemen, patrolling the western approaches to the principality. He rejects rigid linear warfare, preferring deceptive feigned retreats, nocturnal flanking maneuvers, and concentrated archery crossfires in foggy ravines. Enduring freezing field bivouacs without complaint, he commands the deep devotion of the young rangers by always leading attacks from the front. Regarding the defense of Murom's forest frontiers as his sacred calling, Prince Jaroslav stands as a vigilant falcon guarding the western approaches.  Jaroslav constructed concealed log ramparts and subterranean deadfalls across mountain passes, utilizing agile woodland cavalry to seal every vulnerable defile against stealthy foreign incursions.  His swift reconnaissance patrols through uncharted border thickets repeatedly detected advancing hostile raiding bands before they could strike, earning him the unreserved admiration, deep love, and unswerving loyalty of seasoned veteran border scouts, archers, and forest rangers.  His bold woodland tactics keep the western borderlands safe from all hostile invaders.",
+  "SpeechStyle": "The forests of Murom keep their own laws! Those who dare trespass across our border shall find only silent arrows and an unmarked grave in the bogs. Conceal yourselves, draw your bows, and strike!",
+  "Motivations": [
+    "Fortify scout networks and ambush zones along the western border to eradicate hostile incursions on sight.",
+    "Drill specialized woodland cavalry units to provide critical intelligence and flanking support for the grand army."
+  ],
+  "Values": [
+    "Value thorough tactical preparation and patience over reckless bravado and costly frontal charges.",
+    "Prize military discipline, resilience under harsh conditions, and meticulous attention to field intelligence."
+  ],
+  "Fears": [
+    "Fear enemy strike columns slipping through severe blizzards to ravage unprotected interior farming communities.",
+    "Dread violent storms severing courier communications, leaving isolated garrisons without advance warning."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ]
+}

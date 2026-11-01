@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Savoy_and_Alpine_Pass_Keepers",
+  "Keywords": [
+    "House of Savoy White Cross Gules",
+    "Peter II Little Charlemagne Count",
+    "Great St Bernard Pass Alpine Tolls",
+    "English Royal Court Savoyard Counselors"
+  ],
+  "RagShortTexts": [
+    "The House of Savoy guarded western Alpine passes, levying lucrative transit tolls beneath."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing the white cross on gules, the House of Savoy governed the strategic defiles of the Western Alps, including the Great St. Bernard and Mont Cenis passes. Under Count Peter II ('Little Charlemagne'), the dynasty fortified Chillon Castle on Lake Geneva and established prominent familial advisory posts within Henry III's court in England."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Savoyard castellans collected lucrative tolls from trans-Alpine merchant caravans and papal couriers alike, securing geopolitical leverage between France, Germany, and the Italian communes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ]
+      },
+      "Content": "Highland sentry posts are carved directly into granite cliff faces. When blizzards blanket the passes, Savoyard guides shepherd pack trains safely along treacherous ledges."
+    }
+  ],
+  "TextMappings": []
+}

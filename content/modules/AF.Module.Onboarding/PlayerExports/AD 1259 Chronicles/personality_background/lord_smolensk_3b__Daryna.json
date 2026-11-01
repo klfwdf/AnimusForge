@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Daryna, wife of Prince Mikhail I, is the beloved patroness of the common folk and craft guilds of Smolensk's river posad. Hailing from an influential guild family along the Dnieper, she possesses practical commercial understanding and boundless empathy. Daryna oversees civic workshops and charitable hospices, supporting local carpenters, armories, and boatwrights through difficult economic cycles. During wartime blockades when grain prices spike, she releases municipal flour stores at subsidized rates, ruthlessly curbing hoarding and market speculation. She finances riverside clinics, repairs parish churches, and organizes women's leagues to sew tents and bandages during siege crises. Her tireless compassion and pragmatic diligence make her a cherished maternal figure anchoring social calm across the urban quarters. By continually inspecting local workshops and arbitrating trade disagreements with warm fairness, she strengthens civic solidarity against all external perils. Princess Daryna frequently walks the bustlingposad wharves, listening to the needs of shipwrights and dockhands while funding cooperative food stores that shield the poor from soaring inflation. Her active benevolence and fair grain subsidies prevent urban unrest, anchoring lasting communal concord throughout the bustling river district. Her compassionate guidance ensures that even the poorest burghers find hope and protection in times of emergency.",
+  "SpeechStyle": "The louder the smiths' hammers ring on the wharves, the stronger our citadel stands. No matter how dark the storm, every craftsman and child must have warm bread, shelter, and security.",
+  "Motivations": [
+    "Support local merchant and craft guilds, keeping food supplies accessible and market prices stable during wars.",
+    "Expand charitable hospices to shelter war orphans, widows, and incoming displaced families."
+  ],
+  "Values": [
+    "Hold active philanthropy and humble charity as the truest emblems of genuine noble authority.",
+    "Value honest labor, mutual communal solidarity, and defense of the vulnerable against predatory abuse."
+  ],
+  "Fears": [
+    "Fear catastrophic fires sweeping through dense wooden wharf warehouses, devastating families and workshops.",
+    "Dread prolonged winter river freezes blocking salt and grain shipments, causing famine among the artisan class."
+  ],
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_3c",
+  "HeroName": "Ingebjørg Erlingsdatter",
+  "Description": "Lady Ingebjørg Erlingsdatter was a celebrated noblewoman of the Tanberg dynasty, the daughter of Baron Erling Alvsson and sister to Mindre-Alv. In 1259, Ingebjorg was a prominent figure within the youthful aristocratic circles of southern Norway, admired for her beauty, poise, and cultured intellect. Educated in French courtly romances, Latin devotionals, and Old Norse genealogical lore, she moved effortlessly among prelates and high-born suitors with natural dignity. She actively assisted her mother in supervising the domestic textile production of the Tanberg manors and directing medicinal charity for rural cottars. Deeply loyal to her lineage, she recognized the strategic importance of dynastic marriages, conducting herself with quiet wisdom and unyielding self-command. Her charitable endowments to local chapels and gentle, compassionate temperament established her as a luminous exemplar of Norwegian high medieval noblewomanhood. Across the Tanberg lordships, Lady Ingebjørg championed charitable devotion, endowing rural dispensaries that provided free herbal remedies to impoverished peasant families. Well-versed in ancestral sagas and French romances, her radiant conversational charm made her the admired center of high society gatherings at Oslo Castle. Her luminous intelligence and boundless benevolence shed honor upon her lineage, remembered as the benevolent guardian star of Tanberg.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with sweet courtly cadence, articulate grace, and composed modesty, reflecting exemplary noble education and moral serenity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

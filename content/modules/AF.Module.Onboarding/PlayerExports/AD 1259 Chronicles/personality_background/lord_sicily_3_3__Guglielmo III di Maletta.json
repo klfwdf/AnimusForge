@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_3_3",
+  "HeroName": "Guglielmo III di Maletta",
+  "Description": "Guglielmo III di Maletta is the dashing eldest son and heir of Apice, celebrated for exceptional prowess in the joust and mounted warfare. Having accompanied his father to royal councils and martial camps since early youth, Guglielmo combines classical feudal training with an aggressive tactical instinct for heavy cavalry charges. Burning with knightly ambition, he yearns to prove his valor upon the front lines, determined to earn his own laurels and silence skeptics by driving his family banner through enemy battlements across Italy. Young Guglielmo trained tirelessly in the martial arts of the joust and cavalry melee, displaying conspicuous physical audacity and tactical intuition, burning with ambition to shatter Guelph mercenary squadrons upon the field of battle. Accompanying his father to military councils, Guglielmo inspires fellow squires with his burning knightly pride and martial prowess, vowing to carry the Maletta standard through the most fortified breaches of their adversaries. Burning with knightly zeal, physical vigor, and chivalric honor, young Guglielmo stands ready to lead the vanguard squadrons of the realm into decisive battle for glory and king. Driven by fearless audacity and chivalric pride, he is destined to carve his legend upon the battlefield. Burning to win his golden spurs in pitched combat, young Guglielmo rides fearlessly alongside his squires, ready to strike down any foe.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve battlefield glory against Guelph adversaries and establish his military reputation.",
+    "Inherit and expand the county of Apice, elevating the house to undisputed feudal prominence."
+  ],
+  "Values": [
+    "Fearless battlefield valor, knightly prowess, and unrelenting personal courage.",
+    "Unwavering fidelity to King Manfred and the sacred heraldry of the Staufen realm."
+  ],
+  "Fears": [
+    "Being sidelined in garrison duties and denied opportunities for immortal glory.",
+    "Political intrigue or court betrayals forfeiting his ancestral inheritance."
+  ],
+  "SpeechStyle": "Speaks with bold martial confidence, fiery chivalric enthusiasm, and eager youthful frankness. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

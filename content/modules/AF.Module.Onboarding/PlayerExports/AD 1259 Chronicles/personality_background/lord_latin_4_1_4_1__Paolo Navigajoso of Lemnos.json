@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_1_4_1",
+  "HeroName": "Paolo Navigajoso of Lemnos",
+  "Description": "Paolo Navigajoso, aged forty in 1259, is the eldest son and designated heir of Megas Doux Leonardo Navigajoso, serving as the primary commander of the vital northern Aegean fortress island of Lemnos. Inheriting the fierce crusader tenacity of his grandfather Filocalo, Paolo commands the massive cliffside citadel of Kastro, dominating the approaches to the Dardanelles and Constantinople. Stern, unyielding, and battle-hardened, he maintains a formidable garrison of Venetian crossbowmen and Frankish veterans. In 1259, as Nicaean forces intensify their siege preparations around Constantinople, Lemnos stands as the vital lifeline of the Latin capital. Paolo reinforces the stone battlements and prepares for total war, vowing to hold the island gateway against the Byzantine fleet to his last breath. Clad in heavy Venetian mail and a scarlet cross mantle, Paolo patrols the rocky cliffs of Lemnos like an iron statue. He punishes insubordination with ruthless severity while rewarding courageous combatants with lavish largesse. Facing the encroaching Nicaean navy, Paolo has pledged to turn the island's waters into a watery graveyard for all who challenge Latin dominion. Unforgiving and resolute, Paolo holds the cliffside fortress of Kastro against the gathered might of Nicaean naval raiders. His ironclad defense of Lemnos secures the maritime lifeline of Constantinople, sealing his reputation as a warrior without fear.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Barks with ferocious military authority, hardened by endless maritime vigil and unyielding in the face of overwhelming odds.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

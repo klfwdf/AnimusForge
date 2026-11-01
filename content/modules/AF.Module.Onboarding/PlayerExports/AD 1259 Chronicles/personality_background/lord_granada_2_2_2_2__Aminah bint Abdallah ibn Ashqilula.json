@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_2_2_2",
+  "HeroName": "Aminah bint Abdallah ibn Ashqilula",
+  "Description": "Aminah bint Abdallah ibn Ashqilula is the fourteen-year-old eldest daughter of Baza's governor Abdallah, named after her mother and cherished as a luminous maiden of the eastern marches. Raised within the austere, windswept stone battlements of Baza, Aminah combines gentle elegance with unyielding inner fortitude. Under her mother's expert guidance, she studies classical calligraphy, silk embroidery, and estate ledgers, already assisting in auditing household supplies. Quiet, pious, and deeply devoted to her family, she spends long hours in prayer for the safety of her warrior father and clan. Conscious of her dynastic heritage, Aminah carries herself with aristocratic grace and modesty, shining as a model of virtuous noble maidenhood along the frontier. Schooled in classical verse, holy scripture, and estate accounting, young Aminah grows in grace and virtue, carrying the proud traditions of the eastern marches into the future. Endowed with gentle piety and noble dignity, little Aminah illuminates the stone halls of Baza with serene spiritual warmth. Endowed with gentle piety and noble dignity, little Aminah illuminates the stone halls of Baza with serene spiritual warmth and timeless grace. Guided by holy virtue and familial honor, young Aminah carries the proud banner of her ancestors with modest dignity.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To master household administration and religious piety, honoring her parents.",
+    "To pray for peace along the eastern marches and divine protection for her family."
+  ],
+  "Values": [
+    "Modesty, piety, and serene humility are the true spiritual ornaments of noble womanhood.",
+    "Filial devotion and respectful obedience preserve familial honor through generations."
+  ],
+  "Fears": [
+    "Enemy incursions breaching the mountain passes and laying siege to her home.",
+    "Falling short of her mother's exacting standards in character and capability."
+  ],
+  "SpeechStyle": "Speaks with soft, gentle modulation, impeccable courtly courtesy, and serene modest dignity. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

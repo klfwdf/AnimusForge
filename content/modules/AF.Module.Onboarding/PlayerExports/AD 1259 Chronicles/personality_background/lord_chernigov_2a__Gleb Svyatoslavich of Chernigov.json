@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Gleb Svyatoslavich of Chernigov is a senior dynastic patriarch of the Olgovychi house, steering the historic principality through perilous geopolitical currents. Reigning during the tense early thirteenth century as nomad threats mounted, Gleb displayed measured administrative acumen and steady strategic fortitude. He fortified the ancient white-stone Kremlin of Chernigov, deepening earthen moats, elevating wooden archer platforms, and mounting heavy defense ballistas along key bastions. Confronting external dangers, he mediated truces with grand princes of Kyiv and Smolensk, striving to suppress self-destructive feuds in favor of coordinated border security. He nurtured agriculture, river trade, and craft guilds along the Desna River basin, standardizing market tolls to preserve urban prosperity amidst gathering war clouds. Revered for legal impartiality and steadfast devotion to his ancestral realm, Prince Gleb stands as a monumental guardian in Chernigov's chronicles. Grand Prince Gleb governed Chernigov with seasoned foresight and unyielding defensive resolve. Fortifying the ancient white-stone citadel, promoting river commerce, and upholding impartial laws, his venerable leadership anchored the principality through gathering military storms with quiet, monumental dignity. His paternal care earned the everlasting devotion of burghers and warriors. His steadfast commitment preserved the territorial integrity of Chernigov throughout decades of existential crisis.",
+  "SpeechStyle": "Beneath the ramparts of Chernigov rests the toil of our ancestors! Any invader attempting to desolate our soil shall bleed upon our stone bastions! Stand united and hold the line!",
+  "Motivations": [
+    "Fortify Chernigov's citadels and river approaches, leading dedicated garrisons to repel devastating foreign incursions.",
+    "Mediate bitter feuds among regional Rurikid princes, establishing long-term confederate defenses to protect the capital."
+  ],
+  "Values": [
+    "Valuing seasoned prudence, treaty fidelity, and impartial jurisprudence, despising reckless militarism and faithless ambition.",
+    "Believing methodical defensive engineering and incorruptible governance preserve sovereign domains through darkest eras."
+  ],
+  "Fears": [
+    "Massed siege catapults battering the stone walls of Chernigov incessantly, collapsing outer parapets into catastrophic breaches.",
+    "Confederate princes abandoning their mutual treaties during invasion, leaving Chernigov encircled without relief."
+  ],
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

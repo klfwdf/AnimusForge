@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5j",
+  "HeroName": "Kela",
+  "Description": "Kela is the noble chatelaine and wife of Abraham Rátót, admired throughout Heves for her domestic thrift, warmth, and Christian piety. Born into an honorable Magyar gentry house, she brought practical domestic intelligence and graceful modesty to the Rátót clan. Kela diligently assists her husband in managing manor provisions, brewery inventories, and textile production, ensuring household accounts remain in pristine order. Possessing a compassionate heart, she established soup kitchens across family estates, distributing bread to impoverished widows and war refugees. In 1259, as royal muster calls multiply and her husband labors tirelessly over supply lines, Kela presides over home affairs with gentle efficiency, offering an enduring refuge of tranquility and support. Kela established charitable bread kitchens and clothing hospices across family estates, offering tender care to impoverished widows and war orphans. Her gentle kindness and devout Christian charity brought peace and spiritual comfort to rural tenant communities throughout difficult years. Her virtuous domestic stewardship preserved harmonious community relations, earning her clan the enduring love and respect of tenant farmers, regional burghers, and border communities alike throughout the northern highlands and fertile agricultural valleys of Heves, earning the heartfelt gratitude of all who dwelt there.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assist her husband in managing Heves domestic affairs, ensuring peaceful and thriving estates.",
+    "Promote charitable relief across family villages, cultivating enduring goodwill among tenants."
+  ],
+  "Values": [
+    "Hold compassion, wifely devotion, and domestic thrift as supreme virtues, scorning vanity.",
+    "Value tranquil domestic harmony over noisy court ostentation and frivolous indulgence."
+  ],
+  "Fears": [
+    "Fears escalating warfare imposing crushing taxes that impoverish vulnerable tenant families.",
+    "Dreads her husband suffering injury in accidents or ambushes along supply routes."
+  ],
+  "SpeechStyle": "Our springs flow clear and our hearths stay warm! With our home well-ordered, my lord may conduct affairs abroad with complete peace of mind! Faith and charity comfort the brave; God's peace guards our manors forever!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

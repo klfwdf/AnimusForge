@@ -1,0 +1,43 @@
+{
+  "Id": "rule_1250",
+  "Keywords": [
+    "1250",
+    "1250 Lore",
+    "1250 Chronicles",
+    "AD1259 1250"
+  ],
+  "RagShortTexts": [
+    "Historical doctrine and chronicle records concerning 1250 in 1259 Eastern Europe.",
+    "Geopolitical significance, tactical mechanical design, and feudal governance of 1250 Lore.",
+    "Primary medieval evidence on border warfare, fortifications, and treaties across 1250 Chronicle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The fortified citadel and defensive strongpoint of 1250 stands as a pivotal bastion commanding vital riverine portages, trade crossings, and frontier marches across 1259 Eastern Europe. Constructed utilizing deeply anchored oak timber cribs packed with rammed gravel and dressed fieldstone curtain walls, the fortress was engineered to dissipate the kinetic impact of counterweight siege engines while providing overlapping crossbow fire. Equipped with deep interior cisterns tapping subterranean springs and grain magazines designed for six months of isolation, it serves as an impenetrable redoubt guarding sovereign domains against predatory steppe tumens, Teutonic crusaders, and pagan skirmishers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Frontier sentries shivering on the wind-blasted parapets of 1250 keep watch over the frozen forest treeline. With crossbows slung under greased wool mantles to shield sinew cords from freezing drizzle, every guardsman clutches a bearded boarding axe, knowing that at the first clang of the alarm bell, they must hold the narrow wall-walk against swarming assault."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The governing castellans and burghers of 1250 review defensive ledgers in the great stone hall: repairing rampart breaches demands thirty wagon-loads of lime mortar and hundreds of silver grivnas for mercenary cross-bow bolts. Wax-sealed dispatches from royal chanceries and archbishoprics demand unyielding resistance against barbarian incursions."
+    }
+  ],
+  "TextMappings": []
+}

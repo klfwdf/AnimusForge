@@ -1,0 +1,31 @@
+{
+  "Id": "rule_William_of_Saliceto_and_Surgical_Revolution",
+  "Keywords": [
+    "William of Saliceto Chirurgia",
+    "Rejection of Laudable Pus",
+    "Scalpel over Thermal Cautery",
+    "Bologna University Medical Surgery"
+  ],
+  "RagShortTexts": [
+    "William of Saliceto revolutionized 13th-century surgery at Bologna, rejecting 'laudable."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At the University of Bologna, William of Saliceto (1210–1277) revolutionized medieval clinical trauma care. In his 1275 treatise Chirurgia, Saliceto shattered ancient Galenic dogma by declaring that wound suppuration ('laudable pus') caused systemic tissue harm rather than natural healing. Advocating cold, sharp scalpel incisions over indiscriminate thermal cauterization irons, he reunited internal medicine with manual anatomy, elevating surgery from a barber's craft to an academic science."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "doctor",
+          "scholar"
+        ]
+      },
+      "Content": "Italian-trained surgeons employed delicate arterial ligatures and wine antiseptic dressings, drastically improving battlefield survivability."
+    }
+  ],
+  "TextMappings": []
+}

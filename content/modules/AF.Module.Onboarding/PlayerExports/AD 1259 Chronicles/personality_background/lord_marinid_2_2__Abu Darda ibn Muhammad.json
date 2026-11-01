@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_2_2",
+  "HeroName": "Abu Darda ibn Muhammad",
+  "Description": "Abu Darda ibn Muhammad was a son of Muhammad ibn Idris and belongs to the Idris branch. No chronicle records his life, so his character is a game-setting construction based on the faction's history. His appearance is a game-setting invention: tall and lean, with a pale scar across the bridge of his nose from a saddle rub, and a fondness for bright red short coats. He wears a belt with copper buckles, a sign of his pride in family honor. According to the game setting, he served in a light cavalry unit in youth and learned to charge and pursue, which earned him a reputation for daring among cousins of his age. He once led a sortie at a frontier clash and won praise from his uncles, though he was also rebuked for acting without orders. Among rivals within the kin, he does not hide his displeasure. He often challenges others' decisions in public, which makes him easy to resent. His highest aim is to wipe away his father's quiet image and prove that the Idris branch is more than a line of pasture managers. His darkest fear is being seen as a coward. If he flinches before others, he falls into deep self-doubt and may take reckless risks to prove his courage. He especially dreads that his impulsiveness will drag the whole family into needless quarrels.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wanted to wipe away his father's quiet image and show that the Idris branch could carry weight on the battlefield and at court, not only in the pastures.",
+    "He sought the respect of his uncles and cousins by turning his frontier conduct into deeds that would be remembered and that would earn him a larger voice.",
+    "He tried to build his own followers among the kin, using old bonds with fellow cavalrymen to keep part of the troops firmly in his hands."
+  ],
+  "Values": [
+    "Honor and courage, since he believed a man's worth lies in not flinching before danger, even at the cost of wounds or reproach.",
+    "Comradeship, because he took seriously the pledges made between those who fought side by side, and he despised betrayal of a fellow soldier.",
+    "Frankness, since he would rather voice disagreement in public than scheme in the shadows, and he considered hypocrisy more shameful than defeat."
+  ],
+  "Fears": [
+    "Showing cowardice before others, which would cost him his existing followers and any hope of winning the respect of his uncles.",
+    "His own rashness drawing the whole family into an avoidable clash, with him blamed as the one who started it."
+  ],
+  "SpeechStyle": "He speaks loudly and quickly, often with short challenges. He addresses elders formally but interrupts peers without hesitation. Praise makes him boastful, and rebuke makes him fall silent and sulk, then throw himself back into the work.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

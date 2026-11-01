@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_8_6",
+  "HeroName": "Guy de Lusignan, Lord of Couhé and Peyrat",
+  "Description": "Guy de Lusignan is the younger brother and trusted lieutenant of Count Hugues XII, holding the lordships of Couhé and Peyrat. At twenty-seven, he is a seasoned commander of heavy cavalry, celebrated throughout Poitou for his martial prowess and strict battlefield discipline. Stationed in fortified citadels guarding the routes between Poitiers and Limousin, Guy commands the elite household men-at-arms of the Lusignan dynasty. A master of lance charges and counter-ambush tactics, he repeatedly eradicated roving mercenary freebooters and highway bandits, guaranteeing safe transit for commercial caravans and monastic supply trains. Fiercely loyal to his elder brother, Guy serves as his indispensable right hand in all military councils. Direct, honorable, and unshakeably brave, he commands total respect from knights and sergeants as an unassailable defensive bastion of Poitou. Guy established strict military courts in Couhé, punishing desertion and banditry while leading his armored lances with terrifying precision. Chivalrous, direct, and brotherly to his men, he personally shattered enemy vanguard formations wielding a heavy war mace, serving as the invincible vanguard blade of the Lusignan host. Through unremitting martial practice and honorable conduct in daily service, he rapidly develops into an invincible defensive champion of the storied House of Lusignan.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain peak combat readiness for the household cavalry to protect Poitou from invasion.",
+    "Serve Count Hugues with absolute loyalty to preserve the supremacy of their dynasty."
+  ],
+  "Values": [
+    "Unyielding martial courage and knightly fidelity as the core of a commander's soul.",
+    "Unconditional dedication to the Lusignan banner, refusing surrender or dishonor."
+  ],
+  "Fears": [
+    "Reconnaissance failure leading his heavy cavalry into a lethal terrain trap.",
+    "Internal subversion compromising border fortresses and tarnishing his brother's realm."
+  ],
+  "SpeechStyle": "Speaks with crisp military authority and rugged confidence, his speech concise, forceful, and carrying the unyielding command presence of an elite cavalry captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

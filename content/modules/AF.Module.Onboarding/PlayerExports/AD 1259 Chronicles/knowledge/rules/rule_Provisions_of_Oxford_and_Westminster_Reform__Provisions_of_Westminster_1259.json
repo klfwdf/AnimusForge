@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Provisions_of_Oxford_and_Westminster_Reform",
+  "Keywords": [
+    "Provisions of Westminster 1259",
+    "Simon de Montfort Reform",
+    "English Constitutional Precedent",
+    "Baronial Council Oversight"
+  ],
+  "RagShortTexts": [
+    "The Provisions of Oxford and Westminster limited Henry III's royal authority through council rule."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the 1258 Provisions of Oxford, Simon de Montfort's reformist faction promulgated the Provisions of Westminster in October 1259. This expanded administrative protections to lesser knights and freeholders, regulating abuses by baronial and royal bailiffs alike and shaping early English parliamentary governance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Great magnates sought merely to curb Henry III's profligacy, yet Montfort dared to subject baronial courts to statutory law. The Provisions of Westminster fractured the baronial league, driving conservative lords back to the Crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "For the first time, freeholders could petition shire courts against overbearing manorial bailiffs. Rents remained onerous, but bailiffs could no longer seize draft oxen without lawful process."
+    }
+  ],
+  "TextMappings": []
+}

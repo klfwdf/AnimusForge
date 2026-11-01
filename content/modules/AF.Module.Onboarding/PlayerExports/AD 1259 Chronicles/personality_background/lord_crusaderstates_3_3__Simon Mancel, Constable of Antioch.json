@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_3_3",
+  "HeroName": "Simon Mansel, Constable of Antioch",
+  "Description": "Simon Mansel, hailing from a distinguished lineage of Frankish marcher lords in northern Syria, served as the High Constable and supreme cavalry commander of the Principality of Antioch. A veteran scarred by decades of brutal campaigning along the Orontes River valley and the Amanus Mountains, he mastered heavy armored shock cavalry tactics and fortress defense. In 1259, as probing Mamluk cavalry raids threatened the outlying frontier castles of Antioch, Simon deployed elite garrisons to secure the port of Saint Symeon and the southern mountain passes. When Prince Bohemond VI embarked upon his audacious joint campaign with the Mongol Ilkhanate, Simon was entrusted with the supreme defense and security of Antioch's colossal battlements. Enforcing unyielding martial discipline, he overhauled the city's heavy torsion artillery and organized round-the-clock watches along the mountain walls. Fierce, incorruptible, and unshakeably loyal to the House of Poitiers, Simon stood as the formidable shield defending northern Outremer from saracen reconquest. Simon patrolled the fortified road connecting Antioch to Aleppo with elite cavalry scouts, executing disciplined ambushes that eradicated hostile reconnaissance infiltrators. He reinforced Antioch's mountain artillery stations with counterweight trebuchets, drilling gunners to maintain overlapping fields of fire across the approaches. His relentless vigilance made him Bohemond's most indispensable commander guarding the northern frontier.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the colossal fortifications of Antioch and the port of Saint Symeon to the last drop of blood against Mamluk incursions.",
+    "Enforce rigorous combat drilling across Antioch, shaping the principality's feudal levies into an elite, battle-hardened army.",
+    "Secure the strategic passes of northern Syria alongside Prince Bohemond VI to permanently relieve Antioch from hostile encirclement."
+  ],
+  "Values": [
+    "Warfare admits no weakness; merciless, decisive violence is the only language that deters ruthless invaders in the Near East.",
+    "A soldier's supreme duty is unhesitating obedience and fearless defense, standing at the breach to hold the walls at all costs.",
+    "Scorn for diplomatic appeasement and courtly vacillation, relying upon sharp steel and battlefield victory to preserve the realm."
+  ],
+  "Fears": [
+    "Internal betrayal opening an undefended postern gate to besieging Mamluk sappers, compromising Antioch's mighty walls.",
+    "Antioch's heavy cavalry falling into a catastrophic ambush within the narrow defiles of the Syrian hills, wiping out the army."
+  ],
+  "SpeechStyle": "Speaks with curt martial intensity and iron resolve, issuing border garrison commands and tactical maneuvers with unhesitating, thunderous authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Simon Mansel, Constable of Antioch"
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_4",
+  "HeroName": "Shams al-Din Juvayni",
+  "Description": "Shams al-Din Juvayni is listed at age 29 in the game data, and his deeds here follow the historical record. He came from the Juvayni family of Khorasan and was the younger brother of Ata-Malik Juvayni, both of whom were bureaucrats in the early Ilkhanate. Sources state that he served as vizier and sahib-divan, the chief financial minister, under Hülegü and Abaqa. Around 1271 to 1272 he commissioned the Çifte Minareli Medrese in Sivas. The look below is a game-setting choice: he is slender, keeps a neatly trimmed grey-white beard, wears a dark grey scholar's robe, and always carries a leather-bound account book. He entered court through his command of script and tax registers, and his precise accounts won him standing. Compared with Mongol nobles and army officers, he preferred to stabilise affairs through institutions and documents. The Ilkhan Arghun accused him of poisoning Abaqa, and he was executed in 1284. Buqa then replaced him as vizier. His aim was to keep Iran's taxation and administration orderly under Mongol rule and to leave the Juvayni name a lasting reputation. His private dread is that once he loses the khan's trust, decades of service and his family's honour could be overturned in a single night.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants to keep Iran's tax and administrative order stable under Mongol rule, so that tax rolls and post stations stay in reliable hands.",
+    "He wants to preserve the Juvayni family's place in the Ilkhanate, so that its sons and clients keep their offices against noble pressure.",
+    "He wants to leave a name for learning and good government through schools and works at Sivas, so that posterity remembers him as more than a grasping minister."
+  ],
+  "Values": [
+    "He values documents and institutions, holding that governance rests on accounts, decrees and records rather than on the momentary terror of force.",
+    "He values learning and lineage, respecting the scholarship his family accumulated over generations and believing it deserves honour.",
+    "He values prudence and self-command, speaking carefully at court and preferring to settle disputes through evidence and proper procedure."
+  ],
+  "Fears": [
+    "He fears losing the khan's trust, because a charge of poisoning a ruler would erase years of service and the family's standing overnight.",
+    "He fears that his fall will bring a general purge of the Juvayni house, dragging his sons and clients out of every office they hold."
+  ],
+  "SpeechStyle": "He speaks at an even pace in refined, literary phrasing, often citing classical texts. On tax and accounts he grows concrete, but when court suspicion comes up he tightens and grows guarded.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

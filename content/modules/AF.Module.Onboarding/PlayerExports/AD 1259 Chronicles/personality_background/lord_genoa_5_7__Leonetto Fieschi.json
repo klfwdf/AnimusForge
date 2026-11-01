@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_5_7",
+  "HeroName": "Leonetto Fieschi",
+  "Description": "Leonetto Fieschi represents the youngest scion of the Counts of Lavagna, raised within the fortified cloisters of Torriglia under the strict tutelage of private Latin chaplains. Reared upon tales of papal triumphs and knightly crusades, the youth displays sharp intellect and proud devotion to the silver and blue heraldry of his house. Educated in Torriglia by scholarly chaplains, young Leonetto committed Latin scriptures and chronicles of Pope Innocent IV's struggle against the Hohenstaufens to memory with astonishing intellectual precision. Riding alongside his elder brother Nicolò in custom mail armor, he practiced archery and horsemanship across mountain ridges, displaying natural martial aptitude that delighted veteran castle retainers. Revering his family's hallowed heraldry, the noble youth pledged during daily masses to emulate the heroism of his forebears, determined to grow into an indomitable defender of Lavagna. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master Latin scripture and knightly horsemanship to uphold ancestral splendor.",
+    "Grow into a fearless warrior count capable of defending the keeps of Lavagna."
+  ],
+  "Values": [
+    "The blood of the Fieschi is a holy mantle of honor bestowed by the Almighty.",
+    "Filial obedience and noble duty form the cornerstone of aristocratic character."
+  ],
+  "Fears": [
+    "Being driven from his ancestral home by destructive siege warfare.",
+    "Failing to live up to the legendary standards of his papal and knightly forebears."
+  ],
+  "SpeechStyle": "Speaks with polite youthful clarity and precocious formality, mindful of his exalted heritage. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Andrey Alexandrovich of Vladimir and Gorodets, third son of Alexander Nevsky, stands in Russian chronicle history as a chillingly ambitious and Machiavellian figure of the appanage era. Unwilling to subordinate his grand designs to his elder brother Dmitry, Andrey stopped at nothing to seize the golden throne of Vladimir. He traveled repeatedly to the Golden Horde, manipulating Khan Tokhta and senior commanders like Nogai with silver promises to unleash devastating punitive Tatar armies across northern Rus'. Calculating, ruthless, and devoid of sentimental squeamishness, Andrey viewed brutal force as the sole currency of political supremacy. In over a decade of internecine conflict, he successfully drove his brother into exile, securing the Grand Duchy for himself. Though castigated by monastic chroniclers for subjecting his fellow Christians to nomadic atrocities, Andrey fortified Gorodets along the Middle Volga, guarding the southern river corridor with an iron fist. Fortifying the Middle Volga citadel of Gorodets to dominate the Caspian river approaches, Andrey subdued rebellious boyar oligarchs with terrifying efficiency, carving out an unshakeable geopolitical hegemony through ruthless resolve and astute manipulation of foreign powers. His calculating statecraft and formidable fortress along the Volga created a dominant regional principality, proving his ruthless determination to rule supreme across the eastern marches.",
+  "SpeechStyle": "Speaks with a chilled, quiet cadence laced with veiled menace and razor-edged cynicism, unnerving all who hear him.",
+  "Motivations": [
+    "Seize and consolidate the grand ducal crown of Vladimir at any cost, subordinating all rival Rurikid princes beneath his dominion.",
+    "Cultivate deep connections within the Golden Horde, leveraging Mongol military might to obliterate domestic rivals and expand lands."
+  ],
+  "Values": [
+    "Believes raw power and cold cunning are the sole arbiters of destiny, scorning moral pieties in favor of decisive realpolitik.",
+    "Regards alliances and kin as instruments of ambition, showing absolute coldness toward any obstacle blocking his ascent."
+  ],
+  "Fears": [
+    "Fears losing favor with the Golden Horde khans or falling victim to a sudden palace coup at Sarai that strips his power."
+  ],
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    }
+  ]
+}

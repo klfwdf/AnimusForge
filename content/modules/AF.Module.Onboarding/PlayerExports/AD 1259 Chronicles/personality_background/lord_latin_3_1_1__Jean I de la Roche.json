@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_3_1_1",
+  "HeroName": "Jean I de la Roche",
+  "Description": "Jean I de la Roche, aged thirty-three in 1259, is the eldest son and heir of Guy I de la Roche, Lord of Athens. Distinguished by intellectual brilliance and knightly refinement, he is literate in classical Greek and deeply versed in scholastic philosophy and feudal jurisprudence. While his father travels to the Parlement of Paris to vindicate Athens' sovereignty, Jean serves as regent, governing Athens and Thebes with remarkable statecraft. He fortifies the passes of Boeotia, ensures the steady collection of trade tariffs, and fosters cordial relations with native Greek notables and Venetian merchants. Cultured, courageous, and prudent, Jean stands fully prepared to guide the Athenian principality through the brewing storms of 1259. Governing Thebes as regent, Jean studies scholastic translations of Aristotle and Cicero late into the night. Combining his father's fiscal prudence with tactical wisdom, he maintains a swift cavalry patrol while keeping the native Greek peasantry pacified through equitable administration. Cultured and alert, he stands ready to assume the full ducal burden whenever history demands. Governing with the wisdom of an ancient philosopher and the valor of a Christian knight, Jean secures the borders of Boeotia. His enlightened leadership protects the scholarly treasures and thriving silk looms of Thebes from the ravages of war.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Articulates with scholarly precision and courtly grace, displaying effortless fluency in both chivalric ideals and geopolitical reality.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

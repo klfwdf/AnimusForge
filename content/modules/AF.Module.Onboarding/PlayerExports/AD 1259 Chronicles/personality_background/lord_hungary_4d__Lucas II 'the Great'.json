@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_4d",
+  "HeroName": "Lucas II 'the Great'",
+  "Description": "Lucas II Péc, celebrated in chronicles as 'Lucas the Great', is the most illustrious military commander and statesman of the Péc dynasty, serving as royal Master of the Horse and future Palatine of Hungary. Endowed with strategic genius and commanding presence on the battlefield, Lucas was pivotal in transforming Clan Péc into a dominant force in medieval European politics. In early campaigns across Austria and Styria, he mastered synchronized heavy cavalry shock charges, repeatedly repelling enemy vanguard hosts against superior numbers. Revered by King Béla IV as a premier frontline general, Lucas commanded absolute respect among the knightly gentry of Transdanubia for his rigorous discipline and chivalric generosity. In 1259, as King Ottokar II of Bohemia masses formidable legions along the western frontier, Lucas II organizes massive military levies across western Hungary, standing ready to shatter any foreign invasion. Lucas II organized standardized county levies and warhorse stud registries across Transdanubia, drilling thousands of heavy lancers and spearmen. His exceptional generalship transformed Clan Péc into a primary military shield guarding western Hungary against Bohemian aggression. He stood constantly prepared to lead his armored legions into battle, resolved to secure Hungary's frontier borders against all foreign conquerors.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush Bohemian hosts in the western theater, cementing his eternal renown as Hungary's premier captain.",
+    "Elevate Clan Péc to the supreme office of Palatine, ushering in a golden age of family hegemony."
+  ],
+  "Values": [
+    "Value battlefield victory, chivalric honor, and strict discipline as supreme callings.",
+    "Prize grand strategic vision and unstoppable shock power, convinced strength alone preserves the realm."
+  ],
+  "Fears": [
+    "Fears divided command along the western frontier allowing Bohemian forces to encircle his cavalry.",
+    "Dreads timid courtiers surrendering hard-won frontier fortresses through diplomatic betrayal."
+  ],
+  "SpeechStyle": "The heavy knights of Péc stand fully armed, and our banners whip in the wind! Anyone challenging Saint Stephen's crown shall taste our crushing charge! Transdanubian knights stand ready; our thunderous charge will shatter all enemies!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

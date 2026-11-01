@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_5_1_2",
+  "HeroName": "Jon Ragnvaldsson Smør",
+  "Description": "Sir Jon Ragnvaldsson Smør was an accomplished jurist, royal councilor, and the primary administrative architect of the noble Smør dynasty. In 1259, Jon served within the royal chancery at Bergen, managing the complex customs schedules, maritime trade tariffs, and diplomatic contracts of the crown. Gifted with an analytical mind trained in Continental canon and mercantile jurisprudence, he supervised the extensive commercial books, fish-export accounts, and landed deeds of the Smør family. During the legislative reforms of King Magnus the Lawmender, Jon played an influential advisory role, ensuring that the ancient commercial liberties of western baronial magnates were harmonized with the new statutory National Law. His foresight, financial brilliance, and calm diplomacy made him an indispensable counselor in both domestic administration and foreign treaty negotiations. Through his meticulous management, the wealth and landed estates of the Smør house expanded steadily, securing its prominence for generations. At the Gulating law assembly, Jon earned national distinction for his forensic mastery of maritime conventions and commercial contracts, repeatedly checking feudal attempts to evade royal harbor tariffs. He managed the family's international financial instruments and silver exchanges connecting Bergen with merchant leagues in Hamburg and Lübeck. Combining rigorous scholarship with pragmatic administrative sharpness, he served as the indispensable intellectual helmsman of the Smør patrimony.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with quiet analytical precision, measured courtly restraint, and commercial acumen, evaluating treaties and financial scrolls with forensic focus.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jon Ragnvaldsson Smør"
+}

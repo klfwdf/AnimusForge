@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1i",
+  "HeroName": "Komnena Nemanjić, Princess Consort of Arbanon",
+  "Description": "Komnena Nemanjić, aged sixty in 1259, is the formidable daughter of Stefan the First-Crowned and aunt to King Uroš I. Her extraordinary life was forged in the rugged mountains of Albania, where she ruled as Princess Consort of Arbanon from the fortress of Krujë, wed successively to Dhimitër Progoni and Gregory Kamonas. Navigating treacherous rivalries between Venice, Epirus, and native clans, Komnena governed her highland principality with iron firmness and astute diplomatic maneuvering. Now residing as an elder statesman at the Serbian court, she provides invaluable strategic counsel regarding the Adriatic marches and Albanian allegiances. In 1259, her battle-tested wisdom shields Serbia's southwestern flanks from Latin and Epirote encroachment. Komnena's decades commanding the rugged heights of Krujë endowed her with eagle-eyed strategic vision and unyielding authority. Intimately familiar with highland clan rivalries, she commands mountain warriors through strict justice and generous patronage. In royal council at Raška, her blunt tactical evaluations guide King Uroš unerringly in safeguarding Serbia's southwestern passes. Tempered by long years of frontier combat in the mountains of Arbanon, Princess Komnena offers blunt, battle-tested counsel to the crown. Her unyielding resolve and strategic vigilance ensure that Serbia's southwestern border passes remain securely defended against all foes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with stark, commanding authority and veteran frontier resolve, direct and penetrating, brooking no courtly vacillation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

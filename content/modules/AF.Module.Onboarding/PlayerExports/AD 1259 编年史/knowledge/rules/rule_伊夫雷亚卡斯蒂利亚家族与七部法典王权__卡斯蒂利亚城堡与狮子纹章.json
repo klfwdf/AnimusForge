@@ -1,0 +1,41 @@
+{
+  "Id": "rule_伊夫雷亚卡斯蒂利亚家族与七部法典王权",
+  "Keywords": [
+    "卡斯蒂利亚城堡与狮子纹章",
+    "阿方索十世智者大帝",
+    "七部法典王权罗马法集大成",
+    "神圣罗马帝国皇位争夺风波"
+  ],
+  "RagShortTexts": [
+    "卡斯蒂利亚伊夫雷亚家族以城堡与狮子为盾，阿方索十世以七部法典奠定罗马王权法统。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "统治卡斯蒂利亚与莱昂的勃艮第-伊夫雷亚支系，以红底金城堡与白底紫红跃狮的四等分纹章（Quartered Castle and Lion）象征两邦联合。在“智者”阿方索十世（Alfonso X the Wise）治下，王权推行空前宏伟的法治改革，编纂了皇皇巨著《七部法典》（Las Siete Partidas），将古典罗马法与王权集中思想引入半岛。然而阿方索沉迷于花费万千国库争夺神圣罗马帝国皇位（Fecho del Imperio），在国内外引发了严重抗税风潮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "卡斯蒂利亚大贵族（Ricoshombres）对国王推行罗马法专制与苛征军费极度愤怒，屡次密谋结盟叛乱。国王在托莱多天文台凝望星空编撰星表，王宫庭院里却弥漫着男爵叛变的剑拔弩张。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "artisan"
+        ]
+      },
+      "Content": "阿方索十世不仅是立法者，更是诗人与音乐家。他主持编纂了赞美圣母的《圣母玛利亚圣歌集》（Cantigas de Santa Maria），为卡斯蒂利亚语文学树立了不可磨灭的丰碑。"
+    }
+  ],
+  "TextMappings": []
+}

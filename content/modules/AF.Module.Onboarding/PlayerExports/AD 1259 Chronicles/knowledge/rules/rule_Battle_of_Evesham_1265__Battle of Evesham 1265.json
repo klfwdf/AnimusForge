@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Evesham_1265",
+  "Keywords": [
+    "Battle of Evesham 1265",
+    "Prince Edward Longshanks Vengeance",
+    "Simon de Montfort Death Mutilation",
+    "Avon River Green Hill Ambush"
+  ],
+  "RagShortTexts": [
+    "In 1265 at Evesham, Prince Edward encircled Simon de Montfort along the Avon loops,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On August 4, 1265, Prince Edward trapped Simon de Montfort's outnumbered force within a loop of the River Avon at Evesham. Amidst an ominous summer thunderstorm, royalist knights offered no quarter, slaughtering Montfort and dismembering his corpse on Green Hill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "While restoring Henry III, Edward absorbed Montfort's parliamentary framework to govern an increasingly modern England."
+    }
+  ],
+  "TextMappings": []
+}

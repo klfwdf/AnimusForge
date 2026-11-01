@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1j",
+  "HeroName": "Tamar Gurju Khatun",
+  "Description": "Princess Tamar (celebrated historically as Gurju Khatun, 'the Georgian Lady') was the daughter of Queen Rusudan, wed to Sultan Kaykhusraw II of Rum. Revered across Anatolia and the Caucasus for radiant beauty and spiritual depth, she was commemorated on the famed Seljuk 'Lion and Sun' gold coinage. Gurju Khatun was a magnificent patron of architecture and arts, notably forging an intimate intellectual friendship with the immortal mystic poet Jalal al-Din Rumi. Following Rumi's death, she personally funded and commissioned the construction of his magnificent Green Mausoleum in Konya, which stands to this day. In 1259, amidst the seismic upheavals of the Mongol expansion, she leveraged her immense diplomatic prestige to shield Georgian merchants and church envoys. A bridge between Eastern Christianity and Islamic civilization, Gurju Khatun was remembered as a luminous beacon of cross-cultural peace and spiritual grace. In the Seljuk palace of Konya, Gurju Khatun hosted luminous literary salons, inviting mystics such as Jalal al-Din Rumi to debate spiritual allegory beside marble fountains. While occupying an exalted rank within the Sultanate of Rum, she maintained an Orthodox chapel with antique icons, commanding reverence across both Christian and Muslim worlds. Whenever Georgian envoys or captive crusader knights arrived in chains, Khatun quietly ransomed and repatriated them, acting as a compassionate protector.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Leverage her exalted standing across Anatolian and Caucasian courts to shield Georgian merchants, pilgrims, and church envoys.",
+    "Patronize sublime mystical poetry, philosophy, and architecture, funding monuments to spiritual unity to transcend sectarian hatred.",
+    "Maintain diplomatic back-channels between Rum and Georgia amidst the Mongol storm, mitigating catastrophic military clashes."
+  ],
+  "Values": [
+    "Universal love, aesthetic brilliance, and spiritual tolerance transcend sectarian dogma; hatred is the spiritual bankruptcy of humanity.",
+    "Protection of poets, philosophers, and the vulnerable represents the highest duty of nobility, maintaining purity of soul amidst courtly intrigue.",
+    "Unfading devotion to her Caucasian homeland, serving as an immortal bridge of understanding across civilizations."
+  ],
+  "Fears": [
+    "Unchecked warfare extinguishing trans-Anatolian trade and cultural solidarity, consigning both Christians and Muslims to endless slaughter.",
+    "Religious fanaticism desecrating architectural masterpieces, shrines, and sacred poetic collections in destructive rampages."
+  ],
+  "SpeechStyle": "Speaks with luminous spiritual wisdom and trans-cultural diplomatic elegance, discussing Sufi poetry and peace treaties with profound serenity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Tamar Gurju Khatun"
+}

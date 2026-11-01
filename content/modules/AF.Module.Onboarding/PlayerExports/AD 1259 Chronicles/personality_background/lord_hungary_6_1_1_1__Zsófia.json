@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_6_1_1_1",
+  "HeroName": "Zsófia",
+  "Description": "Zsófia is the noble chatelaine and wife of Voivode Ernye Ákos, celebrated across Diósgyőr Castle for her steadfast leadership and piety. Born into an ancient noble house, she brought refined dignity and organizational genius to the Ákos lineage. While her husband campaigned across Styria and the Balkan borders, Zsófia managed the vast estates of Diósgyőr with formidable authority. She supervised armor smithies, collected tithes, and stockpiled mountain granaries to ensure fortress defenders could withstand prolonged sieges. Renowned for her Christian charity, she founded Franciscan hospices and sheltered the orphans of fallen knights, commanding universal devotion from garrison families. In 1259, amidst rumors of impending war, Zsófia anchors the domestic defense of Diósgyőr with serene fortitude, providing an unshakeable home for her hero husband. Zsófia established grain granaries and medical hospices within Diósgyőr Castle, providing pensions and shelter to the widows of fallen knights. Managing vast agricultural revenues with calm aristocratic dignity, she ensured an unbroken flow of munitions for her husband's frontier campaigns. Her maternal grace and charitable benevolence provided a resilient domestic fortress for the heroic defenders of the northeastern march and regional castles, securing peace and stability for generations of warriors.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve peace and prosperity across Diósgyőr, ensuring uninterrupted logistical support for frontline troops.",
+    "Advance Christian charity, winning profound respect and devotion from tenant families and soldiers."
+  ],
+  "Values": [
+    "Hold wifely fidelity, prudent thrift, and charitable guardianship as sacred noble callings.",
+    "Value calm domestic discipline, rejecting reckless extravagance and courtly vanity."
+  ],
+  "Fears": [
+    "Fears her husband falling in violent combat, depriving her family of its heroic champion.",
+    "Dreads accidental fires or freezing blizzards destroying fortress grain stores and arms reserves."
+  ],
+  "SpeechStyle": "The hearths of Diósgyőr illuminate the night, and our armories stand full. While my lord fights for the realm, I guard our home; it shall never fall! Our hearths burn bright; our home defenses preserve peace for our warriors!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_2_1_2",
+  "HeroName": "Gutkeled nembeli Domokos",
+  "Description": "Gutkeled nembeli Domokos is the younger son of Pál and grandson of Miklós I, serving as a vigilant deputy fortress commander and infantry master. Operating alongside his elder brother Lothárd, Domokos specializes in the tactical deployment of heavy spearmen squares and fortified wagon redoubts. Austere, methodical, and unbending in discipline, he adapted defensive ballistics from Saxon and Teutonic craftsmen, creating lethal crossfire zones across Balaton defiles. Domokos champions compact shield-walls and coordinated crossbow volleys over reckless individual cavalry charges, ensuring defensive stability in pitched engagements. In 1259, as tension escalates along the Austrian borders, Domokos commands the reserve militia garrisons in Zala, drilling levies relentlessly to stand fast against any onslaught. Domokos constructed formidable earthworks, abatis barriers, and deep ditches to channel attacking infantry into lethal crossbow kill-zones. He drilled local peasant levies in unyielding spearmen formations, forging disciplined defense squares capable of repulsing heavy horse. His methodical caution and tactical precision eliminated vulnerabilities along the southern defensive perimeter of Transdanubia. His impenetrable spear-wall formations and coordinated missile barrages turned narrow valley defiles into death traps for hostile raiders, securing the entire southern march against sudden and aggressive enemy invasions across the frontier.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Drill an unbreakable infantry formation to serve as the unyielding anchor of frontier defense.",
+    "Guard critical defiles in Zala, ensuring no gap ever opens in the family's defensive line."
+  ],
+  "Values": [
+    "Hold iron discipline and tactical cohesion as the soul of warfare, scorning reckless bravado.",
+    "Value methodical precision, convinced stubborn endurance triumphs over fleeting passion."
+  ],
+  "Fears": [
+    "Fears raw recruits panicking under pressure, allowing enemy cavalry to rupture the shield-wall.",
+    "Dreads exhaustion of crossbow bolts leaving ramparts defenseless against heavy assault."
+  ],
+  "SpeechStyle": "Our spears bristle and our shields form an iron mountain! Unbending discipline ensures victory; anyone slamming against our line shall be crushed! Our spear-wall is an iron barrier; reckless raiders shall be shattered!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

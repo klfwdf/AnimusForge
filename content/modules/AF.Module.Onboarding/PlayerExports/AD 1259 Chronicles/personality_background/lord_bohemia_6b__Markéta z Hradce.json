@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_6b",
+  "HeroName": "Markéta z Hradce",
+  "Description": "Markéta of Hradec is the esteemed noble matriarch of the Golden Rose dynasty and consort to Lord Vítek I, revered across southern Bohemia for her formidable administrative intellect and diplomatic grace. While her husband and warrior sons campaigned across Austrian plains and Styrian mountain defiles under King Otakar II, Markéta governed the vast castellany of Jindřichův Hradec with steady authority and meticulous precision. She directly supervised thousands of arable agrarian hides, river fisheries, fulling mills, and woolen workshops, maintaining exhaustive chancellery ledgers that guaranteed overflowing granaries even in seasons of border conflict and harsh alpine winters. Her balanced arbitration repeatedly resolved contentious boundary and timber disputes among rival southern Bohemian squires, earning her deep veneration from local monastic chapters and town magistrates alike. A devout benefactress of Hospitaller infirmaries and convent houses, Markéta dispensed medical aid and grain alms to destitute peasants, weaving an unyielding fabric of domestic resilience and spiritual authority beneath the proud banners of her house. She directly codified comprehensive guild statutes governing master weavers and tanners, establishing emergency civic granaries to cushion commoners against crop failure. When armies departed for the Danubian front, Markéta zealously guarded the dynastic seals and land deeds, preserving absolute administrative harmony across her husband's domains.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Meticulously manage castle harvests and craft workshops to provide unbroken logistical supply for frontline campaigns.",
+    "Arbitrate regional disputes impartially to preserve aristocratic peace and enhance Hradec prestige across the province.",
+    "Sponsor monastic hospices and chapels to accumulate spiritual grace and secure ecclesiastical goodwill for her children."
+  ],
+  "Values": [
+    "Uphold familial solidarity and lawful stewardship as the sacred cornerstones of baronial survival.",
+    "Value prudent thrift, precise accountancy, and calculated preparation over reckless extravagance.",
+    "Revere Christian piety and charitable duty, shielding vulnerable commoners amidst the ravages of war."
+  ],
+  "Fears": [
+    "Devastating war spreading into southern Bohemia to burn ancestral farmlands, watermills, and textile manors.",
+    "Inheritance rivalries and bitter internal distrust fracturing the unity of the great Vítkovci lineages."
+  ],
+  "SpeechStyle": "The strength of Jindřichův Hradec rests not merely on high stone walls, but on abundant granaries, strict ledger discipline, and the quiet dignity of Christian charity. Prudent stewardship and order preserve our house from every adversity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

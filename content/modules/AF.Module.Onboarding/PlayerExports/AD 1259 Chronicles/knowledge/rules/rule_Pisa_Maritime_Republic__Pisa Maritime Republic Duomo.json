@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Pisa_Maritime_Republic",
+  "Keywords": [
+    "Pisa Maritime Republic Duomo",
+    "Arno River War Galleys Pisa",
+    "Tuscan Ghibelline Champion",
+    "Sardinia Corsica Maritime Dominance"
+  ],
+  "RagShortTexts": [
+    "Pisa commanded Tuscan Ghibelline naval power, dominating Sardinian and Corsican maritime."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Maritime Republic of Pisa projected formidable naval prowess from the mouth of the Arno. Flying red banners charged with white crosses, Pisa championed the imperial Ghibelline cause, dominating trade and silver extraction throughout Sardinia and Corsica."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "sailor"
+        ]
+      },
+      "Content": "Towering Romanesque marble galleries celebrated Crusader victories, funding aggressive naval galleys deployed against rival Genoese convoys."
+    }
+  ],
+  "TextMappings": []
+}

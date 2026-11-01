@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_6_1",
+  "HeroName": "Judyta Mazowiecka",
+  "Description": "Judith of Masovia (Judyta Mazowiecka) reigns as Duchess of Wrocław, daughter of Duke Konrad I of Masovia, consort to Duke Henryk III the White, and royal mother to the legendary Duke Henryk IV Probus. Carrying the proud bloodlines of eastern Poland's foremost frontier house, Judith possessed formidable political intellect, regal poise, and remarkable administrative fortitude. Entering the bustling Lower Silesian metropolis of Wrocław, she became her husband's indispensable partner, coordinating provincial governance while Henryk defended the realm against the predatory rampages of his brother Rogatka. When Henryk III died unexpectedly in 1266, Judith stepped forward with extraordinary maternal courage, fiercely guarding the hereditary rights of her young orphan son, Henryk IV. In a brilliant stroke of high diplomacy, she secured the direct guardianship of King Přemysl Otakar II of Bohemia, neutralizing envious uncles who circled like vultures to dismember the rich Duchy of Wrocław. Through boundless resilience and razor-sharp geopolitical foresight, Judith shielded her son's inheritance, preserving the jewel of Silesia for its golden age. Judith endowed charitable funds at Wrocław Cathedral, employing steely resolve to protect her infant son's crown. Her maternal courage and acute political alliances preserved the jewel of Silesia from greedy usurpers.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fiercely defend the life and inheritance of young Henryk IV Probus against rapacious and treacherous uncles.",
+    "Leverage the royal protection of King Přemysl Otakar II of Bohemia to deter neighboring military incursions.",
+    "Preserve urban municipal liberties and economic vitality in Wrocław to guarantee future royal revenues."
+  ],
+  "Values": [
+    "Hold maternal duty and the defense of her son's throne as sacred callings, enduring any trial to secure his future.",
+    "Prize calculated diplomatic patience and pragmatic balance-of-power statecraft over reckless confrontation.",
+    "Uphold Christian honor and familial duty, commanding profound reverence from churchmen and princes alike."
+  ],
+  "Fears": [
+    "Young Henryk IV falling victim to poison or treachery while ward at the royal Bohemian court in Prague.",
+    "Violent factional insurrections tearing Wrocław apart, enabling greedy marcher lords to sack the capital."
+  ],
+  "SpeechStyle": "Wrocław's realm was forged by my husband's blood, and none shall strip it from my son! While I breathe, the honor of our house remains inviolable! Maternal devotion shields our heir; Wrocław's throne remains inviolate!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

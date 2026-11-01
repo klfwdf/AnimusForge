@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_7_1_a",
+  "HeroName": "Przemysł II Wielkopolski",
+  "Description": "Przemysł II of Greater Poland reigns as Duke of Poznań and Greater Poland, Duke of Pomerelia, High Duke of Kraków, and ultimately King of Poland (crowned in 1295), celebrated as the epoch-making restorer of the Polish monarchy. Born posthumously following the death of his father Przemysł I, he was nurtured by his mother Elisabeth of Wrocław and his uncle Bolesław the Pious, dedicating his life to ending two centuries of feudal fragmentation. Dashing, brave, and intellectually brilliant, Przemysł II repelled aggressive Brandenburgian incursions along the Warta before concluding the masterly Treaty of Kępno in 1282 with Duke Mściwój II, peacefully reuniting Pomerelia and Gdańsk with Poland. In 1295, amidst transcendent jubilation within Gniezno Cathedral, Archbishop Jakub Świnka anointed and crowned Przemysł II as King of Poland—the first anointed Polish monarch since 1079—minting the unified White Eagle across his royal seal. Though treacherously assassinated only seven months later by Brandenburgian hit-men at Rogoźno, the royal flame of Polish statehood he rekindled could never be extinguished. He stands as the tragic, glorious martyr-king of the Polish realm, whose sacrifice heralded the triumphant dawn of national reunification. Przemysł II crowned his life's work at Gniezno, reuniting the White Eagle crown in an epoch of resurrection. His heroic martyrdom ignited an immortal flame of national unity that transformed the destiny of Poland.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "End centuries of feudal division, attaining coronation at Gniezno as King of a resurrected and unified Poland.",
+    "Safeguard Gdańsk and Baltic access, crushing Brandenburgian aggression along the western marches.",
+    "Partner with patriotic church prelates and burghers to forge an unshakeable, centralized royal administration."
+  ],
+  "Values": [
+    "Hold national reunification and sovereign kingship as sacred callings, willingly dying for Poland's resurrection.",
+    "Prize chivalric bravery, visionary statecraft, and uncompromising patriotism over cowardly appeasement.",
+    "Revere divine providence and the ancestral White Eagle, inspiring all Poles with his unyielding royal majesty."
+  ],
+  "Fears": [
+    "Falling victim to treacherous foreign assassination just as the royal crown of Poland is restored.",
+    "Rebellious domestic dukes inviting foreign invaders to dismember the hard-won union with Pomerelia."
+  ],
+  "SpeechStyle": "Two centuries of fragmentation end today! The White Eagle crown before Gniezno's altar belongs to all brave Poles; our kingdom shall rise united! Gniezno's bells proclaim a united kingdom; our realm rises from the ashes!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

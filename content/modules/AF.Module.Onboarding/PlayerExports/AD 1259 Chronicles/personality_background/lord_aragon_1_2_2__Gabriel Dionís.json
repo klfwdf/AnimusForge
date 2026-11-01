@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_2_2",
+  "HeroName": "Gabriel Dionís",
+  "Description": "Gabriel Dionís is the analytical and dependable second son of Count Dénes of Hungary, specializing in siegecraft, logistical coordination, and frontier defense. Unlike his fiery elder brother Amor, Don Gabriel is thoughtful, methodical, and deeply versed in artillery mechanics, counter-mining operations, and the supply lines of Levantine garrisons. Serving as master of works and drill captain at Torre de Canals, he ensures that missile armories and granary stores remain in flawless readiness. In 1259, with unrest stirring across the southern valleys of Valencia, Gabriel coordinates an intricate network of stone beacon towers and scouting outposts, tracking clandestine contacts between local Mudejars and Granadan agents. Prudent, watchful, and steadfast under pressure, he provides the essential tactical ballast that preserves his family's frontier lordships against surprise incursions. Gabriel dedicated immense care to the estate armories and stables, adopting Danubian metalcraft to temper mail hauberks and horse bards for the family knights. Alert to treacherous undercurrents across the Valencian march, he led nocturnal cavalry patrols through deep ravines to intercept hidden sabotage. Spartan in speech and lethal with the couched lance, he served as the unshakeable martial bastion defending the Dionís family holdings against all regional enemies.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct a coordinated beacon network across southern Valencia to ensure early tactical warning",
+    "Refortify the bastions, moats, and stone engines of Torre de Canals into an impregnable citadel",
+    "Guarantee unbroken logistical provisioning to support frontline cavalry forces during campaigns"
+  ],
+  "Values": [
+    "Victory in war is decided by rigorous preparation and calculated defense, not reckless fury",
+    "A commander's highest honor is unshakeable vigilance; negligence is an unforgivable betrayal",
+    "Mastery of terrain, discipline, and practical wisdom conquer raw numbers"
+  ],
+  "Fears": [
+    "A surprise night assault breaching the outer works and overwhelming fortress garrisons",
+    "Supply lines being severed, leaving his men starved out during a protracted siege"
+  ],
+  "SpeechStyle": "Blunt, sparse, and resolute; speaks with the gruff economy of a frontier warlord focused purely upon defense and combat readiness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

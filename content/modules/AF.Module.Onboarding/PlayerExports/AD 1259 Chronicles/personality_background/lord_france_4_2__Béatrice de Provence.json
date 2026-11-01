@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_4_2",
+  "HeroName": "Béatrice de Provence, Countess of Provence and Queen of Sicily",
+  "Description": "Béatrice de Provence is the sovereign Countess of Provence and Forcalquier in her own right, reigning as Queen consort of Sicily and Naples alongside Charles I of Anjou. The youngest sister of Queen Marguerite of France and Queen Eleanor of England, she inherited the entirety of Provence, making her one of the wealthiest heiresses in Christendom. Endowed with fierce ambition and magnificent political resolve, Béatrice deployed the vast maritime revenues of Marseille and Toulon to finance Charles's conquest of the Kingdom of Sicily against the Hohenstaufen dynasty. Far more than a royal consort, she governed Provence with an iron hand, suppressing urban revolts and navigating the complex diplomacy of the papal curia. A lavish patron of Occitan troubadours and Dominican scholars, Béatrice commands towering authority across the Mediterranean as a magnificent sovereign. Queen Béatrice reorganized the Provencal naval arsenals with iron resolve, supervising the construction of dozens of galleys at Marseille that guaranteed the maritime lifeline for the conquest of Naples. Majestic, commanding, and ruthlessly decisive, she crushed municipal insurrections with unwavering force, dominating the geopolitics of the western Mediterranean with sovereign authority. Her ruthless political genius and magnificent patronage of Mediterranean fleets solidified Angevin supremacy across southern Europe for an entire generation.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure and expand Angevin dominion over the Kingdom of Sicily and the eastern Mediterranean.",
+    "Preserve the absolute sovereign authority of the County of Provence against municipal defiance."
+  ],
+  "Values": [
+    "Imperial ambition and dynastic grandeur as a divinely sanctioned royal calling.",
+    "Rigorous administration of maritime domains and ruthless suppression of disloyalty."
+  ],
+  "Fears": [
+    "Hohenstaufen partisans stirring violent rebellion in Sicily to overthrow Angevin rule.",
+    "Provencal communes revolting to cut off maritime financing for Mediterranean military operations."
+  ],
+  "SpeechStyle": "Speaks with imperial poise and commanding southern elegance, her French and Occitan phrasing sharp, stately, and radiating the unyielding will of an anointed queen.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

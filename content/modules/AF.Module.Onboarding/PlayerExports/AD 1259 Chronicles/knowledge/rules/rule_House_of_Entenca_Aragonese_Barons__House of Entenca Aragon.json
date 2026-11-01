@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Entenca_Aragonese_Barons",
+  "Keywords": [
+    "House of Entenca Aragon",
+    "King James Conqueror Entenca",
+    "Valencia Reconquista Barons",
+    "Almogavar Mediterranean Admirals"
+  ],
+  "RagShortTexts": [
+    "Ranked among the eight premier baronies of Aragon, the Entença led the conquests of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Foremost among the ancient baronies of Aragon, the House of Entença spearheaded King James I's crusades across the Balearics and Valencia. Leading relentless Almogavar light infantry alongside heavy cavalry, they carved out massive frontier lordships."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "In the Aragonese Cortes, the Entença baronial veto commanded respect; their private garrisons secured the volatile Moorish frontier."
+    }
+  ],
+  "TextMappings": []
+}

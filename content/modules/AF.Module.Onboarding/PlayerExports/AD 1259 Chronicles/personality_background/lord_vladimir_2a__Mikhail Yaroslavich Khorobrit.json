@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Mikhail Yaroslavich Khorobrit ('the Brave'), son of Yaroslav II and brother of Alexander Nevsky, was a legendary warrior-prince of legendary ferocity. Renowned across Rus' as 'Khorobrit' (the Valiant or Audacious) for his fearless audacity and indomitable battlefield aggression, he became one of the earliest rulers of Moscow. In a bold coup, he seized the Golden Throne of Vladimir, asserting vigorous martial leadership over the fractured principality. In 1248, when an overwhelming Lithuanian invasion ravaged the Protva River basin, Mikhail did not hesitate: he led his armored druzhina directly into the maelstrom. At the ferocious Battle of the Protva River, Mikhail fought in the bloody vanguard, striking down dozens of foes before falling heroically in combat—the last Grand Prince of Vladimir to die in battle. His immortal courage and supreme sacrifice forged an enduring legend of martial heroism, inspiring generations of warriors to defend the soil of Rus' to their last breath.  Mikhail's legendary stand at the Battle of the Protva River, where he charged into the thickest ranks of the invading host, cemented his memory as an immortal martyr who gave his life for the sacred soil of Rus'.",
+  "SpeechStyle": "A true knight lives by his sword and dies in the saddle! Against marauders who ravage our lands, iron and blood are the only answers. Follow me into the fray—charge!",
+  "Motivations": [
+    "Lead fearless cavalry charges to annihilate foreign invaders threatening the sovereign soil of Rus'.",
+    "Restore the martial glory of the Vladimir grand-ducal throne through uncompromising valor and battlefield triumphs."
+  ],
+  "Values": [
+    "Treasure heroic battlefield audacity and self-sacrificing chivalric duty above life itself.",
+    "Prize uncompromising valor in open combat, scorning cowardly hesitation and submissive political compromise."
+  ],
+  "Fears": [
+    "Fear falling to a stray arrow before he can personally eradicate the enemy host and secure complete victory.",
+    "Dread faint-hearted politicians surrendering territorial honor and betraying the sacrifices of fallen knights."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    }
+  ]
+}

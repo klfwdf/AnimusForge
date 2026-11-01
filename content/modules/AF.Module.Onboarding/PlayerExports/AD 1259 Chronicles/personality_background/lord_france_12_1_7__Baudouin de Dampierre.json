@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_1_7",
+  "HeroName": "Baudouin de Dampierre, Young Knight of Flanders",
+  "Description": "Baudouin de Dampierre is the youngest son of Count Guy and Mahaut de Béthune, full of robust energy and natural childish daring. At seven, he is thoroughly enchanted by the martial pageantry of his father's court, preferring the clatter of the armory and the stables to quiet lessons in the library. Bold, spirited, and fiercely loyal to his elder brothers, Baudouin constantly practices with miniature wooden broadswords in the castle tiltyard, loudly proclaiming his intention to ride into battle alongside 'The Lion of Flanders'. He displays remarkable fearlessness around warhorses, effortlessly riding spirited moorland ponies through the castle gates. The grizzled household sergeants dote upon this fierce young prince, guarding him with fierce devotion as another brave warrior of the Dampierre line. Nurtured amidst border skirmishes and tournament circuits, this valiant young scion served as castellan and trusted banneret. He patrolled frontier bastions with unflagging loyalty, dedicated body and soul to the defense of the Flemish lion banner against external threats. His energetic vigilance ensured that frontier outposts stood ever prepared against sudden hostile incursions and baronial feuds. His youthful courage and chivalric honor promised a distinguished military career in service to his house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Grow strong enough to wear real steel harness and ride to war alongside his brothers.",
+    "Win squire mock-tournaments to gain the proud praise of his formidable father."
+  ],
+  "Values": [
+    "Fearless bravery, refusal to yield to pain, and steadfast pride in knightly arms.",
+    "Fierce hero-worship of his father and brothers, resolved to bring glory to his house."
+  ],
+  "Fears": [
+    "Being treated as a coddled child and forbidden from watching weapons drills.",
+    "Crying after a hard tumble and being mocked as lacking true warrior courage."
+  ],
+  "SpeechStyle": "Speaks with piping, energetic boldness, his speech rapid, blunt, and peppered with eager declarations of knightly combat and cavalry charges, radiating innocent courage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

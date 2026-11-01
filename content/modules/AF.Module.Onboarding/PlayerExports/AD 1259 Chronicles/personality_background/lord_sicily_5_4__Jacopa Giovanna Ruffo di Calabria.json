@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_5_4",
+  "HeroName": "Jacopa Giovanna Ruffo di Calabria",
+  "Description": "Lady Jacopa Giovanna Ruffo di Calabria is the lively young daughter of Count Pietro II, bringing joyful laughter, radiant warmth, and playful vitality to the imposing fortress of Catanzaro. Fascinated by tales of adventurous sea voyages and foreign merchants arriving from the Levant, Jacopa delights in music, needlecraft, and sacred choir. Cherished tenderly by her battle-hardened father and elder sister, she grows up sheltered from the harsh realities of war, representing the gentle, uncorrupted innocence of the Ruffo household. Lady Jacopa delights in the coastal breezes of the clifftop gardens, her bright innocence and affectionate charm bringing pure joy to the stern garrison of Catanzaro, shielded completely from the grim brutalities of medieval warfare. Cherished by her noble parents and attendants alike, little Jacopa embodies the sweetest promise of peace, her pure presence bringing warmth and tranquility to the imposing halls of the ancestral keep. Shielded by ancient battlements and loving kin, little Jacopa flourishes in happiness and playful laughter, representing the tender hope of the southern noble house. Her sweet childish laughter and gentle prayers bring serene comfort to her battle-hardened father amidst relentless warfare. Shielded by ancient battlements and loving kin, little Jacopa flourishes in happiness and playful laughter, representing the tender hope of the southern realm.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Enjoy her peaceful childhood learning the lute and embroidering beautiful tapestries.",
+    "Listen to wandering troubadours recite romances of legendary chivalry and distant realms."
+  ],
+  "Values": [
+    "Natural kindness, gentleness, and deep love for nature and familial affection.",
+    "Cherishing domestic harmony and using her joyful warmth to comfort her weary kin."
+  ],
+  "Fears": [
+    "Howling Mediterranean storms lashing the stone ramparts in the dead of night.",
+    "War wounds, grim weapons, and the frightening perils her father faces on campaign."
+  ],
+  "SpeechStyle": "Speaks with bright childlike mirth, innocent curiosity, and affectionate charm. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,25 @@
+{
+  "HeroId": "lord_nicaea_1_3_1",
+  "HeroName": "Eiréne Komneni Laskarína Vranáína",
+  "Description": "Eiréne Komneni Laskarína Vranáína embodied the aristocratic convergence of the historic Laskaris, Komnenos, and Vranas dynasties through her marriage to Caesar Constantine Palaiologos, younger brother of Emperor Michael VIII. In 1259, amidst the seismic transition from Laskaris rule to the Palaiologan ascension, Irene served as a vital stabilizing linchpin whose imperial pedigree legitimized the new regime. Highly respected for her dignified demeanor, piety, and administrative prudence across their family estates in Thrace and Macedonia, she partnered with her husband to generously fund the restoration of damaged monasteries, urban hospitals, and public fountains. Their regal likenesses—clad in lavish Caesaral vestments embroidered with imperial double-headed eagles—remain immortalized in the famed donor portraits of the Lincoln College Typikon. Following Constantine's military campaigns and retirement, Irene embraced monastic vows as nun Maria, dedicating her final years to contemplation and philanthropic works. Across her palatine manors in southern Macedonia, Irene maintained charitable infirmaries and bread distribution stations, hiring skilled physicians to care for soldiers' families. She personally supervised courtly embroidery guilds that produced gold-threaded iconostases and liturgical vestments donated to monasteries on Mount Athos. Through all the arduous campaigns of her husband Constantine, Irene governed their private appanages with quiet perfection, earning universal devotion from provincial subjects.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Her words are calm, gracious, and steeped in ancestral imperial nobility, reflecting deep reverence for church institutions.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

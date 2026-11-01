@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Turcopole_Levantine_Light_Cavalry",
+  "Keywords": [
+    "Turcopole Levantine Light Cavalry",
+    "Crusader Order Auxiliary Horse",
+    "Mobile Reconnaissance and Anti Ambush",
+    "Composite Bow and Round Shield Cavalry"
+  ],
+  "RagShortTexts": [
+    "Turcopoles were mixed-lineage Levantine light horse archers scouting for crusader military."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Turcopoles ('sons of Turks') served as indigenous light cavalry auxiliary forces employed by Outremer lords and military orders. Often born of mixed Christian and Seljuk or Arab ancestry, they rode nimble desert mounts equipped with composite recurve bows, light lances, and leather round bucklers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Commanded by the Turcopolier within the Hospitaller hierarchy, these riders provided skirmish screens and desert convoy escorts, preventing crusader columns from being surrounded around dried cisterns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dressed in flowing linen burnooses, Turcopoles look identical to Bedouin scouts. They track waterholes across baking salt flats where heavy barded destriers collapse from heatstroke."
+    }
+  ],
+  "TextMappings": []
+}

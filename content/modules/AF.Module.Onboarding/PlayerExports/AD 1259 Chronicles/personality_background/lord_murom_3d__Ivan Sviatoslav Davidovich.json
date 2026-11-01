@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Ivan Sviatoslav Davidovich of Murom is a talented young administrator and logistical coordinator within the grand-ducal family. Complementing the battlefield aggression of his kinsmen, Ivan possesses a calculating intellect, sharp organizational discipline, and economic foresight. He coordinates grain allocations across municipal warehouses, monitors arrowsmith forges, and maintains pontoon river crossings along the Oka. Ivan introduced standardized inventory registers for the armories, rigorously supervising timber procurement and iron smithing to ensure top-tier equipment. In defense planning, he organized an advanced network of riverside beacon towers and mounted courier relays to track foreign troop movements across the frontier. Convinced that careful preparation is the mother of victory, Prince Ivan stands as an indispensable organizer anchoring Murom's defensive infrastructure.  Ivan organized advanced beacon communications, iron foundries, and extensive grain reserves, ensuring that the defenses of Murom remained completely self-sufficient and invincible through protracted winter sieges.  His encyclopedic mastery of fortress engineering, supply logistics, armor forges, and advanced scout relays made him an indispensable strategic mastermind safeguarding the principality of Murom against all unexpected military disasters, devastating winter blockades, and hostile foreign sieges.  His organizational brilliance ensures that the fortress of Murom remains fully prepared for every trial.",
+  "SpeechStyle": "Battles are decided in the armories and granaries long before armies clash! With full storehouses, sharp steel, and vigilant scouts, Murom stands invincible against any foe. Execute orders with precision!",
+  "Motivations": [
+    "Perfect Murom's supply reserves, weapons production, and scout relays to withstand protracted hostile sieges.",
+    "Modernize fiscal administration and estate farming to expand the material strength and autonomy of the principality."
+  ],
+  "Values": [
+    "Regard meticulous preparation, data accuracy, and logistical superiority as the foundational pillars of victory.",
+    "Prize cool analytical calculation, always seeking the maximum strategic benefit with minimal cost in human life."
+  ],
+  "Fears": [
+    "Fear enemy saboteurs severing underground water aqueducts, crippling fortress defenses despite ample food stores.",
+    "Dread catastrophic droughts or unseasonable frosts decimating regional harvests and draining vital granaries."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ]
+}

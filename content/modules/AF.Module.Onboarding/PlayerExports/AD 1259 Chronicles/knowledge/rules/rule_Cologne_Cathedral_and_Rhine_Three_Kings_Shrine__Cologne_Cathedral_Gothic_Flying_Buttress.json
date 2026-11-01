@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Cologne_Cathedral_and_Rhine_Three_Kings_Shrine",
+  "Keywords": [
+    "Cologne Cathedral Gothic Flying Buttress",
+    "Shrine of Three Holy Kings",
+    "Rhine Shipping Toll Hub",
+    "Cologne Archbishop Elector Power"
+  ],
+  "RagShortTexts": [
+    "Cologne Cathedral, housing the golden Shrine of the Three Kings, anchored Rhine trade and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Commanding the Rhine waterway, Cologne ranked as the Holy Roman Empire's largest urban center. Begun in 1248, Cologne Cathedral was designed to house Nicholas of Verdun's gilded Shrine of the Three Kings, drawing massive pilgrimage traffic. Its Archbishop-Elector reigned as Arch-Chancellor of Italy and kingmaker of the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Patrician burghers continuously contest the prince-archbishop's feudal jurisdiction. While the prelate tallies electoral subsidies from foreign monarchs, the city council arms civic militias to guard trade charters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Floating timber rafts loaded with Mosel wine downriver means paying tolls at every abbey bend. But tying a three-crown pilgrimage pennant to the mast ensures bailiffs refrain from confiscating cargo."
+    }
+  ],
+  "TextMappings": []
+}

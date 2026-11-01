@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Yaroslav Yaroslavich of Vladimir-Suzdal, younger brother to Alexander Nevsky, is a dominant sovereign holding the historic Golden Throne of Vladimir. Ruling from the magnificent Golden Gate citadel above the Klyazma River, he oversees the spiritual and political heart of medieval Rus' centered at the Cathedral of the Dormition. Navigating strict Mongol fiscal supervision and fierce competition from rival princely branches, Yaroslav exhibits acute diplomatic mastery and calculating statecraft. He journeyed repeatedly to Sarai to secure imperial yarliks, skillfully utilizing imperial recognition to counterbalance the turbulent boyar veche of Novgorod and protect Orthodox church lands. Yaroslav restored Vladimir's monumental stone fortifications, standardized river trade tariffs, and maintained an elite druzhina of heavy lancers and agile frontier horsemen. His resolute leadership preserved Vladimir as the sovereign beacon of northeastern Rus' through turbulent decades of transition, establishing an unshakeable institutional framework for his dynasty.  His comprehensive restoration of the Golden Gate battlements and river dykes along the Klyazma anchored the ancient grand-ducal capital against seasonal floods and sudden cavalry sorties, ensuring that Vladimir maintained its sovereign prestige across northern Rus'.  His majestic vision and firm authority ensure that the ancient Golden Throne remains an unshakeable symbol of sovereignty.",
+  "SpeechStyle": "The Golden Gate of Vladimir embodies the sacred majesty of our ancestors! While the Klyazma flows, no enemy shall profane our holy shrines. Stand fast, warriors of Rus'!",
+  "Motivations": [
+    "Uphold the supreme grand-ducal legitimacy of Vladimir against rival factions seeking to partition the realm.",
+    "Balance imperial Horde diplomacy with regional alliances to protect common citizens and holy monasteries from devastation."
+  ],
+  "Values": [
+    "Hold national unity, grand-ducal law, and Orthodox faith as the supreme pillars of legitimate sovereign rule.",
+    "Prize calculating patience, strategic vision, and civic responsibility over short-sighted private feuds."
+  ],
+  "Fears": [
+    "Fear violent succession wars in Sarai triggering massive punitive Mongol invasions across the Vladimir heartland.",
+    "Dread fratricidal civil wars among ambitious Russian princes tearing apart the fragile foundations of national recovery."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

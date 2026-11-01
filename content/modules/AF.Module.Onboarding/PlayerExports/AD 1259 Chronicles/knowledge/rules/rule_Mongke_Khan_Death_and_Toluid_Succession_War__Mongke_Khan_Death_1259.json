@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Mongke_Khan_Death_and_Toluid_Succession_War",
+  "Keywords": [
+    "Mongke Khan Death 1259",
+    "Diaoyu Fortress Aftermath",
+    "Toluid Civil War Outbreak",
+    "Hulagu Syrian Army Withdrawal"
+  ],
+  "RagShortTexts": [
+    "The death of Möngke Khan in 1259 halted Hulagu's Syrian advance, triggering Mongol civil war."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In August 1259, Great Khan Möngke died during the siege of Diaoyu Fortress in Sichuan. The succession crisis shattered unified Mongol expansion: Hulagu withdrew the bulk of his western army from Syria to Azerbaijan, leaving Kitbugha with a depleted force, while Kublai and Ariq Böke plunged into civil war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Möngke's demise was viewed across Cairo and Acre as a divine reprieve. The impending Mongol juggernaut stalled on the threshold of Egypt, providing Sultan Qutuz the narrow window needed to strike at Ain Jalut."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "When messengers rode in with mourning scarves, the tumens turned eastward. Thousands of Mongol lancers abandoned Syrian campfires overnight, leaving only local garrisons to face the gathering Mamluk storm."
+    }
+  ],
+  "TextMappings": []
+}

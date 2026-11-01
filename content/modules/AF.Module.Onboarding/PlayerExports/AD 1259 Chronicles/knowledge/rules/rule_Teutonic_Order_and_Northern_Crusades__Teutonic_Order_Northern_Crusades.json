@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Teutonic_Order_and_Northern_Crusades",
+  "Keywords": [
+    "Teutonic Order Northern Crusades",
+    "Prussian Military Subjugation",
+    "Ordensburg Brick Fortresses",
+    "Livonian Swordbrothers Merger"
+  ],
+  "RagShortTexts": [
+    "Backed by Pope and Emperor, Teutonic Knights waged ruthless Baltic crusades, planting."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sanctioned by papal bulls and imperial Golden Bulls, the Teutonic Knights absorbed the decimated Livonian Brothers of the Sword and spearheaded the Northern Crusades across Prussia, Livonia, and Estonia, forging an autonomous monastic-military state anchored by red-brick Ordensburg fortresses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Grand Master answers only to Christ and the Pope. Under Anno von Sangershausen, the Order converts pagan marshes into disciplined German bailiwicks, extracting grain tithes and extinguishing indigenous rebellion under holy vows of poverty, chastity, and war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Brother-knights clad in white mantles with black crosses drive lances through Baltic skirmishers. Behind the knightly wedge march German crossbowmen and sergeants with pollaxes, systematically deforesting pagan ambush zones."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Prussian villagers are dragged by monks to rivers for forced baptism, their sacred oaks felled to fuel monastery lime kilns. Beneath stone keeps, pagan serfs whisper ancient chants to Perkūnas in the forest gloom."
+    }
+  ],
+  "TextMappings": []
+}

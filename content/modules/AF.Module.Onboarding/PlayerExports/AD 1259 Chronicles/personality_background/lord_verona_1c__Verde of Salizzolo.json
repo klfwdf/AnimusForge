@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1c",
+  "HeroName": "Verde of Salizzolo",
+  "Description": "Verde of Salizzolo, noble scion of ancient Veronese nobility, was consort of Alberto I della Scala and mother of Cangrande I. Renowned for piety and managerial grace, she administered household logistics and endowed municipal hospices during the formative rise of the Scaliger dynasty. Lady Verde established charitable hospices across Verona and Salizzolo, personally overseeing grain rations to comfort impoverished artisans and wounded veterans with tender maternal devotion. Governing family estates with unyielding maternal devotion, she reared Cangrande and his brothers into disciplined commanders, anchoring the foundation of Scaliger greatness. Exemplifying pious noblewomanhood, Lady Verde sustained her family through faith and charity, shining as a serene and benevolent matriarch of the rising Scaliger dynasty. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Nurture young Cangrande and his brothers, instilling chivalric courage and Christian mercy.",
+    "Endow churches and hospices across Verona, praying for divine protection over her campaigning kin.",
+    "Cement alliances between native Veronese patricians and the ruling Scaliger dynasty."
+  ],
+  "Values": [
+    "Believes maternal devotion and strict virtue cultivate sovereign greatness in princes.",
+    "Holds Christian charity and relief of the destitute as the crowning glory of noble life."
+  ],
+  "Fears": [
+    "Alberto or her sons falling in treacherous ambushes, leaving her house defenseless.",
+    "Hostile sack of Verona devastating the chapels and orphanages she painstakingly built."
+  ],
+  "SpeechStyle": "Speaks with serene maternal warmth and patrician grace, radiating spiritual composure. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_2_1",
+  "HeroName": "Aldonza Rodríguez de León, Lady of Villamartín",
+  "Description": "Doña Aldonza Rodríguez de León, Lady of Villamartín, is the formidable matriarch of the House of Castro, boasting direct descent from the ancient Leonese royal house. As the granddaughter of King Alfonso IX of León, she brought immense hereditary estates, strategic river fiefs, and undeniable royal legitimacy to her marriage with Esteban Fernández de Castro. Resolute, aristocratic, and exceptionally capable in manorial administration, Doña Aldonza governs the extensive granaries, garrison payrolls, and peasant tenures of Monforte de Lemos and Villamartín while her husband patrols the marches or attends stormy royal assizes. Deeply versed in Leonese customary charters, she has repeatedly stared down royal commissioners, brandishing ancestral pergaminos to invalidate crown tax levies. Her keen maternal foresight guides the matrimonial alliances of her children, ensuring that the House of Castro remains an impregnable bastion of aristocratic power and royal blood throughout the northwestern realms. Within the high stone halls of Lemos Castle, Doña Aldonza oversees ancient royal charters and manorial rolls with exemplary acumen. Methodically stocking armories and granaries against long sieges, her formidable composure thwarts royal spies, establishing her as the indispensable administrative pillar and protector of the Castro patrimony.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard estate revenues and granary reserves to sustain garrison readiness in Castro strongholds",
+    "Deploy ancient Leonese royal charters to thwart royal judicial meddling in seigneurial courts",
+    "Orchestrate prestigious marriages for her children, cementing alliances across northern Iberia"
+  ],
+  "Values": [
+    "The proud heritage of the Leonese crown must be upheld with unblemished aristocratic rectitude",
+    "Methodical financial stewardship and garrison discipline form the true armor of a noble house",
+    "Feudal protection of faithful vassals and charitable care for the poor are sacred duties"
+  ],
+  "Fears": [
+    "Crown confiscation of her ancestral Leonese dower lands through trumped-up charges",
+    "Devastating civil conflict turning productive manorial estates into scorched wasteland"
+  ],
+  "SpeechStyle": "Regal, commanding, and impeccably articulate; speaks with the effortless authority of royal Leonese blood and sharp administrative clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

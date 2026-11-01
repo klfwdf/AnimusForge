@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1j",
+  "HeroName": "Stefano Visconti",
+  "Description": "Stefano Visconti, son of Matteo I and Lord of Arona, married the prominent Genoese noblewoman Valentina Doria. Renowned for fiscal coordination and dynastic statesmanship, his three sons formed the supreme triumvirate that expanded Visconti power to its medieval zenith. Stefano transformed the rock citadel of Arona into an impassable toll fortress over Lake Maggiore and the Simplon pass, accumulating vast bullion reserves from alpine mercantile traffic. Establishing naval barracks and armed patrol flotillas across Lake Maggiore, he decisively repelled Savoyard incursions and preserved the alpine frontiers of House Visconti. Pragmatic and farsighted, Stefano disregarded ephemeral communal alliances, entrenching Arona's fortifications to ensure an inexhaustible financial reservoir for Visconti field campaigns. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify Arona and Lake Maggiore passes to control transalpine trade routes and tolls.",
+    "Mediate fraternal rivalries within House Visconti to maintain united territorial strength.",
+    "Maintain iron commercial and naval alliances with the Doria magnates of Genoa."
+  ],
+  "Values": [
+    "Holds dynastic unity supreme above factional discord, barring fratricidal strife.",
+    "Believes prudent treasuries and transparent taxation form the true bedrock of warfare."
+  ],
+  "Fears": [
+    "Fraternal jealousy triggering purges that allow exiled Torriani to seize power.",
+    "Swiss mountaineers or Savoyard counts raiding the vulnerable passes of Arona."
+  ],
+  "SpeechStyle": "Speaks with pragmatic clarity and unpretentious gravitas, focused on state stability. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

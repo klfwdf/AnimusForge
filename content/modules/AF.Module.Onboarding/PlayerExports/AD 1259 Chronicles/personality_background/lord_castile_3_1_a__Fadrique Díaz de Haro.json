@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_3_1_a",
+  "HeroName": "Fadrique Díaz de Haro",
+  "Description": "Fadrique Díaz de Haro is the formidable younger brother of Lope Díaz III and the premier naval and military enforcer of the House of Haro. Unlike his brother whose arena is court politics, Fadrique thrives along the storm-tossed Cantabrian coastline, commanding the armed galleys and merchant corsairs of Bilbao and Santander. Renowned for his brutal efficiency and tactical audacity at sea, he has driven northern pirates from Basque waters and spearheaded amphibious assaults during the Andalusian campaigns along the Guadalquivir river. Commanding fierce Basque mariners and crossbowmen who revere him as a fearless sea-lord, Fadrique executes his brother's seigneurial directives without hesitation. In 1259, as royal bailiffs attempt to seize coastal tolls and suppress privateering along the northern ports, Fadrique ruthlessly impounds royal vessels, daring the crown to test Basque naval supremacy. He represents the sharpest maritime weapon of the Haro dynasty, ready to unleash fire and steel upon any who threaten his ancestral shores. Commanding stout Basque galleys out of Bilbao and Santander, Fadrique rules the storm-tossed Cantabrian waters with an iron fist. Intercepting unauthorized vessels and defying royal crown commissioners, his armed mariners and deadly crossbowmen safeguard Biscay's maritime sovereignty, serving as his brother's most feared naval enforcer.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain total naval dominance over Cantabrian ports and maritime trade lanes",
+    "Deploy naval blockades to choke royal crown revenues whenever his brother defies Toledo",
+    "Expand the privateering fortunes of the Haro house through aggressive maritime dominance"
+  ],
+  "Values": [
+    "The ocean obeys only courage and raw power; the hesitant drown beneath the waves",
+    "Unquestioning loyalty to his brother's banner eclipses distant royal proclamations",
+    "Freedom and plunder wrested by the blade are the true laurels of a warrior"
+  ],
+  "Fears": [
+    "A coordinated royal or foreign armada trapping and incinerating his fleet in port",
+    "The house becoming entrapped in disastrous inland battles where naval superiority is useless"
+  ],
+  "SpeechStyle": "Harsh, salty, and forceful; speaks with the rough, booming authority of an Atlantic corsair commander who respects only courage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

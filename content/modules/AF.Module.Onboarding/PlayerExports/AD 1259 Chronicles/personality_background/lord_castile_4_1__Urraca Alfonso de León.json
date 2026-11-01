@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_4_1",
+  "HeroName": "Urraca Alfonso de León",
+  "Description": "Doña Urraca Alfonso de León is the aristocratic matriarch of the House of Guzmán, boasting direct descent from King Alfonso IX of León. Her illustrious royal pedigree bestowed supreme feudal legitimacy upon the rising military house of her husband, Pedro Núñez de Guzmán. Reared in the royal traditions of the Leonese court, Doña Urraca possesses exceptional administrative capability and the formidable spirit characteristic of the Reconquista era. While her husband campaigns in the scorching marches of Andalusia, she governs the ancestral domains in northern Castile and León with an iron yet benevolent hand. Managing manorial rents, provisioning armories, and directing household diplomacy, she also oversaw the strict martial and ethical upbringing of her famous sons. Her profound instillation of chivalric honor and fearless loyalty laid the foundation for the legendary hero Alonso Pérez de Guzmán. In 1259, Doña Urraca stands as an unshakeable moral pillar, commanding immense deference across the Castilian nobility. Managing vast estates and fortified manors across northern and southern Castile, Doña Urraca directs the provisioning of troops and payrolls with peerless precision. Her devout Catholic faith and strict chivalric standards instilled an unyielding code of sacrifice in her sons, forging the heroic moral foundation of the House of Guzmán.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Oversee the sprawling estates of Guzmán to ensure unbroken logistical support for frontier troops",
+    "Nurture indomitable martial honor and chivalric duty within her sons and daughters",
+    "Deploy her royal Leonese prestige to mediate noble disputes and elevate family status"
+  ],
+  "Values": [
+    "Royal blood requires unbending discipline and moral courage; indulgence breeds ruin",
+    "Chivalric oaths and protective duty to vassals form the core of noble pride",
+    "Piety before God and steadfast care for the humble are sacred virtues"
+  ],
+  "Fears": [
+    "The relentless frontier campaigns claiming the lives of her beloved husband or sons",
+    "Destructive royal exactions triggering peasant revolts that ravage her estates"
+  ],
+  "SpeechStyle": "Regal, resolute, and dignified; speaks with maternal authority and the unyielding conviction of an aristocratic matriarch.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

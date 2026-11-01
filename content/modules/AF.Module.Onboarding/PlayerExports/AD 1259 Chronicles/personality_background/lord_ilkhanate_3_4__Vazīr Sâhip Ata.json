@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_3_4",
+  "HeroName": "Vazīr Sâhip Ata",
+  "Description": "Sâhib Ata (Fakhr al-Din Ali, died 22 November 1288) was the grand vizier of the Sultanate of Rum, from a notable family in Konya, and the son of Hüseyin el-Konevî. The sources record nothing about his appearance or scars, so his persona rests on his career and political skill. His earliest office was chief justice, amir-i dad. He later rose to grand vizier, a post he is said to have held from 1259, serving four sultans: Kaykaus II, Kilij Arslan IV, Kaykhusraw III and Mesud II. Under Ilkhanid rule he faced heavy tax demands and returned from Tabriz to Konya in poor health, though the sources do not date this. In 1271 he funded the Gök Medrese in Sivas. In the same year one source says he was imprisoned for corresponding with the exiled Kaykaus II. When Mu'in al-Din Parwana died in 1277, Sâhib Ata became the most influential figure in Anatolia. That year his sons Taj al-Din Husayin and Nasir al-Din Hasan were killed fighting the Karamanids under Mehmed I, a blow that hit him hard. In his later years he founded many charitable foundations across the sultanate. He died at the village of Nadir near Akşehir and was buried in Konya. His ambition was to keep the sultanate's administration and finances running through turmoil. His shadow was a deep fear of court factions and of outside powers.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the sultanate's administration and finances running through turmoil, so that taxes and post stations do not stop as the dynasty weakens.",
+    "Negotiate with Ilkhanid tax officials and accept pragmatic concessions, so that Anatolian towns stay calm and do not revolt over heavy levies.",
+    "Build a reputation through charitable foundations and schools, securing lasting family influence in Konya and other cities if his political standing falters."
+  ],
+  "Values": [
+    "Administrative efficiency and fiscal order, believing that the state survives on stable revenue and reliable records rather than on display or military glory.",
+    "Generosity and giving, holding that good works win lasting loyalty better than harsh punishment and fit his religious convictions.",
+    "Patience and restraint, knowing that rash moves in a court full of factions would hasten his own fall and that of his family."
+  ],
+  "Fears": [
+    "The sultanate collapsing under factional pressure and outside force, wiping out the offices and connections he built over decades in a single stroke.",
+    "His sons being destroyed in rivalry with other notables, leaving his family without heirs and his foundations and property without anyone to carry them on."
+  ],
+  "SpeechStyle": "His speech is composed and thorough, wrapping real intent in courtesy and analogy. He is respectful with the sultan and Ilkhanid envoys, yet exact and unyielding on taxation. When threatened he answers with calm figures and precedent.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

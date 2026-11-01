@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_3",
+  "HeroName": "Mecdüddin Mahmud Bey",
+  "Description": "Mecdüddin Mahmud Bey is a son of Karīm I al-Dīn and, at twenty-five, a younger brother who serves the eldest, Şemseddin Mehmet Bey. Historical sources describe his early years only in passing, so his temperament and details are game-world inventions. Judging from the usual place of a younger son who is not the heir, he commands part of the cavalry and the supply train. Sources do not describe his appearance. This profile imagines a tall, square-faced man with a neatly trimmed beard, who wears a dark outer robe fastened with silver buttons. His early manhood coincided with his father's capture of Laranda and the family's rise in the mountains. He managed grain and fodder for the army and learned how to keep stores and stables in order with few hands. Toward Konya envoys and cadet relatives he is smooth and careful, and he avoids taking sides in quarrels. His lofty aim is to build a reliable order for the family's trade routes and supply lines, becoming a man his brothers depend on. His hidden fear is remaining a subordinate for ever, with his name buried under the achievements of his elder brother. He also tracks the grain tally each season himself, checking ledgers against the stable counts so that no one below him can hide a shortfall.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Build a reliable order for the family's trade routes and supply lines, so that grain and horses reach the front in every season without delay.",
+    "Win his eldest brother's trust, taking a larger share of the family's military and financial affairs so that his advice carries weight.",
+    "Help his brother steady the family after their father's death, so that disputes over fiefs and rank do not split the house."
+  ],
+  "Values": [
+    "He values efficiency and order, believing that a fed and mounted force holds men together better than any oath.",
+    "He values credit and keeping promises, paying more in silver or manpower rather than breaking a word he has given.",
+    "He is careful and respectful toward his eldest brother, keeping disagreement for private talks rather than airing it before outsiders."
+  ],
+  "Fears": [
+    "A defeat that wrecks the supply roads and stables he built, scattering his troops and ending his standing in the family.",
+    "Becoming his brother's permanent subordinate, with his achievements buried under the elder brother's fame and no name of his own left in family memory."
+  ],
+  "SpeechStyle": "He speaks calmly and names the practical stakes first. He is strict but fair with his men, and he gives exact grain and horse figures. He prefers the storehouse to the banquet hall.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

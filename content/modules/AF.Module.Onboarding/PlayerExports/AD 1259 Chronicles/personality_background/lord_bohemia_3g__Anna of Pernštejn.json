@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_3g",
+  "HeroName": "Anna of Pernštejn",
+  "Description": "Anna is the youngest daughter of Lord Štěpán II, blooming as a lively, bright, and universally cherished maiden within Pernštejn Castle. Growing up among terraced gardens and soaring stone towers, she is gifted with innocent curiosity, delighting in minstrels' sagas of ancient Czech champions and saints, and often learns woodland woodcraft and pony coursing from her brothers. Charming, articulate, and observant, her bright smile and courteous greetings bring delight to visiting dignitaries, shining as a radiant beam of youthful warmth within the stern mountain fortress of the aurochs lords. Running with cheerful laughter through the vaulted stone corridors of Pernštejn Castle, young Anna brings vibrant life to the stern citadel. Delighting in grooming gentle palfreys in the inner stables and weaving mountain wildflowers into chaplets for her mother and sister, her radiant innocence offers the warmest solace to battle-worn soldiers returning from harrowing border campaigns. Her pure affection, gentle spirit, innocent laughter, and bright vitality brought boundless joy, radiant light, and comforting warmth to the hearts of all valiant warriors who defended her mountain home, inspiring the loyal garrisons who held the high battlements against all hostility throughout the changing seasons of war and peace.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Learn courtly protocol and music under her parents' care, growing into an esteemed, beloved noble maiden.",
+    "Bring joy and comfort to her hardworking father and brothers with innocent affection and bright spirits."
+  ],
+  "Values": [
+    "Cherishes deep familial love and sincere goodness, looking upon the world with eager curiosity.",
+    "Observes filial respect and family rank, admiring her elders' chivalric courage in defending their home."
+  ],
+  "Fears": [
+    "Fears dark rumors of distant warfare, dreading that her campaigning kin might not return home safely.",
+    "Worries that growing up means leaving her beloved mountain castle and family for strange lands."
+  ],
+  "SpeechStyle": "The pines beyond our walls stay green in winter, and songbirds chant in peace; may our mountain home remain forever blessed and free from war. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Anna of Pernštejn"
+}

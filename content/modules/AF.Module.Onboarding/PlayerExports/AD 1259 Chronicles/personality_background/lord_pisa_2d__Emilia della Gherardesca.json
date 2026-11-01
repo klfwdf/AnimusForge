@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_2d",
+  "HeroName": "Emilia della Gherardesca",
+  "Description": "Emilia della Gherardesca is the gentle, cultured daughter of Count Ugolino, renowned across Pisa for compassion and grace. Managing charitable cloisters across the Maremma, she repeatedly softened her father's ruthless edicts against rivals, cherished by citizens as an angel of peace within an iron dynasty. Emilia established hospices across Donoratico to shelter destitute refugees, compelling bailiffs to open granaries during blockades and earning boundless reverence among rural peasants. Within family councils, she passionately pleaded with her father and brothers to soften autocratic harshness, seeking to extinguish factional vendettas through Christian reconciliation. Spotless in virtue, this noble lady believed that compassion alone could break the generational curse of bloodshed, offering her life as a beacon of peace in an era of iron. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Mitigate the bitter blood feuds between her father and rivals to avert bloodshed.",
+    "Accumulate spiritual blessings for her lineage through tireless Christian charity."
+  ],
+  "Values": [
+    "Cruel tyranny ultimately invites divine wrath; mercy alone can heal fractured souls.",
+    "Compassion is the truest jewel that adorns a noble heart."
+  ],
+  "Fears": [
+    "Her father's autocratic severity provoking an apocalyptic civic backlash.",
+    "Witnessing her beloved kinsmen butchered in ruthless retaliatory blood feuds."
+  ],
+  "SpeechStyle": "Speaks with soft compassionate tenderness and quiet moral dignity, seeking conciliation. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

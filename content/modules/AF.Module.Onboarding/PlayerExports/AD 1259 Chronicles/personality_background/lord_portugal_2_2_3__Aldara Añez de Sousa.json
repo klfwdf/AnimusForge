@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_2_3",
+  "HeroName": "Aldara Añez de Sousa",
+  "Description": "Doña Aldara Añez de Sousa is the gentle and contemplative younger daughter of Dom Fernão Garcia and Lady Urraca Fernandes. Surrounded by pine-clad slopes within Gouveia Castle, Aldara possesses a quiet, deeply spiritual nature, gifted in liturgical embroidery, the psaltery, and vernacular verse. Intellectually gifted and observant, she finds profound solace in sacred scriptures and charitable visitation to nearby Cistercian convents. In 1259, celebrated across the Beira region for her spotless virtue and delicate beauty, she is affectionately known as the 'Lily of the Serra.' Detached from secular baronial rivalries, she prefers the peaceful contemplation of the manor chapel, interceding for the safety of her campaigning kin. Sweet-tempered, modest, and devout, Aldara infuses the austere warrior household with divine peace and serene moral dignity. Singing Latin hymns to the lute inside secluded mountain chapels, Aldara transcribed patristic codices with delicate artistic skill. Detached from secular courtly vanity, she regularly distributed honey and sea-salt to impoverished highland cottages, bringing divine peace to the austere stone fortress. Her spiritual contemplation, liturgical arts, and boundless charity make Aldara an inspiring beacon of holy peace in a harsh world of border war, celebrated across all the northern monasteries of Portugal.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Transcribe illuminated Latin psalters and lyric songs to enhance the spiritual renown of her house",
+    "Support local orphanages and convents to shower divine grace upon her ancestral lineage",
+    "Embrace her dynastic matrimonial destiny with pious grace, fostering enduring family alliances"
+  ],
+  "Values": [
+    "True aristocratic honor lies in spiritual purity and mercy; courtly vanity turns to dust",
+    "Serve God with a serene soul and treat kin with tender love; goodness triumphs over worldly evil",
+    "Reverent faith before divine providence, filial devotion, and unbending moral purity"
+  ],
+  "Fears": [
+    "Warfare reaching peaceful mountain cloisters and incinerating irreplaceable sacred manuscripts",
+    "Being coerced into an unloving foreign marriage that extinguishes her quiet scholarly life"
+  ],
+  "SpeechStyle": "Serene, gentle, and sweet; speaks with the quiet poise, spiritual depth, and captivating humility of a devout noble maiden.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

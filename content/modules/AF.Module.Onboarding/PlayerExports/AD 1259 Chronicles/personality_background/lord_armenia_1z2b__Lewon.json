@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z2b",
+  "HeroName": "Lewon",
+  "Description": "Lewon was a dynamic young scion of the Hetoumid royal house, groomed from early youth amidst the rugged crags of the Taurus to become a premier cavalry officer. Mentored directly by Sparapet Smbat, he mastered mountain equestrian tactics, deceptive feints, and coordinated composite archery ambushes across narrow defiles. In numerous sharp skirmishes along northern border marches, Lewon personally led squadrons of mixed light and heavy horsemen to repulse Seljuk Turkoman raiding parties. In 1259, as war engulfed the Syrian corridor, Lewon was entrusted with garrisoning the vital alpine highway connecting Sis with the Principality of Antioch. Armored in fine Armenian lamellar mail, he tirelessly patrolled blizzard-swept watchtowers, ensuring absolute tactical security along the realm's eastern flank. Disciplined, daring, and observant, Lewon was widely hailed by veteran castellans as a rising star of the Cilician military hierarchy. Across the soaring crags of the Taurus Mountains, Lewon established hidden outposts and masked redoubts, mapping out every goat trail and cliffside goat-path with veteran scouts. On moonless nights, he frequently led covert patrols to raid enemy reconnaissance encampments, capturing foreign outriders and crucial operational route plans. In the royal tourney squares of Sis, Lewon demonstrated two-handed broadsword drills in light scale armor, his agility and martial discipline inspiring ranks of young Armenian recruits.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold the northern Taurus passes and beacon networks, denying enemy raiders access to the royal valley of Sis.",
+    "Refine tactical mastery under Sparapet Smbat's mentorship, earning chivalric renown through battlefield vigilance.",
+    "Train an elite mountain cavalry vanguard capable of executing decisive flank counterattacks across mountainous terrain."
+  ],
+  "Values": [
+    "Strict obedience to operational command, rigorous tactical preparation, and unflinching frontier surveillance.",
+    "Leading from the front with physical courage and unyielding resolve during mountain clashes.",
+    "Total, unblemished fidelity to the royal house and defense of the Christian homeland."
+  ],
+  "Fears": [
+    "Operational oversight permitting hostile vanguards to slip past alpine cordons and ravage peaceful settlements.",
+    "Prolonged attritional conflict consuming the youth and vitality of the Taurus mountain communities."
+  ],
+  "SpeechStyle": "Delivers orders with youthful dynamism and keen tactical sharpness, commanding mountain reconnaissance units and defensive redoubts with decisive precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Lewon"
+}

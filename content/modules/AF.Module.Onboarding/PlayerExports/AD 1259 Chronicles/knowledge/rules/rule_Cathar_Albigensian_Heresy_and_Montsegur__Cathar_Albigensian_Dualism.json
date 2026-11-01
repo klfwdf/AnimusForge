@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Cathar_Albigensian_Heresy_and_Montsegur",
+  "Keywords": [
+    "Cathar Albigensian Dualism",
+    "Light Spiritual and Dark Material World",
+    "Consolamentum Pure Spirit Baptism",
+    "Montsegur Castle Pyre Aftermath"
+  ],
+  "RagShortTexts": [
+    "The Cathars preached radical dualism, driven into Pyrenean caves after the Montségur pyres."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Flourishing across Occitania before harsh suppression, the Cathars practiced radical gnostic dualism, viewing the physical world as satanic entrapment of divine spirits. Ascetic leaders called Perfecti received the spiritual baptism of Consolamentum, eschewing meat and marriage until the mass immolation at Montségur in 1244."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "The Albigensian Crusades allowed the Capetian crown to assimilate Languedoc under Paris. Dominican inquisitors methodically interrogated rural communities to eradicate remaining clandestine cells."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Highland shepherds whisper reverence for the fugitive 'Good Men' sheltering in limestone caverns, who never lie or charge tithes, living in total apostolic poverty."
+    }
+  ],
+  "TextMappings": []
+}

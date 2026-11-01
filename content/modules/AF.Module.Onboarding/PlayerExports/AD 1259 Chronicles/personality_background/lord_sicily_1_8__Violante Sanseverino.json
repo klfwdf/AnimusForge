@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_8",
+  "HeroName": "Violante Sanseverino",
+  "Description": "Violante Sanseverino, Countess of Caserta, is the imperial daughter of Emperor Frederick II and half-sister of King Manfred, commanding profound reverence at thirty-eight years of age. Inheriting the striking golden hair and regal pride of the Hohenstaufen dynasty, Violante was educated in the radiant multicultural court of her father. Intimately familiar with the political ambitions of southern Italian nobility, she superintends the domestic administration of Caserta while maintaining lavish patronages over monastic orders. Deeply affectionate toward her brother Manfred, Violante acts as an unshakeable bridge, constantly urging her calculating husband Riccardo to throw Caserta's full military weight behind the royal crown. She represents an immortal imperial matriarch balancing family love with high statecraft. Carrying imperial Hohenstaufen majesty and profound political insight, Countess Violante bridges high court statecraft with baronial solidarity, fiercely championing her royal brother's cause. Her unbending pride and maternal wisdom preserve dynastic honor, an immortal imperial matriarch guiding her household through storms with supreme grace. Combining imperial Hohenstaufen majesty with deep maternal wisdom and staunch loyalty, Countess Violante commands the utmost reverence throughout the baronies and courts of the south. Embodying imperial dignity and steadfast loyalty, she preserves the honor and heritage of the Hohenstaufen name across the baronies of the south.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To ensure her husband Caserta stands firmly beside King Manfred in defense of Staufen sovereignty.",
+    "To safeguard her children, ensuring the perpetuation of both the imperial and Sanseverino lines."
+  ],
+  "Values": [
+    "Imperial majesty must never kneel before papal usurpation; defending royal blood is sacred.",
+    "Kinship is the only true fortress in times of crisis; betraying family brings eternal damnation."
+  ],
+  "Fears": [
+    "Her brother Manfred being betrayed and destroyed by foreign invaders invited by Rome.",
+    "Her husband wavering in his loyalty, plunging her into a torment of divided allegiance."
+  ],
+  "SpeechStyle": "Speaks with imperial majesty, eloquent warmth, and commanding aristocratic pride. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

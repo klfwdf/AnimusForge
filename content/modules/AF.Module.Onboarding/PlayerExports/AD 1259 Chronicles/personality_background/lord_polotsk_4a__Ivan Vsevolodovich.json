@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Ivan Vsevolodovich is a veteran commander and castellan within the Polotsk dynastic realm, holding the strategic western marches against the Baltic frontier. Governing border redoubts commanding the lower approaches of the Western Dvina, Ivan stood on the absolute front lines against crusader scouts and pagan warbands. Trained in arms from early youth, he mastered the construction of oak-and-earth ramparts across swampy defiles, deploying interlocking spearmen phalanxes and heavy crossbow batteries. Confronting superior numbers during sieges, he commanded ramparts with immovable composure, repeatedly repelling ladder assaults amidst rainstorms of arrows. Incorruptible, austere, and deeply protective of his troops, he shared every bitter camp hardship and ensured full rations for all levies. Hailed across the frontier as the 'Iron Sluice of the West', he stands as an unshakeable guardian sentinel shielding Polotsk's flank. Prince Ivan Vsevolodovich held the western border keeps with legendary tenacity. Directing interlocking spearmen phalanxes and archer batteries through torrential sieges, his incorruptible devotion preserved Polotsk's vulnerable frontiers against relentless crusader and pagan attacks. His steadfast vigilance at the border bastions discouraged opportunist invaders, ensuring that the western gateway to Polotsk remained an impenetrable wall of shield and spear.",
+  "SpeechStyle": "Our ramparts are cemented with our sweat and blood, and our trenches shall be the grave of invaders! While I breathe, no enemy shall breach this perimeter! Hold your ground!",
+  "Motivations": [
+    "Guard western border bastions, leading heavy spearmen and crossbowmen to shatter enemy incursions into the interior.",
+    "Strengthen frontier fortifications and ballistic arsenals, maintaining an incorruptible home defense guard for Polotsk."
+  ],
+  "Values": [
+    "Valuing soldierly fidelity, strict camp discipline, and selfless patriotism, despising cowardice, insubordination, and treason.",
+    "Believing immovable tactical composure and interlocking defensive fortifications withstand the fiercest imperial assaults."
+  ],
+  "Fears": [
+    "Coordinated assaults by heavy battering rams and incendiary catapults collapsing the fragile stone angles of his keep.",
+    "Flanking cavalry severing rear logistical supply roads, trapping the border garrison in starvation without relief."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ]
+}

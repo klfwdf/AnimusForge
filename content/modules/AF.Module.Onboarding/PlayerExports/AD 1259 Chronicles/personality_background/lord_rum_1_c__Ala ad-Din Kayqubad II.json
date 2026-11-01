@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_c",
+  "HeroName": "Ala ad-Din Kayqubad II",
+  "Description": "Ala ad-Din Kayqubad II is thirty-nine, the eldest brother of Kaykhusraw III, and a heavily built man. The little finger of his left hand is missing a joint, cut off by a bowstring when he was twenty and riding out on his first campaign. He wears deep red robes edged with sable and a sabre whose scabbard is bound with silver bands, its grip wrapped in faded leather that once belonged to his father. He is known at court for sharp judgment. In his early years he garrisoned the eastern frontier and cultivated ties with Turkish cavalry commanders there, building a body of horsemen who serve him personally. The historical Kayqubad II, who reigned from 1249 to 1254, was the son of Kaykhusraw II, while this Ala ad-Din is the son of Kilij Arslan IV. The two share only the name. He deals harshly with rivals. On a hunt he once lured a cousin who challenged his lands into a mountain valley, and afterwards no one dared test him again. His feelings toward his younger brother are mixed. He wants to borrow the royal name the brother carries but has no intention of letting him hold much real power. His aim is to gather the Seljuk crown back into his own hands so that every decree of Konya bears his seal. Yet the fear he least wants to face is that his ambition will drive away the old retainers, who may one day desert him when it matters most.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Recover the seal and decrees of Konya so that royal orders are issued in his own name, without needing the chamberlain or Mongol envoys to approve them first.",
+    "Enlarge his cavalry in the east by bringing personally loyal Turkish commanders under his banner, forming a force that will not scatter with each change at court.",
+    "Hold down his younger brother's real authority, keeping the royal title as a pretext while ensuring that every major order takes effect only with his consent."
+  ],
+  "Values": [
+    "Power and honour, believing that the dignity of the royal house must be defended by the strong, and that accepting the chamberlain's arrangements means abandoning the Seljuk name.",
+    "Results over scruples, judging both battlefield and court purely by outcome and refusing to pass up a chance to end a problem for good.",
+    "Rewarding loyalty generously with fiefs and gifts, while settling accounts ruthlessly with any commander who betrays him."
+  ],
+  "Fears": [
+    "His ambition alienating the old retainers, so that a single desertion at a decisive moment could break the cohesion of his cavalry overnight.",
+    "Being driven out of Konya by his brother and the chamberlain together, losing his lands one by one and dying alone at a frontier post."
+  ],
+  "SpeechStyle": "Direct and forceful, often pausing to press the listener with his gaze. Gives orders in short, clear sentences, but speaks to equals in roundabout, pointed remarks. He smiles before he acts against a threat.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

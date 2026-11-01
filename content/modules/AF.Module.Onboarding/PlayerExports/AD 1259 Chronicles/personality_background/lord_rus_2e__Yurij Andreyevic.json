@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Yurij Andreyevic of Gorodets, youngest son of Andrey Alexandrovich, thrives far from courtly protocols as a daring border scout commander along the Volga frontier. Impatient with administrative routines, Yurij embraced the perilous life of a wilderness horse ranger, patroling the shifting frontiers between Nizhny Novgorod and the wild southern steppes. He leads an elite irregular company composed of Slavic huntsmen, Finnish forest trackers, and converted nomadic outriders adept at reading tracks in dense taiga brush. Capable of surviving for days amidst blizzards on dried horseflesh, Yurij strikes enemy scouting detachments when their campfires are lit at dusk, vanishing into marshlands before alarms can be sounded. Uncompromisingly hardy and fiercely loyal to his riders, he serves as the watchful gray wolf of the eastern woodlands, shielding his father's domain from surprise assaults. Leading light cavalry squadrons through trackless taiga and marshes with phantom-like stealth, Yurij ambushed enemy supply columns with surgical precision, his hawk-like scouting vigilance serving as an inescapable nightmare for encroaching invaders. Striking with devastating stealth from the taiga shadows, his agile outriders ambushed hostile patrols and safeguarded woodland travelers, celebrated as an indispensable ranger of the frontier.",
+  "SpeechStyle": "Speaks with brisk, energetic rhythm and gravelly outdoor warmth, his words direct and colored by the natural cadence of the wilderness.",
+  "Motivations": [
+    "Clear hostile scouts and woodland brigands from the Lower Volga, carving out secure passage for merchant trains and settlers.",
+    "Establish an interconnected forest beacon network across the borderlands to transmit intelligence on enemy advances instantly."
+  ],
+  "Values": [
+    "Holds stealth, acute situational awareness, and adaptability as paramount, believing survival belongs to those who strike first unseen.",
+    "Reveres the rugged brotherhood of frontiersmen, despising formal etiquette in favor of raw resilience forged in wild elements."
+  ],
+  "Fears": [
+    "Fears being surrounded deep in marshy forests with severed lines of retreat, watching his faithful riders hunted down in isolation."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ]
+}

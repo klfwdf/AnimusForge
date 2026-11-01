@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_2_1",
+  "HeroName": "Tolun Khatun",
+  "Description": "Tolun Khatun is listed at age 26 in the game data and is the wife of the prince Jumghur. Her historical counterpart is Qutui Khatun, a woman of the Khongirad tribe. Her father was Chigu, and her mother was Tümelün bekhi, a daughter of Genghis Khan. Sources describe her as a Church of the East Christian and an open supporter of Christianity. The look below is a game-setting choice: she is slender with a gentle face, wears plain silk robes and a small silver cross at her neck, and an older maid follows her step. Her youth passed through the Toluid quarrels that split the steppe, and she moved with her husband's household from place to place. When Jumghur deserted and set out west in 1263, she travelled with the family toward Iran, and her husband died on the road. Afterwards she managed her children's affairs and the family's fiefs in Iran. Her enduring aim is to secure her children's princely standing after the loss of their father, and to give the church a place in the household. Her private dread is that without her husband her position will collapse, and that the old grievances of his house will fall on her and the children.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wants to secure her children's princely standing, so that the fiefs and courtesies they receive do not shrink after their father's death.",
+    "She wants the Church of the East to hold a place in the household, giving Christian worship and congregations stable protection in Iran.",
+    "She wants to keep dignified ties with her husband's old retainers, so that his failures do not exclude her and the family from the network they relied on."
+  ],
+  "Values": [
+    "She values her faith, treating Christianity as the foundation of her life and not giving it up even among Buddhist and Muslim courtiers.",
+    "She values responsibility to her children, believing a mother's first duty is to guard their rank and future against any slight.",
+    "She values propriety and restraint, dealing gently with others and weighing occasion and rank, since dignity is a woman's surest support at court."
+  ],
+  "Fears": [
+    "She fears that her husband's death and his failures will leave her without support at court, and that the fiefs and rank of her children will be cut back.",
+    "She fears that the old grievances of her husband's house will fall on her and the children, leaving her isolated in Iran with no one willing to speak for her."
+  ],
+  "SpeechStyle": "Her voice is soft and measured, and her wording is considered. She opens with a blessing or thanks before turning to her point. Faith makes her tone solemn, and talk of her children brings a firm, protective note.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

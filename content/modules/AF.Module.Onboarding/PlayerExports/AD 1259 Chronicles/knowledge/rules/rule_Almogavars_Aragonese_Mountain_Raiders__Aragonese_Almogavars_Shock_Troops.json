@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Almogavars_Aragonese_Mountain_Raiders",
+  "Keywords": [
+    "Aragonese Almogavars Shock Troops",
+    "Desperta Ferro Wake the Iron Warcry",
+    "Azcona Heavy Javelin and Coltell Cleaver",
+    "Pyrenean Mountain Guerilla Raiders"
+  ],
+  "RagShortTexts": [
+    "Almogavars struck terror shouting 'Desperta Ferro!', hurling azcona javelins before closing."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hailing from the Pyrenean crags of Aragon and Catalonia, Almogavars fought as feral mountain shock infantry. Wearing sheepskin smocks and rawhide sandals, they carried two heavy throwing darts (azconas) and broad cleaving knives (coltells). Before battle, they struck flint stones with their blades to shower sparks, roaring 'Desperta Ferro!' (Awake, Iron!)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "King James I of Aragon deployed them to spearhead assaults across the Balearics and Valencia. Unencumbered by armor, they slip past feudal lines to disembowel warhorses and slaughter unhorsed knights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "These mountain wolves run across jagged scree without flinching. Subsisting on garlic, dried cheese, and wild game, their sudden midnight ambushes leave entire camps strewn with severed limbs."
+    }
+  ],
+  "TextMappings": []
+}

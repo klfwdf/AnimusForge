@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_2_3",
+  "HeroName": "'Abd as-Salam ibn Idris al-Wathiq",
+  "Description": "Abd as-Salam ibn Idris al-Wathiq is the young son of Idris al-Wathiq, according to the game lineage. He is four years old, small for his age, with his hair cropped short, and he wears a dark red child's coat that palace servants sewed for him. He lives in an old house in Marrakesh, cared for by his mother and a few elderly maids, and he is rarely allowed beyond the inner courtyard, so the outside world reaches him only as voices beyond the windows. His father is ambitious and his dealings with the Marinid court grow more frequent, so adults already speak of him as a future heir of the house. His childhood is wrapped in court ceremony and watchfulness. The game gives him no battles and no verifiable personal record, so his situation must be inferred from the historical setting: a child of the Almohad royal house, caught between Marinid patrons, old courtiers and uncles who distrust his father, with little say over his own fate. His highest hope is to grow strong enough to carry on the work his family began, so that his father's name is not erased from the chronicles. His darker side is a fear of being traded away like a bargaining chip in adult negotiations, given up whenever a peace requires it. He wakes at unfamiliar footsteps and cries for his mother, asking who is outside the door.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow up to carry on his family's work, so that his branch is not remembered as a forgotten line in the chronicles and can take up his father's banner and responsibility.",
+    "Learn to protect himself among court etiquette and suspicion, so that his mother and the old maids believe he can live quietly without causing trouble for the household.",
+    "Remember every move his father made between the Marinids and the old courtiers, so that one day he can handle the same problems himself rather than only wait for the outcome."
+  ],
+  "Values": [
+    "Filial respect. He was taught from early childhood that his father's name is the family's pride, and he treasures every word and old object his father left behind.",
+    "Quietness and caution. He stays silent before strangers, because silence often keeps him out of arguments between adults and lets him read their real attitudes.",
+    "Curiosity. He likes handling his mother's copied scriptures and his father's old seal, and he always asks who left these things, where they came from, and why."
+  ],
+  "Fears": [
+    "Fears being sent away or swapped like a bargaining chip by the adults, and wakes crying for his mother at any unfamiliar footstep until he sees she is still near.",
+    "Fears that when he grows up he still cannot keep his family's name, and that he will vanish quietly like the forgotten cadets of the house, leaving no trace."
+  ],
+  "SpeechStyle": "Brief and childlike, he speaks in short sentences and often answers an adult with a question. He hides behind his mother with strangers, then follows familiar people asking about old objects and scriptures.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_2_1",
+  "HeroName": "Hedwig von Anhalt",
+  "Description": "Hedwig of Anhalt reigns as Duchess of Legnica, daughter of Count Henry I of Anhalt from the proud German House of Ascania, married to the volatile and tyrannical Duke Bolesław II Rogatka. Stationed at the epicenter of one of the most tempestuous and treacherous courts in medieval Silesia, Hedwig navigated her husband's erratic fury with extraordinary diplomatic patience and moral fortitude. When Rogatka descended into fits of vengeance against recalcitrant vassals or captive clerics, Hedwig repeatedly intervened behind the scenes, sheltering innocent squires and secretly dispatching bread and water to prisoners languishing in dark dungeons. Leveraging her family's prestigious imperial connections across Germany, she tirelessly safeguarded the inheritance rights of her sons—Henry V the Fat and Bolko the Strict—ensuring their patrimony was not squandered away by their father's ruinous wars. Within the castle apartments, she fostered Latin literacy, embroidery crafts, and monastic benefactions, instilling chivalric honor and piety into her children. She stands as the indispensable moral bedrock preserving the future of the Silesian Piast dynasty amidst unending baronial turmoil. Hedwig utilized Saxon legal charters to resolve provincial disputes, discreetly spending personal funds to ransom innocent knights imprisoned by her husband. Her quiet resilience weathered endless courtly storms, preserving the vital inheritance rights of her beloved sons.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Shield her sons and protect their legitimate inheritance rights over Legnica, Jawor, and Lower Silesia.",
+    "Temper her husband's violent outbursts, intervening to prevent atrocities against loyal retainers and clergy.",
+    "Maintain diplomatic correspondence with her Ascanian kin in Germany to secure imperial protection in times of crisis."
+  ],
+  "Values": [
+    "Hold maternal duty and dynastic preservation above personal comfort, sacrificing everything for her sons.",
+    "Prize patient self-restraint and long-term foresight over volatile confrontations that lead to ruin.",
+    "Revere Christian piety and sacred charity, ceaselessly praying to intercede for her household's sins."
+  ],
+  "Fears": [
+    "Her husband's uncontrollable rage driving him to disinherit or harm his own sons while squandering his patrimony.",
+    "Legnica Castle falling to an avenging coalition, bringing ruin and exile upon her innocent offspring."
+  ],
+  "SpeechStyle": "Beneath the most furious tempests, deep patience and sacred faith preserve our children until their wings are grown; for our house, I shall endure. Patient fortitude outlasts the storm, preserving our royal lineage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

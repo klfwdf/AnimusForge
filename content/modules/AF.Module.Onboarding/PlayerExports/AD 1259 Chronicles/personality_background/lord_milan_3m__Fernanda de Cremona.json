@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3m",
+  "HeroName": "Fernanda de Cremona",
+  "Description": "Fernanda de Cremona, from ancient Cremonese nobility, was a trusted matriarch in the court of Patriarch Raimondo della Torre. Master of Po valley politics, she managed chancery dispatches and intelligence archives in Friuli, serving as an astute counselor to the exiled clan. Fernanda maintained an espionage bureau in Aquileia disguised as a merchant exchange, smuggling political manifestos into Milan to keep the flames of Torriani resistance burning. Operating an impenetrable counter-intelligence bureau in Aquileia, she unmasked Visconti spies among exiled knights, guarding the survival of the Torriani leadership with cold brilliance. Methodical and discreet, Fernanda orchestrated an intricate intelligence web across northern Italy, preparing the ground for an eventual Torriani restoration. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain an espionage network in Friuli to monitor political shifts in Visconti-ruled Milan.",
+    "Cultivate contacts in Cremona and southern Lombardy to prepare for an eventual counter-strike.",
+    "Administer the patriarchal treasury to ensure adequate stipends for all displaced Torriani kin."
+  ],
+  "Values": [
+    "Believes precision intelligence and patience are deadlier than hasty military advances.",
+    "Views quiet endurance as the supreme virtue, trusting time rewards the calculating."
+  ],
+  "Fears": [
+    "Visconti assassins infiltrating Aquileia to poison Patriarch Raimondo, their last pillar.",
+    "Clandestine agent rolls in Lombardy leaking to the Visconti, causing mass executions."
+  ],
+  "SpeechStyle": "Speaks with soft, icy composure and analytical detachment, penetrating and discreet. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

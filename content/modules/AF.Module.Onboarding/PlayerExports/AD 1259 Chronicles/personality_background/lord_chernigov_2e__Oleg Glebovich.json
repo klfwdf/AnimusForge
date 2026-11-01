@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Oleg Glebovich is the spirited youngest son of Grand Prince Gleb of Chernigov, commanding the river flotillas and amphibious reconnaissance along the Desna River. Intimately familiar with the winding waterways and sandbars of the Desna basin, Oleg mastered coordinated river-and-land tactics, deploying shallow-draft war boats to outflank invaders. He commanded a mobile hundred-man amphibious scouting squadron armed with composite recurve bows and sabers, patrolling riparian corridors outside the city walls. During recurring border clashes, he repeatedly staged surprise amphibious landings against hostile logistics trains, capturing vital supplies and reconnaissance maps. Charismatic, daring, and observant, Oleg earned boundless loyalty among young boatmen and horse archers who admired his fearless outdoor mastery. Affectionately hailed as the 'Falcon of the Desna', he serves as Chernigov's sharpest external eye and most agile waterborne strike force. Patrolling the winding waters of the Desna, Prince Oleg wielded his swift river flotillas with predatory agility. Launching sudden amphibious ambushes against hostile supply convoys, his fearless tactics denied invaders passage across the riverbanks, securing Chernigov's outer perimeter with agile vigilance. His aquatic mastery made him the dreaded phantom of the riverways. His relentless aquatic patrols provided an invaluable shield that protected the riverbanks from surprise devastation.",
+  "SpeechStyle": "The broad waters of the Desna are our domain! Hoist sails and draw your bows! Let hostile raiders attempt this crossing, and our arrows shall send them to the riverbed! Forward!",
+  "Motivations": [
+    "Command river war boats and amphibious scouts to dominate the Desna, intercepting enemy reconnaissance and supply convoys.",
+    "Establish an impenetrable early-warning screen along waterways, securing strategic security for Chernigov's urban core."
+  ],
+  "Values": [
+    "Prized tactical agility, daring opportunism, and camaraderie, disdaining rigid doctrines and predictable conventional warfare.",
+    "Believing swift amphibious intelligence and sudden surprise strikes overcome vastly superior numbers in fluid border wars."
+  ],
+  "Fears": [
+    "War boats snared by underwater stakes or boom chains in shallows, exposing trapped crews to lethal shore-based archery volleys.",
+    "Severe drought dropping river levels dramatically, stranding naval squadrons and eliminating his tactical mobility."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ]
+}

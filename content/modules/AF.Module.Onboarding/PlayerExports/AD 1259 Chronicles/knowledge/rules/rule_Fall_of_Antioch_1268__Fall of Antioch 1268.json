@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Fall_of_Antioch_1268",
+  "Keywords": [
+    "Fall of Antioch 1268",
+    "Baibars Mamluk Siege",
+    "Crusader Principality Extinguished",
+    "Baibars Mocking Letter Bohemond"
+  ],
+  "RagShortTexts": [
+    "In 1268, Baibars seized and razed Antioch, extinguishing one of the oldest Crusader states."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In May 1268, Sultan Baibars brought catastrophic ruin upon the Principality of Antioch. Breaching monumental Roman-era bastions in mere days, Mamluk forces plundered the ancient Christian capital, putting garrisons to the sword and levelling ducal palaces in retribution for Frankish-Mongol alliances."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "priest"
+        ]
+      },
+      "Content": "Baibars's infamous mocking letter to Prince Bohemond VI sealed the irrecoverable collapse of northern Outremer."
+    }
+  ],
+  "TextMappings": []
+}

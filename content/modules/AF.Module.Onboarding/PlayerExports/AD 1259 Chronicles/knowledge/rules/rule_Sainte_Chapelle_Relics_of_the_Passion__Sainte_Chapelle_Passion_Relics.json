@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Sainte_Chapelle_Relics_of_the_Passion",
+  "Keywords": [
+    "Sainte Chapelle Passion Relics",
+    "Crown of Thorns Veneration",
+    "Constantinople Relic Pawn",
+    "Saint Louis Holy Sovereignty"
+  ],
+  "RagShortTexts": [
+    "Louis IX redeemed Christ's Crown of Thorns from Baldwin II, enshrining it in Paris's."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bankrupted by Latin imperial decay, Baldwin II pawned the supreme Passion relic—the Crown of Thorns—to Venetian financiers. King Louis IX redeemed the sacred relic for 135,000 gold livres and erected the radiant Sainte-Chapelle on the Île de la Cité, elevating Paris into Western Christendom's paramount reliquary center."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Towering stained-glass lancets depict over eleven hundred biblical scenes, casting jewel-like radiance across the gilded reliquary shrine, inspiring awe among pilgrims from across the Christian world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possessing the Instruments of the Passion grants Saint Louis transcendent arbitral authority. Disputing English barons and imperial contenders travel to Paris to submit their grievances before his pious judgment."
+    }
+  ],
+  "TextMappings": []
+}

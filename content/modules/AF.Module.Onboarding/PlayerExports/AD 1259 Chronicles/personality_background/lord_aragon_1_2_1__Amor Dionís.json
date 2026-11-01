@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_2_1",
+  "HeroName": "Amor Dionís",
+  "Description": "Amor Dionís is the valiant eldest son and heir of Count Dénes of Hungary, representing the rising generation of the Hungarian-Aragonese nobility in the Kingdom of Valencia. Reared amidst the newly conquered citrus groves and fortified marches of the Levant, Don Amor combines the equestrian speed of the Magyar steppe with the devastating shock power of Catalan heavy lancers. Intrepid, aggressive, and fiercely loyal to his family's royal patrons, he commands an elite retinue of mounted cross-border skirmishers, having distinguished himself in suppressing insurgent Mudejar cells across the southern valleys. In 1259, as frontier security wavers, Amor stands as a dedicated champion of Infante Peter, tirelessly patrolling the trade routes between Torre de Canals and Valencia. Yearning for chivalric renown in the holy war, the young cavalry captain is ever prepared to charge at the head of his riders to cement his house's glory upon Iberian soil. Amor routinely patrolled the rocky ridgelines between Torre de Canals and Xàtiva, strictly verifying transit tolls and transit charters for traveling merchants. Conscious of the vulnerabilities of a foreign dynasty in Aragon, he consistently claimed the spearhead in combat, winning the unstinting respect of native Catalan captains through proven battlefield valor. With disciplined determination, this capable young lord steadily expanded his ancestral Hungarian knightly honors across the Iberian frontier.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win martial glory in frontier combat to establish the unassailable renown of the Dionís house",
+    "Defend the seigneurial domains of Torre de Canals against Moorish insurgent attacks",
+    "Serve Infante Peter as a premier vanguard cavalry commander in Mediterranean campaigns"
+  ],
+  "Values": [
+    "A knight's worth is proven in the storm of mounted combat; hesitation is the badge of a coward",
+    "Repay royal favors and ancestral honor with unswerving blood fealty until death",
+    "Charge boldly into the fray; victory crowns the audacious and true"
+  ],
+  "Fears": [
+    "Being captured and held for ransom, bringing dishonor upon his family's chivalric name",
+    "Political machinations at court stripping his house of its hard-won Valencian fiefs"
+  ],
+  "SpeechStyle": "Calm, incisive, and pragmatic; speaks with the crisp precision of an active cavalry officer mindful of duty and honor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

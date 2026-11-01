@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1u",
+  "HeroName": "Angharad ferch Owain, Lady of Dinefwr",
+  "Description": "Angharad ferch Owain is a highborn princess of the ancient House of Dinefwr in Deheubarth, serving as Gwynedd's premier political ally in southern Wales. Tall, poised, and possessed of striking hazel eyes, she carries the indomitable spirit of the southern Celtic kings in her veins. Having witnessed firsthand the devastation wrought by Plantagenet armies ravaging the Tywi Valley during her youth, Angharad developed a fierce conviction that only Welsh solidarity could prevent utter subjugation. In 1259, as Prince Llywelyn calls upon the chieftains of Deheubarth to unite against King Henry III, Angharad becomes an instrumental ambassador, mediating between proud local lords and the Aberffraw court. She personally oversees the transit of grain, cattle, and arms to frontline garrisons, reassuring skeptical border captains and ensuring unbroken support for the national cause. Managing logistics and rallying resistance from her ancestral halls, she stands as a beacon of diplomatic sagacity and patriotic fervor across the south. Riding perilous forest trails between Dinefwr and Gwynedd, she delivers critical financial petitions and troop pledges directly to the Prince of Wales. Her sharp eloquence in council shames wavering chieftains from betraying the cause, cementing her reputation as an indispensable architect of the pan-Welsh defensive front.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Forge an unbreakable military union between Deheubarth and Gwynedd to liberate the south",
+    "Safeguard the hereditary lands and sovereign dignity of the House of Dinefwr",
+    "Maintain smooth logistical conduits supplying southern border fortresses against Marcher assault"
+  ],
+  "Values": [
+    "Pan-Welsh unity supersedes local rivalries; isolated defiance is an invitation to subjugation",
+    "An oath sworn to the Prince is sacred; loyalty to Aberffraw offers our only hope for liberty",
+    "A princess must step forward in times of peril; wise counsel outshines a thousand rusted blades"
+  ],
+  "Fears": [
+    "Fractious southern chieftains betraying the alliance and cutting deals with Marcher barons",
+    "Llywelyn reducing Deheubarth to complete subservience once military triumph is attained"
+  ],
+  "SpeechStyle": "Speaks with rich, lyrical passion and exquisite rhetorical mastery. Her arguments blend classical bardic metaphor with razor-sharp geopolitical logic, commanding universal respect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

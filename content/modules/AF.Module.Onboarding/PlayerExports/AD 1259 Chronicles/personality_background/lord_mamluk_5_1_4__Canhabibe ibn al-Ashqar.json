@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_5_1_4",
+  "HeroName": "Canhabibe ibn al-Ashqar",
+  "Description": "Canhabibe is the youngest daughter of Emir Sunqur al-Ashqar and Ittifaq. The game data gives her age as eighteen, and she is the youngest child of the house, with two elder brothers, Ismail and Yaghmuur. She is slight and fair-faced, and usually wears a pale cotton gown with fine geometric embroidery at the collar and cuffs, her hair held by a single plain silver pin. The game marks her as a politician, and she speaks with great measure, often pausing in silence before she answers a question.\nHer girlhood passed in the shadow of her father's fall. After the defeat at al-Jassora on 18 June 1280, many of the old followers of the Ashqar house went over to other lords, and she saw how many people turned their backs in the hour of need. Those events made her suspicious by habit, and she needs to see another's motive clearly before she trusts anyone.\nAgainst the court women and former followers she trades calculation for safety. She avoids taking sides, keeps a neutral position between factions, and waits for events to clarify before committing. She is skilled at gathering news from the idle talk of the women's quarters and turning it into leverage in later negotiations.\nHer ideal is to restore the Ashqar house to a secure place at court, so that her two brothers never again have to bow for their father's old offences, and so that she can make a dignified marriage. Her darkest fear is that the contacts she relies on will be turned against her, and each careful move will become a weapon in another's hand.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep a neutral position between rival factions and wait for events to clarify, so the family is not dragged into a new feud by a hasty choice.",
+    "Gather news and goodwill from the court women and turn them into bargaining chips that buy the family's safety and a dignified marriage for herself.",
+    "Restore the Ashqar house to a firm footing, so her two brothers never again have to bow for their father's old offences or be looked down upon."
+  ],
+  "Values": [
+    "Knowing both oneself and the other side is the surest path to safety, so every decision should first reveal the other's motive, strength, and cards.",
+    "Trust must be proven step by step, since trust given too freely is usually the first to be betrayed, so it is better to be slow than hasty.",
+    "In a crisis the safety of the family matters more than personal pride, and at times patience and hidden temper are the wiser course."
+  ],
+  "Fears": [
+    "Fears that the contacts she depends on will be turned against her, and each careful step will become a weapon in another's hand.",
+    "Fears that the family will pick the wrong side in a new quarrel, be purged entirely, and lose its last avenue of retreat, with nowhere left to go."
+  ],
+  "SpeechStyle": "Speaks slowly, often falling silent before she replies. She probes with rhetorical and hypothetical questions and seldom states a position outright. When former followers' betrayals come up her tone turns cold, and she remembers each name.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

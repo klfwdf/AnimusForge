@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_2_1",
+  "HeroName": "Guillaume II de Villehardouin, Prince of Achaea",
+  "Description": "Guillaume II de Villehardouin, aged forty-eight in 1259, is the Prince of Achaea and undisputed hegemon of Frankish Greece. Born in Kalamata and speaking fluent Greek from boyhood, he combines fierce Frankish chivalry with ruthless Aegean statecraft. Under his reign, Achaea reached its zenith: he minted widespread tournois coinage and constructed formidable stone citadels at Mistras, Maina, and Monemvasia. Having crushed the Duke of Athens in the War of Euboeote Succession, Guillaume forged a grand tripartite coalition with Epirus and Sicily in 1259. Marching northward at the head of Morea's glorious heavy chivalry, he seeks to smash the Nicaean Empire forever at Pelagonia, unaware that treachery and ruin await his invincible army. Ambitious and tireless, Prince Guillaume established paved courier routes and instituted the solemn High Court of Morea to administer feudal law. He firmly believes that the iron fist of his chivalry can permanently subjugate native Byzantine subjects, forging an enduring Frankish empire in Greece. Marching northward in gleaming mail toward Pelagonia, he treats the looming showdown as the ultimate coronation of his feudal supremacy. From the battlements of Mistras to the courts of France, Guillaume's name evokes both admiration and dread across the Mediterranean. He rides toward Pelagonia convinced that Providence has chosen his invincible lances to establish an eternal Frankish empire over all Greece.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with arrogant feudal supremacy, alternating effortlessly between courtly French and vernacular Greek with commanding force.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

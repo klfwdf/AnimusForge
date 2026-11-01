@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_1_6",
+  "HeroName": "Ruiseart de Brùs",
+  "Description": "Richard de Brus is the youngest son of Robert V, Lord of Annandale, and Isabella de Clare, nine years of age. Energetic, bright-eyed, and high-spirited, his cheerful blue eyes and tumbling brown hair reflect an untamed boyhood zest for life. Though thoroughly doted upon by his parents and elder siblings within the secure ramparts of Lochmaben Castle, Richard is sturdy and fearless. He passionately trails behind his eldest brother Robert, enthusiastically striking straw quintains with a wooden practice sword and mimicking cavalry battle cries. Household accounts record his proud mastery of riding a small white palfrey, beloved by the castle garrison for his sunny bravery and merry laughter. Though destiny will one day see him serve as an esteemed knight and royal servant in Plantagenet campaigns, he currently enjoys an idyllic, protected childhood, bringing joyful sunshine into the mighty fortress. Across the sunny bailey of Lochmaben Castle, young John delights in spirited mock jousts upon sturdy Highland ponies; his innocent laughter, brave little heart, and bright inquisitiveness bring warmth and cheer into the fortified halls, making him the cherished favorite of seasoned garrison sergeants, court clerks, and household kin throughout Annandale, admired by everyone who visits.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Grow strong and tall so he can soon wear real iron chainmail and ride a fierce warhorse like brother Robert.",
+    "Play joyfully with castle hounds and falcons, bringing pride and laughter to his loving family."
+  ],
+  "Values": [
+    "Worships mighty knightly heroes and noble steeds, longing to become a great protector of his house.",
+    "Values affection, joyful play, and the safe, warm embrace of his parents and siblings."
+  ],
+  "Fears": [
+    "Fears the howling winter gales echoing down shadowy castle stairwells on stormy nights.",
+    "Dreads displeasing his stern father and tries hard to recite his Latin lessons properly."
+  ],
+  "SpeechStyle": "Speaks with joyous, high-spirited childhood chatter, eager, bubbly, and brimming with innocent excitement.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

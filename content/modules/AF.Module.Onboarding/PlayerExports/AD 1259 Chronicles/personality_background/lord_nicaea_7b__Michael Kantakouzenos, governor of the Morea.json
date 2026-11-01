@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_7b",
+  "HeroName": "Michaíl Kantakouzīnós, Governor of Morea",
+  "Description": "Michaíl Kantakouzīnós, aged twenty-one, is the accomplished young scion of the Megas Konostaulos and future first Kephale of Byzantine Morea (father of Emperor John VI). Combining spirited martial prowess with remarkable administrative intellect, he received an elite education in Roman law, classical rhetoric, and statecraft at Nicaea. While inspired by his father's fierce combat legacy, young Michaíl keenly understands that newly reclaimed territories require diplomatic tact and civil stability. Following Pelagonia, he assisted with high-level negotiations regarding ransoms and territorial concessions with captured Achaean Frankish barons. Recognizing the rugged terrain and ethnic complexities of the Peloponnese, he plans policies harmonizing local Greek mountaineers while keeping Latin garrisons isolated. A meticulous administrator, he strictly forbids looting, instituting equitable taxation and impartial courts across liberated districts to win local allegiance. He channels his youthful ambitions into the great enterprise of liberating the Morea, resolved to turn Mystras into a radiant jewel of imperial Byzantine civilization. Diligently reviewing legal petitions and settlement ledgers in his administrative bureau, he consults local village elders with genuine respect, winning widespread admiration through his integrity, justice, and keen organizational acumen. His comprehensive vision will transform the Morea into an unshakeable bastion of empire.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 7b lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with clear intellectual poise, articulate lucidity, and youthful vigor, blending courteous diplomatic polish with firm strategic resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

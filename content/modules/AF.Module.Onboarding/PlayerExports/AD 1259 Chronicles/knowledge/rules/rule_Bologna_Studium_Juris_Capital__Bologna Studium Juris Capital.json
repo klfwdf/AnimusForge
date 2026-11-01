@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Bologna_Studium_Juris_Capital",
+  "Keywords": [
+    "Bologna Studium Juris Capital",
+    "Asinelli Garisenda Twin Towers",
+    "Corpus Juris Civilis Glossators",
+    "Guelph Stronghold Bologna"
+  ],
+  "RagShortTexts": [
+    "Bologna shone as the world's intellectual cradle of revived Roman civil law, bristling with."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bologna hosted Western Europe's oldest continuous university, celebrated for revived Roman legal scholarship under master glossators like Accursius. Dominated by soaring patrician brick towers, the autonomous Guelph commune balanced academic prestige with fierce urban warfare."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "notable"
+        ]
+      },
+      "Content": "Self-governing student nation guilds held civic magistrates accountable, turning the commune into an unassailable bastion of legal jurisprudence."
+    }
+  ],
+  "TextMappings": []
+}

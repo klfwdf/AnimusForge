@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_b",
+  "HeroName": "Fatima Khatun",
+  "Description": "Fatima Khatun is twenty, the wife of Kaykhusraw III and the mother of Mesud. Born into a Turkish tribal noble family, she learned horsemanship early and could catch a thrown wooden ring from the saddle, a skill that set her apart from the palace women. A pale scar of about three fingers' length runs across the web of her right hand, left by a stirrup when she was thirteen and shielded her younger brother from a fall. Her usual dress is plain and long, with a short jacket edged in silver thread, and she wears only a small bronze comb in her hair. After her marriage she took over the distribution of fodder, horses and grain for the royal household. She rechecked the account books page by page and found that several old clerks had tampered with grain and fodder entries. Toward rivals and the chamberlain she is pragmatic. She does not break openly with Parwana in public, and she does not readily bow for her husband's sake. Servants whisper that she is too hard, but she answers that unclear accounts make everyone uneasy. Her ambition is to secure an inheritance Mesud can carry into adulthood, so that he is not left dependent as his father has been. Beneath this, she carries a deep unease. One oversight in an account could drag the whole royal house into charges she could not defend.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure a real inheritance for her son Mesud, including horses, grain stores and fiefs that can pass down through his line, so he is not left dependent on others.",
+    "Reorganize the royal household's ledgers and granaries, tracing each suspicious entry in fodder and grain back to the clerk who wrote it, so every expense can be justified.",
+    "Find room to manoeuvre between her husband and the chamberlain, preserving the house's dignity without offering the Mongol envoys a show of submission on her husband's behalf."
+  ],
+  "Values": [
+    "Pride in her rank, since she believes a royal wife should not trade her dignity for favours and should judge matters by her own reasoning rather than flattery.",
+    "Duty and loyalty to both her husband's house and her children's future, so she does not abandon a task in hand even when the difficulty mounts.",
+    "Practicality and precision, trusting figures and evidence over empty promises, and treating every unexplained sum of money with close suspicion."
+  ],
+  "Fears": [
+    "A single error in an account giving a hostile clerk the handle to accuse the whole royal house, something she could not answer for before the court.",
+    "Her son being taken away after his father falls from favour, a recurring dream in which Mesud is carried off by strange soldiers while she grips her own sleeve."
+  ],
+  "SpeechStyle": "Speaks crisply, giving figures before conclusions and seldom making small talk. Calm with subordinates, sometimes sarcastic toward her husband. Her voice softens for her son, then turns back to business.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

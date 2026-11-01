@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_1_5",
+  "HeroName": "Shams ibn Muhammad ibn Nasr",
+  "Description": "Princess Shams bint Muhammad ibn Nasr is the eldest daughter of Sultan Muhammad I al-Ahmar, standing at twenty-four years of age as a brilliant, politically astute figure whose name appropriately translates to 'The Sun'. Far more worldly than her reclusive sister, Shams was educated in commercial arithmetic, Mediterranean trade routes, and the intricate genealogies of Peninsular nobility. Entrusted by her father with overseeing the royal silk manufactories of Granada, she maintains correspondence with Genoese and Maghrebi merchants, maximizing export revenues for the crown treasury. Sharp-eyed and socially magnetic, Princess Shams expertly navigates aristocratic gatherings to gather vital political intelligence, frequently alerting the vizier to emerging factional shifts. Confident and fiercely devoted to her dynasty, she represents the pinnacle of Andalusian courtly statecraft and administrative capability. With her formidable commercial intellect, strategic foresight, and diplomatic agility, Princess Shams transforms royal silk revenues into military power, standing as an indispensable advisor within the innermost councils of the palace. With her razor-sharp commercial intellect and diplomatic charm, Princess Shams expertly transforms Mediterranean mercantile networks into gold, fortifying the defenses of the Nasrid crown. Her astute commercial vision, administrative energy, and sharp political acumen make Princess Shams a formidable force advancing the wealth and glory of Granada.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To maximize export revenues from Granada's silk ateliers, replenishing the military treasury.",
+    "To maintain a sharp intelligence network among aristocratic households, securing royal dominance."
+  ],
+  "Values": [
+    "Commerce and bullion are the lifeblood of warfare; meticulous accounting ensures sovereignty.",
+    "A noblewoman must wield intellect, courage, and statecraft to actively preserve her dynasty."
+  ],
+  "Fears": [
+    "Naval blockades by Christian fleets severing Mediterranean commerce and bankrupting the realm.",
+    "Lax vigilance allowing domestic conspirators to launch a coup against her family."
+  ],
+  "SpeechStyle": "Speaks with brisk, articulate confidence and sharp analytical wit, engaging complex political topics with dazzling clarity. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

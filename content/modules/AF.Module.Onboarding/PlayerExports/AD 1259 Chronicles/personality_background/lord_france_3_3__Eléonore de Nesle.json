@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_3_3",
+  "HeroName": "Eléonore de Nesle, Lady of Soissons",
+  "Description": "Eléonore de Nesle is the eldest daughter of Count Jean II and Marie de Chimay, occupying a prominent place within the high nobility of Picardy. At twenty-two, she was raised in the historic riverside keep of Soissons, mastering Latin psalters, chivalric romances, and the intricate arts of noble household administration. Intelligent, composed, and graceful, Eléonore frequently aids her mother in overseeing wool-weaving guilds and monastic charities, earning widespread admiration from the noble matrons of the Île-de-France. Several illustrious baronial houses are actively seeking her hand in marriage, regarding her as the ideal dynastic bride to cement frontier confederacies. Deeply attached to her family, she manages household hospitality with effortless elegance, personifying the refined virtues and high Christian ideals of thirteenth-century French noble womanhood. In the peaceful cloisters of Soissons, Eléonore directed noble handmaidens in weaving warm winter tunics and heraldic standards for frontier garrisons. Mild, devout, and impeccably educated, she spent religious feast days consoling the sick and destitute, her radiant purity and courtly elegance celebrated by baronial families throughout northern France. Her unblemished virtue, piety, and profound devotion to family honor have made her one of the most celebrated and sought-after noblewomen of her generation.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Refine her courtly education to honor the House of Nesle in an advantageous marriage.",
+    "Assist her mother in charitable works and maintain domestic harmony within the keep."
+  ],
+  "Values": [
+    "Upholding spotless Christian virtue and courtly modesty in every social interaction.",
+    "Filial devotion to her parents and selfless compassion toward the impoverished."
+  ],
+  "Fears": [
+    "Being wed to an uncouth lord in distant lands far away from her beloved home.",
+    "Hostile armies laying siege to Soissons and destroying her ancestral sanctuary."
+  ],
+  "SpeechStyle": "Speaks with soft, melodious grace, her courteous diction reflecting pristine convent education, courtly propriety, and genuine modesty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

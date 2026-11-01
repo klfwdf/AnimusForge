@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_7c",
+  "HeroName": "Blanche de Brienne, Abbess of Maubuisson",
+  "Description": "Blanche de Brienne was the imperial daughter of King John of Brienne, Emperor of Constantinople, dedicating her life to God as the Abbess of royal Maubuisson. Founded by Queen Blanche of Castile, Maubuisson Abbey held premier spiritual and charitable preeminence within the crusading network of western Christendom. Renouncing secular aristocratic splendor, Blanche devoted her existence to contemplative prayer, theological transcription, and sheltering the destitute. In 1259, as catastrophic dispatches arrived from Outremer, Blanche established continuous prayer vigils and emergency relief funds for the Holy Land. She supervised the crafting of bandages, woolen tunics, and sacred vessels, shipping them via Templar galleys to hospices in Acre and Cyprus. Her transcendent piety and boundless compassion inspired French royalty and knights alike, earning her universal veneration as the holy guardian of Outremer. Blanche de Brienne served God with profound devotion within royal Maubuisson Abbey, celebrated across France for theological scholarship and spiritual sanctity. She directed an extensive scriptorium and medicinal herbary, regularly dispatching illuminated scripture rolls and medicinal ointments to Hospitaller infirmaries in Outremer. When returned crusaders and noble widows suffered trauma or spiritual despair, Blanche provided comforting counsel, rekindling their Christian peace and fortitude. Church prelates and French royals alike revered her as an indispensable spiritual matriarch protecting holy enterprises.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain continuous day-and-night intercessory prayer vigils at Maubuisson Abbey for the preservation of Christian Outremer.",
+    "Direct monastic revenues toward relief convoys, shipping medical salves, bandages, and grain annuities to frontline hospices.",
+    "Preach crusader sacrifice among French royal noblewomen, inspiring the court to curb luxury in favor of aiding the Holy Land."
+  ],
+  "Values": [
+    "Worldly splendor is fleeting dust; true nobility is achieved solely through compassionate service to the sick and destitute.",
+    "Rigorous adherence to monastic vows and spiritual purity, offering an unshakeable sanctuary of peace amidst a violent world.",
+    "Humility and total self-renunciation, employing imperial royal lineage solely to advance the divine love of Christ."
+  ],
+  "Fears": [
+    "The Holy Sepulchre and the altars of Acre being destroyed by saracen hordes, extinguishing the light of Christ in the Levant.",
+    "Christian princes succumbing entirely to secular greed, abandoning their sacred vows and bringing divine judgment upon Europe."
+  ],
+  "SpeechStyle": "Speaks with serene monastic solemnity and profound theological grace, quoting holy scripture and directing ecclesiastical charities with transcendent spiritual authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Blanche de Brienne, Abbess of Maubuisson"
+}

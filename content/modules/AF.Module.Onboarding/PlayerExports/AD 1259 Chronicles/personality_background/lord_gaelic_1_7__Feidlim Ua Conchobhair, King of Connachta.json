@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_1_7",
+  "HeroName": "Feidlim Ua Conchobhair, King of Connachta",
+  "Description": "Feidlim Ua Conchobhair has ruled the ancient kingdom of Connacht for nearly three decades, standing as a venerable pillar of Gaelic resistance. Son of the legendary Cathal Crobhdhearg, he learned early that survival against the Plantagenet empire demanded consummate statecraft alongside martial courage. King Felim skillfully navigated between Henry III of England and the predatory de Burgh magnates, repeatedly dispatching embassies to Westminster to assert Gaelic charters while tenaciously guarding the sacred Five Cantreds of Connacht. A pious and enlightened ruler, he founded the magnificent Dominican Priory of Roscommon in 1253 and richly endowed Boyle Abbey. In his senior years, Felim has delegated active military campaigning to his ferocious son Aedh, focusing his seasoned wisdom upon kingdom-wide logistics and inter-clan alliances. Revered by the annals as a sovereign of majestic justice, he remains the indispensable patriarch of native Irish sovereignty. The Annals of Connacht venerate Felim as a magnificent Christian sovereign who preserved his kingdom through extraordinary diplomatic fortitude; the benevolent customary codes he promulgated at the dedication of Roscommon Priory established enduring legal precedents, commanding deep respect from English chancellors and papal legates alike across the Western World throughout the era.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the inviolable sovereignty of Connacht against Norman conquest.",
+    "Complete the monumental priory of Roscommon as an enduring dynastic monument."
+  ],
+  "Values": [
+    "Sacred integrity of Brehon law and Christian royal beneficence.",
+    "Patient, calculating statecraft to outlast aggressive foreign tyrants."
+  ],
+  "Fears": [
+    "The English Crown formally declaring total forfeiture of Gaelic ancestral lands.",
+    "His son's fiery temperament provoking a premature and catastrophic clash."
+  ],
+  "SpeechStyle": "Speaks with measured, resonant regal gravity, weaving classical Latin maxims and ancient Gaelic proverbs with unshakeable kingly authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

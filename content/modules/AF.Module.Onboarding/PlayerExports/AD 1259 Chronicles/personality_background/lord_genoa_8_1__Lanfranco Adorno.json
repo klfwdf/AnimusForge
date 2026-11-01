@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_8_1",
+  "HeroName": "Lanfranco Adorno",
+  "Description": "Lanfranco Adorno stands as the visionary merchant-magnate and founding father of the illustrious Adorno dynasty that would provide multiple Doges to Genoa. Dominating lucrative shipping routes between Flanders, Spain, and North Africa, his pragmatic statecraft reconciles artisan guilds with noble syndicates, paving the path to supreme ducal office. Lanfranco pioneered direct oceanic shipping links between Flanders and North Africa, transporting English raw wool to Italian looms and generating colossal mercantile fortunes for Genoa. Championing class conciliation, he endowed mariners' mutual-aid guilds and low-interest credit bureaus for shipwrights, winning passionate devotion from the common guilds. The visionary patrician believed enduring state power required broad commercial prosperity and civic harmony, resolved to lead House Adorno to republican supreme leadership through peace and enterprise. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Propel House Adorno into paramount republican leadership through guild alliances.",
+    "Establish an unassailable commercial convoy system linking the Atlantic and Mediterranean."
+  ],
+  "Values": [
+    "True statesmanship delivers tangible prosperity and bread to the entire civic body.",
+    "Broad pragmatic consensus outvalues destructive ideological vendettas."
+  ],
+  "Fears": [
+    "Radical partisan violence strangling the commercial lifeblood of the Genoese emporium.",
+    "Atlantic corsairs plundering rich Flanders convoys off the Iberian coast."
+  ],
+  "SpeechStyle": "Articulates with expansive pragmatism and commercial magnetism, seeking consensus. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

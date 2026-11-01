@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Medieval_University_Curriculum_Trivium_Quadrivium",
+  "Keywords": [
+    "Medieval Trivium Grammar Rhetoric Logic",
+    "Quadrivium Arithmetic Geometry Music Astronomy",
+    "Scholastic Disputatio Dialectic Method",
+    "Thomas Aquinas Summa Antecedents"
+  ],
+  "RagShortTexts": [
+    "Universities climbed the seven liberal arts, applying scholastic disputatio to harmonize."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Classrooms in Paris, Bologna, and Oxford revolved around the seven liberal arts: the foundational Trivium (grammar, rhetoric, logic) and advanced Quadrivium (arithmetic, geometry, music, astronomy). Pedagogy peaked in scholastic disputationes, where masters harmonized patristic authority with newly translated Aristotelian logic under Thomas Aquinas."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Autonomous guilds of masters and students held papal charters exempting them from municipal bailiffs. Disputes between Dominican Thomists and Averroist philosophers sparked fiery campus controversies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ]
+      },
+      "Content": "Pauper clerks sit on straw-strewn floors copying glosses onto costly vellum folios. Earning a master's hood transforms even a yeoman's son into a royal chancellor or ecclesiastical advocate."
+    }
+  ],
+  "TextMappings": []
+}

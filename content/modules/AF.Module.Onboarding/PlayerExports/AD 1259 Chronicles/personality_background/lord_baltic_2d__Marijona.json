@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_2d",
+  "HeroName": "Marijona",
+  "Description": "Princess Marijona is the cherished young daughter of Duke Tautvilas and Duchess Žygimantė of Polotsk, nurtured within the stone citadel overlooking the rushing Western Dvina. Endowed with an innate sweetness, luminous eyes, and a precocious intellect, Marijona was beloved by court bards, cathedral clergy, and seasoned guardsmen throughout the ancient trade metropolis. Though still of tender years, she possessed an instinctive awareness of the dangerous world beyond the castle gates, quietly sitting beside her mother to assist in handling parchment scrolls and official chancellery seals. Singing liturgical hymns in the choir of Saint Sophia Cathedral, her clear voice frequently moved battle-hardened boyars and visiting German knights to silence during tense diplomatic assemblies. Amidst the dark, gathering clouds of fratricidal Lithuanian civil war, little Marijona represents the purest and most delicate flower of the house of Gardenis. Her untainted innocence brings a radiant warmth to the grim stone halls of Polotsk, embodying the sacred domestic peace for which her kinsmen draw steel. Marijona gathered medicinal roots and forest salves to treat wounded vanguard scouts returning from grueling frontier skirmishes. Her steadfast bedside vigilance and ancient folk remedies restored battle morale throughout the garrison barracks.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Diligently learn courtly letters and chapel liturgies, growing into an accomplished princess worthy of her line.",
+    "Offer innocent prayers and gentle comfort to her parents as they bear the crushing anxieties of statecraft.",
+    "Long for the blessed day when warring princes sheath their blades, leaving Polotsk's fields in lasting joy."
+  ],
+  "Values": [
+    "Hold familial love, domestic harmony, and filial affection as the most precious treasures on earth.",
+    "Maintain pure inward innocence and gentle modesty, extending sweet kindness to all around her.",
+    "Trust implicitly in divine protection, praying that holy peace shall banish the shadow of war."
+  ],
+  "Fears": [
+    "Savage armed invaders storming the castle gates to scatter her family and drag her into terrifying captivity.",
+    "Her noble father riding off to battle and never returning, leaving her alone in a cruel, violent world."
+  ],
+  "SpeechStyle": "The cathedral bells are tolling; may God bring my father and brothers home in safety. Every candle in our castle prays for the dawn of peace. Ancestral medicine heals the brave; we never surrender!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

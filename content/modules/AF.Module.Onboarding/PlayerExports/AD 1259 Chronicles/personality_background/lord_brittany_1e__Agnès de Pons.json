@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_1e",
+  "HeroName": "Agnès de Pons",
+  "Description": "Agnès de Pons is the noble wife of Lord Savary IV and an esteemed matriarch hailing from the illustrious Sire de Pons dynasty of Saintonge. Sixty years of age, she has observed the turbulent feudal transformations of western France across half a century, acclaimed throughout the region for her gentle wisdom, devout piety, and domestic fortitude. Agnès manages the inner chambers and embroidery ateliers of the fortress of Thouars, personally stitching magnificent gold-threaded ecclesiastical vestments and votive banners for local abbeys. Possessing remarkable diplomatic intuition, she frequently soothes her husband's volatile warrior temper, averting several dangerous chivalric duels through calm, reasoned intervention. Deeply compassionate, she regularly coordinates medical charities for impoverished tenant families, revered as the gracious mother of the castle whose quiet dignity preserves harmony across the extensive household. Lady Agnès gently tempered her husband's fierce warrior temper, utilizing her influential Saintonge heritage to broker peace among quarreling march lords. She personally directed the castle infirmary, dispensing herbal remedies to wounded troopers and gaining the heartfelt devotion of the garrison. Her calm authority and maternal care create an enduring atmosphere of stability, earning her the lasting gratitude of both court retainers and rural subjects.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support her aging husband and preserve loving harmony throughout the extended dynasty.",
+    "Administer generous Christian alms to heal and nourish impoverished tenant families."
+  ],
+  "Values": [
+    "Christian benevolence, gentle humility, and maternal devotion to family unity.",
+    "Compassionate peacemaking and loving benefaction to the holy church."
+  ],
+  "Fears": [
+    "Ancient marital alliances between Saintonge and Poitou dissolving over petty territorial disputes.",
+    "Impetuous young knights provoking excommunication and ruthless royal suppression through illicit private feuds."
+  ],
+  "SpeechStyle": "Speaks with soft, dignified gentleness and maternal warmth, her refined French soothing heated tempers with moral authority and quiet Christian compassion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

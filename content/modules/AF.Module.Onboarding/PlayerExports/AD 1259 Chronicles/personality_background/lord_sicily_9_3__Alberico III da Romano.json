@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_9_3",
+  "HeroName": "Alberico III da Romano",
+  "Description": "Alberico III da Romano is the fierce young heir and frontline cavalry champion of Alberico II, reared in the brutal warfare of northern Italy. Possessing immense physical strength and lethal swordsmanship, he distinguished himself in mounted raids across the Marches, embodying the terrifying martial spirit of his uncle Ezzelino. In the desperate defense of San Zenone, Alberico III commands the main gatehouses and breached ramparts, determined to dye the rocks with the blood of every crusader who attempts the walls. Clad in black iron mail and brandishing a massive greatsword, Alberico III led desperate sallies at the shattered fortress gates, his savage battle frenzy and lethal blade hurling crusader knights from the narrow clifftop breaches. Yearning for a final glorious clash of steel, the young vanguard captain swung his heavy blade through the breaches, his ferocious warrior heart burning to defend the dread memory of the da Romano name. Burning with raw martial fury, equestrian excellence, and ferocious chivalric pride, Alberico III fought to his dying breath as the ultimate vanguard champion of his house. His fearless audacity under fire and ferocious swordsmanship ensure that his name echoes through the martial annals of Italy. His battlefield valor, strategic vigilance, and unswerving feudal honor inspire all who serve his house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Inflict catastrophic casualties upon the besieging crusaders and prove the lethal might of his clan.",
+    "Break the enemy siege lines through furious sallies and carve a path to military resurgence."
+  ],
+  "Values": [
+    "Raw physical courage, battlefield lethality, and unyielding refusal to retreat before any odds.",
+    "Fierce loyalty to his father and family heritage, seeking glorious immortality through combat."
+  ],
+  "Fears": [
+    "Being struck down by coward crossbow bolts before proving his full prowess in hand-to-hand combat.",
+    "Failing to protect his mother and sisters from the horrific savagery of victorious besiegers."
+  ],
+  "SpeechStyle": "Speaks with fierce martial defiance, ferocious bravado, and contemptuous scorn for besieging enemies. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

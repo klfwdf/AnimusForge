@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Boris Andreyevic of Gorodets, eldest son of Andrey Alexandrovich, emerged as a ferocious vanguard cavalry captain and enforcer along the Middle Volga. Imbued from boyhood with his father's uncompromising martial pragmatism, Boris was schooled in the relentless realities of medieval warfare. He repeatedly spearheaded aggressive military campaigns on behalf of the Gorodets court, leading heavy armored horsemen in brutal sieges against rival bastions in Pereyaslavl and the Tver borderlands. An exacting commander who tolerated zero insubordination, Boris executed battlefield ambushes with crushing swiftness, enveloping enemy scouting forces before they could report his movements. Beyond his prowess with lance and battleaxe, he fortified riverine narrows with stockades to strangle opposing logistics, hailed by his retainers as an unstoppable iron ram on the field. Enforcing draconian military discipline among his armored lancers, Boris spearheaded brutal breakthroughs in contested river crossings, his savage combat reputation striking dread into nomadic marauders and rival princely retinues across the Volga marches. Leading furious cavalry charges with relentless ferocity, his martial audacity carved through opposing ranks, cementing his reputation as an unstoppable vanguard captain along the Volga corridor, inspiring absolute obedience and fierce courage across every contested battle line.",
+  "SpeechStyle": "Speaks with a gruff, resonant boom that carries across campfires, his imperious commands brooking no debate or delay.",
+  "Motivations": [
+    "Conquer hostile territories with irresistible cavalry charges, smashing rival princely forces to establish supreme military dominion.",
+    "Erect fortified blockhouses along strategic Volga river choke-points to control trade traffic and asphyxiate enemy logistics."
+  ],
+  "Values": [
+    "Values crushing martial power and relentless speed as supreme virtues, believing total victory demands complete destruction of foes.",
+    "Enforces strict military obedience, despising cowardice and holding that conquerors inherit unquestioned rights over the vanquished."
+  ],
+  "Fears": [
+    "Dreads leading his armored riders into boggy defiles and crossbow ambushes, crippling his lineage's frontline offensive power."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ]
+}

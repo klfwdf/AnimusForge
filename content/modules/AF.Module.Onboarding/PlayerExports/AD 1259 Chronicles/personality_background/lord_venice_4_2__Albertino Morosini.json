@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_4_2",
+  "HeroName": "Albertino Morosini",
+  "Description": "Albertino Morosini is the brilliant twenty-seven-year-old brother of Tommaso, serving as Podestà of Treviso and senior diplomat—destined to become the grandfather of King Andrew III of Hungary. Master of civil jurisprudence, diplomatic protocol, and mainland mercenary organization, Albertino governs the strategic marches guarding the approaches to the Venetian lagoon. Successfully countering the aggressive warlord Ezzelino da Romano, he balances military strength with diplomatic cunning to secure Venetian borders. Having served with distinction as Podestà of Constantinople and high magistrate across Dalmatian communes, Albertino authored influential colonial legal codices that masterfully harmonized Venetian maritime statutes with pragmatism on the frontier. Throughout the fierce War of Saint Sabas against Genoa, he coordinated financial levies and logistical supplies across overseas emporia, ensuring that Venetian battle fleets in the Levant never lacked cordage, pitch, or military payrolls. A venerated statesman within the Senate, his measured rhetoric and strategic foresight render him an indispensable architect of the Republic's grand strategy, safeguarding House Morosini's paramount influence in ducal politics. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate Venetian control over Treviso and secure mainland approaches against predatory warlords.",
+    "Forge lucrative commercial and royal matrimonial ties across the Alps into Central Europe and Hungary."
+  ],
+  "Values": [
+    "Strategic diplomacy, institutional legality, and international balance of power over reckless bloodshed.",
+    "Unswerving loyalty to the Venetian state, executing complex treaties with meticulous precision."
+  ],
+  "Fears": [
+    "Mainland tyrants breaching defensive frontier lines and ravaging the agricultural hinterland.",
+    "Diplomatic failures embroiling Venice in exhausting simultaneous two-front wars on land and sea."
+  ],
+  "SpeechStyle": "Speaks with incisive diplomatic precision, smooth European courtliness, and calculating calm. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

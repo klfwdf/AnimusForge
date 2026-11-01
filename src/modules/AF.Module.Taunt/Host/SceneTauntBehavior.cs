@@ -121,6 +121,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
+		CampaignEvents.MakePeace.AddNonSerializedListener(this, OnMakePeace);
 		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTaken);
 		CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleased);
 		CampaignEvents.CanHeroDieEvent.AddNonSerializedListener(this, OnCanHeroDie);
@@ -351,6 +352,17 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		TryCommitPendingMainHeroBattleDeath();
 		TryCommitDeferredCrimeWhenBackOnWorldMap();
 		TryCommitDeferredLordSceneDiplomacyWhenBackOnWorldMap();
+	}
+
+	private void OnMakePeace(IFaction side1Faction, IFaction side2Faction, MakePeaceAction.MakePeaceDetail detail)
+	{
+		// Match native CrimeCampaignBehavior: only this player's treaty settles its counterpart.
+		IFaction playerFaction = Hero.MainHero?.MapFaction;
+		if (playerFaction == null) return;
+		IFaction counterpart = side1Faction == playerFaction ? side2Faction
+			: side2Faction == playerFaction ? side1Faction : null;
+		if (counterpart != null && counterpart != playerFaction)
+			ClearDeferredCrimeForExternal(counterpart, "native_make_peace");
 	}
 
 	private void OnHeroPrisonerTaken(PartyBase capturer, Hero prisoner)
@@ -837,6 +849,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 					_penaltyLedger.ClearDeferredCrime(item.Key);
 					continue;
 				}
+				bool settlementCommitted = false;
 				try
 				{
 					float num2 = MathF.Max(0f, factionById.MainHeroCrimeRating);
@@ -844,17 +857,19 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 				float num5 = _penaltyLedger.ReserveNativeCommit(text, num2, num3);
 				if (num5 <= 0f)
 				{
-					Logger.Log("SceneTaunt", $"Deferred scene-taunt crime pool not injected because native crime is already at max. Faction={factionById.Name}, NativeCrime={num2:0.##}, Pool={num:0.##}, Max={num3:0.##}");
+					settlementCommitted = true;
+					Logger.Log("SceneTaunt", $"Settled deferred scene-taunt crime at native cap without a refill balance. Faction={factionById.Name}, NativeCrime={num2:0.##}, Deferred={num:0.##}, Max={num3:0.##}");
 					continue;
 				}
 				float num6 = _penaltyLedger.GetDeferredCrime(text);
 					ChangeCrimeRatingAction.Apply(factionById, num5, true);
+					settlementCommitted = true;
 					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CrimeCommittedAfterScene", "After leaving the scene, {FACTION} crime increases by {AMOUNT}.", ("FACTION", factionById.Name), ("AMOUNT", num5.ToString("0.#"))));
 					Logger.Log("SceneTaunt", $"Injected scene-taunt crime pool into native crime. Faction={factionById.Name}, NativeBefore={num2:0.##}, Added={num5:0.##}, RemainingPool={num6:0.##}, NativeAfter={MathF.Max(0f, factionById.MainHeroCrimeRating):0.##}");
 				}
 				catch (Exception ex)
 				{
-					_penaltyLedger.RestoreFailedNativeCommit(text, num);
+					if (!settlementCommitted) _penaltyLedger.RestoreFailedNativeCommit(text, num);
 					Logger.Log("SceneTaunt", "Committing deferred scene crime on world map failed: " + ex.Message);
 				}
 			}

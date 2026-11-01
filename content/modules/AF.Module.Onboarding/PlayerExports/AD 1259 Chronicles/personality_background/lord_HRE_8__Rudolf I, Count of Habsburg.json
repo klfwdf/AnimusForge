@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_8",
+  "HeroName": "Rudolf I, Count of Habsburg",
+  "Description": "Rudolf I, Count of Habsburg, is the brilliant founding architect of Habsburg dynastic supremacy and the preeminent commander of Swabia and Alsace. Through cold, calculating pragmatism and decades of hardened campaign service, he wove an expansive feudal network across the Upper Rhine and Aargau, securing the lucrative Kyburg inheritance to become southwestern Germany's undisputed military powerhouse. Tall, imposing, and battle-tested across countless sieges, Rudolf astutely maneuvered through the chaotic vacuum left by the Hohenstaufen collapse, cementing a vital matrimonial pact with the Hohenberg dynasty while intervening decisively in civic feuds around Basel and Strasbourg. Rudolf despised empty pomp, meticulously husbanding every florin, strategic pass, and armored knight to expand tangible territorial control. Biding his time with lethal patience, he harbored grand ambitions to claim the Roman-German crown and restore sovereign order over the fractured Empire. Amid the craggy defiles of the Upper Rhine, Rudolf combined lightning siege engineering with astute mortgage acquisitions, absorbing the castles of impoverished counts into his burgeoning hegemony. Enforcing rigorous camp discipline among Swiss and Swabian infantry, he shared soldierly rations and winter bivouacs with ordinary levies. This austere pragmatism and unyielding strategic patience turned every imperial crisis into a springboard for Habsburg power. His calculating vision laid the groundwork for an imperial destiny that would reshape the map of Europe.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure firm control over Kyburg and Swabian passes, amassing funds and chivalric levies to contest imperial hegemony.",
+    "Accumulate prestige and alliances during the Interregnum to claim the Roman-German crown for House Habsburg."
+  ],
+  "Values": [
+    "Adheres to relentless pragmatism and calculation, valuing physical strongholds and loyal retinues over paper treaties.",
+    "Holds the aggrandizement of Habsburg ancestral power as an absolute creed, taking no uncalculated risks."
+  ],
+  "Fears": [
+    "Fears King Ottokar II of Bohemia utilizing immense silver wealth to buy the electors and monopolize southern Germany.",
+    "Worries unexpected disaster might leave the family without capable heirs, fracturing hard-won domains."
+  ],
+  "SpeechStyle": "A crown unsupported by steel is merely a gilded cage; master every mountain pass and granary, and victory is won before blades clash. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Rudolf I, Count of Habsburg"
+}

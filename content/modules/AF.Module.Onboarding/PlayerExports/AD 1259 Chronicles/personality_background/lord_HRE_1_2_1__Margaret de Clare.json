@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_1_2_1",
+  "HeroName": "Margaret de Clare",
+  "Description": "Margaret de Clare, daughter of Richard de Clare, Earl of Gloucester, was consort of Edmund, Earl of Cornwall. Reared in England's most powerful magnate dynasty, she united royal Plantagenet interests with baronial might, exercising substantial influence across high politics. Margaret directed cloth workshops and hospices within her castle domains, defending Clare inheritance claims before royal chancellors with haughty baronial pride and intellect. She welcomed noble embassies in London and Gloucester, deploying legal charters to defeat predatory schemes aimed at dismembering the vast inheritance of House Clare. Possessing unyielding baronial pride, Lady Margaret faced political storms with regal defiance, exemplifying the magnificent fortitude of English magnate heiresses. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Mobilize Clare baronial networks to strengthen her husband's authority within the Regency.",
+    "Protect her extensive personal dower estates against royal and baronial encroachments.",
+    "Patronize Oxford theological scholars to enhance the intellectual prestige of her lineage."
+  ],
+  "Values": [
+    "Believes baronial survival requires balancing royal prerogative against magnate liberties.",
+    "Holds patrician independence and personal dignity inviolable in every marital trial."
+  ],
+  "Fears": [
+    "A childless marriage ending in legal divorce and stripping her of her countess title.",
+    "Her native House of Clare siding against the King and facing treasonous confiscation."
+  ],
+  "SpeechStyle": "Speaks with icy baronial haughtiness and calculating clarity, brooking zero condescension. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

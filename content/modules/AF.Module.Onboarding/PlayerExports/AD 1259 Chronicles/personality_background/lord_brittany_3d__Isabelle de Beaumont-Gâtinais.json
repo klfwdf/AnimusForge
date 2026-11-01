@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_brittany_3d",
+  "HeroName": "Isabelle de Beaumont-Gâtinais",
+  "Description": "Isabelle de Beaumont-Gâtinais is a high-born noblewoman of the House of Laval, hailing from the prestigious baronial family of Beaumont in the royal county of the Gâtinais. Nineteen years of age, she was educated amidst the cultural refinement of the Capetian court, possessing deep familiarity with royal chancellery protocols and chivalric etiquette. At Vitré Castle, Isabelle orchestrates aristocratic hospitality and seasonal festivals with graceful poise, while generously endowing rural almshouses along the Maine border. Pious, intelligent, and unruffled by political tensions, she brings serene elegance to the fortified halls, universally admired as an exemplar of aristocratic charm and virtuous womanhood. Isabelle enriched Vitré castle with scholarly manuscripts and Parisian architectural designs from her royal court background. Her decisive administrative talent ensured unshakeable logistical and defensive stability whenever her husband was called away on royal service. Her sophisticated administrative supervision of household finances and diplomatic dispatches guarantees absolute stability, making her an exemplary partner in baronial governance and cultural patronage. Her calm prudence and insightful diplomacy during turbulent regional negotiations make her a pillar of strength within the great castle of Vitré, admired by all noble peers across Brittany and neighboring Anjou.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cultivate the arts and provide compassionate relief to frontier communities.",
+    "Uphold the impeccable aristocratic honor of her lineage across France and Brittany."
+  ],
+  "Values": [
+    "Infusing frontier baronial administration with the rigorous jurisprudence of the Paris court.",
+    "Sustaining powerful diplomatic alliances for Laval within the inner circle of the French Crown."
+  ],
+  "Fears": [
+    "Unruly march vassals provoking crown intervention through defiant tax resistance.",
+    "Household finances collapsing into debt through lavish expenses, endangering patrimonial estates."
+  ],
+  "SpeechStyle": "Speaks with gentle, crystalline sweetness and courtly decorum, her diction cultured, soothing, and reflecting the highest standards of royal French breeding.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

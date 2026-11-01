@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_2_2",
+  "HeroName": "Şemseddin of Karaman",
+  "Description": "Şemseddin is a son of Bünsuz Karaman Bey and Bengü. At twenty-four he is a cadet of the Karamanid house who shares his name with an earlier family figure. The historical record does not describe him personally, so his temperament, marriage, and experiences are game-world inventions. Given the usual career of cadet sons at court, he is likely to be found in the offices of Konya. No source describes his looks. This profile imagines a slender, pale young clerk with a short beard, who wears a pale blue silk robe with silver thread at the cuffs. Much of his youth passed between the court and the camp. He learned to write documents, check grain accounts, and manage envoys with tact. Against cousins from the senior line and powerful ministers, his method is patience and careful arithmetic. At the decisive moment he lays a clearly written account before his opponent, leaving no room to refuse. He gets on well with his family and often writes his father's letters to the court without seeking credit. His lofty aim is to win a real post in Konya and gain for his branch the standing that the senior line enjoys. His hidden fear is that, once his father is gone, the reputation of the senior line will bury his achievements and leave him as somebody's assistant forever.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Win a real post in Konya's offices, so that his branch has a voice at court equal to the senior line rather than standing as a bystander.",
+    "Use his skill with documents and accounts to win more grain, tax, and pay for the family, with every sum recorded and checkable.",
+    "Build his own reputation among brothers and cousins, so that no one can quietly claim his achievements as their own."
+  ],
+  "Values": [
+    "He values rules and written records, believing that a signed contract protects a family better than spoken promises, so he keeps evidence for everything.",
+    "He values calm, checking figures and people before acting in anger, and he would rather go slow and sure than make an irreversible mistake.",
+    "He respects his father Bunsuz's uprightness and worries about it, believing that patience and ink can resolve many needless quarrels."
+  ],
+  "Fears": [
+    "After his father dies, the senior line may use its rank to push the branch aside, erasing his achievements and leaving him as a nameless assistant.",
+    "A mistake in accounts or a palace misunderstanding that costs him his post, ending any chance of advancement and dragging his family down with him."
+  ],
+  "SpeechStyle": "He speaks evenly and carefully, setting out facts and figures before reaching a conclusion. He is respectful to elders and courteous to colleagues, rarely shows emotion, and uses a gentle reminder in place of direct rebuttal.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

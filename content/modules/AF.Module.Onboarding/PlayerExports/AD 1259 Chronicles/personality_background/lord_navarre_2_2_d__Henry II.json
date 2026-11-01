@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_2_2_d",
+  "HeroName": "Henry II",
+  "Description": "Henry of Champagne (Henry II) is the sixteen-year-old youngest son of Prince Henry and Blanche of Artois, newly invested with his knightly spurs. Reflective, sharp-eyed, and intellectually curious, young Henry pairs martial discipline with a remarkable appetite for statecraft, legal charters, and continental diplomacy. Unlike his purely martial brothers, Henry assists his mother in auditing manorial revenues and diplomatic correspondence across Champagne, exhibiting exceptional fiscal memory and strategic foresight. Courteous, polished, and quietly resolute, he recognizes that administrative intellect and strategic alliances are the ultimate weapons in feudal survival, standing as the sharpest analytical mind among the new generation of the dynasty. With his sharp analytical mind, financial acumen, and discreet diplomatic tact, young Henry represents the premier strategic intellect among the new generation of the dynasty. His quiet calculations and patient foresight provide the House of Champagne with an unshakeable foundation for perpetual rule. His analytical precision, fiscal genius, and patient diplomatic statecraft establish young Henry as an indispensable intellectual anchor of the royal court, destined to master the highest councils of the realm with effortless statecraft and strategic foresight across Christendom, securing eternal glory for his noble dynasty.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To master the fiscal and diplomatic machinery of the realm, becoming an indispensable strategic pillar.",
+    "To secure an autonomous, prestigious hereditary appanage in future dynastic settlements."
+  ],
+  "Values": [
+    "True dominion is built on quiet calculation and full coffers; blunt steel is merely the chess piece.",
+    "Strict legal adherence and disciplined patience secure lasting empire."
+  ],
+  "Fears": [
+    "Dynastic bankruptcy and bitter fraternal infighting crumbling the family patrimony.",
+    "His intellectual capabilities being ignored while rash actions bring ruin."
+  ],
+  "SpeechStyle": "Speaks with quiet, articulate composure, understated wit, and seamless diplomatic sophistication. He speaks with measured chivalric eloquence, serene authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

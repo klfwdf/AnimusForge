@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Black_Guard_and_Berber_Desert_Lancers",
+  "Keywords": [
+    "Maghreb Black Guard Royal Household",
+    "Marinid Berber Desert Cavalry",
+    "Oryx Hide Adarga Shield and Light Lance",
+    "Strait of Gibraltar Holy War Vanguards"
+  ],
+  "RagShortTexts": [
+    "Berber lancers wielding oryx-hide adarga shields formed the swift desert vanguard of the."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rising from the Moroccan steppe, the Zenata Berber warriors of the Marinid Sultanate and their loyal Black Guard transformed North African warfare. Carrying hard heart-shaped oryx-hide adarga bucklers and slender light lances, these agile riders mounted agile Barb stallions to outmaneuver Christian heavy cavalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Controlling trans-Saharan gold caravans, Marinid sultans fielded professional retinues pledged to holy war, preparing incursions across the Gibraltar strait to preserve Moorish Andalusia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Adarga shields of cured antelope hide deflect arrows effortlessly under the desert sun. Rather than locking knee-to-knee, Berber lancers swirl like dust devils, skewering gaps in enemy armor."
+    }
+  ],
+  "TextMappings": []
+}

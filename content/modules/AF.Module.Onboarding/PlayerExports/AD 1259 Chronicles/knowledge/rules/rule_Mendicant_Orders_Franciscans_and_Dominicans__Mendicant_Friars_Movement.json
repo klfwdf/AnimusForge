@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Mendicant_Orders_Franciscans_and_Dominicans",
+  "Keywords": [
+    "Mendicant Friars Movement",
+    "Franciscan Apostolic Poverty",
+    "Dominican Intellectual Order",
+    "Saint Francis Assisi Rule"
+  ],
+  "RagShortTexts": [
+    "Franciscans embracing holy poverty and Dominicans armed with scholastic learning."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Franciscan and Dominican mendicant friars revolutionized medieval Christendom by abandoning cloistered seclusion. Franciscans embraced radical apostolic poverty among urban paupers, preaching in the vernacular, while Dominicans deployed rigorous scholastic disputation to combat intellectual heresies in rising universities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Thomas Aquinas and Albertus Magnus lecture in Paris, harmonizing Aristotelian logic with Christian theology, while Franciscan brothers preach humility in crowded squares. Together they form the intellectual and pastoral pillars of Rome."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Traditional abbots held wealthy fiefs and drew cynical scorn. Now even kings and queens request humble Franciscan cinctures and gray tunics upon their deathbeds to secure safe passage through purgatory."
+    }
+  ],
+  "TextMappings": []
+}

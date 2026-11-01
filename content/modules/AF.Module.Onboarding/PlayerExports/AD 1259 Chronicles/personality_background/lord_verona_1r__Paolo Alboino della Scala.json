@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1r",
+  "HeroName": "Paolo Alboino della Scala",
+  "Description": "Paolo Alboino della Scala, youngest son of Mastino II, served as co-Signore of Verona alongside his brother Cansignorio. Pious, unassuming, and gentle, he devoted his authority to patronizing monastic orders and arbitrating civic disputes, winning deep public reverence. Paolo Alboino endowed urban hospices for the destitute and arbitrated civil lawsuits, earning universal veneration across Verona for unblemished personal purity. Distributing relief during epidemics and wars, his saintly charity and selfless dedication won universal adoration as Verona's most beloved and merciful magistrate. Spotless in virtue, Paolo Alboino lived as a saintly magistrate whose selfless charity cleansed Verona of factional bitterness, beloved as a true father of the people. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Endow municipal hospices and friaries to provide free medicine and grain to impoverished citizens.",
+    "Support Cansignorio's monumental civic works by diligently handling civic arbitration tribunals.",
+    "Shun factional conspiracies that might ignite fratricidal violence, praying for dynastic peace."
+  ],
+  "Values": [
+    "Believes righteous, compassionate justice pleases God, viewing earthly vanity as fleeting.",
+    "Holds kindness and self-restraint as moral imperatives, abhorring political cruelty."
+  ],
+  "Fears": [
+    "His gentle disposition being manipulated by conspirators to undermine his brother's rule.",
+    "Dynastic bloodshed drawing divine retribution down upon the final generation of his house."
+  ],
+  "SpeechStyle": "Speaks with monastic gentleness and heartfelt sincerity, radiating spiritual calm. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_5d",
+  "HeroName": "Mariola Orsini",
+  "Description": "Lady Mariola Orsini is an influential and dignified noblewoman of the House of Orsini, serving as a critical matrimonial and political link in Latium's baronial networks. Possessing regal Roman beauty, sharp political discernment, and immaculate administrative poise, Mariola oversees household accounts and domestic logistics within the fortified palaces of Monte Giordano. Navigating cutthroat curial politics with cool detachment, she stands as an esteemed counselor behind her brothers' martial campaigns. Possessing regal Roman beauty and sharp political acuity, Lady Mariola directs domestic logistics and treasury books within Monte Giordano, advising her brothers with cool detachment and maintaining an unshakeable aristocratic poise in high baronial diplomacy. Balancing administrative vigilance with sovereign baronial dignity, Mariola preserves household order through every crisis, serving as the trusted intellectual anchor behind her brothers' sweeping geopolitical ambitions. Her unyielding discipline, moral integrity, and administrative mastery command the unreserved loyalty and deep respect of the entire nobility and household of Monte Giordano. Her quiet strength, analytical mind, and aristocratic grace make Mariola a beacon of promise for the glorious future of the Orsini lineage. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Orchestrate advantageous dynastic alliances that solidify Orsini hegemony across central Italy.",
+    "Master domestic logistics and finances to provide unshakeable rear support for her family's ambitions."
+  ],
+  "Values": [
+    "Uncompromising dynastic pride, family loyalty, and preservation of aristocratic honor.",
+    "Rational moderation, administrative discipline, and firm order in the face of chaos."
+  ],
+  "Fears": [
+    "Urban conflagrations or street riots breaching Monte Giordano and destroying family archives.",
+    "A sudden reversal of political fortunes leaving her house vulnerable to vindictive rivals."
+  ],
+  "SpeechStyle": "Speaks with cool aristocratic reserve, sharp political acuity, and commanding patrician composure. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Vasylko Romanovych is Prince of Volhynia, younger son of Roman the Great, and the steadfast, lifelong comrade-in-arms to King Danylo. In an era marred by vicious fraternal betrayals across medieval Rus', the unbreakable loyalty and mutual devotion between Vasylko and Danylo stood as a rare and legendary beacon of brotherhood. Governing the vital Volhynian strongholds of Vladimir and Lutsk, Vasylko is renowned for his modesty, integrity, and exceptional defensive tactical acumen. He shielded Danylo's flank through countless campaigns against rebellious boyars, Hungarian knights, and marauding Lithuanian war-bands. At the Battle of Yaroslav in 1245, his armored cavalry charges anchored the royal vanguard to secure historic triumph. In 1259, when Mongol general Burundai arrived with overwhelming armies demanding the demolition of fortresses, Vasylko courageously negotiated within the enemy camp, preserving his people's lives through heroic composure. Ruling Volhynia with legendary steadfastness, Prince Vasylko maintained lifelong fraternal solidarity with King Danylo, presenting an unbroken united front against hostile powers. He drilled elite garrisons in Lutsk, repaired vital hydraulic infrastructure, and prudently managed manpower under the grim shadow of Mongol vassalage, preserving the martial nucleus of southwestern Rus'. His seasoned administrative mastery ensured that towns and villages along the Styr River flourished in peace, providing the bedrock of military recruitment and supplies.",
+  "SpeechStyle": "Brotherhood is stronger than the heaviest plate, and we defend Vladimir to the death! However grim the Mongol tide, Volhynia stands with our king! Fraternal loyalty makes our realm an unbroken fortress.",
+  "Motivations": [
+    "Devote his life to supporting King Danylo, preserving the territorial integrity and dynastic unity of Rus'.",
+    "Protect the people of Volhynia under the shadow of Mongol terror, safeguarding the seeds of national revival."
+  ],
+  "Values": [
+    "Hold fraternal fidelity, selfless sacrifice, and pastoral protection of subjects as holy knightly vows.",
+    "Prize patient resilience and rock-solid military discipline, holding firm amidst terrifying perils."
+  ],
+  "Fears": [
+    "Fears Burundai breaking treacherous truces to sack defenseless Volhynian towns following wall destructions.",
+    "Dreads the collapse of Danylo's grand liberation crusade, plunging the dynasty into extinction."
+  ],
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

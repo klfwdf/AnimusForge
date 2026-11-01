@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1b",
+  "HeroName": "Mikuláš I. Opavský",
+  "Description": "Mikuláš I is the beloved eldest natural son of King Přemysl Otakar II and the Austrian noblewoman Agnes of Kuenring. Though barred from the Bohemian royal succession by illegitimate birth, his royal father secured papal legitimization and invested him with the sovereign Duchy of Opava. Trained from childhood in Prague's martial lists and Moravian border forts, Mikuláš inherited his sire's imposing stature and aggressive tactical instincts. Regularly accompanying the royal court on inspections along the Silesian and Polish frontiers, he mastered the logistics of northern march fortresses. Acutely conscious of the legal vulnerabilities surrounding his birth, he burns to prove through unwavering loyalty and battlefield valor that the blood of the Přemyslid lion courses through his veins, determined to serve as his father's most unyielding northern spearhead. Within his Duchy of Opava, Mikuláš opened vast woodland clearings and mining foundries, recruiting Saxon and Silesian engineers to construct deep moats and stone ramparts to overawe neighboring Piast dukes. Ambushing marauding border raiders in harsh winter terrain alongside his scouts, he organized northern relay outposts while his royal father campaigned abroad, commanding the fierce loyalty of veteran Bohemian lances. His iron resolve and battlefield prowess marked him as a formidable defender of the northern marches.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate military and fiscal command over Opava, transforming the duchy into an iron northern barrier.",
+    "Win renowned battlefield glory against Polish and Silesian forces to secure royal honors despite illegitimate birth."
+  ],
+  "Values": [
+    "Regards military honor and unswerving filial devotion to King Otakar as supreme chivalric duties.",
+    "Believes strong fortress bastions and veteran lances far outweigh court flattery."
+  ],
+  "Fears": [
+    "Fears legitimate royal heirs or rival factions will disinherit him from the sovereign Duchy of Opava.",
+    "Worries allied Polish-Hungarian cavalry will breach Opava's marches and ravage Moravian valleys."
+  ],
+  "SpeechStyle": "Titles may be bounded by parchment, but glory is won by cold steel! As Otakar's son, Opava's stone battlements shall prove my royal blood! In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Mikuláš I. Opavský"
+}

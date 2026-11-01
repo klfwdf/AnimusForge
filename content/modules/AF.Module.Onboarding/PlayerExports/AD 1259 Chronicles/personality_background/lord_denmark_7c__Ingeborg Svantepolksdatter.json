@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_7c",
+  "HeroName": "Ingeborg Svantepolksdatter",
+  "Description": "Lady Ingeborg Svantepolksdatter, illustrious noblewoman of Östergötland, was the eldest legitimate daughter of Lord Svantepolk of Viby. Inheriting the blood of Danish kings, Swedish monarchs, and Baltic dukes, Ingeborg was educated in Latin literature, genealogical annals, and high courtly etiquette within the ancestral halls of Viby. Renowned for her gracious piety and diplomatic intelligence, her marriage into the paramount Swedish aristocracy cemented her father's judicial alliance across the realm. She was a dedicated benefactress of Vreta Abbey and regional hospices, regularly financing food distributions for displaced peasants during seasons of military mobilization. Navigating intricate factional intrigues between Copenhagen and Stockholm, Ingeborg provided steady counsel, venerated across both realms as a peerless matriarch. Ingeborg established extensive textile and embroidery manufactories at Viby, exporting fine woolens to Lübeck and Visby and dedicating the profits to parish schools and orphan hospices. Immersed in patristic codices and genealogical annals, she offered perceptive juristic counsel to her father during knotty estate arbitrations. Throughout decades of regional unrest, Ingeborg's steadfast Christian devotion and gentle matriarchal authority soothed volatile border animosities, celebrated across Östergötland as an angel of peace and domestic nobility. Her deep piety and generous hospitality cemented lasting alliances among the ruling baronial houses of Scandinavia.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Reinforce the transnational prestige of her lineage through prestigious dynastic alliances across Scandinavia.",
+    "Endow Vreta Abbey and regional charitable foundations, sheltering vulnerable peasants from civil dislocations."
+  ],
+  "Values": [
+    "Believes unwavering Christian piety and the scrupulous defense of family honor are sacred moral obligations.",
+    "Champions compassionate benevolence and domestic harmony, seeking to heal political animosities through gentleness."
+  ],
+  "Fears": [
+    "Dreads border warfare desecrating the sanctuaries of Vreta Abbey and sweeping away the peace of her household."
+  ],
+  "SpeechStyle": "Speaks with gentle courtly modulation and refined clarity, her dignified modesty reflecting deep moral character.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

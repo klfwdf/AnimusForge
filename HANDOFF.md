@@ -1,3 +1,12 @@
+# 仓库整理：提交其他会话已完成的修复与世界书（2026-11-01）
+
+其他会话已结束，按用户确认整理本地 main：
+- 代码：此前只在隔离分支提交、聚焦应用到工作区的四个修复，按工作区内容（与原提交逐字节一致）本地提交：场景喊话犯罪池持续补满（`eccff17d58` + `ea90dc7182`）、YJ Gemini 四路统一 low（`14e49132df`）、全局移除 minimal 思考档位（`46e6480aaf`）。
+- 世界书：`content/modules/AF.Module.Onboarding/PlayerExports/` 下 AD 1259 中英、东欧 1259 中英新目录（5639 个 JSON），AD 1259 Chronicles 规则/开局/音色修改与 37 个旧人设文件删除，`NpcBuiltinNameAliases.json`，世界书指导文档（`docs/世界书指导.md`、根目录 `世界书指导.md`，删除 `docs/animusforge_worldbook_ai_authoring_guide.md`）。新世界书暂未写进 `content/content-map.json`，不会进部署。
+- 未提交：根目录 `PlayerExports/`、`scratch/`、`work/` 生成物；HANDOFF/主台账的本地私有行；仅换行差异的文件。
+
+验证：提交集合扫描无发布策略禁用文本、无密钥/内网地址。编译部署结果见本条之后的部署记录。
+
 # 合并远端 origin/main（2026-11-01）
 
 用户要求“拉取远端并合并”，冲突逐项确认后执行：

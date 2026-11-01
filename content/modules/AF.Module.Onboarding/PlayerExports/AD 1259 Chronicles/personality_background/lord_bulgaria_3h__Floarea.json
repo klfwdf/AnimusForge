@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_3h",
+  "HeroName": "Floarea, Noblewoman of Wallachia",
+  "Description": "Floarea, aged twenty, is an accomplished noble maiden belonging to an ancient boyar lineage rooted within the Jiu Valley of North Oltenia. Reared amidst the rugged grandeur of the sub-Carpathian slopes, she combines delicate beauty with the resilient, spirited heart of a mountain daughter. Trained in the transcription of sacred Slavonic texts and traditional herbal healing, she regularly gathers mountain botanicals to treat severe wounds. During brutal campaigns repulsing Hungarian incursions, she tirelessly superintended field infirmaries, nursing hundreds of wounded warriors back to health. Her selfless compassion, grace, and moral nobility have won the adoration of the entire boyar host, celebrated as the brightest blossom of the Carpathians. Unafraid of wartime hardships, she sustains civilian morale through ancient Wallachian ballads, banishing despair amidst protracted mountain sieges. Floarea dedicates her youth and Christian piety to the welfare of her people, standing as a luminous beacon of solace to the defenders of the realm. Tirelessly traversing the emergency field infirmaries of the Jiu Valley, she cleans combat wounds with soothing mountain balms, saving countless young lives through her courageous, tireless, and selfless Christian dedication. Their unwavering dedication and strategic foresight remain indispensable to the enduring independence and glory of the realm.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with silver mountain sweetness, compassionate warmth, and natural lyrical grace, bringing peace and courage to all who hear her.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

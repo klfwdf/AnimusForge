@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_9_4",
+  "HeroName": "Filip Törnesson Hjorthorn",
+  "Description": "Lagman Filip Törnesson Hjorthorn was a revered Lawman of Närke, royal knight, and renowned jurist of the prominent Hjorthorn lineage. In 1259, Filip presided over the general ting courts of Närke, earning nationwide renown for his forensic legal acumen, incorruptible integrity, and calm judicial composure. Steeped in both customary provincial codes and the transformative royal peace legislation of Birger Jarl, he adjudicated intricate land disputes and blood-feud arbitrations with absolute equity. Filip fearlessly checked the predatory abuses of powerful magnates, ensuring that humble freemen and widows received full protection under the law. Beyond his judicial bench, he commanded regional levy contingents with disciplined distinction, repelling rogue brigands and maintaining iron order along vital provincial borders. His enduring commitment to statutory justice and meticulous compilation of legal precedents established him as one of medieval Sweden's greatest judicial icons. As Lawman of Närke, Lagman Filip revised all provincial judgment scrolls and boundary markers, permanently resolving centuries-old land disputes between neighboring agrarian parishes. When powerful magnates attempted to seize communal village pastures, Filip stood firm, enforcing the restitution of usurped lands with incorruptible judicial courage. His steadfast devotion to the rule of statutory equity established him as an immortal titan in the annals of Swedish legal history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with measured judicial solemnity and impartial clarity, articulating legal statutes and evidence with incorruptible fairness and calm composure.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

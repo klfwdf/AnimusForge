@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_3h",
+  "HeroName": "Bertalan III.",
+  "Description": "Bertalan III (Bartol III Frankopan), aged one in 1259, is the youngest infant scion of the House of Frankopan, bearing the venerable ancestral name of the dynasty's early crusader founders. Swaddled in fine linen within the fortress of Krk, the healthy babe slumbers beside stone hearths fed with fragrant pine. Regularly blessed by the comital chaplains, his fragile life unfolds under the vigilant protection of the clan's armored garrison. While regional maritime powers contend for control of Adriatic shipping lanes, this infant prince remains blissfully sheltered from all strife, a tender symbol of generational continuity. Infant Bertalan III slumbers peacefully in his carved oaken cradle within Castle Krk, his gentle breaths mingling with the sea breezes. Chaplains record his noble name upon the parchment registers, invoking divine favor and St. Mark's eternal grace to shield him from illness and war. Devoted knights and seasoned mariners guard the child night and day, seeing in his innocent birth an auspicious promise of eternal dynastic renewal. Watched over by pious chaplains and veteran mariners, young Bertalan rests peacefully within carved stone ramparts, a precious child destined to inherit the maritime honors and heroic legacy of his ancestors.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Coos with soft infant purity, babbling playful baby sounds and smiling radiantly at gentle maternal faces.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

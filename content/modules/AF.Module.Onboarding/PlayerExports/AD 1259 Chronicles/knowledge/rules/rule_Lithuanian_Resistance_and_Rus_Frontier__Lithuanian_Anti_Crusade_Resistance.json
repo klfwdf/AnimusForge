@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Lithuanian_Resistance_and_Rus_Frontier",
+  "Keywords": [
+    "Lithuanian Anti Crusade Resistance",
+    "King Mindaugas Strategic Baptism",
+    "Rus Orthodox Frontier Defenses",
+    "Battle on the Ice Legacy"
+  ],
+  "RagShortTexts": [
+    "King Mindaugas unified pagan Lithuania against the Teutons, while Alexander Nevsky guarded Rus."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Confronted by relentless Teutonic pressure, Mindaugas forged the Lithuanian tribes into a centralized kingdom, accepting Christian baptism in 1251 to secure a papal crown while Samogitian pagans continued fierce frontier combat. Concurrently, Grand Prince Alexander Nevsky of Novgorod guarded Orthodox Rus, cementing the frontier after his 1242 victory at Lake Peipus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Boyars of Novgorod and Lithuanian kunigai understand that Teutonic conquest brings social subjugation. Mindaugas balances between Rome's cross and ancestral pagan rites, while Nevsky manages tributary subservience to the Golden Horde to ensure total focus against Latin crusaders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Samogitian woodsmen lure heavy knights into treacherous bogs, dragging them down with hooked poles and cleaving visors with broadaxes. Novgorodian militia hold river crossings with overlapping shields and composite recurve bows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Hunters sacrifice mead and bread at forest shrines under the night sky. Latin monks claim our souls are damned, but the old sacred groves provided timber for our grandfathers, and our soil shall not yield to Teutonic spade or cross."
+    }
+  ],
+  "TextMappings": []
+}

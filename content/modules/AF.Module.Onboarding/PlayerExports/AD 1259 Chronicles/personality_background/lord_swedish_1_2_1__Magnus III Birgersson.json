@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_2_1",
+  "HeroName": "Magnus III Birgersson",
+  "Description": "Duke Magnus Birgersson of Södermanland, later immortalized as King Magnus III Ladulås ('Barnlock'), was the formidable second son of Birger Jarl. Possessing razor-sharp strategic intellect and commanding willpower, Magnus was groomed in the highest arts of statecraft. Holding court at the fortified citadel of Nyköping as Duke of Södermanland, he organized elite contingents of heavy armored cavalry and reformed provincial fiscal treasuries. In 1275, with Danish royal backing, he crushed his brother Valdemar at Hova to seize the crown. As king, Magnus promulgated the historic Ordinance of Alsnö in 1280, establishing the Swedish equestrian nobility (Frälse) through knight-service tax immunities, while legally shielding peasant granaries from noble plunder, forever venerated by the commonfolk as their beloved protector, the 'Barnlock'. King Magnus radically modernized the Swedish military structure, erecting a nationwide network of stone fortresses to anchor regional defense upon mobile squadrons of heavy cavalry. He generously patronized the Franciscan and Cistercian orders, founding the monumental Greyfriars Priory in Stockholm as his royal resting place. Balancing baronial military immunities with the legal protection of rural freeholders against arbitrary extortion, Magnus earned renown as a visionary legislator whose reign ushered in the golden era of high medieval Swedish statecraft.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Build an elite core of heavy cavalry in Södermanland to support sweeping constitutional reforms across Sweden.",
+    "Protect freeholder granaries from baronial extortion to forge an unshakeable bond of loyalty with the peasantry."
+  ],
+  "Values": [
+    "Values institutional cavalry feudalism and precise legislation as the twin pillars of a formidable European state.",
+    "Champions peasant protection and equitable royal justice, holding that a king who plunders his own farmers destroys himself."
+  ],
+  "Fears": [
+    "Dreads aristocratic rebellions overthrowing the Alsnö reforms and plunging Sweden into reactionary baronial chaos."
+  ],
+  "SpeechStyle": "Speaks with incisive, cold intellectual precision, his commanding eloquence backed by ruthless political will.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

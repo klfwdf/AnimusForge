@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_2d",
+  "HeroName": "Konstantin",
+  "Description": "Konstantin (Konstantin Dragaš), aged five in 1259, is the perceptive second son of Lord Dejan and Princess Teodora, and future lord of eastern Macedonia (whose daughter Helena Dragaš would later become mother to the last Byzantine Emperor, Constantine XI). Thoughtful and contemplative by nature, Konstantin displays extraordinary memory and fascination with illuminated manuscripts, frescoes, and regional maps. While his elder brother Jovan relishes outdoor martial games, Konstantin absorbs ecclesiastical learning and courtly diplomacy beside his mother in the quiet halls of Zemen. In 1259, growing beneath the protective wings of his family, the young prince begins an intellectual and moral journey that will ultimately bridge the dynasties of Serbia and imperial Byzantium. Konstantin reads quietly in his stone study at Zemen, his young fingers tracing illuminated script detailing the life of Emperor Constantine. Gentle and observant, he assists his mother in cataloging estate stores with astonishing mathematical precision. Amidst the harsh military atmosphere of the mountain fortress, the young prince shines like a luminous pearl of sacred learning and wisdom. Deeply absorbed in historical chronicles and patristic theology, young Konstantin cultivates the rare intellect of an enlightened ruler. His quiet wisdom and mathematical clarity promise a distinguished future bridging South Slavic statecraft with imperial Mediterranean diplomacy.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with sweet boyish politeness and surprising clarity, thoughtful and observant, listening attentively before offering words.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

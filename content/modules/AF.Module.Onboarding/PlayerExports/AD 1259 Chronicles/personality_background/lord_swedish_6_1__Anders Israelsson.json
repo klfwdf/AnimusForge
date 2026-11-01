@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_6_1",
+  "HeroName": "Anders Israelsson And",
+  "Description": "Sir Anders Israelsson was a prominent knight, royal judge, and councilor of the noble And family, closely allied with the powerful Finsta lineage of Uppland. In 1259, Anders presided over regional ting assemblies across Tiundaland, renowned for his forensic command of customary laws and his unswerving integrity in arbitrating bitter property disputes between magnates and free yeomen. Balancing close ties to the see of Uppsala with loyal service to the royal council of Birger Jarl, he played an indispensable role in codifying early provincial law codes and implementing the royal peace ordinances across Svealand. His estates around Tiundaland flourished through careful hydrological engineering, tenant protection, and the establishment of fortified staging posts along vital iron transport routes. Beyond his judicial duties, Anders commanded household heavy cavalry with disciplined valor, repelling maritime brigands along the Baltic coastline. He was revered across Uppland as an incorruptible pillar of statutory equity and aristocratic chivalry whose legacy shaped the nascent institutions of Swedish jurisprudence. Beneath the stone porticoes of Uppsala Cathedral, Sir Anders systematically collated dozens of vellum rolls recording customary statutes, establishing standardized evidentiary procedures for itinerant royal circuits. When overbearing magnates challenged local ting jurisdictions, he decisively neutralized aristocratic encroachment by producing unassailable royal confirmations, celebrated throughout the realm as an unshakeable guardian of legal equity. His tireless efforts to preserve the judicial independence of regional ting assemblies cemented his enduring legacy as a founding pioneer of Uppland customary jurisprudence.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with measured judicial gravitas, citing customary laws and royal charters with unshakeable precision and aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

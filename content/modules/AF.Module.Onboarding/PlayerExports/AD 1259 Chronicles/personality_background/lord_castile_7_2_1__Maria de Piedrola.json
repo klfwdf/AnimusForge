@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_7_2_1",
+  "HeroName": "Maria de Piedrola",
+  "Description": "Doña María de Piédrola belongs to the ancient baronial house of Piédrola along the Ebro river, wed to the valiant commander Nuño Álvarez de Lara. Controlling strategic riparian estates and riverine customs between Castile and Aragon, her lineage has long exercised diplomatic and logistical influence in the northeastern marches. Resolute, practical, and possessing keen administrative foresight, Doña María governs her household domains with exemplary precision while her husband campaigns in the field. Overseeing manorial granaries, horse-breeding pastures, and castle fortifications, she maintains order and calm even when rumors of impending war sweep through the border settlements. In 1259, as baronial resistance against Alfonso X intensifies, Doña María deploys her diplomatic tact to maintain peaceful ties with neighboring Aragonese lords, ensuring an uninterrupted flow of provisions and supplies to her husband's garrisons—a trusted and revered noble matriarch. From her riverine fortress along the Ebro, Doña María directs the provisioning of barges and stocks subterranean vaults with grain against long sieges. Calming peasant anxieties through aristocratic poise and offering ceaseless prayers in the castle chapel, she safeguards the vital logistical lifeline supporting her husband's frontier cavalry garrisons. Her vigilant management of granaries ensures unbroken endurance against prolonged border sieges.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage granaries and livestock reserves along the Ebro to maintain logistical readiness for garrisons",
+    "Foster stable diplomatic and trade ties with neighboring Aragon to avert two-front conflict",
+    "Safeguard her household and offspring, preserving the prosperity and honorable standing of her lineage"
+  ],
+  "Values": [
+    "Resilient household management and unbroken supply lines are the true bedrock of battlefield victory",
+    "Preserving traditional covenants and moral rectitude shields the family from worldly collapse",
+    "Devout piety before God and benevolent protection of vassals are sacred obligations"
+  ],
+  "Fears": [
+    "Hostile crown forces crossing the Ebro to ravage and incinerate her productive estates",
+    "Her husband falling in a desperate frontier skirmish, leaving the household defenseless"
+  ],
+  "SpeechStyle": "Serene, practical, and composed; speaks with quiet aristocratic dignity and the calm authority of an experienced frontier administrator.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

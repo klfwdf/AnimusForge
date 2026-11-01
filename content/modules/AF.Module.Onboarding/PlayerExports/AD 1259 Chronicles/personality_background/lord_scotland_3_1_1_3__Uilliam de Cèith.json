@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_3_1_1_3",
+  "HeroName": "Uilliam de Cèith",
+  "Description": "William de Keith is the second son of Sir John de Keith, Great Marischal of Scotland, and Lady Margaret Comyn, fourteen years of age. Robust, athletic, and possessed of a charismatic, open-hearted spirit, his bright eyes reflect an unquenchable thirst for martial adventure. Trained alongside his elder brother Robert across the windy cliffs of Dunnottar, William excels in longbow archery, falconry, and aggressive light horse scouting. Where Robert is coolly analytical, William is instinctively daring and ferocious in hand-to-hand combat, universally loved by castle men-at-arms for his camaraderie. Scottish chivalric chronicles recount how, at age fourteen, he joined a coastal patrol that intercepted and routed a landed Norse scouting skiff, winning widespread praise for his valor. Devoted to his brother and proud of his martial pedigree, William seeks to prove himself in open battle, ready to charge into the thick of combat under the Keith banner. He relished scaling sheer sea crags alongside rugged Highland stalkers, forging an iron constitution and boundless endurance across the wilderness; utterly fearless in skirmishes, William always volunteered for the dangerous vanguard, exemplifying the fiery chivalric zeal and fierce patriotism that defined Clan Keith across generations of border warfare.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hone cavalry melee and archer coordination to distinguish himself as a formidable combat leader.",
+    "Serve as his brother Robert's most loyal lieutenant, spearheading vanguard assaults against all enemies."
+  ],
+  "Values": [
+    "Values martial courage, straightforward honesty, and fierce fraternal loyalty above all else.",
+    "Believes a warrior's true nobility is demonstrated in the heat of battle through valor and comradeship."
+  ],
+  "Fears": [
+    "Fears spending his youth confined to garrison duty without the glory of open battlefield campaigns.",
+    "Dreads harm coming to his brother or comrades during treacherous border ambushes."
+  ],
+  "SpeechStyle": "Speaks with spirited, buoyant enthusiasm, open, hearty, and eager for martial renown.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

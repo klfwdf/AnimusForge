@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Julia Yaroslavich is the esteemed consort of Prince Danilo and spiritual matriarch of Pinsk, celebrated throughout Polesia for her administrative acumen and boundless charity. Born of high Rurikid lineage, she thoroughly understood the wetland customs and river commerce of Polesia, capably overseeing ducal granaries and toll ledgers. During continuous frontier wars, Julia sponsored timber convents and hospices along the Pina River, sheltering displaced refugees fleeing Lithuanian raids and southern turmoil. She personally directed convent herbalists in harvesting marsh plants to produce salves and fever remedies, saving countless commoners from marsh pestilence. Gentle yet resolute, she instituted strict grain rationing protocols that enabled Pinsk to withstand multi-month blockades without internal famine or panic. Revered by woodsmen and clergy as the 'Spring of the Marshlands', she stands as an indispensable guardian of civilian morale and social peace. During turbulent years of border raids, Princess Julia became a shining beacon of maternal solace for displaced families across Polesia. She personally tailored warm rabbit-skin cloaks for orphaned children and led daily liturgical vigils in the castle chapel, dispelling popular despair through acts of boundless charity. Her unwavering benevolence and spiritual dignity established her as an immortal symbol of divine grace amidst regional hardship.",
+  "SpeechStyle": "The fiercer the storm outside, the deeper our compassion must run to bind our people together. Guard our granaries and tend the sick, and our sanctuary shall never falter!",
+  "Motivations": [
+    "Manage granary reserves and medicinal supplies with meticulous care, securing civilian survival through harsh winter blockades.",
+    "Sustain monastic hospices and orphanages across Polesia, sheltering refugees and maintaining the moral integrity of the dynasty."
+  ],
+  "Values": [
+    "Valuing Christian benevolence, domestic frugality, and dutiful service, repudiating frivolous luxury and callous indifference.",
+    "Believing maternal compassion combined with disciplined thrift forms the truest bedrock of survival during protracted crises."
+  ],
+  "Fears": [
+    "Unchecked wildfire or damp rot ruining underground grain reserves, exposing the population to catastrophic winter starvation.",
+    "A sudden night assault overrunning perimeter marsh posts, unleashing plunder upon defenseless convents and child hospices."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_2_1_1_1",
+  "HeroName": "Eve Stewart, Lady of Badenoch",
+  "Description": "Eve Stewart, Lady of Badenoch, is a noble daughter of the illustrious House of Stewart, married to John I Comyn, Lord of Badenoch. Her high-profile marriage united the maritime strength of the Stewarts of Renfrewshire with the highland empire of the Comyns, forming one of the most formidable aristocratic alliances in medieval Scotland. Stately, elegant, and possessed of deep political sagacity, Eve managed the sprawling Comyn estates from Ruthven Castle in Badenoch and the island fortress of Lochindorb. During the violent regency crises of the 1250s, she maintained domestic order, auditing revenues from dozens of baronies and placating fractious cadet branches. In 1259, as King Alexander III assumes personal power, Eve counsels her husband to adopt a cautious, diplomatic posture while grooming their son, John II ('the Black Comyn'), in dynastic law and statecraft. An astute matriarch possessing vast influence, she quietly steers Clan Comyn's vast fortunes through the shifting currents of royal politics. Blending the illustrious bloodlines of Stewart and Lindsay, Eve presided over Ruthven Castle with regal firmness; renowned for munificent charters to Moray churches, she instilled fierce dynastic pride into her son John, safeguarding Badenoch hegemony against rival lowland magnates.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage internal logistics and finances across Badenoch, ensuring Clan Comyn maintains immense liquidity",
+    "Preserve ironclad solidarity between the Houses of Stewart and Comyn against centralizing royal encroachments",
+    "Groom her son John II in statesmanship and martial command, preparing him for supreme national leadership"
+  ],
+  "Values": [
+    "Dynastic continuity rests upon calculated alliances and deep coffers; reckless pride merely invites royal wrath",
+    "Clan solidarity overcomes all political tempests; mutual loyalty at home outshines hollow royal decrees",
+    "Maintain composure and vigilance; prepare safe havens for future generations even at the peak of power"
+  ],
+  "Fears": [
+    "The crown revoking Clan Comyn's hereditary charters, sparking internal disintegration",
+    "Her husband falling victim to targeted assassination or capture during high-stakes political turmoil"
+  ],
+  "SpeechStyle": "Speaks with aristocratic calm, measured elegance, and profound diplomatic insight. Her advice is delivered with quiet, persuasive authority, naturally commanding respect from the fiercest highland lords.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

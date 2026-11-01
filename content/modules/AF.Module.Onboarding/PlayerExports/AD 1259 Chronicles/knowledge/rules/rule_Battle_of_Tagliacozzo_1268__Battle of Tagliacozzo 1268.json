@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Tagliacozzo_1268",
+  "Keywords": [
+    "Battle of Tagliacozzo 1268",
+    "Conradin Last Hohenstaufen",
+    "Erard de Valery Ambush",
+    "Naples Market Square Execution"
+  ],
+  "RagShortTexts": [
+    "In 1268 at Tagliacozzo, Charles of Anjou ambushed young Conradin, executing the last."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fought on August 23, 1268, Tagliacozzo extinguished the imperial line of Frederick II. Sixteen-year-old Conradin swept away the Angevin frontline, only to be crushed by veteran crusader Érard de Valéry's concealed knightly reserve. Captured fleeing north, Conradin was publicly beheaded in Naples."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Conradin's thrown glove sparked the Sicilian Vespers decades later, transferring Staufen claims to Aragon."
+    }
+  ],
+  "TextMappings": []
+}

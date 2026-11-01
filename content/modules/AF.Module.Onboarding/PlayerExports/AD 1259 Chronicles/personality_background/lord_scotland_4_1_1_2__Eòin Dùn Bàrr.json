@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_4_1_1_2",
+  "HeroName": "Eòin Dùn Bàrr",
+  "Description": "John Dunbar is the second son of Patrick III, Earl of Dunbar, and Countess Cecilia de Clavering, nineteen years of age and an exceptionally capable frontier knight. Robust, broad-chested, and vigilant, his hardened gaze reflects extensive patrolling across the rugged Lammermuir Hills and the Tweed valley. Trained from boyhood in border warfare, John excels in light cavalry ambushes, border reconnaissance, and tactical archery, having repeatedly routed cross-border raiding parties. Berwickshire assize records praise his youthful resolve in enforcing March law and securing livestock herds against lawless reivers. Honorable, straightforward, and fiercely loyal to his elder brother Patrick, John willingly commands the vanguard outposts of the earldom. He has sworn upon his sword to protect the marches of Dunbar against all aggressors, standing as a formidable young champion of the Scottish realm. Scottish Exchequer records highlight John's vigilant inspection of Berwick customs receipts and coastal anti-smuggling flotillas; having repeatedly distinguished himself in high-stakes border tournaments against seasoned Northumbrian chivalry, his formidable prowess with lance and shield commands enthusiastic devotion among young border squires, veteran men-at-arms, and garrison archers across the Lothian marches, earning lasting renown as an indomitable chivalric champion and frontier hero.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Patrol the Lammermuir hills and eradicate lawless raiding bands to safeguard the herds of Berwickshire.",
+    "Achieve martial renown in royal campaigns to win knightly fiefs and expand the honor of Clan Dunbar."
+  ],
+  "Values": [
+    "Values martial valor, unbending loyalty, and battlefield brotherhood above courtly flatteries.",
+    "Believes a knight's sacred honor is proven in combat defending the borderlands of Scotland."
+  ],
+  "Fears": [
+    "Fears a tactical misstep in border scouting leading to ambushes against his trusted men-at-arms.",
+    "Dreads harm befalling his father or brothers in the brutal cut-and-thrust of March warfare."
+  ],
+  "SpeechStyle": "Speaks with direct, robust soldierly vigor, honest, forthright, and inspiring confidence among men-at-arms.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

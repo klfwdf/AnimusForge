@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_7_5",
+  "HeroName": "Domnall Mór Ó Cellaigh",
+  "Description": "Domnall Mór Ó Cellaigh is the formidable young tanist of Uí Maine and commander of its heavy armored cavalry corps. Twenty-four years old, towering, athletic, and fiercely disciplined, he mirrors the regal martial charisma of his father King Conchobar. Domnall excels in heavy lance charges, horsemanship, and defensive earthwork engineering, repeatedly leading counter-thrusts across the River Suck to shatter intrusive Anglo-Norman raiding parties, capturing fine destriers and mail hauberks. Beyond battlefield valor, he possesses remarkable architectural and logistical acumen, having personally supervised the reinforcement of strategic stone fortifications guarding vital Shannon river crossings. Honorable, decisive, and uncompromising in his fidelity to Celtic alliances, young Domnall is acclaimed as a future great sovereign, his lance forming an unbreakable shield over Uí Maine. During desperate defensive engagements along the fortified Shannon causeways, Domhnall Mór repeatedly rallied his heavy lancers, counter-charging hostile scaling columns with thunderous momentum; his extraordinary architectural foresight and fearless battlefield leadership make him the idol of veteran men-at-arms, celebrated as the unbreakable champion of Uí Maine. His heavy lance remains the supreme terror of encroaching Anglo-Norman cavalry columns, destined to govern his ancestral lands with legendary chivalric dignity, martial brilliance, and undisputed sovereign authority.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Dominate the Shannon crossings with heavy cavalry and expel Norman invaders.",
+    "Succeed his father to make Uí Maine the wealthiest and most secure kingdom in Erin."
+  ],
+  "Values": [
+    "Fearless battlefield leadership and sacred fidelity to alliance oaths.",
+    "Unwavering protection of his tenantry and deep comradeship with his men."
+  ],
+  "Fears": [
+    "Stone river bastions collapsing under sustained hostile bombardment.",
+    "Equestrian squadrons pursuing routed foes too far into hidden ambushes."
+  ],
+  "SpeechStyle": "Speaks with ringing, powerful baritone confidence, commanding, articulate, and inspiring, radiating the natural authority of a gifted battlefield leader.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -159,7 +159,7 @@
   <string id="AF_MCM_MainApi_Model_Hint" text="例如: gpt-4o-mini。请填写你当前接口实际支持的模型名。" />
   <string id="AF_MCM_MainApi_Dropdown_Hint" text="请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。" />
   <string id="AF_MCM_MainApi_Thinking_Hint" text="开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
-  <string id="AF_MCM_MainApi_Reasoning_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_MCM_MainApi_Reasoning_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_MCM_MainApi_Temperature_Hint" text="控制正文生成随机性。0 更稳定，2 更发散。默认 0.80。" />
   <string id="AF_MCM_MainApi_MaxTokens_Hint" text="主API正文生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。" />
   <string id="AF_MCM_MainApi_Streaming_Hint" text="此项或所选语音服务开启时，主 API 正文使用 SSE 流式传输。支持的界面逐步显示文字；本地语音在完整回复通过校验后分句朗读。前处理、后处理和周报 API 不变。此开关保存值默认关闭；下次正文请求生效。" />
@@ -825,7 +825,7 @@
   <string id="AF_TERMINAL_UI_MainApiThinkingEnabled_Hint" text="开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
   <string id="AF_TERMINAL_UI_MainApiThinkingEnabled_Group" text="1. AI 核心配置/1. 主API（正文生成）" />
   <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Title" text="思维链强度" />
-  <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Group" text="1. AI 核心配置/1. 主API（正文生成）" />
   <string id="AF_TERMINAL_UI_MainApiTemperature_Title" text="温度" />
   <string id="AF_TERMINAL_UI_MainApiTemperature_Hint" text="控制正文生成随机性。0 更稳定，2 更发散。默认 0.80。" />
@@ -858,7 +858,7 @@
   <string id="AF_TERMINAL_UI_AuxiliaryApiThinkingEnabled_Hint" text="开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiThinkingEnabled_Group" text="1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Title" text="思维链强度" />
-  <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Group" text="1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiTemperature_Title" text="温度" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiTemperature_Hint" text="控制前处理、规则路由和简易对话链路的随机性。0 更稳定，2 更发散。默认 0.00。" />
@@ -888,7 +888,7 @@
   <string id="AF_TERMINAL_UI_ActionPostprocessApiThinkingEnabled_Hint" text="开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiThinkingEnabled_Group" text="1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Title" text="思维链强度" />
-  <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Group" text="1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiTemperature_Title" text="温度" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiTemperature_Hint" text="控制动作标签与情绪标签判定的随机性。建议保持较低。默认 0.00。" />
@@ -921,7 +921,7 @@
   <string id="AF_TERMINAL_UI_EventAndRebellionApiThinkingEnabled_Hint" text="默认关闭。事件周报与王国叛乱命名是严格格式任务，建议只在确认接口会把最终答案稳定写入 content 时开启。开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiThinkingEnabled_Group" text="1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Title" text="思维链强度" />
-  <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Group" text="1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Title" text="温度" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint" text="控制使用事件/叛乱API的周报、王国命名、外交宣言与书记官代笔等任务的随机性。外交配置不完整并回退主API时，采用主API温度。0更稳定，2更发散。默认0.80。" />

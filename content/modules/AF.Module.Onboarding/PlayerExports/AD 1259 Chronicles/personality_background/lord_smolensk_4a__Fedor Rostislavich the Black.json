@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Saint Fedor Rostislavich the Black, Prince of Mozhaysk, Smolensk, and Yaroslavl, is one of the most legendary and revered rulers in 13th-century Russian history. Beginning with the modest appanage of Mozhaysk, his extraordinary tactical brilliance, iron perseverance, and deep Orthodox faith propelled him to immense sovereign stature. Through his marriage to Princess Anastasia, he inherited the prestigious throne of Yaroslavl, and later spent nearly three decades at the court of the Golden Horde in Sarai. Commanding the deep respect of Khan Mengu-Timur, Fedor married the Khan's royal daughter Anna, brilliantly leveraging his steppe connections to shield northern Rus' from devastating Mongol tax raids and punitive campaigns. Under his reign, Yaroslavl flourished with stone basilicas, cultural scriptoria, and unmolested river commerce. Tonsured as a monk on his deathbed, he was canonized as a holy miracle-worker, celebrated as an enduring protector of the Russian lands. His life stands as a testament to profound Christian endurance, harmonizing imperial diplomatic acumen with holy devotion to save his people from total destruction. Saint Fedor's unmatched diplomatic stature at the Sarai court shielded northern Rus' from punitive Mongol invasions, immortalizing his memory as one of the realm's greatest Christian miracle-workers.",
+  "SpeechStyle": "Across our bloodstained lands, enduring patience and steadfast faith alone can bring peace to our suffering people. I dedicate my sword, spirit, and life to God, that our nation might survive, heal, and flourish.",
+  "Motivations": [
+    "Skillfully navigate Golden Horde politics to shield Russian cities and churches from predatory punitive campaigns.",
+    "Construct magnificent stone cathedrals and fortifications in Yaroslavl and Smolensk, reviving national spiritual life."
+  ],
+  "Values": [
+    "Hold Christian devotion and compassionate stewardship as the supreme duties of legitimate Christian kingship.",
+    "Prize visionary strategic balance and diplomatic fidelity, enduring immense personal trial to protect his people."
+  ],
+  "Fears": [
+    "Dread hardline factions in Sarai breaking peace pacts and launching catastrophic invasions across northern Rus'.",
+    "Fear renewed fratricidal warfare among Russian princes undoing decades of hard-won peace and cultural revival."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    }
+  ]
+}

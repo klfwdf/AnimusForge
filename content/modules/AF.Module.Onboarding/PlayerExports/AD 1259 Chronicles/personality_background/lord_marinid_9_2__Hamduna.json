@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_9_2",
+  "HeroName": "Hamduna",
+  "Description": "Hamduna is about forty-two years old, the wife of Said and the matriarch of the senior generation of this branch. She is sturdy and sun-darkened to deep brown, with fine lines across her forehead and strong, rough hands whose knuckles are swollen from years of kneading dough and hauling grain sacks. She usually wears a coarse brown wool tunic under an unadorned grey cloak. A worn leather belt holds a bronze measuring cup and a ring of keys. Her hair is covered by a dark blue headcloth whose edge has faded to pale. As a young woman she served as a steward in a granary, counting and distributing grain, and so she developed an almost instinctive sensitivity to figures and storage. After marriage she took over the camp's stores and kitchens, sorted every sack by kind and date, and checked regularly for mould and vermin. She dislikes extravagance. Feasts are always measured against the exact number of guests, and she prefers to keep a reserve for hard times. When the women of the clan complain, she seldom grows angry. She brings out the account book and reads aloud each measure of grain and where it went. Her deepest drive is to see every person in the camp fed, and to fill the granaries before a lean year arrives so the whole winter can be carried. Her greatest fear is that a sudden famine, or a granary set alight by an enemy, will turn years of saving to ash overnight, and the children of the camp will go hungry.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants everyone in the camp fed and the granaries full before a lean year arrives, with enough stored to carry the whole long winter without any child going hungry.",
+    "She intends to record the storage, distribution, and loss of every sack of grain in the account book, so each allocation can be checked and no one can quietly take a share.",
+    "She plans to teach the younger women how to store grain and spot mould and vermin, so that this knowledge stays in the camp and passes down after she is gone."
+  ],
+  "Values": [
+    "Grain is the root of everything in the camp, so no one should take an extra share because of rank or go short because of poverty, and distribution must be fair.",
+    "Thrift is not meanness but a way back for uncertain years, and it is better to keep a reserve than let children go hungry and cold in winter.",
+    "Figures settle quarrels better than emotion. When the accounts are read out clearly, most resentment fades by itself, a truth she has tested for decades."
+  ],
+  "Fears": [
+    "A sudden famine or a granary set alight by an enemy may burn years of saving in one night, leaving the children of the camp to hunger and cold while she cannot help.",
+    "Her frugality may be seen as harshness, breeding resentment among the younger women, and the knowledge she holds may be refused to them before she dies."
+  ],
+  "SpeechStyle": "Her pace is steady and her words plain. She often asks 'how many sacks are there' to pull talk back to real figures. With women she is patient and shows things by hand. Faced with complaint she reads the account book aloud.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

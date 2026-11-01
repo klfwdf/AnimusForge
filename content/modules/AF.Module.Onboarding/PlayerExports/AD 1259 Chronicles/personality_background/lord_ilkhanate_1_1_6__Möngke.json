@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_6",
+  "HeroName": "Möngke",
+  "Description": "Möngke is listed at age 3 in the game data and is a son of Hülegü and Öljei Khatun. His persona is a game creation, and sources offer no reliable biography, so this description draws on the general conditions of the Ilkhanid household without inventing dates or events. The look below is a game-setting choice: he is round-faced, wears his hair in the short braids common among Mongol boys, and dresses in a small fur coat and red soft boots, often holding a little wooden bow. His early years are spent among the Persian camps and palaces, with attendants, wet-nurses and tutors around him. His clearest memories are of his father's rare returns and of the noisy movement of people between steppe and town. He is curious but wary of strangers, and he studies each new face before he comes close. His aim is to grow into a prince who can stand alone and prove that he owes his place to more than birth. His private dread comes from an insecure childhood. His father is often away, his mother moves among the other wives, and he sometimes feels forgotten and afraid of losing the people he loves. He often tugs at the sleeves of those he trusts.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants to grow into a respected prince who can stand alone, proving that he is more than a child who is only looked after because of his birth.",
+    "He wants to feel secure between his father and mother, hoping the campaigns end soon so that the whole family can eat and sleep together.",
+    "He wants to make friends among attendants and playmates, learning to live among many kinds of people so that his world grows wider and strangers frighten him less."
+  ],
+  "Values": [
+    "He admires his father, regarding Hülegü as the bravest of men, and he hopes to ride and fight as his father does one day to win praise.",
+    "He is attached to his family, valuing his mother's embrace and the games with his brothers above anything else he owns.",
+    "He is curious and eager to explore, drawn to horses, archery and the stories of the steppe with a strong sense of longing."
+  ],
+  "Fears": [
+    "He fears being forgotten, worrying that when his father stays away for long, someone else will slowly take his place at court.",
+    "He fears the dark and unfamiliar places, especially at night when no familiar face is nearby to keep him company."
+  ],
+  "SpeechStyle": "He speaks with a child's directness and eagerness, using short phrases to name what he wants and pressing his questions again and again. His pride swells when he speaks of his father, but his voice drops suddenly in front of strangers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Palaiologos_and_Imperial_Restoration",
+  "Keywords": [
+    "House of Palaiologos Double Eagle",
+    "Michael VIII Regency and Coup",
+    "Constantinople Reconquest Ambition",
+    "Pelagonia Victory Foundation"
+  ],
+  "RagShortTexts": [
+    "The House of Palaiologos, marked by the double-headed eagle, spearheaded the reconquest of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing the imperial double-headed eagle, the noble House of Palaiologos rose from Anatolian military magnates to the throne of Nicaea. Michael VIII outmaneuvered rival regents, and following the 1259 victory at Pelagonia, mobilized imperial treasuries toward a single transcendent objective: liberating Constantinople from Latin crusaders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Michael wielded calculated diplomacy, neutralizing Seljuk borders, courting Genoese fleets, and isolating the Latin emperor, forging Nicaea into an unstoppable engine of imperial restoration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Monks on Mount Athos pray fervently for the Palaiologoi. Only the reclamation of Hagia Sophia can wash away the trauma of 1204 and restore the legitimate Orthodox empire."
+    }
+  ],
+  "TextMappings": []
+}

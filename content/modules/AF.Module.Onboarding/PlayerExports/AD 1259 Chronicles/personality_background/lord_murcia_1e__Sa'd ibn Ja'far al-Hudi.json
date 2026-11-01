@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1e",
+  "HeroName": "Sa'd ibn Ja'far al-Hudi",
+  "Description": "Sa'd ibn Ja'far al-Hudi, eleven in the game setting, is the son of Ja'far and Hamduna and the grandson of Baha' ad-Dawla. He is small for his age, with dark hair that the wind often tangles, and he ties an old cloth at his waist as a banner, though the game does not say where the cloth came from. He is too young to appear in any historical record, so his place in the family is known only through kinship. His youth can only be inferred from the setting. He likely learned letters and counting from his grandfather's attendants, and learned banquet manners from his mother. Against older rivals or playmates, his reactions are direct and rash. He often crosses lines out of curiosity, but he does not hold grudges. He once gave a stable boy his favourite knife after losing a wager, and learned that a promise must be shown in action as well as spoken. His driving aim is to grow into a man who does something useful for the city, proving that he is more than a name inherited from his father and grandfather. His deepest fear is that his father's talks fail, the family loses its fiefs, and he has no strength to protect the people near him.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow into a knight or steward able to act on his own, proving he is more than the heir of his grandfather's and father's names.",
+    "Learn counting and supply planning from the quartermaster and clerks, so he can follow every sack of grain and every expense in the castle.",
+    "Listen to his grandfather's attendants recount talks and border affairs, and keep the old Murcian and Castilian agreements in mind for the future."
+  ],
+  "Values": [
+    "Curiosity about new things, a wish to look, ask and try for himself rather than accept every adult's answer that it is none of his business.",
+    "Fairness among playmates, speaking up for whoever is weaker even when it earns a scolding, which he regards as the quality that matters most.",
+    "Respect for his mother's dignity and his father's steadiness, treating them as the standard he hopes one day to meet and be judged by."
+  ],
+  "Fears": [
+    "His father's talks failing, the castles and fiefs being taken, and his own lack of strength to protect anyone while the house declines.",
+    "His rashness causing a disaster that costs his mother or father their standing at court, leaving him known as a child who cannot be trusted."
+  ],
+  "SpeechStyle": "Speaks quickly, often firing a string of questions and pressing for answers when he does not understand. He interrupts adults at times, but tries to lower his voice and use grown-up words when elders are present.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

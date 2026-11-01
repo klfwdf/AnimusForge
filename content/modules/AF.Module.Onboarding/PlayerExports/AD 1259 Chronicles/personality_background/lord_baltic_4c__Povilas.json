@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_4c",
+  "HeroName": "Povilas",
+  "Description": "Prince Povilas is the valiant eldest son and battle-tested vanguard commander of Duke Erdvilas and Duchess Ugnė of Navahrudak, celebrated across the Lithuanian borderlands for his immense physical strength and martial ferocity. Raised amidst the roaring warhorses and iron foundries of the Black Ruthenian marches, Povilas mastered heavy cavalry lances, greatswords, and double-bearded battleaxes from earliest youth, earning widespread dread as the 'Hammer of Navahrudak.' Sharing his father's fierce martial instincts, he led agile raiding detachments of armored Samogitian infantry and mounted outriders along the upper Neman and Narew rivers, repeatedly repelling cross-border incursions. On the battlefield, Povilas was an unstoppable force of nature, donning blackened mail to lead the vanguard charge in person, smashing enemy shield-walls with devastating momentum. Though blunt, hot-tempered, and unsparing in combat, his devotion to his parents and his house was unshakeable, gladly risking his life to defend the battlements of Navahrudak. Povilas stands as an indomitable pillar of martial fury, wielding his battleaxe to secure his family's realm amidst the stormy feudal conflicts of the Baltic. Povilas organized scouting parties that charted remote wilderness paths and ambushed isolated enemy reconnaissance detachments. His quiet tactical brilliance ensured that hostile incursions were detected and severed long before reaching settlement walls.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve resounding martial glory on the battlefield, winning renown as the foremost warrior of the Astikai line.",
+    "Establish a continuous network of timber checkpoints along the upper Neman to eradicate border raiding.",
+    "Stand at the vanguard of Duke Erdvilas's hosts, defending the sovereignty of Navahrudak with his life."
+  ],
+  "Values": [
+    "Prize audacious battlefield courage, physical prowess, and warrior spirit, despising cowardly appeasement.",
+    "Maintain ferocious loyalty to his ancestral bloodline, standing as an unyielding shield for his family.",
+    "Lead every charge from the front and guard the retreat, sharing every hazard with his devoted men-at-arms."
+  ],
+  "Fears": [
+    "His warhorse being brought down in marshland, leaving him surrounded and captured alive by his enemies.",
+    "Navahrudak Castle falling to a surprise assault while he is campaigning abroad, leaving his family unprotected."
+  ],
+  "SpeechStyle": "The riders of Navahrudak waste no words! Question my double-bearded battleaxe; trespass upon Astikai land, and your broken bones shall pave our road! Forest scouts watch every path; no enemy escapes our sight!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

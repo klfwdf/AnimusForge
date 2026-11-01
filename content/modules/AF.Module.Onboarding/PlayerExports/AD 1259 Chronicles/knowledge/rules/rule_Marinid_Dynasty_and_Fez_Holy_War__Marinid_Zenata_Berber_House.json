@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Marinid_Dynasty_and_Fez_Holy_War",
+  "Keywords": [
+    "Marinid Zenata Berber House",
+    "Fes Jdid Royal Citadel Fortress",
+    "Almohad Caliphate Overthrow",
+    "Moroccan Trans Strait Jihad Ambition"
+  ],
+  "RagShortTexts": [
+    "The Marinid dynasty conquered Morocco, establishing their capital at Fez to wage holy war."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hailing from Zenata Berber pastoralists, the Marinid dynasty swept across Morocco, toppling the fragmented Almohad Caliphate. Setting their seat at Fes Jdid, Marinid sultans championed strict Maliki Sunni orthodoxy, marshaling desert tribes to mount defensive holy campaigns into Christian-dominated Andalusia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Sultans like Abu Yusuf Ya'qub reorganized tribal levies into disciplined royal armies, projecting power across the Strait of Gibraltar to intervene in Iberian politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Black camel-hair pavilions carpet the hills outside Fez. When the tribal drums beat for mobilization, thousands of horsemen mount with desert ferocity."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_8_1",
+  "HeroName": "Ya'qub ibn 'Abdallah al-Marini",
+  "Description": "Ya'qub is about thirty-four years old and descends from a collateral line of Abu Yahya Abu Bakr's kin rather than from the senior house. He has earned a standing through diplomacy and documentary skill. He is tall and dark-complexioned, usually wearing a deep blue silk robe whose cuffs are embroidered with fine silver key-pattern scrolls. At his waist hang a plain sash, a silver ink pot, and a gilt reed pen. His eyes are sharp, and when he speaks he often narrows them as if weighing the other person's worth. As a young man he served as a clerk at the customs office of a trading port, learning the accounts and tax rates of many merchants, and he grew almost obsessively sensitive to numbers in legal texts. He was later sent as an envoy to a fortress on the border with a neighbouring people. In one negotiation he noticed that the agreement carried an appended clause that would cost his side dearly. He refused to sign on the spot and left the opposing envoy with no route of retreat. From then on he was known for shrewdness, and elders of the clan often asked for his advice. He seldom challenges rivals directly. He records every promise a rival makes and waits for the moment when a slip gives him the evidence he needs. His deepest drive is to let collateral lines earn the same respect as the senior house through ability rather than birth. His greatest fear is that his shrewdness will be taken for treachery, so that the very people he most wants to help will keep their distance from him.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants collateral lines to earn the same respect as the senior house through ability, so that the clan judges men by their skill rather than by their birth.",
+    "He intends to check every appended clause and figure in an agreement, so that his side is never caught by a detail the opposing party set as a trap.",
+    "He plans to use his experience of negotiation and customs to establish fixed rules for trade routes and town relations, so each party can act by written terms."
+  ],
+  "Values": [
+    "Every figure and appended clause in a document is a real commitment, and those who neglect details eventually pay for it, so he would rather go slowly and read every term.",
+    "Ability should carry more weight than birth, and a capable person from any branch deserves the place that skill has earned, which is his plain view of the clan.",
+    "Information is the cheapest and most powerful weapon, and recording a rival's promise is how one keeps the evidence for future disputes, a habit learned at the customs office."
+  ],
+  "Fears": [
+    "His shrewdness may be read by the clan as treachery, so that the collateral kin he most wants to help will drift away and no one will understand his efforts.",
+    "He may lose a negotiation to a detail he failed to notice, so the written rules he built lose credibility and his standing collapses before others."
+  ],
+  "SpeechStyle": "His pace is even and his sentences precise, often using phrases like 'by the terms' and 'please repeat that'. He names each sum exactly. Facing provocation he smiles, opens his notebook, and reads back the other man's words.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

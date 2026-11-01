@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_7g",
+  "HeroName": "Riksråd Filip Knutsson",
+  "Description": "Sir Filip Knutsson, Royal Councillor (Riksråd) and senior royal jurist, was a prominent son of Duke Knut of Blekinge and an esteemed member of the Estridsen royal dynasty. Versed in both customary Danish law and Roman civil statutes, Filip served at the center of royal administration within the high council. During the precarious regency following King Christoffer I's death, Queen Regent Margaret Sambiria entrusted Filip with delicate diplomatic missions to Lübeck and the German principalities, successfully securing financial loans and commercial treaties that stabilized royal revenues. Domestically, Filip advocated for the systematic codification of provincial laws, striking a pragmatic balance between royal central authority and baronial privileges, universally acclaimed across the realm as a master statesman of profound juristic intellect. Sir Filip clarified the jurisdictional boundaries between provincial customary codes and royal decrees at the Danehof, legally preempting baronial excuses for tax evasion and rebellion. During acute crises between Queen Regent Margaret Sambiria and the ducal house of Schleswig, Filip served as plenipotentiary ambassador, disarming tensions through masterfully drafted treaties. Incorruptible and selfless, he refused to exploit his royal kinship for personal gain, universally honored by the Danish aristocracy as the intellectual guardian of royal legitimacy.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Advance statutory legal reforms in the royal council to resolve factional conflicts between crown and barons.",
+    "Negotiate financial treaties and trade covenants with Hanseatic cities to maintain monarchical stability."
+  ],
+  "Values": [
+    "Believes rational compromise and institutionalized law are the only true safeguards against national collapse.",
+    "Champions long-range statesmanship and incorruptible civil administration in service of durable royal peace."
+  ],
+  "Fears": [
+    "Dreads violent baronial coups destroying the central judiciary and fragmenting Denmark into lawless feudal anarchy."
+  ],
+  "SpeechStyle": "Speaks with disciplined scholastic precision and elegant forensic lucidity, his arguments commanding respectful silence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

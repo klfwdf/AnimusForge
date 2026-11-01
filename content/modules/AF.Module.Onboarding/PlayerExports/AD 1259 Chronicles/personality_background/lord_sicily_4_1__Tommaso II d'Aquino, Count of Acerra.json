@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_4_1",
+  "HeroName": "Tommaso II d'Aquino, Count of Acerra",
+  "Description": "Count Tommaso II d'Aquino is the commanding patriarch of the ancient Lombard-Norman House of Aquino and Count of Acerra, dominating the rich plains and fortress networks of Terra di Lavoro. Head of the prestigious Aquino lineage that produced Saint Thomas Aquinas, Tommaso commands an immense host of armored feudal cavalry and holds sway over vital strategic highways. Renowned for judicial authority and steadfast leadership, he served as a decisive architect in King Manfred's coronation, standing as the supreme domestic bulwark of the realm. Commanding the fertile plain of Terra di Lavoro with an iron hand, Count Tommaso II directs hundreds of armored knights, crushing Angevin espionage and internal border rebellions through swift, terrifying martial strikes across the region. As the paramount baron of Terra di Lavoro and trusted advisor to King Manfred, Tommaso enforces feudal law with uncompromising gravitas, standing as an indomitable champion of the southern Ghibelline cause. His immense feudal prestige, seasoned martial authority, and iron defense of the realm establish Count Tommaso II d'Aquino as a towering titan steering southern Italy through every crisis. Lord Tommaso's unconquered war banner remains the ultimate rallying symbol for every knight marching across Campania. Lord Tommaso's terrifying cavalry charges and ironclad feudal authority guarantee that the plains of Acerra remain completely barred to papal invaders.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the sprawling ancestral fiefs of Acerra and secure Aquino supremacy among southern magnates.",
+    "Uphold King Manfred's royal authority and crush Guelph and Angevin conspiracies in Campania."
+  ],
+  "Values": [
+    "Ancestral dynastic honor, feudal oaths, and unyielding resistance against papal encroachment.",
+    "Impartial justice, martial order, and iron discipline across his feudal domains."
+  ],
+  "Fears": [
+    "A foreign papal crusade devastating the prosperous lands and cities of Campania.",
+    "Factional splintering within the sprawling Aquino clan undermining their military might."
+  ],
+  "SpeechStyle": "Speaks with commanding baronial gravity, deliberate feudal authority, and unshakeable confidence. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

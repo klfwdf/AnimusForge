@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_2b",
+  "HeroName": "Emilia Patrasso di Guarcino",
+  "Description": "Lady Emilia Patrasso di Guarcino is the venerable wife of Roffredo I and mother of the future Pope Boniface VIII, hailing from the noble baronial house of Guarcino. Renowned across southern Latium for administrative competence and pious fortitude, Emilia managed the family's extensive castle households, financial books, and religious endowments at Anagni. Demanding and visionary in rearing her children, she instilled rigorous legal discipline and unbending ambition in her sons, standing as an indomitable matriarch. Directing castle granaries and household accounts at Anagni with exemplary authority, Lady Emilia managed the Caetani estates while instilling iron discipline, intellectual rigor, and relentless ambition in her talented sons. Her unswerving devotion to Christian charity and household order preserved family prosperity through turbulent years, providing her children with the unshakeable domestic foundation required to conquer the highest offices of the Church. Her spotless moral rectitude, transparent accounting, and compassionate maternal guidance enshrine Lady Emilia as an exemplary noblewoman revered throughout the Roman Campagna. Her selfless charity, constant vigilance, and maternal care have shielded the people of Anagni through decades of destructive border strife. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure flawless household discipline and financial reserves to propel her children's ambitions.",
+    "Protect her family through constant prayer and charitable works amidst cutthroat political strife."
+  ],
+  "Values": [
+    "Fear of God, strict domestic order, moral discipline, and contempt for vanity and indolence.",
+    "Dedication to the spiritual and secular elevation of her children and dynastic prestige."
+  ],
+  "Fears": [
+    "Her brilliant sons falling victim to curial intrigues or assassination by rival factions.",
+    "Hostile raids torching her ancestral manors and disrupting the peace of her household."
+  ],
+  "SpeechStyle": "Speaks with maternal dignity, austere Christian conviction, and commanding aristocratic authority. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

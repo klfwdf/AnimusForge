@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_6",
+  "HeroName": "Costanza di Sicilia, Princess of Sicily",
+  "Description": "Princess Costanza of Hohenstaufen is the cherished ten-year-old daughter of King Manfred, named in honor of her legendary great-grandmother Queen Constance of Hauteville. A golden princess of the Staufen dynasty, Costanza was raised amidst the opulent marble colonnades and sea breezes of Palermo and Naples. Possessing sweet, luminous grace, sharp intellect, and deep filial devotion to King Manfred, she is thoroughly versed in classical Latin, Italian court poetry, and royal etiquette. Manfred regards Costanza as the living vessel of Staufen legitimacy, actively orchestrating her betrothal to Infante Peter of Aragon (future Peter III) to seal a colossal maritime alliance across the Western Mediterranean. Destined by history to claim the Sicilian crown after the Vespers, she thrives in loving sanctuary. Princess Costanza embodies the living legitimacy of both the Hauteville and Hohenstaufen royal lines, nurtured in classical verse and statecraft as the future hope of Mediterranean kingship. Destined by history to claim the Sicilian crown after the Vespers, she thrives in loving sanctuary amidst the royal palaces of Palermo, adored by the Sicilian nobility. Nurtured in royal virtue, pious contemplation, and classical letters, young Costanza shines as an angelic symbol of Staufen legitimacy and imperial grace across the Mediterranean world.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To excel in classical schooling and courtly accomplishments, bringing pride to her royal father.",
+    "To honor the sacred imperial heritage of Hohenstaufen and Hauteville, preparing for high destiny."
+  ],
+  "Values": [
+    "Imperial lineage carries an eternal burden of dignity; steadfast virtue preserves the crown.",
+    "Filial devotion and faith in divine providence form the bedrock of noble life."
+  ],
+  "Fears": [
+    "War shattering her father's throne and stealing away the family she loves.",
+    "Being exiled as an isolated captive to a hostile foreign court."
+  ],
+  "SpeechStyle": "Speaks with sweet, gentle composure and flawless courtly etiquette, radiating innate princessly grace. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_5",
+  "HeroName": "Chagetai Darga",
+  "Description": "Chagetai Darga is listed in the game roster as a darga of the Ilkhanate, a royal official who runs a border toll station and the handover of a post road. He belongs to a second branch of the royal house. The name comes from Chagetai, the second son of Genghis Khan, but this game figure has no documented blood link to the Chagatai khanate, and the persona does not rely on that association. No historical source identifies a person of this name, so his birth, death, posts and deeds are unknown. This persona is a game-internal setting inferred from the faction's background rather than a historical fact. The game source names no parents, spouse or children, so his origin is left for the persona to fill. He spends most of his time in a small hut beside the toll station, logging the goods and duties of every passing caravan, and he is acutely sensitive to figures. He is careful and believes that only a complete record of every coin in and out can stand before the royal tents. Before royal envoys he is respectful and sparing with words. He never promises a tax reduction lightly, and he does not use his office for private gain. His goal is to keep the toll station and post road running without error, so that he earns heavier responsibilities. His fear is that a single gap in the accounts will be exposed, or that a dispute among princes will force him to hand the station to someone else, undoing years of work.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the toll station and post road running without error, so that a clear ledger earns the royal tents' trust and builds the reputation for heavier duties.",
+    "Check the goods and duties of passing caravans against the books, so that every coin of revenue can be traced and no rival can attack him over accounting.",
+    "Stay neutral between princes and local officials, holding on to the toll station so it is not taken by others in the next change of power."
+  ],
+  "Values": [
+    "Accounts and records matter most to him, since figures that can be checked are the surest basis of a local official's standing and superiors' trust.",
+    "He keeps to obedience to the royal tents, holding that a toll station's authority is granted from above and that a clear order must be carried out at once.",
+    "Thrift and restraint, insisting that public silver be spent only on practical needs and never diverted for display or private pleasure."
+  ],
+  "Fears": [
+    "A single gap in the books being exposed, wiping out a clean record built over years and costing him his post and his family's name.",
+    "Being forced to take sides in a dispute among princes, then punished by the opposing faction and stripped of his men and revenue."
+  ],
+  "SpeechStyle": "His tone is steady and restrained, and his wording is exact, clear about duties and figures. He turns to concrete matters when asked to take sides, is courteous to superiors, and is strict with subordinates.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

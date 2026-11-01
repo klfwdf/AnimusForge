@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Royal_Bahri_Mamluk_Imperial_Guard",
+  "Keywords": [
+    "Royal Bahri Mamluk Elite",
+    "Kipchak Turkic Slave Cavalry",
+    "Rawda Island Nile Barracks",
+    "Composite Recurve Bow and Heavy Lance"
+  ],
+  "RagShortTexts": [
+    "The Bahri Mamluks of Cairo's Rawda Island combined nomadic composite archery with armored."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Bahri Mamluks formed the iron backbone of the Sultanate of Cairo. Bought as adolescent Kipchak Turkic captives from the steppe, they underwent rigorous training in equestrian martial arts (furusiyya) on Rawda Island. Armored in fine mail and lamellar, they combined rapid-fire composite archery with disciplined lance charges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Leaders like Qutuz and Baibars rose through Bahri ranks by sheer merit and ruthless steel. Rejecting hereditary claims, this military brotherhood elevated its fiercest commanders to the sultanate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "On practice grounds outside Cairo, Bahri troopers loose three arrows at full gallop into an iron helm without breaking stride. Clashing head-on with their armored wedges spells doom for ill-disciplined levies."
+    }
+  ],
+  "TextMappings": []
+}

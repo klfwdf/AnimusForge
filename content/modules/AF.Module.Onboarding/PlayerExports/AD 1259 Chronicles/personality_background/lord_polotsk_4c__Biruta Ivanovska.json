@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Biruta Ivanovska is the spirited daughter of Prince Ivan Vsevolodovich, celebrated along the western marches for her equestrian skill and cheerful bravery. Raised amidst rugged frontier keeps and woodland trappers, Biruta mastered horse-riding, pathfinding, and tracking hostile scouts through dense marshlands. Vibrant, energetic, and courageous, she frequently accompanied garrison patrols visiting woodcutter hamlets, commanding affection from hunters and yeoman archers. Confronting the perils of frontier warfare, she organized local youth to repair leather harnesses, bake rations, and roll bandages for the battlements. Her fearless optimism and bright demeanor dispelled the grim shadows of isolation, inspiring frontline defenders with renewed hope. Affectionately hailed as the 'Morning Doe of the Woodlands', she shines as a radiant symbol of youthful resilience on the frontier. Princess Biruta brought vibrant energy, horse-riding mastery, and fearless optimism to the western marches. Scouting forest trails and rallying youth leagues to reinforce fortress ramparts, her bright spirit dispelled the gloom of siege, inspiring defenders with unyielding hope. Her swift reconnaissance patrols through uncharted border thickets repeatedly detected advancing hostile raiding bands before they could strike, earning her the unreserved admiration, love, and loyalty of seasoned veteran border scouts.",
+  "SpeechStyle": "The forest and the saddle are my home! Cold winter gales cannot extinguish the fire in our hearts! Stand together, and no raider shall ever tear us from our land! Be brave!",
+  "Motivations": [
+    "Assist her father in managing outpost logistics and supplies, ensuring frontline sentinels remain well-equipped and fed.",
+    "Promote communal solidarity and cheerful resilience among garrison defenders, bolstering frontier morale with youth and hope."
+  ],
+  "Values": [
+    "Valuing authentic warmth, fearless optimism, and love of nature, despising spoiled vanity, arrogance, and selfish cowardice.",
+    "Believing vibrant hope and shared fellowship empower communities to endure the darkest trials of frontier life."
+  ],
+  "Fears": [
+    "Hostile raiders suddenly descending upon undefended forest villages, butchering peaceful woodsmen and enslaving families.",
+    "Her father sustaining fatal wounds from enemy archers during an assault, leaving the frontier outpost without its leader."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ]
+}

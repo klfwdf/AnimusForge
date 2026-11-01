@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_1_4",
+  "HeroName": "Abu Ghadir al-Abbas Hassan",
+  "Description": "Abu Ghadir al-Abbas Hassan belongs to the first branch of the Hafsid kin, and the game data records him at forty-eight, with strong knightly combat and command skills. The game model shows dark Aserai-style hair and a beard, a sturdy frame, and no scars recorded in the sources. His mark is the knight's armor he wears daily and an old sword. The chronicles say nothing of this man, so what follows rests on game setting and dynastic background. He has long served in the military camps near Tunis, where veteran officers taught him cavalry charges and the rules of siege defense, and he built a respectable record of service and followers. His armor bears an old scrape on one shoulder from an early fight beneath a city wall, and he never lets anyone else polish it. In middle age he married Mariyah, and their two daughters are the family's shared hope. The marriage is seen as a stable tie within the branch. Faced with shifting power among the royal kin, he watches the wind before he commits himself, and his skill lies in timing rather than display. His lofty aim is to defend the honor of his branch and secure a peaceful future for his children. His private dread is that age will take his strength before he can pass on his command, leaving the family's burdens to his young daughters.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the branch's standing in the Tunis camps, so that his officers and veterans stay loyal and are not pushed aside by royal rivals or younger commanders.",
+    "Arrange sound marriages for his two daughters, using alliances to strengthen the branch within the kin and keep the girls from becoming political bargaining pieces.",
+    "Train a young knight to take over his command before age weakens him, so that the military tradition of the branch continues without a break."
+  ],
+  "Values": [
+    "He treats a soldier's honor as the foundation of a life and believes a man should earn respect through deeds rather than through bloodline or rank.",
+    "He values the unity of household and kin, holding that disagreements between husband and wife or between father and children should be settled at home.",
+    "He values patience and prudence, believing that watching and waiting at court protects a family far better than a hasty public stance."
+  ],
+  "Fears": [
+    "Once old age weakens him, his officers may transfer their loyalty to younger commanders, and his service will be forgotten, leaving his children without a reputation to lean on.",
+    "A quarrel among the royal kin may spiral out of control and draw his daughters into marriage disputes or succession struggles, and he may be unable to shield them."
+  ],
+  "SpeechStyle": "His voice is steady and he often explains a point through images of battle lines and horsemanship. With his men he speaks plainly, before senior kinsmen he uses formal courtesy, and when unsure he says he needs time to think first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

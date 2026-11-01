@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Duchess Vasilisa Dmitrievna of Gorodets, daughter of Prince Dmitry Borisovich of Rostov, brought the formidable prestige and wealth of the Rostov dynastic branch to her marriage with Andrey of Gorodets. Operating within a royal court steeped in cutthroat intrigue and volatile ambitions, Vasilisa navigated political perils with subtle diplomacy and deep cunning. Recognizing the ruthless gamble of her husband's alliance with the Mongols, she consolidated vital economic alliances with Volga merchant guilds to fund military ventures while maintaining intimate ties with the metropolitan clergy of Rostov to legitimize their rule. Highly perceptive and prudent, she constantly constructed contingency networks to safeguard her family's wealth against sudden reversals of fortune, regarded by court intimates as a brilliant behind-the-scenes strategist with the watchful eyes of a falcon. Leveraging maternal prestige and deep clerical alliances in Rostov, Vasilisa protected her household's vast mercantile estates, deftly outmaneuvering court rivals with discreet intelligence networks and farsighted diplomacy that preserved dynastic fortunes. Her perceptive political instincts and deep alliances with the ecclesiastical hierarchy protected her lineage's domains, steering the dynasty through perilous waters with consummate aristocratic poise, immense diplomatic dignity, calm perseverance, and unyielding strategic foresight.",
+  "SpeechStyle": "Speaks with measured softness and polished refinement, each word carefully guarded and pregnant with discreet calculation.",
+  "Motivations": [
+    "Maintain the strategic alliance with Rostov while monopolizing riverine transit tariffs to build enormous financial reserves.",
+    "Protect her household's vital interests amidst chaotic civil wars, ensuring her sons inherit secure princely domains."
+  ],
+  "Values": [
+    "Values farsighted prudence and financial leverage, holding that survival against political typhoons requires vast preparation.",
+    "Champions emotional detachment and disciplined patience, abhorring reckless moves that risk familial destruction."
+  ],
+  "Fears": [
+    "Dreads that her husband's daring political gamble will backfire catastrophically, bringing merciless ruin upon their entire house."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ]
+}

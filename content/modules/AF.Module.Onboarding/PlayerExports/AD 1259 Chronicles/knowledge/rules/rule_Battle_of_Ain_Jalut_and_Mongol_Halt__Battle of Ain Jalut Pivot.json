@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Ain_Jalut_and_Mongol_Halt",
+  "Keywords": [
+    "Battle of Ain Jalut Pivot",
+    "Qutuz and Baibars Mamluk",
+    "Kitbuqa Slain at Ain Jalut",
+    "Mamluk Steppe Tactics Triumph"
+  ],
+  "RagShortTexts": [
+    "In 1260 at Ain Jalut, Mamluk horse archers crushed Kitbuqa, definitively halting Mongol."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fought on September 3, 1260, at Ain Jalut ('Spring of Goliath') in Galilee, the battle marked the high-water mark of Mongol conquest. Mamluk Sultan Qutuz and General Baibars executed a masterclass in feigned retreat, encircling Kitbuqa's vanguard in a bloody shock cavalry counter-assault that shattered Mongol invincibility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Ain Jalut saved Cairo, Damascus, and Mecca from annihilation, firmly cementing Mamluk military prestige across the Near East."
+    }
+  ],
+  "TextMappings": []
+}

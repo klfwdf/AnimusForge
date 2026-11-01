@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Royal_Forest_Laws_and_Greenwood_Poaching",
+  "Keywords": [
+    "English Royal Forest Law",
+    "Vert and Venison Crown Prerogative",
+    "Red Deer Poaching Mutilation Penalty",
+    "Verderers Foresters and Greenwood Outlaws"
+  ],
+  "RagShortTexts": [
+    "Royal Forest Laws claimed vert and venison exclusively for the King, punishable by blinding."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Under Norman Forest Law, vast tracts of England were cordoned as the King's personal hunting grounds. Strictly separating 'vert' (timber foliage) and 'venison' (game deer), statutes forbade unauthorized clearing or keeping unmaimed mastiffs. Poaching royal stags historically incurred blinding and mutilation, fostering deep outlaw lore."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The 1217 Charter of the Forest curbed royal overreach, abolishing capital punishment in favor of heavy fines, though verderers and forest wardens continued to extract arbitrary dues from shire freemen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ]
+      },
+      "Content": "In royal oak forests, poachers grease bowstrings to loose shafts into the dusk. Salting illicit venison inside hay ricks feeds starving families when winter blizzards ruin harvest stores."
+    }
+  ],
+  "TextMappings": []
+}

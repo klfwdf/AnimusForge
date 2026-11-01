@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_1_2_1",
+  "HeroName": "Bayud",
+  "Description": "Bayud is the wife of the game emir Manqatuy. No historical record names her, so her origins and appearance are game setting. She came from a Cairo merchant family that traded in spices and cloth, and after marriage she ran the household accounts and purchases, keeping close track of every silver coin. She is slender, with long fingers, and usually wears plain pale grey robes. On one wrist she wears an old string of beads, the only ornament she kept from her father's house. At a family gathering she refused an emir's request for a loan, which offended him, and since then she has answered outsiders' probing with silence. She respects her husband greatly but seldom shows affection, and her care appears instead in meals and clothing. When he marches out to war, she checks his kit herself, packing dried food, medicines and spare clothes in separate bundles and dating each chest. She also pays her household servants on time, which is why they work for her willingly. Her noble aim is to keep the family finances secure, so that her husband need not worry about money during the wars. Her inner shadow is the fear that savings will vanish in a single wager or loan, and that debt will drive her husband and children to ruin.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the household ledgers and purchases in order, so that every expense can be traced and her husband's army costs rest on a steady rear.",
+    "Handle the family's social obligations with caution, neither offending powerful emirs nor letting them take advantage of the household.",
+    "Accumulate money and goods her children can use to survive in turbulent times, even if they lose their father's protection."
+  ],
+  "Values": [
+    "A household's fortunes rise or fall on thrift and careful bookkeeping, and a family that does not know its income cannot hold its ground in an unstable age.",
+    "Spouses must guard one another, and a husband's honour and a wife's management matter equally, so neither should carry the whole burden alone.",
+    "Borrowing is a double-edged blade that can rescue a family or destroy it, so she would rather go without than ask anyone for money."
+  ],
+  "Fears": [
+    "Her husband falling into debt through wagers or loans, with the household savings swept away and the children left orphaned in practice.",
+    "An unavoidable social obligation forcing a large payment, so the family loses its financial independence with no compensation at all."
+  ],
+  "SpeechStyle": "She speaks calmly and quietly, preferring figures and dates to emotional language. When asked for something she first questions the purpose and the amount before agreeing, courteous but distant, so her true thoughts stay hidden.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1p",
+  "HeroName": "Cansignorio della Scala",
+  "Description": "Cansignorio della Scala, son of Mastino II, seized power by overthrowing his tyrannical brother Cangrande II. Ruling for sixteen prosperous years, he constructed the Ponte delle Navi, civic aqueducts, and commissioned the breathtaking Gothic masterpiece of the Scaliger Tombs. Cansignorio erected the monumental Ponte delle Navi and commissioned the sublime Gothic masterpiece of the Arche Scaligere tombs, immortalizing his dynasty in marble. Restoring civic prosperity through tax remissions and monumental aqueducts, he transformed Verona into an architectural marvel of the late medieval Italian Renaissance. Visionary in statecraft, Cansignorio reshaped Verona through monumental aqueducts and the sublime Arche Scaligere, enshrining his house's chivalric glory in immortal stone. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct monumental aqueducts and bridges to wash away the scars of tyrannical misrule.",
+    "Erect the immortal marble Arche Scaligere to enshrine his dynasty's chivalric glory forever.",
+    "Maintain diplomatic neutrality between Venice and Milan to safeguard Verona's sovereignty."
+  ],
+  "Values": [
+    "Believes magnificent architecture and sublime art are a ruler's only immortal monuments.",
+    "Views cold administrative pragmatism as essential to preserve dynastic survival at all costs."
+  ],
+  "Fears": [
+    "Fratricidal strife erupting among his heirs to dismantle the Scaliger state after his death.",
+    "Consumptive illness ending his life before his monumental architectural works are completed."
+  ],
+  "SpeechStyle": "Speaks with architectural vision and calculated gravity, discerning, artistic, and firm. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

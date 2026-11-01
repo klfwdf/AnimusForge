@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_4_4",
+  "HeroName": "Kristina Petersdotter",
+  "Description": "Lady Kristina Petersdotter of Finsta, younger daughter of Sir Peter Karlsson, was renowned across Uppland for her tranquil disposition and deep religious devotion. Imbued with contemplative Christian piety, Kristina spent her youth studying sacred scripture and hagiographies. She assisted her elder sister in supervising domestic manufactories, demonstrating exceptional artistry in ecclesiastical embroidery, notably producing a magnificent liturgical baldachin for Uppsala Cathedral. Gentle, empathetic, and discreet, she frequently visited rural hamlets to distribute warm clothing and herbal salves to tenant families. Prudent and reserved, she was universally esteemed by the regional nobility as an embodiment of quiet grace and steadfast virtue. Kristina maintained charitable dispensaries within Finsta Castle, distributing herbal medicines without charge to tenant families across neighboring parishes, saving hundreds of lives during harsh winter epidemics. Untouched by worldly ambitions, she viewed Christian contemplation and compassionate service to the poor as the ultimate purpose of life. Her unblemished purity, moral sweetness, and tireless dedication to alleviating suffering won the boundless love of both clergy and common folk, honored as the guardian angel of Finsta. Her quiet spiritual guidance and selfless benevolence brought solace to the grief-stricken, establishing her memory as a holy sanctuary of peace.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Dedicate herself to sacred embroidery and liturgical art, offering prayers for the enduring protection of Finsta.",
+    "Relieve the hardships of impoverished tenant families through medical charity, securing deep communal love."
+  ],
+  "Values": [
+    "Believes that inner spiritual purity and selfless charity are far more enduring than worldly power.",
+    "Champions quiet humility and familial devotion, seeking to bring tranquility to her ancestral house."
+  ],
+  "Fears": [
+    "Dreads the fires of war ravaging the peaceful sanctuaries of Finsta and destroying innocent peasant lives."
+  ],
+  "SpeechStyle": "Speaks with gentle, modest reserve and radiant sincerity, her soothing cadence inspiring profound peace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

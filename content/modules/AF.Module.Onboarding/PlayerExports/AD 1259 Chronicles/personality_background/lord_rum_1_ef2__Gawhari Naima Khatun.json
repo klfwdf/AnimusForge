@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_ef2",
+  "HeroName": "Gawhari Naima Khatun",
+  "Description": "Gawhari Naima Khatun is twenty-four, the daughter of Kaykhusraw II and Gulcicek Khatun, and the sister of Kilij Arslan Kaykhusraw. She is slender and tends to tilt her head when she listens. A pale red birthmark sits behind her right ear. She prefers lilac silk gowns and wears a thin silver chain with a small round pendant engraved with an Arabic maxim, a betrothal gift from her mother. From childhood she studied Persian and Arabic, and many of the court's letters come from her pen, which gives her a reputation in diplomatic writing. She has never been on a campaign. All her experience comes from the study and the reception hall, and she remembers the seating order at every Mongol embassy. She watches her brother's ambition with unease, but never opposes it in public, preferring to remind him privately to choose his words with care. Toward her uncle Kaykhusraw III, who is suspicious of the family, she keeps a polite distance, speaking for neither side and repeating nothing she overhears. Once an envoy spoke carelessly at a banquet, and she rewrote the wording overnight so the negotiation did not collapse. Her goal is to win a useful treaty through peaceful talks, so the royal house does not rely on swords alone. Her deepest fear is that every document she drafts will one day serve as evidence that she took part in a family conspiracy.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win a useful treaty through peaceful talks, so the royal house holds its place through letters and diplomacy rather than swords and cavalry alone on the battlefield.",
+    "Learn the seating order and etiquette of every embassy, and record the relations between Mongol envoys and local nobles to give the family accurate advice.",
+    "Keep an even hand between her brother and her uncle, so that her documents never become evidence for either side against the family or anyone near her."
+  ],
+  "Values": [
+    "Words and courtesy, believing a carefully worded document outweighs a hastily sent cavalry column, so every phrase deserves long thought and revision.",
+    "Discretion, since she never repeats private talk from the court and believes those who leak other people's secrets soon lose all trust and respect.",
+    "Loyalty to her brother, for though she disapproves of his ambition, she still checks his mistakes at key moments before others can see them and punish the household."
+  ],
+  "Fears": [
+    "Her carefully drafted documents being used one day as proof that she took part in a family conspiracy, costing her all her good name and footing at court.",
+    "Her brother's ambition destroying the whole family in a clash, leaving her documents useful only as footnotes to a defeat that no one wishes to read."
+  ],
+  "SpeechStyle": "Speaks softly and chooses words with care, often replacing rebuttal with a polite question. Formal with foreign envoys, blunter with close kin. On her brother she stays restrained, ending with a gentle reminder.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

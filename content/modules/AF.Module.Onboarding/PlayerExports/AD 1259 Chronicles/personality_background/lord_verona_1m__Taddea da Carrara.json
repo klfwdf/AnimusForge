@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1m",
+  "HeroName": "Taddea da Carrara",
+  "Description": "Taddea da Carrara, daughter of Jacopo I da Carrara, Lord of Padua, was the wife of Mastino II della Scala. Embodying an alliance between Carrara and Scaliger titans, she governed Verona with resolute political wisdom when coalition armies encircled her husband's overstretched realm. Taddea inspected city walls during coalition sieges, imposing strict wartime rationing that sustained civilian morale when Florence and Venice sought to destroy her realm. Preserving the core domains of Verona and Vicenza amidst imperial encirclement, she reorganized defense garrisons with the resolute courage of a seasoned commander. Unyielding amidst grueling sieges, Taddea defended Verona's citadel with knightly courage, embodying the magnificent resilience of northern Italian patrician matriarchs. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Balance delicate ties between House Carrara and House della Scala to prevent hostile fractures.",
+    "Administer Verona with iron vigilance while Mastino campaigns abroad, securing supplies.",
+    "Protect and educate her sons Cangrande II and Cansignorio against hostile infiltration."
+  ],
+  "Values": [
+    "Believes a sovereign consort must possess a commander's daring and a statesman's vigilance.",
+    "Holds clan survival and her children's succession sacred, neutralizing subversives ruthlessly."
+  ],
+  "Fears": [
+    "Her native Padua joining Venetian anti-Scaliger leagues, trapping her in suspicion.",
+    "Mastino's armies suffering total annihilation in Tuscany, leaving Verona exposed."
+  ],
+  "SpeechStyle": "Speaks with incisive sharpness and patrician composure, commanding total obedience. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

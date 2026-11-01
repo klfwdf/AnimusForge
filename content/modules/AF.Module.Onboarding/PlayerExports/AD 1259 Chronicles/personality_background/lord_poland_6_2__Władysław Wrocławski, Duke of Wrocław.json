@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_6_2",
+  "HeroName": "Władysław Wrocławski",
+  "Description": "Władysław of Wrocław reigns as Duke of Wrocław, Prince-Archbishop of Salzburg, and Supreme Chancellor of the Kingdom of Bohemia, the brilliant youngest son of High Duke Henry II the Pious. Destined for ecclesiastic leadership, Władysław studied canon and civil law at the renowned universities of Padua and Bologna, emerging as one of the most accomplished jurists and diplomats in thirteenth-century Christendom. When violent civil wars erupted between his brothers Henryk III and Bolesław Rogatka, Władysław exercised measured arbitration, briefly co-ruling the Duchy of Wrocław to preserve order and peace. His brilliant administrative intellect won the profound trust of King Přemysl Otakar II of Bohemia, who appointed him Royal Chancellor and elevated him to the prince-archbishopric of Salzburg, making Władysław the most powerful Polish prelate in imperial Europe. Governing vast alpine and Danubian dioceses, he steadfastly defended ecclesiastic immunities while deploying his formidable influence to safeguard the territorial rights of the Silesian Piasts. Władysław stands as a colossal figure of the medieval church, bridging Rome, Prague, and Poland with sovereign intellect and diplomatic majesty. Władysław studied imperial jurisprudence and deployed his archiepiscopal authority to shield Silesian inheritances. His diplomatic intellect bridged Central Europe, commanding the highest reverence across courts and cathedrals.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Deploy his archiepiscopal authority in Salzburg and Prague to shield Silesian Piast territories within imperial diets.",
+    "Establish strict canonical jurisprudence and urban municipal charters in Wrocław to prevent feudal dismemberment.",
+    "Mediate volatile tensions between the Holy Roman Empire, Bohemia, and Polish dukes to foster diplomatic stability."
+  ],
+  "Values": [
+    "Hold canon jurisprudence, written statutes, and lawful equity as the supreme cornerstones of civilization.",
+    "Prize deep scholarly intellect and legal mastery, believing lawful parchment conquers crude steel.",
+    "Fulfill his high pastoral duties, dedicating his life to the exaltation of the church and his royal bloodline."
+  ],
+  "Fears": [
+    "Papal-imperial conflict erupting into destructive warfare that devastates his archdiocese of Salzburg.",
+    "Silesian dukes destroying themselves in fratricidal civil wars, allowing foreign margraves to conquer their lands."
+  ],
+  "SpeechStyle": "Sacred canon law and written statutes are the strongest curbs upon violent swords; before God and Emperor, Piast justice stands unshakeable! Canon statutes and sacred wisdom conquer kingdoms far better than war.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

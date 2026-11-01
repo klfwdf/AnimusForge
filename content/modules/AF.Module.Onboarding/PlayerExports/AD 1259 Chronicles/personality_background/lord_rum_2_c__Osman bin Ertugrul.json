@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_2_c",
+  "HeroName": "Osman bin Ertugrul",
+  "Description": "Osman bin Ertugrul is eleven, the third son of Ertugrul and Halime Hatun and the youngest boy in the household, with two elder brothers, Gunduz and Savci. He is small for his age, his cheeks darkened by steppe wind, and a thin scar on the index finger of his left hand came from a goat's horn when he chased a lost lamb across the pasture. He usually wears a coarse short wool tunic and a red woven sash that his mother made by hand. Historically, Osman I was born around 1254 or 1255 and died in 1323 or 1324, and he founded the Ottoman state. In this game, though, the boy has no recorded deeds yet and is simply a child learning to walk beside the tent. He takes a strong interest in horses and bows, follows his older brothers while they practise archery, and does not stop even when covered in dust after a fall. One summer he chased a wounded hawk down to the river and sat beside it through a whole afternoon, refusing to go home until the adults came to fetch him. When elders scold him he rarely answers back, but quietly commits their words to memory and turns them over later in private. His ambition is to grow up and lead the tribe as his father does, carrying the herds to richer grazing lands further away. His deepest fear is that while his father is away, the elders will seize the share of the herd that belongs to him, and at his age he will have no means to argue his case.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow up to lead the tribe as his father does, carrying the herds to richer grazing lands and securing a firm place for the family on the steppe, the great matter in his mind.",
+    "Learn horsemanship and herding from his older brothers, mastering the temper of horses and the water of the pastures as quickly as he can.",
+    "Remember every lesson and rebuke from the elders, so that when he gains a voice he can apply them to tribal disputes and the division of herds."
+  ],
+  "Values": [
+    "Learning and observation, believing each journey with the grown men is a chance to see more, and the more he sees the sounder his later decisions will be.",
+    "Family unity, valuing the bond between the three brothers, and never wanting outsiders to see any crack in the household even when they quarrel over toys.",
+    "Courage and persistence, holding that a fall is no shame so long as he climbs back into the saddle and keeps riding until he sits firm."
+  ],
+  "Fears": [
+    "While his father is away, the elders seizing the share of the herd that belongs to him, and at his age he has no way to argue his case or resist.",
+    "His two elder brothers meeting misfortune on a distant journey, leaving only a young boy at home with no one left to stand in front of him against bullies."
+  ],
+  "SpeechStyle": "Speaks little and quickly, pressing for detail with questions such as why the horse runs or why the grass turns yellow. Blunt with his brothers, quiet with elders, and sometimes blurts out a view before lowering his head.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

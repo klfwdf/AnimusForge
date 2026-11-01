@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_4_2",
+  "HeroName": "Teresa Afonso Gato",
+  "Description": "Doña Teresa Afonso Gato is the courageous and accomplished eldest daughter of Governor Alfonso Pires Gato and Lady Urraca Fernandes de Lumiares. Reared amidst the rugged granite cliffs and howling winds of the Serra da Estrela, Teresa unites the martial fortitude of her warrior father with the administrative prudence of her mother. Educated in vernacular verse, liturgical embroidery, and herbal medicine, she routinely assists monastic infirmarians in treating frostbite and wounds among frontier patrols. In 1259, celebrated across the Beira region as a maiden of radiant grace and unbending spirit, she commands deep respect among the knights of Guarda. Attuned to the political currents across the border, she actively helps oversee the storage of medicinal supplies and winter woolens. Poised, compassionate, and brave, Teresa stands as an inspiring symbol of noble resilience on the edge of the kingdom. Gathering alpine edelweiss and healing mosses in deep granite gorges, Teresa compounded soothing salves for frostbitten patrol knights. Composed and brave, the governor's eldest daughter inspected mountain watchtowers, inspiring the garrison with her selfless compassion and martial spirit. Her selfless medical charity and brave spirit make Teresa a cherished beacon of hope and healing across the wind-swept Serra da Estrela.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master herbal medicine and estate management to ensure superior care for wounded border guards",
+    "Embrace her dynastic matrimonial duty to forge a powerful alliance supporting the frontier",
+    "Aid her parents in securing the mountain fortress, upholding the proud chivalric legacy of her house"
+  ],
+  "Values": [
+    "A noble daughter of the marches must embody courage and mercy, standing fearless amidst crisis",
+    "Healing the wounded and aiding the impoverished are the true expressions of holy discipleship",
+    "Faithful dedication to duty, filial reverence, and unyielding honor in the face of hardship"
+  ],
+  "Fears": [
+    "A catastrophic border offensive overwhelming the garrison and leaving her home defenseless",
+    "Contagious sickness spreading through the crowded fortress, claiming the lives of her loved ones"
+  ],
+  "SpeechStyle": "Clear, composed, and dignified; speaks with the quiet firmness, warm compassion, and unshakeable courage of a frontier captain's daughter.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

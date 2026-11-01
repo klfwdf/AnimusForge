@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Rostislavichi_Smolensk_Princes",
+  "Keywords": [
+    "House of Rostislavichi Smolensk",
+    "Headwaters of Dnieper Smolensk",
+    "Varangian Trade Tolls Smolensk",
+    "Smolensk Rus Princes Buffer"
+  ],
+  "RagShortTexts": [
+    "The Rostislavichi commanded Smolensk on the upper Dnieper, guarding ancient river highways."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Controlling the Dnieper headwaters, the Rostislavichi ruled Smolensk behind formidable earthworks and stone churches. Leveraging key portages between the Baltic and Black Sea, they maintained profitable commercial ties with Riga and German merchants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Well-drilled druzhina warriors repelled predatory steppe scouts, ensuring unbroken transit along Rus inland waterways."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_2b",
+  "HeroName": "Stephanie of Armenia",
+  "Description": "Stephanie of Armenia was a royal daughter of King Leo I the Great and an elder sister of Queen Isabella, embodying the proud dynastic lineage of the Rubenids. Having participated directly in high-stakes royal marriages across Mediterranean courts, she was acutely familiar with the cynical realpolitik governing crusader diplomacy. Stephanie developed an incisive, guarded intellect, capable of detecting hidden peril beneath the most flattering diplomatic overtures. Within the royal chancery of Sis, she oversaw confidential correspondence, rigorously scrutinizing foreign treaties to safeguard Cilician territorial sovereignty. In 1259, as titanic regional conflicts threatened the Levantine border, Stephanie repeatedly cautioned royal commanders against complacency, urging total fortress readiness. Discreet, vigilant, and intensely loyal to her homeland, Stephanie was respected as an invaluable counselor in evaluating dangerous geopolitical alliances. Within the royal archival chancery, Stephanie instituted a strict multi-seal verification protocol, thoroughly auditing all frontier land deeds and diplomatic tax immunities. She corresponded directly with mountain scout captains, cross-referencing travelers traversing the caravan highways to weed out foreign spies and traitors. Living in unpretentious austerity within a quiet palace wing, this experienced Rubenid princess devoted her days to analyzing Near Eastern diplomatic dispatches, advising young Prince Leo.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Safeguard the sovereign integrity of Little Armenia, preventing foreign powers from eroding mountain autonomy through deceptive treaties.",
+    "Scrutinize diplomatic communications and marital pacts, uncovering hidden ulterior motives among Outremer crusaders and neighboring princes.",
+    "Ensure border citadels maintain absolute logistical vigilance and stockpiles to counter sudden betrayals by regional allies."
+  ],
+  "Values": [
+    "Rigorous skepticism, diplomatic prudence, and continuous vigilance are essential to national survival amidst predatory empires.",
+    "Uncompromising defense of royal prerogatives and territorial boundaries against foreign encroachment.",
+    "Analytical realism triumphing over naive idealism; guarding the realm through forensic intelligence."
+  ],
+  "Fears": [
+    "The kingdom placing naive faith in foreign chivalric promises, only to be abandoned to catastrophic encirclement.",
+    "Espionage or internal treachery leaking vital alpine fortification blueprints to hostile powers, breaching defenses."
+  ],
+  "SpeechStyle": "Speaks with guarded courtly precision and calculating discernment, evaluating diplomatic treaties and crusader alliances with cool skepticism.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Stephanie of Armenia"
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_gaelic_5_3",
+  "HeroName": "Niamh Ó Con Ceanainn",
+  "Description": "Niamh Ó Con Ceanainn is the gifted elder daughter of King Donnell and Queen Lasairfhíona, distinguished by her gentle nature and scholarly inclinations. Fourteen years old in 1259, she has studied Latin grammar, archaic Gaelic bardic meters, and botanical medicine under her mother's tutelage, renowned across the eastern manors for her quiet erudition and delicate embroidery. Niamh loves assisting nuns at the local priory in illuminating devotional psalters and preparing soothing tisanes for sick village children. Growing up amidst the ever-present drums of frontier defense, her gentle spirit remains untarnished by wartime bitterness; she listens attentively to her father's councils, offering gentle words of encouragement that bring solace to weary captains. Treasured as a blossom of peace within a warrior clan, she embodies the hopes of her family for an enduring native tranquility. Within the quiet riverside scriptorium, young Niamh painstakingly transcribed illuminated Latin psalters and archaic heroic sagas; her sweet nature, profound piety, and remarkable mastery of herbal healing bring gentle solace to battle-scarred warriors and village children alike, cherished as an innocent flower of peace within a resilient warrior sept. Her compassionate care brings hope and comfort to the vulnerable throughout the frontier lands.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master Latin manuscripts and Gaelic poetry to record local legends and history.",
+    "Assist her mother in charitable healing, praying earnestly for the return of peace."
+  ],
+  "Values": [
+    "Pious pursuit of sacred wisdom and pure-hearted Christian compassion.",
+    "Filial obedience, gentle modesty, and moral serenity amidst turbulent times."
+  ],
+  "Fears": [
+    "War reaching her peaceful manor and destroying illuminated manuscripts.",
+    "Her father or brother falling victim to treachery during border patrols."
+  ],
+  "SpeechStyle": "Speaks with soft, lyrical sweetness, modest, thoughtful, and deeply respectful, reflecting her gentle piety and monastic education.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

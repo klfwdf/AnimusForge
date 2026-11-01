@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_3_1_c",
+  "HeroName": "Isabel de Vere",
+  "Description": "Isabel de Vere is the graceful and discerning daughter of Hugh de Vere, 4th Earl of Oxford, and Hawise de Quincy. Slender, fair-haired, with thoughtful grey eyes and a serene courtly demeanor, she embodies the refined intellectual tradition of the Anglo-Norman baronage. Educated within the scholarly library of Castle Hedingham, Isabel is skilled in Latin transcription, herbal medicine, and the Celtic harp. Under her mother's expert guidance, she developed a sophisticated understanding of kingdom politics as her father and brothers championed the Provisions of Oxford. In 1259, as armed conflict looms, Isabel assists in organizing castle infirmaries, preparing medicinal dressings, and managing sensitive diplomatic correspondence with neighboring baronial houses. Her poise and hospitality during tense political councils at Hedingham soothe fractious tempers and cement valuable alliances. Gentle yet resolute, she stands as a beacon of domestic virtue and moral courage within the reformist ranks. In the infirmary, she prepares elderberry ointments and rolls bolts of linen bandages, ensuring the castle is fully equipped to treat battle casualties. Receiving baronial couriers with flawless grace, Isabel's serene intelligence earns universal admiration across the reformist coalition. She remains dedicated to soothing troubled spirits and upholding the proud traditions of the House of Oxford.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage castle infirmaries and domestic provisions, ensuring warriors receive expert medical care",
+    "Foster baronial trust through gracious diplomacy during strategic summits at Castle Hedingham",
+    "Cultivate the healing arts and Christian scholarship, preserving sanity amidst approaching war"
+  ],
+  "Values": [
+    "A lady's true nobility shines in healing wounds; medicine and mercy are as vital as the sword",
+    "Uphold justice and fidelity; the constitutional liberties defended by her kin are a holy legacy",
+    "Practice humble charity and serene decorum, keeping an untroubled soul amidst stormy times"
+  ],
+  "Fears": [
+    "Castle Hedingham enduring a prolonged winter siege, starving the defenders and infirmaries",
+    "Her beloved father or brothers being slaughtered upon the battlefield, plunging the house into mourning"
+  ],
+  "SpeechStyle": "Speaks with soft, melodic clarity and refined intellectual grace. Her tone is empathetic and deeply reassuring, naturally calming anxieties and commanding heartfelt deference from all who listen.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

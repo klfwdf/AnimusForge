@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_2b",
+  "HeroName": "Žygimantė",
+  "Description": "Žygimantė reigns as Duchess of Polotsk, the esteemed consort to Duke Tautvilas, standing as a luminous figure uniting Baltic noble pride with Eastern Slavic princely traditions. Possessing commanding poise, articulate eloquence, and acute administrative wisdom, Žygimantė governed the bustling fortress city of Polotsk during her husband's frequent military campaigns across Livonia and Samogitia. From the upper citadel overlooking Saint Sophia Cathedral, she audited customs rolls, coordinated timber and pitch reserves, and supervised the provisioning of fortress ramparts along the Western Dvina. Her diplomatic tact was legendary; she harmoniously balanced the competing interests of Orthodox Ruthenian boyars, Catholic German merchants arriving from Riga, and pagan Lithuanian guardsmen, earning widespread reverence as a fair sovereign. She established flourishing textile and gold-embroidery workshops whose luxury products found eager markets in Novgorod and Smolensk, enriching the ducal treasury. Amidst the brutal, fratricidal wars of the Lithuanian dynasty, Žygimantė's quiet fortitude and protective authority shielded Polotsk from internal ruin. Žygimantė personally oversaw the stockpiling of cured salted provisions and grain stores for lengthy northern siege defense. Her compassionate administration of civic aid earned profound devotion from city craftsmen, resilient townsfolk, local guild masters, and highland peasant levies.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage commercial river customs and domestic reserves to ensure unbroken logistical support for Duke Tautvilas.",
+    "Reconcile Orthodox boyars, Catholic merchants, and pagan warriors to preserve internal peace in Polotsk.",
+    "Protect the lives and hereditary inheritance of her children amidst the brutal dynastic wars tearing Lithuania apart."
+  ],
+  "Values": [
+    "Prize equitable justice, civic harmony, and commercial prosperity over narrow ethnic or religious prejudice.",
+    "Value calm, calculated diplomatic intellect, seeking prudent balance amidst shifting factional rivalries.",
+    "Fulfill her sovereign domestic duties, extending generous charity to urban hospices and the vulnerable."
+  ],
+  "Fears": [
+    "Duke Tautvilas falling into a lethal ambush during succession talks, leaving her and her children isolated.",
+    "Crusader hosts or nomadic raiders storming Polotsk, burning Saint Sophia Cathedral and reducing the town to ash."
+  ],
+  "SpeechStyle": "Polotsk's prosperity demands harmony among all faiths; swords conquer ramparts, but just laws and broad benevolence alone keep our citadel unbroken! Our granaries are full and our granite bastions remain steadfast!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

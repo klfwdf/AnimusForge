@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_6_1",
+  "HeroName": "Kadan",
+  "Description": "Kadan is of middle height, with heavy hands whose knuckles are hardened by years of working siege engines. An old arrow wound on his left arm has faded to pale white. He is known in the game setting for his skill with siege engineering, and he carries a measuring rule and a handful of iron nails at his belt. Craftsmen say he can cut timber to a finger's width. The namesake in medieval records is Kadan, a son of Ogedei Khan and a brother of Guyuk, who is recorded as one of the leaders of the 1241 expedition into Poland during the western campaign of Batu. Kadan's early career was shaped by that military network, so he tends to judge politics as an engineer judges a bridge, weighing cost, time and risk before anything else. Against rivals he seldom argues in public. He draws the supply routes, camps and allies of his opponents on paper, and strikes only after he finds the weak point. His marriage to Borte is calm but firm. He values her skill in the saddle and relies on her standing among the kinsmen. His highest aim is to win the sixth clan a seat in the great council through engineering and battlefield service. His fear is concrete: a failed siege might destroy the family's reputation overnight, and his own drawings could become evidence used against him in the council.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Earn military credit through siege engines and engineering, so that the sixth clan holds a voice in the great council equal to other kinsmen of the khan.",
+    "Calculate the cost, time and risk of every march and siege, so that his men do not die for avoidable mistakes and the clan's supplies and craftsmen are used well.",
+    "Keep steady ties with the house of Batu and the house of Ogedei, so that he avoids being forced onto the wrong side in a dispute over the khanate and keeps room to manoeuvre."
+  ],
+  "Values": [
+    "Evidence over promises, because he trusts drawings, figures and results he has seen with his own eyes, and this earned him respect from craftsmen and soldiers alike.",
+    "Technicians matter as much as riders, since he believes a catapult crew is worth as much as a cavalry charge and never belittles the logistics that keep an army fed.",
+    "Careful ambition, because he seeks power but insists on a retreat path at every step, refusing to stake the family's future on one reckless gamble."
+  ],
+  "Fears": [
+    "Fears that a failed siege would collapse the family's reputation overnight, since his judgement is the proof of his worth, and failure would deny his whole life.",
+    "Fears that his battle plans and ledgers will be taken by rivals and presented as proof of reckless ambition, costing him the trust of the khan."
+  ],
+  "SpeechStyle": "Slow and exact. Kadan explains tactics through comparisons, such as likening a siege to building a wooden bridge. He asks disagreeing people for figures and often sketches a small diagram. He speaks plainly to subordinates.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

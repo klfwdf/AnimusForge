@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_7b",
+  "HeroName": "Hedvika ze Schaunbergu",
+  "Description": "Hedvika of Schaunberg traces her proud lineage to the sovereign counts of Schaunberg, dominant dynasts of Upper Austria whose territories commanded the Upper Danube corridor, entering the House of Rožmberk through her marriage to Marshal Vok I. Bringing immense Bavarian and Austrian marcher estates as her dowry, Hedvika served as an indispensable diplomatic bridge reconciling imperial German baronial pride with Bohemian crown ambitions. A woman of formidable administrative wisdom and profound Catholic devotion, she was the primary co-foundress of Vyšší Brod Monastery, personally supervising the settlement of Cistercian monks from Wilhering Abbey and endowing the monastic scriptorium with rare illuminated texts. In Vok's frequent military absences across Styria, Hedvika administered the extensive Rožmberk households, harmonizing delicate relations between native Czech vassals and incoming German mining settlers. Her measured counsel, quiet authority, and deep piety won the respect of papal legates and royal chancellors alike, serving as a pillar of aristocratic stability across both banks of the Danube. Using her ancestral Schaunberg influence, Hedvika welcomed renowned Cistercian scholars from the Danube valley and presented Vyšší Brod with precious liturgical relics and gold vestments. She graciously resolved cultural frictions between native Czech tenants and incoming German miners, nurturing enduring communal peace across the estate.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Oversee the growth of Vyšší Brod Cistercian Abbey as a transcendent beacon of faith and spiritual learning along the border.",
+    "Mediate tensions between Danubian German magnates and the Bohemian crown to protect marcher trade and stability.",
+    "Nurture the Rožmberk heirs to embody both Czech martial courage and imperial courtly sophistication."
+  ],
+  "Values": [
+    "Hold steadfast Catholic devotion and generous monastic endowment as the true spiritual salvation of a noble lineage.",
+    "Prize stainless aristocratic honor, marital fidelity, and truthful word above ephemeral worldly gains.",
+    "Rely on patient, dignified perseverance to overcome adversity rather than succumbing to emotional panic."
+  ],
+  "Fears": [
+    "Irreconcilable war erupting between Austria and Bohemia, pitting her beloved husband against her ancestral Schaunberg kin.",
+    "Vyšší Brod Monastery being desecrated and sacked by lawless mercenaries during sudden frontier incursions."
+  ],
+  "SpeechStyle": "Only when justice, Christian mercy, and sacred faith are carved into foundation stones can a dynasty withstand the tempests of time; may God shield our house. Sacred faith and charity remain the eternal foundation of our posterity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

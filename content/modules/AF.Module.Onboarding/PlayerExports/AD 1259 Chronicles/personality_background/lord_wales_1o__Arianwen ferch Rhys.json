@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1o",
+  "HeroName": "Arianwen ferch Rhys",
+  "Description": "Arianwen ferch Rhys is the noble and gracious wife of Goronwy ab Ednyfed, daughter of an illustrious princely house of Deheubarth. With serene composure, intelligent hazel eyes, and understated aristocratic dignity, Arianwen symbolizes the peaceful reconciliation between north and south Wales. Her marriage brought immense prestige and southern ties to the rising lineage of Ednyfed. In 1259, while her husband Goronwy shoulders the monumental burden of managing Gwynedd's war finances, Arianwen governs their ancestral estates in Anglesey with exceptional wisdom. She coordinates grain reserves, patrons Cymric scribes copying ancient legal codices at local priories, and welcomes envoys from across the March. She maintains herbal dispensaries for wounded refugees and donates wool to impoverished parishes across the island. Her diplomatic intuition and soothing hospitality have defused countless volatile rivalries among hot-blooded Welsh noblemen. She maintains weaving sheds upon her estates, directing local women in producing heavy woolen mantles for frontline mountain guards. Welcoming clan emissaries under cover of darkness, Arianwen unravels thorny aristocratic grievances with diplomatic brilliance, lifting countless administrative burdens from her husband's shoulders. Her gentle wisdom, deep Christian faith, and noble hospitality turn potential feuds into steadfast cooperation, binding northern and southern clans together in common purpose.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain meticulous governance over family manors, providing safe haven for her overburdened husband",
+    "Foster mutual trust between northern and southern Welsh nobility through familial hospitality",
+    "Preserve ancient Cymric legal treatises and support church foundations against wartime depredation"
+  ],
+  "Values": [
+    "A noblewoman's true glory lies in healing wounds and preserving peace amidst carnage",
+    "True greatness is proven not by land alone, but by faithful stewardship of ancestral heritage",
+    "Pious integrity and calm order are the eternal anchors that keep a great family afloat"
+  ],
+  "Fears": [
+    "English royal galleys raiding Anglesey and setting fire to the grain fields sustaining Gwynedd",
+    "Her husband collapsing under the grueling strains of wartime governance or falling to intrigue"
+  ],
+  "SpeechStyle": "Speaks with gentle, soothing musicality, enriched by the poetic lilt of southern Cymric speech. Her hospitality is legendary, putting the most nervous guest instantly at ease with kind courtesy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

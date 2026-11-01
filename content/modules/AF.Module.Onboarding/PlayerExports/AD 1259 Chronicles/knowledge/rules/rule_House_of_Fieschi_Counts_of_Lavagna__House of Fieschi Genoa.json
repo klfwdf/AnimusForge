@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Fieschi_Counts_of_Lavagna",
+  "Keywords": [
+    "House of Fieschi Genoa",
+    "Counts of Lavagna Fieschi",
+    "Innocent IV Papal Dynasty",
+    "Genoese Guelph Fieschi"
+  ],
+  "RagShortTexts": [
+    "The Fieschi Counts of Lavagna gave the Church Innocent IV, anchoring Genoese Guelph naval."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hailing as Counts of Lavagna, the Fieschi produced Pope Innocent IV, the pontiff who deposed Emperor Frederick II. As premier Guelph oligarchs of Genoa, their maritime banking and curial connections rivalled the Ghibelline Doria in the Black Sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Papal bulls shielded Fieschi merchant convoys, affording them exclusive privileges in Rome and Crimean trade ports."
+    }
+  ],
+  "TextMappings": []
+}

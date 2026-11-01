@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2i",
+  "HeroName": "Hroznata of Úžice",
+  "Description": "Hroznata of Úžice stands as an esteemed royal magistrate and loyal commander closely allied by marriage to the House of Šternberk. Ruling the fortress of Úžice, he long served as Deputy Burgrave of Prague Castle and chief judicial assessor, deploying his profound mastery of customary Czech law and royal feudal charters to assist King Otakar in balancing baronial interests. Composed, calculating, and fair-minded, Hroznata frequently represented the Bohemian Crown on embassies to Moravia and Silesia, defending sovereign prerogatives through airtight legal covenants that defused volatile noble feuds. In managing defensive assets, he fortified grain mills and stone storehouses across crown manors, serving as an indispensable administrative cornerstone trusted by both the royal court and the Šternberk faction. Presiding over the heavy stone tables of the High Land Court in Prague, Hroznata reviewed ancient parchment charters to dismiss unlawful land claims pressed by greedy barons over public highways and royal mines. Around his seat of Úžice, he repaired stone bridges and watercourses to eliminate bandit lairs, earning widespread renown throughout the legal establishment as an incorruptible pillar of crown justice and the Šternberk alliance. His forensic mastery of customary statutes and unswerving integrity guarded the royal peace across the provinces.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Align royal statutory jurisprudence with manorial customs, helping the Burgrave curb baronial overreach.",
+    "Preserve the alliance between Úžice and Šternberk, ensuring family estates receive royal protection."
+  ],
+  "Values": [
+    "Regards rigorous legal procedure and feudal legitimacy as foundational pillars of royal prosperity.",
+    "Executes public offices with total fidelity, viewing honorable service to the realm as supreme glory."
+  ],
+  "Fears": [
+    "Fears southern magnates colluding to subvert royal courts, plunging the realm back into lawless feuds.",
+    "Worries royal foreign overexpansion will trigger fiscal insolvency, paralyzing central institutions."
+  ],
+  "SpeechStyle": "Charters are locks and laws are anvils; subtle precision in council chambers decides the fate of thousands of knights and fertile fields. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Hroznata of Úžice"
+}

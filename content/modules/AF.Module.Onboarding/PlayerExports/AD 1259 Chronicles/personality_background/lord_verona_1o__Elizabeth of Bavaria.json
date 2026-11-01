@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1o",
+  "HeroName": "Elizabeth of Bavaria",
+  "Description": "Elizabeth of Bavaria, daughter of Holy Roman Emperor Louis IV the Bavarian, was the royal consort of Cangrande II della Scala. Infusing Wittelsbach imperial prestige into Verona, she maintained impeccable royal dignity and fortitude amidst her husband's autocratic turbulence. Princess Elizabeth observed court turmoil from the sanctuary of Castelvecchio, endowing monastic libraries with Wittelsbach royal pride and aloof spiritual serenity. Maintaining imperial Wittelsbach pride amidst court turmoil, she refused compromise with conspirators, preserving royal honor through moral fortitude and spiritual composure. Austere and pious, Princess Elizabeth preserved Wittelsbach imperial dignity amidst alien court violence, crafting an enduring testament to royal fortitude and faith. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold Wittelsbach imperial majesty and ceremonials within the stormy court of Verona.",
+    "Moderate Cangrande II's despotic excesses, seeking to bridge the gulf with the alienated Popolo.",
+    "Protect German imperial envoys and secure vital transalpine commercial passes across the Alps."
+  ],
+  "Values": [
+    "Holds her Wittelsbach imperial blood as an untouchable standard of honor amidst all trials.",
+    "Believes legitimate sovereignty must reflect Christian justice rather than wanton bloodshed."
+  ],
+  "Fears": [
+    "Cangrande II's despotism triggering a popular revolution that engulfs her in retaliation.",
+    "Wittelsbach fortunes waning in Germany, leaving her isolated amidst Italian factionalism."
+  ],
+  "SpeechStyle": "Speaks with austere imperial distinction and regal restraint, commanding solemn deference. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

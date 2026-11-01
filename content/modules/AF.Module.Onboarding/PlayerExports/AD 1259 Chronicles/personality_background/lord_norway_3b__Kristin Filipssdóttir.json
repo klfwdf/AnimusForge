@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_3b",
+  "HeroName": "Kristin Filipssdóttir",
+  "Description": "Lady Kristin Filipssdóttir was an influential noblewoman, diplomatic anchor, and aristocratic consort of Baron Erling Alvsson of Tanberg. In 1259, Kristin directed the extensive domestic economy, agricultural revenue archives, and artisanal workshops across the vast Tanberg estates. Boasting direct bloodlines entwined with both former royal pretenders and high ecclesiastical dignitaries, she served as a perceptive informal diplomat within the high aristocracy. Her astute financial management modernized the production of fine woolen textiles and timber exports along the Drammensfjord, amassing substantial wealth for her household. A vigilant and devoted mother, she worked tirelessly to temper the fiery martial ambitions of her son, the famous Mindre-Alv, channeling his talents toward high realm service. Her generous endowments to regional Dominican priories and steadfast moral dignity established her as an exemplary matriarch of the Norwegian golden age. Lady Kristin managed extensive flax-bleaching fields and fine spinning mills at Tanberg, exporting high-grade textiles across North Sea ports to accumulate substantial silver fortunes. Her astute political intuition smoothed over perilous factional disputes between the royal court and regional barons, safeguarding her family's ascendancy. With serene maternal wisdom and aristocratic grace, she directed the dynasty's domestic affairs, revered by prelates and tenants throughout southern Norway.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with courtly elegance, poised restraint, and perceptive subtlety, navigating complex dynastic politics with practiced aristocratic grace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

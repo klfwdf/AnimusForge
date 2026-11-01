@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_4_2",
+  "HeroName": "Gráinde Ó Flaithbheartaigh",
+  "Description": "Gráinde Ó Flaithbheartaigh is the noble queen consort of King Ruaidhri and supreme chatelaine of the maritime lordships of Connemara. Born into an illustrious lineage of western seafaring chieftains, she possesses comprehensive knowledge of Atlantic tides, hidden shoals, and deep-sea fisheries. While her husband campaigns with his war-fleets along Lough Corrib, Gráinde governs the coastal strongholds from sheltered sea-lochs, methodically supervising dry-cured fish stores, salt-pans, and home-spun wool manufactories that sustain the clan through bitter Atlantic winters. Calm, resilient, and exceptionally skilled in traditional bone-setting and herbal salves, she personally ministers to wounded galley rowers returned from raiding expeditions. When predatory Norman cavalry probed coastal settlements, she repeatedly rallied aged archers and women to defend granite raths until relief ships arrived. Revered across the islands as an unyielding protector, she is hailed as the North Star of the Western Seas. Exhaustive manorial audits preserved among the maritime clan rolls reveal that Queen Gráinde personally inspected harbor breakwaters and hidden granary vaults across the western islands; braving winter gales to oversee the orderly rationing of dried fish and home-spun wool mantles, her boundless compassion and noble resilience have won the passionate devotion of fishing communities throughout Connemara.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure abundant dried food and salt stores to outlast prolonged English coastal blockades.",
+    "Maintain the sea-loch havens as impregnable refuges for her family's war-fleets."
+  ],
+  "Values": [
+    "Steadfast maritime endurance and self-sacrificing devotion to clan survival.",
+    "Prudent economic stewardship and austere self-discipline over luxurious indulgence."
+  ],
+  "Fears": [
+    "Devastating winter gales destroying the fishing fleet and causing catastrophic famine.",
+    "Hostile naval blockades cutting off essential supplies of iron tools and medical herbs."
+  ],
+  "SpeechStyle": "Speaks with calm, oceanic composure and practical precision, authoritative, clear-headed, and inspiring quiet confidence across the turbulent coastal islands.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

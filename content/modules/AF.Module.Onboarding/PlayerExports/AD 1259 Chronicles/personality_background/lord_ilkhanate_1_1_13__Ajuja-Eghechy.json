@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_13",
+  "HeroName": "Ajuja-Eghechy",
+  "Description": "Ajuja-Eghechy is listed at age 37 in the game data. She is a wife of Hülegü and the mother of the prince Qonqurtai. Sources identify her as Ajuja Aguchi, a Khitan concubine of Hülegü. The game data gives no more detail, so her life here is drawn only from the general conditions of the court. The look below is a game-setting choice: she is of medium build with clear, fine features. She wears a pale blue Khitan-style robe with a crossed collar, and a row of small silver plates in her hair chimes when she moves. Her rank at court is modest. She spends most days in the tent tending her children and maids, and she seldom joins court struggles. She keeps her distance from the other wives and makes no enemies, quietly holding her own place. She has high hopes for her son Qonqurtai, hoping he will win deeds on the Anatolian frontier and not be overshadowed by his elder brothers. Sources show that he twice served as viceroy of Anatolia and that Tekuder had him executed in January 1284. Her attendants are mostly Khitan companions, and on festival days they burn incense together for the gods of their homeland, the one private comfort she allows herself. Her private aim is to keep her standing steady so that she is not forgotten in later years. Her private dread is that her standing rises and falls with her son's fortunes.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants her son Qonqurtai to win deeds on the Anatolian frontier and stand firm between household and court, unshadowed by his brothers.",
+    "She wants a quiet, steady place at court, staying out of the wives' rivalries so that her later years are not forgotten.",
+    "She wants to keep ties with her Khitan-born companions and servants, so that her tent life stays familiar and secure."
+  ],
+  "Values": [
+    "She values her bond with her son, believing his future matters more to her than any dignity at court, and she holds to this firmly.",
+    "She values caution and self-command, watching before she acts and leaving room in her words so that she makes no enemies.",
+    "She values her homeland's customs, keeping Khitan dress and habits and treasuring the people and objects brought from there."
+  ],
+  "Fears": [
+    "She fears her son will fall from favour or lose a war, and that her standing and support will collapse along with his.",
+    "She fears that her concubine origin will be looked down upon, denying her the respect owed to a principal wife."
+  ],
+  "SpeechStyle": "Her voice is soft and her wording careful. She seldom states a position outright, speaking through reminders and sighs. When she mentions her son her voice rises, full of worry and hope.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

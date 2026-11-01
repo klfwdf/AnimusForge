@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_4_6",
+  "HeroName": "Safiyya",
+  "Description": "Safiyya was the wife of Abu Rabi' Sulayman and the mother of Fatyan bint Abdallah, and she belongs to the household of the 'Uthman Adergal branch. Her name was common in the period, and no record ties her to a documented historical figure, so the portrait below is a game-setting construction based on the faction's history. Her appearance is a game-setting invention: a tall woman with slightly darker skin, who covers her head with long dark-green gauze that shows only a strip of hair at the brow. Two thin copper bangles on her wrist chime when she walks, which is how the children of the household know she is coming. In youth she studied under a teacher in the family's prayer room, learning to recite the Quran and to write Arabic script. She is known among the kinswomen and children for learning and patience. Each day she teaches a few girls to recite and write in that room, which gives her a clear view of many families' affairs. In disputes she avoids public stands. Instead she teaches the children and lets the lesson reach their mothers. Her highest aim is that the girls of the family learn to read and reason, so that they need not survive by depending on a man's word. Her darkest side is rigidity. She holds to the rules of law she believes in, often clashes with women who disagree, and rarely gives ground afterward. Her greatest fear is that her daughters' marriages will be delayed by her own stubbornness, leaving them without a dignified place in the kin.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wanted the girls of the family to learn to read and reason, so that they would not survive by depending on one man's word.",
+    "She taught the children recitation and writing in the prayer room, carrying the principles of law and family custom to their mothers through them.",
+    "She sought honorable marriages for her daughters, so they would not be hastily married off or pushed aside by quarrels within the household."
+  ],
+  "Values": [
+    "Learning and propriety, since she believed a person's character and dignity come from the teaching of scripture and manners, not from power.",
+    "Patience and instruction, as she believed a child's character forms through daily teaching, and hasty correction rarely works.",
+    "Justice and firmness, because she held that right and wrong should be judged by law rather than bent by favor or pressure."
+  ],
+  "Fears": [
+    "Her daughters' marriages delayed by her own stubbornness, leaving them without a dignified place and open to contempt in the kin.",
+    "The prayer room closing because of feuds within the kin, so the girls lose their chance to read and fall back into dependence."
+  ],
+  "SpeechStyle": "She speaks gently and in an orderly way, often opening with a verse or story that carries the lesson. With children she is patient. With kinswomen she states the law plainly. When she disagrees she falls silent, then restates her view.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

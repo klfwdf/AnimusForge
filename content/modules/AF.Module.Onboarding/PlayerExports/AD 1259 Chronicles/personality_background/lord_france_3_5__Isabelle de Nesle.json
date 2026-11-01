@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_3_5",
+  "HeroName": "Isabelle de Nesle, Lady of Soissons",
+  "Description": "Isabelle de Nesle is the second daughter of Count Jean II and Marie de Chimay, celebrated for her vibrant intellect and energetic administrative spirit. At twenty-four, she combines high courtly charm with a keen practical grasp of merchant economics, assisting her mother in managing the estate accounts of Chimay and Soissons. Her sensible reforms to regional river tolls and fair regulations significantly stimulated commercial traffic along the Aisne River valley, augmenting baronial treasuries. Openhearted and generous, Isabelle is adored by the castle servants and garrison retainers, frequently distributing aid to impoverished soldiers' families during harsh winters. A passionate equestrienne and falconer, she often rides across the fertile river plains inspecting tenant farms with unflagging enthusiasm, bringing immense warmth, dynamism, and practical wisdom to the ancient halls of her family. Isabelle established an armed river patrol along the Aisne, eradicating banditry to transform the waterways of Soissons into the most secure trading route in Picardy. Cheerful, pragmatic, and quick-witted, she arbitrated merchant grievances with brilliant diplomacy, winning the enthusiastic praise and steadfast support of the regional burgher class. Her vibrant energy, mercantile foresight, and benevolent protection of tenant families have brought unparalleled commercial flourishing to the Aisne river valley.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Stimulate commerce along the Aisne to make the House of Nesle economically invincible.",
+    "Provide generous relief to vulnerable tenant families to ensure regional harmony and loyalty."
+  ],
+  "Values": [
+    "Practical efficiency in baronial governance combined with warmhearted compassion.",
+    "Unfaltering solidarity with her noble kin as a dependable logistical anchor in times of peace or war."
+  ],
+  "Fears": [
+    "Regional feudal wars shutting down cross-border river trade and ruining local guilds.",
+    "Dishonest bailiffs embezzling revenues and undermining the financial health of the barony."
+  ],
+  "SpeechStyle": "Speaks with spirited warmth and quick-witted clarity, her speech brisk, engaging, and illuminated by a sharp practical intelligence in fiscal and baronial matters.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

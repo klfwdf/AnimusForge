@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_1h",
+  "HeroName": "Marguerite de Lusignan",
+  "Description": "Marguerite de Lusignan is the illustrious wife of Aimery IX, hailing from the celebrated Lusignan dynasty whose scions held the crowns of Jerusalem and Cyprus. Daughter of Count Hugh X of Lusignan and Queen Dowager Isabella of Angoulême (widow of King John of England), Marguerite unites the bloodlines of Capetian and Plantagenet royalty. Thirty years of age, she possesses imperial poise, razor-sharp intellect, and a profound understanding of continental diplomacy. Her marriage cemented an unshakeable geopolitical alliance between the House of Thouars and the formidable Lusignan affinity of Poitou. Marguerite actively assists Aimery in auditing manorial charters, customs tolls, and monastic endowments, while maintaining correspondence with prominent French and English peers. Revered as an illustrious jewel of the high nobility, she brings immense international prestige to the vicomte's court. Marguerite brought the formidable diplomatic network and aristocratic pride of the House of Lusignan into the Thouars household. Her skillful correspondence with neighboring princes averted numerous cross-border feuds, solidifying her standing as one of Poitou's most capable noblewomen. Her refined elegance and mastery of dynastic alliances have positioned the house of Thouars as an indispensable arbiter across the turbulent Poitevin borders, commanding wide baronial esteem.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage her illustrious Lusignan connections to bolster her husband's baronial sovereignty.",
+    "Forge diplomatic alliances among the Poitevin nobility to prevent external feudal encroachment."
+  ],
+  "Values": [
+    "Defending the dynastic prestige and diplomatic eminence of Lusignan and Thouars.",
+    "Prudent fiscal governance coupled with generous patronage to retain the staunch loyalty of vassals."
+  ],
+  "Fears": [
+    "Poitevin magnates fracturing into factional strife, destroying their collective diplomatic leverage against Paris.",
+    "Her offspring choosing the losing side in future royal succession struggles, triggering forfeiture."
+  ],
+  "SpeechStyle": "Speaks with imperial, measured grace and polished courtly diction, her speech reflecting high Plantagenet and Capetian breeding that commands instant deference.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

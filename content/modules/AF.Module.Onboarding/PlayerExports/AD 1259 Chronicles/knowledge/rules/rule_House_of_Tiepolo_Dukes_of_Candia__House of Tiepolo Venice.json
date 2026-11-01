@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Tiepolo_Dukes_of_Candia",
+  "Keywords": [
+    "House of Tiepolo Venice",
+    "Statuto Tiepolo Venice",
+    "Dukes of Candia Tiepolo",
+    "Tiepolo Maritime Magnates"
+  ],
+  "RagShortTexts": [
+    "The Tiepolo dynasty gave Venice two transformative doges, codifying civil statutes and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Tiepolo patricians shaped the Venetian state through Doges Giacomo and Lorenzo Tiepolo, authors of Venice's celebrated maritime code. Holding vast feudal estates in Crete (Candia), they married imperial diplomacy with populist guild support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Arsenal shipwrights rallied willingly behind Tiepolo captains, furnishing warships ready for instant Mediterranean deployment."
+    }
+  ],
+  "TextMappings": []
+}

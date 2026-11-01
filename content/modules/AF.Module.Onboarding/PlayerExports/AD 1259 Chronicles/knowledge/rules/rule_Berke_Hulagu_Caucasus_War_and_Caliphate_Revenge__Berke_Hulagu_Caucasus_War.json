@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Berke_Hulagu_Caucasus_War_and_Caliphate_Revenge",
+  "Keywords": [
+    "Berke Hulagu Caucasus War",
+    "Caliphate Blood Feud Vengeance",
+    "Golden Horde Mamluk Alliance",
+    "Terek River Frozen Battle"
+  ],
+  "RagShortTexts": [
+    "Berke Khan waged war against Hulagu over Baghdad's destruction, allying with Mamluk Egypt."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hulagu Khan's sack of Baghdad and execution of Caliph Al-Musta'sim provoked the fury of Berke Khan, Muslim ruler of the Golden Horde. Declaring vendetta for the Caliph, Berke allied with Mamluk Egypt, launching deep cavalry offensives into the Caucasus, culminating in frozen carnage along the Terek River."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Genghis Khan's Yassa strictly forbade fratricide among golden princes, but holy zeal and pasturelands in Shirvan shattered ancestral bans. Berke leveraged Byzantine diplomacy to keep Aegean maritime corridors open to Cairo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Across the frozen Terek River, steppe tumens faced identical horse archers. Steppe arrows whined against steppe lamellar; it was the grimmest winter men ever witnessed, with cracked ice swallowing thousands."
+    }
+  ],
+  "TextMappings": []
+}

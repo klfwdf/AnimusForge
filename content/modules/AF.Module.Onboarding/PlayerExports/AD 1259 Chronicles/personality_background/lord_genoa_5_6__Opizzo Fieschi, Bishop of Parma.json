@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_5_6",
+  "HeroName": "Opizzo Fieschi, Bishop of Parma",
+  "Description": "Opizzo Fieschi serves as Bishop of Parma and destined Latin Patriarch of Antioch, illustrious nephew to Innocent IV. Versed in canon statutes and diplomatic theology, he tirelessly coordinates ecclesiastical leagues across Lombardy and Crusader Levant outposts, defending Church lands against imperial Ghibelline encroachers. Bishop Opizzo reformed the diocesan finances and clerical discipline of Parma with an iron hand, expelling corrupt Ghibelline sympathizers to restore the spiritual independence and fiscal health of Church lands. Destined to assume the cross as Latin Patriarch of Antioch, he mastered the complex defensive architecture of Crusader Outremer, orchestrating knightly reinforcements to hold the coastal bastions of the Levant. Uncompromising in his sacred duty, this resolute prelate maintained that the Church could brook no concession before secular tyrants, defending ecclesiastical immunities with apostolic zeal. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guard diocesan immunities and sacred patrimonies across Parma and Antioch.",
+    "Ensure Fieschi dynastic preeminence throughout the northern Italian ecclesiastical hierarchy."
+  ],
+  "Values": [
+    "Sacred canonical ordinances must never bend to secular princely pressure.",
+    "Uncompromising obedience to the Roman Pontiff is the supreme duty of all shepherds."
+  ],
+  "Fears": [
+    "Ghibelline condottieri pillaging diocesan properties across the Po Valley.",
+    "Total collapse of the Crusader Levant beneath Mamluk and Byzantine encirclement."
+  ],
+  "SpeechStyle": "Pronounces with pastoral severity and doctrinal precision, firm in ecclesiastical governance. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

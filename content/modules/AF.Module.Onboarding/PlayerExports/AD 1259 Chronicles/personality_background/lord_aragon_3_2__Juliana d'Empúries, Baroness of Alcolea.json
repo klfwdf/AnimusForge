@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_2",
+  "HeroName": "Juliana d'Empúries, Baroness of Alcolea",
+  "Description": "Doña Juliana d'Empúries is a distinguished noblewoman of the House of Empúries, united in marriage to the illustrious House of Entença as Baroness of Alcolea de Cinca. Wife to the warlord Bernat Guillem II d'Entença, Juliana directly oversees the massive fortress of Alcolea and its sprawling irrigated agricultural domains along the Cinca river. Drawing upon the commercial sophistication of her coastal maritime lineage, she invested capital into hydraulic milling and inland agriculture, dramatically enriching the barony's treasuries. In 1259, as her husband frequently campaigns on the Valencian crusader front, Juliana acts as the supreme governor of the rear, managing storehouses, payrolls, and Mudejar tenant pacts. Renowned for her administrative rigor and firm command, she vigorously defends Entença river toll rights and water distribution privileges before local courts. Resolute, intelligent, and stately, Baroness Juliana serves as an indispensable bridge uniting coastal maritime prestige with inland frontier power. Auditing detailed tax ledgers within her chancellery at Alcolea, Juliana personally inspected customs seals on trade barges navigating the Cinca river. Sternly punishing corrupt bailiffs while reinforcing stone riverbanks, she ensured her husband's frontier barony maintained flourishing granaries and unbroken social order despite ongoing wars. Her iron determination and financial acumen ensure that Alcolea remains an impregnable logistical bastion supporting the crusades of the Levant.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Efficiently govern the barony of Alcolea to maintain irrigation and abundant granaries for war",
+    "Strengthen the strategic alliance between her natal Empúries kin and the House of Entença",
+    "Defend exclusive ferry tolls and milling rights along the Cinca from rival barons"
+  ],
+  "Values": [
+    "Logistics and agricultural plenty are the true foundations of martial victory; estate duty is supreme",
+    "Rule vassals through strict law and fair covenants; combining mercy with rigor secures the house",
+    "Faithful dedication to family, moral uprightness, and vigilant stewardship"
+  ],
+  "Fears": [
+    "Catastrophic floods along the Cinca destroying irrigation canals and drowning valley granaries",
+    "Her husband and sons falling in an ambush on the Valencian frontier, leaving the barony leaderless"
+  ],
+  "SpeechStyle": "Dignified, incisive, and authoritative; speaks with the calm command, administrative rigor, and judicial weight of a formidable frontier chatelaine.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

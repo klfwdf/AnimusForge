@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Camino_de_Santiago_and_Pilgrim_Scallop_Shell",
+  "Keywords": [
+    "Camino de Santiago Pilgrimage Route",
+    "Saint James Scallop Shell Badge",
+    "Pilgrim Hospices and Mountain Passes",
+    "Plenary Indulgence Sins Remission"
+  ],
+  "RagShortTexts": [
+    "Pilgrims walking the Camino worn scallop shell badges, seeking plenary indulgence at."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Crossing the Pyrenees along the Camino Francés, millions of barefoot penitents journeyed to the Cathedral of Santiago de Compostela in Galicia. Wearing broad-brimmed felt caps pinned with the Galician scallop shell badge and bearing walking staffs, pilgrims sought plenary remission of sins at the shrine of the Apostle Saint James."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "A network of monastic hospices, bridges, and infirmaries sustained wayfarers across Navarre and Castile, making the Camino a conduit for troubadour song, roman-gothic architecture, and languages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Blistered feet freeze traversing rocky mountain passes in November. Touching the lead shell badge brings endurance, knowing monastic hospices offer hot lentil porridge and clean straw bedding."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_2b",
+  "HeroName": "Teodora Nemanjić",
+  "Description": "Princess Teodora Nemanjić, aged thirty in 1259, is an exalted royal daughter of the Serbian ruling house and wife to Lord Dejan of Zemen. Carrying the prestigious Nemanjić lineage, she personifies aristocratic pride, administrative resolve, and deep Orthodox devotion. Within the frontier domains of Zemen and Kumanovo, Teodora manages civic charters, grain requisitions, and ecclesiastical endowments, championing the construction of frontier churches honoring the Theotokos. In 1259, undaunted by external border incursions, she holds the home citadel with sovereign composure, supervising the knightly education of her sons Jovan and Konstantin, standing as the proud royal matriarch of the rising Dejanović dynasty. Princess Teodora presides over civic hearings in the great hall of Zemen, adjudicating border disputes with royal clarity and firmness. She supervises local ironworks and armorers, guaranteeing abundant supplies of heavy arrows, chainmail, and horseshoes for the garrisons. Blessed with august dynastic blood, she serves as an indispensable political pillar and intellectual partner beside her warrior husband. Combining royal Nemanjić pride with frontier administrative energy, Princess Teodora manages the baronial estates of Zemen with supreme authority. Her watchful oversight of armories and monastic endowments anchors her family's rising dynasty amidst the shifting sands of Balkan politics.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with aristocratic royal composure and maternal authority, clear and commanding, inspiring unwavering loyalty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

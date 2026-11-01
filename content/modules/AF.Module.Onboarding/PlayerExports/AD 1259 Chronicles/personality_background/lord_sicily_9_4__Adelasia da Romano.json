@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_9_4",
+  "HeroName": "Adelasia da Romano",
+  "Description": "Lady Adelasia da Romano is the noble and courageous daughter of Alberico II and Margherita, living through the catastrophic twilight of her dynasty. Despite being reared in the epicenter of merciless political warfare, Adelasia exhibits extraordinary spiritual composure, grace, and inner steel. As San Zenone is choked by unrelenting siege engines, the twenty-four-year-old noblewoman aids her mother in tending the wounded and distributing rations, standing on the ramparts with angelic fortitude. Amidst the choking smoke and thunderous bombardment of the mountain siege, Adelasia remained steadfastly beside her parents, her serene prayers and gentle hands comforting maimed soldiers with an angelic grace that transcended earthly horrors. Like a pure white rose blooming upon a scorched precipice, Adelasia dispelled terror with spiritual composure, her quiet nobility turning the besieged citadel into a poignant monument of tragic grace and eternal family love. Her sublime purity, serene contemplation, and tragic spiritual fortitude make Adelasia da Romano an angelic, immortal figure shining amidst the dark ruins of her clan. Her sweet innocence, tranquil prayers, and gentle noble bearing illuminate the grim battlements with pure grace, kindness, and spiritual light. Her moral fortitude, serene dignity, and selfless devotion to her household illuminate her noble lineage.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Stand steadfastly beside her parents and brother, providing spiritual consolation amidst the inferno.",
+    "Care for wounded defenders and maintain noble dignity and composure whatever destiny brings."
+  ],
+  "Values": [
+    "Spiritual purity, unconditional love for family, and sublime dignity transcending mortal suffering.",
+    "Steadfast moral integrity, refusing to allow brutality and hatred to corrupt her gentle soul."
+  ],
+  "Fears": [
+    "Watching her beloved parents and brother butchered before her eyes in the final breach.",
+    "Enduring unspeakable humiliation at the hands of crude mercenaries before finding peace."
+  ],
+  "SpeechStyle": "Speaks with serene gentleness, unshakeable inner calm, and the tragic grace of a high-born martyr. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Edinburgh_Castle_Rock_Citadel",
+  "Keywords": [
+    "Edinburgh Castle Rock Citadel",
+    "Firth of Forth Scottish Keep",
+    "Saint Margaret Chapel Edinburgh",
+    "Royal Mile Medieval Spine"
+  ],
+  "RagShortTexts": [
+    "Edinburgh Castle perched atop volcanic basalt, guarding royal charters, treasury, and the."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Edinburgh Castle dominated Lothian from its precipitous volcanic crag. Housing the Scottish royal court, records, and treasury, its craggy approaches commanded sweeping vistas of the Firth of Forth while repelling mechanical siege assaults."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Natural cliff walls and deep mountain wells made the rock fortress nearly impregnable, anchoring Alexander III's centralized crown governance."
+    }
+  ],
+  "TextMappings": []
+}

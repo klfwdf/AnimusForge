@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_1_1_1",
+  "HeroName": "Alice of Cayphas",
+  "Description": "Alice of Cayphas was born into the historic Frankish barony holding the strategic coastal fief beneath Mount Carmel, guarding the vital sea-lanes of the Bay of Acre in the Kingdom of Jerusalem. Raised amidst the ecclesiastical chants and maritime breezes of Latin Outremer, she acquired an exhaustive command of feudal inheritance jurisprudence and the delicate lineage alliances binding the high nobility of the Levant. In 1259, as predatory Mamluk raiding parties repeatedly harried the coastal plain of Palestine, Alice managed her family's agricultural magazines, maritime tithes, and refugee relief with resolute foresight. She generously subsidized the Carmelite Order in expanding their stone monastery along the rugged coastal bluffs, ensuring sanctuary and medical sustenance for visiting pilgrims and battle-worn crusader knights. Within the contentious assemblies of the High Court of Acre, she maintained dignified diplomatic neutrality, bridging bitter rivalries among the military orders through pious Christian arbitration. Her steadfast stewardship shielded the hereditary patrimony of Cayphas while exemplifying the highest ideals of aristocratic piety, legal integrity, and maternal magnanimity throughout the Latin East. Whenever winter tempests and saracen corsairs battered the coast, Alice coordinated food distributions and medical hospices for displaced pilgrims with impeccable grace. In the High Court of Acre, she defended her barony's ancestral customs dues through persuasive legal briefs that commanded the respect of Frankish jurists and Genoese merchants alike. Her benevolent devotion established Cayphas as a tranquil haven of Christian refuge.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Protect the ancestral coastal barony of Cayphas and Mount Carmel from devastating Mamluk mounted incursions.",
+    "Endow the Carmelite monastery and Hospitaller charities with grain rents to sustain Christian pilgrims in Outremer.",
+    "Maintain diplomatic neutrality in the High Court of Acre to preserve the honor and survival of her lineage."
+  ],
+  "Values": [
+    "Belief in divine providence and using aristocratic wealth for charitable relief of destitute pilgrims in the Holy Land.",
+    "Adherence to feudal law, customary charters, and composed dignity amidst the turbulence of Levantine politics.",
+    "Preserving familial virtue and pious fortitude in the face of external siege and internal political fracture."
+  ],
+  "Fears": [
+    "A sudden Mamluk siege overwhelming Cayphas castle and slaughtering the peaceful monastic community on Mount Carmel.",
+    "Fratricidal factional violence erupting among the military orders in Acre, destroying the last Frankish footholds."
+  ],
+  "SpeechStyle": "Speaks with refined Levantine courtliness and tranquil noble reserve, delivering measured observations on coastal trade and monastic stipends with quiet dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Alice of Cayphas"
+}

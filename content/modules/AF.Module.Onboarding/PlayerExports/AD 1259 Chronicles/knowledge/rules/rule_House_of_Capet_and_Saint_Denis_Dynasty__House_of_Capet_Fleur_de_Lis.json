@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Capet_and_Saint_Denis_Dynasty",
+  "Keywords": [
+    "House of Capet Fleur de Lis",
+    "Louis IX Saint Capetian Lineage",
+    "Saint Denis Royal Necropolis",
+    "French Crown Demesne Expansion"
+  ],
+  "RagShortTexts": [
+    "The Capetian dynasty expanded the royal demesne under Louis IX's revered Christian justice."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ruling France since 987 without an interrupted succession, the House of Capet reached unprecedented moral authority under Louis IX. Emblazoned with golden fleurs-de-lis on azure fields, royal bodies lay enshrined at Saint-Denis. Louis centralized justice through itinerant royal inspectors (enquêteurs) and the Parlement of Paris."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Cadet branches like Anjou and Artois extended Capetian dynastic dominance into southern Italy and crusader principalities, establishing Paris as the diplomatic arbitrator of Christendom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Commoners revere King Louis dispensing open-air justice beneath the Oak of Vincennes, where any aggrieved pauper can petition the crown without aristocratic intimidation."
+    }
+  ],
+  "TextMappings": []
+}

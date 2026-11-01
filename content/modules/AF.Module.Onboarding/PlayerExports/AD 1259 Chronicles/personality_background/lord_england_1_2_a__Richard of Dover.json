@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_1_2_a",
+  "HeroName": "Richard of Dover",
+  "Description": "Richard of Dover is the capable son and heir of Richard FitzRoy, Baron of Chilham, and grandson of King John. Athletic, sharp-featured, and resolute, with dark eyes burning with martial ambition, he grew up amidst the salt spray and siege engines of the Kentish coast. Trained from boyhood in amphibious assault, coastal cavalry reconnaissance, and crossbow defense, Richard represents the martial vanguard of the loyalist royal family. In 1259, he serves as deputy marshal of Chilham Castle, actively leading mounted patrols along the vulnerable coastline between Sandwich and Dover. Aware of the gathering storm between King Henry III and Simon de Montfort's baronial party, Richard staunchly aligns with the crown. He enforces rigorous naval inspections of Flemish shipping entering the Channel, confiscating contraband arms destined for rebel strongholds. Driven by a fierce desire to distinguish himself beyond the shadow of royal illegitimacy, Richard prepares his garrison for the inevitable civil war, determined to prove himself one of the crown's most formidable champions upon the battlefield. Leading mounted skirmishers along the Sandwich dunes, he drills troops in rapid beachhead counter-charges and intercepts hostile spies sounding Channel anchorages. Enforcing strict military discipline across Kent, Richard hungers for battle, resolved to win immortal fame and erase the stigma of royal illegitimacy.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve martial renown across Kentish battlegrounds to secure undisputed hereditary baronial title",
+    "Enforce total security along the Channel, severing covert continental arms shipments to rebels",
+    "Lead elite royalist cavalry contingents in the impending war to restore absolute royal authority"
+  ],
+  "Values": [
+    "True nobility is forged through valor and sweat upon the field; cold steel proves worth better than pedigree",
+    "Iron discipline and loyalty are an army's sinews; rebellion must be met with unyielding steel",
+    "Fulfill our ancestral coastal charge; not an inch of the Dover coast shall fall to enemies"
+  ],
+  "Fears": [
+    "Coastal defenses faltering due to supply shortages on the eve of invasion",
+    "The crown compromising and surrendering Dover's custody to treacherous baronial rebels"
+  ],
+  "SpeechStyle": "Speaks with brisk, ringing authority and military directness. He wastes no time on diplomatic preamble, focusing entirely on tactical troop placements, garrison supplies, and martial duty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

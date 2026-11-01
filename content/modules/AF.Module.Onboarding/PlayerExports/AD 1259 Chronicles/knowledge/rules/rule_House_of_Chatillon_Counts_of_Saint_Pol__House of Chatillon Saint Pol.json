@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Chatillon_Counts_of_Saint_Pol",
+  "Keywords": [
+    "House of Chatillon Saint Pol",
+    "Chatillon Crusader Constables",
+    "Blois Champagne Chatillon Kin",
+    "Crown Vassals of Saint Pol"
+  ],
+  "RagShortTexts": [
+    "The Chatillon line produced royal constables and crusade commanders spanning Blois and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The martial House of Châtillon held the counties of Saint-Pol and Blois. Stalwart champions of Louis IX on the Seventh Crusade, their banners spearheaded royal vanguards from Champagne to Egypt with unmatched chivalric devotion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The red-and-ermine shields of Châtillon signaled resolute heavy cavalry shock across every major royal campaign."
+    }
+  ],
+  "TextMappings": []
+}

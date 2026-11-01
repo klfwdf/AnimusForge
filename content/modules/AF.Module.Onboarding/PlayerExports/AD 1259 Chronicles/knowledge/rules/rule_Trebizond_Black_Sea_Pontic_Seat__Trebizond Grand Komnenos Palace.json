@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Trebizond_Black_Sea_Pontic_Seat",
+  "Keywords": [
+    "Trebizond Grand Komnenos Palace",
+    "Pontic Silk Road Terminal",
+    "Hagia Sophia Trebizond Cliff",
+    "Exiled Byzantine Komnenos"
+  ],
+  "RagShortTexts": [
+    "Trebizond guarded the Pontic coast, where the Grand Komnenoi preserved an opulent Greek."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Clinging to Pontic cliffs along the southern Black Sea, Trebizond served as the gilded capital of the Grand Komnenos dynasty. Flanked by deep ravines, its palace citadels received rich Persian and Central Asian overland caravans bound for Genoese galleys."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "merchant"
+        ]
+      },
+      "Content": "Exporting silver, hazelnut oils, and fine silks, Trebizond sustained splendid Byzantine ceremonial court life independent of Constantinople."
+    }
+  ],
+  "TextMappings": []
+}

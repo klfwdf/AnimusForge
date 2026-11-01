@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Sachsenspiegel_German_Customary_Law",
+  "Keywords": [
+    "Sachsenspiegel Customary Code",
+    "German Feudal Fief Law",
+    "Free Peasant Land Tenure",
+    "Saxon Jurisprudence Eike"
+  ],
+  "RagShortTexts": [
+    "The Sachsenspiegel codified Saxon customary and feudal law into German vernacular text."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Compiled by Eike von Repgow, the Sachsenspiegel stands as the most authoritative vernacular record of German customary law. Divided into Landrecht (civil law) and Lehnrecht (feudal law), it formalizes imperial electoral protocols, knightly military obligations, and free tenure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Under Lehnrecht, no liege lord can dispossess a vassal of his fief without judicial sanction, nor compel knight service beyond six weeks without paying board. It safeguards lesser nobility from ducal encroachment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "The Landrecht guards our boundary stones; not even a baron may remove a village mark without trial. Burdened as we are, customary law prevents the manor steward from inventing arbitrary new levies."
+    }
+  ],
+  "TextMappings": []
+}

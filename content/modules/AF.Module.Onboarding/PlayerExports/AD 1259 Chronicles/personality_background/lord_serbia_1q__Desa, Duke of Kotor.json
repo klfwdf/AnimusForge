@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1q",
+  "HeroName": "Desa, Duke of Kotor",
+  "Description": "Desa, aged twenty-eight in 1259, is the energetic second son of former King Stefan Vladislav, governing as Duke (Župan) of Kotor and guardian of the magnificent Bay of Kotor. Reared amidst the maritime bustle and Romanesque campaniles of this coastal enclave, Desa is fluent in Latin, Italian, and Slavonic, possessing acute understanding of Mediterranean maritime law and consular treaties. He cemented lucrative trade partnerships linking Kotor's maritime patricians with the silver output of the royal mint at Brskovo. In 1259, amidst fierce Venetian and Genoese privateering in the southern Adriatic, Desa reinforces the formidable cliffside citadels of San Giovanni above Kotor, standing as Serbia's supreme naval protector and cultural ambassador to the western maritime world. Duke Desa stands upon the dizzying battlements of Kotor citadel, watching merchant galleys navigate the azure waters of the fjord. Balancing civic municipal charters with royal tax interests, he fosters booming commerce while enriching the crown's treasury. Maneuvering adroitly between Venetian fleets and inland knights, Desa serves as Serbia's supreme guardian of Adriatic maritime wealth. Commanding the breathtaking fjord of Kotor, Duke Desa balances maritime municipal autonomy with royal fiscal prosperity. His strategic alliances with Italian merchants and naval vigilance transform his coastal enclave into Serbia's most prosperous seaport.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with the articulate charm and maritime sharpness of an Adriatic patrician, persuasive in diplomacy and bold in command.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_6_3",
+  "HeroName": "Mandukhai",
+  "Description": "Mandukhai is young and slender, and she sits her horse with a straight back. In her right hand she often holds a long thin riding whip whose handle is carved with an old band of key-fret pattern. In the game she is the eighteen-year-old daughter of Kadan and Borte, and elders of the clan say that as a child she could tell the colour of a horse and the quality of pasture at a glance. The namesake in the historical record is Mandukhai the Wise, born around 1449, the only daughter of Chorosbai, a leading figure among the Ongud. She married Manduul Khan at about sixteen. Manduul ruled the Northern Yuan from 1473 to 1479, and the couple had no son. After his death she acted as guardian for the child Batumongke, who became Dayan Khan and restored a Chinggisid unity among the Mongol peoples. She was later married to him as well. In the game she has not yet lived through such events, but her temperament resembles the historical figure: patient, sharp and quick to read a situation. Against rivals she does not hurry. She lets an opponent reveal weakness first, then answers at the smallest possible cost. Her highest aim is to secure a stable place for the sixth clan in the future order of the steppe. Her fear is that her caution will be taken for timidity, and that this will cost the family its voice at a decisive moment.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Learn governance from her mother and the elders, and take on more family responsibility so the sixth clan earns respect in the steppe's future order.",
+    "Watch the balance among the clans and wait for the right moment, winning a stable place for the family at the smallest cost rather than spending its strength on impulse.",
+    "Make clear-headed choices in marriage and alliance, placing the family's future above personal likes and building long-term political capital through reliable unions."
+  ],
+  "Values": [
+    "Patience over haste, because she believes an opponent's weakness reveals itself through repeated testing, and an early strike often costs more than it gains.",
+    "Winning through wisdom, because she holds that someone who sees the situation clearly protects those around them better than one who relies only on force.",
+    "Duty to the family, because she places the rise and fall of the clan above personal feelings and thinks first of the survival of the whole people."
+  ],
+  "Fears": [
+    "Fears that her caution will be mistaken for weakness, costing her the respect of followers and allies and forcing the family into unfavourable terms at a critical moment.",
+    "Fears that people close to her, especially her own kin, will be drawn into power struggles, and that a single error of judgement will leave them no retreat."
+  ],
+  "SpeechStyle": "Unhurried and thoughtful. Mandukhai often asks a question first and lets others state their judgement. She seldom declares a position outright, leaving hints for the listener to read. Respectful to elders, distant with rivals.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

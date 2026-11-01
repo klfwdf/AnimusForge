@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Della_Scala_Scaligers_of_Verona",
+  "Keywords": [
+    "House of Della Scala Verona",
+    "Mastino I Scaliger Lords",
+    "Adige River Verona Fortresses",
+    "Post Ezzelino Scaliger Rule"
+  ],
+  "RagShortTexts": [
+    "The Scaligers rallied Verona after tyrant Ezzelino's demise, planting their white ladder."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rising to prominence after Ezzelino da Romano's fall in 1259, Mastino I della Scala secured the Podestà of Verona. Bearing a silver ladder crest, the Scaliger lords pacified the Adige valley, turning Verona into a formidable Ghibelline bastion in Veneto."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Under Scaliger sway, fortified river bridges protected merchants from Lombard robber barons, establishing rare urban stability."
+    }
+  ],
+  "TextMappings": []
+}

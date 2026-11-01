@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_1_2",
+  "HeroName": "Balian IV of Ibelin, Lord of Arsuf",
+  "Description": "Balian IV of Ibelin, Lord of Arsuf and Grand Constable of Jerusalem, was the premier champion of baronial constitutionalism in the Latin Kingdom, nephew to the legendary Old Lord of Beirut. Steeped in the prestigious Assizes of Jerusalem and chivalric warfare, he wielded decisive authority within the High Court of Acre during an era of unprecedented existential peril. In 1259, amidst the catastrophic urban warfare of the War of Saint Sabas between Venetian and Genoese factions, Balian acted as royal bailiff and military arbitrator, subduing factional street brawls with iron discipline. With the ferocious rise of the Bahri Mamluks in Egypt and the thunderous advance of Hulagu Khan's Mongol hordes across Mesopotamia, Balian systematically reinforced the stone ramparts and sea-moats of Arsuf. Clad in heavy mail and bearing the ancestral arms of Ibelin, he repeatedly led mounted knightly sorties to repel nomadic raiders harrying the coastal road between Jaffa and Acre. His unbending devotion to legal precedents, baronial honor, and coastal fortresses established him as the supreme bulwark safeguarding the Christian remnant of Outremer. Along the contested coastal road linking Jaffa and Acre, Balian frequently led mounted knightly patrols to secure merchant caravans against nomadic raiders, strictly enforcing highway peace. He personally supervised architectural reinforcements along the sea-facing ramparts of Arsuf, converting the promontory castle into an impregnable fortress against Mamluk advance. His unbending integrity made him the supreme guardian of constitutional liberties in Outremer.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify Arsuf and the defenses of Acre to halt the imperial expansion of the Egyptian Mamluk Sultanate.",
+    "Uphold baronial liberties under the Assizes of Jerusalem and suppress the destructive maritime mercantile wars in Acre.",
+    "Maintain the preeminence of the House of Ibelin to unite the Hospitallers and Templars against common external foes."
+  ],
+  "Values": [
+    "Conviction that constitutional law and sacred feudal covenants form the indispensable bedrock of Christian Outremer.",
+    "Dedication of knightly arms to defending the Holy Land, leading from the front in accordance with the martial glory of Ibelin.",
+    "Strict military discipline, impartiality in judicial office, and unswerving integrity in diplomatic leadership."
+  ],
+  "Fears": [
+    "Mamluk siege engines breaching the outer walls of Arsuf, culminating in the slaughter of its heroic garrison.",
+    "Italian maritime republics cutting naval supply lifelines over commercial rivalries, leaving Acre defenseless."
+  ],
+  "SpeechStyle": "Speaks with seasoned martial gravitas and formidable legal authority, addressing the High Court of Acre and garrison commanders with decisive, resonant eloquence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Balian IV of Ibelin, Lord of Arsuf"
+}

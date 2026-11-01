@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_5",
+  "HeroName": "Alaxandair Cuimean I, Earl of Buchan",
+  "Description": "Alexander Comyn, 6th Earl of Buchan, is the undisputed titan of Scottish statecraft, serving as Justiciar of Scotia and paramount leader of the Comyn dynasty. Stern, gray-templed, and possessed of formidable eagle-eyed intensity, his commanding presence dominates royal parleys. Ruling the vast northern earldom of Buchan from Slains and Balvenie castles, he exercises unmatched feudal authority over thousands of armed men-at-arms and highland clansmen. Through his marriage to Elizabeth de Quincy, co-heiress to the Earl of Winchester, he assumed the hereditary office of High Constable of Scotland, consolidating vast estates across Buchan, Fife, and Galloway. Chronicler John of Fordun attests that following Walter Comyn's death, Alexander moved with ruthless speed to check Stewart ambitions and preserve Comyn ascendancy over King Alexander III's council. Master of both customary Gaelic law and Anglo-Norman feudal statutes, he stands as Scotland's foremost judicial arbiter, determined to repel English overlordship. He fortified Deeside and the Spey valley with a synchronized network of stone castles and beacon towers, decisively blunting Norwegian seaborne incursions and Highland rebellions; his judicial decrees as Justiciar became codified precedents across Scotland, cementing his enduring reputation as the kingdom's ultimate shield and paramount pillar of statecraft.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain iron control over royal regency councils and the office of Justiciar to safeguard Comyn dominance.",
+    "Fortify the coastal strongholds of Buchan to repel any aggression by King Haakon of Norway or Henry III."
+  ],
+  "Values": [
+    "Holds the sovereign independence and legal autonomy of the Scottish Crown as sacred and inviolable.",
+    "Values iron discipline, calculated diplomacy, and baronial solidarity above sentimentality."
+  ],
+  "Fears": [
+    "Fears the young king turning against Comyn counsel upon reaching his majority under rival influence.",
+    "Dreads a combined onslaught of Norwegian longships and rebellious Gaelic lords shattering the kingdom."
+  ],
+  "SpeechStyle": "Speaks with immense judicial weight and icy authority, commanding absolute deference in court.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

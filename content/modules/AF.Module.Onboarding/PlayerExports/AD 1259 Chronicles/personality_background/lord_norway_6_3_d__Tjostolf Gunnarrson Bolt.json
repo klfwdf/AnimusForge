@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_6_3_d",
+  "HeroName": "Tjostolf Gunnarrson Bolt",
+  "Description": "Sir Tjostolf Gunnarsson Bolt was an astute judicial counselor, administrative strategist, and younger son of Sir Gunnar Bolt. In 1259, Tjostolf was establishing himself as the primary intellectual and legal architect of the expanding Bolt patrimony in southeastern Norway. Possessing a penetrating analytical mind versed in both provincial customary codes and canonical jurisprudence, he managed complex land arbitrations and estate conveyances. Unlike his martial brother Jon, Tjostolf operated with cool deliberation, carefully navigating factional currents at court to shield his family's landed interests from royal encroachment. His legal acumen and contractual precision secured valuable manorial exemptions and timber rights that significantly augmented the family's revenues. Quietly formidable and fiercely loyal to his lineage, he formed an indispensable partnership with his father and brother in building the Bolt dynasty. At the Borgarting court, Tjostolf successfully represented the Bolt clan in complex land boundary disputes, drafting legal petitions praised for their flawless adherence to customary jurisprudence. He managed estate rent-rolls and tax registers across Borgarsyssel and Oslo, applying meticulous oversight to safeguard every penny of familial revenue. His dispassionate legal acumen and strategic foresight provided the Bolt family with an impenetrable juridical shield in royal and provincial assemblies.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with cool analytical precision, measured reserve, and sharp tactical logic, scrutinizing administrative charters and defensive plans with forensic clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Tjostolf Gunnarrson Bolt"
+}

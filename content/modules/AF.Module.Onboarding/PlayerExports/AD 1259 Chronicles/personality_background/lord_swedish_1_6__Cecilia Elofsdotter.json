@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_6",
+  "HeroName": "Cecilia Elofsdotter",
+  "Description": "Lady Cecilia Elofsdotter of Ving, second daughter of Lord Elof Ingridsson, was renowned throughout West Götaland for her quiet intellect and contemplative grace. Educated in patristic theology and Nordic sagas, Cecilia assisted in overseeing the extensive textile and flax workshops at Ving, supplying fine linens and woolens to Skara Cathedral and regional monastic orders. Modest and perceptive, she navigated aristocratic marriage proposals with careful discernment, prioritizing clan solidarity and the spiritual reputation of her lineage above vanity. Celebrated by diocesan clergy and relatives alike, she embodied the highest virtues of piety, intellectual modesty, and domestic diligence. Cecilia introduced advanced Continental tapestry-weaving techniques into the workshops of Ving, producing exquisite liturgical vestments and altar tapestries preserved within Skara Cathedral. Remaining serenely detached from worldly ambitions, she dedicated her life to contemplative prayer and charitable vigils, establishing secluded chapels where daily intercessions were offered for soldiers fallen in civil wars. Her modest self-restraint, spiritual purity, and moral discipline commanded universal veneration across West Götaland, celebrated as a noble symbol of consecrated virtue. Her steadfast devotion to monastic scholarship and liturgical art enriched the ecclesiastical legacy of West Götaland, inspiring noblewomen across the realm to embrace lives of quiet piety and dutiful service.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Direct the textile looms and manuscript illuminations at Ving, supplying church vestments and enriching family reserves.",
+    "Contract an honorable marriage alliance with an upright knightly family to solidify her lineage's legal standing."
+  ],
+  "Values": [
+    "Believes quiet spiritual devotion and modest self-discipline are far more precious than loud worldly vanity.",
+    "Champions sibling devotion and familial harmony, dedicating her life to preserving her household's purity."
+  ],
+  "Fears": [
+    "Dreads an ill-fated political match embroiling her family in brutal aristocratic feuds."
+  ],
+  "SpeechStyle": "Speaks with soft-spoken modesty and measured clarity, her words imbued with thoughtful spiritual grace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_3i",
+  "HeroName": "Guido I.",
+  "Description": "Guido I Frankopan, aged twenty-one in 1259, is a disciplined young comital commander governing the fortified marches around Modruš, guarding the vital overland corridor connecting the Kvarner coast with continental Croatia. Exemplifying Western chivalric prowess combined with maritime vigilance, he is an expert horseman and shock cavalry officer. Patrolling the treacherous karst passes of the Velebit mountains, Guido maintains iron order, ensuring that supply trains and messengers transit safely between comital estates. Trusted implicitly by Count Jerindo and his cousin Frederick, the young knight commands the mountain cavalry detachment with relentless vigilance. In 1259, Guido keeps his outposts fully manned, an incorruptible shield of the dynasty. Guido I commands war galleys and coastal bastions across the Kvarner Gulf with supreme naval authority, mastering both mounted cavalry and boarding tactics. Patrolling island choke points, he enforces strict maritime discipline, ruthlessly suppressing Adriatic corsairs and foreign infiltrators. Fierce, vigilant, and ambitious, this young Frankopan warlord vows to expand his family's maritime toll rights and capture critical coastal anchorages. Mastering coastal navigation and armored combat, Guido defends his island domains with relentless courage, ensuring that Frankopan authority remains absolute across the northern Adriatic waters.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with quiet military precision and youthful resolve, concise and direct, projecting unwavering competence and vigilance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Benevento_1266",
+  "Keywords": [
+    "Battle of Benevento 1266",
+    "Charles of Anjou Papal Champion",
+    "Manfred of Sicily Last Stand",
+    "Lucera Saracen Archers Benevento"
+  ],
+  "RagShortTexts": [
+    "In 1266 at Benevento, Charles of Anjou slew King Manfred, replacing Hohenstaufen rule with."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On February 26, 1266, Benevento decided the fate of southern Italy. Charles of Anjou, championing papal Guelphs, engaged King Manfred of Sicily along the Calore River. When local Italian baronial lines faltered, Manfred threw himself into the melee to die a king's death, terminating Hohenstaufen sovereignty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "The Angevin victory installed a ruthless French dynasty over Naples and Sicily, altering Mediterranean balance."
+    }
+  ],
+  "TextMappings": []
+}

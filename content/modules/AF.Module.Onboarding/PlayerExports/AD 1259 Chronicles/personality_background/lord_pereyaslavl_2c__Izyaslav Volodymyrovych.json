@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Izyaslav Volodymyrovych of Pereyaslavl, the eldest son of Vladimir Monomakh and Gytha of Wessex, stands in chronicle tradition as a youthful martyr of dynastic honor. Initially entrusted with the frontier march of Kursk before receiving the throne of Murom, he served as the vanguard defender holding the boundary between forest Rus' and the wild steppe. Izyaslav combined his father's intrepid military courage with his mother's resolute royal spirit, earning renown for fortifying frontier palisades and maintaining strict discipline. When Prince Oleg of Chernigov invaded Murom with hostile forces, the nineteen-year-old prince scorned retreat, leading his outnumbered druzhina out to meet the attackers in open battle. Slain fighting heroically upon the field of Murom, his tragic sacrifice ignited Monomakh's righteous campaign to punish civil rebellion, forever mourned across Rus' as a radiant young hero. The prince's martyrdom galvanized the entire principality in righteous resistance against external aggression, his unwavering chivalric sacrifice recorded in chronicle hagiographies as an eternal emblem of youthful bravery and patriotic duty. His heroic memory inspired generations of borderland warriors to hold their ground with unbending valor in defense of their ancestral homeland, refusing to surrender their faith or freedoms to overwhelming odds.",
+  "SpeechStyle": "Speaks with radiant, youthful fire and ringing conviction, his voice vibrant with chivalric fervor and unflinching loyalty.",
+  "Motivations": [
+    "Fulfill his martial oath to protect the frontiers of the Monomakh patrimony, refusing retreat regardless of enemy numbers.",
+    "Erect enduring timber ramparts along the marchlands, embodying an inspiring standard of knightly sacrifice and fidelity."
+  ],
+  "Values": [
+    "Holds chivalric duty and family honor far above mortal survival, choosing an honorable death over shameful compromise.",
+    "Reveres the noble ideals of his parents Monomakh and Gytha, aspiring to burnish the dynastic legacy through heroic action."
+  ],
+  "Fears": [
+    "Dreads failing his post in battle, bringing dishonor to Monomakh's name and disappointing his parents' high hopes."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ]
+}

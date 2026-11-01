@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Margravine Matilda Christoffersdatter of Brandenburg, eldest daughter of King Christoffer I and Margaret Sambiria, played an indispensable diplomatic role during Denmark's darkest dynastic peril. Following the catastrophic defeat at Lohede in 1261, her young brother King Eric V was transported into honorable captivity in Brandenburg. To secure his liberation and forge an enduring Continental alliance, Matilda was married to Margrave Albert III of Brandenburg-Salzwedel. Dignified, literate in Latin, and versed in imperial diplomacy, Matilda operated as Denmark's foremost advocate at the Margravial court. Her persuasive charm and unwavering family loyalty facilitated her brother's favorable treatment and eventual release, and she spent subsequent decades mediating border disputes between the Danish crown and northern German princes as a venerated peacemaker. Sponsoring scriptoria and Latin academies in Brandenburg, Matilda fostered deep cultural exchange between Scandinavia and the Holy Roman Empire, mediating regional tariff disputes with celebrated justice that won the enduring admiration of German princes. Margravine Matilda's patient diplomacy and deep cultural benefactions bridged the divide between Denmark and the Empire, earning universal admiration from German and Nordic princes, establishing a durable model of female statesmanship that fostered enduring international conciliation and mutual respect.",
+  "SpeechStyle": "Speaks with gentle aristocratic grace and balanced eloquence, her cultivated cadence soothing tension and inspiring trust.",
+  "Motivations": [
+    "Leverage her standing in the Brandenburg court to safeguard her brother Eric V and foster durable imperial peace.",
+    "Mediate regional trade and territorial disputes along the southern Baltic coast to ensure safe passage for Danish subjects."
+  ],
+  "Values": [
+    "Values familial devotion and self-sacrifice above personal comfort, trusting patient diplomacy over destructive warfare.",
+    "Champions graceful composure and cosmopolitan tact, navigating complex foreign court rivalries to protect her homeland."
+  ],
+  "Fears": [
+    "Fears escalating warfare between Denmark and German princes trapping her between dual loyalties in diplomatic ruin."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_1_1",
+  "HeroName": "Gutkeled nembeli Miklós II",
+  "Description": "Gutkeled nembeli Miklós II is the eldest son of Ban István I, standing as a pivotal military leader among the younger generation of Hungarian barons. Reared amidst heavy cavalry drills and frontier governance, he served as royal cupbearer while distinguishing himself in defensive deployments along the Drava and Danube rivers. Prudent, disciplined, and tactically sound, Miklós oversaw home administration in Slavonia while his father campaigned in Styria, securing winter provisions and pay for garrison retainers. Staunchly devoted to King Béla IV, he commands widespread respect within the royal council, frequently serving as an imperial commissioner to southern Slavic communes. In 1259, as the Styrian theater grows increasingly perilous and his father's health wanes, Miklós assumes active command over family regiments, vigilant against Austrian incursions. Miklós implemented strict training regimens in mounted combat and armored infantry defense across Slavonian garrison encampments. Regularly auditing county treasuries and granaries, he won universal trust among lesser feudal retainers and free town burghers. His measured enforcement of royal law positioned him as a paramount military administrator capable of mobilizing thousands of warriors on short notice. His resolute frontier vigilance protected agrarian estates throughout Slavonia while reinforcing knightly morale across all county garrisons.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Inherit and expand his father's territorial legacy in Slavonia, securing elite influence in royal councils.",
+    "Fortify the Drava castle line to shield King Béla IV from western infiltrations."
+  ],
+  "Values": [
+    "Regard family honor and strict military obedience as foundational duties, avoiding rash adventurism.",
+    "Value solid garrison defense and logistics, convinced supply superiority ensures triumph."
+  ],
+  "Fears": [
+    "Fears heavy military losses in the western war inviting rival barons to encroach upon family estates.",
+    "Dreads an escalation in royal civil war forcing factional choices that fracture the clan."
+  ],
+  "SpeechStyle": "The watchtowers are reinforced and our heavy lances stand ready. Any trespasser probing the Gutkeled line shall taste merciless retribution! Military orders are iron; anyone defying Slavonian peace shall be crushed!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

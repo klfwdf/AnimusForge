@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_4b",
+  "HeroName": "Dragica Novakić",
+  "Description": "Dragica Novakić, aged twenty in 1259, is the devoted young wife of royal officer Hrebljan Stojić, hailing from a respected knightly lineage of Raška. Gentle, pious, and domestically resourceful, she manages their rural estate and household economy with quiet efficiency while her husband serves on palace guard duty. Skilled in needlework and tailoring sturdy padded arming doublets for warrior retainers, Dragica is widely beloved among garrison families for her generous almsgiving and kindhearted counsel. In 1259, as she cradles her newborn son Pribac beside the glowing hearth, Dragica anchors her home with serene fortitude and prayer, providing an enduring sanctuary of love and moral strength amidst the martial uncertainties of the era. Dragica spins fine wool in her tranquil country manor near Raška, weaving warm tunics and padded armor linings for her soldier husband. Nurturing her baby with tender maternal warmth, she welcomes her husband home from patrols with hot bread and comforting affection. In this sheltered mountain homestead, the young wife protects her family's domestic happiness with quiet, steadfast devotion. Dedicated to her home and newborn infant, Dragica weaves sturdy woolens and nurtures her family with tender Slavic warmth. Her patient devotion and devout prayers shield her household like a gentle fortress of domestic tranquility amidst frontier uncertainties.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with gentle warmth and modest grace, soft-spoken yet resolute, radiating maternal tenderness and domestic calm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Kantakouzenos_and_Magnate_Estates",
+  "Keywords": [
+    "House of Kantakouzenos Aristocracy",
+    "Smyrna Miletus Great Estates",
+    "Byzantine High Military Dynasts",
+    "Palaiologos Imperial Co-Rulers"
+  ],
+  "RagShortTexts": [
+    "The House of Kantakouzenos held immense Anatolian landholdings, providing generals to."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ranking among Byzantium's wealthiest dynastic magnates, the House of Kantakouzenos held immense estates across Smyrna and Thrace. Fielding private retinues and loaning gold to the Nicaean crown, their commanders, often holding the office of Megas Domestikos, were instrumental in Michael VIII's campaigns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Intermarrying with the Palaiologoi, Kantakouzenos generals steered imperial military policy, balancing aristocratic privileges against centralized fiscal needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "artisan"
+        ]
+      },
+      "Content": "Their fortified estates patronized monastic scriptoriums, copying classical philosophy and patristic commentaries amid turbulent Anatolian frontier warfare."
+    }
+  ],
+  "TextMappings": []
+}

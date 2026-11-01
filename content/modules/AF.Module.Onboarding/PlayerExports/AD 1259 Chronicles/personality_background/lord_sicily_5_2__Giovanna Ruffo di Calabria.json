@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_5_2",
+  "HeroName": "Giovanna Ruffo di Calabria",
+  "Description": "Countess Giovanna Ruffo di Calabria is the esteemed chatelaine of Catanzaro, renowned across southern Italy for administrative genius and formidable composure. Born of high baronial lineage, Giovanna wields acute political foresight, directing civic affairs, taxation registers, and logistical stockpiles across more than a dozen fortress towns. Sitting in judgment over civic disputes while Count Pietro commands at the frontier, Giovanna maintains spotless order and financial solvency, serving as the strategic intellectual heart of the House of Ruffo. Countess Giovanna governed the civic administration of Catanzaro with decisive intelligence, reviewing taxation registers and harbor tariffs while Count Pietro patrolled the frontiers, ensuring her fortresses remained abundantly stocked against potential sieges. Her incorruptible justice and energetic administration turned Catanzaro into an impregnable center of power, generating inexhaustible wealth and supplies that sustained the House of Ruffo through every regional emergency. Her flawless administrative oversight, civic justice, and unyielding fortitude have established Countess Giovanna as the supreme domestic ruler securing the wealth of Calabria. Her unyielding discipline, moral integrity, and administrative mastery command the unreserved loyalty and deep respect of the entire province. Her flawless administrative oversight, civic justice, and unyielding fortitude have established Countess Giovanna as the supreme domestic ruler securing Calabria.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master estate finances and granaries to guarantee Catanzaro can endure prolonged sieges.",
+    "Strengthen feudal leagues and instill sophisticated political acumen in her children."
+  ],
+  "Values": [
+    "Administrative efficiency, civic order, and merciless accountability for misconduct.",
+    "Unflinching prioritization of dynastic survival, sovereignty, and regional greatness."
+  ],
+  "Fears": [
+    "Venal retainers being bribed by external enemies to surrender vital coastal passes.",
+    "Earthquakes or pestilence ravaging coastal settlements and decimating the regional economy."
+  ],
+  "SpeechStyle": "Speaks with measured gravitas, concise legal clarity, and formidable executive authority. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

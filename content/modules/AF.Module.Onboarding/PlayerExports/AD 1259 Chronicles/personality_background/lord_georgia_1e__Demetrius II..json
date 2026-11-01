@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1e",
+  "HeroName": "Demetrius II the Self-Sacrificer",
+  "Description": "King Demetrius II the Self-Sacrificer (Demetre II Tavdadebuli) was the son of King David VII Ulu and Queen Gvantsa, celebrated as Georgia's saint-king. Born in 1259 amidst catastrophic invasions, he witnessed the tragic martyrdom of his mother and the relentless martial struggles of his royal father. Assuming the crown during the peak of Ilkhanate dominance, Demetrius governed with miraculous patience, rebuilding ravaged cities and churches. He codified laws, revived cultural education, and shielded peasants from extortion, steering the kingdom through dark decades of foreign hegemony. In 1289, when Khan Arghun threatened to devastate Georgia with total extermination, Demetrius refused to flee, willingly surrendering himself to execution to save his realm. Canonized as a holy martyr by the Georgian Orthodox Church, his Christ-like sacrifice immortalized him as the eternal moral protector of his nation. Within the chanceries of Tbilisi and Sis, Demetrius enforced equitable governance, presiding over morning courts to hear humble peasant petitions and ban feudal extortion. He revitalized the Orthodox church, committing royal revenues to restore scorched stone basilicas and commissioning master scribes to illuminate scripture Gospels. When informed that Khan Arghun's armies prepared for total slaughter, Demetrius kissed his pectoral cross with serene resolve, stepping toward martyrdom to save his subjects.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Embrace the sacred calling of self-sacrifice, willing to lay down his life to shield the Georgian people from imperial annihilation.",
+    "Navigate foreign domination with stoic wisdom, rebuilding desolated towns and restoring the spiritual infrastructure of the church.",
+    "Reconcile feuding baronial factions through moral authority and equitable justice, preserving the cultural core of the nation."
+  ],
+  "Values": [
+    "Sovereignty exists to protect subjects; a true Christian king must offer his own life to avert the slaughter of his people.",
+    "Uncompromising moral rectitude and compassion in confronting tyrannical empires; scorning cowardly survival at the cost of blood.",
+    "Embodying the sacrificial love of Christ through princely martyrdom, anchoring the eternal soul of Georgia in saintly honor."
+  ],
+  "Fears": [
+    "Punitive imperial armies laying waste to Georgian valleys, butchering defenceless subjects and eradicating Christian civilization.",
+    "Personal cowardice allowing innocent citizens to suffer collective punishment in his stead, staining the crown with eternal guilt."
+  ],
+  "SpeechStyle": "Speaks with quiet sacred authority and profound Christian compassion, addressing national crises with selfless, stoic serenity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Demetrius II the Self-Sacrificer"
+}

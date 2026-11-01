@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_3_5",
+  "HeroName": "Lanfranco Grimaldi",
+  "Description": "The younger Lanfranco Grimaldi serves as an audacious junior naval officer, reared amidst constant patrols along the jagged western reefs. An expert in heavy galley boarding actions and harbor ambushes, he yearns to prove his command mettle against Pisan corsairs and uphold the martial traditions of his house. The younger Lanfranco trained relentlessly in coastal surf, drilling crews in hand-to-hand boarding melees and nocturnal swimming raids until his detachment became the sharpest shock unit along the coast. During violent clashes against Pisan galleys, he spearheaded boarding parties, cutting rigging under intense crossbow fire and seizing the enemy banner amidst flames to the astonishment of veteran captains. Burning to carve his own martial legend upon the high seas, this intrepid young warrior is determined to prove that the blood of invincible naval conquerors still courses through Grimaldi veins. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Command a frontline war galley to smash enemy lines in open naval engagement.",
+    "Earn legendary renown as an invincible admiral upholding Grimaldi maritime honor."
+  ],
+  "Values": [
+    "Battle honors are written in enemy blood and captured standards, not empty words.",
+    "Uncompromising obedience to naval orders bonds warriors in life and death."
+  ],
+  "Fears": [
+    "Lingering in mundane harbor duties while peers reap combat glory at sea.",
+    "Being outshone by rival captains in the quest for senatorial command commissions."
+  ],
+  "SpeechStyle": "Speaks with brisk military directness and palpable pride in his ancestral bloodline. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

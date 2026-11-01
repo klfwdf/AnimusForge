@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Emperor_Frederick_II_Art_of_Falconry",
+  "Keywords": [
+    "De Arte Venandi cum Avibus Masterpiece",
+    "Gyrfalcon Peregrine and Saker Hunting",
+    "Leather Falcon Hood and Taming Discipline",
+    "Medieval Empirical Ornithology Peak"
+  ],
+  "RagShortTexts": [
+    "Frederick II's hunting treatise 'De Arte Venandi cum Avibus' pioneered empirical zoology."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Emperor Frederick II's monumental Latin masterwork 'De Arte Venandi cum Avibus' (The Art of Hunting with Birds) represented the pinnacle of medieval empirical science. Refusing to accept Aristotle without firsthand dissection, Frederick documented avian anatomy, molting, and migration, pioneering the Arab leather hood technique to calm prized arctic gyrfalcons and sakers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "White gyrfalcons imported from Iceland were traded between kings as ultimate sovereign gifts. Royal Master Falconers commanded salaries and prestige exceeding battlefield marshals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "On Apulian plains, the falconer unhoods a perched peregrine from his gauntlet. Circling into thermals, the bird folds wings in a 100-mile-per-hour stoop, striking waterfowl out of mid-air."
+    }
+  ],
+  "TextMappings": []
+}

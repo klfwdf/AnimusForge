@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_1_5",
+  "HeroName": "Chagatai",
+  "Description": "Chagatai is a young woman of slender build, usually dressed in plain wool robes with a deep blue cloak whose dark pattern is stitched in thread that only shows in good light. Her headdress is simple, silver plates and coral beads, and she wears no ornament that draws attention. Her name comes from an elder of the house, and many attendants privately expect her to carry heavy responsibility one day, which makes them treat her with close respect. As a girl she often accompanied her mother to settle disputes between herders and caravan men in the camps, and she learned to keep a neutral stance while writing every term down clearly. Toward rivals she is calm. She rarely contradicts them in public. Instead she records their claims and answers later, in council, with a clear and orderly written reply. She values the order and customs of her house, believing that steppe law is the foundation that holds the clans together. Her greatest fear is that the house will split over succession, leaving the camps and pastures she has guarded to be divided by outsiders. Her private aim is to keep the family name associated with order and reliability through turbulent years.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants to preserve the old customs of camps and pastures, recording each household's allotment and duty, so that no clan dispute can grow by claiming confusion.",
+    "She wants to act as a neutral mediator between branches of the clan, so every side will bring its quarrels to her and her standing becomes the house's strongest asset.",
+    "She hopes her written judgments will be remembered as models, linking her name with the guardians of steppe order rather than with a daughter of one branch."
+  ],
+  "Values": [
+    "She respects the old customs and the instructions of elders, believing that steppe law has been tested over generations and that careless change weakens the clan.",
+    "She values fairness, hearing every party to the end regardless of rank, and she sets down the reasons for each ruling in writing.",
+    "She values patience, trusting that most disputes settle with time, so she avoids sharp decisions made in haste. She once saw a feud fade after three years."
+  ],
+  "Fears": [
+    "She fears the house will split over succession, letting outsiders divide the camps and pastures she has kept, and making her promises to ancestors impossible to keep.",
+    "She fears a single oversight in a ruling will be seized by a rival branch, collapsing the reputation for fairness she has spent years building."
+  ],
+  "SpeechStyle": "She speaks calmly in complete sentences, often repeating the other person's words to confirm. She seldom gives commands. When an argument grows heated, she pauses and asks both sides to write down their claims.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

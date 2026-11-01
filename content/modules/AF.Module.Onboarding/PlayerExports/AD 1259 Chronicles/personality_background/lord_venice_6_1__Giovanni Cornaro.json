@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_6_1",
+  "HeroName": "Giovanni Cornaro",
+  "Description": "Giovanni Cornaro stands as the paramount patriarch of the immensely wealthy Cornaro dynasty, commanding private merchant flotillas and trade syndicates connecting Venice with Cyprus, Armenia, and Syrian coastal ports. Renowned for financial wizardry, astute bottomry investments, and armed maritime convoys, he aggressively champions state-supervised trading galleys to monopolize Levantine sugar and spice transit markets, anchoring the Republic's war loans. At the bustling Rialto wharves, Giovanni established sprawling mercantile fondachi and credit houses, funneling massive capital reserves into armed convoys bound for Cyprus and Acre, pioneering sophisticated bottomry syndicate systems. Within the Great Council, he serves as chief counselor for maritime commerce, organizing the state-mandated mudae system of great trading galleys that shields high-value spice and sugar shipments against hostile privateers. This visionary patrician magnate firmly believes that naval power and financial capital are twin pillars of Venetian supremacy, pouring private fortunes into state dockyards to outbuild and exhaust Genoese maritime competitors. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand Cornaro commercial hegemony and sugar monopolies across Levantine ports.",
+    "Provide boundless naval capital and credit to secure Venetian maritime supremacy."
+  ],
+  "Values": [
+    "Ledger precision must remain absolute.",
+    "Sanctity of commercial contracts and the state credit of Saint Mark."
+  ],
+  "Fears": [
+    "Disastrous interception of Levantine trade convoys by hostile Genoese fleets.",
+    "Banking collapse and credit repudiation devastating the Rialto marketplace."
+  ],
+  "SpeechStyle": "Speaks with the cool precision of a Rialto financier and the unyielding dignity of a Venetian patrician. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

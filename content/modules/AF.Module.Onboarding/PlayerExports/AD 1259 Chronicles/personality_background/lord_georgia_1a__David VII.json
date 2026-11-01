@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1a",
+  "HeroName": "David VII Ulu",
+  "Description": "King David VII Ulu ('the Senior') was the formidable monarch of Georgia from the Bagrationi dynasty, son of King George IV Lasha. Renowned for immense physical stature and martial ferocity, he survived early captivity to co-rule Georgia alongside his cousin David VI Narin under Mongol oversight. David Ulu commanded elite divisions of heavy Georgian cataphracts during Hulagu's campaigns, winning martial renown at Alamut and Baghdad. However, relentless Mongol requisitions, crushing tributes, and humiliating imperial demands gradually pushed the proud Caucasian monarch to open rebellion. In 1259, David Ulu defiantly refused imperial military summons, joining forces with Prince Sargis Jaqeli of Samtskhe to ignite an epic mountain war of liberation. Armored in heavy ring mail wielding a massive battle-axe, he shattered imperial vanguard forces across rugged defiles, remembered as the fearless 'Lion King of the Caucasus.' Across the fortified gorges of Tashiskari and Samtskhe, King David VII Ulu established integrated beacon relays, personally drilling heavy cataphracts in alpine shock tactics. Bound by an indissoluble oath of brotherhood with Atabeg Sargis Jaqeli, he emptied royal armories to equip mountain fortresses with Milanese plate and lances. In the thick of melee, the warrior king charged at the vanguard, his thunderous battle-cries echoing off canyon walls and filling defending legions with ferocious zeal.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Resist brutal Mongol tribute demands and vassalage, restoring the sovereign independence of the Bagrationi crown across the Caucasus.",
+    "Consolidate mountain fortresses across Samtskhe and Kartli, organizing an unyielding alpine barrier against imperial punitive expeditions.",
+    "Defend the Georgian Orthodox Church and sacred shrines, driving out foreign invaders to preserve the nation's spiritual soul."
+  ],
+  "Values": [
+    "Honorable martyrdom in battle far surpasses shameful servitude; Caucasian mountain liberty is sacred and non-negotiable.",
+    "Comradely devotion to his troops, leading cataphract charges in person to forge indomitable military cohesion.",
+    "Unyielding fidelity to ancestral Christian faith and Bagrationi sovereignty, scorning craven compromises with conquerors."
+  ],
+  "Fears": [
+    "Overwhelming imperial armies sealing mountain passes, starving besieged garrisons and consigning Georgia to devastation.",
+    "Feudal betrayal by self-serving nobles undermining national solidarity, extinguishing the flame of independence."
+  ],
+  "SpeechStyle": "Speaks with rugged Caucasian baronial authority and fiery royal pride, commanding cavalry musters and council sessions with booming, indomitable vigor.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "David VII Ulu"
+}

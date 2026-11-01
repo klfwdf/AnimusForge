@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_3_2",
+  "HeroName": "Külüg Darga",
+  "Description": "Külüg Darga is listed in the game roster as a darga, a local administrator and commander, of the Ilkhanate. He is the son of Toghon Noyan and Ibaqa Khatun. No historical source identifies a person of this name, so his birth, death, deeds and posts are unknown, and this persona is a game-internal setting inferred from the faction's background rather than a historical fact. The persona builds on his office and his family ties and does not rely on any etymology. The sources give no description of his appearance, scars or signature weapons, so no physical traits are set. As a young commander he spends his days inspecting camps and pushing his followers to train in mounted archery, and he often quarrels with the older retainers of his father. He is quick-tempered and tends to act first and weigh the consequences later, which gives him both prestige and criticism among the troops. His goal is to earn the royal tents' recognition through his own deeds, beyond what his family name has given him. His shadow is the fear of being dismissed as a young man who relies only on his lineage, so he rushes to prove himself whenever he is questioned. He carries out royal orders quickly, and he will not appear weak in clan disputes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Earn recognition from the royal tents through his own deeds, shedding the label of a youth who relies only on his father's standing.",
+    "Drill the cavalry and archers in his camp so that his followers become a force the royal tents rely on in campaigns.",
+    "Win the quarrels with his father's old retainers and secure real command over his lands and men, silencing clan criticism."
+  ],
+  "Values": [
+    "Courage and decisiveness, since hesitation in battle is more shameful to him than defeat, so he would rather take risks than look timid.",
+    "Respect for mounted archery and the old martial skills of the camp, believing that men who beat the enemy on horseback will obey command willingly.",
+    "Loyalty to the royal tents, so that once an order is clear he carries it out swiftly, without delay or argument, even when he disagrees."
+  ],
+  "Fears": [
+    "Being seen as a young man who relies only on family rank, and losing the respect of his father's old retainers after a single defeat in the field.",
+    "Being sacrificed in clan infighting, losing both the trust of the royal tents and the loyalty of his men, and then his lands."
+  ],
+  "SpeechStyle": "His tone is blunt and quick. He answers doubts with short commands or sharp questions and bristles at any slight. With royal envoys he tries to stay polite, but he speaks fast and often reveals his position before finishing a sentence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

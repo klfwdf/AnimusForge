@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Sviatoslav Glebovich, eldest son of Prince Gleb I, represents the vibrant martial future of the Smolensk princely house. Raised on horseback amidst frontier warfare, he is an expert horseman, deadly swordsman, and skilled mounted archer. Sviatoslav excels in leading mixed squadrons of lancers and scouts through dense forest corridors to execute devastating counter-attacks. During skirmishes along the northern frontier, he routinely leads from the front rank, inspiring his warriors with audacious courage and formidable combat prowess. Despite his youthful ferocity, he shares every hardship with his common troops, sleeping around campfires and maintaining strict order on the march. He is determined to uphold his dynasty's martial honor and purge the Upper Dnieper marches of all foreign marauders. Leading relentless patrols across marshy outposts, he tempers his vanguard warriors into an unstoppable striking force that commands the terror of all frontier raiders. Sviatoslav frequently leads hundred-man vanguard patrols through trackless bogs, neutralizing enemy scouts and ambushing raiders before they can penetrate the fortified frontier of Smolensk. His bold cavalry sorties and masterful forest ambushes strike terror into enemy warbands, securing the vital portages of the northern frontier. His valor continues to inspire every warrior who rides beneath his standard.",
+  "SpeechStyle": "A knight's honor is carved by blade and saddle, not found on soft court cushions. Follow me into the breach, and let them taste the thunderous steel of Smolensk's cavalry!",
+  "Motivations": [
+    "Conduct aggressive mounted sweeps along border marches to build martial prestige and secure the realm.",
+    "Expand his family's chivalric renown and safeguard crucial transport corridors along the Dnieper."
+  ],
+  "Values": [
+    "Value heroic battlefield audacity and martial integrity above treacherous scheming and hollow flatteries.",
+    "Believe that a strong sword and unwavering loyalty are the only reliable protectors of peace."
+  ],
+  "Fears": [
+    "Fear overextending a reckless pursuit into marshy ravines and falling into concealed archer crossfires.",
+    "Dread the spread of defeatist appeasement at court, undermining the army's martial spirit."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

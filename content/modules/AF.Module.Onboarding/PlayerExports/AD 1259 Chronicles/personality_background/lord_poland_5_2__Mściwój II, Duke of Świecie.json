@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_5_2",
+  "HeroName": "Mściwój II, Duke of Świecie",
+  "Description": "Mściwój II (Mestwin II) reigns as Duke of Świecie and later supreme Duke of Pomerelia and Gdańsk, the brilliant and determined son of Świętopełk II the Great, celebrated as the decisive unifier and sovereign architect of Baltic history. Governing the commanding water fortress of Świecie at the confluence of the Vistula and Wda rivers, young Mściwój distinguished himself in ferocious cavalry skirmishes against his uncle Sambor II and the expansionist Teutonic Knights. Following his father's death, Pomerelia was fractured by civil wars; Mściwój waged unrelenting campaigns, outmaneuvering his treacherous brother, repelling crusader incursions, and systematically uniting all Pomerelian lands under his sole command. Confronted by aggressive encirclement from the Margraves of Brandenburg and the Teutonic Order, the childless duke made a monumental patriotic decision: in 1282, he signed the historic Treaty of Kępno with Duke Przemysł II of Greater Poland, mutually designating each other as heirs and bequeathing Pomerelia back to the Polish crown. Fierce in combat, calculating in council, and motivated by supreme geopolitical foresight, Mściwój stands as a towering hero who preserved Gdańsk for the Polish nation. Mściwój's visionary diplomacy at Kępno united Pomerelian maritime might with Greater Poland's royal destiny. His decisive statecraft ensured that the Baltic estuary remained an eternal possession of the Polish nation.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush domestic baronial fragmentation, reuniting Gdańsk, Świecie, and Tczew under his undisputed autocratic rule.",
+    "Shatter predatory encroachment by the Teutonic Knights and Brandenburg, defending Pomerelia's maritime sovereignty.",
+    "Form an indissoluble mutual succession compact with Greater Poland to secure Slavic solidarity against German conquest."
+  ],
+  "Values": [
+    "Hold national survival and territorial sovereignty above personal ego, daring to make historic strategic choices.",
+    "Prize ferocious front-line leadership and iron discipline, believing unyielding strength alone guarantees freedom.",
+    "Master long-term geopolitical foresight, aligning regional interests to secure lasting historical victory."
+  ],
+  "Fears": [
+    "Brandenburgian armies seizing Gdańsk in a surprise assault, severing Pomerelia permanently from Poland.",
+    "Dying without a legitimate heir and seeing his hard-won unified principality carved up by rapacious invaders."
+  ],
+  "SpeechStyle": "The waves of the Vistula and the Baltic shall never be chained by greedy crusaders! I would unite our crown with the White Eagle rather than serve German margraves! The oath of Kępno is eternal; Pomerelia and Poland are united in blood!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

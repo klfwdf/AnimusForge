@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_5_1_3",
+  "HeroName": "Philippa of Montfort",
+  "Description": "Philippa of Montfort was the eldest daughter of Philip of Montfort, Lord of Tyre, and Maria of Antioch-Armenia, inheriting high baronial and royal lineage. Raised within the maritime palaces of Tyre overlooking the Mediterranean, she received an elite education in French courtly literature, Latin liturgy, and statecraft. Active in the cosmopolitan social and diplomatic life of the great port, Philippa assisted her mother Maria in hosting visiting crusader princes and naval delegations. In 1259, as the shadows of war lengthened across the Levant, Philippa devoted substantial energy to hospital charities in Tyre, caring for wounded knights and refugee families. Possessing an acute understanding of Levantine feudal genealogies, she offered astute advice to her father and brothers regarding regional political alliances. Celebrated for her graceful piety, refined intellect, and poise, Philippa stood as an admired noblewoman within Outremer's high society. At Tyre's seaside palace, Philippa hosted renowned literary gatherings, welcoming troubadours, theologians, and crusader knights returning from Continental campaigns. Her sharp political instincts helped her family navigate complex marriage negotiations, providing valuable counsel to her father on shifting court loyalties. Her beauty, wit, and poise enhanced the Montfort dynasty's prestige across Mediterranean noble circles.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the distinguished courtly prestige of the House of Montfort, representing her family across the noble networks of Outremer.",
+    "Dedicate herself to hospital charities and monastic almsgiving in Tyre, succoring war-ravaged refugee families and orphans.",
+    "Foster strategic social alliances with noble houses in Acre and Cyprus, reinforcing her family's diplomatic standing."
+  ],
+  "Values": [
+    "A noblewoman's true worth resides in pious virtue and moral grace; wealth must be tempered by humility and Christian charity.",
+    "Preserving familial harmony through gentle wisdom, acting as a soothing diplomatic anchor amidst tumultuous power struggles.",
+    "Devotion to sacred scripture, translating aristocratic privilege into compassionate service for the afflicted."
+  ],
+  "Fears": [
+    "Tyre succumbing to a violent siege, resulting in the sack of her beloved coastal city and the captivity of her kin.",
+    "Being coerced into an unhappy dynastic marriage with a cruel foreign lord, sacrificing her happiness to political expediency."
+  ],
+  "SpeechStyle": "Speaks with melodic courtly refinement and engaging noble poise, greeting visiting crusader prelates and knights with polished, gracious warmth.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Philippa of Montfort"
+}

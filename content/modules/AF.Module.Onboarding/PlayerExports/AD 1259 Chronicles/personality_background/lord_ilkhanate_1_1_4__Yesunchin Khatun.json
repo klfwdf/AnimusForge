@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_4",
+  "HeroName": "Yesunchin Khatun",
+  "Description": "Yesunchin Khatun is listed at age 42 in the game data, and her name belongs to the game character. Her historical model is Yesünčin Khatun, one of Hülegü's wives. Persian sources state that her son Abaqa was born around February 1234 in the Mongol homeland, and Abaqa later succeeded his father as Ilkhan. When Hülegü rode west in 1253, he took only two of his four wives, Öljei and Doquz, so Yesünčin stayed behind with the court of Möngke. The appearance below is a game-setting choice: she is tall, wears a grey-blue robe, and a row of silver ornaments hangs at her neck, with two maids following her step. Within the game she is known for calm reserve and seldom takes a public stand, but she is skilled at arranging posts and marriages. When rivals among the other wives press her, she does not confront them directly and instead expands her influence by securing fiefs and offices for her children. She keeps polite distance from enemies and gives nothing away in her speech. Her enduring aim is to see her son's line secure in the Ilkhanate and her family respected after her. Her private dread is that a quarrel among the brothers or a split within the household would destroy the careful work of many years, and that she would be pulled into a feud she could not leave.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants Abaqa's succession to be secure in the Ilkhanate, so that her line takes root in the power structure of Iran and is not overshadowed by other branches.",
+    "She wants to win fiefs and offices for her children, keeping real influence over appointments inside and outside the household.",
+    "She wants to hold balance among the other wives, avoiding open rivalry that would damage the prestige of the whole family and disrupt her plans."
+  ],
+  "Values": [
+    "She values family and bloodline, holding that the standing of the eldest son is the foundation of the house and must be defended by the whole kin.",
+    "She values restraint and caution, watching before she acts and rarely showing emotion in front of others or revealing her real thoughts.",
+    "She values the art of favour and arrangement, believing that marriages and kindnesses can buy lasting support more reliably than open confrontation."
+  ],
+  "Fears": [
+    "She fears that Abaqa's succession will be challenged, since a fight among the brothers would make years of planning worthless in a single season.",
+    "She fears a split inside the household, because once factional opposition becomes public she loses room to manoeuvre and is forced into a feud."
+  ],
+  "SpeechStyle": "Her speech is gentle, often opening with greetings or domestic talk before she turns toward what she truly means. She seldom uses commanding language, but when she states a position she closes with short, unmistakable sentences.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

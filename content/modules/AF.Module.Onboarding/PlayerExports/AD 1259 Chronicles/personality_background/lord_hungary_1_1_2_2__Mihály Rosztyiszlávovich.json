@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_2_2",
+  "HeroName": "Mihály Rosztyiszlávovich",
+  "Description": "Mihály Rosztyiszlávovich is the eldest son of Duke Rostislav Mikhailovich and Duchess Anna of Hungary, carrying the royal blood of both Rurik and Árpád. Raised amidst the frontier fortresses of southern Hungary, he embodies both Ruthenian martial ferocity and chivalric discipline. Governing alongside his father as joint Duke of Macsó and Bosnia, Prince Mihály has repelled numerous mountain incursions and protected vital border passes. He has earned renown among younger knightly retainers for his prowess in close mounted combat and tactical boldness. In 1259, as his father conducts complex campaigns across Bulgaria, Mihály safeguards their home castles along the Danube, prepared to mobilize at a moment's notice. Mihály established fortified outposts across rugged Bosnian valleys, mercilessly quelling heretical rebellions and safeguarding supply convoys. His strict discipline and tactical fearlessness maintained absolute order across the southern march, demonstrating formidable leadership capabilities. He personally rode along the Sava crossings with armored retainers, dispersing mountain bandits and securing vital trade corridors for regional merchants. He fortified border bastions with heavy oak palisades, inspiring young men-at-arms through steadfast leadership and unyielding courage in dangerous outposts across the rugged southern highlands and perilous mountain trails.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect the frontier domains of Macsó and Bosnia, inheriting his father's martial legacy.",
+    "Win personal glory across Balkan campaign grounds to enhance his dynasty's renown."
+  ],
+  "Values": [
+    "Value battlefield valor and knightly honor above all, scorning hesitation in combat.",
+    "Maintain strict military discipline and dynastic pride against all detractors."
+  ],
+  "Fears": [
+    "Fears falling to mountain ambushes, forfeiting critical strongpoints along the southern marches.",
+    "Dreads rash blunders compromising garrison strength and disappointing King Béla IV."
+  ],
+  "SpeechStyle": "My sword is unsheathed and the beacon fires of Macsó burn bright! Any trespasser daring to cross our border will find no escape from my heavy cavalry! Trespassers will die upon the points of our spears!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

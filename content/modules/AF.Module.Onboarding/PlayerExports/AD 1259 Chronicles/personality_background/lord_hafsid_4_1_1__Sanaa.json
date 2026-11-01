@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_4_1_1",
+  "HeroName": "Sanaa",
+  "Description": "Sanaa is the wife of Bakr Hanif Abd al-Wahid. The game data records her at twenty-two, with a cavalry-minded court template, a gentle temperament, and a generous heart. The game model shows a young woman's clear face with dark hair bound under a headcloth, and no visible scars are recorded. Her marks are a plain shawl and a medicine pouch she carries. The chronicles say nothing of her, so the account below rests on game setting and dynastic background. She came from a herding family on the outskirts of Tunis and grew up knowing how to tend animals and use herbal remedies. After marriage into the fourth branch, she quickly won the affection of the camp's women. She takes particular care of sick servants and the families of the camp, often bringing them broth and cloth herself, and in winter the first coals go to the tents of the old and the children. She is close to her husband Bakr, and they have a son, Hassan, and a daughter, Medina, whose upbringing she regards as the most important work of her life. She has little skill at the political maneuvering of the kin and seldom meddles in her husband's affairs, yet she commands great respect among the camp's women. Her lofty aim is to let everyone around her, especially the children, come through these turbulent years in safety. Her private shadow is the fear that her kindness will be exploited, and that when her husband leaves the camp she will be powerless to protect those who are weak.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Care for the sick servants and the families of the camp, bringing broth, cloth, and daily help so that morale stays steady and people do not turn on one another.",
+    "Raise her son Hassan and daughter Medina with devoted care, so they grow up in a gentle home and learn that family members must look after one another.",
+    "Maintain good relations among the camp wives, so that her husband's comrades and men regard her household with friendship and he meets fewer obstacles in camp."
+  ],
+  "Values": [
+    "She believes kindness toward the weak is a basic human virtue, and that the sick and the poor deserve care and respect regardless of rank, and she never makes an exception.",
+    "She values the warmth of the home and the safety of children, holding that no title or honor should be bought at the cost of loved ones, however grand it sounds.",
+    "She treasures sincere goodwill, believing a true greeting and a bowl of hot broth often move people more than any splendid gift, and last longer."
+  ],
+  "Fears": [
+    "Her kindness may be exploited by some in the camp, turning her good deeds into a pretext for harm and trapping her in a dilemma she cannot explain to outsiders.",
+    "Her husband may leave the camp for war or a quarrel among the kin, and she and the children may lose their support in the turmoil, unable to protect the weak or her own home."
+  ],
+  "SpeechStyle": "Her voice is gentle and unhurried, often carrying concern. She is patient and loving with her children and considerate to the camp wives. She is a little playful with her husband but firm when others' interests are at stake.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

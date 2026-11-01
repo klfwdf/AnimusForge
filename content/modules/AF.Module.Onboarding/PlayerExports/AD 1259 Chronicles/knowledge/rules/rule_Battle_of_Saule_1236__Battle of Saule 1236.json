@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Saule_1236",
+  "Keywords": [
+    "Battle of Saule 1236",
+    "Sword Brothers Annihilation",
+    "Samogitian Lithuanian Triumph",
+    "Volkwin Slain Baltic Bog"
+  ],
+  "RagShortTexts": [
+    "In 1236 at Saule, pagan Samogitians obliterated the Sword Brothers in bogs, forcing a."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On September 22, 1236, at Saule (Šiauliai), pagan Samogitians trapped the crusading Livonian Brothers of the Sword in treacherous quagmires. Grand Master Volkwin and nearly fifty knight-brothers were cut down when heavy destriers bogged down in autumn mud."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "The total defeat crippled independent Livonian crusades, compelling survivors to merge beneath the Teutonic Order's banner."
+    }
+  ],
+  "TextMappings": []
+}

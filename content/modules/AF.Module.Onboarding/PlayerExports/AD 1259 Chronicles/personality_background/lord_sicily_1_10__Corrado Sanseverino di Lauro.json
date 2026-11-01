@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_10",
+  "HeroName": "Corrado Sanseverino di Lauro",
+  "Description": "Corrado Sanseverino di Lauro is the seventeen-year-old son and direct heir to Count Riccardo of Caserta, proudly named after Emperor Conrad IV. Tall, athletic, and passionate for martial glory, young Corrado drilled rigorously in heavy cavalry tactics, jousting, and broadsword combat under royal household captains. Bold, high-spirited, and uncompromisingly honorable, he lacks his father's cautious political ambivalence, openly revering King Manfred as his chivalric idol. Burning with zeal to lead heavy lances against Guelph rebellions in the north, Corrado already commands border patrols, demonstrating tactical daring in capturing frontier marauders. Retainers revere him as the fierce martial future destined to lead the House of Caserta. Corrado's chivalric enthusiasm, physical strength, and unswerving devotion to King Manfred mark him as a dynamic young cavalry officer destined to lead the Sanseverino hosts into battle. Burning to win his spurs in pitched battle, he rides toward his martial destiny with unshakeable resolve, commanding his personal squires with calm chivalric authority. With boundless chivalric pride, Corrado prepares to lead his armored retainers into the thick of battle to defend his royal kin and win eternal renown across Italy. Throughout the turbulent Italian campaigns, his unwavering devotion to the Ghibelline cause and fearless chivalric prowess inspire all who march beneath his standard.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To capture enemy colors in live combat, proving worthy of his imperial and baronial blood.",
+    "To ride faithfully beside King Manfred, crushing all Guelph enemies on the field."
+  ],
+  "Values": [
+    "A true knight conquers renown through cold steel; hesitation and cowardice are contemptible.",
+    "Bleeding for righteous sovereignty is the supreme glory; treachery deserves eternal ruin."
+  ],
+  "Fears": [
+    "Making a fatal error during his baptism of fire that tarnishes his military honor.",
+    "Being trapped in garrison routine while epic battles unfold without him."
+  ],
+  "SpeechStyle": "Speaks with ringing, enthusiastic resonance and youthful martial confidence, radiating soldierly drive. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

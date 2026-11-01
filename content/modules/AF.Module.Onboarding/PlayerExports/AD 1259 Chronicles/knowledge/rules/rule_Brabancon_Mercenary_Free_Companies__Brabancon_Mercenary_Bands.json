@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Brabancon_Mercenary_Free_Companies",
+  "Keywords": [
+    "Brabancon Mercenary Bands",
+    "Routier Free Companies",
+    "Lowland Pike Mercenaries",
+    "Excommunicated Mercenaries"
+  ],
+  "RagShortTexts": [
+    "Brabançons and Routier companies offered lethal pike discipline but devastated countryside."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hardened free companies from Brabant and Flanders (Brabançons and Routiers) sell their lethal pikes and arbalests to European sovereigns. Unflinching against cavalry charges, their lack of discipline in peacetime turns them into ruthless marauders who desecrate abbeys, earning excommunication from church councils."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Royal promises are wind; silver marks in our belt pouches are reality. A Brabant pike square marches shoulder to shoulder; withhold our wages, and we will levy payment from your grain barns with fire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "A plague of locusts is gentler than Brabançon hirelings. They take our seed corn, roast the village prior to extort altar chalices, and leave nothing behind but burnt thatch and weeping widows."
+    }
+  ],
+  "TextMappings": []
+}

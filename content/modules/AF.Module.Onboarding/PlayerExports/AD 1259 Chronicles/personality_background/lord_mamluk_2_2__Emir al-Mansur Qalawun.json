@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mamluk_2_2",
+  "HeroName": "Emir al-Mansur Qalawun",
+  "Description": "Qalawun was a Kipchak of the Burj Oghlu tribe, the same tribe as Baybars. The sources say that he was probably sold into slavery during the Mongol invasions and brought to Egypt at around fourteen, where an amir bought him for a thousand dinars, which gave him the nickname al-Alfi, the Thousander. He rose from a junior Mamluk to amir and, in the upheaval of 1279, became the real ruler. The sources say little of his looks, so the description follows the game setting: a broad frame, a square face, a short greying beard, and a green jade ring on his right thumb. He wears dark green court robes. His youth passed in the barracks of Egypt and Syria, where he learned to read men and accounts and to wait in the gaps of power. In 1279 he first served as atabeg for the child Solamish, then sent the boy into exile and took the title al-Malik al-Mansur for himself. At Homs in 1281 he and Sunqur al-Ashqar jointly repelled Abaqa's invasion. He then captured Margat, Latakia and Tripoli, and besieged Acre in 1290. His noble aim is to build a stable dynasty in which his descendants rule the Mamluk state for generations. His inner shadow is the fear that old colleagues or rivals will destroy his foundations after his death and cut off his line in a struggle for power.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Remove the crusader strongholds along the Levantine coast, taking Margat, Latakia and Tripoli in turn to clear the way for Mamluk expansion.",
+    "Place his sons in key military posts in Egypt and Syria, so that his dynasty stays in the hands of his own descendants after his death.",
+    "Balance the factions at court, using veteran commanders such as Sunqur al-Ashqar while preventing any one amir from rising high enough to threaten the throne."
+  ],
+  "Values": [
+    "Patience is the first virtue of a ruler, and he spends years stabilising the realm rather than expanding rashly after a single success.",
+    "Power rests on wealth and military strength, so a dynasty must control its treasury and troops closely to withstand threats from within and without.",
+    "Capable men deserve respect, but their achievements must never grant them the power of the throne, and every loyalty must be kept alive by steady rewards and watchful oversight."
+  ],
+  "Fears": [
+    "After his death his former colleagues and close kin fight each other for the throne, dissolving the order he built within a single night.",
+    "Mongols or crusaders attacking in force while the transfer of power leaves his successor too weak to hold the frontiers."
+  ],
+  "SpeechStyle": "He speaks slowly, often guiding others with questions. He supports his points with figures and dates, but a cold glance shows he will never pardon betrayal or neglect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_3_5",
+  "HeroName": "Björn Björnsson",
+  "Description": "Sir Björn Björnsson of Färlev, vibrant young knight and cavalry commander, was the youngest son of High Councillor Sir Björn Näf. Trained in heavy shock horsemanship and swordsmanship alongside his elder brother Nils, young Björn embraced the martial reforms of King Magnus Ladulås, enlisting his personal armored retinue into the royal guard. Courageous, charismatic, and fiercely loyal, he led equestrian shock charges during pacification campaigns against coastal reavers, winning universal acclaim among the royal knights. Devoted to knightly chivalry and ancestral honor, he enforced strict discipline upon his troopers while guarding the family's manors across Götaland, celebrated as a dynamic spearhead of the Näf lineage. Sir Björn developed advanced combined-arms tactics coordinating mounted crossbowmen and heavy shock cavalry along the western coast, transforming his retainers into an elite strike brigade comparable to Continental standards. During the pacification campaigns of the 1270s, Björn led forced cavalry marches across rugged terrain, intercepting rebel supply columns and capturing rebel commanders in defiles. Honorable, strict in drill, yet fiercely protective of his men, he commanded universal respect among the equestrian officer corps, celebrated as a premier vanguard commander of Sweden. His unwavering valor on the field of honor ensured the peace and security of the western marches against hostile maritime incursions.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Distinguish himself in the royal cavalry guard to secure prominent military commands for the Näf lineage.",
+    "Maintain relentless frontier patrols around his ancestral estates, crushing marauders and securing civilian peace."
+  ],
+  "Values": [
+    "Reveres knightly valor, battlefield integrity, and chivalric honor, holding that arms must only serve lawful justice.",
+    "Champions straightforward courage and brotherly fidelity, scorning cowardly deception in war and peace."
+  ],
+  "Fears": [
+    "Dreads battlefield betrayal dishonoring his family's chivalric reputation and leaving their lands vulnerable to plunder."
+  ],
+  "SpeechStyle": "Speaks with ringing, spirited cavalry boldness and frank soldierly cadence, his energetic voice radiating confidence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

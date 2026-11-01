@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Gerden Tovtivilskij (Duke Gerdenis of Nalšia and Polotsk) is a far-sighted statesman and dynastic prince of the Tovtivil clan, later ascending the grand-ducal throne of Polotsk. Mastering the complex diplomatic chessboard connecting the Baltic Sea, Livonia, and Rus', Gerden operated with acute political realism. Following the assassination of King Mindaugas in 1263, Gerden navigated the regional power vacuum with masterly composure, negotiating decisive peace accords with the Livonian Order and the Bishop of Riga in 1264. These treaties permanently secured Polotsk's sovereign jurisdiction over the Western Dvina basin, checking radical pagan incursions into Orthodox lands. He safeguarded municipal freedoms, patronized cathedral learning, and expanded riverine customs warehouses, ensuring Polotsk flourished during widespread Baltic civil wars. His cool-headed statesmanship and treaty-making prowess established Gerden as an indispensable savior of Polotsk's statehood. Prince Gerden steered Polotsk through the catastrophic power vacuum following Mindaugas's assassination with brilliant diplomatic composure. Ratifying historic peace accords that secured sovereign river transit, his masterly balance-of-power diplomacy preserved the state's territorial integrity through gathering storms. By balancing German commercial privileges against Orthodox ecclesiastical autonomy, he neutralized hostile coalitions and preserved sovereign stability along the vital river commerce network.",
+  "SpeechStyle": "Swords may seize walls, but wise treaties preserve empires. Balance competing interests with calm resolve; Polotsk's sovereign rights over the Dvina shall never brook compromise!",
+  "Motivations": [
+    "Ratify comprehensive peace and commerce treaties, permanently securing Polotsk's sovereignty over the Dvina river basin.",
+    "Navigate the volatile Baltic power balance with realpolitik, insulating his realm from surrounding imperial warfare."
+  ],
+  "Values": [
+    "Valuing calculated equilibrium, contractual sanctity, and rational diplomacy, scorning rash fanaticism and treacherous aggression.",
+    "Believing masterly negotiation backed by unassailable legal compacts preserves kingdoms when wild chaos engulfs the world."
+  ],
+  "Fears": [
+    "Radical crusader factions violating peace charters to launch sudden holy wars, collapsing Dvina river stability.",
+    "Pagan Baltic armies ravaging the principality with merciless fury, reducing Polotsk's Orthodox civilization to ashes."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

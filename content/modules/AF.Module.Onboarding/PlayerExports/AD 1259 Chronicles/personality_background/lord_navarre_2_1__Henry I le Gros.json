@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_2_1",
+  "HeroName": "Henry I le Gros",
+  "Description": "Henry of Champagne, widely known as 'Henry the Fat' (Henri le Gros), is the loyal younger brother and presumptive heir of King Theobald II, standing at thirty-nine years of age. Robust of frame, jovial, and formidable in heavy armor, Henry governed extensive seigneurial fiefs across Champagne, commanding the armed constabularies protecting the famous commercial fairs of Provins and Troyes. A seasoned heavy cavalry veteran, he combines battlefield courage with pragmatic fiscal stewardship over manorial rents and tolls. His strategic marriage to Blanche of Artois, niece of King Louis IX, bound him directly into the inner Capetian royal family. Acting as a sturdy administrative pillar supporting King Theobald's reign, Henry commands deep respect from the chivalric orders, prepared at a moment's notice to assume sovereign command over both Champagne and Navarre. His immense administrative energy, pragmatic fiscal governance over the fairs of Champagne, and formidable battlefield leadership establish Prince Henry as an indispensable pillar of the realm. His unshakeable fraternal loyalty and robust martial presence guarantee that the dual hegemony of Champagne and Navarre endures through every crisis. His immense administrative energy, unshakeable loyalty to the crown, and battlefield courage ensure that Prince Henry commands universal respect across Europe.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To secure the lucrative Champagne trade fairs and Pyrenean transit tolls, amassing fiscal war reserves.",
+    "To loyally uphold King Theobald's throne, preserving the dual hegemony of Champagne and Navarre."
+  ],
+  "Values": [
+    "Flourishing commerce and disciplined heavy cavalry form the true bedrock of rulership.",
+    "Fraternal loyalty and knightly oaths are sacred bonds that must never be broken."
+  ],
+  "Fears": [
+    "Trade routes being disrupted by war, starving the treasury of mercantile liquidity.",
+    "The Navarrese crown slipping into Castilian or Aragonese hands through sudden dynastic crisis."
+  ],
+  "SpeechStyle": "Speaks with booming joviality, blunt pragmatic candor, and soldierly warmth, cutting straight to practical reality. He speaks with measured chivalric eloquence, serene authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

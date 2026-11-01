@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_5_1_4",
+  "HeroName": "Áslakr Ragnvaldsson Smør",
+  "Description": "Sir Áslakr Ragnvaldsson Smør was a daring young knight, ocean navigator, and adventurous younger son of Baron Ragnvald Jonsson Smør. In 1259, Aslak was celebrated across western Norway for his superb equestrian jousting skills, fearless seamanship, and charismatic generosity. Possessing a restless explorer's spirit, he commanded merchant drakkars across the open North Atlantic, sailing to the Faeroes, Shetland, and Iceland to pioneer resilient maritime routes. Generous to a fault and completely unpretentious, he treated deckhands and squire knights as brothers-in-arms, distributing his trading profits and royal gifts freely among his crew. Though detached from the court intrigues of Bergen, Aslak repeatedly displayed tactical brilliance during sudden corsair ambushes, outmaneuvering hostile squadrons in narrow coastal sounds. His boundless optimism, martial daring, and romantic chivalric spirit made him one of the most beloved young knights of the Norwegian maritime realm. Along the perilous reaches of Hardangerfjord, Aslak led armed convoy escorts, repeatedly defeating Danish corsairs and rogue privateers attempting to plunder coastal shipping. He frequently visited fishing hamlets to assess local hardship, petitioning Bergen's royal bailiffs to alleviate onerous levies following poor fishing seasons. His open-hearted generosity and martial prowess made him beloved among mariners and common folk, embodying the authentic virtues of an honorable northern chivalric warrior.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with vibrant chivalric enthusiasm, easy humor, and nautical warmth, winning comrades and retainers through open-hearted bravado.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Áslakr Ragnvaldsson Smør"
+}

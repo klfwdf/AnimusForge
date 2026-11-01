@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Order_of_St_Lazarus_and_Leper_Knights",
+  "Keywords": [
+    "Order of St Lazarus Knights",
+    "Green Cross Leper Hospice",
+    "Diseased Noble Knights Sanctuary",
+    "Acre St Lazarus Gate Bastion"
+  ],
+  "RagShortTexts": [
+    "The Order of Saint Lazarus bore green crosses, fielding leper knights who fought with."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Order of Saint Lazarus, bearing plain green crosses upon white habits, held a unique role caring for leprosy victims outside Jerusalem and Acre. When knights from the Templars or Hospitallers contracted the affliction, they transferred to Saint Lazarus, continuing to bear arms behind iron visors until death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Viewing leprosy as a divine purgation of worldly pride, Lazarus hospices applied Syrian and Greco-Arab herbal poultices and isolation quarantines, preserving human dignity amid incurable suffering."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Never mock veiled Lazarus warriors. Knowing their bodies are doomed by disease, they charge without fear of death, crashing through enemy lines with ferocious fatalism."
+    }
+  ],
+  "TextMappings": []
+}

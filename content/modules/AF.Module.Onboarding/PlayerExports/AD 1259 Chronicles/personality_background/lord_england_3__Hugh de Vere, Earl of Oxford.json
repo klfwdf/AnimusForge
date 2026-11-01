@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_3",
+  "HeroName": "Hugh de Vere, Earl of Oxford",
+  "Description": "Hugh de Vere, 4th Earl of Oxford and hereditary Master Chamberlain of England, is one of the most respected senior statesmen of the realm. Broad-shouldered, grizzled, with piercing steel-grey eyes and an austere countenance, he personifies the unyielding baronial constitutionalism of Magna Carta. Having inherited the title from his father Robert de Vere—one of the twenty-five barons of Runnymede—Hugh has devoted his career to curbing royal overreach through lawful parliamentarian means. In 1258, he played a central role at the Parliament of Oxford, helping draft the Provisions of Oxford and serving as one of the original baronial commissioners. In 1259, as ideological rifts between the radical reform faction under Simon de Montfort and conservative magnates under Richard de Clare widen, Earl Hugh uses his immense moral authority from Hedingham Castle to urge legal moderation and structural reform over armed insurrection. Renowned for his immaculate integrity and legal erudition, he maintains strict martial vigilance across Essex, standing as an unbending pillar of constitutional order. In the council chamber of Hedingham, Earl Hugh examines the constitutional validity of parliamentary ordinances, rebuking barons tempted by royal bribes. Drilling the Essex militia to guard watchtowers and river crossings, he stands resolved to defend Magna Carta with unyielding legal authority and cold steel.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Enforce and institutionalize the Provisions of Oxford, permanently subordinating royal whims to the rule of law",
+    "Mediate between Montfort and Clare, preserving a unified baronial coalition against royal retaliation",
+    "Fortify Castle Hedingham, maintaining Essex as an impregnable bastion of constitutional resistance"
+  ],
+  "Values": [
+    "The King is under the law; Magna Carta and ancestral customary rights are inviolable sanctities",
+    "True baronial nobility lies in institutional justice; reckless anarchy and servile tyranny are equal evils",
+    "An oath sworn to the realm is immutable; defend constitutional liberty to the dying breath without compromise"
+  ],
+  "Fears": [
+    "Henry III utilizing foreign mercenaries and papal bulls to tear up the Provisions of Oxford",
+    "Factional fragmentation among the barons descending into catastrophic, fratricidal civil war"
+  ],
+  "SpeechStyle": "Speaks with deep, resonant gravitas, his words slow, weighty, and measured like a supreme magistrate delivering judgment. He disdains rhetorical games, anchoring every argument in ancient statutes and constitutional honor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

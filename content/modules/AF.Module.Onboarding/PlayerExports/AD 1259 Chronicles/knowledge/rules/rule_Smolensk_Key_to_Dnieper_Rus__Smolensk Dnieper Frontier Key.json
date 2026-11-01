@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Smolensk_Key_to_Dnieper_Rus",
+  "Keywords": [
+    "Smolensk Dnieper Frontier Key",
+    "Dormition Cathedral Smolensk",
+    "Shield of Western Rus Fortress",
+    "Varangian Portage Crossroads"
+  ],
+  "RagShortTexts": [
+    "Smolensk guarded the upper Dnieper portages, serving as the storied western stone shield of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Smolensk commanded the pivotal upper Dnieper portages linking Baltic trade to the Black Sea. Defended by deep ravines and formidable earthen-and-timber ramparts, this ancient princely seat anchored Rus defense against expanding pagan Lithuanian warlords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Seasoned druzhina axemen guarded the grand Dormition Cathedral, upholding uninterrupted Orthodox liturgy amid border warfare."
+    }
+  ],
+  "TextMappings": []
+}

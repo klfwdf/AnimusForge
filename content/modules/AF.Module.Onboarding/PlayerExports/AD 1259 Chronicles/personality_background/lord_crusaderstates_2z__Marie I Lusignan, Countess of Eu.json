@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_2z",
+  "HeroName": "Marie I of Lusignan, Countess of Eu",
+  "Description": "Marie I of Lusignan, sovereign Countess of Eu in Normandy, represented the premier continental branch of the illustrious Lusignan dynastic tree. Governing vast feudal domains and maritime fortresses commanding the English Channel, she maintained intimate dynastic ties and reciprocal financial investments with the royal courts of Cyprus and Outremer. In 1259, recognizing the grave existential threat posed by Mamluk expansion to her eastern kin, Marie utilized her immense wealth to subsidize knightly recruitment and overseas shipping for the Holy Land. She dispatched extensive letters of credit and silver remittances to the Hospitaller commanderies in Acre and the monastic foundations of Nicosia, acting as a crucial continental financier. Within the royal court of France and the papal curia, Marie championed the diplomatic cause of Outremer, passionately advocating for a unified Christian crusading enterprise to relieve the Latin East. Combining high-born Norman grandeur with profound crusader conviction, Marie served as an indispensable trans-continental bridge sustaining the Frankish overseas states. In Normandy, Marie expanded armor-forging manufactories across Eu, shipping high-grade mail coats and lance-heads across the sea to reinforce the garrisons of Cyprus and Acre. Addressing the French Estates and papal legates, she delivered impassioned speeches detailing Levantine crises, mobilizing critical funding for crusader defense bonds. Her continental patronage served as an indispensable lifeline for the crusader kingdoms.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Safeguard the hereditary sovereignty of the County of Eu and maintain prosperous financial networks connecting France to Outremer.",
+    "Funnel massive silver subsidies and armored retinues to Acre and Cyprus to fortify the eastern crusader front against invasion.",
+    "Lobby the French crown and the Papal Curia to organize a grand, unified general crusade for the relief of the Holy Land."
+  ],
+  "Values": [
+    "The Lusignan bloodline carries a sacred divine destiny to defend Outremer; continental wealth must actively succor overseas kin.",
+    "Governing feudal revenues and military logistics with unbending discipline to project power across Christian Europe.",
+    "Transforming vast secular fortune into pious crusading works that glorify God and immortalize her noble house."
+  ],
+  "Fears": [
+    "French royal encroachment usurping the fiscal autonomy of the County of Eu, crippling her ability to subsidize Outremer.",
+    "The Mamluk annihilation of Acre resulting in the slaughter of her eastern kin and the permanent extinction of the crusader states."
+  ],
+  "SpeechStyle": "Speaks with the imperious elegance and sophisticated legal discernment of high French nobility, commanding attention with poised, majestic diction.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Marie I of Lusignan, Countess of Eu"
+}

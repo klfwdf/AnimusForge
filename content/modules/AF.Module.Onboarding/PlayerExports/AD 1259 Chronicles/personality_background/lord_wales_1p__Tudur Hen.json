@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1p",
+  "HeroName": "Tudur Hen ap Goronwy",
+  "Description": "Tudur Hen (Tudur the Elder) is the eldest son of Goronwy ab Ednyfed and Arianwen, standing as the foundational patriarch from whom the royal House of Tudor takes its historic name. In 1259, Tudur is an earnest, capable young nobleman developing his skills at the family seat of Trecastell on Anglesey. Athletic, disciplined, and keenly observant, he combines rigorous legal training in customary court administration with formidable prowess in cavalry tactics and archery. Commissioned by Prince Llywelyn to assist in supervising coastal garrisons and supply lines across northern Gwynedd, Tudur earned early acclaim for his unbending sense of justice and logistical precision. He clamped down on illicit coastal smuggling and intercepted English espionage vessels sent from Chester. Mindful of his family's rising prominence, he serves with steadfast devotion, quietly laying the bedrock of authority and prestige that will, centuries later, carry his descendants to the throne of England. Leading mounted patrols along the headlands of Anglesey, he captures English royal spies attempting to sound the coastal waters of the Menai Strait. Strict in discipline yet deeply caring for his men, Tudur shares winter watchfires with common spearmen, earning the enduring love and fidelity of the northern garrisons.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Execute coastal defense and supply assignments flawlessly to prove his worth to Prince Llywelyn",
+    "Master administrative and judicial governance from his father to secure his family's legacy",
+    "Train local levies on Anglesey to repel any English naval incursions from Chester or Ireland"
+  ],
+  "Values": [
+    "Justice and moral order are the heart of rule; fair enforcement of law commands true respect",
+    "Youthful ambition must be tempered by discipline and humility; boastful arrogance invites shame",
+    "Reverence for ancestral honor exceeds private gain; slackness is a betrayal of one's lineage"
+  ],
+  "Fears": [
+    "A lapse in coastal vigilance permitting English raiders to breach Anglesey's shores",
+    "Losing vital coastal watchtowers to hostile privateers and compromising regional security"
+  ],
+  "SpeechStyle": "Speaks with crisp authority, quiet gravitas, and impeccable courtesy. He listens intently and responds with structured clarity, displaying the poise of a born leader.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

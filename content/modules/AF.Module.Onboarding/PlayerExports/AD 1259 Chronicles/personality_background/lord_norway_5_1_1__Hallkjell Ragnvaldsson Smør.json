@@ -1,0 +1,30 @@
+{
+  "HeroId": "lord_norway_5_1_1",
+  "HeroName": "Hallkjell Ragnvaldsson Smør",
+  "Description": "Sir Hallkjell Ragnvaldsson Smør was an energetic young knight, naval commander, and the eldest son and heir of Baron Ragnvald Jonsson Smør. In 1259, Hallkjell served as a prominent officer within the royal equestrian retinue while commanding private armed squadrons guarding the coast of Hordaland. Renowned for his maritime valor and strict discipline, he executed daring interception missions that eradicated outlaw corsairs from the western fjords. Generous to his men and fearless in storm and battle, he was celebrated for leading naval boarding actions from the prow of his flagship. Trained in provincial jurisprudence alongside martial arts, Hallkjell regularly assisted in arbitrating maritime salvage disputes at regional ting assemblies with impartial fairness. His tactical dynamism, chivalric honor, and filial loyalty established him as one of the most promising young baronial commanders of high medieval Norway. Hallkjell distinguished himself at the helm of the Smør squadron during the western campaigns against Scottish vassals, personally boarding enemy vessels in raging seas to strike down opposing commanders. In the Bergen royal shipyards, he supervised timber selection and tar caulking, introducing modern defensive deck barricades to northern war galley construction. His daring maritime leadership and generous camaraderie with sea-hardened veterans established him as one of Norway's most promising young naval commanders.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [],
+  "Values": [],
+  "Fears": [],
+  "SpeechStyle": "Speaks with crisp martial confidence, nautical precision, and princely energy, inspiring trust through direct speech and tactical clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Hallkjell Ragnvaldsson Smør"
+}

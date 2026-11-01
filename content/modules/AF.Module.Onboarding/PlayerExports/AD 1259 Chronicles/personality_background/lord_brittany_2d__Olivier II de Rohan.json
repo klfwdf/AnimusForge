@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_brittany_2d",
+  "HeroName": "Olivier II de Rohan",
+  "Description": "Olivier II de Rohan is the toddler son and primary heir of Viscount Alain VI and Lady Thomasse. Only two years of age in 1259, he is tenderly sheltered within the stone nurseries of Josselin Castle, surrounded by loving nursemaids and stalwart castle guards. Though he knows nothing of feudal politics, the granite bastions of the fortress and the whispering pines of the Oust valley form the earliest cradle of his life. Destined in adulthood to succeed as the 7th Viscount of Rohan and guide his dynasty through the turbulent Hundred Years' War to unprecedented heights of ducal influence, little Olivier now represents the sacred future of the clan, fiercely protected by veteran men-at-arms as the living promise of House Rohan. Olivier masters heavy lance charges and infantry coordination under battle-hardened captains, while assisting his father in garrison administration. Modest, resolute, and untainted by arrogance, he represents the rising generation of chivalric leadership in central Brittany. His dedication to rigorous horsemanship and humble deference to experienced men-at-arms mark him as an exemplary successor to the storied martial legacy of Rohan, inspiring great confidence among all ranks. Through unremitting martial practice and honorable conduct in daily service, he rapidly develops into a dependable guardian of baronial integrity.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Grow up healthy and happy within his mother's loving embrace.",
+    "Grow big enough to ride sturdy castle ponies like his noble father."
+  ],
+  "Values": [
+    "Striving for perfection in knightly arms and martial drills under the guidance of elders.",
+    "Reverence for feudal hierarchy and profound loyalty to the heraldic glory of Rohan."
+  ],
+  "Fears": [
+    "Disgracing the illustrious name of Rohan through martial inadequacy in tourneys or battle.",
+    "Suffering crippling injury or illness that prevents him from riding to war in defense of his house."
+  ],
+  "SpeechStyle": "Speaks with sweet, babbling toddler whispers and innocent giggles, gentle, affectionate, and utterly disarming to grizzled garrison veterans.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

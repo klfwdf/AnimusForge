@@ -741,10 +741,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string normalizedModel = (modelName ?? string.Empty).Trim();
-		bool isGemini37FlashHigh = normalizedModel.StartsWith("gemini-3.7-flash-high", StringComparison.OrdinalIgnoreCase);
 		bool thinkingEnabled = true;
-		string effort = isGemini37FlashHigh ? DuelSettings.ReasoningEffortHigh : DuelSettings.ReasoningEffortMinimal;
+		string effort = DuelSettings.ReasoningEffortLow;
 		switch (target)
 		{
 		case ApiSetupTarget.Auxiliary:

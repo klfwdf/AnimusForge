@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Reims_Archbishopric_and_Coronation_Cathedral",
+  "Keywords": [
+    "Reims Coronation Cathedral",
+    "Holy Ampulla Clovis Chrism",
+    "Archbishop Duke of Reims",
+    "Smiling Angel of Reims Gothic"
+  ],
+  "RagShortTexts": [
+    "Reims hosted French royal consecrations with Holy Ampulla unction, ranking as chief ducal peer."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Reims stands as the sacred coronation sanctuary of French monarchy. Beneath towering Gothic vaults, the Archbishop of Reims—premier ecclesiastical peer of France—anoints Capetian sovereigns using holy chrism from the celestial Ampulla, sanctifying royal legitimacy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Without unction at Reims, a monarch remains a mere warlord; its cathedral bells command feudal obedience across all Christian realms."
+    }
+  ],
+  "TextMappings": []
+}

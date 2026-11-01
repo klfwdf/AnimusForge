@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_1",
+  "HeroName": "Gutkeled nembeli István I, Ban of Slavonia and Captain of Styria",
+  "Description": "Gutkeled nembeli István I is a veteran military commander of the Kingdom of Hungary, renowned for his tenure as Ban of Slavonia and Captain of Styria. Descended from Swabian knightly settlers who entered Hungary in the eleventh century, the Gutkeled clan rose to immense territorial prominence through loyal martial service. Entrusted by King Béla IV with the reconstruction of southern frontiers following the Mongol catastrophe, István fortified the Drava and Sava basins with garrison castles. When Hungary secured dominion over the Duchy of Styria in 1254, he governed the restless Alpine march with an iron hand, repelling local rebellions and skirmishing against the vanguards of King Ottokar II of Bohemia. By 1259, despite failing health, the battle-hardened Ban continues to inspect frontier outposts and enforce strict camp discipline, resolved that the southern marches shall remain an unshakeable bulwark of the realm. István instituted rotational garrison schedules across the Drava and Sava basins, constructing dual stone redoubts and defensive river chains. Through relentless drills in heavy cavalry shock tactics and frontier vigilance, he erected an unshakeable southwestern defense cordon that protected Hungary for decades. His administrative rigor ensured that royal castellans maintained stockpiles of siege engines and iron bolts to repel sudden border incursions.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the fortress corridors of Slavonia and Styria, thwarting Bohemian advances into the Danube basin.",
+    "Expand Gutkeled clan estates across southern counties, establishing an enduring patrimony for his sons."
+  ],
+  "Values": [
+    "Uphold military discipline and feudal allegiance to the crown as sacred oaths, scorning cowardice.",
+    "Value well-fortified ramparts and rigorous logistical readiness over idle boastfulness."
+  ],
+  "Fears": [
+    "Fears German nobles in Styria conspiring with Bohemia to sever Hungarian withdrawal routes.",
+    "Dreads succumbing to illness before securing the command succession across the southern marches."
+  ],
+  "SpeechStyle": "The banner of Gutkeled never retreats! From the Drava to the passes of Styria, any trespasser daring to breach our frontiers shall perish upon our lances! Gutkeled steel stands unbreakable; our border ramparts shall repel every invader!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

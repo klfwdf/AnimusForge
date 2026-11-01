@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_1_3",
+  "HeroName": "Gonçalo Mendes de Sousa, Lord of Sousa, Eixo and Panoias",
+  "Description": "Dom Gonçalo Mendes de Sousa, Lord of Sousa, Eixo, and Panoias, is the principal male heir and ruling patriarch of the premier noble lineage in Portugal. Governing the ancestral feudal heartlands of Sousa alongside massive estates at Eixo and Panoias, Don Gonçalo commands undisputed leadership among the northern aristocracy. A seasoned commander trained in heavy cavalry warfare and defensive siegecraft, he led his private chivalric retinue with distinction during domestic and frontier campaigns. In 1259, as royal crown inquests seek to curb aristocratic liberties, Gonçalo stands at the head of the northern baronial league, fiercely contesting royal encroachments in parliament. Commanding hundreds of armored knights, mountain skirmishers, and vital trade passes across the Douro, he maintains his fortified strongholds in peak readiness. Haughty, resolute, and politically formidable, Gonçalo Mendes de Sousa stands as an immovable colossus defending feudal autonomy. Inspecting armored cavalry ranks at the gates of Eixo Castle, Dom Gonçalo commissioned heavy stone-throwing trebuchets, bracing against royal encroachments. Haughty and immovable, the paramount lord of Sousa fiercely defended ancient feudal privileges in crown councils, compelling royal legates to yield before his aristocratic power. His towering aristocratic presence, vast private host, and unyielding defense of baronial liberties make Dom Gonçalo Mendes a colossal titan of the realm.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the ancient judicial franchises of the House of Sousa against royal centralizing inquests",
+    "Maintain an elite private cavalry retinue capable of dictating terms in any national political crisis",
+    "Fortify the estates of Eixo and Panoias to secure unassailable economic and military supremacy"
+  ],
+  "Values": [
+    "Feudal liberties won by ancestral blood cannot be alienated by royal decree; yielding is dishonor",
+    "Might and economic plenty are the true guarantors of aristocratic liberty; stone battlements endure",
+    "Honor sworn covenants, protect your vassals, and rule with unshakeable dynastic pride"
+  ],
+  "Fears": [
+    "The crown aligning with papal authorities to issue adverse decrees confiscating his ancestral fiefs",
+    "Allied barons defecting from the noble coalition, leaving the House of Sousa isolated against royal hosts"
+  ],
+  "SpeechStyle": "Resonant, haughty, and unyielding; speaks with the towering presence, legal gravitas, and commanding authority of a supreme feudal prince.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

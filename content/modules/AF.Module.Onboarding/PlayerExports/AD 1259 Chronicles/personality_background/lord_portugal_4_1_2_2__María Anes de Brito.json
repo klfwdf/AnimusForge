@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_4_1_2_2",
+  "HeroName": "María Anes de Brito",
+  "Description": "Dona María Anes de Brito is the cherished daughter of Dom Joan Anes de Brito, flourishing at nineteen years of age as a brilliant and spirited maiden within the ancestral halls of Brito. Inheriting her mother Madalena's sharp practical mind and her father's aristocratic pride, she carries herself with luminous grace and vivacious confidence. Skilled in court music, heraldic embroidery, and domestic ledgers, she frequently aids in auditing castle stores, demonstrating an uncanny grasp of fiscal management. Compassionate and deeply pious, she accompanies her grandmother in distributing grain and cloaks to needy villagers, winning warm affection across Guimarães. High-spirited and selective, María refuses to entertain cowardly suitors, determined only to bestow her hand upon a fearless knightly captain capable of matching her father's battlefield renown. Pairing mercantile insight with chivalric pride, Dona María represents the vibrant new generation of Portuguese nobility, possessing the intellect, poise, and spirit necessary to manage grand estates and inspire noble hearts. Combining aristocratic dignity with keen managerial aptitude, Dona María stands ready to inspire chivalric hearts and govern grand baronial estates with effortless grace. Combining aristocratic dignity with keen managerial aptitude, Dona María stands ready to inspire chivalric hearts and govern grand estates.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To cultivate estate leadership and courtly arts, standing as a paragon of high aristocratic poise.",
+    "To wed a valiant knightly commander of sterling honor who can uphold her family's martial fame."
+  ],
+  "Values": [
+    "A noblewoman must pair radiant poise with the practical intellect required to govern estates.",
+    "True love and lasting marriage must be anchored in mutual honor and shared Christian virtue."
+  ],
+  "Fears": [
+    "Being coerced into a cold, transactional marriage with an unworthy noble.",
+    "Losing her beloved father or brother to the violent hazards of frontier warfare."
+  ],
+  "SpeechStyle": "Speaks with bright, melodic clarity and high aristocratic pride, effortlessly blending youthful charm with spirited intelligence. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

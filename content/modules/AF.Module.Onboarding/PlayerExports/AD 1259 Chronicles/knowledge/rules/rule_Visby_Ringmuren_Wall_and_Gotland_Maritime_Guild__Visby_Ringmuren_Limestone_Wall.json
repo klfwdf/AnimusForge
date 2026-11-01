@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Visby_Ringmuren_Wall_and_Gotland_Maritime_Guild",
+  "Keywords": [
+    "Visby Ringmuren Limestone Wall",
+    "Gotland Baltic Shipping Hub",
+    "Visby German Burgher Guild",
+    "Baltic Maritime Privateer Threat"
+  ],
+  "RagShortTexts": [
+    "Visby on Gotland island, encircled by limestone walls, anchored northern maritime trade."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Stationed in the heart of the Baltic on Gotland Island, Visby formed the critical crossroads of northern maritime routes. Enclosed by the 3.4-kilometer limestone Ringmuren wall with over thirty defense towers, it operated under Wisby Sea Laws. German and Gotlander merchant guilds assembled armed convoys of cogs to transport timber, furs, and tar safely past pirates."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Legends claimed Visby pigs ate from silver troughs and women spun with golden distaffs. Yet the imposing Ringmuren was erected not merely against pirates, but to keep resentful rural Gotland freeholders from storming urban gates."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Heavy arbalests line the limestone battlements. When longship sails appear on the horizon, harbor alarm bells ring, and mercenary sentries drop harbor chains to seal the haven tight."
+    }
+  ],
+  "TextMappings": []
+}

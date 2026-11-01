@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Hanseatic_League_Origins_and_Baltic_Kontors",
+  "Keywords": [
+    "Hanseatic League Origins",
+    "Lubeck Visby Merchant Pact",
+    "Baltic Herring Timber Trade",
+    "Novgorod Peterhof Kontor"
+  ],
+  "RagShortTexts": [
+    "Lübeck and northern merchant cities formed early Hanseatic networks dominating Baltic trade."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In the mid-13th century, merchants from Lübeck, Visby, and Hamburg forged commercial pacts that matured into the Hanseatic League. Deploying stout high-sided cogs, they established fortified Kontors in Novgorod and London, monopolizing northern timber, tar, beeswax, salted herring, and prized Arctic furs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "The Hanse operates under autonomous Lübeck civic law, governed by patrician burghers. When trading charters are signed, even Scandinavian kings and Teutonic Grand Masters must respect commercial credits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Hanseatic cogs feature towering fore and aft castles that render boarding attempts from small pirate skiffs nearly impossible. With hired arbalesters manning the rail, maritime raiders usually end swinging from the yardarm."
+    }
+  ],
+  "TextMappings": []
+}

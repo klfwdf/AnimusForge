@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_1_3",
+  "HeroName": "Joan Mendes de Briteiros",
+  "Description": "Joan Mendes de Briteiros is the second son of Dom Mem Rodrigues, possessing a quicksilver intellect, vibrant curiosity, and sharp wit that perfectly balance his elder brother's stoic gravity. Raised amidst the martial discipline of Guimarães, Joan readily absorbed swordplay and horsemanship, yet his true passion ignited around parchment maps, chronicle folios, and the heroic lays chanted by visiting troubadours. Inheriting his father's renowned lyric genius, the young lord already plucks the lute with uncanny finesse, improvising elegant verses in courtly Galician-Portuguese. Sharp-eyed and strategically imaginative, he frequently outwits his companions in tactical martial games. Family elders view Joan as an exceptionally gifted scion capable of excelling either as an elite diplomatic envoy in the royal chancery or as an inventive cavalry captain commanding flank assaults on campaign. Joan's quicksilver intellect and sparkling lyric gift make him an extraordinary prodigy among the realm's youth, positioning him to excel as an influential diplomatic envoy and visionary counselor within the inner circles of the royal court of Lisbon. Possessing both strategic cunning and refined lyric eloquence, Joan shines as an exceptional scion capable of championing his clan's interests across the highest councils of the kingdom.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To master the epic histories and strategic maps of Iberia, learning the subtle arts of statecraft.",
+    "To gain distinction as both an inventive troubadour and a sharp strategic advisor at court."
+  ],
+  "Values": [
+    "Wit, eloquence, and foresight often resolve crises that brute force only deepens.",
+    "Keen observation is the sharpest dagger against deception and ambush."
+  ],
+  "Fears": [
+    "Being confined to obscure rural manors without opportunity to shine in royal diplomacy.",
+    "Seeing his brother or companions wounded in battle while unable to intervene."
+  ],
+  "SpeechStyle": "Speaks with lively wit, poetic charm, and animated intelligence, swiftly grasping complex ideas with playful ease. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

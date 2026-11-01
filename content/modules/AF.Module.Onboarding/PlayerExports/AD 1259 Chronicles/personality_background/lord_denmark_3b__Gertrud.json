@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_3b",
+  "HeroName": "Gertrud",
+  "Description": "Lady Gertrud of Ågård, noble matriarch of the nascent Gyldenstierne dynasty and wife of Sir Erik, served as the indispensable domestic anchor of their sprawling northern estates. Born of ancient Jutlandic equestrian nobility, Gertrud combined flawless estate stewardship with devout piety and gracious hospitality. While her lord campaigned or attended high political tings at Viborg, Gertrud governed the inner bailey of Ågård, directing bailiffs and tenant farmers in the processing, storage, and maritime transport of vast harvests of rye, wool, and salted fish. Deeply spiritual, she patronized coastal priories and established charitable hospices, distributing grain to famished peasants during severe winter freezes, venerated throughout northern Jutland as a wise and merciful protectress of her people. Gertrud modernized the domestic workshops of Ågård by introducing advanced weaving looms and barrel-curing techniques for Baltic herring, vastly increasing estate revenues and funding the acquisition of German warhorses and plate armor. During fierce winter blizzards and food shortages, she traveled to coastal hamlets to distribute wool cloaks, rye loaves, and hot broth, severely reprimanding grain hoarders. Her unyielding sense of justice and maternal benevolence commanded profound loyalty from parish priests and freeholders alike, remembered as the warm hearthstone that sustained her lineage through perilous times.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage estate accounts and granary reserves at Ågård with meticulous frugality to sustain the family's regional influence.",
+    "Fund local church charities and hospices, sheltering rural tenants from famine and the predations of war."
+  ],
+  "Values": [
+    "Believes that unpretentious diligence, domestic thrift, and devout faith are the true cornerstones of enduring noble houses.",
+    "Reveres Christian charity, holding that worldly wealth is justified only when deployed to alleviate human suffering."
+  ],
+  "Fears": [
+    "Dreads catastrophic crop failures and pirate raids devastating the tenant hamlets and granaries of northern Jutland."
+  ],
+  "SpeechStyle": "Speaks with serene maternal warmth and aristocratic composure, her gentle tones carrying quiet yet decisive authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

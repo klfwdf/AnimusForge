@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2b",
+  "HeroName": "Margrethe Erlandsdatter",
+  "Description": "Lady Margrethe Erlandsdatter of Scania, sister to Archbishop Jakob Erlandsen and magnate Johannes, was a formidable matriarch within the Galen-Hvide dynasty. Managing the administrative and economic operations of their sprawling Scanian estates, Margrethe combined aristocratic sophistication with deep theological erudition. During the darkest years of civil war and papal interdict when her brothers fought the Danish crown, Margrethe fortified their ancestral strongholds, coordinating agricultural output and horse breeding to supply the clan's private armies. Highly principled, she financed the expansion of Saint Lawrence Cathedral in Lund and established hospices for displaced clergy and refugees fleeing royalist campaigns. Her unflinching composure and astute strategic mind made her an indispensable counselor, venerated as the wise matriarch of Scania. During severe winter shortages and widespread rural dislocations, Margrethe unlocked the family granaries across Scania, distributing rye and salted provisions to hundreds of tenant families while remitting punitive feudal dues. Literate in Latin canonical texts and feudal charters, she acted as a trusted interlocutor for papal legates dispatched to investigate the Danish ecclesiastical crisis, expertly drafting formal defenses of the archiepiscopal see. Her irreproachable moral dignity, combined with her steadfast patronship of monastic hospices, established her as a tranquil pillar of moral authority during decades of bitter civil and spiritual warfare.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage family estates and ecclesiastical revenues with ledger precision to furnish her brothers' war efforts with supplies.",
+    "Shelter persecuted clergy and displaced families, maintaining regular liturgical life across the archdiocese of Lund."
+  ],
+  "Values": [
+    "Reveres Christian piety and fierce clan solidarity as sacred pillars, defending holy church immunities from secular tyranny.",
+    "Champions disciplined stewardship and active charity, holding that moral rectitude and sound logistics outlast transient crowns."
+  ],
+  "Fears": [
+    "Fears royalist mercenaries sacking Lund Cathedral, destroying ancient relics, sacred codices, and familial charters."
+  ],
+  "SpeechStyle": "Speaks with serene, aristocratic grace and pious precision, her measured words radiating quiet moral authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_8_2",
+  "HeroName": "Simona Adorno",
+  "Description": "Simona Adorno governs the commercial accounting chancellery of House Adorno, auditing maritime insurance pools and freight dividends for great oceanic carracks. Acute and decisive, she established a premier marine credit syndicate in Genoa, insulating family ventures from volatile Mediterranean exchange shocks. Lady Simona audited oceanic ledgers with flawless accuracy, mastering foreign customs tariffs, currency parities, and maritime insurance indemnities to the admiration of seasoned factors. She established a permanent relief fund for widows of mariners lost at sea, personally overseeing disbursements to burnish House Adorno's public standing as benevolent civic patrons. Methodical and prudent, she maintained that the true worth of wealth lay in mitigating peril and uplifting lineage, guiding family finances through turbulent Mediterranean crises. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure maximal returns across all deep-sea ventures operated by House Adorno.",
+    "Maintain an immaculate commercial credit rating and boundless liquid specie reserves."
+  ],
+  "Values": [
+    "Precise legal underwriting and insurance form the beacon that averts oceanic ruin.",
+    "Unshakable fidelity to contracts is the supreme soul of commerce."
+  ],
+  "Fears": [
+    "Catastrophic oceanic squalls triggering catastrophic insurance liquidation demands.",
+    "Outbreak of monarchical wars closing Atlantic ports to Genoese shipping."
+  ],
+  "SpeechStyle": "Speaks with crisp financial clarity and analytical precision, astute in assessing risk. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

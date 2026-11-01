@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Treaty_of_Jaen_and_Nasrid_Parias",
+  "Keywords": [
+    "Treaty of Jaen 1246",
+    "Nasrid Gold Parias Tribute",
+    "Muhammad I Castilian Vassalage",
+    "Andalusian Survival Strategy"
+  ],
+  "RagShortTexts": [
+    "Under the 1246 Treaty of Jaén, Muhammad I paid massive gold parias to Castile to ensure."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Signed in 1246 after the siege of Jaén, the Treaty of Jaén established the tributary vassalage of Muhammad I of Granada to Fernando III of Castile. In exchange for surrendering Jaén and paying an annual tribute of 150,000 gold maravedís (parias), Granada secured sovereign survival beneath the Sierra Nevada."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Castilian monarchs utilized Granadan gold parias to finance cathedral construction and imperial electioneering, while Nasrid ministers recognized that tribute was the price of time—purchasing the years required to fortify the Alhambra."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Armed escorts delivering bullion chest across the frontier grip lance-butts in tense silence. Gold buys uneasy truces, but border jinetes and Castilian caballeros villanos know the truce hangs by a frayed silk thread."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Silk spinners and olive tenders in the Vega surrender coin to tax collectors so the King can fill the Castilian gold carts. Heavy tributes drain our purses, but our homes remain unburnt and our children sleep in peace."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Maria Mikhailovna is the learned daughter of Saint Mikhail of Chernigov and consort of Prince Vasilko of Rostov, celebrated across medieval Rus' as an illustrious chronicler. Her marriage linked the southern cultural sophistication of Chernigov with the northern principality of Rostov, forging an enduring intellectual bridge. Following her husband's heroic death at the Battle of the Sit River in 1238, Maria assumed regent responsibilities, directing the compilation of the famous 'Rostov Chronicle'. Her historical annals meticulously documented the Mongol invasions and her father's martyrdom at Sarai, preserving irreplaceable national memory and spiritual pride. A profound patroness of theology and arts, Maria endowed scriptoria and cathedral restorations, safeguarding manuscript traditions amidst widespread destruction. Revered by scholars and churchmen as an enlightened beacon of Ruthenian letters, her literary and spiritual legacy endures as a monument of medieval culture. Beneath the flickering icons of Rostov's Cathedral of the Dormition, Princess Maria wielded her quill to record the epic defense of Rus'. Her poignant chronicle immortalized her father's supreme martyrdom and her husband's battlefield sacrifice, gifting future generations an eternal testament to spiritual liberty and national dignity. Her literary works remain celebrated masterworks of medieval Slavic history.",
+  "SpeechStyle": "Swords may lay waste to stone keeps, but truth inscribed in parchment outlives empires! Record the sacred valor of our fathers, so our children remember the true cost of freedom!",
+  "Motivations": [
+    "Direct the compilation of the Rostov Chronicles, preserving the historical truth and spiritual heritage of medieval Rus'.",
+    "Endow cathedral scriptoria and monastic libraries, sheltering displaced scholars to safeguard intellectual culture."
+  ],
+  "Values": [
+    "Valuing historical integrity, intellectual rigor, and pious truth, rejecting ideological deception and ignorant barbarism.",
+    "Believing the written word and divine reflection possess eternal power to illuminate future generations beyond catastrophe."
+  ],
+  "Fears": [
+    "Catastrophic fires consuming cathedral scriptoria, turning decades of illuminated historical chronicles into ashes forever.",
+    "That long centuries under the Tatar yoke will cause future generations to forget ancestral liberty, embracing servitude."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Capetian_Fleurs_de_lis_Royal_Symbolism",
+  "Keywords": [
+    "Capetian Fleurs de lis",
+    "French Royal Iris Heraldry",
+    "Sacred Oriflamme War Banner",
+    "Saint Denis Royal Sovereignty"
+  ],
+  "RagShortTexts": [
+    "The azure shield with golden fleurs-de-lis and the sacred Oriflamme embodied Capetian."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Under Louis IX, the semy of golden fleurs-de-lis on an azure field (France Ancien) stood as the preeminent insignia of the Capetian monarchy. Its tripartite petals invoke the Holy Trinity, paired with the sacred scarlet silk war banner of Saint-Denis, the Oriflamme. Unfurling the Oriflamme signaled unyielding battle with no quarter asked nor given."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The lilies of France command baronial deference across Christendom. Whether borne by Charles of Anjou into Italian campaigns or royal bailiffs in Languedoc, the fleur-de-lis shield rallies unmatched chivalric power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "The iris embodies both Marian purity and regal wisdom. Anointed with holy chrism at Reims under the sign of the lilies, Capetian kings are believed by pilgrims to cure scrofula through the royal touch."
+    }
+  ],
+  "TextMappings": []
+}

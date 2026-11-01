@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_5_2_3",
+  "HeroName": "Jeanne de Montfort, Countess of Vendôme",
+  "Description": "Jeanne de Montfort was the daughter of Philip II of Montfort and Jeanne de Lévis, later becoming Countess of Vendôme through prestigious dynastic marriage. Educated within the chivalric and literary atmosphere of Castres Castle, she mastered French poetry, devotional scriptures, and feudal protocol. Possessing deep insight into her family's dual continental and Levantine interests, Jeanne assisted her mother in coordinating estate hospitality and noble assemblies. In 1259, as reports of eastern military crises reached France, Jeanne organized charitable campaigns among southern noblewomen to fund crusader medical relief. Her refined demeanor and diplomatic intelligence secured high acclaim from the comital House of Vendôme, vastly enhancing the Montfort network in northern France. Gentle, devout, and politically astute, Jeanne stood as an admired archetype of aristocratic virtue and familial devotion in high medieval France. Jeanne was profoundly versed in French courtly protocol and Latin classics, assisting her mother in administering the domestic diplomacy and treasury of Castres Castle. She frequently received traveling envoys from the Templar Order and Mediterranean merchant syndicates, keenly assessing shifting overseas commodity prices and feudal alliances. In 1259, conscious of escalating perils in Outremer, she actively facilitated strategic dynastic unions and chivalric pacts across Languedoc. Her calm intellect and noble poise earned her universal acclaim throughout southern French nobility.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the distinguished courtly honor of the House of Montfort, enhancing her family's prestige across French high society.",
+    "Organize charitable hospices and devotional almsgiving, praying for the divine protection of her father and brothers on crusade.",
+    "Secure prestigious dynastic alliances with the high nobility of France, constructing an enduring political network for her lineage."
+  ],
+  "Values": [
+    "A noble lady's true nobility springs from inner purity and steadfast virtue; compassionate charity outshines worldly arrogance.",
+    "Preserving familial unity through gentle wisdom, acting as a soothing moral anchor amidst turbulent political rivalries.",
+    "Devotion to Christian piety, transforming temporal fortune into practical salvation and charitable sanctuary for the afflicted."
+  ],
+  "Fears": [
+    "Her father and brothers perishing on foreign battlefields in the Levant, leaving their house vulnerable to predatory rivals.",
+    "Feudal warfare ravaging her peaceful ancestral estates, plunging her kin into ruinous vendettas and dispossession."
+  ],
+  "SpeechStyle": "Speaks with serene courtly polish and natural aristocratic grace, receiving noble guests and handling dynastic affairs with poised, charming dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jeanne de Montfort, Countess of Vendôme"
+}

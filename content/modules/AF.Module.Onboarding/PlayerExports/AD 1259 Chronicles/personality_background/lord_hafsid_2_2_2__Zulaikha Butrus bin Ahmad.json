@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_2_2_2",
+  "HeroName": "Zulaikha Butrus bin Ahmad",
+  "Description": "Zulaikha Butrus bin Ahmad is the daughter of Emir Ahmad Butrus al-Mutawakkil and his wife Salma. The game data records her at sixteen, with a knightly template and a strong gift for command and management. The game model shows a young girl's clear face with dark hair bound up, and no scars are recorded. Her manner is more businesslike than that of most girls her age, and her eyes carry a stubborn spirit that refuses to yield. The chronicles say nothing of her, so this account rests on game setting and dynastic background. As a child she followed her father into the cavalry camps, watching knights drill and carry orders, and she listened to her mother describe the favors and dangers of the kin. She is particularly alert to management and order, and likes to watch how servants divide their work, often offering surprising suggestions for improvement. Veteran officers praise her riding and archery, and she often tests herself against them on the drill ground, refusing to concede easily. Her mother insists she first learn courtesy and restraint, and this sometimes makes her feel constrained. Her lofty aim is to one day command an army or a domain as a man would, and to make the family name shine more brightly in her hands. Her private shadow is the fear that her ambition will be seen by the senior kin as a presumption, earning their resentment and forcing her to abandon her aims.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Gain management experience between the household and the camps, learning to arrange servants, grain, and garrisons so she can lead on her own later rather than remain idle.",
+    "Ask veteran officers about archery and battle formations, aiming to win the knights' acknowledgment of her command rather than being seen only as her father's daughter.",
+    "Learn courtesy and self-restraint under her mother's guidance, so that her ambition does not show too early and provoke suspicion among the senior kin."
+  ],
+  "Values": [
+    "She believes capable people should hold the right posts regardless of sex, judged by whether they can run a company or manage a domain well, not by birth.",
+    "She values order and clear duties, holding that a team only realizes its full strength when each member serves their role and rewards and punishments are fair.",
+    "She honors her parents' teaching, yet longs to step beyond the boundaries they have drawn and prove by her own results that she can carry heavy responsibility alone."
+  ],
+  "Fears": [
+    "Her ambition may be judged presumptuous by the senior kin, forcing her to shrink her aims and spend her life on household trifles without room to act.",
+    "A failed attempt at management or command may cost her men, and both her reputation and her parents' trust may suffer together, hard to win back."
+  ],
+  "SpeechStyle": "Her voice is clear and direct, often opening with a question. With her parents she coaxes, with veteran officers she is earnest, and she sometimes offers a surprising idea and waits for an answer.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

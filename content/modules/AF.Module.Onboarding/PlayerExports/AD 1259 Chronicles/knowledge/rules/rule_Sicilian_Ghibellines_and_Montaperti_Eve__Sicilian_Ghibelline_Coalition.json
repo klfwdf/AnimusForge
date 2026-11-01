@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Sicilian_Ghibellines_and_Montaperti_Eve",
+  "Keywords": [
+    "Sicilian Ghibelline Coalition",
+    "Montaperti Battle Eve 1259",
+    "Siena Florence Tuscan Feud",
+    "Manfred German Cavalry Aid"
+  ],
+  "RagShortTexts": [
+    "Manfred of Sicily reinforced Ghibelline Siena with heavy German knights on the eve of Montaperti."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1259, tensions between Tuscan Guelphs (led by Florence) and Ghibellines (led by Siena) reached boiling point. King Manfred of Sicily intervened decisively, dispatching 800 German mercenary knights under Count Giordano d'Agliano to Siena, laying the operational groundwork for the Battle of Montaperti (1260)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Florentine burghers believed civic militias could easily starve Siena into submission. Yet Manfred's German ironclad cavalry represented veteran shock troops unawed by Florentine guild infantry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Tuscan vineyards are bristling with spearmen. In Siena, German mercenaries drink Chianti while sharpening broadswords, knowing when the clash comes by the Arbia, the river will run scarlet."
+    }
+  ],
+  "TextMappings": []
+}

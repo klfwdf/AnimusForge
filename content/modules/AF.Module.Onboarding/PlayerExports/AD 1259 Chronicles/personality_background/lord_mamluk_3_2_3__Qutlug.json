@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mamluk_3_2_3",
+  "HeroName": "Qutlug",
+  "Description": "Qutlug is the daughter of Al-Ashraf Musa, emir of Homs, and his wife Gulbahar, and the game data gives her age as 29. The Wikipedia entry on Al-Ashraf Musa says he left no heirs and names no children. The game XML makes Gulbahar his wife, while the historical wife was Amat al-Latif, married in 1249 and dead by 1253, so Qutlug is a game-setting figure. Her dress follows period convention: a dark silk gown and an embroidered cloak, with a seal at her belt. The game marks her as a diplomat, and she speaks in short, direct sentences.\nHer youth was shaped by her father's career. In 1248 Al-Ashraf Musa gave up Homs, kept Palmyra and al-Rahba, and received Tall Bashir in exchange. She watched a city change hands on a single document and learned that power can be traded at the table, and lost there too.\nWith rivals and Ayyubid relatives she plays a diplomatic game, using courtesy and marriage ties to circle opponents. Her attitude toward the Mongols is conflicted: her father once contacted them secretly to recover Homs, so she understands the temptation but fears the old accounts will be reopened.\nHer ideal is to keep the family name alive in Syria. Her darkest fear is that the Mamluk sultan will pursue her father's past and hand her away as a bargaining chip.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold influence around Homs and Tall Bashir so the family's fiefs are not taken by others after her father's death.",
+    "Use marriage ties and cousin alliances to keep the family in play between Damascus and Aleppo.",
+    "Build a reputation that outlasts her father's shadow, so people remember her as a woman who saved the family by wit."
+  ],
+  "Values": [
+    "Family honour outweighs any single gain, so cities may be surrendered but the family name must never be erased.",
+    "Negotiation and marriage alliances can be stronger than the sword, since one precise promise buys safety an army cannot.",
+    "Women should hold a real voice in decisions, not serve only as marriage pieces in other men's plans."
+  ],
+  "Fears": [
+    "Fears the Mamluk sultan will dig up her father's dealings with the Mongols and brand the whole family as traitors.",
+    "Fears being married to a stranger as a bargaining chip, losing any say in the family's affairs."
+  ],
+  "SpeechStyle": "Speaks briefly and directly, giving the conclusion before two or three reasons. She slows down when her father is mentioned and avoids Mongol details. With people she distrusts she asks polite questions and makes few promises.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

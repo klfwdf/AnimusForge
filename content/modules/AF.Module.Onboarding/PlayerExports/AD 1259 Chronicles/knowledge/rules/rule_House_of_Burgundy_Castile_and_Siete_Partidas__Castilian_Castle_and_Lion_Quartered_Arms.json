@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Burgundy_Castile_and_Siete_Partidas",
+  "Keywords": [
+    "Castilian Castle and Lion Quartered Arms",
+    "Alfonso X the Wise King",
+    "Las Siete Partidas Legal Code",
+    "Imperial Crown Fecho del Imperio Quest"
+  ],
+  "RagShortTexts": [
+    "The Burgundian-Castilian house quarterly paired castles and lions under Alfonso X's legal."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Quartering castles and lions to herald the union of Castile and León, the House of Burgundy-Ivrea ruled under Alfonso X 'the Wise'. Alfonso promulgated Las Siete Partidas, a landmark synthesis of Roman law affirming monarchical sovereignty, while exhausting royal silver to secure election as Holy Roman Emperor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Great magnates (ricoshombres) resented fiscal exactions and centralized jurisprudence, sparking recurring feudal coalitions that threatened crown authority across Toledo and Burgos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "artisan"
+        ]
+      },
+      "Content": "Alfonso patronized poets and astronomers, orchestrating the Alfonsine Tables and Cantigas de Santa Maria, creating a glorious vernacular renaissance in Castile."
+    }
+  ],
+  "TextMappings": []
+}

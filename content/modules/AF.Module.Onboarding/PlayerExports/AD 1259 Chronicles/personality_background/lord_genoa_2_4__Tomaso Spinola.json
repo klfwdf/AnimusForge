@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_2_4",
+  "HeroName": "Tomaso Spinola",
+  "Description": "Tomaso Spinola commands private war galleys and armed commercial flotillas across the Western Mediterranean, trading between Seville, Valencia, and Tunis. An expert in Iberian bullion flows and grain consignments, he aggressively raids rival merchant convoys, funneling silver reserves directly into the war chest of House Spinola. Patrolling between Gibraltar and the Balearic Islands aboard swift galleys, Tomaso aggressively captured Catalan and Pisan merchantmen, funneling heavy chests of Spanish silver bullion into his clan's vaults. He maintained lucrative intelligence links across North African Muslim emporia, adroitly negotiating with local emirs to acquire grain and alum consignments at steep discounts, outmaneuvering traditional competitors. Pragmatic and daring, he understood that dominance over the Western Mediterranean provided boundless gold, equipping House Spinola with decisive leverage in the bitter arena of Genoese municipal politics. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "opportunistic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Monopolize the lucrative silver and silk maritime conduits out of the Iberian kingdoms.",
+    "Equip an expanding fleet of private corsair galleys from captured naval prizes."
+  ],
+  "Values": [
+    "Trade routes are flowing gold; the sharpest blade collects the richest dividend.",
+    "Audacious seamanship transforms perilous squalls into immense family fortunes."
+  ],
+  "Fears": [
+    "Seizure of trading galleys by Aragonese or Castilian royal armadas.",
+    "Devastating Moorish corsair counter-attacks wiping out unescorted convoys."
+  ],
+  "SpeechStyle": "Speaks with brisk maritime decisiveness and seasoned confidence, weathered by Atlantic gales. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_2c",
+  "HeroName": "Eon de Rohan, Seigneur du Gué-de-l'Isle",
+  "Description": "Eon de Rohan is the valiant younger brother of Viscount Alain VI, serving as Seigneur du Gué-de-l'Isle. Twenty years of age, athletic, and fiercely spirited, he was trained from childhood in the thick woodlands along the River Oust, mastering horsemanship, archery, and close-quarters combat. Eon specializes in commanding mobile detachments of Breton skirmishers and light lancers, routinely intercepting lawless marauders infiltrating the forests of Rohan. Revered by younger squires as the Sword of the Oust, he displays reckless courage in the vanguard of every engagement. Utterly devoted to his elder brother, Eon defends the family's feudal autonomy with passionate martial defiance, standing as a formidable shock commander on the front lines. At Gué-de-l'Isle, Eon reinforced the riverine stone tower and instituted round-the-clock mounted patrols that eradicated banditry along interior Breton trade routes. His prompt compliance with feudal muster warrants made him an indispensable military anchor for the head of the house. His vigilant vigilance and swift mounted detachments guarantee uninterrupted commerce, making him an invaluable frontier sentinel for the central Breton lands. His fearless devotion to the defense of regional trade caravans has earned him an exemplary reputation among all noble vassals across the countryside.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win immortal battlefield renown alongside his brother, defending Rohan from all enemies.",
+    "Fortify Gué-de-l'Isle into an impregnable frontier outpost to secure the clan's liberties."
+  ],
+  "Values": [
+    "Absolute feudal fidelity to the Viscount of Rohan and unyielding defense of the river bridge.",
+    "Relentless military discipline in eradicating road bandits to protect peaceful merchants."
+  ],
+  "Fears": [
+    "Garrison negligence allowing enemy infiltrators to breach the fortified bridge by night.",
+    "Failing to reinforce the ducal host in time during major campaigns, triggering military disaster."
+  ],
+  "SpeechStyle": "Speaks with ringing youthful fervor and bold martial confidence, candid, energetic, and brimming with unshielded enthusiasm for battlefield adventure.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

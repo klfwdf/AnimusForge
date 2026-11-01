@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_1",
+  "HeroName": "Theobald II the Young, King of Navarre, Count of Brie",
+  "Description": "Theobald II of Champagne, known to history as 'The Young' (Thibaut V of Champagne), rules as King of Navarre and Count of Brie at twenty-eight years of age. Inheriting the immense diplomatic wealth, chivalric lyric culture, and commercial fairs of Champagne, he ascended the throne of Pamplona in 1253. Through his high marriage to Princess Isabella of France, daughter of Saint Louis IX, Theobald cemented an invincible alliance with the French Capetian monarchy. An enlightened administrative reformer, he modernized Navarrese governance by appointing royal magistrates (merinos), establishing itinerant judicial courts, and institutionalizing the ancient customary charters (Fueros de Navarra) to curb feudal baronial lawlessness. Deftly balancing between the expansionist ambitions of Alfonso X of Castile and James I of Aragon, King Theobald guards the strategic Pyrenean passes of Roncesvalles and the Camino de Santiago pilgrim conduits, standing as a pious, cultured, and legally visionary sovereign. His enlightened administrative vision, unblemished Christian piety, and strategic statecraft elevated Navarre into an orderly and flourishing realm, cementing King Theobald II as an immortal model of crusading kingship. Guarding the pilgrimage routes of Saint James with chivalric devotion, he won enduring fame as both a poet and a righteous Christian sovereign.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To deepen legal codification and judicial oversight in Navarre, curbing baronial feuds and protecting pilgrims.",
+    "To safeguard Navarre's sovereign independence against Castile and Aragon through the Capetian alliance."
+  ],
+  "Values": [
+    "A Christian sovereign must govern through impartial law, sworn charters, and pious justice.",
+    "Guarding the sacred mountain passes and pilgrim routes is a sacred crusader vocation."
+  ],
+  "Fears": [
+    "Castile and Aragon conspiring to partition Navarre's fertile southern river valleys.",
+    "Conservative Pyrenean barons launching armed rebellions against royal judicial consolidation."
+  ],
+  "SpeechStyle": "Speaks with refined Capetian elegance, classical legal precision, and serene regal authority. He speaks with measured chivalric eloquence, serene authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

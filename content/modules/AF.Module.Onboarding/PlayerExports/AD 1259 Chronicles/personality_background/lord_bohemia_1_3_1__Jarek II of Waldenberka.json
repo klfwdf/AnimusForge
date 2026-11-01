@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_3_1",
+  "HeroName": "Jarek II of Waldenberka",
+  "Description": "Jarek II is the eldest son and heir of Lord Jarek, reared in the martial chivalry of Prague as an officer of the elite royal bodyguard. Robust, athletic, and devastatingly skilled with lance and heavy poleaxe, he gained admission to King Otakar's retinue at an early age, riding in the armored vanguard during campaigns securing the Austrian borderlands along the Danube. Contrasting his father's administrative calm, Jarek II burns with warrior ambition, stationing himself in rugged Moravian redoubts to drill border outposts and repulse cross-border raids launched by Hungarian skirmishers. Honorable, strict, and deeply respected by his men-at-arms for sharing frontline hardships, he yearns to etch the name of Waldenberk in military chronicles through glorious shock combat under the sovereign banner of Bohemia. Leading heavy horsemen through the dense defiles of southern Moravia, Jarek II repeatedly severed retreat routes of foreign marauders, hauling captured captains to Prague for trial. Living and dining among common foot soldiers, he personally inspected lance tips and shield rivets, meting out swift punishment to shirkers, resolved to carve his lineage's path into royal chronicle through sheer martial prowess. His battlefield ferocity and rigorous command made him a shining exemplar of chivalric vanguard service.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve distinguished military honors in field campaigns, winning royal knighthood and hereditary fiefs.",
+    "Assume command over family defenses, forging Waldenberk retainers into an elite combined-arms cavalry force."
+  ],
+  "Values": [
+    "Regards chivalric valor and unyielding martial courage as a knight's supreme calling, scorning cowardice.",
+    "Holds pure loyalty to the King sacrosanct, ready to defend southern Moravia with his life."
+  ],
+  "Fears": [
+    "Fears border defenses being breached due to negligence, tarnishing his family's honorable martial record.",
+    "Worries extended periods of peace will dull the combat readiness of his veteran cavalry squadrons."
+  ],
+  "SpeechStyle": "Our fathers secure our supplies, but we hold the vanguard! Once steel clashes, only the enemy's total rout shall halt our charge! In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jarek II of Waldenberka"
+}

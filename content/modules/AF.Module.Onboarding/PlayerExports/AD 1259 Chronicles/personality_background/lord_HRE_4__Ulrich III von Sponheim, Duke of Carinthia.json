@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_4",
+  "HeroName": "Ulrich III von Sponheim, Duke of Carinthia",
+  "Description": "Ulrich III von Sponheim was the last Duke of Carinthia and Margrave of Carniola of his ancient house. Ruling eastern alpine defiles for decades, his lack of surviving male heirs led to the fateful treaty bequeathing Carinthia to King Ottokar II of Bohemia, transforming Central Europe. Ulrich III barred alpine defiles toward Venice with triple moats, auditing silver mines to establish an impassable fortress barrier against Italian condottieri incursions. Confronting succession extinction with statesmanship, he transferred Carinthia intact to Bohemia, preventing his ancestral alpine people from being partitioned by rivals. Facing dynastic extinction with statesmanship, Ulrich III preserved Carinthia intact for his people, remembered as an alpine prince of supreme strategic vision. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify eastern alpine passes leading toward Venice, securing Carinthian fortresses.",
+    "Defend secular ducal jurisdiction and mining tolls against the Archbishop of Salzburg.",
+    "Bequeath his duchies to King Ottokar II of Bohemia to prevent rival dynastic partition."
+  ],
+  "Values": [
+    "Believes critical alpine marches must be transferred to strong crowns to avert partition.",
+    "Holds ducal territorial integrity supreme, choosing cold strategic realism over family feuds."
+  ],
+  "Fears": [
+    "His brother Philipp stirring baronial revolts with ecclesiastical backing to void his will.",
+    "Italian condottieri invading southern Carinthian valleys to pillage lucrative silver mines."
+  ],
+  "SpeechStyle": "Speaks with austere alpine gravity and melancholy resolve, commanding solemn obedience. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

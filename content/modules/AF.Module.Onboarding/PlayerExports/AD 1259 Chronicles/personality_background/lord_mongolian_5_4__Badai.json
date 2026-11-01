@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_5_4",
+  "HeroName": "Badai",
+  "Description": "Badai is a broad-shouldered Mongol lord of the fifth clan, easily recognised by an old scar that runs from his left cheekbone down to the jaw. He carries a short-hafted battle axe at his saddle, and his riders know the axe as his personal sign. He began his career by managing the family's horse herds, learning each pasture, water source and herder's temper before he was given any command. That slow training gave him his first reputation for order and fairness. He pays and punishes his men according to their deeds, and he never humiliates anyone in public, which is why his cavalry has stayed steady for years. He seldom meets rivals head on. He first ties the relatives of an opponent to himself through marriage and gifts, then waits until the important men on the other side owe him favours. At the next assembly he quietly rearranges seating and shares of pasture, so that his enemies lose room to manoeuvre without noticing it. He trusts only a few people, and his wife Argbadh is the one person before whom his hard manner softens. His highest aim is to make the fifth clan again seen as the legitimate lineage among the steppe peoples. His deepest fear is that his riders might scatter in some future contest, leaving his family without bargaining power and forgotten by the others.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Restore the fifth clan to a legitimate seat among the steppe peoples at every assembly, so that its name stands first again on the list of pasture shares.",
+    "Keep the family herds and pastures well managed, so every herder knows that those who follow him will not be abandoned in a famine year.",
+    "Turn quarrels with other clans into useful alliances through careful marriages and gifts, avoiding wasteful battles that drain men and animals."
+  ],
+  "Values": [
+    "Keep every promise made to an ally, even when the cost is high, because he believes his standing in the clan rests on it entirely.",
+    "Reward and punish openly, since unfair distribution of shares is, in his view, the first step toward a split among the followers.",
+    "Restraint and steadiness, seldom showing anger in front of others, because he believes authority comes from calm and predictability rather than fear."
+  ],
+  "Fears": [
+    "Fears that his riders could scatter in some unforeseen contest, leaving the family without bargaining power and forgotten by the other clans.",
+    "Fears that Argbadh or other close people will be pulled into political plots, since few people around him remain trustworthy."
+  ],
+  "SpeechStyle": "Terse and measured. Badai speaks in short declarative sentences, names people by clan or rank, and answers hostility with a calmer voice. He hears out every term before offering one concrete figure, and never makes vague promises.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

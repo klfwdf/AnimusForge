@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Holy_Roman_Empire_Great_Interregnum",
+  "Keywords": [
+    "Holy Roman Empire Great Interregnum",
+    "Imperial Dual Election Crisis",
+    "Hohenstaufen Line Extinction",
+    "Richard of Cornwall Alfonso X Rivalry"
+  ],
+  "RagShortTexts": [
+    "After 1254 Hohenstaufen extinction, the Empire entered the Great Interregnum amidst dual."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the demise of Conrad IV in 1254, the Hohenstaufen dynasty vanished, casting the Holy Roman Empire into the Great Interregnum. Bribed by rival factions, the Prince-Electors held a double election in 1257, crowning Richard of Cornwall and Alfonso X of Castile, neither of whom could enforce sovereignty over Germany."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Archbishops of Cologne, Mainz, and Trier feast in sovereign liberty. Without an imperial Caesar to curtail feudal encroachment, mining royalties, minting monopolies, and toll-house profits belong entirely to local princes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Free lances and robber barons rule the highways. In the absence of imperial peace (Landfrieden), a band of forty mounted men-at-arms in a fortified hilltop stone keep can extort entire caravans traversing the Danube."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "When the imperial throne is vacant, peasant granaries are looted twice over. Mainz bailiffs seize the rye on Monday, and Bavarian mercenaries steal the cattle on Wednesday. We pray for an Emperor to restore the broken law."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Salt_Monopolies_and_Gabelle_Taxation",
+  "Keywords": [
+    "Crown Salt Monopoly Administration",
+    "Gabelle Regulated Salt Tax",
+    "Coastal Salt Pans and Meat Brining",
+    "Salt Smuggling and Bailiff Enforcement"
+  ],
+  "RagShortTexts": [
+    "Salt was essential for winter meat preservation, exploited by royal gabelle tax monopolies."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Essential for curing meat and preserving herring through harsh winters, salt was the most coveted commodity across Europe. Monarchs established lucrative state monopolies like the French gabelle, requiring households to purchase fixed salt quotas from royal storehouses (greniers à sel) at inflated prices to fund standing treasuries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Controlling coastal salt lagoons—such as Chioggia for Venice or Hyères for Provence—yielded dependable revenue streams that underwrote war fleets and diplomatic bribes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Official salt is gray, gritty, and exorbitant. Despite brutal gallows penalties for smuggling (faux-saunage), highland runners risk everything to pack untaxed sea salt through nocturnal mountain trails."
+    }
+  ],
+  "TextMappings": []
+}

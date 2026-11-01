@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_8",
+  "HeroName": "Agnese Zorzi",
+  "Description": "Lady Agnese Zorzi is the gentle eighteen-year-old sister of Marino Zorzi, sharing his profound Christian piety and quiet moral rectitude. Serving beside Dominican sisters at the Basilica of Santi Giovanni e Paolo, Agnese tends to the sick, provides linen and bread for impoverished fishermen's families, and embroiders sacred vestments. Living with modest simplicity in an age of ostentation, she commands deep affection across the lagoon as an angelic embodiment of noble compassion. Serving beside Dominican sisters in the parish of Santi Giovanni e Paolo, Agnese Zorzi dedicated her life to nursing the sick and clothing impoverished fishing families, celebrated across the lagoon for her angelic humility and Christian charity. Devoted to the welfare of the poorest lagoon parishes, Agnese embodied the pure spirit of Christian mercy, her gentle presence comforting war-weary citizens and bringing spiritual solace to all who sought her aid. Her gentle prayers, sincere piety, and tender noble bearing illuminate the ancient halls with pure grace, kindness, and spiritual consolation. Cherished by her noble kin and attendants alike, Lady Agnese represents the venerable wisdom, continuity, and peaceful promise of her house. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Live in Christian contemplation and pray for her brother's safety and integrity in civic office.",
+    "Alleviate the suffering of the poor and orphaned across the parishes of Venice through charity."
+  ],
+  "Values": [
+    "Christian humility, charity, and spiritual purity over the fleeting illusions of worldly wealth.",
+    "Conscientious devotion to tenant welfare, family harmony, and the service of God."
+  ],
+  "Fears": [
+    "Outbreaks of plague or winter famines bringing devastation to the poor fishing parishes.",
+    "Her brother's unyielding righteousness exposing him to ruthless conspiracies from corrupt oligarchs."
+  ],
+  "SpeechStyle": "Speaks with soft melodious modesty, sincere spiritual warmth, and compassionate gentleness. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

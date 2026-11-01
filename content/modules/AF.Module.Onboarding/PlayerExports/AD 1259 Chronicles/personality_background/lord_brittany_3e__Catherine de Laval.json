@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_brittany_3e",
+  "HeroName": "Catherine de Laval",
+  "Description": "Catherine de Laval is the cherished ten-year-old daughter of Guy VII and Philippa of Vitré. Blessed with her mother's gentle features and her father's resilient spirit, little Catherine brightens the imposing granite galleries of Vitré Castle with her lively curiosity and sweet laughter. She studies Latin grammar, illuminated embroidery, and harp melodies, spending happy afternoons watching the sun gleam upon the forested horizons of the marchlands. Exceptionally affectionate, she eagerly greets returning knights with fresh wild clover and sweetbreads, melting the battle-weariness of hardened men-at-arms with her radiant innocence. Fiercely protected by the entire garrison, she is the darling of the eastern march. Within the rugged stone walls of Vitré fortress, young Catherine is a beacon of joy. Her sweet, melodious recitations of saints' lives and bright innocence provide boundless comfort to the seasoned warriors and noble kin defending the barony's frontiers. Her joyous laughter and innocent affection provide a constant source of spiritual solace to the armored warriors enduring long watches upon the ramparts. Her radiant innocence and sweet disposition bring unending warmth to everyone in the grand hall, soothing the harshest burdens of feudal rule with pure familial joy.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Play freely in the castle gardens and perform sweet harp songs for her parents.",
+    "Pray for her father and brother to return safely and happily from every campaign."
+  ],
+  "Values": [
+    "Treasuring every corner of Vitré and offering pure warmth to comfort every weary warrior.",
+    "Diligently learning sacred hymns and Latin prayers to grow into an exemplary Christian lady."
+  ],
+  "Fears": [
+    "Terrifying siege fires breaking the castle peace and harming her beloved family.",
+    "Being taken away from her familiar home and loving protectors by ruthless invaders."
+  ],
+  "SpeechStyle": "Speaks with chiming, sweet childhood clarity, affectionate, polite, and brimming with unshielded wonder and playful laughter.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_2",
+  "HeroName": "Birger Magnusson, Dux Sweorum",
+  "Description": "Dux Birger Magnusson of Bjelbo, celebrated Regent of Sweden and founder of Stockholm, was the titan who restructured the geopolitical landscape of northern Europe. Rising as head of the House of Bjelbo, Birger was elevated to Duke of Sweden (Dux Sweorum) in 1248, exercising supreme sovereign power for nearly two decades. In 1249, he spearheaded the Second Swedish Crusade into Tavastia, permanently annexing Finland to the Swedish crown, and in 1252 founded the fortress-city of Stockholm to safeguard Lake Mälaren from maritime reavers. A visionary lawgiver, Birger promulgated the historic National Peace Decrees (Edöreslagarna), establishing absolute legal protection for women, domestic hearths, churches, and ting assemblies, effectively abolishing ancient blood-feuds and consolidating the administrative foundation of the medieval Swedish realm. Birger Jarl enforced comprehensive mining codes and maritime customs tariffs across the Baltic littoral, enriching the royal treasury in Stockholm while attracting German merchants from Lübeck, igniting the dawn of Swedish urban commerce. When reactionary Folkung magnates launched successive rebellions to dismantle his administrative reforms, Birger acted with chilling ruthlessness, crushing the insurgencies at Herrevadsbro and Sparrsätra. His unbending authority established the enduring supremacy of the House of Bjelbo for generations.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Promulgate the national peace ordinances to eradicate ancestral clan feuds and centralize monarchical rule.",
+    "Fortify Stockholm and consolidate the conquests in Finland to secure Swedish naval mastery over the northern Baltic."
+  ],
+  "Values": [
+    "Believes that unbending statutory rule and iron discipline are the only remedies for feudal factionalism.",
+    "Champions dynamic imperial expansion and enduring public monuments, dedicating his life to national greatness."
+  ],
+  "Fears": [
+    "Dreads fraternal civil war among his sons extinguishing his dynasty and plunging Sweden back into lawless chaos."
+  ],
+  "SpeechStyle": "Speaks with granite-hard, monumental gravity, his deliberate proclamations sounding like unalterable royal statutes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

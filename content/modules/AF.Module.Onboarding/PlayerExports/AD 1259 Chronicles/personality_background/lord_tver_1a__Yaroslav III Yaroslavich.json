@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Yaroslav III Yaroslavich, youngest son of Yaroslav II and younger brother to Alexander Nevsky, is the visionary founder of the Grand Principality of Tver. At the strategic confluence of the Volga and Tvertsa rivers, Yaroslav transformed a modest frontier outpost into a thriving commercial center and an impregnable military stronghold. Navigating a treacherous political terrain under the watchful eye of the Golden Horde and rival Rurikid princes, he displayed extraordinary resilience, diplomatic agility, and calculating statecraft. Yaroslav journeyed to Sarai to secure princely yarliks, skillfully utilizing imperial recognition to anchor his authority over Tver while fiercely protecting Orthodox monastic privileges and ecclesiastical autonomy. He fortified Tver with stone ramparts, formed a disciplined retinue of heavy river cavalry, and fostered bustling trade fairs along the Volga waterway. His reign laid the unshakeable foundation for Tver's historic rise as a premier sovereign power in northern Rus', forever venerated as the dynasty's immortal founder. Yaroslav's comprehensive fortification programs and expansion of river wharves along the Volga transformed Tver into an impenetrable military stronghold, cementing its role as a glorious contender for total hegemony across northern Rus'.  His visionary leadership continues to inspire the citizens of Tver to defend their ancient liberties.",
+  "SpeechStyle": "The mighty Volga nourishes the unbending ambition of Tver! Though storms rage across the steppe and rivals gather at our borders, we shall stand unconquered upon our ramparts!",
+  "Motivations": [
+    "Fortify Tver's Volga stone defenses and expand river commerce to establish the principality as the premier power in Rus'.",
+    "Skillfully balance Golden Horde diplomacy and inter-princely alliances to secure the supreme grand-ducal throne for his line."
+  ],
+  "Values": [
+    "Hold dynastic ambition, sovereign dignity, and Orthodox faith as the supreme guiding principles of kingship.",
+    "Prize calculating endurance and pragmatic flexibility over reckless emotional bravado in statecraft."
+  ],
+  "Fears": [
+    "Dread palace shifts in Sarai sparking punitive Mongol campaigns that could reduce Tver's rising cities to ashes.",
+    "Fear hostile coalitions among rival Russian principalities severing vital Volga trade routes and strangling the realm."
+  ],
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ]
+}

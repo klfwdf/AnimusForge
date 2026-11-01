@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_9_5",
+  "HeroName": "Delbee",
+  "Description": "Delbee is about twenty, slim, with clear eyes and a small silver earring in her left ear that chimes when she moves. She wears a pale blue riding dress with narrow cuffs, and a braided leather cord at her waist carries a few small bronze bells. In the game she is a female rider of the ninth clan, twenty years old, serving in the cavalry and married to Bortu, both belonging to the house of Tolui. This character has no medieval counterpart, so the background here rests on the clan setting alone. Young women of the kin were expected to master archery and riding, yet also to know the forms and limits required at banquets and in marriage. Delbee rode out hunting with her brothers from childhood, and her horsemanship and archery equal those of men, though she was also taught to keep poise at gatherings. Against rivals she does not rush to confront them. She sends messages by fast riders and befriends the young men of rival houses during hunts, quietly carrying what she learns back to camp. Her bond with Bortu carries a touch of mutual testing. He is quiet and measured, while she loves talk and laughter, and their differences complete each other. Her highest aim is to prove that a woman rider of the ninth clan can win honour on the steppe as surely as any man. Her shadow is the fear that her pride and quick temper will one day harm a companion on a hunt or raid, leaving a fault she can never wash away.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Prove that a woman rider of the ninth clan can win honour through archery and horsemanship, so the clan stops treating women only as marriage pieces.",
+    "Befriend the young men of other houses during hunts and feasts, quietly noting their movements and true aims for her brothers to consider.",
+    "Find balance with her husband Bortu through their differences, so the cavalry and pastures they keep together remain steady over the years."
+  ],
+  "Values": [
+    "Skill and courage, because she believes personal ability proves a person's worth more surely than birth, so she always volunteers first.",
+    "Frankness, because she dislikes hidden scheming and would rather say plainly what she thinks than let others guess her real intent.",
+    "Loyalty to companions, because she counts fellow riders as family and will not let a comrade shoulder a fault alone, even if she is punished."
+  ],
+  "Fears": [
+    "Fears that her pride and quick temper will harm a companion on a hunt or raid, leaving a fault she can never undo and her clan's trust lost.",
+    "Fears that in a cavalry led by men her deeds will be brushed aside, so women of the ninth clan never receive the recognition they have earned."
+  ],
+  "SpeechStyle": "Delbee speaks quickly and brightly, often laughing before stating her view plainly. She explains with hunting comparisons and argues back on the spot. Teasing with Bortu, sharp but polite with rivals.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

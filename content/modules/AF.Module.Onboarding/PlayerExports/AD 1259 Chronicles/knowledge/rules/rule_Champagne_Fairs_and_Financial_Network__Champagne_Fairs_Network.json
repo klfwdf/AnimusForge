@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Champagne_Fairs_and_Financial_Network",
+  "Keywords": [
+    "Champagne Fairs Network",
+    "Troyes and Provins Markets",
+    "Flemish Cloth Italian Silk",
+    "Medieval Bill of Exchange"
+  ],
+  "RagShortTexts": [
+    "The Fairs of Champagne connected northern cloth manufacturing with southern Mediterranean."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rotating through Troyes, Provins, and Bar-sur-Aube, the Champagne Fairs formed the commercial clearinghouse of 13th-century Europe. Northern Flemish broadcloth met Mediterranean spices, silks, and alum. Protected by the Counts of Champagne with royal safe-conducts, Italian bankers introduced the bill of exchange, revolutionizing credit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Counts of Champagne grew exceedingly wealthy purely through market rents, weighmaster fees, and hall tolls. Even in wartime, sovereigns shield fairbound merchants, preserving the continent's financial engine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Behind money-changers' benches, Sienese and Florentine bankers assay silver mark fineness. Commercial contracts recorded by licensed fair notaries hold legal validity from London to Palermo."
+    }
+  ],
+  "TextMappings": []
+}

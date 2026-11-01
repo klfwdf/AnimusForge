@@ -1,0 +1,34 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Yaropolk II Vladimirovich of Kyiv, illustrious son of Vladimir Monomakh, ruled Pereyaslavl through decades of legendary victories against steppe invaders before ascending the throne of Kyiv. As the iron shield of the southeastern marches, he launched audaciously planned cavalry strikes deep into the Don and Sula river plains, crushing major Polovtsian hordes and securing the agrarian frontier. Renowned for personal bravery coupled with brilliant reconnaissance discipline, Yaropolk transformed Pereyaslavl into an impregnable bastion that struck dread into nomadic raiders. Upon succeeding his brother Mstislav as Grand Prince of Kyiv, he wrestled untiringly against the divisive intrigues of the Chernigov Olgovichi, using both surgical military strikes and principled mediation to maintain dynastic unity. Even in advanced age, he commanded campaigns from the saddle, revered across chronicle annals as an exemplar of knightly courage. Renowned for seamlessly integrating disciplined foot spearmen with heavy lancers, his masterstroke at the Battle of the Salnitsa severed enemy command banners and decisively routed nomadic hosts. His battlefield prowess was immortalized by Dnieper river bards who praised his martial brilliance and chivalric fortitude across generations, celebrating his steadfast defense of Christian civilization against overwhelming eastern odds.",
+  "SpeechStyle": "Speaks with a commanding, sonorous cadence like battle trumpets, brimming with veteran authority and direct chivalric resolve.",
+  "Motivations": [
+    "Uphold Monomakh's legacy of offensive frontier warfare, routing encroaching steppe hosts with disciplined cavalry campaigns.",
+    "Assert the senior authority of the Kievan grand princely throne, subduing factional princely revolts to preserve dynastic peace."
+  ],
+  "Values": [
+    "Values martial valor and sworn oaths above all else, enforcing severe retribution against princely perjury and treason.",
+    "Champions battlefield camaraderie and iron discipline, sharing soldiers' hardships to command unswerving loyalty from horsemen."
+  ],
+  "Fears": [
+    "Laments the tragedy of fratricidal princely strife leaving frontier marchlands exposed to utter devastation by barbarian hordes."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_on_the_Ice_Lake_Peipus",
+  "Keywords": [
+    "Battle on the Ice Lake Peipus",
+    "Alexander Nevsky Livonian Defeat",
+    "Novgorod Veche Sledge Ambush",
+    "Orthodox Northern Bastion 1242"
+  ],
+  "RagShortTexts": [
+    "In 1242 on frozen Lake Peipus, Alexander Nevsky routed Livonian knights, preserving Rus."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fought on the thawing ice of Lake Peipus on April 5, 1242, the Battle on the Ice pitted Alexander Nevsky's Novgorod druzhina against elite Livonian and Danish crusaders. Nevsky absorbed the Teutonic wedge with archers and sled-barricades before enveloping their heavy armour on fracturing lake ice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "The triumph halted western crusader expansion into northwestern Rus, safeguarding Orthodox religious autonomy."
+    }
+  ],
+  "TextMappings": []
+}

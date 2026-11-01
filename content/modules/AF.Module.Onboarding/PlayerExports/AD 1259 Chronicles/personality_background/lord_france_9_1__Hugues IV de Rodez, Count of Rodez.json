@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_9_1",
+  "HeroName": "Hugues IV de Rodez, Count of Rodez",
+  "Description": "Hugues IV de Rodez is the reigning Count of Rodez and Viscount of Carlat, dominating the rugged plateau of Rouergue in southern France. At twenty-seven, he blends the iron-fisted authority of a highland march lord with the refined cultural patronage of the golden age of troubadours. Ruling from the imposing hilltop citadel of Rodez, he controls lucrative silver mining operations and thriving transhumance wool trade routes connecting the Massif Central with Languedoc. Hugues maintains an illustrious literary court while drilling mountain crossbowmen and heavy cavalry in complex defensive maneuvers. His marriage to Lady Isabeau of the ancient House of Roquefeuil cemented an unshakeable confederacy across the Cévennes mountains. Resisting royal French centralization with diplomatic skill and armed vigilance, Hugues tenaciously defends the ancient judicial liberties of his county. Count Hugues constructed a central wool exchange outside Rodez, appointing sworn weigh-masters and mounted guards to secure the trade routes of the Massif Central. Charismatic, openhanded, and visionary, his vibrant court drew celebrated troubadours from across southern Europe, establishing Rodez as an unshakeable commercial beacon. His energetic administration of highland markets and steady enforcement of customary laws maintain peaceful prosperity along the strategic corridors of the Massif Central.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the high baronial liberties of Rodez against French royal bureaucratic expansion.",
+    "Expand silver mining and wool trade across Rouergue to enrich the county treasury."
+  ],
+  "Values": [
+    "Unyielding defense of customary southern liberties and baronial jurisdiction.",
+    "Lavish patronage of troubadour poetry coupled with fierce martial protection of his serfs."
+  ],
+  "Fears": [
+    "Royal seneschals manufacturing legal pretexts to seize the silver keeps of Rodez.",
+    "Border raids from neighboring Gascon lords ravaging highland wool markets."
+  ],
+  "SpeechStyle": "Speaks with rich highland authority, his Occitan-infused French rhythmic, cultured, and punctuated by the sharp command cadence of an independent southern magnate.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

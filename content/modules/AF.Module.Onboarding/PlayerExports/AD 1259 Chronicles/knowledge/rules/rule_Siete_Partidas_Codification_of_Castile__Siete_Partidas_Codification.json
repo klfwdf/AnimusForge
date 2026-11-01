@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Siete_Partidas_Codification_of_Castile",
+  "Keywords": [
+    "Siete Partidas Codification",
+    "Alfonso X Statutory Law",
+    "Toledo Roman Jurisprudence",
+    "Castilian Royal Legal Code"
+  ],
+  "RagShortTexts": [
+    "Alfonso X's Siete Partidas unified Castilian statutory law, synthesizing Roman and canon law."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Commissioned by Alfonso X of Castile, the Siete Partidas represents a monumental codification of law blending Roman civil jurisprudence, canon law, and maritime custom. It established coherent statutes on succession, royal authority, commerce, and justice across Iberia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "King Alfonso employs Roman law to curb baronial customary exemptions. The Partidas explicitly declares the king as God's vicar of secular justice, reserving appellate authority over private baronial courts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Structured into seven parts reflecting holy harmony, it articulates human righteousness from sacraments to market contracts. Written in clear Castilian vernacular, its doctrines reach beyond monastic cloisters."
+    }
+  ],
+  "TextMappings": []
+}

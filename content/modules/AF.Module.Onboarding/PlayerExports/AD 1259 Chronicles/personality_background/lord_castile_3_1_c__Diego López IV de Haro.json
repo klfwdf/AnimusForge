@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_3_1_c",
+  "HeroName": "Diego López IV de Haro",
+  "Description": "Diego López IV de Haro is the eldest son and designated heir of Lope Díaz III, representing the formidable future of the Lordship of Biscay. Trained from boyish youth in heavy equestrian combat, siege engineering, and the intricacies of Basque tribal alliances, Diego embodies the martial ideal of the northern aristocracy. While inheriting his father's commanding presence and unbending pride, Diego possesses a cooler, far more calculating intellect. He recognizes that despite the formidable wealth of the Basque iron trade and Cantabrian fleets, Biscay cannot endure an uncoordinated war of attrition against the full mobilization of the Castilian monarchy. Consequently, while drilling the elite mountaineer contingents of Biscay, Diego carefully cultivates alliances with the younger generation of grandees and princes—most notably Infante Sancho. Resolute, disciplined, and deeply committed to his ancestral heritage, the young heir regularly tours the sacred assembly oaks of Guernica, keeping a vigilant eye upon Toledo, ready to seize the reins of power the moment destiny calls upon him to defend the House of Haro. Drilling heavy infantry phalanxes and cavalry lances across northern garrison towns, Diego exhibits a cool strategic maturity far beyond his years. Wary of royal traps, he cultivates discrete ties among the kingdom's rising princes, prepared to assume the lordship of Biscay and defend the Haro banner with calculated courage and unbending resolve.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate military and fiscal control over Biscay to ensure an unchallengeable succession",
+    "Forge strategic alliances with youthful princes to exploit upcoming royal succession crises",
+    "Modernize the fortifications of Guernica and Bilbao to withstand protracted royal sieges"
+  ],
+  "Values": [
+    "A ruler must balance martial courage with tactical cunning; reckless wrath spells ruin",
+    "The ancient fueros and sacred oath of Guernica are inviolable treasures of the house",
+    "Dynastic continuity and sovereignty eclipse personal sentiment"
+  ],
+  "Fears": [
+    "A sudden catastrophe befalling his father leaving the lordship vulnerable to royal partition",
+    "Internal Basque tribal factions betraying the Haro cause in exchange for royal gold"
+  ],
+  "SpeechStyle": "Commanding, articulate, and disciplined; speaks with the measured gravity of a designated heir who understands the deadly stakes of power.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

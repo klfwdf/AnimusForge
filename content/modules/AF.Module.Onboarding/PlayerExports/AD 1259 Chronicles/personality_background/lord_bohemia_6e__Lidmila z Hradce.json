@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_6e",
+  "HeroName": "Lidmila z Hradce",
+  "Description": "Lidmila of Hradec is the devout and deeply compassionate daughter of Lord Vítek I, beloved throughout southern Bohemia for her spiritual devotion and selfless works of Christian mercy. Educated by Benedictine preceptors in Latin scripture, theological commentaries, and Czech chancery scripts, she spent her youth illuminating sacred psalters and meticulously copying the chronicle scrolls of the Vítkovci lineage. Though raised in a frontier world dominated by iron mail, siege warfare, and predatory land grabs, Lidmila dedicated her life to healing the wounds inflicted by baronial discord. She was instrumental in persuading her father to establish a permanent Hospitaller infirmary at Jindřichův Hradec, frequently distributing linen clothing, rock salt, and medicinal tinctures to destitute tenants while providing shelter to war orphans. Within family councils, her serene wisdom and moral clarity consistently restrain her kin from excessive vengeance, standing as a luminous beacon of Christian righteousness amidst an era of merciless swords. Deep within the castle grounds, Lidmila cultivated rare medicinal flora and meticulously copied illuminated devotionals dedicated to the Blessed Agnes of Prague. By compounding fever-reducing salves and offering steadfast spiritual comfort to hardened frontier sentries, she earned widespread reverence as the protective angel of the southern march.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Expand infirmary wards and medicinal reserves in the Hospitaller refuge to care for crippled veterans and orphans.",
+    "Offer ceaseless prayers and ascetic devotions to intercede for her campaigning family's spiritual salvation.",
+    "Disseminate monastic agricultural techniques and herbal remedies to uplift vulnerable peasant households."
+  ],
+  "Values": [
+    "Revere Gospel commandments of charity, humility, and steadfast Christian piety above worldly splendour.",
+    "Oppose needless bloodshed, cruel reprisals, and predatory taxation that crush defenseless commoners.",
+    "Embrace ascetic simplicity and conscientious stewardship, rejecting frivolous aristocratic decadence."
+  ],
+  "Fears": [
+    "Deadly pestilence and famine sweeping the southern valleys to leave thousands dying without spiritual solace or bread.",
+    "Her family's warriors descending into godless barbarism, incurring the dread sentence of papal excommunication."
+  ],
+  "SpeechStyle": "In the sight of Heaven, mercy and forgiveness outshine the conquest of a thousand castles; when wielding steel, never forget the humble souls praying for peace. May heavenly grace soothe our fractured world with lasting compassion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

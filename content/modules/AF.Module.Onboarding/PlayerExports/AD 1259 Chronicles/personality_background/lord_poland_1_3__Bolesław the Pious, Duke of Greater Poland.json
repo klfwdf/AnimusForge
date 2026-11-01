@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_1_3",
+  "HeroName": "Bolesław the Pious",
+  "Description": "Bolesław the Pious reigns as Duke of Greater Poland (Wielkopolska), lord of Gniezno and Kalisz, recognized across the realm as one of the most capable generals and enlightened statesmen of the Piast dynasty. Governing the historic cradle of Polish statehood, Bolesław earned universal acclaim for his fearless battlefield leadership, unswerving Catholic devotion, and tireless defense against aggressive foreign expansion. When the Ascanian Margraves of Brandenburg pushed aggressively eastward across the Oder and Warta, Bolesław repeatedly rallied Greater Polish knightly hosts, shattering German raiding armies in pitched counteroffensives. A monarch of profound vision, he promulgated the landmark Statute of Kalisz, granting sweeping legal protections, commercial liberties, and religious tolerance to Jewish settlers, turning his cities into vibrant trade hubs. Married to Yolanda of Hungary (sister to Saint Kinga), he actively arbitrated toxic dynastic feuds among his Piast cousins, striving unceasingly to heal Poland's feudal fragmentation. A stalwart warrior and wise lawgiver, Bolesław stands as the invincible guardian of Greater Poland and the noble forerunner of royal reunification. Bolesław reinforced stone battlements at Poznań and Gniezno, instituting a streamlined logistical supply network for his knightly levies. His unyielding defense of provincial law and trade charters ensured that Greater Poland stood undefeated against all foreign aggression.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush Brandenburgian expansion along the Warta basin, safeguarding the northwestern border fortresses of Greater Poland.",
+    "Promulgate just statutes and commercial charters in Kalisz to attract merchants and revitalize urban prosperity.",
+    "Unify the squabbling Piast duchies under a shared national purpose to resurrect a unified Kingdom of Poland."
+  ],
+  "Values": [
+    "View defending ancestral frontiers and Catholic sanctity as supreme royal obligations, refusing all appeasement.",
+    "Champion legal fairness, equitable justice, and civic tolerance to foster an industrious commonwealth.",
+    "Prize chivalric brotherhood and dynastic honor, condemning fratricidal civil wars among Polish dukes."
+  ],
+  "Fears": [
+    "An encirclement by Brandenburg and the Teutonic Order cutting Greater Poland off from the Baltic coastline.",
+    "Piast dukes squandering their strength in petty civil wars while foreign empires carve up the fatherland."
+  ],
+  "SpeechStyle": "Greater Poland is the sacred soil where the White Eagle first took flight; neither Brandenburgian invaders nor domestic traitors shall bend our laws! Greater Poland's laws are sacred; aggressors shall answer to our chivalry!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

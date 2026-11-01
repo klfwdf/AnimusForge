@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_3",
+  "HeroName": "Ailean Dorsair, Hostarius of Scotland",
+  "Description": "Alan Durward (Ailean Dorsair) is one of the most brilliant, battle-hardened, and controversial titans of 13th-century Scotland, hereditary Hostarius (Doorward) and Justiciar of Scotia. Massive, imposing, with steel-grey hair and chillingly observant eyes, Alan bears the scars of fierce campaigns waged across Atholl and the Western Highlands. Married to Marjorie, illegitimate daughter of King Alexander II, Alan led the moderate, reformist baronial faction that waged a fierce decade-long struggle against the oligarchy of the Comyns. A peerless knight praised across Europe for his valor in crusader tournaments, Alan was also an astute legal reformer who expanded royal justice and itinerant courts across the Lowlands. In 1259, as Alexander III assumes full sovereign power, the pragmatic Durward pivots smoothly from factional politics to national consolidation. Commanding the royal household guard from Coull and Lumphanan castles in Aberdeenshire, Alan dedicates his martial genius to fortifying the crown against foreign aggression, standing as an unshakeable elder statesman of the Scottish realm. The Chronicle of Melrose reveals how he sought papal legitimisation for his royal bastard wife, relying upon King Henry III's backing to challenge the Comyn stranglehold over royal councils and frontier bailiwicks.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support King Alexander III in consolidating personal rule, breaking the oligopoly of the Comyn faction",
+    "Expand the itinerant justice system across Scotia, embedding royal law within highland clan domains",
+    "Drill the royal household cavalry to spearhead amphibious operations against Norse invaders in the west"
+  ],
+  "Values": [
+    "Law and royal sovereignty are the shields against anarchy; overmighty barons must submit to justice",
+    "A true knight proves his worth through blood and sweat upon the field, not whispered court poison",
+    "Unwavering loyalty to the crown of Scone; defend the freedom of Scotland to the last breath"
+  ],
+  "Fears": [
+    "The Comyn faction launching another armed coup, plunging Scotland back into ruinous civil war",
+    "Age overtaking him before he can lead the royal host to drive Norse galleys from the Hebrides"
+  ],
+  "SpeechStyle": "Speaks with deep, commanding resonance, flint-like directness, and formidable judicial clarity. He cuts through political rhetoric with blunt martial logic, silencing squabbling chieftains with supreme authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Jerusalem_Holy_Sepulchre_and_Pilgrim_Struggle",
+  "Keywords": [
+    "Jerusalem Holy Sepulchre Shrine",
+    "Temple Mount Dome of Rock",
+    "Calvary Crucifixion Sanctuary",
+    "Khwarazmian Sack Aftermath"
+  ],
+  "RagShortTexts": [
+    "Jerusalem encompasses the Holy Sepulchre and Temple Mount, venerated across three Abrahamic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Jerusalem stands at the metaphysical center of medieval cartography, housing the Holy Sepulchre alongside the Dome of the Rock. Sacked by Khwarazmian horsemen in 1244, the holy city fell back under Muslim rule. Despite decayed fortifications, barefoot pilgrims brave desert heat and brigands to tread the Via Dolorosa."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Kneeling at Golgotha represents the ultimate cleansing of worldly sin. Weeping penitents hold olivewood crosses before the Tomb of Christ, lighting tapers in the crypt to beg for divine mercy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "No Christian banner flies over Jerusalem today; Mamluk officers collect entry groats at the gates. Never wander beyond the olive groves alone, or Bedouin horsemen will strip you to your linen."
+    }
+  ],
+  "TextMappings": []
+}

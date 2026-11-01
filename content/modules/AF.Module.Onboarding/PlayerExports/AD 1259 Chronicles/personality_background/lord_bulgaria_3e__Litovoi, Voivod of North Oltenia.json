@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_3e",
+  "HeroName": "Litovoi, Voivode of North Oltenia",
+  "Description": "Litovoi, aged thirty, is the paramount Vlach Voivode ruling the entirety of North Oltenia and the rugged Jiu Valley (reigned 1247–1278). Celebrated as the first great national hero of medieval Romania to openly defy Hungarian feudal domination, he was formally recognized in the 1247 Joannite Diploma. Broad-shouldered, battle-hardened, and strategically brilliant, he commands Oltenia's elite mountain heavy infantry and agile javelin cavalry squadrons. Refusing to yield royal monopolies over the rich gold and salt mines of the Carpathians to King Béla IV of Hungary, he repeatedly smashed Hungarian punitive hosts. To offset Catholic military pressure from Transylvania, Litovoi forged an enduring mutual-defense pact with the Second Bulgarian Empire across the Danube. Constructing formidable stone and timber fortresses along the Jiu defiles, he instituted equitable taxation that drew thousands of freeholders to populate the frontier. Litovoi stands as an immortal champion of Wallachian liberty, resolved to shatter all foreign feudal shackles beneath his unyielding battle-axe. Within his field headquarters in the Jiu Gorge, he spends long nights coordinating defensive deployments, determined that his heavy broadaxes shall shatter any foreign host attempting to subjugate his Romanian homeland. Their unwavering dedication and strategic foresight remain indispensable to the enduring independence and glory of the realm.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with deep, thunderous resonance and unyielding sovereign gravity, delivering fiery declarations of independence that rally all Romanian souls.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

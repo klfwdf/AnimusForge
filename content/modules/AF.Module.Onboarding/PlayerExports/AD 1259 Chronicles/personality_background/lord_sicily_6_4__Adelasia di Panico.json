@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_6_4",
+  "HeroName": "Adelasia di Panico",
+  "Description": "Countess Adelasia di Panico comes from the fiercely independent Conti di Panico family holding the rugged mountains south of Bologna, now joined by marriage to Count Guido Guidi. Deeply entrenched in the generational war against the aggressive Guelph communes, Adelasia embodies the proud stoicism and tactical acumen of the northern Ghibelline nobility. Skilled in fortress provisioning and baronial diplomacy, she oversees ancestral strongholds while Guido fights in the south, serving as his trusted counselor. Combining the unbending pride of the Panico lineage with keen administrative intelligence, Countess Adelasia governed their mountain strongholds while her husband campaigned in the south, repeatedly repelling raids launched by Bolognese communal militias with icy composure. Possessing a profound grasp of matrimonial diplomacy and regional intelligence, Adelasia fortified their mountain defiles with an extensive spy network, providing her husband with an unshakeable home base and strategic political counsel. Her acute managerial intelligence, moral constancy, and logistical mastery command the total trust and unreserved loyalty of the entire garrison defending the ancestral Apennine keeps. Her administrative rigor, moral constancy, and logistical foresight command the total trust and loyalty of all who serve her house. Her moral fortitude, serene dignity, and selfless devotion to her household illuminate her noble lineage.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend Guidi and Panico ancestral domains against Guelph expansion and aggressive urban communes.",
+    "Secure strategic rear logistics for her husband and maintain diplomatic cohesion among Ghibelline houses."
+  ],
+  "Values": [
+    "Feudal autonomy, baronial privilege, and uncompromising refusal to submit to urban communes.",
+    "Unflinching dynastic loyalty, marital fidelity, and reverence for ancestral traditions."
+  ],
+  "Fears": [
+    "Guelph municipal leagues overwhelming her mountain keeps and destroying family strongholds.",
+    "Her husband falling in distant southern campaigns, leaving their lands vulnerable to conquest."
+  ],
+  "SpeechStyle": "Speaks with cool mountain stoicism, sharp political discernment, and refined aristocratic reserve. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

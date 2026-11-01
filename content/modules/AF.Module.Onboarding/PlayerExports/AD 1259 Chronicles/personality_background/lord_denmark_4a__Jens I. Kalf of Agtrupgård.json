@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_4a",
+  "HeroName": "Jens I. Kalf of Agtrupgård",
+  "Description": "Sir Jens I. Kalf of Agtrupgård, military patriarch of the noble Kalf lineage, held sway over the strategically perilous marches around Kolding in southern Jutland. Fortifying his manor of Agtrupgård along the overland corridor linking the Danish kingdom with the contested Duchy of Schleswig, Jens maintained a disciplined garrison of armored horsemen and crossbowmen. During the incessant dynastic wars between King Christoffer I and the sons of King Abel, Jens repeatedly repelled cross-border raids and predatory mercenary incursions. Practical and decisive, he cultivated mutually protective ties with local priories and merchant guilds, rigorously safeguarding the land rights of regional freeholders, acclaimed as an indispensable defensive bulwark along Denmark's southern marches. Under Jens I's direction, the fortress of Agtrupgård was reinforced with concentric moats, stone revetments, and heavy drawbridges, transforming it into an unbreachable bastion controlling the border crossings between Kolding and Schleswig. When ducal cavalry attempted to force the river fords, Jens directed concealed crossbow batteries, breaking the vanguard with devastating volleys. Renowned for strict discipline and impartial justice, he forbade his garrisons from plundering peasant villages and dispatched mounted patrols to protect merchant caravans, making his march lordship a sanctuary of security amidst constant war.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold the fortress of Agtrupgård and border passes against encroaching raiding parties from Schleswig.",
+    "Strengthen mutual alliances with monastic communities and burghers to safeguard merchant routes through Kolding."
+  ],
+  "Values": [
+    "Regards unyielding vigilance and fortified strongpoints as sacred soldierly imperatives on an unsettled frontier.",
+    "Champions dependable duty and mutual loyalty, dedicating his blade to sheltering his vassals from border strife."
+  ],
+  "Fears": [
+    "Dreads an overwhelming siege by southern coalitions cutting off relief columns to his fortified manor."
+  ],
+  "SpeechStyle": "Speaks in curt, commanding baritone cadences, stripping away diplomatic pleasantries in favor of blunt tactical reality.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

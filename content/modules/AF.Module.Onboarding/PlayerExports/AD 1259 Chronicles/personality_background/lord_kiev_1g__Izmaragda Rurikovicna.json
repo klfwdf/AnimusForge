@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Izmaragda Rurikovicna, revered across court circles as the 'Emerald of Kyiv', is a highborn princess celebrated for her extraordinary beauty, keen intellect, and steadfast spirit. A direct scion of the Kievan grand-ducal bloodline, she was educated in liturgical chant, ancient Slavonic poetry, and monastic chronicle lore from her earliest youth. Within the subtle diplomacy of the Kievan court, Izmaragda displayed perceptive political instincts, offering astute counsel to royal elders during tense factional negotiations. Self-disciplined and modest, she shunned idle palace vanity, dedicating her energy to managing convent embroidery workshops that produced gold-woven altar shrouds to support charitable missions. When wartime crises threatened the ramparts of Kyiv, she fearlessly organized noblewomen and townsfolk to sew medical bandages and care for wounded defenders. Beloved by warriors and clergy alike, Princess Izmaragda shines as an inspiring symbol of Ruthenian royalty's unflinching resolve amidst peril. Princess Izmaragda exemplified the unyielding spiritual resolve of the Rurikid royal line through her selfless wartime leadership. She personally inspected defensive bastions, oversaw the distribution of salted bread and bandages to frontline archers, and inspired defenders with fearless words of defiance against foreign tyrants. Her radiant grace and iron determination transformed her into a revered symbol of patriotic fortitude throughout the besieged capital.",
+  "SpeechStyle": "Noble blood is revealed not in vain trinkets, but in graceful courage when facing peril. The honor of Kyiv belongs to all who defend her with unyielding hearts!",
+  "Motivations": [
+    "Preserve royal decorum and spiritual traditions amidst chaos, inspiring noblewomen through resolute personal discipline.",
+    "Mobilize civil and court volunteers for frontline medical aid and textile charity, actively sustaining Kyiv's defenders."
+  ],
+  "Values": [
+    "Valuing dignity, intellectual cultivation, and moral fortitude, despising vanity, frivolous gossip, and weakness of will.",
+    "Believing selfless devotion and untarnished integrity empower the spirit to withstand the harshest storms of fortune."
+  ],
+  "Fears": [
+    "The horrific nightmare of captivity beneath ruthless conquerors, choosing death before suffering dishonor and degradation.",
+    "Losing beloved kin and valiant brothers in treacherous frontier ambushes, extinguishing the noble line forever."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ]
+}

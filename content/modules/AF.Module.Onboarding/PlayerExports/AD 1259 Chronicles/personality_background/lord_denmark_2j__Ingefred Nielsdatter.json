@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2j",
+  "HeroName": "Ingefred Nielsdatter",
+  "Description": "Lady Ingefred Nielsdatter of the Galen-Hvide house was the cherished daughter of cavalry commander Niels Erlandsen. Reared in the aristocratic heartland of Scania, Ingefred combined her father's unyielding spirit with consummate courtly education, literate in Latin romances and Danish poetic traditions. At tournament feasts across Scania, she served as queen of the lists, her grace and razor-sharp intellect dazzling young knights across Scandinavia. When royal blockades squeezed family revenues, Ingefred mobilized household workshops to manufacture gambesons, bandaging, and medicines for wounded guardsmen, auditing quartermaster distributions with rigorous precision. Composed, discerning, and possessed of formidable strategic insight, her counsel carried weight in family councils, celebrated as an ornament of noble intellect and virtue. Combining financial acumen with extraordinary patience, Ingefred managed the lucrative accounts of the Galen dynasty's herring fisheries and salt warehouses along the Scanian coast, generating bullion to sustain the anti-monarchical coalition. She extended steadfast protection to Cistercian friars targeted by crown authorities, financing secluded woodland sanctuaries where regular sacramental liturgies persisted despite nationwide interdicts. Facing aggressive royalist officers demanding arbitrary levies, Ingefred calmly brandished ancestral immunity charters, refusing to yield a single copper and commanding universal respect for her unwavering integrity.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Cultivate extensive political alliances across northern aristocratic courts through courtly patronages and diplomatic gatherings.",
+    "Supervise domestic textile manufactories and medical infirmaries, ensuring wounded household retainers receive immediate care."
+  ],
+  "Values": [
+    "Values noble refinement, familial dignity, and loyal selflessness, believing high-born women anchor dynastic strength.",
+    "Champions graceful composure and methodical thoroughness, employing empathy and intellect to protect her household."
+  ],
+  "Fears": [
+    "Dreads her father and uncles falling in battle, leaving the household stripped of its military shields against royal retribution."
+  ],
+  "SpeechStyle": "Speaks with melodic clarity and cultured brilliance, her articulate grace diffusing conflict while commanding instinctive deference.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

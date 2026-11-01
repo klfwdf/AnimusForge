@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_2d",
+  "HeroName": "Isotta Manfretta",
+  "Description": "Isotta Manfretta, noble daughter of House Lancia, was reared in the mountain castles of Piedmont. Pious and resolute, she managed rural estates along the upper Po and endowed field hospices, earning widespread reverence from common folk and soldiers amidst civil wars. Isotta established soup kitchens and herbal dispensaries behind ancient cloisters, personally rationing bread to comfort thousands of displaced refugees amidst the raging civil wars. Refusing to permit extortion against fleeing peasants, she distributed draught oxen and seed grain across ravaged villages, winning universal affection through saintly compassion. Understanding that wars must end while Christian mercy endures, she earned boundless moral prestige by sheltering thousands of destitute souls across northern Italy. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Care for wounded veterans and displaced war orphans, preserving manor production.",
+    "Guard grain reserves and cisterns within Busca castle against hostile sabotage.",
+    "Offer devout prayers in family chapels to seek divine protection for campaigning kin."
+  ],
+  "Values": [
+    "Believes female mercy shines as a beacon capable of healing the horrors of war.",
+    "Holds clan fidelity and Christian temperance as immutable moral foundations."
+  ],
+  "Fears": [
+    "Fanatical mobs stirred by papal agents storming unprotected monastic refuges.",
+    "Reckless young knights perishing needlessly in disastrous tactical ambushes."
+  ],
+  "SpeechStyle": "Speaks with gentle modesty and pastoral serenity, radiating deep Christian charity. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

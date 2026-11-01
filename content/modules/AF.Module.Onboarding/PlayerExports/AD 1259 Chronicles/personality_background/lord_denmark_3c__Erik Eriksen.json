@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_3c",
+  "HeroName": "Erik Eriksen",
+  "Description": "Sir Erik Eriksen of Ågård, eldest son and martial heir of Sir Erik Gyldenstierne, emerged as a premier equestrian leader among northern Jutland's young nobility. Rigorously trained in heavy cavalry skirmishing, siege tactics, and feudal administration, young Erik commanded his household's armored retainers across the vital reaches of the Limfjord. During the widespread banditry and factional warfare surrounding the royal succession in 1259, he directed relentless counter-raiding operations, securing mountain tracks, ferry crossings, and granary convoys against marauding mercenary bands. Beyond his formidable martial prowess, Erik actively engaged in regional legal arbitration at the Viborg ting, defending freeholders against arbitrary seizure and earning universal acclaim as an honorable knight. In border skirmishes and anti-bandit operations across Jutland, Erik fought in the vanguard, capturing marauder captains in hand-to-hand combat and inspiring his men with fearless valor. Recognizing that bravery must be fortified by tactical discipline, he established mandatory crossbow training for local yeomen and improved perimeter ditch-and-palisade systems across Vendsyssel. When royal tax collectors attempted arbitrary requisitions, Erik defended provincial customary liberties before regional magistrates, cementing his status among northern Danish youth as a chivalric leader of singular courage. His tireless martial vigilance across the Jutlandic marches earned him the lifelong devotion of his equestrian retinue.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Clear mercenary brigands and maritime raiders from the northern estuaries to guarantee peace for local freeholders.",
+    "Uphold his lineage's chivalric honor on the battlefield and in legal assemblies to solidify succession to Ågård."
+  ],
+  "Values": [
+    "Reveres knightly valor, protective justice, and the sacred code of chivalry as supreme guidelines for conduct.",
+    "Champions martial resolution and unyielding discipline, scorning cowardice in the face of sworn duties."
+  ],
+  "Fears": [
+    "Dreads treacherous ambushes compromising defensive garrisons and leading to the slaughter of his loyal retainers."
+  ],
+  "SpeechStyle": "Speaks with vibrant, resonant clarity and frank soldierly cadence, exuding youthful determination and knightly fervor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

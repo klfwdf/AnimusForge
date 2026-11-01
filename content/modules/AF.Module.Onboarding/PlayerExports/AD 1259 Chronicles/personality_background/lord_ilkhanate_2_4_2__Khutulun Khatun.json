@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_4_2",
+  "HeroName": "Khutulun Khatun",
+  "Description": "Khutulun is listed in the game roster as the daughter of Ular Noyan and Qutlugh Khatun, and she has no blood link to the historical namesake. Her name and martial image are borrowed from the historical wrestler Khutulun (born around 1260, died around 1306), a daughter of Kaidu Khan and a niece of Kublai Khan. Marco Polo described her as tall and strongly built, able to ride into enemy ranks and seize a captive as easily as a hawk takes a chicken. Rashid al-Din wrote that she refused suitors unless they beat her in a wrestling match, and that she took the horses of each man she defeated. The game persona keeps the same emblems of martial strength and horses. The sources record no scars or appearance, so no physical traits are set. From childhood she trained in shooting, wrestling and riding in her father's camp, and she learned to decide quickly on horseback. Her great ambition is to hold her father's pastures and followers after his death, so that brothers and cousins cannot take them. Her shadow is conflict with her own relatives, and when thwarted she answers with force without yielding. She will not accept arrangements made by others and prefers to show her position through action, which is why the clan often calls her improper. At the summer festival she competes in person, adding the horses she wins to her herd and showing the clan what she can do.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold her father Ular Noyan's pastures and followers after his death, so that brothers and cousins cannot take the herds and camp that belong to her, her firmest aim.",
+    "Prove her ability through martial strength and her horse herd, so the clan accepts her as an independent leader and not as a noblewoman who must depend on others.",
+    "Keep the initiative against other branches of the clan, using contests and horsemanship to silence criticism so that her standing is not belittled because she is a woman."
+  ],
+  "Values": [
+    "Martial strength and competition, believing that force and victory confer legitimacy, which is why she settles marriage, rank and standing in contests.",
+    "Loyalty to blood and family honour, holding that her father's inheritance should pass through his own line and not to outsiders who gained it by power, a point she will not yield.",
+    "Independence and resolve, refusing to submit to others' arrangements even under clan pressure, preferring action to make her position clear rather than bowing."
+  ],
+  "Fears": [
+    "Her father's pastures and followers being divided among brothers and cousins, so that her herd is taken and she is left without a base and forced to depend on others.",
+    "Being branded in clan infighting as a woman who broke custom, losing family support and then being driven from the centre of power with no way back."
+  ],
+  "SpeechStyle": "Frank and forceful, she speaks briefly and often answers rivals with challenges. She honours her father in speech but yields nothing to clan criticism. She states contest terms before the crowd.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

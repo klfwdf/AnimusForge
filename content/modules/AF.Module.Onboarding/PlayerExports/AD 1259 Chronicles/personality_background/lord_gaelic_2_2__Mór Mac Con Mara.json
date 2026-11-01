@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_2_2",
+  "HeroName": "Mór Mac Con Mara",
+  "Description": "Mór Mac Con Mara is the revered Queen consort of Thomond and an illustrious daughter of the hereditary MacNamara marshals—the sacred guardians who inaugurate the O'Brien kings at the ancient sacred mound of Magh Adhair. Her marriage represents the vital union between Thomond's royal house and its foremost military vassal dynasty. Renowned for her deep administrative acumen and quiet authority, Queen Mór presides over the court at Clonroad, skillfully preserving the allegiance of over a hundred regional septs to King Conor. She is exceptionally knowledgeable in traditional cattle counts, booleying grazing agreements, and storehouse management, ensuring that Dalcassian war-hosts never lack provisions, weapons, or field medicines during brutal campaigns. Her open-handed generosity to tenant families displaced by Norman raiders has made her universally beloved, celebrated by clan bards as the golden latch of Dalcassian unity. Historical covenants inscribed at the inauguration hill of Magh Adhair show Queen Mór expertly coordinating seasonal cattle transhumance and emergency clan mobilizations; establishing field dispensaries at Clonroad that saved hundreds of wounded warriors, she is venerated by the septs of Clare as the loving matriarch, diplomatic peacemaker, and logistical soul of Thomond. She is forever remembered as a maternal pillar of peace.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the sacred covenant between Clan MacNamara and the royal house of Thomond.",
+    "Maintain manorial farming and protect impoverished commoners amidst ceaseless war."
+  ],
+  "Values": [
+    "Christian charity and fidelity to ancient inaugural covenants.",
+    "Patient endurance in safeguarding domestic order amidst relentless strife."
+  ],
+  "Fears": [
+    "Dynastic rivalry igniting a fratricidal civil war among Dalcassian pretenders.",
+    "Norman raiding parties desecrating the sacred inauguration oak at Magh Adhair."
+  ],
+  "SpeechStyle": "Speaks with gracious, melodic serenity and matriarchal wisdom, resolving bitter clan feuds with soothing poise and impeccable customary justice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Nicaean_Varangian_Guard_and_Imperial_Axemen",
+  "Keywords": [
+    "Nicaean Varangian Guard",
+    "Two Handed Danish Battleaxe",
+    "Norse and Anglo Saxon Exiles",
+    "Imperial Blachernae Palace Bodyguards"
+  ],
+  "RagShortTexts": [
+    "The Varangian Guard protected Byzantine emperors in Nicaean exile, wielding two-handed."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Varangian Guard remained the legendary royal bodyguard of the Byzantine emperors during their exile in Nicaea. Composed of Norse warriors and Anglo-Saxon refugees who fled Norman England, these armored axemen carried six-foot Danish battleaxes, swearing lifelong oaths to defend the purple-born basileus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Untangled from court conspiracies, Varangians guarded treasury chambers and throne rooms under strict military honor, serving Michael VIII Palaiologos during the campaign to reclaim Constantinople."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Towering northern giants who drink mead by the flagon, they stand impassive on guard duty. When their heavy Danish axes cleave downward, they split iron bascinets down to the teeth."
+    }
+  ],
+  "TextMappings": []
+}

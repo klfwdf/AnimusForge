@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1c",
+  "HeroName": "Ja'far ibn Muhammad al-Hudi",
+  "Description": "Ja'far ibn Muhammad al-Hudi, twenty-eight in the game setting, is the son of Baha' ad-Dawla and Yasmin, and he has married Hamduna, with whom he has a son, Sa'd. He is lean, with high brows, drums his fingers on tables when he speaks, and favours pale grey robes with only a light short sword at his belt. The sources record nothing of his youth, and the game describes him as a diplomat. One suggestion is that he may once have acted as his father's envoy. The 1243 treaty did send a son of the Murcian emir to Burgos, but the sources do not name him, so any link is only a background inference. Against rivals he works courtesy first and force last. He cultivates the followers of opposing envoys at banquets, notes each man's weakness, and trades favours or secrets for cooperation. He knows Castilian court etiquette well, yet never admits his true aims in public. He also follows horses and hounds, often watching riders train on the grass beyond the walls and noting their faults in a small book. His driving aim is to protect the family's Murcian fiefs through diplomacy. His deepest fear is that his manoeuvres will be seen through, leaving him discredited and sacrificed as a disposable piece.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect the family's Murcian fiefs through diplomacy, so Castilian and Granadan envoys still come to negotiate with the Hudid house.",
+    "Cultivate followers and officials at court and border banquets, recording their weaknesses so the family holds leverage before every talk.",
+    "Win a fief he can govern on his own for himself and his son Sa'd, so the house's power is no longer concentrated in his father alone."
+  ],
+  "Values": [
+    "Patience at the negotiating table is worth more than courage on the battlefield, and rushed promises that cannot be kept are never acceptable.",
+    "Favours are a form of capital to be counted, so he remembers every kindness and betrayal and repays each in its proper time.",
+    "Family dignity cannot be bought, so even a profitable deal is refused if it damages the house's name."
+  ],
+  "Fears": [
+    "Every careful manoeuvre being seen through, costing him credibility and leaving him a scapegoat sacrificed for others at the table.",
+    "Losing a castle or fief under his management while the court considers his diplomacy worthless, dragging his son down with him."
+  ],
+  "SpeechStyle": "Speaks evenly, using rhetorical questions and hints rather than firm commitments. At banquets he praises the other side before slowly reaching his point. With his son he is far more direct, citing past events to show the stakes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

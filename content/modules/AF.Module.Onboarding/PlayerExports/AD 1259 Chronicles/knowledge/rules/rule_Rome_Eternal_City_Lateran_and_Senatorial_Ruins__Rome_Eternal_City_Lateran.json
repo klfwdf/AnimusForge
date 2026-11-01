@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Rome_Eternal_City_Lateran_and_Senatorial_Ruins",
+  "Keywords": [
+    "Rome Eternal City Lateran",
+    "Capitoline Hill Roman Senate",
+    "St Peter Basilica Pilgrimage",
+    "Colonna Orsini Baronial Feuds"
+  ],
+  "RagShortTexts": [
+    "Rome functioned amidst colossal imperial ruins, balancing papal courts at the Lateran with."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Eternal City presented a landscape where classical monuments jutted out of pastoral pastures. Sheep grazed amidst the Colosseum and Forum ruins. Popes governed from the Lateran Palace, drawing throngs to old St. Peter's, while the Capitoline Senate and rival clans (Colonna and Orsini) fortified ancient monuments into private war towers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Along the Tiber, tumbled Corinthian capitals evoke antiquity's majesty. While papal bulls shake kingdoms across the continent, within Rome's walls citizens still invoke classical republican liberties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Pilgrims trekking from beyond the Alps bring diverse foreign coin. Selling lead pilgrim ampullae near Ponte Sant'Angelo pays the rent, provided you dodge arrows when the baronial towers trade crossbow fire."
+    }
+  ],
+  "TextMappings": []
+}

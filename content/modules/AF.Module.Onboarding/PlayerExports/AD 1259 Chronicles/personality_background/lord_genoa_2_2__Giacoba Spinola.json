@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_2_2",
+  "HeroName": "Giacoba Spinola",
+  "Description": "Giacoba Spinola presides as the formidable matriarch of House Spinola, governing expansive mountain fiefs, iron mines, and fortress complexes along the Scrivia valley. Meticulously extracting transit tolls from trans-Apennine merchant caravans, she channels boundless logistical wealth into arming the clan's retainers and heavy men-at-arms. Lady Giacoba directly inspected the arsenals and grain magazines of mountain keeps, driving ironwrights to forge heavy armor and crossbow bolts to turn her family's inland fiefs into an unassailable bastion. An uncompromising architect of dynastic matrimony, she wed Spinola daughters to imperial Lombard barons and Hohenstaufen loyalists, creating an extensive military alliance spanning the southern foothills of the Alps. Knowing that factional struggles permitted no hesitation, this austere matriarch enforced relentless logistical readiness, ensuring her kinsmen were immaculately equipped for the coming confrontation for the Republic. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve absolute territorial sovereignty and customs revenues across mountain fiefs.",
+    "Assist her husband in sweeping away all obstacles on his ascent to supreme power."
+  ],
+  "Values": [
+    "Fortified walls and mountain lands are the only immutable realities in a shifting world.",
+    "Weak-willed conciliation squanders the ancestral heritage of centuries."
+  ],
+  "Fears": [
+    "Communal blockades severing the mountain fortresses from the maritime port.",
+    "Papal mercenary forces storming the strategic Apennine choke points."
+  ],
+  "SpeechStyle": "Speaks with icy aristocratic haughtiness and formidable authority, commanding absolute obedience. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

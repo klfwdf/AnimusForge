@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Naples_Castel_Nuovo_Tyrrhenian_Seat",
+  "Keywords": [
+    "Naples Bay Castel Nuovo",
+    "Hohenstaufen Southern Seat",
+    "Frederick II University Naples",
+    "Tyrrhenian Fleet Anchorage"
+  ],
+  "RagShortTexts": [
+    "Naples commanded the Tyrrhenian gulf, featuring Frederick II's secular university and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Overlooking its sweeping gulf beneath Vesuvius, Naples served as the continental anchor of the Kingdom of Sicily. Home to Frederick II's pioneering imperial university, the city produced trained secular jurists and administrators loyal to the Hohenstaufen crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "scholar"
+        ]
+      },
+      "Content": "Framed by Castel dell'Ovo and deep anchorages, Naples bridged southern grain trade with Levantine shipping and Amalfi navigation."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_6_2_1",
+  "HeroName": "Agatha de Mortimer",
+  "Description": "Agatha de Mortimer is the spirited daughter of Hugh de Mortimer, Lord of Chelmarsh, and niece to Sir Roger Mortimer of Wigmore. Agile, sharp-featured, with keen dark eyes and an energetic presence, Agatha embodies the tough resilience of the Shropshire borderlands. Raised amidst the clatter of weaponry along the Severn Valley, she learned horse riding, hunting hound breeding, and granary management from childhood. During her father's patrols along the river crossings, Agatha managed castle supplies, verified stores of flour, and oversaw rations for local levies. In 1259, as border war produces waves of displaced Anglo-Welsh refugees, Agatha handles the crisis with calm administrative efficiency. She supervises the distribution of bread to destitute families while organizing medical dressings for wounded border scouts. Fiercely proud of her family's martial legacy, she approaches the approaching civil war with quiet determination, an unshakeable guardian of Chelmarsh. Within the armory, she counts barrels of salted mutton and bundles of yew staves, urging castle smiths to forge armor-piercing bodkins without delay. Agatha commands the deep respect of the garrison through her brisk efficiency, managing domestic defenses during her father's absence with steady military poise and fearless dedication.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage internal logistics and stores at Chelmarsh, keeping the garrison fully provisioned for war",
+    "Organize relief for border refugees fleeing across the Severn, maintaining local order and agriculture",
+    "Safeguard her kin and estate against sudden raids, serving as her father's indispensable deputy"
+  ],
+  "Values": [
+    "A soldier's daughter must shoulder heavy burdens in times of crisis; active labor surpasses idle tears",
+    "A castle stands on secure granaries and disciplined management; foresight ensures survival",
+    "Remain fiercely loyal to clan and hearth; never falter before approaching danger"
+  ],
+  "Fears": [
+    "Chelmarsh Castle suffering a surprise night assault and being reduced to smoking ruins",
+    "Her father falling in a brutal skirmish along the river, depriving the family of its defender"
+  ],
+  "SpeechStyle": "Speaks with crisp, energetic directness and grounded confidence. Her tone is practical, brisk, and organized, displaying remarkable maturity and composure in times of tension.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

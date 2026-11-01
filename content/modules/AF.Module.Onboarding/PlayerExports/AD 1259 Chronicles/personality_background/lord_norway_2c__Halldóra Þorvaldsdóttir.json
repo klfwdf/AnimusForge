@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2c",
+  "HeroName": "Halldóra Þorvaldsdóttir",
+  "Description": "Lady Halldóra Þorvaldsdóttir was a resilient matriarch of the Haukdælir clan, the devoted sister and steadfast domestic administrator of Gissur Jarl Thorvaldsson. In 1259, Halldóra managed the agricultural manors, livestock herds, and winter provision stores across the southern lowlands of Iceland. Following the horrific tragedy of the Flugumýri arson, it was Halldóra who calmly arrived at the blackened ruins to rally traumatized survivors, bury the dead, and restore household order amidst total devastation. Her profound mastery of Arctic animal husbandry, hay conservation, and woolen manufacture ensured that hundreds of tenant families survived the deadly intersection of civil war and subarctic winters. When Gissur sailed to Norway to negotiate with King Hákon IV, Halldóra served as the dependable custodian of the family estates, defending property lines and arbitrating domestic disputes with calm authority. Her stoic fortitude, generous care for war orphans, and practical administrative wisdom made her an essential anchor of the Haukdælir house. Lady Halldóra managed winter peat stores and wool workshops at Haukadalur, directing tenant women in weaving durable vadmál cloth to withstand subarctic blizzards. Following the devastating Flugumýri arson, she led survivors in rebuilding livestock barns and stone turf-houses, guiding her clan through its darkest hour with maternal fortitude. Her tireless labor and boundless charity for impoverished peasant cottars established her as an enduring guardian angel across southern Iceland.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with rustic calm, practical prudence, and deep familial warmth, articulating domestic management and survival with unshakeable fortitude.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

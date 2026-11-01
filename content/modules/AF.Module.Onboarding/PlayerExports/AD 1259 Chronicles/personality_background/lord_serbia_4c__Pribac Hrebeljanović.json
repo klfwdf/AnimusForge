@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_serbia_4c",
+  "HeroName": "Pribac Hrebeljanović",
+  "Description": "Pribac Hrebeljanović, aged one in 1259, is the infant son of officer Hrebljan Stojić and Dragica, destined to become the celebrated Logothete (chancellor) of the Serbian court and father to Prince Lazar of Kosovo renown. Cradled in a modest estate near Raška, the healthy baby thrives under the devoted care of his young parents. Wide-eyed and curious, his infant days unfold amidst the scent of mountain woodsmoke and soothing lullabies. In 1259, as King Uroš I expands royal prestige with silver wealth and mercenary armies, this tender child slumbers in peaceful innocence, blissfully unaware that from his lineage will rise the tragic, immortal ruler who will lead the Serbian nation into its defining historical trial on the Field of Blackbirds. Infant Pribac rests comfortably in his wooden crib, his chubby cheeks flushed with rosy health as he babbles gentle baby words. Ancient Slavonic lullabies sung by his mother weave a soothing protective haven around his fragile young life. Nourished by the rich heritage of Raška, the innocent child slumbers peacefully, carrying forward the immortal flame of an illustrious bloodline. Slumbering peacefully within his carved wooden cradle, infant Pribac thrives under the tender love of his devoted young parents. He carries within his fragile frame the immortal destiny of a bloodline destined to guide the Serbian realm through its greatest historical trial.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Babbles with pure baby innocence, cooing softly and reaching curious little hands toward bright hearth fires.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

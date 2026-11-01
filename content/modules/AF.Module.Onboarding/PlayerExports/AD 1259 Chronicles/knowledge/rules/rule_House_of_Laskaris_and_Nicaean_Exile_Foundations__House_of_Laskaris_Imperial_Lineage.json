@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Laskaris_and_Nicaean_Exile_Foundations",
+  "Keywords": [
+    "House of Laskaris Imperial Lineage",
+    "Theodore I Nicaean Exile Realm",
+    "Anti Latin and Seljuk Resistance",
+    "Tragic Blinding of John IV"
+  ],
+  "RagShortTexts": [
+    "The House of Laskaris preserved Roman sovereignty at Nicaea, laying foundations for."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the 1204 disaster, Theodore I Laskaris founded the Empire of Nicaea, turning Anatolian exile into an agricultural and military stronghold. Under John III Doukas Vatatzes, the dynasty fortified frontiers against Seljuks and crusaders, though the accession of child-emperor John IV precipitated Michael VIII Palaiologos's coup."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest"
+        ]
+      },
+      "Content": "Orthodox clergy revered Laskaris rulers for ascetic fiscal integrity, famously commemorated by Vatatzes purchasing an empress's crown purely from royal egg sales."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Veteran soldiers look back upon Laskaris governance fondly; borderers received tax exemptions and timely grain rations before court focus shifted to European dynastic wars."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z2c",
+  "HeroName": "Ochine of Korykos",
+  "Description": "Oshin of Corycus was the younger brother of King Hethum I and youngest son of Grand Baron Constantine, ruling as hereditary lord of the maritime bastion of Corycus. Corycus comprised a massive continental fortress linked strategically with an unassailable island sea castle, forming Cilicia's paramount Mediterranean naval port. Oshin combined formidable naval command and siege engineering skills with an astute comprehension of trans-Mediterranean commerce, maritime law, and tariffs. He established lucrative naval treaties and commercial concessions with the Republics of Venice and Genoa, transforming Corycus into a bustling terminal for Asian luxury trade. In 1259, confronting threats from corsair fleets and overland raiding parties, Oshin mounted heavy torsion ballistas upon coastal bastions, locking down the deep-water harbor. Astute, resolute, and fiercely protective of his realm's sea lanes, Oshin was renowned across the Levant as the iron master of Armenia's maritime gateway. At Corycus, Oshin established naval inspection offices and dry docks, constantly refitting armored war galleys to protect trading lanes across the eastern sea. He scrutinized freight manifests for Damascus steel, Asian spices, and silks, maintaining fair tariffs and crushing illegal maritime smuggling rings. Whenever Mediterranean storms raged or corsair sails were sighted, Oshin climbed to the uppermost tower of the sea castle, orchestrating naval artillery defenses amidst roaring surf with fearless command.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the dual land and sea fortresses of Corycus, securing Cilicia's maritime lifeline and overseas trade routes.",
+    "Expand commercial partnerships with Genoa, Venice, and Cyprus, channeling custom revenues and arms into the royal treasury.",
+    "Maintain heavily armed naval patrol flotillas to eradicate corsairs and safeguard Christian pilgrim traffic across the Levant."
+  ],
+  "Values": [
+    "Maritime primacy and commercial wealth are the indispensable economic anchors sustaining mountain sovereignty.",
+    "Honorable adherence to treaties balanced with ruthless vigilance in defending coastal security.",
+    "Fraternal loyalty to King Hethum, dedicating maritime strength to the collective defense of the realm."
+  ],
+  "Fears": [
+    "Combined naval and overland encirclement severing Corycus from Cyprus and Europe, isolating Little Armenia.",
+    "Devastation of Mediterranean shipping lanes extinguishing custom revenues needed to maintain royal fortresses."
+  ],
+  "SpeechStyle": "Speaks with robust naval authority and commercial acumen, issuing harbor decrees and coastal defense strategies with brisk, formidable confidence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Ochine of Korykos"
+}

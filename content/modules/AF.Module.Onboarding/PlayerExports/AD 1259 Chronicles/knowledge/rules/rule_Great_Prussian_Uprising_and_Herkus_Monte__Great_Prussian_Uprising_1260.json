@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Great_Prussian_Uprising_and_Herkus_Monte",
+  "Keywords": [
+    "Great Prussian Uprising 1260",
+    "Herkus Monte Rebel Chieftain",
+    "Natangian Tribal Resistance",
+    "Teutonic Stone Castle Sieges"
+  ],
+  "RagShortTexts": [
+    "Following Durbe, Herkus Monte led the Great Prussian Uprising, besieging Teutonic redoubts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Spurred by victory at Durbe, the Great Prussian Uprising (1260–1274) erupted across all Baltic provinces. Led by Herkus Monte, a Natangian chieftain educated in Germany, the rebels utilized captured siege artillery and European field tactics to raze Teutonic outposts, leaving only Königsberg and Elbing besieged."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "Monte was a nemesis forged by the Order's own schooling. Fluent in Latin, he turned European military doctrine against his former masters, restoring pagan altars in blood sacrifices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Teutonic garrisons in Königsberg boiled leather horse harness for food. Only continuous seasonal crusades proclaimed by the Pope prevented the complete extermination of the Order in Prussia."
+    }
+  ],
+  "TextMappings": []
+}

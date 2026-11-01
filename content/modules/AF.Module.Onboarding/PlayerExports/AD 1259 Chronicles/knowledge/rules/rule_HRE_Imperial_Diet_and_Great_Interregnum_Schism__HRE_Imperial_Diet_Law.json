@@ -1,0 +1,41 @@
+{
+  "Id": "rule_HRE_Imperial_Diet_and_Great_Interregnum_Schism",
+  "Keywords": [
+    "HRE Imperial Diet Law",
+    "Dual Election Crisis 1259",
+    "Prince Elector Schisms",
+    "Imperial Immediacy Rights"
+  ],
+  "RagShortTexts": [
+    "During the Great Interregnum, dual elections paralyze the HRE, allowing princes to expand."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Holy Roman Empire languishes in the Great Interregnum following Hohenstaufen extinction. Richard of Cornwall and Alfonso X of Castile contest the Roman kingship, yet neither exerts effective rule over German lands, allowing territorial princes and free cities to consolidate regional independence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Without an effective emperor, every duke and count acts as Caesar within his own fortress. The electors gladly accepted bullion from London and Toledo, but none desire a ruler strong enough to discipline them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Castles sprout along the Rhine like weeds, each housing robber knights who shake down river traffic. Mercenaries swear to whoever pays best, clashing over bridge tolls and border rights."
+    }
+  ],
+  "TextMappings": []
+}

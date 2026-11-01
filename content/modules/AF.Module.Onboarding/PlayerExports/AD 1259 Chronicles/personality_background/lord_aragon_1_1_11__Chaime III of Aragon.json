@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_11",
+  "HeroName": "Chaime III of Aragon, King of Majorca",
+  "Description": "Infante James (Chaime / James II of Majorca) is the cultivated yet beleaguered younger son of James I and Queen Violant of Hungary. Destined to inherit the sovereign Kingdom of Majorca, the Pyrenean counties of Roussillon and Cerdanya, and the wealthy mercantile lordship of Montpellier, James represents the maritime and Occitan cultural brilliance of the House of Barcelona. A sophisticated administrator and builder, he patronized maritime trade and erected monumental architectural gems, including the circular Castle of Bellver in Palma and the grand Palace of the Kings of Majorca in Perpignan. Yet in 1259, young James lives in the menacing shadow of his elder brother, Infante Peter, who fiercely opposes the partition of the Aragonese crown and seeks to reduce Majorca to vassalage. To protect his fragmented island and continental realm, James aggressively promotes Mediterranean commerce while cultivating discrete diplomatic alliances with the Capetian crown of France and the Papacy. Proud, defensive, and fiercely devoted to his subjects' maritime charters, he wages a lifelong chivalric struggle to maintain the sovereign independence of his realm. Patrolling the sun-drenched vineyards between Perpignan and Roussillon, James maintained vigilant watch squadrons while commissioning Genoese master-masons to reinforce the circular towers of Bellver Castle. Constantly wary of Aragonese naval maneuvers, he conducted delicate diplomatic correspondence with papal envoys in fluent Occitan and Catalan, determined to forge an unassailable bastion of wealth and law safeguarding the sovereign liberty of Majorca.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the absolute sovereignty of Majorca, Roussillon, and Montpellier against his brother Peter",
+    "Subsidize merchant fleets to transform the port of Palma into a paramount Mediterranean trade nexus",
+    "Forge protective alliances with the French Capetians and Rome to counterbalance Aragonese aggression"
+  ],
+  "Values": [
+    "The sovereignty granted by royal testament is sacred; Majorca shall never become a vassal of Zaragoza",
+    "Maritime wealth and flourishing civic liberties are the true shields of an island kingdom",
+    "Prudent diplomacy and unwavering vigilance preserve small nations against predatory empires"
+  ],
+  "Fears": [
+    "His brother Peter launching an amphibious invasion of Majorca to revoke his sovereign crown",
+    "French royal expansionism absorbing his continental lordships in Montpellier and Roussillon"
+  ],
+  "SpeechStyle": "Refined, articulate, and guarded; speaks with courtly Occitan lyricism, stiffening into fierce defiance whenever sovereign independence is disputed.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

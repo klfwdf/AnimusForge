@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3h",
+  "HeroName": "Mark I Csák, Ispan of Hont",
+  "Description": "Mark I Csák is an influential baron and military commander of Clan Csák, serving as Ispán of Hont and royal Master of the Horse. A brother to Voivode Matthew II and Palatine Peter I, Mark occupies a pivotal strategic position within the clan's vast territorial network. Governing the rugged highlands of Hont, he controls vital mountain corridors connecting Hungary with southern Poland and Silesian trade routes. Vigilant and tactical, Mark repeatedly suppressed robber-knight coalitions infesting the northern timberlands, securing safe transport for precious metals bound for royal mints. A cornerstone of familial solidarity, he coordinates resources to bolster his brothers' diplomatic and military endeavors at court. In 1259, as interstate friction intensifies across Central Europe, Mark refortifies the mountain bastions of Hont, resolved to preserve the northern gates of the kingdom. Mark constructed fortified twin stone watchtowers and heavy timber barricades across the narrow gorges of Hont, drilling specialized highland archers and light scouts. His vigilant command secured silver mining routes and royal courier highways against foreign brigands. His calm, battle-tested leadership ensured that the northern passes remained impenetrable under all weather conditions, defending the frontier with unflinching resolve and unswerving martial vigilance.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the mountain passes and mining towns of Hont, securing Clan Csák's supremacy across the highlands.",
+    "Support his brothers' ascent in royal councils, expanding family estates and sovereign privileges."
+  ],
+  "Values": [
+    "Hold frontier defense, military discipline, and clan brotherhood as sacred obligations.",
+    "Value fortified mountain defense and thorough logistical preparation over rash posturing."
+  ],
+  "Fears": [
+    "Fears sudden enemy ambushes pillaging silver caravans and disrupting mining commerce.",
+    "Dreads factional politics in Buda starving northern hill-forts of vital military subsidies."
+  ],
+  "SpeechStyle": "The crags of Hont form the iron gate of Hungary, and our banner guides the frontline! Anyone trespassing our northern passes shall be crushed without mercy! Hont's passes stand ironclad; trespassers shall be crushed without mercy!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

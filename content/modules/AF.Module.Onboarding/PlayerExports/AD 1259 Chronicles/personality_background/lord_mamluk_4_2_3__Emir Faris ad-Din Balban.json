@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_2_3",
+  "HeroName": "Emir Faris ad-Din Balban",
+  "Description": "Faris ad-Din ibn Balban is thirty-one years old and the younger son of Sayf ad-Din Balban and Ardukin, close in age to his brother Izz ad-Din. He is not tall and has fine, quiet features. He dresses in plain grey-blue robes and seldom wears showy ornaments. He speaks slowly and likes to watch from the edges of a room. His training leaned toward tactics and paperwork, and he often helped his father sort documents in the tent.\nHe grew up between the court and the camp, and he saw a great deal of the calculations emirs made against one another. He witnessed his brother's impulses and his father's careful balancing, so he learned early to look before moving. Those years taught him that a single error of judgement can cost more than a lost battle.\nHis method against rivals is methodical. He studies an opponent's finances, marriages and contacts before choosing between a bribe and courteous pressure. He seldom quarrels in public, yet often gains the upper hand in private negotiations. He says nothing aloud about his brother's recklessness, but he worries about it.\nHis ideal is to find a safe and lasting path for the Balban family. His darkest fear is that a failed negotiation will expose him to an accusation he cannot answer, forcing him to sacrifice himself so his father and brother can be spared.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Find a safe and lasting path for the Balban family, so the two brothers do not wear each other down in the whirlpool of power.",
+    "Build enough leverage and goodwill at the negotiating table that the family is never left isolated after a reshuffle of posts.",
+    "Learn the finances and marriage ties of every court faction, so he holds the facts before a rival makes the first move."
+  ],
+  "Values": [
+    "A failed judgement can cost more than a lost battle, so he would rather wait one step longer than decide in haste without certainty.",
+    "Words can settle a contest as surely as the sword, and one precise promise or well-judged meeting may buy an army's worth of safety.",
+    "He tolerates his brother's boldness but refuses to follow it, because the family needs one member who stays calm and leaves a way back."
+  ],
+  "Fears": [
+    "Fears that a failed negotiation will hand a rival a weapon, pinning him under an accusation he cannot answer and dragging the family's name with him.",
+    "Fears that his brother's impulses will lead the family into ruin while he lacks the power to stop it and must watch everything fall."
+  ],
+  "SpeechStyle": "Speaks slowly and chooses words with care, often saving the conclusion for last after laying out costs and benefits. With rivals his tone stays mild, but one precise question can make them reveal their hand.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

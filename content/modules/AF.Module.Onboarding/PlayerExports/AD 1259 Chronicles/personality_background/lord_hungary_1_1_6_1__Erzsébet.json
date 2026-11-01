@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_6_1",
+  "HeroName": "Erzsébet",
+  "Description": "Erzsébet the Cuman is the fierce consort of Junior King Stephen V and daughter of Köten Khan, supreme chieftain of the Kipchak-Cumans. Fleeing the Mongol onslaught, her nomadic people settled the vast Hungarian plains under a royal pact sealed by her childhood marriage to Stephen. Proudly retaining her nomadic heritage, Elizabeth is a skilled horse archer whose passionate charisma commands unswerving loyalty from Cuman clans across the realm. She serves as her husband's most invaluable political ally, guaranteeing the crucial military service of thousands of seasoned horse archers. By 1259, standing firm against haughty Catholic prelates who decry steppe customs, Elizabeth oversees the mobilization of tribal hosts to support Stephen's campaigns while nurturing her royal offspring. Elizabeth rode through nomadic settlements across the Tisza basin, meeting clan elders according to ancient steppe rites and reviewing combat-ready riders. She guaranteed that thousands of lethal composite bows answered her summons, prepared to crush political plots against her husband. Her charismatic presence unified disparate nomadic clans, transforming their pastoral warriors into an invincible auxiliary strike force for the crown. Her steadfast pride safeguarded ancestral steppe traditions, cementing a permanent military bulwark of dedicated horsemen for the kingdom.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure ancestral pastures and traditional liberties for Cuman tribes as the paramount shield of the crown.",
+    "Aid Stephen's ascent to uncontested kingship, ensuring her Cuman-blooded son inherits the realm."
+  ],
+  "Values": [
+    "Hold tribal kinship and steppe honor sacred above all, admiring bold defiance and loyalty.",
+    "Despise pedantic hypocrisy, trusting swift horses and keen sabers command real respect."
+  ],
+  "Fears": [
+    "Fears Catholic magnates conspiring to slaughter Cuman leaders, repeating her father's assassination.",
+    "Dreads civil war claiming Stephen's life, leaving her children defenseless before hostile barons."
+  ],
+  "SpeechStyle": "The steppe winds never extinguish our drawn bows! Anyone who insults the honor and liberty of the Cuman nation shall drown beneath a storm of arrows! Steppe arrows shall pierce anyone threatening our liberty!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

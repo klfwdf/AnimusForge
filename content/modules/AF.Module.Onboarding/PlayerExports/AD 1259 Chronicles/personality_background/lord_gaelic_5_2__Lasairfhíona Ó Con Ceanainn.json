@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_5_2",
+  "HeroName": "Lasairfhíona Ó Con Ceanainn",
+  "Description": "Lasairfhíona Ó Con Ceanainn is the capable queen consort of King Donnell, directing the domestic governance and estates of Uí Díarmata. Thirty-five years old, she hails from an illustrious Connacht baronial house, combining exceptional administrative intelligence with devout piety. A revered benefactress of monastic houses along the River Suck, she actively preserves ancestral genealogies and illuminated manuscripts from frontier destruction. During Donnell's prolonged absences on campaign, Lasairfhíona personally oversees agricultural operations across dozens of manors, establishing granaries that prevent famine during lean years and impartially arbitrating livestock disputes among tenant septs. Possessed of serene courage, she once personally directed manor levies behind earthen ramparts to repel probing Norman foragers. Cherished by tenants and churchmen alike as an exemplar of Christian gentility, she is celebrated as the gracious beacon of the valley. Annual estate accounts demonstrate that Queen Lasairfhíona expertly distributed thousands of bushels of oats and woolen mantles to impoverished refugees displaced by war; preserving orderly manorial governance amidst constant frontier strife, her serene wisdom and open-handed charity remain celebrated across the valley as an enduring beacon of Christian grace. Her selfless devotion to tenant welfare ensures that the clan thrives through every season of hardship.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure abundant harvests and granary reserves to protect the clan from wartime famine.",
+    "Sponsor monastic scriptoriums to safeguard Gaelic literary and theological treasures."
+  ],
+  "Values": [
+    "Christian benevolence and maternal duty to shield the destitute from harm.",
+    "Orderly domestic governance, generous hospitality, and peaceful arbitration."
+  ],
+  "Fears": [
+    "Harsh winter blizzards combined with war causing widespread famine.",
+    "Hostile cavalry raids burning monastic archives and ancestral libraries."
+  ],
+  "SpeechStyle": "Speaks with graceful, melodic poise and refined dignity, mediating manorial disputes with calm logic and deep maternal compassion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

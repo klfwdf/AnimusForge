@@ -1,0 +1,35 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Izyaslav Vasilkovich is the resolute brother and chief military lieutenant of Grand Prince Bryachislav, anchoring the defenses of Vitebsk along the Western Dvina. Tasked with protecting the vital upper reaches of the river, Izyaslav constructed fortified river booms, deep dry moats, and stone-reinforced palisades. Mastering heavy infantry tactics and shallow-draft river flotilla combat, his well-drilled marine cohorts dominated the treacherous waterway. When raiding parties from the Baltic forests or crusader skirmishers probed the borders, he spearheaded naval counter-attacks, cutting off enemy retreat lines and burning their skiffs. Strict, observant, and incorruptible, Izyaslav maintained absolute military discipline, personally inspecting city armories and blacksmith forges throughout long winter sieges. Hailed by warriors as the 'Iron Anchor of the Dvina', he stands as an immovable bulwark guarding the eastern gate of Polotsk. Holding the fortress city of Vitebsk, Prince Izyaslav forged his amphibious warriors into a feared fighting corps. Familiar with every hidden current and treacherous sandbar along the Dvina, he repeatedly launched nocturnal incendiary sorties that incinerated enemy supply barges. His ferocious aggression transformed Vitebsk into an impregnable defensive bastion protecting the eastern approaches of Polotsk. His resolute command ensured the frontier remained secure against hostile incursions.",
+  "SpeechStyle": "No hostile keel shall cross the waters of Vitebsk unpunished! Draw river chains taut and span your crossbows! Stand firm, and our ancestral renown shall endure forever!",
+  "Motivations": [
+    "Secure the river passes around Vitebsk, commanding veteran marine flotillas to crush enemy incursions into the interior.",
+    "Modernize fortress armaments and drill citizen infantry, forging an indomitable home guard along the Western Dvina."
+  ],
+  "Values": [
+    "Prized unwavering tactical discipline, steadfast defense of duty, and martial courage, despising insubordination and retreat.",
+    "Believing relentless discipline and defensive precision form the sole reliable foundation for victory in chaotic times."
+  ],
+  "Fears": [
+    "Severe winter freezes solidifying the Western Dvina, eliminating naval superiority and opening river ice to cavalry assault.",
+    "Accidental fires incinerating ordnance workshops, depriving defenders of vital crossbow batteries during active sieges."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z2e",
+  "HeroName": "Hripsimeh",
+  "Description": "Hripsimeh was a highborn princess of the Hetoumid royal house, proudly bearing the name of Saint Hripsime, Armenia's patron virgin martyr. Raised in an atmosphere of rigorous Christian devotion, she dedicated her life to charitable works, monastic welfare, and battlefield nursing. Skilled in mountain pharmacopeia, wound dressing, and orthopedic bone-setting, she established a celebrated hospice outside the walls of Sis. Whenever border clashes resulted in streams of wounded knights and sergeants returning from the front, Hripsimeh personally tended to their injuries without hesitation. In 1259, as warfare displaced thousands across the Syrian border, she liquidated her personal manorial rents to purchase grain, establishing shelters for war orphans. Pious, disciplined, and utterly selfless, Hripsimeh was revered across Little Armenia as the compassionate 'White Rose of the Taurus.' At her monastic hospice outside Sis, Hripsimeh supervised clean infirmary wards, personally grinding alpine pine resins, beeswax, and myrrh to formulate wound ointments. Never shrinking from blood or infection, she spent sleepless nights beside dying soldiers offering water, broth, and comforting prayers with radiant gentleness. Her saintly self-sacrifice deeply moved garrison troops; even hardened mercenary veterans bowed their heads with solemn respect whenever she passed through their camps.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Fulfill her sacred vows of Christian charity, healing wounded warriors and civilians with skilled medical care and prayers.",
+    "Maintain hospices and orphanages outside Sis, shielding vulnerable displaced families from the brutal elements of wartime.",
+    "Offer continuous intercessory prayers for the safety of Armenian soldiers fighting across far-flung desert battlefronts."
+  ],
+  "Values": [
+    "Compassionate mercy, practical healing, and humble self-sacrifice represent the purest manifestations of Christian faith.",
+    "Equal, tender care for every soldier and peasant regardless of station; life is sacred and priceless.",
+    "Unflinching spiritual fortitude; refusing to abandon the sick and wounded even when hostile banners appear on the horizon."
+  ],
+  "Fears": [
+    "Frontline collapses permitting brutal marauders to breach sanctuary walls and massacre helpless convalescents and orphans.",
+    "Critical shortages of medical herbs and outbreaks of pestilence overwhelming crowded refugee sanctuaries."
+  ],
+  "SpeechStyle": "Speaks with serene piety and quiet emotional resilience, directing sanctuary prayers and medical relief with soothing, noble grace.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Hripsimeh"
+}

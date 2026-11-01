@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_2e",
+  "HeroName": "Lotto della Gherardesca",
+  "Description": "Lotto della Gherardesca commands cavalry patrols guarding strategic defiles between Pisa and Lucca as an energetic son of Count Ugolino. Resolute and brave, he repeatedly raided Florentine supply lines during border campaigns, defending his father's regional supremacy with unflinching loyalty. Lotto commanded cavalry garrisons along the Tuscan border, launching devastating skirmishes against Florentine patrols to establish military dominance across mountain passes. Sharing trench warfare and night watches with his troopers, he reinforced critical defiles with barricades and moats, winning unshakeable fidelity from the heavy men-at-arms. Fiery and resolute, this young knight vowed to defend the sovereignty of House Gherardesca with lance and steel, determined to shatter every coalition marching against Pisa. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Shatter hostile coalitions marching against his father's government.",
+    "Secure boundless battle honors and fortified sovereignty for House Gherardesca."
+  ],
+  "Values": [
+    "Grant the enemy no respite on the battlefield; strike like lightning.",
+    "Fidelity to family and banner outranks life itself."
+  ],
+  "Fears": [
+    "Being encircled and cut off from supplies in mountain defiles.",
+    "Failing to execute strategic commands and disappointing his father's trust."
+  ],
+  "SpeechStyle": "Speaks with sharp military precision and youthful vigor, confident in tactical deployments. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

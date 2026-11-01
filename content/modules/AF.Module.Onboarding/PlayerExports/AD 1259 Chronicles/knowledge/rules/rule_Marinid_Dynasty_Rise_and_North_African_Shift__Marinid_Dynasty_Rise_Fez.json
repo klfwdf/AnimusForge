@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Marinid_Dynasty_Rise_and_North_African_Shift",
+  "Keywords": [
+    "Marinid Dynasty Rise Fez",
+    "Zenata Berber Cavalry Nomads",
+    "Almohad Imperial Collapse",
+    "Straits of Gibraltar Interventions"
+  ],
+  "RagShortTexts": [
+    "The rise of the Zenata Berber Marinid Dynasty in Fez transformed cross-Strait Iberian politics."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Around 1259, the collapsing Almohad Caliphate gave way to the Zenata Berber Marinid Dynasty based in Fez. Consolidating power across Morocco, the Marinids brought martial nomadic light cavalry to the fore. In Granada, the Nasrids increasingly looked across the Strait to the Marinids as future military saviors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Dynastic shifts in the Maghreb dictate the survival of Christian Andalusia. Castilian galleys patrol Tarifa precisely to prevent Marinid cavalry armies from executing cross-Strait landings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Marinid horsemen ride nimble Barbs bareback with javelins balanced in each fist. When favorable easterly winds blow across the Strait, their raiding parties hit southern beaches like desert dust storms."
+    }
+  ],
+  "TextMappings": []
+}

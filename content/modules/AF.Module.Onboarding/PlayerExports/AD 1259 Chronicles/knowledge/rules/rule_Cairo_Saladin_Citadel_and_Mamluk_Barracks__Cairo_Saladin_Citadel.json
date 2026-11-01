@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Cairo_Saladin_Citadel_and_Mamluk_Barracks",
+  "Keywords": [
+    "Cairo Saladin Citadel",
+    "Muqattam Hill Redoubt",
+    "Al Azhar Islamic Madrasa",
+    "Nile Granary and Royal Barracks"
+  ],
+  "RagShortTexts": [
+    "Saladin's Cairo Citadel atop the Muqattam hills anchored Mamluk military and administrative."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Commanding the apex of the Nile Delta, Cairo reigns as the vibrant metropolis of Islam. Built by Saladin atop the Muqattam cliffs, the Cairo Citadel features deep spiral wells, armories, and barracks housing royal Bahri Mamluks. Overlooking the venerable Al-Azhar madrasa, it controls Egypt's vast agricultural grain supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Citadel is an arena where sultans are enthroned and deposed. The emir who secures the garrison keys and controls treasury payroll dictates who rules Egypt and Syria."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "When the annual Nile inundation enriches the silt, barley grows taller than a man. We row heavy barges downriver to unload royal granaries beneath the fortress towers."
+    }
+  ],
+  "TextMappings": []
+}

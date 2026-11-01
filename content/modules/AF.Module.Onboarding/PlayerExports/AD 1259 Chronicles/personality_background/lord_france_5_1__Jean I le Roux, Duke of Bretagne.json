@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_5_1",
+  "HeroName": "Jean I le Roux, Duke of Bretagne",
+  "Description": "Jean I le Roux is the reigning Duke of Brittany and Earl of Richmond, heading the cadet Capetian House of Dreux. At forty-two, his fiery red hair and unyielding administrative iron will have cemented his reputation as one of Western Europe's most formidable feudal rulers. Continuing his father Peter Mauclerc's relentless struggle against unruly march barons and overreaching prelates, Jean unified the fractured Breton state through strategic territorial acquisitions and military firmness. He systematically bought out or expropriated critical strategic baronies including Brest, Dinan, and Ploërmel, centralizing ducal authority across the rugged Armorican peninsula. An expert in fortress architecture, he reinforced the perimeter bastions of Nantes and Rennes while establishing traveling ducal assizes to enforce high justice. Married to Princess Blanche of Navarre, he carefully navigates between the Capetian Crown and the Plantagenets to preserve Breton sovereignty. In Nantes, Duke Jean organized a central archival bureau to rigorously verify land titles and eradicate tax evasion across all baronies. Spartan, tireless, and devoid of empty rhetoric, he routinely bivouacked with common crossbowmen on coastal alerts, his ironclad discipline completely overawing refractory march lords and securing the sovereign foundations of the duchy.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Centralize baronial territories to complete the administrative unification of Brittany.",
+    "Maintain armed neutrality between France and England to preserve Breton sovereignty."
+  ],
+  "Values": [
+    "Absolute ducal sovereignty and territorial consolidation above all regional privileges.",
+    "Rigorous enforcement of the law backed by prosperous treasuries and modern fortresses."
+  ],
+  "Fears": [
+    "The French Crown using royal appellate jurisdictions to erode Breton autonomy.",
+    "Rebellious Breton lords allying with English naval forces to seize the citadel of Brest."
+  ],
+  "SpeechStyle": "Speaks with deep, commanding resonance, his French laced with brisk Breton authority, delivering royal edicts with unyielding finality and ironclad baronial resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

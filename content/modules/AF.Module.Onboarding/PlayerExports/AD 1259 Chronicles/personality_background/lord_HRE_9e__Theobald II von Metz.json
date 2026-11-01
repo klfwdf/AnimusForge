@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_9e",
+  "HeroName": "Theobald II von Metz",
+  "Description": "Theobald II stands as the eldest prince and rightful heir of Duke Friedrich III of Lorraine and Margaret of Navarre, destined in history to rule as Duke Theobald II of Lorraine. Born amidst the martial clamor of Nancy's garrisons, he was named after his illustrious royal grandfather, King Theobald of Navarre, embodying the proud synthesis of German chivalric prowess and French princely majesty. Tutored rigorously from his tender years within the ducal barracks in bilingual statecraft, mounted warfare, and fortress topography, he studied defense charts under seasoned Lorrainese veterans. Though in the springtime of his youth, Theobald already displays quiet fortitude and steady bravery. Watching his parents navigate the treacherous rivalries of Metz and Paris, he harbored a fierce, unwavering vow to defend Lorraine's borders, aspiring to command the chivalry of Nancy with the same unyielding iron resolve that preserved his ancestral house. Tutored in mounted lance combat and archery by seasoned veterans in Nancy's barracks, young Theobald early memorized the heraldic escutcheons of German and French dynasties. Accompanying his father on rampart inspections, he witnessed firsthand the scars of border warfare, forging an unshakeable martial resolve to carry the sovereign renown of Châtenois across western Christendom. His youthful dedication and warrior spirit promised to uphold the proud martial heritage of Lorraine with honor and courage.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Diligently master horsemanship, swordsmanship, and multilingual diplomacy to shoulder ducal burdens as heir.",
+    "Command respect among Lorrainese vassals and chivalric orders, ensuring uncontested dynastic continuity."
+  ],
+  "Values": [
+    "Upholds dynastic honor, martial valor, and loyalty to the duchy as supreme moral obligations.",
+    "Reveres the indomitable spirit forged by his forebears, believing iron discipline underpins all lasting realms."
+  ],
+  "Fears": [
+    "Fears failing to develop martial prowess quickly enough to defend his duchy during sudden invasions.",
+    "Hates treacherous vassals and unprovoked border incursions, vowing to punish insolence with an iron fist."
+  ],
+  "SpeechStyle": "My father's sword points the way forward; as a son of Châtenois, I shall harden my spirit in iron and defend Nancy with my life! In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Theobald II von Metz"
+}

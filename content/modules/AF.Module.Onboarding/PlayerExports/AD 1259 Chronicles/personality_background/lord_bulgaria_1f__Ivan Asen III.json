@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_1f",
+  "HeroName": "Ivan Asen III, Tsar of Bulgaria",
+  "Description": "Ivan Asen III, aged twenty-four, is the son of Mitso Asen and Maria Asenina, bearing direct maternal descent from the legendary Tsar Ivan Asen II. Handsome, athletic, and intelligent, he was tutored in both traditional Bulgarian cavalry tactics and the sophisticated statecraft of the imperial Byzantine court. Following his family's retreat to Byzantine territory, he quickly won the strategic favor of Emperor Michael VIII Palaiologos, who recognized his immense dynastic value. Betrothed to Michael's imperial daughter Irene Palaiologina and decorated with high court dignities, he is groomed as the empire's premier instrument for Balkan intervention. An accomplished horseman and articulate diplomat, he maintains unquenchable ambition beneath his polished exterior, dreaming of re-entering Tarnovo as consecrated Tsar. Aware of the volatile boyar rivalries and imminent peasant revolts shaking his homeland, he studies Roman military logistics to prepare for the coming reckoning. Drilling relentlessly on the parade grounds of Constantinople, he masters siegecraft and cavalry tactics, resolved to lead a victorious host back to Tarnovo. Drilling on the imperial parade grounds of Constantinople, he masters siegecraft and cavalry maneuvers, earning the genuine admiration of veteran soldiers through his natural tactical instincts and martial prowess in combined arms warfare.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with polished Byzantine rhetorical poise and youthful Slavic determination, projecting royal confidence and keen martial ambition.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

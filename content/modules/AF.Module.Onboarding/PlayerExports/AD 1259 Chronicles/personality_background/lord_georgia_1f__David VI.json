@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1f",
+  "HeroName": "David VI Narin",
+  "Description": "King David VI Narin ('the Clever') was the son of Queen Rusudan, sovereign Bagrationi monarch, and founder of the independent Kingdom of Imereti. Endowed with keen political intelligence, he journeyed to Karakorum to secure royal confirmation from Great Khan Guyuk, observing imperial power firsthand. Co-ruling with his cousin David VII Ulu, Narin recognized that compliance with relentless Mongol exactions would ultimately extinguish Georgian statehood. In 1259, David Narin boldly raised the banner of insurrection, breaking away to western Georgia behind the impenetrable barrier of the Likhi Mountains. Establishing his royal capital at Kutaisi, he utilized high-altitude ambuscades and fortified defiles to repeatedly repel Ilkhanate punitive expeditions. Shrewd, patient, and indomitable, David VI Narin was celebrated as the visionary alpine monarch who preserved a sovereign haven of Georgian liberty. At Kutaisi, King David VI Narin established customs offices and trade conduits, actively welcoming Genoese and Trebizond merchants across Black Sea corridors. He inspected alpine defiles across the Likhi range, engineering rockfall traps and pitch cauldrons that turned narrow approaches into lethal killing zones. When confronted by haughty Mongol embassies demanding tribute, Narin defused ultimatums through masterful diplomatic evasion while preserving total sovereign autonomy.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Secure an independent western Georgian kingdom behind the Likhi mountains, permanently severing Mongol imperial vassalage.",
+    "Fortify Kutaisi and alpine citadels, establishing an unassailable bastion of Christian resistance against Ilkhanate forces.",
+    "Form diplomatic alliances with Trebizond and Byzantium to break regional blockades, ensuring economic prosperity."
+  ],
+  "Values": [
+    "Strategic calculation and alpine terrain mastery triumph over impetuous brute force; prudence preserves national life.",
+    "Unyielding commitment to state survival and cultural autonomy, maneuvering with resilience against colossal empires.",
+    "Equitable royal justice, low taxation, and strict military discipline to inspire unwavering popular fealty."
+  ],
+  "Fears": [
+    "Massed imperial armies forcing the Likhi mountain passes, overrunning the western valleys in a cataclysmic war of annihilation.",
+    "Destructive civil warfare between eastern and western Georgian dynasties, handing total victory to foreign conquerors."
+  ],
+  "SpeechStyle": "Speaks with shrewd royal composure and sharp tactical discernment, issuing alpine decrees and diplomatic policies with calculated firmness.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "David VI Narin"
+}

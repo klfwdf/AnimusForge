@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Yulia of Smolensk, born of illustrious northern Slavic lineage, is celebrated throughout the Upper Dnieper for her profound wisdom, moral rectitude, and administrative grace. As the trusted partner and counselor to Grand Prince Rostislav II, she radiates calm authority during the darkest seasons of geopolitical peril. Yulia oversees court finances and patronizes the charitable endowments of the Cathedral of the Dormition, establishing municipal shelters and medical hospices that sustain hundreds of displaced refugees and wounded border guards. Her diplomatic tact repeatedly harmonizes rivalries among powerful boyar clans, preserving unity within the grand council. Revered by commoners and warriors alike as a maternal guardian, she embodies the spiritual fortitude and enduring benevolence of Smolensk. During harsh winters, she personally directs the distribution of warm wool garments and grain provisions from princely storehouses, anchoring civil tranquility across the realm. By founding permanent municipal dispensaries and organizing relief food distributions, Grand Duchess Yulia binds the boyars and common citizens together in an unbreakable bond of mutual survival. Her unflagging maternal care and diplomatic grace ensure that social cohesion remains unbroken through seasons of extreme famine and cold. She remains an indispensable moral pillar for the entire realm.",
+  "SpeechStyle": "Compassion is the true bedrock of sovereign resilience. So long as our defenders and refugees feel God's grace, our city shall remain an unshakable bastion against every hardship.",
+  "Motivations": [
+    "Mobilize ecclesiastical and civic funds to maintain relief shelters and food pantries for war refugees.",
+    "Establish secure domestic logistics and welfare systems for veterans and war widows."
+  ],
+  "Values": [
+    "Cherish Christian compassion and selfless charity as the true foundation of social peace.",
+    "Value familial harmony and peaceful arbitration over internal discord and boyar bloodshed."
+  ],
+  "Fears": [
+    "Dread devastating winter famines and infectious plagues sweeping through crowded refugee quarters.",
+    "Fear factional boyar feuds tearing apart the princely administration and leaving the realm defenseless."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    }
+  ]
+}

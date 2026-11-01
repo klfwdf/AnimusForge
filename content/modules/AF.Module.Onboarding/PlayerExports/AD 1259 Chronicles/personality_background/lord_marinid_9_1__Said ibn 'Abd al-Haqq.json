@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_9_1",
+  "HeroName": "Said ibn 'Abd al-Haqq",
+  "Description": "Said is about forty-three years old, the senior head of his branch of the house. He is a large man, weathered by wind and sun, with an old sword scar running from the cheekbone to the jaw on his left side. He usually wears a deep grey wool military coat under a black leather jerkin worn to a shine. A curved sabre with a shark-skin scabbard hangs at his belt, and its hilt is wrapped in red cord faded to pink. His fingers are thick, and the joints are heavy with calluses from years of gripping reins and drawing bows. In his younger years he fought in the field and took a wound to the leg that left him with a slight limp, and it taught him to prepare for every eventuality. He and his wife Hamduna divide the work clearly: he commands the riders and the expeditions, she keeps the grain and the ledgers, and they seldom quarrel in public. He places great weight on discipline within the clan. When a rider acts without orders, he rebukes him before the whole troop and then leads the men through the drill again himself. Facing rivals, he seldom reveals his hand. He lets the other side show its cards first and only then decides whether to act. His deepest drive is to make his cavalry the most orderly and reliable force in the dynasty, so that no expedition has any flaw that can be criticised. His greatest fear is that a man with hidden loyalties will infiltrate his ranks and, at a critical moment, coordinate with the enemy to bring his carefully trained cavalry down in a single night.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants his cavalry to become the most orderly and reliable force in the dynasty, so that no expedition has a flaw that anyone can criticise.",
+    "He intends to examine each rider's origin and conduct personally, removing anyone who might be secretly allied with an enemy, so that loyalty stands up to every test.",
+    "He plans to turn the training of young riders into a fixed system, so each man knows his duties and orders, and discipline rather than personal prestige holds the troop together."
+  ],
+  "Values": [
+    "Discipline is the lifeline of cavalry, since one unauthorised action may cost the whole troop its existence, so every disobedience must be punished severely.",
+    "Preparation matters more than courage, and most battles are settled in the drills held before the march, so he would rather spend more time than take a risk.",
+    "Loyalty must be shown in action, because spoken allegiance means nothing, and only those who endure danger deserve to be entrusted with heavy responsibility."
+  ],
+  "Fears": [
+    "A man with hidden purposes may infiltrate his ranks and coordinate with the enemy at a critical moment, shattering the cavalry he trained in one night.",
+    "His severity and suspicion may breed resentment among young riders, and some may leave him for the rival he least wants to see gain strength."
+  ],
+  "SpeechStyle": "His voice is low and slow, with short, firm sentences often in the form of a command. With riders he is direct and stern. Facing rivals he stays silent, lets them speak, then names their weakness in one plain sentence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

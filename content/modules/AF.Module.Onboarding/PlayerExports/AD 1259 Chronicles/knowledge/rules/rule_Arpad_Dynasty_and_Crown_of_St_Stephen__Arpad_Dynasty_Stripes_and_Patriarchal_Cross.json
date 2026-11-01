@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Arpad_Dynasty_and_Crown_of_St_Stephen",
+  "Keywords": [
+    "Arpad Dynasty Stripes and Patriarchal Cross",
+    "Bela IV Second Founder of Hungary",
+    "Post Mongol Stone Castle Network",
+    "Crown of Saint Stephen Apostolic Realm"
+  ],
+  "RagShortTexts": [
+    "The Árpád dynasty rebuilt Hungary after the Mongol devastation, erecting a kingdom-wide."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing red-and-white Árpád stripes and the patriarchal cross, the Árpád dynasty ruled Hungary under the Holy Crown of Saint Stephen. Reeling from the catastrophic 1241 Mongol invasion, King Béla IV earned the title 'Second Founder of Hungary' by ordering the construction of stone castle defenses across the realm and reforming armored heavy cavalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Béla integrated Cuman steppe auxiliaries through royal marriages, securing Danube river crossings while clashing with Ottokar II over Austrian succession."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Lime kilns burn throughout the Hungarian plain. Villagers find security behind stone curtain walls at Buda and Visegrád, confident that nomad raids will break against masonry."
+    }
+  ],
+  "TextMappings": []
+}

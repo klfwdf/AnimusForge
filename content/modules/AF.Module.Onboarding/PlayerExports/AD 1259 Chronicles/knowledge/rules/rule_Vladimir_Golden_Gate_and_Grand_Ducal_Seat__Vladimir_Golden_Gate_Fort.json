@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Vladimir_Golden_Gate_and_Grand_Ducal_Seat",
+  "Keywords": [
+    "Vladimir Golden Gate Fort",
+    "Cathedral of Dormition Reliefs",
+    "Grand Duke of Vladimir Yarlyk",
+    "Klyazma River Forest Shield"
+  ],
+  "RagShortTexts": [
+    "Vladimir on the Klyazma, marked by the stone Golden Gate, held the Grand Ducal yarlyk of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Perched on bluffs above the Klyazma River, Vladimir served as the supreme seat of north-eastern Rus. Entered through the limestone Golden Gate, the Dormition Cathedral features Romanesque stone carvings. Though devastated by Batu Khan in 1238, the ruler holding the Khan's golden yarlyk here reigns as Grand Prince of all Rus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Alexander Nevsky journeys tirelessly between Sarai and Vladimir. To retain the Grand Ducal patent and prevent catastrophic Tatar punitive raids, he enforces imperial censuses and tax collection with cold necessity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "In forest homesteads, folk douse hearth fires before dark. The distant jingle of harness bells sends families fleeing into deep marshes to avoid Tatar slave-catchers scouring the countryside."
+    }
+  ],
+  "TextMappings": []
+}

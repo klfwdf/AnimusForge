@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_2",
+  "HeroName": "Dom Joan Rodrigues de Briteiros",
+  "Description": "Dom Joan Rodrigues de Briteiros is the distinguished younger brother of Dom Mem Rodrigues, serving at twenty-nine years of age as an accomplished royal knight, frontier commander, and celebrated troubadour of the Portuguese court. Renowned for his exquisite courtly love lyrics (Cantigas de Amor) preserved in historical songbooks, Dom Joan seamlessly unites artistic brilliance with battlefield ferocity. His strategic marriage to Dona Guiomar Gil de Soverosa, daughter of the formidable magnate Gil Vaz de Soverosa, forged a monumental feudal bridge between Briteiros and one of Portugal's mightiest aristocratic houses. On campaign, Joan has spearheaded heavy cavalry contingents during southern border sweeps against Moorish skirmishers, earning high repute for tactical daring. Witty, sophisticated, yet deeply calculating in feudal politics, he leverages poetic banter and diplomatic acumen to champion his family's interests across royal assemblies. His dual mastery of the knightly lance and the troubadour lute establishes Dom Joan as one of the most charismatic young magnates of Portugal, seamlessly weaving martial audacity with high courtly politics to advance his dynasty. His fearless battlefield charges, courtly charm, and brilliant poetic talents make Dom Joan Rodrigues an indispensable champion in the royal entourage of Portugal.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To secure higher martial commands and expand the hereditary manorial domains of Briteiros.",
+    "To immortalize his name in the annals of Iberian troubadour lyric alongside his powerful Soverosa kin."
+  ],
+  "Values": [
+    "The sword defends the realm while the pen secures eternal fame; neither can be forsaken.",
+    "Astute marital alliances and steadfast vows ensure the perpetual ascendancy of the clan."
+  ],
+  "Fears": [
+    "Deepening rifts between Crown and nobility dragging his allied in-laws into ruinous internal strife.",
+    "Wasting his prime in passive garrison duty without securing enduring historical fame."
+  ],
+  "SpeechStyle": "Speaks with courtly polish, sharp wit, and poetic rhythm, effortlessly pivoting between charismatic charm and steely resolve. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

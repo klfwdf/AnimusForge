@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Siena_Ghibelline_Banking_Commune",
+  "Keywords": [
+    "Siena Piazza del Campo",
+    "Sienese Banking Patricians",
+    "Tuscan Ghibelline League",
+    "Montaperti Vengeance Siena"
+  ],
+  "RagShortTexts": [
+    "Siena stood as Florence's fierce Ghibelline rival, distinguished by its Piazza del Campo."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Perched on three clay hills of southern Tuscany, the Commune of Siena was home to premier European merchant-banking syndicates like the Bonsignori. Fiercely Ghibelline, the city challenged Florentine hegemony, culminating in their crushing triumph at Montaperti in 1260."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "merchant",
+          "soldier"
+        ]
+      },
+      "Content": "Beneath the black-and-white balzana banner, citizen militias defended their republican charters with uncompromising civic fervor."
+    }
+  ],
+  "TextMappings": []
+}

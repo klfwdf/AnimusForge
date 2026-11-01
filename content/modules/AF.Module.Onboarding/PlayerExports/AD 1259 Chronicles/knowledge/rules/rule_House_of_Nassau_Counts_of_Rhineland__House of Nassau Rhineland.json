@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Nassau_Counts_of_Rhineland",
+  "Keywords": [
+    "House of Nassau Rhineland",
+    "Nassau Castle Golden Lion",
+    "Nassau Brother Partition",
+    "Great Interregnum Nassau"
+  ],
+  "RagShortTexts": [
+    "The House of Nassau guarded Lahn valley strongholds, expanding their feudal reach during."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Anchored at Nassau Castle over the Lahn, the House of Nassau held pivotal toll passages between Mainz and Westphalia. Bearing azure heraldry with a golden lion, the counts laid the dynastic foundations that would soon propel them to imperial kingship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Nassau bridgeheads collected vital river tolls, sustaining knightly retinues capable of repelling aggressive predatory neighbours."
+    }
+  ],
+  "TextMappings": []
+}

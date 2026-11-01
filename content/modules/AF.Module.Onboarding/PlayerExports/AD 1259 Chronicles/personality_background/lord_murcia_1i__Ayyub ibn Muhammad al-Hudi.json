@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_murcia_1i",
+  "HeroName": "Ayyub ibn Muhammad al-Hudi",
+  "Description": "Ayyub ibn Muhammad al-Hudi, twenty-five in the game setting, is the youngest son of Baha' ad-Dawla and Yasmin. He is married to Rihana, and they have a son, Marwan, and a daughter, Hamda. He shares a mother with his elder brothers Ja'far and Zayd, but his temper differs sharply from theirs. He is slender and pale-skinned, and his clothes carry the dust of the castle stables and storerooms where he spends much of his day. He wears grey-black riding robes and an old copper clasp at his breast, and often carries a light composite bow whose origin the game does not describe. The sources record nothing of him. His youth can only be inferred from the setting: he may have served between his father's riders and the castle guard as a messenger and clerk, learning to keep rolls and allot provisions. Against enemies he avoids open clashes and first counts their numbers and supply before deciding to strike. He holds companions to strict standards, yet rarely rebukes them in public, preferring a quiet reminder to a scolding. His driving aim is to keep the Hudid arms and provisions in good order, so every campaign and defence has sure backing. His deepest fear is a supply failure that starves the garrison and townsfolk during a siege, making his negligence look like proof of the family's incompetence.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the Hudid provisions and arms in good order, so that every campaign and defence has sure backing and no logistical slip brings failure.",
+    "Support his brother Ja'far's diplomacy with reliable money and supplies, so that promises made at the table rest on real grain and troops.",
+    "Train clerks and quartermasters who can take over his work, writing down the methods of rolls and stores so the house does not fall into disorder when one man leaves."
+  ],
+  "Values": [
+    "Plan before acting, because a force that does not know its own grain and numbers has already lost half of any battle before it begins.",
+    "Hold subordinates to strict standards but never rebuke them in front of others, correcting errors privately with concrete methods that preserve their dignity.",
+    "Weigh the family's long-term interests above a small victory now, refusing to let the house's stores and walls be spent on needless risks."
+  ],
+  "Fears": [
+    "A lapse in the supply road that starves the garrison and townsfolk during a siege, with his failure read as proof of the family's incompetence and a stain on its name.",
+    "In family power struggles, being dismissed by his brothers as a mere accountant, losing any right to lead troops or speak in council, and his skill forgotten."
+  ],
+  "SpeechStyle": "Speaks in a steady, orderly way, often listing numbers and items before drawing a conclusion. Cautious with others and seldom shows emotion. With subordinates he is brief and clear, saying only what must be done without extra explanation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

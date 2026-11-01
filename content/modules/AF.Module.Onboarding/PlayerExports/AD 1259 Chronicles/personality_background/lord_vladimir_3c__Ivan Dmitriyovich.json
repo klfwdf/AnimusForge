@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince and Saint Ivan Dmitriyovich of Pereslavl, only son of Grand Prince Dmitrij Alexandrovich and grandson of Alexander Nevsky, was a visionary ruler who reshaped Russian history. Renowned for Christian benevolence, wisdom, and selfless patriotism, he governed the prosperous principality on Lake Pleshcheyevo with exceptional justice and mercy. Ivan reduced onerous taxes, repatriated displaced farmers, and patronized the venerable lakeside monasteries, earning the profound love of his citizenry. Witnessing the tragic exhaustion caused by unending fratricidal feuds among Rurikid princes under the Mongol yoke, Ivan realized that national survival required centralized unification. Upon his deathbed in 1302 without surviving heirs, Prince Ivan executed an epoch-making testament: he bequeathed the entire wealthy Principality of Pereslavl to his uncle, Daniil of Moscow. This decisive act doubled Moscow's power and territorial reach, laying the foundational cornerstone for the eventual unification of Russia and the overthrow of the Horde. Canonized as a saint for his holy life and visionary selflessness, his memory is venerated as an immortal blessing across the Russian land.  Saint Prince Ivan's visionary decision to bequeath Pereslavl to Moscow unified the fragmented strength of the Russian lands, establishing the crucial territorial cornerstone for the eventual liberation of Rus' from the Mongol yoke.",
+  "SpeechStyle": "Earthly appanages are fleeting, but the unity and redemption of our people are eternal before God. In entrusting Pereslavl to Moscow, I pave the path for the resurrection of Rus'. May peace dwell upon our land forever!",
+  "Motivations": [
+    "Unify Russian princely strength to end fratricidal divisions and build an unassailable bastion against foreign tyranny.",
+    "Govern Pereslavl with righteous benevolence, protecting communal welfare and endowing lakeside monastic sanctuaries."
+  ],
+  "Values": [
+    "Value national unity, patriotic sacrifice, and Christian love far above narrow territorial greed and personal pride.",
+    "Prize visionary statecraft and moral rectitude, subordinating personal power to the grand historic resurrection of Rus'."
+  ],
+  "Fears": [
+    "Fear predatory neighboring princes partitioning Pereslavl after his passing and plunging his citizens back into warfare.",
+    "Dread the Russian people losing their spiritual unity amidst ceaseless internecine strife under the imperial yoke."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    }
+  ]
+}

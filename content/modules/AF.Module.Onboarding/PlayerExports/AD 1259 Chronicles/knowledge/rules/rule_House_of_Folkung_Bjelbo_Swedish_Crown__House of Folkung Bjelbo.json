@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Folkung_Bjelbo_Swedish_Crown",
+  "Keywords": [
+    "House of Folkung Bjelbo",
+    "Birger Jarl Swedish Regent",
+    "Founding of Stockholm Folkung",
+    "Golden Lion Azure Waves Crest"
+  ],
+  "RagShortTexts": [
+    "Birger Jarl established the House of Folkung, founding Stockholm and modernizing Swedish."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The House of Bjelbo (Folkung) forged unified Swedish statehood under the brilliant regent Birger Jarl. Founding Stockholm at Lake Mälaren's throat and reforming medieval codes, Birger placed his son Valdemar upon the throne beneath their golden lion crest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Royal peace ordinances (edsöre) enforced swift punishment against rogue jarls, securing expanding Baltic maritime trade."
+    }
+  ],
+  "TextMappings": []
+}

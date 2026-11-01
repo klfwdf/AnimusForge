@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1",
+  "HeroName": "Chaime I, King of Aragon, Majorca and Valencia",
+  "Description": "James I 'the Conqueror' (Jaime I el Conquistador / Chaime I) stands as the supreme martial titan and visionary state-builder of thirteenth-century Mediterranean Christendom. King of Aragon, Majorca, and Valencia, and Count of Barcelona, his imposing stature and iron will were forged in youth under the austere guardianship of the Knights Templar at Monzón. Shattering domestic baronial leagues upon reaching his majority, James launched the amphibious crusade that conquered Majorca in 1229, followed by the hard-fought subjugation of the Kingdom of Valencia in 1238, pushing the frontiers of Islam permanently south of the Júcar. A formidable knight, patron of Mediterranean maritime law, and author of the groundbreaking vernacular memoir Llibre dels fets, he concluded the historic Treaty of Corbeil with Louis IX in 1258, cementing Aragonese trans-Pyrenean boundaries. By 1259, the aging lion of the House of Barcelona must master dangerous internal storms: managing acrimonious territorial rivalries among his ambitious sons—Infantes Peter and James—while curbing recalcitrant Catalan and Aragonese noble assemblies jealous of royal power. Holding court amidst the vaulted halls of Monzón and Lleida, James personally arbitrates the maritime privileges and tariff charters granted to Catalan merchants across Mediterranean trading ports. Even as advanced years silver his hair, the martial giant rides daily in full chainmail, determined that the four red pales of Aragon shall command every coastal headland and island citadel across Christendom.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Balance the territorial inheritances of Infantes Peter and James to guarantee Mediterranean dynastic stability",
+    "Consolidate royal maritime supremacy and the Consolat de Mar across Valencia and the Balearic Isles",
+    "Assist Castile in pacifying rebellious Murcia, securing undisputed Aragonese hegemony in eastern Iberia"
+  ],
+  "Values": [
+    "A monarch's true glory lies in holy reconquest and expanding the territorial boundaries of Christendom",
+    "Maritime dominion and commercial wealth are the lifeblood of the Crown of Aragon",
+    "Reward faithful service with lavish generosity; crush treason with merciless resolve"
+  ],
+  "Fears": [
+    "Fratricidal civil war among his sons tearing apart his hard-won conquests in Valencia and Majorca",
+    "The resurgence of reactionary baronial leagues crippling the royal authority of the crown"
+  ],
+  "SpeechStyle": "Resounding, authoritative, and charismatic; speaks with the towering presence of a legendary crusader king whose deeds define his era.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

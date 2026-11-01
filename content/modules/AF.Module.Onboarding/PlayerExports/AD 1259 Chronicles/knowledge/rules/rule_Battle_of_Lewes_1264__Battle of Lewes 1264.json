@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Lewes_1264",
+  "Keywords": [
+    "Battle of Lewes 1264",
+    "Simon de Montfort Captures King",
+    "Prince Edward Rash Pursuit",
+    "Mise of Lewes Parliament"
+  ],
+  "RagShortTexts": [
+    "In 1264 at Lewes, Simon de Montfort routed royalists, capturing Henry III and Prince Edward."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fought on May 14, 1264, the Battle of Lewes saw Simon de Montfort's reformist barons shatter Henry III's royalist host. Prince Edward's impetuous pursuit of routed London militia left royal flanks exposed, allowing Montfort's white-cross reserves to capture both the King and the King of the Romans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "citizen"
+        ]
+      },
+      "Content": "The resulting Mise of Lewes empowered Montfort to govern England and summon the historic 1265 Commons Parliament."
+    }
+  ],
+  "TextMappings": []
+}

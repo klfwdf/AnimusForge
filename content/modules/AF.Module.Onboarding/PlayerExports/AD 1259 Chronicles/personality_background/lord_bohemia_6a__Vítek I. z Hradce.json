@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_6a",
+  "HeroName": "Vítek I. z Hradce",
+  "Description": "Vítek I of Hradec stands as the venerable patriarch of the Golden Rose lineage of the illustrious Vítkovci dynasty, ruling vast fortified domains in southern Bohemia from the formidable ramparts of Jindřichův Hradec Castle. A staunch and indispensable ally to King Přemysl Otakar II, Vítek mobilized heavy cataphract lances and stalwart retainers during the royal campaigns to subjugate Upper Austria and the Duchy of Styria, securing vital passage through the southern mountain marches. Along the winding Nežárka river, he engineered massive ashlar stone battlements, deep moats, and fortified toll gates, transforming his seat into an impregnable bulwark against Bavarian border incursions. With farsighted statecraft, Vítek introduced the Teutonic Knights into the Hradec lordship, granting them lucrative agricultural tithes and commanding commanderies to anchor ecclesiastical strength across his frontiers. Equally skilled in fiscal governance and martial defense, he expanded carp aquaculture, iron smithies, and forestry rights across the forested river valleys, securing an abundant treasury to sustain Bohemian crown armies while relentlessly cementing his house's baronial dominance against any Austrian marcher rivals. Vítek erected the iconic cylindrical Black Tower bergfried within the upper bailey and established robust treaties with the prince-bishoprics of Passau and Salzburg. These strategic accords secured diplomatic guarantees and commercial tax immunities, turning Jindřichův Hradec into an unassailable bastion of the southern march.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct impregnable stone fortifications along the southern border to dominate river commerce and regional toll jurisdictions.",
+    "Faithfully support King Otakar's campaigns across Austria and Styria to earn ancestral royal charters for his dynasty.",
+    "Expand and protect Teutonic Order commanderies across his estates to reinforce administrative stability and martial prestige."
+  ],
+  "Values": [
+    "Maintain unwavering feudal loyalty to the Bohemian crown, commanding his retainers with iron discipline.",
+    "Prize dynastic honor and the territorial integrity of the southern marches above any reckless ambition.",
+    "Value enduring stonework, solid river fortifications, and prudent financial administration for defensive resilience."
+  ],
+  "Fears": [
+    "Austrian and Bavarian border incursions penetrating the mountain passes to ravage his river estates and mills.",
+    "Fractious baronial revolts tearing apart the Bohemian realm and forcing fraternal strife among the Vítkovci clans."
+  ],
+  "SpeechStyle": "Under the golden rose of Hradec, our stone battlements remain ever vigilant; let trespassers feel the bite of Bohemian iron and the resolute fury of our knightly lances. Our granite ramparts stand unyielding against all seasons of war.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

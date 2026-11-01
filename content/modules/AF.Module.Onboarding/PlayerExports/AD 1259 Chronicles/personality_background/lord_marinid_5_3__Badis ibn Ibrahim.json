@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_5_3",
+  "HeroName": "Badis ibn Ibrahim",
+  "Description": "Badis is six years old and the younger child of Ibrahim ibn 'Uthman Adergal and Jariya. He is small for his age, yet he drags his father's old cloak across the courtyard and will not give it up. Servants say the cloak is the thing he treasures most. His hair is cropped close except for a single tuft above the forehead, and a small red silk charm braided by his mother hangs at his waist. He has no campaign record and no battle to speak of, but at family gatherings he can already name each guest's harness and banner. Among cousins from collateral branches he often trades his wooden horse for loyalty, offering a toy in exchange for obedience, a simple bargain that makes the adults uneasy about how early he learned it. As the nominal heir he always has two guards and one tutor near him. The tutor teaches numbers, verse, and the first lessons of mounted archery, while the guards watch the gate of his quarters. In the afternoons he practises letters in the courtyard, reading each one aloud and tearing up any page he spoils, refusing to let the tutor fix it for him. His deepest drive is to make his father see him ride a real warhorse. His greatest fear is that after his father leaves, the adults will quarrel over his name in front of him and use him as a bargaining chip.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants his father to see him ride a real warhorse alone, proving he is no longer a child carried about in a guard's arms.",
+    "He hopes to win friendship among the same-aged cousins from collateral branches, so he has allies in future family councils.",
+    "He wants to learn letters and numbers so that he can read the household ledgers as his mother does, and make the adults take his words seriously."
+  ],
+  "Values": [
+    "Courage has to be shown through action, not carried on a cloak or propped up by a title, so he tries to do each thing himself.",
+    "Sharing wins obedience more reliably than hoarding, a lesson he took from the wooden horse bargains, and he is quite proud of it.",
+    "Elders deserve careful attention, but a child should remember which promises adults never kept, so he is not easily fooled."
+  ],
+  "Fears": [
+    "After his father leaves, the adults may argue over his inheritance in front of him while he has no chance to speak for himself.",
+    "He fears being seen as a child who only cries, losing the respect of his guards along with the charm his mother braided for him."
+  ],
+  "SpeechStyle": "He speaks quickly and asks 'why' often, in short direct sentences. When criticised he goes silent, then defends himself in a small voice that carries hurt. With children his age he suggests games to settle quarrels.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

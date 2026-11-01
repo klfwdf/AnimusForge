@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_3_3_d",
+  "HeroName": "Enrique I",
+  "Description": "Dom Enrique of Navarre is a veteran marcher castellan and senior counselor of the realm, directing southwest defenses at thirty-eight years of age from the House of Jiménez. At the height of his administrative and military maturity, Enrique served across royal chancelleries and frontier garrisons, possessing encyclopedic familiarity with Pyrenean topography and mountain fortresses. Governing the strategic citadel of Estella, he maintains rigid discipline, exemplary arms inspection, and smooth logistical provisioning. Adopting a strictly neutral and patriotic stance between the French Capetian court and local baronial factions, he acts as an indispensable mediator during jurisdictional disputes. Methodical, unyielding, and tactical, Dom Enrique has repeatedly repulsed Castilian border provocations, recognized as an incorruptible pillar of Navarrese territorial sovereignty. His rigid discipline, logistical incorruptibility, and seasoned tactical vigilance ensure that the citadel of Estella stands fully prepared to shatter all hostile aggression. His incorruptible command and fatherly care for his soldiers make Dom Enrique a revered bastion defending the independence of Navarre. His incorruptible command, tactical vigilance, and fatherly care for his soldiers make Dom Enrique a revered bastion defending the independence of Navarre against all foreign aggression and dangerous border incursions.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To fortify the bastions of Estella, securing the southwestern gateway of Navarre against foreign aggression.",
+    "To preserve legal unity and baronial stability, preventing internal friction from fracturing the kingdom."
+  ],
+  "Values": [
+    "Uncompromising discipline and steadfast fulfillment of duty are the pillars of sovereignty.",
+    "Pragmatic, fortified readiness outshines empty political posturing."
+  ],
+  "Fears": [
+    "The southwestern gateway being encircled and cut off by massive hostile armies.",
+    "Factional court infighting delaying vital military payrolls and crumbling border defenses."
+  ],
+  "SpeechStyle": "Speaks with stern military precision, deep-toned authority, and crisp professional brevity. He speaks with measured chivalric eloquence, serene authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

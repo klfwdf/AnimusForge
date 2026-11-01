@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Sviatoslav Vsevolodovich, holding lands between Murom and Trubchevsk, is an experienced military commander of dual Chernigov-Murom royal heritage. Mastering the strategic geography of the Oka and Dnieper river basins, he is renowned across the army for methodical defense and unshakable composure. Sviatoslav commands the southern fortress network of Murom, directing heavy spearmen phalanxes, crossbow brigades, and armored cavalry patrols. An expert in field engineering, he constructed extensive ditch networks and linked palisades that transformed isolated frontier redoubts into an integrated defensive chain. During border incursions from southern raiders, he absorbs mounted charges behind his shield walls before launching crushing cavalry counter-strokes. Frugal, disciplined, and immune to reckless adventurism, Prince Sviatoslav is venerated as an impenetrable rock anchoring the southern frontier.  His impenetrable wooden palisades, deep defensive moats, and disciplined archers transformed southern Murom into an impregnable frontier bastion that shielded the principality against predatory steppe incursions for decades.  His impenetrable wooden palisades, deep defensive moats, linked redoubts, and disciplined archers transformed southern Murom into an impregnable frontier bastion that shielded the principality against predatory steppe incursions, surprise attacks, and looting warbands for decades.  His unyielding vigilance transformed the southern marshes into an impenetrable wall of shield and spear.",
+  "SpeechStyle": "Our ramparts permit no complacency or negligence! With leveled spears and cocked crossbows, no cavalry charge shall shake the lines of Murom. Stand firm to your posts and hold the line!",
+  "Motivations": [
+    "Hold the southern fortress corridor of Murom against all hostile incursions to ensure the safety of the interior.",
+    "Enforce strict military drill and expand defensive ditch networks to maintain an unassailable bastion."
+  ],
+  "Values": [
+    "Hold strict military obedience, territorial defense, and loyalty to his troops above all earthly rewards.",
+    "Prize rugged competence and taciturn resilience, scorning empty boasting and faint-hearted hesitation under fire."
+  ],
+  "Fears": [
+    "Fear corrupt court administrators cutting garrison grain allotments, leaving his troops freezing and under-equipped.",
+    "Dread massive counterweight trebuchets breaching vulnerable masonry corners during relentless nocturnal bombardments."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ]
+}

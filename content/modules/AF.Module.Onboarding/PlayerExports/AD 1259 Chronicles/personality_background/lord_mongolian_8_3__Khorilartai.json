@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_8_3",
+  "HeroName": "Khorilartai",
+  "Description": "Khorilartai is close to forty, thick-set and steady, with a neatly trimmed beard and deep lines at the forehead and eyes that the wind has polished to a dark, weathered face. He wears a broad-bladed riding sword whose scabbard is bound in old leather, which clansmen say he took as spoils from a raid. In the game he commands the cavalry of the eighth clan, forty-three years old, skilled at organising and deploying horsemen and known for strict discipline. This character has no medieval counterpart, so the background here rests on the clan setting alone. The cavalry of the eighth clan must gather, scatter and withdraw quickly across the steppe, and its commander has to master horses, supplies and marching routes with precision. Khorilartai went on campaign with the elders in his youth and learned to keep formation in disorder and to rebuild a broken force quickly after defeat. Against rivals he dislikes open decisive battle. He prefers to set an ambush on the enemy's route and strike when their horsemen are exhausted by the march. He gets on with fellow officers in a practical way and seldom makes enemies, yet he is merciless with subordinates who break orders. His highest aim is to make the cavalry of the eighth clan a disciplined force that the steppe respects and fears. His shadow is the fear that one miscalculated ambush might trap the whole cavalry in a canyon with no way out.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the cavalry of the eighth clan strictly disciplined and efficiently deployed, so that it can gather, scatter and withdraw swiftly and be feared by the other peoples.",
+    "Master the horses, supplies and marching routes precisely, ensuring every campaign has adequate provisions and a clear retreat, so that no warrior is lost to a logistical error.",
+    "Set ambushes on the enemy's necessary routes to win at small cost, refusing to stake the whole clan's cavalry on one open battle."
+  ],
+  "Values": [
+    "Discipline is the life of cavalry, because he believes an undisciplined horse force, however brave, is only a crowd, so he shows no mercy to those who break orders.",
+    "Calculation over bravado, because he is convinced a careful ambush preserves strength better than ten reckless charges, a lesson he learned on the battlefield.",
+    "Practicality and fairness, because he seldom makes enemies but treats every subordinate alike, believing only just orders win true obedience from soldiers."
+  ],
+  "Fears": [
+    "Fears that a miscalculated ambush will trap the whole cavalry in a canyon with no way out, and he will carry that irreparable responsibility for the rest of his life.",
+    "Fears that discipline will slacken during long years of peace, so that his men cannot respond when a real crisis comes and the clan loses its footing on the steppe."
+  ],
+  "SpeechStyle": "Khorilartai speaks steadily, often in military terms. He gives brief orders, never repeats them, and allows no objection. With fellow officers he states the stakes plainly and backs his view with one or two figures.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_3b",
+  "HeroName": "Filippa Galardo",
+  "Description": "Countess Filippa Galardo presides as the revered chatelaine of Segni, hailing from an ancient baronial lineage of Latium. Master of feudal tenancy law, domestic administration, and estate finance, Filippa governs the expansive castle complexes of Segni while Count Paolo commands in the field, directing granaries, civic justice, and defensive repairs. Balancing gracious noble warmth with firm executive authority, she institutes charitable hospices to relieve the impoverished, earning profound devotion from her people. Countess Filippa directed the sprawling castle administration of Segni with meticulous accounting and executive poise, opening granaries to relieve hungry peasants during harsh winters and embodying the Christian charity and administrative brilliance of a high-born chatelaine. Amidst perilous political upheavals, she protected her household with maternal devotion and flawless financial stewardship, transforming Segni Castle into a prosperous haven of order, abundance, and enduring loyalty for the entire Conti clan. Her spotless moral rectitude, transparent accounting, and compassionate famine relief ensure that Countess Filippa remains celebrated in song across the noble halls of southern Italy. Her selfless charity, vigilant care, and gracious hospitality ensure that Segni flourishes with peace, abundance, and enduring stability through every changing season. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain fortress supplies, financial solvency, and defense readiness throughout the county of Segni.",
+    "Promote pious charitable works to enhance the spiritual standing and moral authority of the Conti house."
+  ],
+  "Values": [
+    "Domestic harmony, Christian charity, and dedicated execution of maternal and feudal duties.",
+    "Moral discipline, protective care for tenant families, and unwavering reverence for God."
+  ],
+  "Fears": [
+    "Hostile raids torching the fertile vineyards and olive mills across the mountain valleys of Segni.",
+    "Corrosive political intrigues or heretical ideas corrupting the spiritual integrity of her kin."
+  ],
+  "SpeechStyle": "Speaks with serene maternal dignity, polished aristocratic courtesy, and crisp administrative clarity. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

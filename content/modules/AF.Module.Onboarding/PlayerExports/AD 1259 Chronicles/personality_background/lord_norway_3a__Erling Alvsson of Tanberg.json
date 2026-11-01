@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_3a",
+  "HeroName": "Erling Alvsson of Tanberg",
+  "Description": "Baron Erling Alvsson of Tanberg was a preeminent Norwegian magnate, royal lendmann, and lord of extensive hereditary estates across Ringerike and Borgarsyssel. In 1259, Erling commanded one of the most formidable private cavalry forces in southern Norway, holding judicial authority over strategic commercial transit ways. Possessing deep genealogical roots intimately tied to ancient royal houses and the highest clerical hierarchies, he was an indispensable powerhouse within the national council of magnates. Erling served King Hákon IV as a vigilant warden of the southeastern marches, fortifying coastal watchtowers and suppressing illicit cross-border smuggling with iron discipline. Fiercely proud of his aristocratic heritage, he stood as an immovable champion of baronial privileges against encroaching crown centralism, navigating royal power with shrewd diplomacy. As the father of the legendary corsair-baron Alv Erlingsson ('Mindre-Alv'), Erling cemented Tanberg as one of the towering political dynastic bastions of high medieval Scandinavia. Across Ringerike, Baron Erling constructed extensive stone irrigation canals and river shipping docks, introducing advanced German lumber milling and iron-smelting technologies that enriched his estates. At the royal council of magnates, his thunderous eloquence repeatedly resisted unilateral royal encroachment upon feudal baronial liberties. Combining the battlefield courage of a veteran knight with the expansive statecraft of a regional potentate, he wielded unshakeable authority in thirteenth-century Norway.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage.",
+    "Pursue noble honor and defend the ancestral rights of the lineage."
+  ],
+  "Values": [
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law.",
+    "Feudal fidelity, knightly valor, and customary law."
+  ],
+  "Fears": [
+    "The dishonor of the family name and defeat in conflict.",
+    "The dishonor of the family name and defeat in conflict."
+  ],
+  "SpeechStyle": "Speaks with formidable baronial haughtiness and gravelly resolve, asserting ancient noble prerogatives with unapologetic aristocratic pride.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

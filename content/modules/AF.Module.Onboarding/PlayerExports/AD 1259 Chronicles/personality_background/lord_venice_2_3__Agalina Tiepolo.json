@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_3",
+  "HeroName": "Agalina Tiepolo",
+  "Description": "Lady Agalina Tiepolo is the twenty-one-year-old daughter of Admiral Lorenzo and Marchesina, blending the refined classical beauty of Venice with the proud heritage of her crusader forebears. Fluent in Occitan, French, and Greek, Agalina converses effortlessly with foreign knights and curial envoys. Nurtured in her father's aggressive martial spirit, she possesses an intuitive grasp of Mediterranean naval geopolitics, celebrated as one of the most brilliant and courted noblewomen of the Republic. Fluent in Mediterranean court languages and commercial law, Agalina Tiepolo exhibits sharp geopolitical acumen, her radiant self-assurance and cultured elegance captivating visiting ambassadors in the grand reception halls of Venice. Combining crusader nobility with Venetian commercial ambition, Agalina moves through patrician salons with effortless grace, prepared to uphold her family's illustrious name through an honorable and strategic marriage alliance. Her radiant poise, courtly wit, gracious hospitality, and musical accomplishments ensure that Agalina Tiepolo remains celebrated across the noble halls of southern Europe. Her quiet strength, analytical mind, and aristocratic grace make Agalina a beacon of promise for the glorious future of the Tiepolo house. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure an illustrious dynastic match that solidifies the Tiepolo faction's supremacy in the senate.",
+    "Master Mediterranean maritime geography to exert sophisticated diplomatic influence across court circles."
+  ],
+  "Values": [
+    "Patrician autonomy, dynastic prestige, and devout Christian faith above passive obedience.",
+    "Intellectual depth, cultural brilliance, and sovereign contempt for shallow ostentation."
+  ],
+  "Fears": [
+    "Being coerced into an uninspiring political marriage that strips her of intellectual agency.",
+    "Naval catastrophes abroad bringing grief and peril to her celebrated father and brothers."
+  ],
+  "SpeechStyle": "Speaks with lyrical courtly polish, sharp geopolitical wit, and radiant Mediterranean self-assurance. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

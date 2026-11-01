@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_gaelic_2_4",
+  "HeroName": "Fionnuala Ní Briain",
+  "Description": "Fionnuala Ní Briain is the cherished young princess of Thomond and the beloved youngest daughter of King Conor. Only seven years old in 1259, she is raised within the safe, sun-drenched orchards of Clonroad Castle, surrounded by the tender devotion of her mother and the protective affection of veteran housecarls. Possessed of a sweet, bright disposition and radiant green eyes, little Fionnuala loves chasing butterflies along the riverbanks of the Fergus and listening wide-eyed to ancient fairy-tales recited by royal harpists. Though she is shielded from the brutal realities of Anglo-Norman warfare, the rhythmic thud of armored hooves and clashing weapons form an indelible backdrop to her childhood. Whenever her father and brothers return from campaign, the little princess rushes to the postern gate bearing wild apples and clover garlands, melting the grim battle-weariness of hardened axemen with her innocent joy. Within the secluded apple orchards of Clonroad Castle, little Fionnuala delights in chasing river dragonflies and weaving clover chaplets; her sweet, untroubled laughter brings radiant light into the austere warrior halls, making her the cherished darling of grizzled kerns who would gladly lay down their lives to protect her innocence and joy.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Play freely in the castle orchards and hear enchanting harp songs every evening.",
+    "Pray for her father and brothers to return safely and happily from every campaign."
+  ],
+  "Values": [
+    "Sweet filial affection and the peaceful warmth of home.",
+    "Gentle kindness to animals, nursemaids, and childhood companions."
+  ],
+  "Fears": [
+    "Frightening midnight gales and howling wolves beyond the ramparts.",
+    "Her beloved father and brothers being away at war for too long."
+  ],
+  "SpeechStyle": "Speaks with sweet, chiming toddler innocence, gentle, affectionate, and brimming with unshielded wonder and playful laughter.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

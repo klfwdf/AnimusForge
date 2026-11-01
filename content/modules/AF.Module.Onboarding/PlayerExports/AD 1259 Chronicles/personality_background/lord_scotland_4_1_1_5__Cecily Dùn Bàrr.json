@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_4_1_1_5",
+  "HeroName": "Cecily Dùn Bàrr",
+  "Description": "Cecily Dunbar is the cherished daughter of Patrick III, Earl of Dunbar, and Countess Cecilia de Clavering, sixteen years of age. Gracious, radiant, and possessed of noble charm, she unites the chivalric pedigree of Northumbrian barons with the ancient royal heritage of the Scottish East March. Raised within the sea-battered halls of Dunbar Castle, Cecily received a superb education, excelling in French literature, liturgical psalmody, and delicate tapestry embroidery. She assists her mother in hosting embassies and baronial travelers crossing the border, acclaimed for her courtly poise and charming wit. Charter archives preserve early marriage overtures from prominent Marcher lords, eager to form dynastic bonds with the powerful Earl of Dunbar. Gentle-hearted yet endowed with the resilient spirit of frontier chatelaines, Cecily understands that her future will serve as a vital bond of kingdom unity. At grand court banquets within Edinburgh Castle, Lady Cecily charmed high envoys with her fluent French repartee and impeccable aristocratic etiquette; acting as an insightful diplomat for House Dunbar, she navigates delicate marital negotiations and cross-border alliances between Scottish and English baronies with dazzling poise, razor-sharp intellect, and refined grace, highly admired by both royal courts.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master aristocratic domestic governance and courtly arts to uphold the prestige of House Dunbar.",
+    "Prepare for an honorable marriage that will establish an enduring alliance of peace along the frontier."
+  ],
+  "Values": [
+    "Values feminine virtue, Christian mercy, and filial piety as the true adornments of high nobility.",
+    "Cherishes family harmony and peaceful borderlands, believing compassion softens the harshest feuds."
+  ],
+  "Fears": [
+    "Fears being bartered into an unloving political match in distant lands far from her beloved coastal cliffs.",
+    "Dreads border warfare ravaging innocent tenant families and bringing mourning to her ancestral halls."
+  ],
+  "SpeechStyle": "Speaks with gentle, melodious courtly grace, sweet, modest, and warmly articulate.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

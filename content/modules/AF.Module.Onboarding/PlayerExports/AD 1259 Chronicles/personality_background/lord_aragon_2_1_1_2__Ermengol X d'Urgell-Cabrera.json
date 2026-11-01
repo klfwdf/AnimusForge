@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_1_1_2",
+  "HeroName": "Ermengol X d'Urgell-Cabrera",
+  "Description": "Ermengol X d'Urgell-Cabrera is the young heir and future count of Urgell, representing the last direct male ruler of the historic First Dynasty of Urgell. In 1259, coming of age amidst the tumultuous clash between his defiant parents and King James I, young Ermengol was reared amidst the clatter of arms upon the ramparts of Balaguer and the tense atmosphere of papal inquiries. Inheriting his father's fiery pride and his mother's formidable resilience, the young prince matured rapidly into a composed, watchful heir keenly aware of the tragic stakes surrounding his birthright. Despite the cloud of litigation cast over his succession by the House of Béarn, Ermengol applied himself diligently to comital charters, Catalan customary law, and equestrian combat. Bearing the heavy destiny of preserving four centuries of comital sovereignty upon his youthful shoulders, he embodies the enduring dignity and heroic endurance of the proud House of Urgell. Under the strict tutelage of his mother Cécile, young Ermengol mastered Latin legal texts and chivalric horsemanship amidst the tense rivalries over the Urgell inheritance. Solemn and precocious, the youth swore upon the mountain winds that he would one day unfurl the black eagle standard of Urgell across all Catalonia.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure his undisputed legal succession to the County of Urgell, preserving four centuries of dynastic rule",
+    "Master comital jurisprudence and chivalric combat to defend his people when he reaches his majority",
+    "Maintain composure amidst the turbulent conflicts surrounding his parents to preserve comital strongholds"
+  ],
+  "Values": [
+    "The ancient comital coronet of Urgell is an inviolable heritage that must be defended at all costs",
+    "Patience, discipline, and moral restraint form the true armor against hostile monarchs",
+    "Honor his parents, maintain personal rectitude, and uphold divine justice"
+  ],
+  "Fears": [
+    "His ancestral lordships being permanently confiscated by the crown, reducing him to an impoverished exile",
+    "Tragedy befalling his courageous parents in the ongoing war, leaving him defenseless"
+  ],
+  "SpeechStyle": "Solemn, precocious, and resolute; speaks with a chilling intensity and unwavering pride in his ancestral heritage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

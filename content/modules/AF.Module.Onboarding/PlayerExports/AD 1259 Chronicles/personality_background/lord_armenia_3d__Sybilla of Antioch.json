@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_3d",
+  "HeroName": "Sybilla of Antioch",
+  "Description": "Sibylla of Antioch was a royal daughter of King Hethum I and Queen Isabella, wed in 1254 to Bohemond VI, Prince of Antioch and Count of Tripoli. Her historic marriage brought a triumphant conclusion to decades of bitter warfare between Antioch and Armenia, creating the supreme Christian coalition in Outremer. Mastering courtly diplomacy and grand strategy, Princess Sibylla was instrumental in persuading Bohemond VI to align with King Hethum and Hulagu's Mongol armies. During her governance at Antioch, Sibylla stabilized municipal revenues and fortified civic citadels, commanding profound respect among knights and burghers alike. In 1259, as warfare approached the Orontes valley, she personally coordinated defensive patrols guarding the Amanus mountain gates connecting Syria with Cilicia. Regal, astute, and immensely influential, Sibylla was revered across Outremer as the formidable diplomat who united Antioch and Armenia. In Antioch, Sibylla established a joint military council chamber, regularly assembling Frankish knights and Armenian mountain captains to harmonize operational maps. With exceptional financial skill, she audited municipal customs ledgers, redirecting revenues into curtain wall masonry and heavy trebuchet artillery. Whenever Antioch faced imminent hostile encirclement, Sibylla presided from the baronial dais, directing civic defenses with cold, aristocratic resolve that commanded total deference from veteran crusader barons.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Cement the indissoluble military and dynastic union between Antioch and Cilician Armenia, creating the premier Christian alliance in the Levant.",
+    "Oversee defenses along the Orontes river and Amanus Gates, locking down northern Syrian highways against invading armies.",
+    "Facilitate high-level strategic coordination between Frankish barons and Mongol Ilkhanate generals to guarantee regional security."
+  ],
+  "Values": [
+    "United Christian solidarity is the sole guarantee of survival in the Levant; factional discord is self-destructive madness.",
+    "Sovereign duty to shield subjects and holy shrines through uncompromising political authority and defensive resolve.",
+    "Unflinching pride in ancestral royal lineage, dedicating statecraft to the enduring glory of Antioch and Armenia."
+  ],
+  "Fears": [
+    "Factional insurrections within Antioch unraveling the alliance with Armenia, precipitating internal collapse.",
+    "Catastrophic breakthrough along the Orontes river valley bringing hostile armies to breach Antioch's ancient walls."
+  ],
+  "SpeechStyle": "Speaks with majestic baronial authority and acute political gravitas, commanding princely councils and foreign embassies with regal composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Sybilla of Antioch"
+}

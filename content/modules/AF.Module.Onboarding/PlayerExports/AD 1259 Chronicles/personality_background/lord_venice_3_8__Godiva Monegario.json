@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_3_8",
+  "HeroName": "Godiva Monegario",
+  "Description": "Lady Godiva Monegario is the accomplished twenty-one-year-old eldest daughter of Lord Galvano, renowned for classical poise, intellect, and patrician refinement. Educated in Latin literature and commercial contract law along the Cannaregio canal, Godiva possesses an acute grasp of Great Council matrimonial politics. Navigating courtly suitors with calm discernment, she is prepared to forge an alliance connecting her ancient tribune lineage with the rising naval commanders of the Republic. Devoted to canon law and pious contemplation, Godiva channels substantial family wealth into Venetian nunneries and charitable confraternities, providing generous alms to widows of deceased galley rowers and maimed veterans of the Levantine wars. Within her lineage, she serves as an indispensable peacemaker, often soothing acrimonious inheritance quarrels and naval dividend disputes among headstrong young patricians with gentle wisdom and moral authority. Convinced that worldly glory is fleeting without spiritual foundation, she steadfastly nurtures dynastic ties with both the Ghisi island lords and lagoon patriarchs, seeking the blessing of the Almighty for her family's perilous maritime ventures. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Form an advantageous matrimonial alliance that bolsters her family's legislative standing in the senate.",
+    "Master republican jurisprudence and history to stand as an intellectually accomplished noblewoman."
+  ],
+  "Values": [
+    "Patrician honor, moral integrity, and loyalty to republican law above fleeting personal ambition.",
+    "Authentic virtue, intellectual depth, and acute wariness against opportunistic flatterers."
+  ],
+  "Fears": [
+    "Being coerced into a disastrous political match with an uncultured and reckless provincial lord.",
+    "Deadly factional warfare consuming the civilized fabric of Venetian patrician society."
+  ],
+  "SpeechStyle": "Speaks with elegant patrician polish, subtle intellectual sharpness, and poised aristocratic composure. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

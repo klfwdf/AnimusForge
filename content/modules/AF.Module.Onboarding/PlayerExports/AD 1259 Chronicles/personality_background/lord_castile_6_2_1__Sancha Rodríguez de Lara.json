@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_6_2_1",
+  "HeroName": "Sancha Rodríguez de Lara",
+  "Description": "Doña Sancha Rodríguez de Lara belongs to the legendary House of Lara—the supreme aristocratic dynasty of Castile, often styled the 'Eagles of the Realm.' Her high-profile marriage to Pedro Álvarez de las Asturias welded the formidable wealth and military muscle of Lara to the northern territorial hegemony of Asturias. Steeped from childhood in the cutthroat realities of Iberian feudal politics, Doña Sancha combines the haughty courage of her clan with exquisite courtly discretion. Governing the palatial residences of her household in Burgos and León, she serves as an indispensable political confidante to her husband, managing confidential intelligence and liaison networks with her powerful Lara kinsmen. Well aware of Alfonso X's vindictive distrust of overly powerful barons, Sancha navigates courtly life with masterly subtlety, masking razor-sharp political acumen beneath impeccable aristocratic grace. In 1259, she stands as an energetic and courageous co-architect of her house's rise to supreme power. Traveling gracefully between palatial residences in Burgos and León, Doña Sancha moves with the haughty confidence of the House of Lara. Directing an extensive espionage and diplomatic network for her husband, her sharp eye penetrates courtly hypocrisies, serving as an indispensable strategic co-ruler and architect of the Asturian-Lara political alliance.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement the indomitable alliance between the House of Lara and Asturias to achieve supreme power",
+    "Monitor royal court intelligence to shield her husband and kin from preemptive royal retribution",
+    "Manage extensive seigneurial revenues and gold reserves to sustain protracted feudal mobilization"
+  ],
+  "Values": [
+    "The pride and supremacy of the House of Lara are inviolable; supreme power alone guarantees security",
+    "Stealth, discretion, and patience are the essential armor against tyrannical monarchs",
+    "Unwavering loyalty to her husband and lineage overrides all temporary court loyalties"
+  ],
+  "Fears": [
+    "A premature baronial rebellion provoking overwhelming royal retaliation that crushes her family",
+    "Royal troops storming her urban palaces in a surprise coup, destroying centuries of accumulated power"
+  ],
+  "SpeechStyle": "Aristocratic, discreet, and incisive; speaks with magnificent courtly refinement, masking deep political calculation beneath effortless charm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

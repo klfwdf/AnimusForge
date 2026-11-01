@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Crusader_Mamluk_Tactical_Truce",
+  "Keywords": [
+    "Crusader Mamluk Tactical Truce",
+    "Acre Safe Passage Logistics",
+    "Anti Mongol Convergence",
+    "Pragmatic Outremer Diplomacy"
+  ],
+  "RagShortTexts": [
+    "Facing Mongol destruction, Acre Crusaders granted Mamluk forces unmolested passage and grain."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In a display of cold geopolitical pragmatism, the Frankish barons of Acre refused Bohemond's call to submit to the Mongols, granting safe transit and grain replenishment to Sultan Qutuz's Mamluk army encamped beneath Acre's ramparts, enabling them to march south unmolested toward Goliath's Spring."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Papal legates might preach damnation against aiding infidels, but the barons of Outremer understand survival. The Mamluks trade and respect truces; the Mongols raze and slaughter without distinction. Between extinction and compromise, we chose life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Looking over Acre's parapets at tens of thousands of Mamluk cataphracts peacefully filling their waterskins was uncanny. Men who traded lances last season now passed loaves of barley bread across the palisades."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Market day brought gold from Cairo into Frankish stalls. When emperors and sultans sign pacts, common merchants pocket silver and thank the saints that arrows remain in their quivers for another sunrise."
+    }
+  ],
+  "TextMappings": []
+}

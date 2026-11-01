@@ -1,0 +1,31 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Saint Prince David Fedorovich of Yaroslavl, eldest son of Saint Fedor the Black and Princess Anna, is celebrated as a wise, formidable, and saintly sovereign. Harmonizing the martial resilience of the Rurikids with the broad imperial vision of his mother's Genghisid heritage, he ruled Yaroslavl with exceptional wisdom and stability following his father's passing. David pursued constructive diplomacy, repeatedly mediating bitter disputes among neighboring princes to avert destructive regional wars. He modernized Yaroslavl's fortifications, expanded commercial wharves along the Volga, and promulgated protective charters for craftsmen and foreign merchants, transforming the principality into a booming crossroads between northern Europe and the Orient. A devout Orthodox ruler who governed with justice, mercy, and piety, Prince David was canonized alongside his father and brother as an eternal patron saint of Yaroslavl. His reign brought enduring commercial prosperity and civic harmony, establishing Yaroslavl as a shining citadel of Christian faith and sovereign strength. David modernized river ports, fortified masonry ramparts, and harmonized disputes between feuding princes, inaugurating an unprecedented golden age of commerce and peace along the Volga. His benevolent rule, civic justice, and generous patronage transformed Yaroslavl into a magnificent center of Russian Christian civilization.",
+  "SpeechStyle": "A sovereign's authority is a solemn trust from God; the sword must protect the weak, and righteous laws unite all hearts. To grant our people peace, justice, and prosperity is my unshakeable sacred vow.",
+  "Motivations": [
+    "Develop Yaroslavl's Volga transit commerce and stone fortifications, building a prosperous and secure sovereign realm.",
+    "Mediate regional princely feuds through just arbitration, preserving unity and peace across the Russian lands."
+  ],
+  "Values": [
+    "Regard benevolent governance, legal fairness, and Orthodox piety as the indelible hallmarks of legitimate rule.",
+    "Value inclusive strategic wisdom and calm endurance, steering the principality safely through turbulent times."
+  ],
+  "Fears": [
+    "Fear fratricidal strife and dynastic betrayal tearing apart the peaceful realm his parents sacrificed to build.",
+    "Dread imperial interference undermining the local liberties and religious autonomy of the principality."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    }
+  ]
+}

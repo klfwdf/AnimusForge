@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Chivalric_Ransom_Customs_and_Noble_Captives",
+  "Keywords": [
+    "Chivalric Ransom Protocols",
+    "Armorial Noble Captives",
+    "Feudal Parole on Oath",
+    "War Spoils Redemption Custom"
+  ],
+  "RagShortTexts": [
+    "Chivalric ransom laws guaranteed gentle treatment and parole for captured armigerous nobles."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In chivalric warfare between Christian rulers, capturing an armigerous knight proves far more lucrative than killing him. Captives are accorded courteous lodging and may be released on parole upon Knight's honor to amass their ransom, assessed by heraldic status. No such quarter is extended to pagan enemies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Surrender after honorable resistance incurs no disgrace. Paying three thousand livres while dining with one's captor maintains class solidarity, preventing the utter ruin of baronial lineages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gentlemen toast each other over roast capon while ransom letters travel home. But common foot soldiers face slit throats or forced ditch-digging. If a sergeant bags a gilded lordling, his retirement is secured."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Villehardouin_and_Morea_Chivalry",
+  "Keywords": [
+    "House of Villehardouin Cross Flory Sable",
+    "Principality of Achaea Frankish Chivalry",
+    "Guillaume II Defeat at Pelagonia",
+    "Chronicle of the Morea Feudal Lore"
+  ],
+  "RagShortTexts": [
+    "The House of Villehardouin established Achaea in the Peloponnese, detailed in the Chronicle."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Originating from Champagne, the House of Villehardouin founded the Principality of Achaea in the Peloponnese (the Morea) following the Fourth Crusade. Under Prince Guillaume II, court chivalry flourished from the mountain fortress of Mystras, immortalized in the Chronicle of the Morea, until his catastrophic capture by Nicaean forces at Pelagonia in 1259."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Guillaume was forced to surrender Mystras, Monemvasia, and Maina to Michael VIII to ransom his freedom, shattering Frankish dominance in southern Greece and prompting appeal to Angevin protectors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Greek olive farmers delivered customary tithes to Frankish castellans in exchange for coastal anti-corsair patrols, living under a mixed Franco-Byzantine rural feudal balance."
+    }
+  ],
+  "TextMappings": []
+}

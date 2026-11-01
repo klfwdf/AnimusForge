@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Haro_and_Lords_of_Biscay",
+  "Keywords": [
+    "House of Haro Two Wolves Rampant",
+    "Lords of Biscay Basque Domain",
+    "Gernika Sacred Oak Liberties",
+    "Cantabrian Iron and Basque Navies"
+  ],
+  "RagShortTexts": [
+    "The House of Haro ruled Biscay under the two-wolves crest, wielding Basque iron and sea power."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hereditary Lords of Biscay in the Basque country, the House of Haro carried two black wolves gripping lambs on silver. Swearing oaths beneath the sacred Oak of Gernika to preserve local fueros (customary charters), they controlled rich Cantabrian iron mines and formidable Basque naval squadrons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Diego López de Haro exercised supreme influence at court; the crown could neither levy troops nor demand maritime levies in Biscay without Haro's assent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ]
+      },
+      "Content": "Basque seamen brave treacherous Bay of Biscay storms with tough iron-fastened keels. Whalers and harpooners on Haro cogs repel corsairs with savage proficiency."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Battle_of_Pelagonia_Triumph",
+  "Keywords": [
+    "Battle of Pelagonia 1259",
+    "Frankish Coalition Annihilation",
+    "Michael VIII Decisive Victory",
+    "Byzantine Restoration Turning Point"
+  ],
+  "RagShortTexts": [
+    "The 1259 Battle of Pelagonia crushed Latin Frankish power, clearing Michael VIII's path to."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In late 1259 in the valley of Pelagonia, John Palaiologos marshaled the Nicaean army to crush the combined coalition of Prince William II of Achaea, Michael II of Epirus, and Manfred of Sicily's German heavy horse, delivering a fatal blow to Western Latin hegemony in Greece."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "William of Villehardouin and his premier Frankish chivalry were paraded in fetters before Emperor Michael VIII. With Achaea broken and Epirus fleeing, the usurping Latin regime behind the walls of Constantinople was utterly isolated from Western Christendom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Cuman horse archers feigned retreat, luring armored Frankish destriers into marshland before encircling them with whistling shafts. By dusk, the finest heavy knights of Morea were butchered or dismounted in the muck."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Greek villagers blessed icons of the Theotokos in the olive groves. For half a century Latin crusaders seized our tithes, but the True Roman Emperor has broken their iron grip on the mountains."
+    }
+  ],
+  "TextMappings": []
+}

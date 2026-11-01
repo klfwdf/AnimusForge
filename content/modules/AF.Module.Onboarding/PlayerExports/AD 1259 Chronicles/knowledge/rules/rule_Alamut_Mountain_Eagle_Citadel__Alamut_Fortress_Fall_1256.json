@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Alamut_Mountain_Eagle_Citadel",
+  "Keywords": [
+    "Alamut Fortress Fall 1256",
+    "Old Man of Mountain Eyrie",
+    "Nizari Ismaili Library",
+    "Alborz Mountain Redoubt"
+  ],
+  "RagShortTexts": [
+    "Alamut Castle, long deemed impenetrable in the Alborz cliffs, fell to Hulagu's siege."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Perched upon sheer crags of the Alborz Mountains, Alamut Castle served for centuries as the unassailable seat of the Nizari Ismaili order. Accessible solely via a narrow ledge path, it housed legendary libraries. In 1256, Hulagu Khan's Chinese engineers dragged dismantled siege engines up the cliffs, compelling surrender and dismantling its towers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "For generations, princes trembled at the Old Man of the Mountain's daggers, paying tribute to avoid assassination. Yet the Mongol siege apparatus proved that even mountain eyries crumble before organized engineering."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "scholar",
+          "priest",
+          "artisan"
+        ]
+      },
+      "Content": "The greatest tragedy of Alamut was the destruction of its magnificent library, home to unmatched astronomical and philosophical codices. Only a handful of Qurans were rescued before the rest served as fuel for cooking fires."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Medieval_Feasting_Etiquette_and_Trenchers",
+  "Keywords": [
+    "Feudal Banqueting Table Etiquette",
+    "Stale Bread Trenchers Plate",
+    "Seated Above or Below the Salt",
+    "Peacock Presentation and Ewer Washing"
+  ],
+  "RagShortTexts": [
+    "Medieval feasts used trenchers of stale bread, placing guests strictly 'above or below the."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The great hall feast served as the primary theater of feudal hospitality and social hierarchy. Guests washed fingers in rosewater ewers before sitting strictly ranked: dignitaries sat 'above the salt' near the dais lord, while squires sat below. Meals were served atop thick slabs of four-day-old stale bread (trenchers) absorbing gravies from roasted venison."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Carvers and cupbearers performed elaborate ritual service. At the meal's end, gravy-soaked trenchers were swept into baskets and distributed to paupers at the castle gate as lordly alms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Huge hearths roast whole oxen on timber spits. Securing a crust of bread drenched in rich deer lard from the castle scullery is a banquet feast for a laborer's family."
+    }
+  ],
+  "TextMappings": []
+}

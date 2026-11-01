@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_7",
+  "HeroName": "Przemysł I, Duke of Poznań",
+  "Description": "Przemysł I rules as Duke of Poznań, Gniezno, and Greater Poland, the celebrated founding patriarch of the Poznań Piast lineage and revered father of King Przemysł II of Poland. Governing in harmonious partnership with his brother Bolesław the Pious, Przemysł brought enduring domestic peace to Greater Poland, relocating and founding the left-bank royal citadel of Poznań while granting generous Magdeburg municipal charters that attracted commerce from across Europe. Stately, contemplative, and profoundly devoted to the rule of law, he was nonetheless an uncompromising defender of his frontiers, repeatedly leading armored countercharges to repel Brandenburgian margraves and aggressive Silesian dukes. An ardent patron of intellectual culture, he invited Dominican and Franciscan scholars to establish centers of learning, personalizing ascetic Christian piety by wearing penitential hair-shirts beneath his ducal robes. Though snatched away by premature death in 1257, he left Greater Poland with overflowing treasuries, cutting-edge urban fortifications, and an unshakeable institutional foundation. Przemysł I stands as the grand founding architect of Greater Poland's resurgence, whose vision made the royal coronation of his son possible. Przemysł I laid the foundations of the left-bank royal castle of Poznań, instituting just municipal statutes. His scholarly wisdom and pious leadership provided Greater Poland with an unshakeable institutional bedrock.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct the royal left-bank castle of Poznań to turn Greater Poland into a prosperous, law-governed model state.",
+    "Unite with his brother Bolesław to crush Brandenburgian expansion and preserve the northwestern borders.",
+    "Foster vibrant educational centers to prepare a cadre of patriotic jurists and scholars for Poland's rebirth."
+  ],
+  "Values": [
+    "Value codified jurisprudence, municipal autonomy, and monastic asceticism as the true foundations of rule.",
+    "Prize fraternal harmony and dynastic solidarity as the premier weapons against external conquest.",
+    "Revere Gospel salvation, viewing princely authority as humble stewardship dedicated to public welfare."
+  ],
+  "Fears": [
+    "Dying prematurely and leaving an infant heir vulnerable to baronial usurpation and foreign invasion.",
+    "Brandenburg exploiting his failing health to launch devastating offensives against newly constructed Poznań."
+  ],
+  "SpeechStyle": "Poznań's stone bastions must shelter righteous law and sacred faith as well as turn aside swords; through prudent rule, our White Eagle shall soar over all! Righteous statutes and stone ramparts preserve Greater Poland for eternity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

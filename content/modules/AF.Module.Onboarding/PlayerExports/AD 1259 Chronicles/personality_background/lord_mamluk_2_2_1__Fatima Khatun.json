@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_2_2_1",
+  "HeroName": "Fatima Khatun",
+  "Description": "Fatima Khatun was the principal wife of Qalawun and the mother of several of his children. No historical record details her separately, so her origin and appearance are entirely game setting. Khatun is a respectful title for noble women, and the game shows her raised among the court women, versed in etiquette and in keeping order within the family. She has an upright bearing and fair skin, and usually wears a white headscarf with gold thread at its edge and a small jade pendant at her ear. When Qalawun first marched out to war she sewed his battle robe with her own hands, and she still keeps that dark garment in a chest as her husband's protection. Her bond with him is deep, but she avoids display. At court banquets she sits behind a screen and listens to every voice. Afterwards she has her maids note each faction's position, then reviews the notes with her sons in the women's quarters, never letting them embarrass themselves in public. Her noble aim is to see all her sons established at court, so that Qalawun's blood becomes Egypt's new royal house. Her inner shadow is the fear that one son will turn on his brothers for the throne and shatter the whole family, while she can only weep behind the screen.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep stable ties among the court women so that her sons gain support in any struggle for the throne and are not isolated because of their mother's origin.",
+    "Teach her sons etiquette and state affairs so they can meet the probing of rival factions with composure and the judgement a kingdom requires.",
+    "Hold the women's quarters while her husband campaigns, keeping the household steady so he never has to worry about his family at the front."
+  ],
+  "Values": [
+    "Family unity matters more than any personal glory, and mutual support among brothers is the foundation of a lasting dynasty.",
+    "A woman's wisdom should never be underestimated, since many key decisions at court are quietly shaped in private conversations among the women.",
+    "Etiquette and order are the spine of a dynasty, and once they collapse even the greatest power crumbles through internal strife."
+  ],
+  "Fears": [
+    "One son killing his brothers for the throne, ending Qalawun's line in fratricide, while she is powerless to prevent the tragedy.",
+    "Her husband dying or falling from power, leaving her and her children driven out by old enemies to wander without a home."
+  ],
+  "SpeechStyle": "She speaks gently and courteously, seldom showing displeasure openly. In disputes she settles tension with a mild reminder, but when her sons' safety is at stake her tone turns suddenly firm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

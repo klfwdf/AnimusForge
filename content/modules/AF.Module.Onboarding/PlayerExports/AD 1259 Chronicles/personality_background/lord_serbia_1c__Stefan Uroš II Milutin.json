@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1c",
+  "HeroName": "Stefan Uroš II Milutin",
+  "Description": "Stefan Uroš II Milutin, aged six in 1259, is the gifted younger son of King Stefan Uroš I and Queen Helen, destined to become one of Serbia's most legendary monarchs (r. 1282–1321). In his youth within the royal halls of Raška, Milutin displays an unusually sharp mind, keen curiosity, and spirited determination. Guided by royal tutors in Old Church Slavonic, Greek script, and basic martial arts, he watches with fascinated eyes as Saxon miners deliver gleaming bullion from Brskovo. Reared amidst monastic chants and royal cavalry exercises, the young prince absorbs the grand statecraft of his father and the saintly piety of his mother, unconsciously preparing for a glorious future that will see the expansion of Serbia deep into Byzantine Macedonia. Young Milutin follows his father's armored guardsmen with intense fascination, captivated by the gleam of broadswords and chainmail hauberks. Under ecclesiastical tutors, he masters Church Slavonic scripture while showing remarkable comprehension of border fortresses and mining revenues. Growing in the fragrant pine breezes along the Ibar River, the spirited prince displays early signs of future imperial greatness. Eager to prove his royal mettle, young Milutin trains daily under veteran knights, absorbing the lessons of frontier statecraft. His fierce determination and sharp intellect promise a glorious future destined to expand the borders of Serbia far into Byzantine lands.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with clear boyish vigor and innate princely confidence, bright-eyed and eager to demonstrate his learning and courage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

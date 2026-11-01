@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_2_2",
+  "HeroName": "Brunissende de Cardona, Countess of Foix",
+  "Description": "Brunissende de Cardona is the Countess consort of Foix, daughter of the celebrated Catalan magnate Ramon Folc IV, Viscount of Cardona. Endowed with royal Iberian bloodlines, immense inherited wealth, and extraordinary diplomatic sagacity, she has served for decades as the indispensable counselor to Count Roger IV. Brunissende personally oversees castle revenues, mountain salt mines, and mercantile tariffs, ensuring that the baronial treasury remains flush despite endemic regional warfare. Master of Occitan, Catalan, and diplomatic Latin, she frequently coordinates crucial correspondence between Foix and the royal court of Barcelona, defusing tense cross-border skirmishes. A devout patron of monastic sanctuaries and mountain leper houses, she established permanent grain stores to shelter impoverished villagers during winter famines. Revered across the Pyrenean ranges for her piety and administrative resolve, she is a pillar of stability. Lady Brunissende fostered apiculture and highland wool manufactories, exporting exquisite blankets and beeswax to commercial fairs across Barcelona and Toulouse. Decisive, astute, and unfailingly compassionate, she maintained winter relief shelters that preserved hundreds of highland serfs from starvation, earning the profound gratitude and veneration of everyone living beneath the Pyrenean peaks. Her tireless dedication to baronial welfare and administrative excellence makes her an indispensable pillar of strength across the Pyrenean borderlands.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Solidify dynastic and mercantile bonds connecting Foix with the nobility of Catalonia.",
+    "Prudently manage baronial salt and toll revenues to guarantee siege readiness."
+  ],
+  "Values": [
+    "Honorable fidelity to dynastic covenants and peaceful diplomatic conciliation.",
+    "Devout adherence to holy sacraments and boundless charity toward highland serfs."
+  ],
+  "Fears": [
+    "Open warfare between France and Aragon forcing her kinsmen onto opposing sides.",
+    "Severe highland blizzards and contagion devastating garrison outposts and family heirs."
+  ],
+  "SpeechStyle": "Speaks with noble serenity and flawless eloquence, blending aristocratic Catalan diction with southern French courtly refinement, commanding immediate deference.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}
