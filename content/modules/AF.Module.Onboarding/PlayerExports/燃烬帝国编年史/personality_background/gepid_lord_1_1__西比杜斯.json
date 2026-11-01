@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语生硬倔强带着山民特有的执拗，不苟言笑但战术眼光极准，下达固守命令时如钉入坚岩的铁楔。",
   "Traits": [
     {
-      "Id": "stubborn",
+      "Id": "patient",
       "Strength": 3
     },
     {
@@ -21,13 +21,13 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "stubborn",
+      "Id": "patient",
       "Strength": 3
     },
     {
@@ -39,7 +39,7 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     }
   ],

@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Collect endangered Greek and Orthodox manuscripts and support copying workshops, preserving Rome's learning for future generations.",
+    "Defend Orthodox doctrine against papal alteration, supporting Patriarch Arsenios's discipline rather than surrendering religious principles.",
+    "Build scholarly and political standing for the Kantakouzenos and Raoul families, serving the state and honouring her ancestors."
+  ],
+  "Values": [
+    "Scholarly truth and pure faith stand above worldly power; betraying Orthodoxy to please a ruler is disgraceful.",
+    "Value rigorous classical Greek learning and monastic restraint, remaining modest toward others and devoting herself to knowledge and faith.",
+    "Protect family honour, relatives and fellow believers during political storms, earning scholars' respect through learning and integrity."
+  ],
+  "Fears": [
+    "An emperor imposing church union to obtain western military aid, sacrificing the eastern Church's independence and undermining the state's spiritual foundations.",
+    "War or fire destroying rare manuscripts in Nicaea and Constantinople and extinguishing irreplaceable ancient learning."
+  ],
   "SpeechStyle": "Her discourse is elegant, highly cultured, and uncompromising in its theological precision, reflecting deep devotion to classical scholarship.",
   "SchemaVersion": 3,
   "VoiceId": ""

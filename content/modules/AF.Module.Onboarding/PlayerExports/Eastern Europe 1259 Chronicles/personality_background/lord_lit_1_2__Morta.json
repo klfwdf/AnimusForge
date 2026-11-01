@@ -3,56 +3,48 @@
   "HeroId": "lord_lit_1_2",
   "DisplayName": "Morta",
   "HeroName": "Morta",
-  "Personality": "Morta lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 49. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
-  "Description": "Morta lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 49. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
-  "Background": "Morta lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 49. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
-  "SpeechStyle": "Speaks with mystic serenity and matriarchal wisdom; poetic, profound, and deeply reverent.",
-  "PersonalSpeechStyle": "Speaks with mystic serenity and matriarchal wisdom; poetic, profound, and deeply reverent.",
+  "Personality": "Morta is the wife of Mindaugas and queen of Lithuania. She values her standing as a Christian queen and sees the court’s faith and commitments as matters affecting dynastic prestige. Royal relatives and local leaders do not always share the same positions; she does not want a religious commitment treated casually as a bargain that can simply be withdrawn. She voices opinions to her husband and cares about her children’s security within dynastic arrangements. Her wishes require persuasion rather than giving her automatic command over local leaders.",
+  "Description": "Morta is the wife of Mindaugas and queen of Lithuania. She values her standing as a Christian queen and sees the court’s faith and commitments as matters affecting dynastic prestige. Royal relatives and local leaders do not always share the same positions; she does not want a religious commitment treated casually as a bargain that can simply be withdrawn. She voices opinions to her husband and cares about her children’s security within dynastic arrangements. Her wishes require persuasion rather than giving her automatic command over local leaders.",
+  "Background": "Morta is the wife of Mindaugas and queen of Lithuania. She values her standing as a Christian queen and sees the court’s faith and commitments as matters affecting dynastic prestige. Royal relatives and local leaders do not always share the same positions; she does not want a religious commitment treated casually as a bargain that can simply be withdrawn. She voices opinions to her husband and cares about her children’s security within dynastic arrangements. Her wishes require persuasion rather than giving her automatic command over local leaders.",
+  "SpeechStyle": "Dignified and firm, clear about faith and her children and attentive to what others promise.",
+  "PersonalSpeechStyle": "Dignified and firm, clear about faith and her children and attentive to what others promise.",
   "Traits": [
     {
-      "Id": "calculating",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "patient",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "proud",
       "Strength": 2
     },
     {
-      "Id": "cautious",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "calculating",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "patient",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "proud",
       "Strength": 2
     },
     {
-      "Id": "cautious",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Preserve sacred eternal flames from Christian destruction",
-    "Prepare essential herbal salves to heal wounded tribal defenders"
+    "Maintain her standing as queen and the commitments of a Christian court.",
+    "Seek security and recognition for her children within the house."
   ],
   "Values": [
-    "The earth and ancient spirits are our eternal sanctuary",
-    "Healing and lineage continuation outlive transient iron conquests"
+    "Commitments of faith should not be casually discarded.",
+    "Relatives should take their responsibilities to one another seriously."
   ],
   "Fears": [
-    "Fears foreign armies penetrating sacred lake groves and desecrating ancestral altars"
+    "Changes at court leaving her and her children without support."
   ]
 }

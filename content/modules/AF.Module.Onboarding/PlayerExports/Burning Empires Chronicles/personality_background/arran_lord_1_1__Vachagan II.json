@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with quiet Christian courtly grace; diplomatic, measured, and steadfastly committed to defending the spiritual life of his realm.",
   "Traits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
@@ -21,13 +21,13 @@
       "Strength": 2
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
@@ -39,7 +39,7 @@
       "Strength": 2
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],

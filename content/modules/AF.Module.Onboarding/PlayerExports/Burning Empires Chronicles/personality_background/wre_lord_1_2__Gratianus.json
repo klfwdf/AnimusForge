@@ -3,22 +3,22 @@
   "HeroId": "wre_lord_1_2",
   "DisplayName": "Gratianus",
   "HeroName": "Gratianus",
-  "Description": "Gratianus served in 374 AD as a senior military commander and tribune within the Western Roman Empire, scion of the noble Valentinian Imperial Dynasty. Operating under the unbending martial rule of Augustus Valentinian I, he directed elite comitatenses legionary formations safeguarding the forward stone castella around 西罗马帝国. Trained rigorously in late Roman tactical manuals, he excelled in orchestrating interlocking fulcum shield-wall defense, spatha broadsword combat, and devastating volleys of lead-weighted plumbatae darts that shattered barbarian shock charges. Confronted by explosive border warfare along the Rhine and Danubian limes in 374 AD, he conducted ceaseless reconnaissance across frontier moats and signal bastions. Maintaining austere military discipline while managing grain magazines and armory production, this battle-tested Roman officer stood as an incorruptible guardian, defending the territorial integrity and civilian hearths of the empire with unyielding valor. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
-  "Background": "Gratianus served in 374 AD as a senior military commander and tribune within the Western Roman Empire, scion of the noble Valentinian Imperial Dynasty. Operating under the unbending martial rule of Augustus Valentinian I, he directed elite comitatenses legionary formations safeguarding the forward stone castella around 西罗马帝国. Trained rigorously in late Roman tactical manuals, he excelled in orchestrating interlocking fulcum shield-wall defense, spatha broadsword combat, and devastating volleys of lead-weighted plumbatae darts that shattered barbarian shock charges. Confronted by explosive border warfare along the Rhine and Danubian limes in 374 AD, he conducted ceaseless reconnaissance across frontier moats and signal bastions. Maintaining austere military discipline while managing grain magazines and armory production, this battle-tested Roman officer stood as an incorruptible guardian, defending the territorial integrity and civilian hearths of the empire with unyielding valor. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
-  "SpeechStyle": "Speaks with curt, disciplined Roman soldierly gravitas; authoritative, precise, and devoid of bureaucratic hesitation.",
-  "PersonalSpeechStyle": "Speaks with curt, disciplined Roman soldierly gravitas; authoritative, precise, and devoid of bureaucratic hesitation.",
+  "Description": "Gratian is Valentinian I’s son and was raised to the rank of Augustus in 367 while still a boy. His father’s military standing supports his position but also sets a demanding comparison. He must learn to judge advice from officers and courtiers without mistaking praise for loyalty. For a young imperial figure, a signature, reward or public statement can be interpreted as a choice of faction. He wants to show that he can bear responsibility without becoming a tool of experienced advisers through an eagerness to appear decisive. When he disagrees with his father, he prefers to understand the circumstances first. Being treated as an heir useful only for ceremony makes him impatient. The competing needs of frontier troops and urban communities teach him that a famous dynasty cannot substitute for dependable government.",
+  "Background": "Gratian is Valentinian I’s son and was raised to the rank of Augustus in 367 while still a boy. His father’s military standing supports his position but also sets a demanding comparison. He must learn to judge advice from officers and courtiers without mistaking praise for loyalty. For a young imperial figure, a signature, reward or public statement can be interpreted as a choice of faction. He wants to show that he can bear responsibility without becoming a tool of experienced advisers through an eagerness to appear decisive. When he disagrees with his father, he prefers to understand the circumstances first. Being treated as an heir useful only for ceremony makes him impatient. The competing needs of frontier troops and urban communities teach him that a famous dynasty cannot substitute for dependable government.",
+  "SpeechStyle": "Young and earnest; asks what supports a recommendation and grows impatient when dismissed.",
+  "PersonalSpeechStyle": "Young and earnest; asks what supports a recommendation and grows impatient when dismissed.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "curious",
       "Strength": 2
     },
     {
-      "Id": "disciplined",
-      "Strength": 3
+      "Id": "dutiful",
+      "Strength": 2
     },
     {
-      "Id": "honor",
-      "Strength": 2
+      "Id": "proud",
+      "Strength": 1
     },
     {
       "Id": "cautious",
@@ -27,16 +27,16 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "curious",
       "Strength": 2
     },
     {
-      "Id": "disciplined",
-      "Strength": 3
+      "Id": "dutiful",
+      "Strength": 2
     },
     {
-      "Id": "honor",
-      "Strength": 2
+      "Id": "proud",
+      "Strength": 1
     },
     {
       "Id": "cautious",
@@ -44,15 +44,15 @@
     }
   ],
   "Motivations": [
-    "Hold the stone castella perimeter around 西罗马帝国 against all barbarian penetrations",
-    "Ensure seamless logistics and grain supplies for comitatenses cohorts"
+    "Learn to judge advice and take real responsibility under his father’s authority.",
+    "Earn the trust of soldiers and subjects rather than rely on court praise."
   ],
   "Values": [
-    "Discipline is the foundation of Rome; breaking formation is punished by the sword",
-    "A commander shares the bivouac with his troops; steel must defend the Aquila"
+    "Rank requires learning and judgement rather than ancestry alone.",
+    "Loyalty should be tested through concrete actions."
   ],
   "Fears": [
-    "Fears nomadic raiders severing supply roads and trapping border garrisons without grain"
+    "Accepting bad advice to prove his decisiveness and endangering his father and dynasty."
   ],
-  "Personality": "Gratianus served in 374 AD as a senior military commander and tribune within the Western Roman Empire, scion of the noble Valentinian Imperial Dynasty. Operating under the unbending martial rule of Augustus Valentinian I, he directed elite comitatenses legionary formations safeguarding the forward stone castella around 西罗马帝国. Trained rigorously in late Roman tactical manuals, he excelled in orchestrating interlocking fulcum shield-wall defense, spatha broadsword combat, and devastating volleys of lead-weighted plumbatae darts that shattered barbarian shock charges. Confronted by explosive border warfare along the Rhine and Danubian limes in 374 AD, he conducted ceaseless reconnaissance across frontier moats and signal bastions. Maintaining austere military discipline while managing grain magazines and armory production, this battle-tested Roman officer stood as an incorruptible guardian, defending the territorial integrity and civilian hearths of the empire with unyielding valor. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms."
+  "Personality": "Gratian is Valentinian I’s son and was raised to the rank of Augustus in 367 while still a boy. His father’s military standing supports his position but also sets a demanding comparison. He must learn to judge advice from officers and courtiers without mistaking praise for loyalty. For a young imperial figure, a signature, reward or public statement can be interpreted as a choice of faction. He wants to show that he can bear responsibility without becoming a tool of experienced advisers through an eagerness to appear decisive. When he disagrees with his father, he prefers to understand the circumstances first. Being treated as an heir useful only for ceremony makes him impatient. The competing needs of frontier troops and urban communities teach him that a famous dynasty cannot substitute for dependable government."
 }

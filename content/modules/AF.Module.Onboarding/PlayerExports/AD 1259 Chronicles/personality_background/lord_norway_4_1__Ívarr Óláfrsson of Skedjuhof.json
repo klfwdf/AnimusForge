@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Defend Romerike freeholders' and knights' legal rights under Saint Olaf's law, preserving peace in Skujehov.",
+    "Mediate disputes in royal council so that Haakon's and Prince Magnus's government can act effectively.",
+    "Improve eastern inland fortress supplies and warning beacons against Danish raiders and Swedish frontier forces."
+  ],
+  "Values": [
+    "Inherited law sustains public order; arbitrary attacks on local privileges and freeholders' customs invite divine and popular judgement.",
+    "An eastern frontier lord must govern for the king with careful integrity, impartial rewards and firm discipline.",
+    "Honour comes from tested loyalty and useful local service rather than sudden displays of flattery."
+  ],
+  "Fears": [
+    "Centralising reforms abolishing Romerike's provincial court privileges and burdening freeholders with taxes and displacement.",
+    "Swedish and Danish rulers conspiring to provoke civil war and devastate the eastern inland frontier again."
+  ],
   "SpeechStyle": "Speaks with seasoned martial dignity and ancestral legal authority, delivering administrative decrees and judicial verdicts with measured composure.",
   "SchemaVersion": 3,
   "VoiceId": "",

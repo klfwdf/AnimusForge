@@ -9,29 +9,29 @@
   "PersonalSpeechStyle": "Speaks with stark, storm-hardened steppe resonance; grave, unflinching, and carrying the heavy burden of a doomed frontline defiance.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "proud",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "proud",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],

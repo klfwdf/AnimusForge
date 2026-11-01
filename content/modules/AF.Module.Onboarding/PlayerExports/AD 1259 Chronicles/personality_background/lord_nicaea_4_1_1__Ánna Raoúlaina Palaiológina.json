@@ -1,7 +1,7 @@
 {
   "HeroId": "lord_nicaea_4_1_1",
   "HeroName": "Ánna Raoúlaina Palaiológina",
-  "Description": "Ánna Raoúlaina Palaiológina was the cultured and defiant daughter of Protovestiarios John Raoul Petraliphas and the famed scholar Theodora Raoulaina. Reared in the aristocratic salons of Nicaea in 1259, Anna was blessed with brilliant classical education and fierce Orthodox conviction, inherited from her celebrated mother. When Emperor Michael VIII forced the Union of Lyons upon the empire in 1274, Anna stood in the vanguard of the aristocratic resistance alongside her mother, refusing to bow to imperial coercion. She utilized her personal dowry to shelter imprisoned anti-unionist monks, financing secret scriptoria that transcribed treatises defending Orthodox liturgical dogmas against Latin theology. Imprisoned and subjected to asset seizures by the crown, Anna bore persecution with haughty imperial disdain, scorning compromises with heretics. Her intellectual brilliance and martyrdom in defense of religious purity established her as one of the most revered noble heroines of the late Byzantine church. Under imperial house arrest in Constantinople, Anna translated Latin patristic refutations into classical Greek beneath her nun's habit. Scorning imperial bribes and decrees of clemency, she sat upon her wooden pallet heaping erudite scorn upon royal apologists who compromised Orthodox dogma. Undaunted by imprisonment, Anna stood as an unbending monument of theological defiance, revered across monasteries as a living martyr whose intellectual brilliance humbled the crown.",
+  "Description": "Ánna Raoúlaina Palaiológina was the cultured and defiant daughter of Protovestiarios John Raoul Petraliphas and the famed scholar Theodora Raoulaina. Reared in the aristocratic salons of Nicaea in 1259, Anna was blessed with brilliant classical education and fierce Orthodox conviction, inherited from her celebrated mother. She utilized her personal dowry to shelter imprisoned anti-unionist monks, financing secret scriptoria that transcribed treatises defending Orthodox liturgical dogmas against Latin theology. Imprisoned and subjected to asset seizures by the crown, Anna bore persecution with haughty imperial disdain, scorning compromises with heretics. Her intellectual brilliance and martyrdom in defense of religious purity established her as one of the most revered noble heroines of the late Byzantine church. Under imperial house arrest in Constantinople, Anna translated Latin patristic refutations into classical Greek beneath her nun's habit. Scorning imperial bribes and decrees of clemency, she sat upon her wooden pallet heaping erudite scorn upon royal apologists who compromised Orthodox dogma. Undaunted by imprisonment, Anna stood as an unbending monument of theological defiance, revered across monasteries as a living martyr whose intellectual brilliance humbled the crown.",
   "Traits": [
     {
       "Id": "proud",
@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Follow her mother Theodora in defending Orthodoxy, refusing submission to papal demands regardless of personal cost.",
+    "Use private wealth to aid imprisoned or exiled Orthodox monks and scholars and preserve rare manuscripts for the eastern Church.",
+    "Maintain the Raoul family's honour and learning, keeping principle during political storms and setting an example of independence from power."
+  ],
+  "Values": [
+    "Religious truth and spiritual freedom exceed imperial threats; abandoning conviction for wealth or office is disgraceful.",
+    "Value rigorous classical learning and monastic restraint, remaining modest toward others but unyielding in faith and scholarship.",
+    "Keep her mother's teaching and family dignity through persecution, remaining composed and principled before danger."
+  ],
+  "Fears": [
+    "Imposed church union destroying Orthodox legitimacy, leading subjects to betray their ancestors' faith and exposing the empire to divine judgement.",
+    "Court agents raiding her mother's monastic library and burning irreplaceable classical and patristic manuscripts."
+  ],
   "SpeechStyle": "Her words are incisive, brilliant, and fiercely uncompromising, reflecting deep patristic scholarship and utter contempt for imperial heresy.",
   "SchemaVersion": 3,
   "VoiceId": ""

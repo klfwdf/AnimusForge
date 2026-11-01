@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Preserve the Branas and former Laskarid families' standing under the Palaiologans, keeping their descendants safe during the redistribution of power.",
+    "Use estate revenues for Orthodox charity, monasteries and the repair of war-damaged churches, benefiting subjects and protecting the family.",
+    "Manage the Caesar's household and support her husband Constantine's government and defence of the European provinces."
+  ],
+  "Values": [
+    "Accept providence and fulfil dynastic duties without intrigue, acting practically, modestly and calmly.",
+    "Value devotion and monastic charity above wealth, dedicating honour to God and the family's good name.",
+    "Keep aristocratic propriety, govern the household well and treat others kindly and modestly despite political upheaval."
+  ],
+  "Fears": [
+    "The new dynasty purging suspected Laskarid relatives, imprisoning innocents and confiscating the family's ancestral estates.",
+    "Renewed war in Europe destroying repaired monasteries and exposing innocent refugees to another disaster."
+  ],
   "SpeechStyle": "Her words are calm, gracious, and steeped in ancestral imperial nobility, reflecting deep reverence for church institutions.",
   "SchemaVersion": 3,
   "VoiceId": ""

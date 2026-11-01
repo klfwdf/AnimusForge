@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Strengthen the stone fortress at the Glomma's mouth against mounted raiders threatening Viken.",
+    "Train southeastern leidang militia under Borgarting military custom to resist stronger enemies in forests and marshes.",
+    "Protect harvests around Heimnes and enforce strict discipline against garrison troops who abuse local farmers."
+  ],
+  "Values": [
+    "A frontier officer must defend his ground while he lives and refuse enemy forces passage across the Glomma line.",
+    "Strict discipline allows a small garrison to resist stronger forces; abandoning posts or fleeing battle demands uncompromising punishment.",
+    "Prefer practical preparation to empty words, ensuring that every ration and crossbow bolt is ready for a possible attack."
+  ],
+  "Fears": [
+    "Floods breaching the Glomma's banks and destroying outposts, allowing an enemy waterborne attack to collapse the Heimnes line.",
+    "The court dismantling frontier towers and river chains during peace talks and exposing unprotected civilians and defenders."
+  ],
   "SpeechStyle": "Speaks with seasoned administrative firmness, military discipline, and calm resolve, executing royal decrees and judicial duties with unshakeable duty.",
   "SchemaVersion": 3,
   "VoiceId": "",

@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with venomous rage and ferocious passion; defiant, bloodthirsty, and utterly consumed by the oath to avenge King Gabinius.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -23,7 +23,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

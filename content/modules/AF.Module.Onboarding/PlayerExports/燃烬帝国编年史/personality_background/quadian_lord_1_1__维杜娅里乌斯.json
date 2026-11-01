@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语中充满不共戴天的复仇烈焰，声嘶力竭高呼战神之名，眼神凶戾如狂狼，令人闻之丧胆。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -23,7 +23,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

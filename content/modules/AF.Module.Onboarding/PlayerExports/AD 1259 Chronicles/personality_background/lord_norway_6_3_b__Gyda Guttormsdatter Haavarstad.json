@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Develop Havardstad fields and fisheries, using grain and wool revenues to finance Bolt expansion.",
+    "Build influence at Viken noble gatherings and marriages, creating a durable eastern alliance for the Bolt family.",
+    "Educate her children, preparing the eldest for frontier command and the youngest for law, administration and learned service."
+  ],
+  "Values": [
+    "Military power and strong estates must support one another; productive lands sustain the warriors who secure the family's future.",
+    "A noblewoman must keep calm judgement and counsel a recklessly ambitious husband, preserving the household's final safeguard.",
+    "Treat estate labourers and tenants well and improve mills and irrigation; cultivators' goodwill sustains lasting food and tax revenues."
+  ],
+  "Fears": [
+    "Long border wars reaching Havardstad and burning ancestral grain fields and wool workshops.",
+    "Her husband's ambition drawing him into a succession struggle and bringing a royal purge upon innocent children and the household."
+  ],
   "SpeechStyle": "Speaks with composed domestic grace, gentle dignity, and hospitable warmth, overseeing clan affairs with quiet aristocratic wisdom.",
   "SchemaVersion": 3,
   "VoiceId": "",

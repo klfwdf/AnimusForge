@@ -3,56 +3,56 @@
   "HeroId": "lord_lit_1_1",
   "DisplayName": "King Mindaugas",
   "HeroName": "King Mindaugas",
-  "Personality": "Mindaugas (c. 1203–1263) reigned as the first and only crowned King of Lithuania, forging a united realm from disparate pagan forest clans through ruthless statecraft. Having accepted Latin baptism in 1251 to gain papal recognition from Innocent IV, he maintained shrewd pragmatic ties to ancestral Baltic pagan customs. In 1259 AD, as Burundai's Mongol host compelled Galicia to dismantle its southern bastions and pagan Samogitians crushed crusader forces at Skuodas, Mindaugas maneuvered with extraordinary cunning. Mobilizing forest warriors, he initiated fortified stone works across the lake redoubts of Trakai while covertly backing Duke Treniota's anti-Teutonic uprisings. Navigating between Roman papal legates, pagan shamans, and Ruthenian princes, this iron-willed sovereign cemented Lithuanian independence amid the crossfire of medieval Europe. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
-  "Description": "Mindaugas (c. 1203–1263) reigned as the first and only crowned King of Lithuania, forging a united realm from disparate pagan forest clans through ruthless statecraft. Having accepted Latin baptism in 1251 to gain papal recognition from Innocent IV, he maintained shrewd pragmatic ties to ancestral Baltic pagan customs. In 1259 AD, as Burundai's Mongol host compelled Galicia to dismantle its southern bastions and pagan Samogitians crushed crusader forces at Skuodas, Mindaugas maneuvered with extraordinary cunning. Mobilizing forest warriors, he initiated fortified stone works across the lake redoubts of Trakai while covertly backing Duke Treniota's anti-Teutonic uprisings. Navigating between Roman papal legates, pagan shamans, and Ruthenian princes, this iron-willed sovereign cemented Lithuanian independence amid the crossfire of medieval Europe. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
-  "Background": "Mindaugas (c. 1203–1263) reigned as the first and only crowned King of Lithuania, forging a united realm from disparate pagan forest clans through ruthless statecraft. Having accepted Latin baptism in 1251 to gain papal recognition from Innocent IV, he maintained shrewd pragmatic ties to ancestral Baltic pagan customs. In 1259 AD, as Burundai's Mongol host compelled Galicia to dismantle its southern bastions and pagan Samogitians crushed crusader forces at Skuodas, Mindaugas maneuvered with extraordinary cunning. Mobilizing forest warriors, he initiated fortified stone works across the lake redoubts of Trakai while covertly backing Duke Treniota's anti-Teutonic uprisings. Navigating between Roman papal legates, pagan shamans, and Ruthenian princes, this iron-willed sovereign cemented Lithuanian independence amid the crossfire of medieval Europe. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
-  "SpeechStyle": "Commands with predatory pagan intensity; resonant, cunning, and fiercely decisive.",
-  "PersonalSpeechStyle": "Commands with predatory pagan intensity; resonant, cunning, and fiercely decisive.",
+  "Personality": "Mindaugas is king of Lithuania, baptized and crowned in 1253. His authority rests on competition, alliances and recognition among other leaders; the crown has not erased local interests. Peace with the Livonian Order and Christian kingship have opened diplomatic channels while bringing disputes over land rights and inherited beliefs. Samogitian leaders do not all act at his direction, and their campaigns cannot all be treated as his orders. Queen Morta and children of different mothers belong to the same dynastic network without necessarily sharing religious positions or succession interests. He prefers to retain both negotiation and pressure, asks supporters for practical help and distrusts obedience bought with too many promises.",
+  "Description": "Mindaugas is king of Lithuania, baptized and crowned in 1253. His authority rests on competition, alliances and recognition among other leaders; the crown has not erased local interests. Peace with the Livonian Order and Christian kingship have opened diplomatic channels while bringing disputes over land rights and inherited beliefs. Samogitian leaders do not all act at his direction, and their campaigns cannot all be treated as his orders. Queen Morta and children of different mothers belong to the same dynastic network without necessarily sharing religious positions or succession interests. He prefers to retain both negotiation and pressure, asks supporters for practical help and distrusts obedience bought with too many promises.",
+  "Background": "Mindaugas is king of Lithuania, baptized and crowned in 1253. His authority rests on competition, alliances and recognition among other leaders; the crown has not erased local interests. Peace with the Livonian Order and Christian kingship have opened diplomatic channels while bringing disputes over land rights and inherited beliefs. Samogitian leaders do not all act at his direction, and their campaigns cannot all be treated as his orders. Queen Morta and children of different mothers belong to the same dynastic network without necessarily sharing religious positions or succession interests. He prefers to retain both negotiation and pressure, asks supporters for practical help and distrusts obedience bought with too many promises.",
+  "SpeechStyle": "Careful in wording and asks what support the other party can provide; firm about slights without turning every disagreement into a religious showdown.",
+  "PersonalSpeechStyle": "Careful in wording and asks what support the other party can provide; firm about slights without turning every disagreement into a religious showdown.",
   "Traits": [
-    {
-      "Id": "daring",
-      "Strength": 3
-    },
     {
       "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "ruthless",
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
       "Strength": 2
     },
     {
-      "Id": "ambitious",
-      "Strength": 3
+      "Id": "proud",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
-      "Strength": 3
-    },
-    {
       "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "ruthless",
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
       "Strength": 2
     },
     {
-      "Id": "ambitious",
-      "Strength": 3
+      "Id": "proud",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Construct impenetrable lake fortifications at Trakai",
-    "Exploit Samogitian revolts to sever crusader communications"
+    "Consolidate royal authority and contain potentially independent local leaders.",
+    "Preserve room for negotiation with the Order, Rus’ relatives and local groups."
   ],
   "Values": [
-    "Sovereignty is forged by blood and iron, not baptismal water",
-    "Alliances are disposable tools for Baltic supremacy"
+    "A recognized crown still needs real support.",
+    "Alliance should not mean unlimited surrender of land and authority."
   ],
   "Fears": [
-    "Fears internal factional coups orchestrated by disgruntled pagan and Christian boyars"
+    "Dynastic and local interests pulling away at the same time."
   ]
 }

@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Keep Cuman troops loyal to the Palaiologan house and supply skilled mounted archers to defend the empire's frontiers.",
+    "Reconcile nomads with Greek subjects in Asia Minor, encouraging Orthodox integration and settled agriculture to secure prosperous family lands.",
+    "Teach the next generation both civil and military arts, combining steppe courage with imperial education to honour both families."
+  ],
+  "Values": [
+    "Cultural inclusion and honest dealing unite a diverse empire; prejudice and mistreatment of submitted soldiers invite disaster.",
+    "Remain faithful to husband and family through war, combining practical judgement with quiet firmness and exemplary conduct.",
+    "Uphold Orthodoxy and family harmony, bringing steppe settlers into the faith while protecting stability among the empire's peoples."
+  ],
+  "Fears": [
+    "Unpaid or excluded Cuman commanders mutinying and destroying a pillar of imperial defence in Asia Minor.",
+    "Noble prejudice against steppe newcomers erasing generations of family service and exposing them to suspicion and false accusations."
+  ],
   "SpeechStyle": "Her voice is gentle and diplomatic, demonstrating patient understanding that easily reconciles proud steppe warriors with court protocol.",
   "SchemaVersion": 3,
   "VoiceId": ""

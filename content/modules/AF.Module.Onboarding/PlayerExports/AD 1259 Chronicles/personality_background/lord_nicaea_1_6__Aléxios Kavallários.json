@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Lead imperial cavalry against enemy lines at Pelagonia and in Europe, winning military distinction in the emperor's service.",
+    "Refine cavalry charges and close combat to make the guard riders an exceptionally effective field force.",
+    "Defend his cousin Michael VIII's rule, destroy separatist rebellions and enlarge imperial territory in Greece."
+  ],
+  "Values": [
+    "A soldier must lead the charge and stand firm before strong enemies, accepting death rather than disgraceful flight.",
+    "Act decisively and openly, treating riders as comrades while sharing hardships and applying fair rewards and punishments.",
+    "Keep absolute loyalty to the Palaiologans, accepting the defence and restoration of Roman lands as the highest honour."
+  ],
+  "Fears": [
+    "Overconfident cavalry riding into an enemy crossbow ambush and losing veteran comrades, fatally weakening the army's line.",
+    "European commanders pursuing separate rewards and refusing cooperation, allowing defeated Latin forces to recover."
+  ],
   "SpeechStyle": "His voice is intense, thunderous, and electrifying, carrying the unstoppable momentum of a frontline cavalry captain.",
   "SchemaVersion": 3,
   "VoiceId": ""

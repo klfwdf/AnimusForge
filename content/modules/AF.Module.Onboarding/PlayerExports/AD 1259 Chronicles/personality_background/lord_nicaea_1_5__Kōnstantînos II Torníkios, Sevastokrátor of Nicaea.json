@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Protect the Tornikios family's Anatolian estates and prosperity while maintaining its central standing at the imperial court.",
+    "Fortify the Sangarios and Anatolian frontier against Turkish raiders, preserving the empire's eastern grain supply and workshops.",
+    "Maintain trust between Michael VIII and Asia Minor's military families, preventing arbitrary rule and preserving political stability."
+  ],
+  "Values": [
+    "Mature judgement and lawful government sustain a state; reckless enthusiasm and needless factional quarrels lead to decline.",
+    "Uphold old military honour and strict discipline, governing the family fairly through authority and benevolence rather than private corruption.",
+    "Remain loyal to Roman imperial authority, defending the frontier and its people without seeking empty personal fame."
+  ],
+  "Fears": [
+    "Excessive attention to Constantinople and Europe leaving Anatolia undefended and allowing Seljuk rulers to consume the empire's original base.",
+    "Courtiers purging Anatolian families as remnants of the old regime and provoking a destructive provincial rebellion."
+  ],
   "SpeechStyle": "His voice is resonant, solemn, and measured, commanding profound respect through decades of military experience and aristocratic gravity.",
   "SchemaVersion": 3,
   "VoiceId": ""

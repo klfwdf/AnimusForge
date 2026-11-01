@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语干脆有力带着低地海风的粗粝感，腰间飞斧从不离手，论断战事条理清晰，对虚伪的吹捧嗤之以鼻。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -27,7 +27,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

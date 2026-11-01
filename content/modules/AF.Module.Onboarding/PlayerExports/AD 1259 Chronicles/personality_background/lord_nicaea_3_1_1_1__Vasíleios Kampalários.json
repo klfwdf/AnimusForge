@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Lead heavy cavalry against invaders in Macedonia and Thrace, holding recovered territory and winning distinction for the empire.",
+    "Improve the family's warhorse breeding and supply guard cavalry with dependable mounts and armour for effective field charges.",
+    "Remain loyal to Marshal Tarchaneiotes and the Palaiologan court, obeying orders and honouring the Kampararios family in battle."
+  ],
+  "Values": [
+    "A soldier proves himself in battle; hesitation and fear of death are shameful, and a commander must lead courageously.",
+    "Keep comradeship and strict discipline, sharing bread, blankets and campaign hardships with his soldiers and treating them openly.",
+    "Honour his oath to the emperor, accepting defence of the frontier and its people as a duty worth his life."
+  ],
+  "Fears": [
+    "Dense crossbow fire in a mountain defile killing horses and trapping his cavalry, destroying veteran comrades and the whole operation.",
+    "Supply failures forcing a retreat in Europe and abandoning hard-won Macedonian territory to renewed western occupation."
+  ],
   "SpeechStyle": "His speech is direct, blunt, and soldierly, resonant with the fierce pride of a cavalry captain who leads every shock charge from the front.",
   "SchemaVersion": 3,
   "VoiceId": ""

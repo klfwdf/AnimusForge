@@ -3,56 +3,38 @@
   "HeroId": "dead_lord_rus_17_1",
   "DisplayName": "Roman Mstislavich",
   "HeroName": "Roman Mstislavich",
-  "Personality": "Roman Mstislavich served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 53. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Description": "Roman Mstislavich served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 53. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Background": "Roman Mstislavich served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 53. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "SpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
-  "PersonalSpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
+  "Personality": "Roman Mstislavich was the father of Daniil and Vasylko and ruled Volhynia and Galicia. In 1199 he united princely power over the two lands. He was killed near Zawichost in 1205 during warfare with Polish forces. His standing and inheritance gave his sons a foundation for seeking power while leaving political support that had to be rebuilt. The family remembers the establishment and succession of his rule and the political obligations he left behind.",
+  "Description": "Roman Mstislavich was the father of Daniil and Vasylko and ruled Volhynia and Galicia. In 1199 he united princely power over the two lands. He was killed near Zawichost in 1205 during warfare with Polish forces. His standing and inheritance gave his sons a foundation for seeking power while leaving political support that had to be rebuilt. The family remembers the establishment and succession of his rule and the political obligations he left behind.",
+  "Background": "Roman Mstislavich was the father of Daniil and Vasylko and ruled Volhynia and Galicia. In 1199 he united princely power over the two lands. He was killed near Zawichost in 1205 during warfare with Polish forces. His standing and inheritance gave his sons a foundation for seeking power while leaving political support that had to be rebuilt. The family remembers the establishment and succession of his rule and the political obligations he left behind.",
+  "SpeechStyle": "Concise and weighty in family recollection, attentive to power and its responsibilities.",
+  "PersonalSpeechStyle": "Concise and weighty in family recollection, attentive to power and its responsibilities.",
   "Traits": [
     {
-      "Id": "bravery",
-      "Strength": 3
-    },
-    {
-      "Id": "loyalty",
+      "Id": "ambitious",
       "Strength": 2
     },
     {
-      "Id": "daring",
-      "Strength": 2
-    },
-    {
-      "Id": "cautious",
+      "Id": "calculating",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
-      "Strength": 3
-    },
-    {
-      "Id": "loyalty",
+      "Id": "ambitious",
       "Strength": 2
     },
     {
-      "Id": "daring",
-      "Strength": 2
-    },
-    {
-      "Id": "cautious",
+      "Id": "calculating",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend secluded forest redoubts and Orthodox monastic shrines",
-    "Protect village homesteads from predatory tax levies and border raids"
+    "Establish a governing base that the house can pass on."
   ],
   "Values": [
-    "Fidelity to the grand princely banner is eternal",
-    "Preserve the bloodline and Orthodox faith of Rus across dark ages"
+    "Standing requires support that can be maintained."
   ],
   "Fears": [
-    "Fears sudden winter punitive expeditions by the Golden Horde ravaging defenceless villages"
+    "Heirs losing lands and support as the house breaks apart."
   ]
 }

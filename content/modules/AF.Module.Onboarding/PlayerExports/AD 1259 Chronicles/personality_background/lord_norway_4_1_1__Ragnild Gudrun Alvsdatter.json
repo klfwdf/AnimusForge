@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Manage Skujehov's granaries and weaving workshops so that family and retainers remain fed, clothed and orderly through winter.",
+    "Maintain Tanberg alliances with eastern Norwegian nobles through marriages and visits, opening royal careers for younger relatives.",
+    "Support Oslo diocesan charity, protecting war orphans and poor widows as a Christian duty of the household."
+  ],
+  "Values": [
+    "A noble household's character reflects its mistress; fair, dignified and generous conduct earns lasting respect.",
+    "Family security outweighs private advantage and requires clear judgement and patient firmness during political storms.",
+    "Use wealth to relieve local suffering so that Skujehov is known for compassion as well as power."
+  ],
+  "Fears": [
+    "Young relatives dying recklessly in border warfare, leaving Skujehov without a legitimate heir and provoking an inheritance struggle.",
+    "Severe plague and famine on Norway's coast destroying the estate's prosperity and the livelihoods of its many tenants."
+  ],
   "SpeechStyle": "Speaks with serene maternal dignity, polished aristocratic grace, and calm assurance, managing noble household alliances with measured wisdom.",
   "SchemaVersion": 3,
   "VoiceId": "",

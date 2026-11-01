@@ -9,37 +9,29 @@
   "PersonalSpeechStyle": "嗓音沉着有力带着行伍刀兵的威严，下达军令时条理分明绝无迟疑，面对强敌时拔剑出鞘、神色自若。",
   "Traits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 2
     },
     {
       "Id": "disciplined",
       "Strength": 2
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 2
     },
     {
       "Id": "disciplined",
       "Strength": 2
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],

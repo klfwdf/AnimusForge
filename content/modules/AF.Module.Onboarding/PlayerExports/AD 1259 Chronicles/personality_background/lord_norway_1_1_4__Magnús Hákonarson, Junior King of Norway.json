@@ -1,7 +1,7 @@
 {
   "HeroId": "lord_norway_1_1_4",
   "HeroName": "Magnus Hákonarson, Junior King of Norway",
-  "Description": "Junior King Magnús Hákonarson, celebrated by history as Magnus the Lawmender (Magnús lagabœtir), was one of medieval Europe's greatest legislative monarchs. In 1259, governing as junior co-ruler alongside his father King Hákon IV, young Magnus immersed himself in canonical jurisprudence, Roman civil law, and ancient Nordic customs. He recognized that unchecked feudal blood feuds bled the nation's vitality, fiercely advocating the substitution of private vengeance with statutory royal justice. Foresighted and pragmatic, he would later negotiate the Treaty of Perth with Scotland, securing substantial annual tribute while consolidating peaceful trade ties across the North Sea. His crowning achievement was the drafting and promulgation of the revolutionary Landslov (National Law Code) of 1274, making Norway one of the very first unified realms in Christendom governed under a single statutory code. His intellectual magnanimity, compassionate reforms protecting women and the impoverished, and devotion to the rule of law immortalized him as a towering beacon of Scandinavian enlightenment. At Bergen, King Magnús assembled the realm's foremost jurists, canonists, and provincial lawmen, systematically reviewing centuries of contradictory provincial customs to forge the monumental Landslov of 1274. He abolished private blood-feud vendettas, establishing royal courts as the sole arbiter of civil justice and securing revolutionary statutory protections for vulnerable widows and impoverished tenants. His unswerving dedication to statutory equity and administrative enlightenment established Norway as a beacon of high medieval jurisprudence.",
+  "Description": "Junior King Magnús Hákonarson, celebrated by history as Magnus the Lawmender (Magnús lagabœtir), was one of medieval Europe's greatest legislative monarchs. In 1259, governing as junior co-ruler alongside his father King Hákon IV, young Magnus immersed himself in canonical jurisprudence, Roman civil law, and ancient Nordic customs. He recognized that unchecked feudal blood feuds bled the nation's vitality, fiercely advocating the substitution of private vengeance with statutory royal justice. Foresighted and pragmatic, he would later negotiate the Treaty of Perth with Scotland, securing substantial annual tribute while consolidating peaceful trade ties across the North Sea. His intellectual magnanimity, compassionate reforms protecting women and the impoverished, and devotion to the rule of law immortalized him as a towering beacon of Scandinavian enlightenment. He abolished private blood-feud vendettas, establishing royal courts as the sole arbiter of civil justice and securing revolutionary statutory protections for vulnerable widows and impoverished tenants. His unswerving dedication to statutory equity and administrative enlightenment established Norway as a beacon of high medieval jurisprudence.",
   "Traits": [
     {
       "Id": "dutiful",
@@ -21,18 +21,18 @@
     }
   ],
   "Motivations": [
-    "Pursue noble honor and defend the ancestral rights of the lineage.",
-    "Pursue noble honor and defend the ancestral rights of the lineage.",
-    "Pursue noble honor and defend the ancestral rights of the lineage."
+    "End blood vengeance and judicial duels, compiling a written code that unites Norwegian provinces under a just legal order.",
+    "Resolve disputes with Scotland and other neighbours through practical diplomacy while preserving Norwegian dignity and trading rights.",
+    "Strengthen legal protection for common people, widows and orphans against abuse by powerful lords."
   ],
   "Values": [
-    "Feudal fidelity, knightly valor, and customary law.",
-    "Feudal fidelity, knightly valor, and customary law.",
-    "Feudal fidelity, knightly valor, and customary law."
+    "Law balances justice and public peace; private violence perpetuates hatred, while lawful restraint allows stable government.",
+    "A ruler legislates under God for the welfare and justice of humble subjects rather than the display of military glory.",
+    "Reason and mercy must temper punishment; severity without tolerance and moral guidance becomes tyranny."
   ],
   "Fears": [
-    "The dishonor of the family name and defeat in conflict.",
-    "The dishonor of the family name and defeat in conflict."
+    "Reckless overseas expeditions exhausting public funds and exposing the country to renewed war and suffering.",
+    "Conservative lords and local thing courts rejecting written-law reform and restoring a fragmented legal order."
   ],
   "SpeechStyle": "Speaks with enlightened judicial serenity, articulate legal brilliance, and moral warmth, articulating statutory equity and royal governance with visionary poise.",
   "SchemaVersion": 3,

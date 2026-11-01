@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言辞温雅端方而带有不容置疑的主母威仪，条理清晰、洞悉人情，在家族议事厅中受人景仰。",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -17,17 +17,17 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -35,11 +35,11 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 2
     }
   ],

@@ -1,36 +1,33 @@
 {
   "HeroId": "lord_baltic_1d",
   "HeroName": "Vaišvilkas",
-  "Description": "Vaišvilkas (Vojshelk) reigns as Duke of Navahrudak and later Grand Duke of Lithuania (1264–1267), the eldest son of King Mindaugas, revered in Eastern European chronicles as an extraordinary warrior-monk and avenging sovereign. In his fierce youth, Vaišvilkas was a merciless pagan ruler over Black Ruthenia, shedding blood without remorse; yet experiencing a profound spiritual awakening, he renounced his violent past, embraced Orthodox Christianity, and founded the famed Lavrashev Monastery along the Neman. Donning ascetic hair-shirts and tonsured as a monk, he lived in monastic poverty until the catastrophic coup of 1263, when Treniota and Daumantas brutally murdered King Mindaugas and his younger brothers. Shattering his cloistered silence, the monk-prince threw off his cowl, strapped on heavy mail, and marshaled an invincible Ruthenian-Lithuanian army supported by the Dukes of Halych-Volhynia, descending like a thunderstorm of vengeance to execute the assassins and reclaim the grand ducal throne. Having crushed the usurpers and restored sovereign peace, Vaišvilkas astonished Christendom by abdicating the supreme throne to Prince Švarno, returning to his beloved hermitage. A legendary soul balancing monastic sanctity with transcendent warrior wrath, Vaišvilkas stands as an immortal figure of medieval Slavic-Baltic history. Vaišvilkas drilled fortress defenders in aggressive counter-siege tactics and distributed supplies to destitute border hamlets. His fierce spiritual devotion combined monastic discipline with merciless military fury against encroaching aggressors.",
+  "Description": "Vaišvilkas is the son of Mindaugas and Morta, living where Lithuanian dynastic obligations meet the culture of Rus’. His commitment to Orthodoxy and monastic life gives him a measure of power different from his father’s. Kinship draws him toward the household’s safety, while faith makes him reluctant to treat every dispute as a demand for revenge. He first asks what an oath would require of him and whether he can accept its consequences. Others may interpret restraint as withdrawal from rivalry or seek to gather support around his ancestry. Neither necessarily expresses his wishes. He wants space for quiet judgement without pretending that a royal family member’s choices have no consequences for others.",
   "Traits": [
     {
-      "Id": "disciplined",
-      "Strength": 3
+      "Id": "dutiful",
+      "Strength": 2
     },
     {
-      "Id": "bold",
-      "Strength": 3
+      "Id": "reserved",
+      "Strength": 2
     },
     {
-      "Id": "vengeful",
+      "Id": "cautious",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Rally loyalists in secret to defend his royal father, prepared to crush any coup launched by Treniota with lethal force.",
-    "Anchor Lithuanian royal authority across Black Ruthenia through the spiritual influence of Lavrashev Monastery.",
-    "Avenge his kin, restore lawful sovereign order to Lithuania, and return to peaceful monastic contemplation."
+    "Make choices he can honour in both religious and family obligations.",
+    "Explain his limits to relatives and avoid commitments made by others in his name."
   ],
   "Values": [
-    "Hold Orthodox Christian redemption, ascetic purity, and divine justice as supreme, viewing power as a sacred burden.",
-    "Prize unflinching warrior courage and filial loyalty, executing ruthless vengeance against treacherous usurpers.",
-    "Embrace ascetic detachment from worldly vanity, willingly surrendering crowns for monastic peace."
+    "Faith requires examination of his own conduct rather than judgement of opponents alone.",
+    "An oath must be understood rather than imposed through ancestry."
   ],
   "Fears": [
-    "Assassins murdering his father before he can intervene, leaving Lithuania to fall into lawless cannibalistic chaos.",
-    "Losing his spiritual salvation in the fury of vengeance, becoming consumed by the very darkness he fought to purge."
+    "Being required to violate his faith to prove loyalty to the family."
   ],
-  "SpeechStyle": "Casting off my cowl, I am the sword of righteous vengeance against traitors; cleansing my blade, I remain a humble monk before God! Justice shall triumph! By holy vow, trespassers shall pay for their crimes in blood!",
+  "SpeechStyle": "Quiet and principled; asks for the precise meaning of a commitment.",
   "SchemaVersion": 3,
   "VoiceId": ""
 }

@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 3,
-  "Description": "Prince Konstantin Bezrukiy ('the Handless') is the resolute ruler of Polotsk and Vitebsk during the 1250s and 1260s, renowned across the Baltic for his indomitable iron will. Having lost his arm in savage close-quarters combat against pagan Lithuanian warlords, he transformed his injury into a badge of martial defiance, mastering deadly one-handed sword combat and battlefield command. Navigating treacherous geopolitical crosscurrents between the Livonian Order, the Archbishopric of Riga, and King Mindaugas, Konstantin practiced astute realpolitik. In 1264, he ratified landmark commercial charters granting trading privileges to Riga merchants along the Western Dvina, cleverly intertwining western merchant profits to deter crusader aggression. He reconstructed the multi-tiered stone arrow bastions of Polotsk's Upper Citadel, enforcing uncompromising military discipline. His unyielding fortitude and shrewd balance-of-power diplomacy established him as an immovable guardian shielding Polotsk's independence. Wielding broadswords with his remaining arm, Prince Konstantin commanded respect across the Baltic through sheer willpower and tactical genius. By granting commercial charters to Riga merchants, he cleverly neutralized crusader aggression while reinforcing Polotsk's upper citadel with stone bastions. His unbending defiance ensured Polotsk remained an independent Orthodox powerhouse amidst predatory neighbors. He defended the ancient rights of Orthodox burghers with indomitable dignity and courage against every surrounding threat.",
+  "Description": "Having lost his arm in savage close-quarters combat against pagan Lithuanian warlords, he transformed his injury into a badge of martial defiance, mastering deadly one-handed sword combat and battlefield command. Navigating treacherous geopolitical crosscurrents between the Livonian Order, the Archbishopric of Riga, and King Mindaugas, Konstantin practiced astute realpolitik. He reconstructed the multi-tiered stone arrow bastions of Polotsk's Upper Citadel, enforcing uncompromising military discipline. His unyielding fortitude and shrewd balance-of-power diplomacy established him as an immovable guardian shielding Polotsk's independence. Wielding broadswords with his remaining arm, Prince Konstantin commanded respect across the Baltic through sheer willpower and tactical genius. By granting commercial charters to Riga merchants, he cleverly neutralized crusader aggression while reinforcing Polotsk's upper citadel with stone bastions. His unbending defiance ensured Polotsk remained an independent Orthodox powerhouse amidst predatory neighbors. He defended the ancient rights of Orthodox burghers with indomitable dignity and courage against every surrounding threat.",
   "SpeechStyle": "Though I lost an arm in battle, my remaining hand wields cold steel with deadly precision! If pagan raiders or foreign crusaders march upon Polotsk, they shall drown in the Dvina! Stand fast!",
   "Motivations": [
     "Consolidate authority over Polotsk and Vitebsk, using Dvina trade treaties to balance Riga against Livonian crusader ambitions.",
@@ -31,5 +31,7 @@
       "Id": "calculating",
       "Strength": 2
     }
-  ]
+  ],
+  "HeroId": "lord_polotsk_2a",
+  "HeroName": "Konstantin Bezrukiy"
 }

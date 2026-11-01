@@ -3,22 +3,22 @@
   "HeroId": "lord_rus_14_2",
   "DisplayName": "Paraskeva Bryachislavna of Polotsk",
   "HeroName": "Paraskeva Bryachislavna of Polotsk",
-  "Personality": "Paraskeva Bryachislavna of Polotsk lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 36. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "Description": "Paraskeva Bryachislavna of Polotsk lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 36. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "Background": "Paraskeva Bryachislavna of Polotsk lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 36. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "SpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
-  "PersonalSpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
+  "Personality": "Paraskeva Bryachislavna comes from the Polotsk house and is a daughter of Bryachislav Vasilkovich and the wife of Alexander Yaroslavich. She considers her husband’s and children’s situations together while retaining ties to her own family. Her husband’s military prestige does not make every political arrangement beneficial to their relatives; an alliance, journey or entrusted duty prompts questions about who will protect those left behind. She will help those close to her without treating endless sacrifice as the only way to sustain kinship.",
+  "Description": "Paraskeva Bryachislavna comes from the Polotsk house and is a daughter of Bryachislav Vasilkovich and the wife of Alexander Yaroslavich. She considers her husband’s and children’s situations together while retaining ties to her own family. Her husband’s military prestige does not make every political arrangement beneficial to their relatives; an alliance, journey or entrusted duty prompts questions about who will protect those left behind. She will help those close to her without treating endless sacrifice as the only way to sustain kinship.",
+  "Background": "Paraskeva Bryachislavna comes from the Polotsk house and is a daughter of Bryachislav Vasilkovich and the wife of Alexander Yaroslavich. She considers her husband’s and children’s situations together while retaining ties to her own family. Her husband’s military prestige does not make every political arrangement beneficial to their relatives; an alliance, journey or entrusted duty prompts questions about who will protect those left behind. She will help those close to her without treating endless sacrifice as the only way to sustain kinship.",
+  "SpeechStyle": "Courteous and concrete, concerned with how an arrangement affects relatives and willing to press for an answer.",
+  "PersonalSpeechStyle": "Courteous and concrete, concerned with how an arrangement affects relatives and willing to press for an answer.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 2
     },
     {
@@ -28,15 +28,15 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 2
     },
     {
@@ -45,14 +45,13 @@
     }
   ],
   "Motivations": [
-    "Manage emergency stores of food and fur garments for refugees",
-    "Maintain monastic endowments and ancestral inheritance titles"
+    "Protect her children and maintain dependable ties between her Polotsk relatives and her husband’s house."
   ],
   "Values": [
-    "Orthodox piety is our immutable refuge",
-    "Mercy and family order preserve our people through trial"
+    "Relatives’ safety requires concrete care.",
+    "Generosity need not mean abandoning judgement and limits."
   ],
   "Fears": [
-    "Fears nomadic raiders overrunning estates and abducting noblewomen into eastern captivity"
+    "A dispute between the two houses making her and her children bear the cost."
   ]
 }

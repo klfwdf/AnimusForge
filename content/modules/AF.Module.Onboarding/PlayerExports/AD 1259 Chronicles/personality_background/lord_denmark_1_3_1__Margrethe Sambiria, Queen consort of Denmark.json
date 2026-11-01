@@ -1,34 +1,36 @@
 {
   "SchemaVersion": 3,
-  "Description": "Queen Regent Margrethe Sambiria of Denmark, daughter of Duke Sambor II of Pomerania, stands in Scandinavian history under the legendary monikers 'Black Greta' and 'Sprænghest' (the Galloping Charger) as a titan of royal defense. When King Christoffer I was suddenly murdered in 1259, leaving ten-year-old King Eric V on a crumbling throne besieged by the dukes of Schleswig, domestic rebellions, and the naval sack of Copenhagen by Jaromar of Rügen, Margaret donned mail armor and took the field in person. As queen regent, she commanded royal armies, crushed peasant uprisings on Zealand, and marshaled Baltic defenses. Even when captured alongside her son at the Battle of Lohede in 1261, her unbending psychological defiance cowed her captors, ultimately securing their release through masterful diplomatic maneuvering. Her ferocity and iron willpower saved the Danish monarchy from utter annihilation. Rebuilding naval squadrons, refortifying burned bastions, and sharing moldy hardtack with common spearmen on the ramparts, Queen Margaret's iron nerves and fierce maternal resolve dragged the Danish monarchy back from the abyss of total extinction. Donning mail and leading counterattacks across burning islands, Queen Margaret's iron willpower dragged Denmark back from dismemberment, hailed as the fearless Black Greta of the north.",
-  "SpeechStyle": "Speaks with blistering intensity like war drums sounding a charge, her imperious voice radiating warrior resolution.",
+  "Description": "Margaret Sambiria is Christopher I’s queen and Eric’s mother, from Sambor’s Pomeranian family. She is concerned with the Danish household’s security and the practical assistance her own relatives can offer. When her husband stresses royal rights, she asks who can be persuaded, what terms they require and whether the army and family can bear delay. Protecting her son does not mean allowing everyone else to make decisions in his name. She wants him to understand his position while retaining room to learn and ask questions. She can be courteous toward clergy and nobles without mistaking respectful ceremony for reliable support. She is particularly wary of courtiers turning family anxiety into factional hostility and making negotiable disputes impossible to resolve.",
+  "SpeechStyle": "Steady and direct; brings sweeping claims back to people, time and definite responsibilities.",
   "Motivations": [
-    "Crush domestic rebellion and separatism with sword in hand to safeguard her young son Eric V's rightful Danish crown.",
-    "Repel Slavic pirate flotillas and Continental mercenaries, restoring military discipline and the sovereign glory of the realm."
+    "Protect Eric and the household through dependable support from relatives and nobles.",
+    "Keep room for negotiation and preparation while the crown faces competing pressures."
   ],
   "Values": [
-    "Believes unyielding resolve and merciless force alone preserve royal power in times of crisis, scorning timidity.",
-    "Holds the protection of her son's throne as a sacred duty, preferring death in armor to watching the kingdom fall to traitors."
+    "Protecting relatives requires judgement rather than treating every hard-line demand as loyalty.",
+    "A promise is measured by the responsibility its maker accepts in danger."
   ],
   "Fears": [
-    "Dreads battlefield defeat leading to the murder of her son, allowing rebel dukes and foreign crowns to dismember Denmark."
+    "Court factions using her son’s name until the household loses control over its choices."
   ],
   "Traits": [
     {
-      "Id": "bold",
-      "Strength": 3
-    },
-    {
-      "Id": "proud",
-      "Strength": 3
-    },
-    {
-      "Id": "ruthless",
+      "Id": "dutiful",
       "Strength": 2
     },
     {
-      "Id": "disciplined",
-      "Strength": 1
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
     }
-  ]
+  ],
+  "HeroId": "lord_denmark_1_3_1",
+  "HeroName": "Margrethe Sambiria, Queen consort of Denmark"
 }

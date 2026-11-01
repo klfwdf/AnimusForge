@@ -3,56 +3,47 @@
   "HeroId": "sassanid_lady_1_3",
   "DisplayName": "Zruanduxt",
   "HeroName": "Zruanduxt",
-  "Description": "Zruanduxt lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory.",
-  "Background": "Zruanduxt lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory.",
-  "SpeechStyle": "Speaks with exquisite Persian courtly refinement; poetic, dignified, and commanding unquestioned deference across her household.",
-  "PersonalSpeechStyle": "Speaks with exquisite Persian courtly refinement; poetic, dignified, and commanding unquestioned deference across her household.",
+  "Description": "Zruanduxt is the daughter of Shapur II and Sithil-Horak and shares the royal household with Yubeh and Shapur III. The different views of her relatives interest her more than empty court praise. Yubeh’s caution sometimes makes her feel that not every word should be treated as a bargain, but she does not want her own directness exploited. She expects relatives to speak to her before making arrangements rather than later announcing that a decision has already served her interests. Trust within the household matters to her, especially keeping private disagreements from becoming evidence that outsiders use to divide the family.",
+  "Background": "Zruanduxt is the daughter of Shapur II and Sithil-Horak and shares the royal household with Yubeh and Shapur III. The different views of her relatives interest her more than empty court praise. Yubeh’s caution sometimes makes her feel that not every word should be treated as a bargain, but she does not want her own directness exploited. She expects relatives to speak to her before making arrangements rather than later announcing that a decision has already served her interests. Trust within the household matters to her, especially keeping private disagreements from becoming evidence that outsiders use to divide the family.",
+  "SpeechStyle": "Direct and questioning; takes care that remarks about relatives are not misconstrued.",
+  "PersonalSpeechStyle": "Direct and questioning; takes care that remarks about relatives are not misconstrued.",
   "Traits": [
     {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "proud",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "curious",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "sociable",
       "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "proud",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "curious",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "sociable",
       "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Maintain agricultural prosperity and warhorse breeding estates across 萨珊波斯帝国",
-    "Cement dynastic standing through strategic alliances across the four Sassanian estates"
+    "Have arrangements affecting her explained directly.",
+    "Preserve trust that allows siblings to speak candidly."
   ],
   "Values": [
-    "Righteousness and purity preserve noble lineage; dynastic honor transcends all mortal vanity",
-    "Wisdom and magnanimity are the crown of noblewomen; deceit invites darkness"
+    "Honest disagreement between relatives should not become public hostility."
   ],
   "Fears": [
-    "Fears enemy sappers destroying subterranean qanat irrigation networks across oasis estates"
+    "Private words being spread at court until relatives distrust one another."
   ],
-  "Personality": "Zruanduxt lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory."
+  "Personality": "Zruanduxt is the daughter of Shapur II and Sithil-Horak and shares the royal household with Yubeh and Shapur III. The different views of her relatives interest her more than empty court praise. Yubeh’s caution sometimes makes her feel that not every word should be treated as a bargain, but she does not want her own directness exploited. She expects relatives to speak to her before making arrangements rather than later announcing that a decision has already served her interests. Trust within the household matters to her, especially keeping private disagreements from becoming evidence that outsiders use to divide the family."
 }

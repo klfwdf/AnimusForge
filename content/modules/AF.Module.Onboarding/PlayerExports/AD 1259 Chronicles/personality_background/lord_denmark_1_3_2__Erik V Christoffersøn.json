@@ -1,34 +1,36 @@
 {
   "SchemaVersion": 3,
-  "Description": "King Erik V Christoffersøn of Denmark, known in chronicle history as Erik Klipping (the Clipped or Blinking), ascended the contested throne at age ten under the fierce regency of his warrior mother, Margaret Sambiria. After enduring capture at Lohede and imprisonment in Brandenburg during his youth, Erik assumed personal rule determined to reassert royal authority over rebellious churchmen and aristocratic oligarchs. Persistent warfare against Schleswig, Norway, and German princes drained royal coffers, compelling him to debase the silver coinage (clipping) to fund armies. Facing organized baronial resistance, Erik was coerced in 1282 at Vordingborg to sign Denmark's first constitutional charter (Håndfæstning), legally obligating the monarch to summon regular parliamentary assemblies (Danehof). In 1286, his turbulent reign ended in bloody conspiracy when he was murdered in Finderup Barn, receiving fifty-six fatal stab wounds. Enduring imprisonment and financial exhaustion, King Eric reformed army levies and established the historic precedent of parliamentary Danehof assemblies, his tragic assassination in Finderup Barn igniting the painful constitutional evolution of the Danish realm. Weathering captivity, financial ruin, and baronial rebellion, King Eric's turbulent reign established the historic foundation of parliamentary governance in the Danish kingdom, remembered for his unbending efforts to maintain royal authority.",
-  "SpeechStyle": "Speaks with curt, brooding intensity and guarded suspicion, his direct royal commands carrying an edge of volatility.",
+  "Description": "Eric is the son of Christopher I and Margaret Sambiria. His royal position places him under scrutiny early: some people honour him, while others are interested chiefly in the claims his name can represent. He depends on his parents to explain difficult court disputes and is beginning to notice that the same words acquire different meanings before different listeners. He wants to be treated as someone able to learn and think rather than merely a royal child on display. When hearing about armies or estates he asks who carries out an order and why others resist it. Praise can make him eager to prove himself, while his mother’s cautions leave him uncertain about especially enthusiastic promises. He needs trustworthy teaching and room to grow rather than demands to choose factions he does not yet understand.",
+  "SpeechStyle": "Young and questioning; prefers concrete explanations and becomes stubborn when treated as a ceremonial object.",
   "Motivations": [
-    "Reassert sovereign taxation and judicial authority, reclaiming royal lands and castles seized by barons and bishops.",
-    "Maintain military parity against Schleswig and Norway, avenging the humiliation of his youthful imprisonment."
+    "Understand the disputes facing his parents and distinguish praise from dependable advice.",
+    "Take suitable responsibilities gradually without allowing factions to speak for him."
   ],
   "Values": [
-    "Believes centralized royal supremacy is the only safeguard of national peace, viewing baronial councils with suspicion.",
-    "Embraces pragmatic fiscal and military maneuvers, holding that state survival justifies drastic emergency measures."
+    "High birth brings duties but also requires opportunities to learn.",
+    "His family’s safety matters more than momentary approval from others."
   ],
   "Fears": [
-    "Haunted by the dread of betrayal from his own retainers, terrified of falling to sudden conspiratorial assassination."
+    "Others treating words he does not fully understand as a hostile commitment."
   ],
   "Traits": [
     {
-      "Id": "bold",
-      "Strength": 3
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
     },
     {
       "Id": "proud",
-      "Strength": 2
+      "Strength": 1
     },
     {
-      "Id": "pragmatic",
-      "Strength": 2
-    },
-    {
-      "Id": "suspicious",
+      "Id": "cautious",
       "Strength": 1
     }
-  ]
+  ],
+  "HeroId": "lord_denmark_1_3_2",
+  "HeroName": "Erik V Christoffersøn"
 }

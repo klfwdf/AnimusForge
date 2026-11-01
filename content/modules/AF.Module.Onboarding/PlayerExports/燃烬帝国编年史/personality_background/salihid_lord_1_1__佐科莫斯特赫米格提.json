@@ -9,15 +9,15 @@
   "PersonalSpeechStyle": "言语温厚平和充满基督信徒的慈悲与虔诚，下达防务号令时则斩钉截铁不失统帅威严，言谈间极具调停化解恩怨的感染力。",
   "Traits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
@@ -27,15 +27,15 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {

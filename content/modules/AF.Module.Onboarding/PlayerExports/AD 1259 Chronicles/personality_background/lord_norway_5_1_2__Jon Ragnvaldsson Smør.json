@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Defend written maritime law at Gulating and Bergen, establishing Smor authority in Norwegian commercial arbitration.",
+    "Build exchange and commercial credit links between Bergen, Rostock and London to expand family wealth through international trade.",
+    "Use contract and inheritance law to acquire further estates and watermills legally in western Norway's fjords."
+  ],
+  "Values": [
+    "Law and contracts sustain civil society; precise legal rights protect a family more durably than blind violence.",
+    "Reason and exact accounts must govern commercial decisions rather than emotion, even when financial judgement requires severity.",
+    "Use legal learning for the family's future, converting privileges into permanent property rights protected by royal written law."
+  ],
+  "Fears": [
+    "Church courts confiscating overseas loans on grounds of usury and paralysing the family's international credit network through litigation.",
+    "Military courtiers gaining power and imposing confiscation by force, overturning the family's legal protections."
+  ],
   "SpeechStyle": "Speaks with quiet analytical precision, measured courtly restraint, and commercial acumen, evaluating treaties and financial scrolls with forensic focus.",
   "SchemaVersion": 3,
   "VoiceId": "",

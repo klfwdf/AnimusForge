@@ -9,12 +9,8 @@
   "PersonalSpeechStyle": "声如金石碰撞铿锵有力带有高傲的波斯宫廷威严，谈及战马武艺时神采奕奕，下达军令时斩钉截铁毫无拖泥带水。",
   "Traits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 2
     },
     {
       "Id": "proud",
@@ -27,12 +23,8 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 2
     },
     {
       "Id": "proud",

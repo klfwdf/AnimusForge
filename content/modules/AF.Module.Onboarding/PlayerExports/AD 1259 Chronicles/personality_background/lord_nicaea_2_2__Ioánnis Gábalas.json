@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Protect Gabalas maritime privileges and trade in Rhodes and the Aegean, building a powerful Byzantine fleet.",
+    "Defeat Venetian blockading ships and secure sea control so that troops and supplies can reach the army recovering Constantinople.",
+    "Expand maritime holdings under imperial grants and dominate Near Eastern and Black Sea customs revenues to enrich the family."
+  ],
+  "Values": [
+    "Warships and sea control decide power in the Near East; practical courage at sea matters more than landowning nobles' ceremonial disputes.",
+    "Value sailors' solidarity and strict naval discipline, leading boarding actions personally and dealing openly with crews.",
+    "Keep contracts and family independence even before the emperor, defending Roman sea power without surrendering an island lord's dignity."
+  ],
+  "Fears": [
+    "Venice surrounding Rhodes with a united Aegean fleet and burning the family's docks and merchant ships, destroying its economic base.",
+    "The court revoking Gabalas customs exemptions and autonomy after recovering Constantinople, reducing an independent maritime house to dependence."
+  ],
   "SpeechStyle": "His voice is rough, booming, and salt-crusted, projecting unshakeable sea captain's authority across crashing waves and burning sails.",
   "SchemaVersion": 3,
   "VoiceId": ""

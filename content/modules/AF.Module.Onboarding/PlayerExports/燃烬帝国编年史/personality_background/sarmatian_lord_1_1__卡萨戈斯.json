@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语雄浑激越带着大草原烈马嘶鸣之势，谈及马战与枪法两眼放光，腰悬弯刀神采飞扬，具有极强的战场统帅魅力。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -23,7 +23,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

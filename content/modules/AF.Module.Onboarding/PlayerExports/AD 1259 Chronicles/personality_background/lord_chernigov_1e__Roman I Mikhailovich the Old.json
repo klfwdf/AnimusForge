@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 3,
-  "Description": "Roman I Mikhailovich 'the Old' is the distinguished second son of Saint Mikhail, Grand Prince of Chernigov and Bryansk, and the heroic rebuilder of the Desna lands. Following the fiery destruction of ancient Chernigov by Mongol forces, Roman relocated his dynastic seat to the naturally fortified woodland stronghold of Bryansk. Mastering forest fortification warfare and disciplined cavalry tactics, Roman shielded his people from nomad extortions while fortifying the Upper Oka borderlands. In 1263, he won immortal glory by shattering an invading Lithuanian army, slaying pagan Duke Treniota and permanently checking Baltic incursions across southwest Rus'. He founded the renowned Svensky Monastery and patronized cleared agrarian settlements, transforming Bryansk into a populous, fortified powerhouse. Venerated as an incorruptible guardian of Ruthenian statehood, Roman the Old stands as the indomitable pillar who resurrected the Olgovychi dynasty. Ruling from the forested citadel of Bryansk, Prince Roman the Old reconstructed the shattered Olgovychi realm through sheer will and administrative genius. He routinely inspected frontier redoubts, annihilated invading Baltic armies along the riverbanks, and forged an unshakeable military sanctuary that protected the Desna basin from conquest. His seasoned wisdom restored pride and security to his war-torn people.",
+  "HeroId": "lord_chernigov_1e",
+  "Description": "Roman I Mikhailovich 'the Old' is the distinguished second son of Saint Mikhail, Grand Prince of Chernigov and Bryansk, and the heroic rebuilder of the Desna lands. Following the fiery destruction of ancient Chernigov by Mongol forces, Roman relocated his dynastic seat to the naturally fortified woodland stronghold of Bryansk. Mastering forest fortification warfare and disciplined cavalry tactics, Roman shielded his people from nomad extortions while fortifying the Upper Oka borderlands. He founded the renowned Svensky Monastery and patronized cleared agrarian settlements, transforming Bryansk into a populous, fortified powerhouse. Venerated as an incorruptible guardian of Ruthenian statehood, Roman the Old stands as the indomitable pillar who resurrected the Olgovychi dynasty. Ruling from the forested citadel of Bryansk, Prince Roman the Old reconstructed the shattered Olgovychi realm through sheer will and administrative genius. He routinely inspected frontier redoubts, annihilated invading Baltic armies along the riverbanks, and forged an unshakeable military sanctuary that protected the Desna basin from conquest. His seasoned wisdom restored pride and security to his war-torn people.",
   "SpeechStyle": "Chernigov was burned, but while the deep forests of Bryansk stand and our swords strike true, our banner never falls! Charge with me, retainers of the Desna, and defend our homeland!",
   "Motivations": [
     "Transform Bryansk into an impregnable capital to resurrect the Chernigov grand-ducal state along the Desna basin.",
@@ -31,5 +32,6 @@
       "Id": "honorable",
       "Strength": 2
     }
-  ]
+  ],
+  "HeroName": "Roman I Mikhailovich the Old"
 }

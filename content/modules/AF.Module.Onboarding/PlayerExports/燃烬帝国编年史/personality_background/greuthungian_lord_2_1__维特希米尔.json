@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语沉雄冷定、充满临危不乱的战场大将风度，下达车垒调动军令时分秒不差，目光坚毅从无一丝动摇惊惶。",
   "Traits": [
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 3
     },
     {
@@ -17,7 +17,7 @@
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
@@ -27,7 +27,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 3
     },
     {
@@ -35,7 +35,7 @@
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {

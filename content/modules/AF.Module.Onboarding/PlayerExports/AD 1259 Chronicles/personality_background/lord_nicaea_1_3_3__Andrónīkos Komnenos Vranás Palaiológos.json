@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Organise food, pay and equipment for the European campaign so that the army retains supplies and morale in difficult conditions.",
+    "Manage family estates in Thrace and Macedonia carefully, improving harvests and workshops to finance imperial recovery.",
+    "Strengthen European castles and passes with fortifications, artillery and towers to make the frontier difficult to breach."
+  ],
+  "Values": [
+    "Careful planning and adequate supplies win wars; advancing without provisions is a grave military error.",
+    "Keep accurate accounts and practical discipline, rejecting embezzlement, false reporting and boastful exaggeration.",
+    "Serve dynasty and family through patient administrative and logistical work behind the front-line army."
+  ],
+  "Fears": [
+    "An overextended army losing its supply routes to enemy cavalry and suffering a catastrophic collapse without food or ammunition.",
+    "Tax officials stealing soldiers' benefits and equipment funds, destroying the loyalty on which the army depends."
+  ],
   "SpeechStyle": "His voice is calm, analytical, and concise, demonstrating a formidable grasp of military supply tables and fortress defenses.",
   "SchemaVersion": 3,
   "VoiceId": ""

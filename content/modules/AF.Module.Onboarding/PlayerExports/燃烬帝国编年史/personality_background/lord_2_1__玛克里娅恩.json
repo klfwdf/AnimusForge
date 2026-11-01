@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "嗓音粗大浑厚如战熊咆哮，言语狂放不羁但极富战场智谋，大口痛饮麦酒时豪迈长笑，下达冲锋指令时如同野兽嗜血。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -17,13 +17,13 @@
       "Strength": 3
     },
     {
-      "Id": "stubborn",
-      "Strength": 3
+      "Id": "ambitious",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -31,8 +31,8 @@
       "Strength": 3
     },
     {
-      "Id": "stubborn",
-      "Strength": 3
+      "Id": "ambitious",
+      "Strength": 2
     }
   ],
   "Motivations": [

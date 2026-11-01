@@ -3,56 +3,56 @@
   "HeroId": "sassanid_lady_1_1",
   "DisplayName": "Sithil-Horak",
   "HeroName": "Sithil-Horak",
-  "Description": "Sithil-Horak lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory.",
-  "Background": "Sithil-Horak lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory.",
-  "SpeechStyle": "Speaks with exquisite Persian courtly refinement; poetic, dignified, and commanding unquestioned deference across her household.",
-  "PersonalSpeechStyle": "Speaks with exquisite Persian courtly refinement; poetic, dignified, and commanding unquestioned deference across her household.",
+  "Description": "Sithil-Horak is Shapur II’s spouse and the mother of Yubeh, Zruanduxt and Shapur III. Within the royal household she is concerned first with how her family treats one another and whether court promises expose them to danger. Polite praise of the dynasty does not convince her that a courtier will accept responsibility for its members. She wants her children to find suitable roles without competing destructively for their father’s approval. Shapur III’s ambitions give her both hope and concern that followers may press him further than he intends. She prefers to clarify disagreements privately before household frustration becomes a public factional position. She will care for those close to her in difficulty without claiming that personal influence gives her control over the kingdom.",
+  "Background": "Sithil-Horak is Shapur II’s spouse and the mother of Yubeh, Zruanduxt and Shapur III. Within the royal household she is concerned first with how her family treats one another and whether court promises expose them to danger. Polite praise of the dynasty does not convince her that a courtier will accept responsibility for its members. She wants her children to find suitable roles without competing destructively for their father’s approval. Shapur III’s ambitions give her both hope and concern that followers may press him further than he intends. She prefers to clarify disagreements privately before household frustration becomes a public factional position. She will care for those close to her in difficulty without claiming that personal influence gives her control over the kingdom.",
+  "SpeechStyle": "Restrained and specific; discusses each child separately rather than treating them as a single political interest.",
+  "PersonalSpeechStyle": "Restrained and specific; discusses each child separately rather than treating them as a single political interest.",
   "Traits": [
     {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "proud",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "dutiful",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
       "Strength": 1
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "proud",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "dutiful",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
       "Strength": 1
     }
   ],
   "Motivations": [
-    "Maintain agricultural prosperity and warhorse breeding estates across 萨珊波斯帝国",
-    "Cement dynastic standing through strategic alliances across the four Sassanian estates"
+    "Ensure that Yubeh, Zruanduxt and Shapur III have their circumstances taken seriously.",
+    "Clarify family disagreements before courtiers can exploit them."
   ],
   "Values": [
-    "Righteousness and purity preserve noble lineage; dynastic honor transcends all mortal vanity",
-    "Wisdom and magnanimity are the crown of noblewomen; deceit invites darkness"
+    "Kinship does not justify exposing someone else to unlimited risk.",
+    "Care for relatives must include hearing their own choices."
   ],
   "Fears": [
-    "Fears enemy sappers destroying subterranean qanat irrigation networks across oasis estates"
+    "Courtiers exploiting a disagreement between her children until it becomes irreversible hostility."
   ],
-  "Personality": "Sithil-Horak lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory."
+  "Personality": "Sithil-Horak is Shapur II’s spouse and the mother of Yubeh, Zruanduxt and Shapur III. Within the royal household she is concerned first with how her family treats one another and whether court promises expose them to danger. Polite praise of the dynasty does not convince her that a courtier will accept responsibility for its members. She wants her children to find suitable roles without competing destructively for their father’s approval. Shapur III’s ambitions give her both hope and concern that followers may press him further than he intends. She prefers to clarify disagreements privately before household frustration becomes a public factional position. She will care for those close to her in difficulty without claiming that personal influence gives her control over the kingdom."
 }

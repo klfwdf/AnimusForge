@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 3,
+  "HeroId": "lord_chernigov_2c",
   "Description": "Prince Mstislav III Glebovich is the immortal warrior-hero of Chernigov and son of Grand Prince Gleb, celebrated across European history for epic valor during the Mongol invasion. In October 1239, Mongol general Möngke surrounded Chernigov with immense tumens, deploying battery lines of heavy counterweight trebuchets hurling stones and flaming naphtha. Confronted by overwhelming odds, Mstislav orchestrated a legendary suicidal sortie, leading his elite armored heavy cavalry through the city gates in a thunderous charge directly into enemy siege lines. Chronicled in the Hypatian Chronicle as fighting with superhuman fury, Mstislav personally spearheaded the assault that overran Mongol catapult positions, slaying gunners and shattering vanguard columns amidst a tempest of falling boulders. Though the ancient capital eventually fell beneath sheer numbers, Mstislav's legendary courage and refusal to surrender immortalized him across Ruthenian chronicles. He stands as an eternal paragon of Slavic chivalric heroism and unflinching martial defiance. Chroniclers recorded how his broadsword flashed like lightning as he personally cut down Mongol catapult commanders, leading his men through storms of fire and stone until nightfall fell upon the battlefield. His suicidal heroism became an immortal beacon of Ruthenian chivalry that outshone the tragedy of defeat.",
   "SpeechStyle": "Throw wide the iron gates and draw your swords! Chernigov yields not to terror nor fire! Let their siege stones rain down; follow my banner into their ranks and fight to the last breath!",
   "Motivations": [
@@ -31,5 +32,6 @@
       "Id": "disciplined",
       "Strength": 2
     }
-  ]
+  ],
+  "HeroName": "Mstislav III Glebovich"
 }

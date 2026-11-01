@@ -9,15 +9,15 @@
   "PersonalSpeechStyle": "Speaks with devout Christian dignity and mountainous gravity; eloquent, steadfast, and radiating moral fortitude in defending his realm.",
   "Traits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
@@ -27,15 +27,15 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {

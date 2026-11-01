@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with booming, unbridled Germanic ferocity; boastful yet strategically shrewd, seasoned by decades of brutal survival against Roman legions.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -17,13 +17,13 @@
       "Strength": 3
     },
     {
-      "Id": "stubborn",
-      "Strength": 3
+      "Id": "ambitious",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -31,8 +31,8 @@
       "Strength": 3
     },
     {
-      "Id": "stubborn",
-      "Strength": 3
+      "Id": "ambitious",
+      "Strength": 2
     }
   ],
   "Motivations": [

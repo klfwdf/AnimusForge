@@ -3,18 +3,18 @@
   "HeroId": "lord_dest_4_4",
   "DisplayName": "Gisela",
   "HeroName": "Gisela",
-  "Personality": "Gisela lived in 1259 AD as an esteemed khatun and aristocratic matriarch within the Golden Horde and Cuman nomadic confederacies, aged 37. Daughter of a distinguished steppe princely line, she wore the towering boqta headdress adorned with peacock plumage and silver filigree over robes of imported silk. Within the vast tent-cities along the lower Volga, she oversaw the rotation of immense herds, seasonal migrations, felt production, and the distribution of war spoils. As tumen armies campaigned in Poland and Galicia in 1259, she maintained domestic stability, coordinating remount supplies and dairy rations for distant garrisons. Versed in both steppe yassa customs and emerging Islamic court diplomacy under Berke Khan, she secured prime seasonal pasture rights and commercial shares for her clan. Supervising camp artisans in repairing war-wagons, curing sinew bowstrings, and salting beef, she anchored the material foundation of nomadic military power. Her shrewd political foresight and administrative strength anchored tribal continuity across the dynamic Pontic steppe. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court.",
-  "Description": "Gisela lived in 1259 AD as an esteemed khatun and aristocratic matriarch within the Golden Horde and Cuman nomadic confederacies, aged 37. Daughter of a distinguished steppe princely line, she wore the towering boqta headdress adorned with peacock plumage and silver filigree over robes of imported silk. Within the vast tent-cities along the lower Volga, she oversaw the rotation of immense herds, seasonal migrations, felt production, and the distribution of war spoils. As tumen armies campaigned in Poland and Galicia in 1259, she maintained domestic stability, coordinating remount supplies and dairy rations for distant garrisons. Versed in both steppe yassa customs and emerging Islamic court diplomacy under Berke Khan, she secured prime seasonal pasture rights and commercial shares for her clan. Supervising camp artisans in repairing war-wagons, curing sinew bowstrings, and salting beef, she anchored the material foundation of nomadic military power. Her shrewd political foresight and administrative strength anchored tribal continuity across the dynamic Pontic steppe. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court.",
-  "Background": "Gisela lived in 1259 AD as an esteemed khatun and aristocratic matriarch within the Golden Horde and Cuman nomadic confederacies, aged 37. Daughter of a distinguished steppe princely line, she wore the towering boqta headdress adorned with peacock plumage and silver filigree over robes of imported silk. Within the vast tent-cities along the lower Volga, she oversaw the rotation of immense herds, seasonal migrations, felt production, and the distribution of war spoils. As tumen armies campaigned in Poland and Galicia in 1259, she maintained domestic stability, coordinating remount supplies and dairy rations for distant garrisons. Versed in both steppe yassa customs and emerging Islamic court diplomacy under Berke Khan, she secured prime seasonal pasture rights and commercial shares for her clan. Supervising camp artisans in repairing war-wagons, curing sinew bowstrings, and salting beef, she anchored the material foundation of nomadic military power. Her shrewd political foresight and administrative strength anchored tribal continuity across the dynamic Pontic steppe. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court.",
-  "SpeechStyle": "Speaks with regal steppe cadence; proud, authoritative, and accustomed to commanding vast camps.",
-  "PersonalSpeechStyle": "Speaks with regal steppe cadence; proud, authoritative, and accustomed to commanding vast camps.",
+  "Personality": "Gisela is a member of a noble house. Their spouse is Hiltae. Their children are Inger. The house belongs to the noble network of Estonia. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and will help those who depend on them and expects that help to be taken seriously\u0001 This person also is sensitive to dignity and slights and finds public humiliation hard to accept and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Description": "Gisela is a member of a noble house. Their spouse is Hiltae. Their children are Inger. The house belongs to the noble network of Estonia. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and will help those who depend on them and expects that help to be taken seriously\u0001 This person also is sensitive to dignity and slights and finds public humiliation hard to accept and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Background": "Gisela is a member of a noble house. Their spouse is Hiltae. Their children are Inger. The house belongs to the noble network of Estonia. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and will help those who depend on them and expects that help to be taken seriously\u0001 This person also is sensitive to dignity and slights and finds public humiliation hard to accept and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "SpeechStyle": "Listens to the terms before answering carefully.",
+  "PersonalSpeechStyle": "Listens to the terms before answering carefully.",
   "Traits": [
     {
       "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -32,7 +32,7 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -45,14 +45,14 @@
     }
   ],
   "Motivations": [
-    "Maintain stability and horse breeding within the rear ordo encampments",
-    "Secure lucrative winter pasture allocations at the Sarai court"
+    "Maintain dependable relationships within the house.",
+    "Keep enough resources for continued care when helping those close to them."
   ],
   "Values": [
-    "The strength of the ordo sustains warriors in the saddle",
-    "Prudent matriarchs preserve the clan's eternal vitality"
+    "Compares gains and costs for both sides and asks about terms before agreeing.",
+    "Will help those who depend on them and expects that help to be taken seriously."
   ],
   "Fears": [
-    "Fears brutal winter zud blizzards decimating livestock herds across the open steppe"
+    "Public humiliation followed by the loss of any means to defend their standing."
   ]
 }

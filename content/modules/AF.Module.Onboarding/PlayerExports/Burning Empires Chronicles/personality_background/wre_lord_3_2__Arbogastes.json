@@ -3,57 +3,47 @@
   "HeroId": "wre_lord_3_2",
   "DisplayName": "Arbogastes",
   "HeroName": "Arbogastes",
-  "Description": "Flavius Arbogastes was in 374 AD a rising Frankish field officer within the Western Roman armies, nephew to Comes Richomeres and disciple of Magister Bauto. Endowed with volcanic battlefield ferocity and tactical genius, he rose rapidly to become Magister militum and supreme warlord of the West. Campaigning across Gaul and Britain, Arbogastes crushed the usurpation of Flavius Victor in 388 AD on behalf of Theodosius the Great, cementing his iron grip over the western legions. An unyielding traditionalist and champion of Roman arms, he maintained absolute dominion over his veteran cohorts, enforcing ferocious combat discipline while patrolling the Rhine fortress line with ruthless efficiency, commanding the fanatical loyalty of his Frankish and Gallic shock infantry. He demanded absolute readiness from every cohort, drilling them in rapid counter-assault maneuvers to crush any Germanic crossing before invaders could establish a bridgehead.",
-  "Background": "Flavius Arbogastes was in 374 AD a rising Frankish field officer within the Western Roman armies, nephew to Comes Richomeres and disciple of Magister Bauto. Endowed with volcanic battlefield ferocity and tactical genius, he rose rapidly to become Magister militum and supreme warlord of the West. Campaigning across Gaul and Britain, Arbogastes crushed the usurpation of Flavius Victor in 388 AD on behalf of Theodosius the Great, cementing his iron grip over the western legions. An unyielding traditionalist and champion of Roman arms, he maintained absolute dominion over his veteran cohorts, enforcing ferocious combat discipline while patrolling the Rhine fortress line with ruthless efficiency, commanding the fanatical loyalty of his Frankish and Gallic shock infantry. He demanded absolute readiness from every cohort, drilling them in rapid counter-assault maneuvers to crush any Germanic crossing before invaders could establish a bridgehead.",
-  "Personality": "Flavius Arbogastes was in 374 AD a rising Frankish field officer within the Western Roman armies, nephew to Comes Richomeres and disciple of Magister Bauto. Endowed with volcanic battlefield ferocity and tactical genius, he rose rapidly to become Magister militum and supreme warlord of the West. Campaigning across Gaul and Britain, Arbogastes crushed the usurpation of Flavius Victor in 388 AD on behalf of Theodosius the Great, cementing his iron grip over the western legions. An unyielding traditionalist and champion of Roman arms, he maintained absolute dominion over his veteran cohorts, enforcing ferocious combat discipline while patrolling the Rhine fortress line with ruthless efficiency, commanding the fanatical loyalty of his Frankish and Gallic shock infantry. He demanded absolute readiness from every cohort, drilling them in rapid counter-assault maneuvers to crush any Germanic crossing before invaders could establish a bridgehead.",
-  "SpeechStyle": "Fierce, cutting, and aggressively decisive, demanding absolute obedience and showing zero patience for weakness.",
-  "PersonalSpeechStyle": "Fierce, cutting, and aggressively decisive, demanding absolute obedience and showing zero patience for weakness.",
+  "Description": "Arbogastes is a western Roman military figure of Frankish origin. He is concerned with whether martial reputation can become lasting trust. He is sensitive to being dismissed, distrusts vague orders and will accept risks for clearly defined objectives. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Background": "Arbogastes is a western Roman military figure of Frankish origin. He is concerned with whether martial reputation can become lasting trust. He is sensitive to being dismissed, distrusts vague orders and will accept risks for clearly defined objectives. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Personality": "Arbogastes is a western Roman military figure of Frankish origin. He is concerned with whether martial reputation can become lasting trust. He is sensitive to being dismissed, distrusts vague orders and will accept risks for clearly defined objectives. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "SpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
+  "PersonalSpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
   "Traits": [
     {
-      "Id": "daring",
-      "Strength": 3
-    },
-    {
-      "Id": "ruthless",
-      "Strength": 3
-    },
-    {
-      "Id": "bravery",
+      "Id": "proud",
       "Strength": 2
     },
     {
-      "Id": "ambitious",
+      "Id": "bold",
       "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
-      "Strength": 3
-    },
-    {
-      "Id": "ruthless",
-      "Strength": 3
-    },
-    {
-      "Id": "bravery",
+      "Id": "proud",
       "Strength": 2
     },
     {
-      "Id": "ambitious",
+      "Id": "bold",
       "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
     }
   ],
   "Motivations": [
-    "Establish unquestioned military supremacy across Gaul and the Rhine limes",
-    "Forge his legions into the most lethal and obedient shock force in the Roman world"
+    "Clarify responsibilities and available resources while retaining followers’ trust through service.",
+    "Have his judgement considered before a decision is made."
   ],
   "Values": [
-    "Sovereignty through raw martial power and unforgiving severity",
-    "Scorn for civilian vacillation and imperial appeasement"
+    "Loyalty requires clear orders and responsibilities that can be fulfilled."
   ],
   "Fears": [
-    "Decay of warrior ethos among Roman cohorts due to political decadence",
-    "Loss of army loyalty to senatorial intriguers"
+    "Vague promises and shifting blame destroying cooperation between officers."
   ]
 }

@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Make Finnoy and Hestbo strong coastal defences in Rogaland against Scottish forces and western raiders.",
+    "Lead longship patrols along the southwest coast, keeping routes to Atlantic islands open for travel and trade.",
+    "Seek royal estates and maritime tax privileges, establishing the family among the southwest coast's leading hereditary nobles."
+  ],
+  "Values": [
+    "A warrior earns dignity at sea and in battle; command of Norwegian warships requires proven military achievement.",
+    "Remain loyal to King Haakon and use disciplined tactics to defeat incursions into Norwegian waters and islands.",
+    "Fair rewards and strict punishment create effective crews; loyal sailors deserve care, while cowardice and rebellion require firm penalties."
+  ],
+  "Fears": [
+    "A combined Scottish fleet striking coastal fortresses, breaking the southwest defences and surrounding Hestbo.",
+    "A North Sea storm killing trusted sailors and destroying the private fleet he has built over many years."
+  ],
   "SpeechStyle": "Speaks with resonant martial pride, sea-borne authority, and chivalric boldness, commanding retainers and councilors with natural knightly presence.",
   "SchemaVersion": 3,
   "VoiceId": "",

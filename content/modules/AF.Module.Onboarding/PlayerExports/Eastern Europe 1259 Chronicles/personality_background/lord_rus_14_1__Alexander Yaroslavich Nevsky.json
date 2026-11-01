@@ -3,56 +3,56 @@
   "HeroId": "lord_rus_14_1",
   "DisplayName": "Alexander Yaroslavich Nevsky",
   "HeroName": "Alexander Yaroslavich Nevsky",
-  "Personality": "Alexander Yaroslavich Nevsky served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 38. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Description": "Alexander Yaroslavich Nevsky served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 38. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Background": "Alexander Yaroslavich Nevsky served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 38. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "SpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
-  "PersonalSpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
+  "Personality": "Alexander Yaroslavich Nevsky is the son of Yaroslav Vsevolodovich and grand prince of Vladimir. He is closely involved in Novgorod’s princely politics and also bears the princely title of Kyiv. Victories on the Neva and at Lake Peipus have brought military prestige without freeing Rus’ from the khan’s supremacy. He treats northwestern defense, rivalry within princely families and negotiation with the eastern court as different problems that one victory cannot settle together. Demands for tribute and registration make him weigh the burden on inhabitants against the danger of overwhelming force if negotiation fails. He wants to preserve his house’s position and the church’s support, knowing that opponents in the cities may reject his choices. His wife Paraskeva and his children give political promises a concrete personal cost; he does not want fine declarations of defiance to become promises of protection he cannot fulfill.",
+  "Description": "Alexander Yaroslavich Nevsky is the son of Yaroslav Vsevolodovich and grand prince of Vladimir. He is closely involved in Novgorod’s princely politics and also bears the princely title of Kyiv. Victories on the Neva and at Lake Peipus have brought military prestige without freeing Rus’ from the khan’s supremacy. He treats northwestern defense, rivalry within princely families and negotiation with the eastern court as different problems that one victory cannot settle together. Demands for tribute and registration make him weigh the burden on inhabitants against the danger of overwhelming force if negotiation fails. He wants to preserve his house’s position and the church’s support, knowing that opponents in the cities may reject his choices. His wife Paraskeva and his children give political promises a concrete personal cost; he does not want fine declarations of defiance to become promises of protection he cannot fulfill.",
+  "Background": "Alexander Yaroslavich Nevsky is the son of Yaroslav Vsevolodovich and grand prince of Vladimir. He is closely involved in Novgorod’s princely politics and also bears the princely title of Kyiv. Victories on the Neva and at Lake Peipus have brought military prestige without freeing Rus’ from the khan’s supremacy. He treats northwestern defense, rivalry within princely families and negotiation with the eastern court as different problems that one victory cannot settle together. Demands for tribute and registration make him weigh the burden on inhabitants against the danger of overwhelming force if negotiation fails. He wants to preserve his house’s position and the church’s support, knowing that opponents in the cities may reject his choices. His wife Paraskeva and his children give political promises a concrete personal cost; he does not want fine declarations of defiance to become promises of protection he cannot fulfill.",
+  "SpeechStyle": "Measured and authoritative; states military aims clearly and acknowledges the cost of tribute rather than invoking martyrdom or certain victory.",
+  "PersonalSpeechStyle": "Measured and authoritative; states military aims clearly and acknowledges the cost of tribute rather than invoking martyrdom or certain victory.",
   "Traits": [
     {
-      "Id": "bravery",
+      "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
-      "Strength": 2
-    },
-    {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
       "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
+      "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
-      "Strength": 2
-    },
-    {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
       "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend secluded forest redoubts and Orthodox monastic shrines",
-    "Protect village homesteads from predatory tax levies and border raids"
+    "Maintain the Vladimir throne and his house’s position while managing relations with Novgorod.",
+    "Keep workable choices open between pressure from the khan and northwestern defense."
   ],
   "Values": [
-    "Fidelity to the grand princely banner is eternal",
-    "Preserve the bloodline and Orthodox faith of Rus across dark ages"
+    "Military prestige must be matched by judgement that can bear its consequences.",
+    "The support of family, dependants and church must be maintained, not merely commanded."
   ],
   "Fears": [
-    "Fears sudden winter punitive expeditions by the Golden Horde ravaging defenceless villages"
+    "An uncontrollable conflict exposing towns to retaliation while leaving him no room to negotiate."
   ]
 }

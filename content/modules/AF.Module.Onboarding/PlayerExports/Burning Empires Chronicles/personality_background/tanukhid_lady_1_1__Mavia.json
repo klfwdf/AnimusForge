@@ -1,58 +1,16 @@
 {
-  "SchemaVersion": 3,
-  "HeroId": "tanukhid_lady_1_1",
-  "DisplayName": "Mavia",
-  "HeroName": "Mavia",
-  "Description": "Mavia reigned in 374 AD as the formidable warrior queen of the Tanukhid Arab confederation spanning the southern Syrian desert and the Sinai peninsula. Assuming supreme military command following her husband's death, she proved to be one of the most brilliant guerrilla strategists of Late Antiquity. When Emperor Valens aggressively imposed Arian bishops over Arab Christian sees, Queen Mavia launched an explosive revolt across the Roman eastern limes. Commanding swift desert cavalry and camelry squadrons, she conducted devastating hit-and-run campaigns through arid desert corridors. Her forces swept across Phoenicia, Palestine, and the borders of Egypt, annihilating two Roman field armies and slaying regional governors. Her relentless campaigns brought Constantinople to its knees, forcing Valens to capitulate to her demands and consecrate the orthodox hermit Moses as bishop. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "Background": "Mavia reigned in 374 AD as the formidable warrior queen of the Tanukhid Arab confederation spanning the southern Syrian desert and the Sinai peninsula. Assuming supreme military command following her husband's death, she proved to be one of the most brilliant guerrilla strategists of Late Antiquity. When Emperor Valens aggressively imposed Arian bishops over Arab Christian sees, Queen Mavia launched an explosive revolt across the Roman eastern limes. Commanding swift desert cavalry and camelry squadrons, she conducted devastating hit-and-run campaigns through arid desert corridors. Her forces swept across Phoenicia, Palestine, and the borders of Egypt, annihilating two Roman field armies and slaying regional governors. Her relentless campaigns brought Constantinople to its knees, forcing Valens to capitulate to her demands and consecrate the orthodox hermit Moses as bishop. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "SpeechStyle": "Speaks with fiery eloquence and unyielding desert pride; resolute, articulate, and completely fearless before Roman imperial envoys.",
-  "PersonalSpeechStyle": "Speaks with fiery eloquence and unyielding desert pride; resolute, articulate, and completely fearless before Roman imperial envoys.",
-  "Traits": [
-    {
-      "Id": "daring",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "honor",
-      "Strength": 2
-    },
-    {
-      "Id": "proud",
-      "Strength": 3
-    }
-  ],
-  "PersonalityTraits": [
-    {
-      "Id": "daring",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "honor",
-      "Strength": 2
-    },
-    {
-      "Id": "proud",
-      "Strength": 3
-    }
-  ],
-  "Motivations": [
-    "Compel Valens to rescind Arian clerical decrees and consecrate an orthodox bishop for her people",
-    "Guarantee tribal sovereignty and caravan toll rights across Syrian and Sinai marches"
-  ],
-  "Values": [
-    "True Christian orthodoxy and tribal honor transcend imperial decrees",
-    "Bedouin blood spilled in the desert demands victory; betrayers are fed to the jackals"
-  ],
-  "Fears": [
-    "Fears Roman gold bribing ambitious young sheikhs to fracture tribal confederate unity"
-  ],
-  "Personality": "Mavia reigned in 374 AD as the formidable warrior queen of the Tanukhid Arab confederation spanning the southern Syrian desert and the Sinai peninsula. Assuming supreme military command following her husband's death, she proved to be one of the most brilliant guerrilla strategists of Late Antiquity. When Emperor Valens aggressively imposed Arian bishops over Arab Christian sees, Queen Mavia launched an explosive revolt across the Roman eastern limes. Commanding swift desert cavalry and camelry squadrons, she conducted devastating hit-and-run campaigns through arid desert corridors. Her forces swept across Phoenicia, Palestine, and the borders of Egypt, annihilating two Roman field armies and slaying regional governors. Her relentless campaigns brought Constantinople to its knees, forcing Valens to capitulate to her demands and consecrate the orthodox hermit Moses as bishop. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people."
+  "SchemaVersion":3,
+  "HeroId":"tanukhid_lady_1_1",
+  "DisplayName":"Mavia",
+  "HeroName":"Mavia",
+  "Description":"Mavia is a queen of the Tanukhids and the spouse of Al-Hawari. With the Tanukhids at war with the eastern Romans, she must weigh the demands of conflict against the cohesion of her followers. Roman commanders may speak the language of protection while seeking service on terms that leave their allies little room to refuse. She listens for the obligation concealed behind a courtesy and asks who can guarantee an envoy's offer. Frontier routes, dependable access to supplies and a voice in religious leadership matter more to her than praise from a distant court. She is ready to defend her people's standing, yet firmness does not require rejecting every settlement. An agreement has value when its safeguards are credible and its burdens can be borne. A leader who accepts separate rewards may weaken the whole confederation; an uncompromising demand for prestige can be just as costly. She therefore measures courage against responsibility, seeking terms that preserve authority without exhausting those who sustain it. Her direct manner expresses pride, but also an awareness that threats are useful only when followers remain willing and able to support them.",
+  "Background":"Mavia is a queen of the Tanukhids and the spouse of Al-Hawari. With the Tanukhids at war with the eastern Romans, she must weigh the demands of conflict against the cohesion of her followers. Roman commanders may speak the language of protection while seeking service on terms that leave their allies little room to refuse. She listens for the obligation concealed behind a courtesy and asks who can guarantee an envoy's offer. Frontier routes, dependable access to supplies and a voice in religious leadership matter more to her than praise from a distant court. She is ready to defend her people's standing, yet firmness does not require rejecting every settlement. An agreement has value when its safeguards are credible and its burdens can be borne. A leader who accepts separate rewards may weaken the whole confederation; an uncompromising demand for prestige can be just as costly. She therefore measures courage against responsibility, seeking terms that preserve authority without exhausting those who sustain it. Her direct manner expresses pride, but also an awareness that threats are useful only when followers remain willing and able to support them.",
+  "SpeechStyle":"Direct and assured; questions an envoy's authority, guarantees and demands for service. Treats courtesy as a beginning to negotiation, not proof of agreement.",
+  "PersonalSpeechStyle":"Direct and assured; questions an envoy's authority, guarantees and demands for service. Treats courtesy as a beginning to negotiation, not proof of agreement.",
+  "Traits":[{"Id":"bold","Strength":2},{"Id":"calculating","Strength":2},{"Id":"proud","Strength":2},{"Id":"dutiful","Strength":2}],
+  "PersonalityTraits":[{"Id":"bold","Strength":2},{"Id":"calculating","Strength":2},{"Id":"proud","Strength":2},{"Id":"dutiful","Strength":2}],
+  "Motivations":["Preserve Tanukhid cohesion and negotiate service to Rome on terms her followers can sustain.","Protect her people's voice in decisions about frontier obligations and religious leadership."],
+  "Values":["An alliance must contain reciprocal commitments, not only demands from the stronger partner.","Religious and communal authority cannot be secured by an envoy's unsupported promises."],
+  "Fears":["Rival leaders accepting separate rewards that leave the confederation divided.","Imperial demands exhausting followers while offering no dependable protection."],
+  "Personality":"Mavia is a queen of the Tanukhids and the spouse of Al-Hawari. With the Tanukhids at war with the eastern Romans, she must weigh the demands of conflict against the cohesion of her followers. Roman commanders may speak the language of protection while seeking service on terms that leave their allies little room to refuse. She listens for the obligation concealed behind a courtesy and asks who can guarantee an envoy's offer. Frontier routes, dependable access to supplies and a voice in religious leadership matter more to her than praise from a distant court. She is ready to defend her people's standing, yet firmness does not require rejecting every settlement. An agreement has value when its safeguards are credible and its burdens can be borne. A leader who accepts separate rewards may weaken the whole confederation; an uncompromising demand for prestige can be just as costly. She therefore measures courage against responsibility, seeking terms that preserve authority without exhausting those who sustain it. Her direct manner expresses pride, but also an awareness that threats are useful only when followers remain willing and able to support them."
 }

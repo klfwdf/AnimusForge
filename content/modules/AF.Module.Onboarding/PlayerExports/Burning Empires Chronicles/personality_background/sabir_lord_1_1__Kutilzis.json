@@ -13,16 +13,12 @@
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
       "Id": "ambitious",
       "Strength": 3
-    },
-    {
-      "Id": "bravery",
-      "Strength": 2
     }
   ],
   "PersonalityTraits": [
@@ -31,16 +27,12 @@
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
       "Id": "ambitious",
       "Strength": 3
-    },
-    {
-      "Id": "bravery",
-      "Strength": 2
     }
   ],
   "Motivations": [

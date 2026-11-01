@@ -3,22 +3,18 @@
   "HeroId": "lord_rus_11_4",
   "DisplayName": "Alexander Glebovich",
   "HeroName": "Alexander Glebovich",
-  "Personality": "Alexander Glebovich served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 15. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Description": "Alexander Glebovich served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 15. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Background": "Alexander Glebovich served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 15. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "SpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
-  "PersonalSpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
+  "Personality": "Alexander Glebovich is a child of the house. Aged 15. Their father is Gleb Rostislavich. Their mother is Anastasia Vyacheslavna. The house belongs to the noble network of Smolensk. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Will sometimes try a small unfamiliar thing before looking back for a relative’s approval.",
+  "Description": "Alexander Glebovich is a child of the house. Aged 15. Their father is Gleb Rostislavich. Their mother is Anastasia Vyacheslavna. The house belongs to the noble network of Smolensk. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Will sometimes try a small unfamiliar thing before looking back for a relative’s approval.",
+  "Background": "Alexander Glebovich is a child of the house. Aged 15. Their father is Gleb Rostislavich. Their mother is Anastasia Vyacheslavna. The house belongs to the noble network of Smolensk. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Will sometimes try a small unfamiliar thing before looking back for a relative’s approval.",
+  "SpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "PersonalSpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
   "Traits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
-      "Strength": 2
-    },
-    {
-      "Id": "daring",
+      "Id": "loyal",
       "Strength": 2
     },
     {
@@ -28,15 +24,11 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
-      "Strength": 2
-    },
-    {
-      "Id": "daring",
+      "Id": "loyal",
       "Strength": 2
     },
     {
@@ -45,14 +37,13 @@
     }
   ],
   "Motivations": [
-    "Defend secluded forest redoubts and Orthodox monastic shrines",
-    "Protect village homesteads from predatory tax levies and border raids"
+    "Find care and trustworthy explanations from relatives.",
+    "Gradually understand their place among relatives."
   ],
   "Values": [
-    "Fidelity to the grand princely banner is eternal",
-    "Preserve the bloodline and Orthodox faith of Rus across dark ages"
+    "Values familiar company and small promises that are kept."
   ],
   "Fears": [
-    "Fears sudden winter punitive expeditions by the Golden Horde ravaging defenceless villages"
+    "Separation from relatives or threats they cannot understand."
   ]
 }

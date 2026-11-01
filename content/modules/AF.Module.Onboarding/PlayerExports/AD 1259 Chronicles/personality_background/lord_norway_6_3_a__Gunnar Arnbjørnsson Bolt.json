@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Lead Bolt knights in expanding the Viken frontier, defeating Swedish incursions and establishing firm family authority.",
+    "Control Bohuslan and Oslofjord trade crossings and customs, making the Bolt family a leading eastern Norwegian power.",
+    "Build a strong court alliance and seek royal recognition of the family as hereditary governors of the Viken frontier."
+  ],
+  "Values": [
+    "Land, rank and rewards are won through military achievement; the frontier belongs to those bold enough to advance.",
+    "Be ruthless toward enemies but generous in lands and wealth to knights whose loyalty is proven in battle.",
+    "Bolt honour takes precedence; foreign enemies and hostile courtiers who obstruct the family's rise must be struck decisively."
+  ],
+  "Fears": [
+    "A suspicious crown supporting rival nobles, dividing Bolt lands, cutting defence funds and removing hereditary command.",
+    "His main cavalry pursuing too deeply into enemy territory and losing much of its trained strength in a crossbow ambush."
+  ],
   "SpeechStyle": "Speaks with ringing martial authority, bold chivalric vigor, and decisive resolve, articulating tactical commands and family ambitions with commanding steel.",
   "SchemaVersion": 3,
   "VoiceId": "",

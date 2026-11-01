@@ -3,57 +3,47 @@
   "HeroId": "wre_lord_2_2",
   "DisplayName": "Merobaudes",
   "HeroName": "Merobaudes",
-  "Description": "Merobaudes stood in 374 AD as the paramount military commander (Magister peditum / Master of Foot) of the Western Roman Empire, hailing from an exalted Frankish noble dynasty. A trusted confidant and principal field strategist of Augustus Valentinian I, he directed the mobile field armies (comitatenses) along the embattled Danubian and Rhine limes, fortifying stone castella to blunt savage Quadian incursions. Following the sudden death of Valentinian I at Brigetio in 375 AD, Merobaudes masterminded the orderly imperial succession by swiftly elevating four-year-old Valentinian II as Augustus, single-handedly forestalling military mutiny and catastrophic civil war. Elevated to the ordinary Roman consulship twice (in 377 and 383 AD), he became the first Germanic general in Roman history to achieve double consular honors. Stern, calculating, and revered by his veteran legionaries, he orchestrated frontier logistics, lead-weighted plumbatae missile batteries, and locked fulcum shield-wall tactics with unbending precision and towering strategic vision as the premier kingmaker and martial pillar of the late Western Empire.",
-  "Background": "Merobaudes stood in 374 AD as the paramount military commander (Magister peditum / Master of Foot) of the Western Roman Empire, hailing from an exalted Frankish noble dynasty. A trusted confidant and principal field strategist of Augustus Valentinian I, he directed the mobile field armies (comitatenses) along the embattled Danubian and Rhine limes, fortifying stone castella to blunt savage Quadian incursions. Following the sudden death of Valentinian I at Brigetio in 375 AD, Merobaudes masterminded the orderly imperial succession by swiftly elevating four-year-old Valentinian II as Augustus, single-handedly forestalling military mutiny and catastrophic civil war. Elevated to the ordinary Roman consulship twice (in 377 and 383 AD), he became the first Germanic general in Roman history to achieve double consular honors. Stern, calculating, and revered by his veteran legionaries, he orchestrated frontier logistics, lead-weighted plumbatae missile batteries, and locked fulcum shield-wall tactics with unbending precision and towering strategic vision as the premier kingmaker and martial pillar of the late Western Empire.",
-  "Personality": "Merobaudes stood in 374 AD as the paramount military commander (Magister peditum / Master of Foot) of the Western Roman Empire, hailing from an exalted Frankish noble dynasty. A trusted confidant and principal field strategist of Augustus Valentinian I, he directed the mobile field armies (comitatenses) along the embattled Danubian and Rhine limes, fortifying stone castella to blunt savage Quadian incursions. Following the sudden death of Valentinian I at Brigetio in 375 AD, Merobaudes masterminded the orderly imperial succession by swiftly elevating four-year-old Valentinian II as Augustus, single-handedly forestalling military mutiny and catastrophic civil war. Elevated to the ordinary Roman consulship twice (in 377 and 383 AD), he became the first Germanic general in Roman history to achieve double consular honors. Stern, calculating, and revered by his veteran legionaries, he orchestrated frontier logistics, lead-weighted plumbatae missile batteries, and locked fulcum shield-wall tactics with unbending precision and towering strategic vision as the premier kingmaker and martial pillar of the late Western Empire.",
-  "SpeechStyle": "Concise, authoritative, and chillingly composed, reflecting decades of supreme command over imperial armies.",
-  "PersonalSpeechStyle": "Concise, authoritative, and chillingly composed, reflecting decades of supreme command over imperial armies.",
+  "Description": "Merobaudes is a military figure connected to the western army and court. He is concerned with whether officers’ commitments and court appointments reinforce one another. He notices who commands men and who can fulfil promised rewards, treating public flattery as a poor guarantee. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Background": "Merobaudes is a military figure connected to the western army and court. He is concerned with whether officers’ commitments and court appointments reinforce one another. He notices who commands men and who can fulfil promised rewards, treating public flattery as a poor guarantee. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Personality": "Merobaudes is a military figure connected to the western army and court. He is concerned with whether officers’ commitments and court appointments reinforce one another. He notices who commands men and who can fulfil promised rewards, treating public flattery as a poor guarantee. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "SpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
+  "PersonalSpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
   "Traits": [
     {
       "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 3
-    },
-    {
-      "Id": "honor",
       "Strength": 2
     },
     {
-      "Id": "daring",
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
       "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 3
-    },
-    {
-      "Id": "honor",
       "Strength": 2
     },
     {
-      "Id": "daring",
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Preserve the political stability and military supremacy of the Western Roman Empire",
-    "Deploy mobile comitatenses to shatter barbarian border invasions"
+    "Clarify responsibilities and available resources while retaining followers’ trust through service.",
+    "Have his judgement considered before a decision is made."
   ],
   "Values": [
-    "Imperial survival through iron discipline and strategic calculation",
-    "Inviolability of supreme military command"
+    "Loyalty requires clear orders and responsibilities that can be fulfilled."
   ],
   "Fears": [
-    "Disintegration of central authority into catastrophic civil war",
-    "Inability of border depots to sustain forward legions during winter campaigns"
+    "Vague promises and shifting blame destroying cooperation between officers."
   ]
 }

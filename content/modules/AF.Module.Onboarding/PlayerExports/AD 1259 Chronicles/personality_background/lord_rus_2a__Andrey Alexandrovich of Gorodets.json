@@ -30,5 +30,7 @@
       "Id": "opportunistic",
       "Strength": 2
     }
-  ]
+  ],
+  "HeroId": "lord_rus_2a",
+  "HeroName": "Andrey Alexandrovich of Gorodets"
 }

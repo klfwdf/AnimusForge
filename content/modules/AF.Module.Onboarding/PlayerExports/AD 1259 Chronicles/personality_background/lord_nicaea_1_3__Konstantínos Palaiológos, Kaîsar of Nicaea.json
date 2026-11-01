@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Expel Frankish forces from the European provinces and Morea, recovering territory and creating a dependable strategic barrier.",
+    "Restore honest administration, cities and post stations in Thrace and Macedonia while relieving war-damaged communities.",
+    "Support his imperial brother Michael VIII with military strength and prestige, preserving their dynasty and its authority."
+  ],
+  "Values": [
+    "Honour and loyalty sustain a noble soldier; betraying a lord or oppressing civilians is disgraceful.",
+    "Lead from the front with strict discipline and care for soldiers, sharing danger and earning their willingness to stand firm.",
+    "Keep Orthodox faith and self-restraint, setting aside worldly vanity to devote his life to the state."
+  ],
+  "Fears": [
+    "Western crusader reinforcements turning Morea into an exhausting stalemate that consumes the empire's best troops and defeats reconquest.",
+    "Courtiers sowing suspicion between brothers, renewing dynastic civil war and allowing foreign enemies to profit."
+  ],
   "SpeechStyle": "His speech is authoritative, dignified, and upright, carrying the moral weight of a seasoned commander who leads by personal example.",
   "SchemaVersion": 3,
   "VoiceId": ""

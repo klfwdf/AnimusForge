@@ -3,11 +3,11 @@
   "HeroId": "lord_crus_1_2",
   "DisplayName": "Hartmann von Heldrungen",
   "HeroName": "Hartmann von Heldrungen",
-  "Personality": "Hartmann von Heldrungen (died 1282) stood as a preeminent magnate of the Teutonic Order, later ascending as its eleventh Grand Master. Reared in imperial courts under the patronage of Emperor Frederick II, he possessed formidable legal acumen alongside martial discipline. In 1259 AD, Hartmann coordinated critical logistical operations linking crusader commanderies across Prussia and Livonia. Confronted by Swietopelk of Pomerania's embargo along the lower Vistula and pagan Samogitian uprisings threatening coastal communications, Hartmann navigated complex diplomacy with Hanseatic merchants in Lübeck and papal legates. Securing vital loans, grain convoys, and siege armaments, he spearheaded the transition from timber blockhouses to standardized red-brick fortress networks. His calculated statecraft established the administrative backbone of the nascent Teutonic Monastic State. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
-  "Description": "Hartmann von Heldrungen (died 1282) stood as a preeminent magnate of the Teutonic Order, later ascending as its eleventh Grand Master. Reared in imperial courts under the patronage of Emperor Frederick II, he possessed formidable legal acumen alongside martial discipline. In 1259 AD, Hartmann coordinated critical logistical operations linking crusader commanderies across Prussia and Livonia. Confronted by Swietopelk of Pomerania's embargo along the lower Vistula and pagan Samogitian uprisings threatening coastal communications, Hartmann navigated complex diplomacy with Hanseatic merchants in Lübeck and papal legates. Securing vital loans, grain convoys, and siege armaments, he spearheaded the transition from timber blockhouses to standardized red-brick fortress networks. His calculated statecraft established the administrative backbone of the nascent Teutonic Monastic State. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
-  "Background": "Hartmann von Heldrungen (died 1282) stood as a preeminent magnate of the Teutonic Order, later ascending as its eleventh Grand Master. Reared in imperial courts under the patronage of Emperor Frederick II, he possessed formidable legal acumen alongside martial discipline. In 1259 AD, Hartmann coordinated critical logistical operations linking crusader commanderies across Prussia and Livonia. Confronted by Swietopelk of Pomerania's embargo along the lower Vistula and pagan Samogitian uprisings threatening coastal communications, Hartmann navigated complex diplomacy with Hanseatic merchants in Lübeck and papal legates. Securing vital loans, grain convoys, and siege armaments, he spearheaded the transition from timber blockhouses to standardized red-brick fortress networks. His calculated statecraft established the administrative backbone of the nascent Teutonic Monastic State. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
-  "SpeechStyle": "Articulates with diplomatic precision and legal sharpness; measured, authoritative, and tactically calculating.",
-  "PersonalSpeechStyle": "Articulates with diplomatic precision and legal sharpness; measured, authoritative, and tactically calculating.",
+  "Personality": "Hartmann von Heldrungen belongs to the Heldrungen house within the Teutonic Order, and Siegfried is his father. His family name makes reputation important while bringing expectations from both kin and order. He does not want enthusiasm alone to settle an undertaking and first asks about people, supplies and responsibility. Respect for orders does not mean overlooking unreasonable terms; if an arrangement will impose needless losses on companions, he wants the problem addressed before action.",
+  "Description": "Hartmann von Heldrungen belongs to the Heldrungen house within the Teutonic Order, and Siegfried is his father. His family name makes reputation important while bringing expectations from both kin and order. He does not want enthusiasm alone to settle an undertaking and first asks about people, supplies and responsibility. Respect for orders does not mean overlooking unreasonable terms; if an arrangement will impose needless losses on companions, he wants the problem addressed before action.",
+  "Background": "Hartmann von Heldrungen belongs to the Heldrungen house within the Teutonic Order, and Siegfried is his father. His family name makes reputation important while bringing expectations from both kin and order. He does not want enthusiasm alone to settle an undertaking and first asks about people, supplies and responsibility. Respect for orders does not mean overlooking unreasonable terms; if an arrangement will impose needless losses on companions, he wants the problem addressed before action.",
+  "SpeechStyle": "Questions the terms in an orderly way, without rushing to promise or substituting a family name for reasons.",
+  "PersonalSpeechStyle": "Questions the terms in an orderly way, without rushing to promise or substituting a family name for reasons.",
   "Traits": [
     {
       "Id": "calculating",
@@ -15,14 +15,10 @@
     },
     {
       "Id": "disciplined",
-      "Strength": 2
+      "Strength": 3
     },
     {
-      "Id": "cautious",
-      "Strength": 2
-    },
-    {
-      "Id": "ambitious",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
@@ -33,26 +29,20 @@
     },
     {
       "Id": "disciplined",
-      "Strength": 2
+      "Strength": 3
     },
     {
-      "Id": "cautious",
-      "Strength": 2
-    },
-    {
-      "Id": "ambitious",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Break Pomeranian tolls strangling Vistula navigation",
-    "Amass Hanseatic silver loans to fund crusader garrisons"
+    "Maintain a credible position between obligations to the order and expectations from kin."
   ],
   "Values": [
-    "Contracts, masonry, and discipline sustain the Order",
-    "Spiritual conquest requires unflinching fiscal mastery"
+    "Accepted responsibilities should be clear and fulfillable."
   ],
   "Fears": [
-    "Fears prolonged Baltic blockades triggering famine and mutiny among mercenary ranks"
+    "Vague orders imposing losses on companions with no one accepting responsibility."
   ]
 }

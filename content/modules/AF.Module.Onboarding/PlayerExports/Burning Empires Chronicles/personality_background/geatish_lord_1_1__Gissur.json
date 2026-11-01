@@ -9,15 +9,15 @@
   "PersonalSpeechStyle": "Speaks with noble, steadfast fidelity; dignified, resolute, and unwavering in upholding ancestral kinship and treaty oaths.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {
@@ -27,15 +27,15 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {

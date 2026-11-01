@@ -3,56 +3,38 @@
   "HeroId": "lord_rus_1_1",
   "DisplayName": "Vasily Vsevolodovich",
   "HeroName": "Vasily Vsevolodovich",
-  "Personality": "Alexander Nevsky (1221–1263) reigned as Grand Prince of Vladimir, Prince of Novgorod, and Prince of Kiev, revered as Russia's immortal protector and Orthodox saint. Having shattered Swedish crusaders on the Neva (1240) and Teutonic knights on Lake Peipus (1242), he safeguarded the northern marchlands of Rus. In 1259 AD, however, Nevsky confronted an agonizing crisis when Mongol darughachi arrived in Novgorod to conduct an imperial tax census, triggering armed revolts in the veche square. Understanding that defiance against Sarai would unleash catastrophic retaliatory annihilation, Alexander rode to St. Sophia with his veteran druzhina, subduing the insurrection with severe resolve and forcing the republic to yield tribute. Enduring the bitter scorn of his citizens to shield them from the sword, his tragic pragmatism ensured the survival of Rus. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Description": "Alexander Nevsky (1221–1263) reigned as Grand Prince of Vladimir, Prince of Novgorod, and Prince of Kiev, revered as Russia's immortal protector and Orthodox saint. Having shattered Swedish crusaders on the Neva (1240) and Teutonic knights on Lake Peipus (1242), he safeguarded the northern marchlands of Rus. In 1259 AD, however, Nevsky confronted an agonizing crisis when Mongol darughachi arrived in Novgorod to conduct an imperial tax census, triggering armed revolts in the veche square. Understanding that defiance against Sarai would unleash catastrophic retaliatory annihilation, Alexander rode to St. Sophia with his veteran druzhina, subduing the insurrection with severe resolve and forcing the republic to yield tribute. Enduring the bitter scorn of his citizens to shield them from the sword, his tragic pragmatism ensured the survival of Rus. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Background": "Alexander Nevsky (1221–1263) reigned as Grand Prince of Vladimir, Prince of Novgorod, and Prince of Kiev, revered as Russia's immortal protector and Orthodox saint. Having shattered Swedish crusaders on the Neva (1240) and Teutonic knights on Lake Peipus (1242), he safeguarded the northern marchlands of Rus. In 1259 AD, however, Nevsky confronted an agonizing crisis when Mongol darughachi arrived in Novgorod to conduct an imperial tax census, triggering armed revolts in the veche square. Understanding that defiance against Sarai would unleash catastrophic retaliatory annihilation, Alexander rode to St. Sophia with his veteran druzhina, subduing the insurrection with severe resolve and forcing the republic to yield tribute. Enduring the bitter scorn of his citizens to shield them from the sword, his tragic pragmatism ensured the survival of Rus. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "SpeechStyle": "Speaks with quiet, iron-clad conviction; stern, prophetic, and laden with tragic statesmanship.",
-  "PersonalSpeechStyle": "Speaks with quiet, iron-clad conviction; stern, prophetic, and laden with tragic statesmanship.",
+  "Personality": "Vasily Vsevolodovich was prince of Yaroslavl and a son of Vsevolod Konstantinovich. He is deceased; his house remembers him as succeeding his father in Yaroslavl. His mother, spouse and children preserve his place in the family. Relatives speaking of him think first of the princely house of Yaroslavl.",
+  "Description": "Vasily Vsevolodovich was prince of Yaroslavl and a son of Vsevolod Konstantinovich. He is deceased; his house remembers him as succeeding his father in Yaroslavl. His mother, spouse and children preserve his place in the family. Relatives speaking of him think first of the princely house of Yaroslavl.",
+  "Background": "Vasily Vsevolodovich was prince of Yaroslavl and a son of Vsevolod Konstantinovich. He is deceased; his house remembers him as succeeding his father in Yaroslavl. His mother, spouse and children preserve his place in the family. Relatives speaking of him think first of the princely house of Yaroslavl.",
+  "SpeechStyle": "Plain in family recollection, focused on the Yaroslavl house and obligations to relatives.",
+  "PersonalSpeechStyle": "Plain in family recollection, focused on the Yaroslavl house and obligations to relatives.",
   "Traits": [
     {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 3
-    },
-    {
-      "Id": "daring",
+      "Id": "dutiful",
       "Strength": 2
     },
     {
       "Id": "cautious",
-      "Strength": 3
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 3
-    },
-    {
-      "Id": "daring",
+      "Id": "dutiful",
       "Strength": 2
     },
     {
       "Id": "cautious",
-      "Strength": 3
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Suppress radical insurrections in Novgorod to avert punitive Mongol devastation",
-    "Secure Orthodox ecclesiastical autonomy and monastic lands"
+    "Leave a stable succession and support for the Yaroslavl house."
   ],
   "Values": [
-    "A ruler must bear public hatred if it preserves his civilization",
-    "Submit to eastern tribute to protect sacred Orthodox faith from western heresy"
+    "Obligations among relatives and continuity of the house."
   ],
   "Fears": [
-    "Fears reckless urban revolts provoking total punitive annihilation by Golden Horde armies"
+    "The house losing mutual support through a succession struggle."
   ]
 }

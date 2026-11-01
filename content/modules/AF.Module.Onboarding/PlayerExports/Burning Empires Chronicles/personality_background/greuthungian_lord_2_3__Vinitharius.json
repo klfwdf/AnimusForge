@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with icy, unsparing martial gravity; curt, merciless toward traitors, yet commanding fanatical loyalty from his armored retinue.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -23,7 +23,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Manage arrows, oil and dried fish in Hestbo's island fortress so that its defenders can endure a long siege.",
+    "Arbitrate fishing and harvest disputes around Finnoy fairly, earning the trust of local farmers, fishers and defenders.",
+    "Maintain inherited ties between the Tinghatt and Hestbo families and support her husband through Norwegian court disputes."
+  ],
+  "Values": [
+    "An island mistress's composure sustains defenders; even attack and storms require calm organisation rather than panic.",
+    "Impartial law reassures island communities; private favouritism must not undermine Hestbo's order.",
+    "Honour the island church's saints and manage defence logistics honestly and carefully so that her husband can serve effectively."
+  ],
+  "Fears": [
+    "Raiders landing under fog, burning estates and churches and killing the island's vulnerable inhabitants.",
+    "Her husband disappearing in a storm during a long voyage, leaving her and their young son exposed to predatory inheritance rivals."
+  ],
   "SpeechStyle": "Speaks with maritime poise, crisp clarity, and aristocratic self-possession, managing island estate logistics with energetic competence.",
   "SchemaVersion": 3,
   "VoiceId": "",

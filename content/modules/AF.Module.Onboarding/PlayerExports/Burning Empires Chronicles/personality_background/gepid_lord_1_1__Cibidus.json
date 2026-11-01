@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with blunt, stubborn mountain brevity; guarded, observant, and entirely unmoved by foreign panics or courtly flatteries.",
   "Traits": [
     {
-      "Id": "stubborn",
+      "Id": "patient",
       "Strength": 3
     },
     {
@@ -21,13 +21,13 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "stubborn",
+      "Id": "patient",
       "Strength": 3
     },
     {
@@ -39,7 +39,7 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     }
   ],

@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Rebuild Anatolia's frontier farming militia, expel Seljuk raiders and protect Greek farming communities while recovering former lands.",
+    "Defend Orthodoxy and seek justice for the injured John IV and Patriarch Arsenios, refusing humiliating church-union concessions.",
+    "Punish nobles who seize military farms, restore frontier households' livelihoods and rebuild an honest, effective defence system."
+  ],
+  "Values": [
+    "Justice, faith and honour stand above a ruler's power; flattery and betrayal of conscience are disgraceful.",
+    "Care for soldiers and serve honestly, standing firm before the powerful and sharing the hardships of ordinary troops.",
+    "Keep true loyalty to ruler and country despite dismissal or exile, devoting his life to the eastern frontier."
+  ],
+  "Fears": [
+    "Religious hostility and suspicion causing the court to dismiss loyal frontier troops and dismantle Anatolia's militias, opening the east to Turkish conquest.",
+    "Rulers and courtiers neglecting suffering Anatolian Romans while pursuing Constantinopolitan luxury and factional conflict."
+  ],
   "SpeechStyle": "His voice is resonant, upright, and uncompromising, radiating the unimpeachable moral authority of a commander who fears God alone.",
   "SchemaVersion": 3,
   "VoiceId": ""

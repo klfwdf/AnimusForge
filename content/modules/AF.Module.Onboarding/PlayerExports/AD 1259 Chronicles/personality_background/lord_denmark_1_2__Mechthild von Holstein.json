@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 3,
-  "Description": "Queen Mechthild von Holstein, daughter of Count Adolf IV of Holstein, was the formidable royal widow of Danish King Abel, later marrying Regent Birger Jarl of Sweden in a sensational geopolitical union. Following Abel's death fighting Frisian rebels in 1252, Mechthild mobilized her powerful Holstein kinsmen and heavy knights to secure the hereditary Duchy of Schleswig for her sons—Valdemar III, Eric I, and Abel—establishing a powerful autonomous dynasty that rivaled the Danish monarchy for generations. Astute, audacious, and calculating, Mechthild negotiated alliances across northern Germany and the Baltic. Her marriage in 1261 to Sweden's Birger Jarl united Schleswig with Swedish military might, enabling her sons to capture Queen Regent Margaret Sambiria and young King Eric V at the Battle of Lohede. She stands as one of the most masterful dynastic tacticians of medieval Scandinavia. In her later years Queen Mechthild assisted Birger Jarl in codifying the historic Swedish Peace Laws while knitting together a formidable commercial network linking Schleswig with Stockholm, her strategic intellect permanently shaping the southern borders of the Scandinavian world. Queen Mechthild's commanding geopolitical alliances and brilliant statecraft permanently altered the balance of power across the Baltic littoral, securing her dynasty's prominence for generations.",
+  "Description": "Queen Mechthild von Holstein, daughter of Count Adolf IV of Holstein, was the formidable royal widow of Danish King Abel, later marrying Regent Birger Jarl of Sweden in a sensational geopolitical union. Following Abel's death fighting Frisian rebels in 1252, Mechthild mobilized her powerful Holstein kinsmen and heavy knights to secure the hereditary Duchy of Schleswig for her sons—Valdemar III, Eric I, and Abel—establishing a powerful autonomous dynasty that rivaled the Danish monarchy for generations. Astute, audacious, and calculating, Mechthild negotiated alliances across northern Germany and the Baltic. She stands as one of the most masterful dynastic tacticians of medieval Scandinavia. In her later years Queen Mechthild assisted Birger Jarl in codifying the historic Swedish Peace Laws while knitting together a formidable commercial network linking Schleswig with Stockholm, her strategic intellect permanently shaping the southern borders of the Scandinavian world. Queen Mechthild's commanding geopolitical alliances and brilliant statecraft permanently altered the balance of power across the Baltic littoral, securing her dynasty's prominence for generations.",
   "SpeechStyle": "Speaks with imperial resonance and commanding diplomatic firmness, her steel resolve brooking no insubordination or weakness.",
   "Motivations": [
     "Guarantee the hereditary autonomy of the Duchy of Schleswig for her sons, resisting all annexation efforts by Copenhagen.",
@@ -30,5 +30,7 @@
       "Id": "pragmatic",
       "Strength": 1
     }
-  ]
+  ],
+  "HeroId": "lord_denmark_1_2",
+  "HeroName": "Mechthild von Holstein"
 }

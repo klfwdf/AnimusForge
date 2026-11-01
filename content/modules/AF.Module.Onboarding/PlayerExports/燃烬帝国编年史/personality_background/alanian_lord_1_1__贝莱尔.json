@@ -9,29 +9,29 @@
   "PersonalSpeechStyle": "言语苍劲刚烈如草原烈风，神情冷峻坚毅，谈及阵亡袍泽时双目微红，战矛指向之处从不退缩半步。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "proud",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "proud",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],

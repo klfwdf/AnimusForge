@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 3,
-  "Description": "Knyaz Tovtivil Litovskij (Duke Tautvilas of Lithuania) is the dynamic, politically formidable ruler of Polotsk during the 1250s and 1260s, nephew and fierce rival to King Mindaugas. Resisting Mindaugas's autocratic consolidation, Tovtivil brought his battle-tested warrior retinues into the Western Dvina basin, was baptized into Orthodox Christianity, and was enthusiastically elected Grand Prince by the Polotsk Veche assembly. A military innovator of the highest order, he combined the lethal mobility of Baltic light horsemen with the resilient shield walls of Ruthenian heavy infantry, crushing repeated invasions by pagan warlords and crusader knights. He orchestrated a grand strategic confederation linking Polotsk with King Danylo of Galicia and the Archbishopric of Riga, converting Polotsk into an unassailable bastion of regional balance. Scrupulously upholding ancient municipal liberties and church traditions, Tovtivil won the profound loyalty of his Orthodox subjects, standing as an immortal titan in Baltic and Rus' history. Grand Prince Tovtivil unified Baltic cavalry agility with Slavic infantry resilience into an unconquerable military instrument. Crushing aggressive invasions along the Dvina, he respected Polotsk's communal assembly laws, securing sovereign independence across two great cultural spheres through brilliant battlefield leadership. His ironclad alliance with local boyars preserved the ancient liberties of Polotsk.",
+  "Description": "Resisting Mindaugas's autocratic consolidation, Tovtivil brought his battle-tested warrior retinues into the Western Dvina basin, was baptized into Orthodox Christianity, and was enthusiastically elected Grand Prince by the Polotsk Veche assembly. A military innovator of the highest order, he combined the lethal mobility of Baltic light horsemen with the resilient shield walls of Ruthenian heavy infantry, crushing repeated invasions by pagan warlords and crusader knights. He orchestrated a grand strategic confederation linking Polotsk with King Danylo of Galicia and the Archbishopric of Riga, converting Polotsk into an unassailable bastion of regional balance. Scrupulously upholding ancient municipal liberties and church traditions, Tovtivil won the profound loyalty of his Orthodox subjects, standing as an immortal titan in Baltic and Rus' history. Grand Prince Tovtivil unified Baltic cavalry agility with Slavic infantry resilience into an unconquerable military instrument. Crushing aggressive invasions along the Dvina, he respected Polotsk's communal assembly laws, securing sovereign independence across two great cultural spheres through brilliant battlefield leadership. His ironclad alliance with local boyars preserved the ancient liberties of Polotsk.",
   "SpeechStyle": "Mindaugas's iron fist cannot crush free men, nor shall crusader armor tame the riders of Polotsk! Baltic fury and Ruthenian steadfastness unite under my banner! Forward to victory!",
   "Motivations": [
     "Maintain sovereign rule over Polotsk, uniting Baltic and Ruthenian forces to shatter Mindaugas's expansionist campaigns.",
@@ -31,5 +31,7 @@
       "Id": "sociable",
       "Strength": 2
     }
-  ]
+  ],
+  "HeroId": "lord_polotsk_3a",
+  "HeroName": "Knyaz Tovtivil Litovskij"
 }

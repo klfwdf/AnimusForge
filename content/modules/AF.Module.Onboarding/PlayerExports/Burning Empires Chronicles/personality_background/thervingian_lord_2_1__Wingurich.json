@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with noble aristocratic weight and paternal warmth; dignified, measured, and deeply protective of his migrating people.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -17,7 +17,7 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
@@ -27,7 +27,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -35,7 +35,7 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {

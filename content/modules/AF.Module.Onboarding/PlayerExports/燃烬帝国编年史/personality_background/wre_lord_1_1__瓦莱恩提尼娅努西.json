@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语沉雄短促如雷霆滚过荒原，极少展露笑颜，下达军令时斩钉截铁不容任何辩驳，目光如鹰隼般逼人，令人不寒而栗。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -27,7 +27,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

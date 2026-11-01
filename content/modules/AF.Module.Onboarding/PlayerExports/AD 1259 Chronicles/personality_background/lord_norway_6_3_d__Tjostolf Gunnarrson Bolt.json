@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Defeat rival claims to Bolt lands at Borgarting and royal courts, protecting the inheritance through law.",
+    "Standardise rents and mill-tax accounts across the family's more than twenty holdings to maintain dependable revenues and exact records.",
+    "Study Norwegian and canon law to obtain monastic protection and estate tax exemptions in the Oslo diocese."
+  ],
+  "Values": [
+    "A sound legal agreement can outweigh a hundred heavy cavalry; careful documents and precedent defeat predatory claims.",
+    "A jurist must reason precisely and examine records closely to build dependable legal protection for the family.",
+    "Use objective political judgement for the family's long-term interests, resisting empty reputation and short-lived profit."
+  ],
+  "Fears": [
+    "Political compromise leading the crown to overturn land law and earlier Bolt judgements, destroying the family's economic rights.",
+    "Brothers fighting in court over family leadership and inheritance, wasting years of legal work and making the household a public disgrace."
+  ],
   "SpeechStyle": "Speaks with cool analytical precision, measured reserve, and sharp tactical logic, scrutinizing administrative charters and defensive plans with forensic clarity.",
   "SchemaVersion": 3,
   "VoiceId": "",

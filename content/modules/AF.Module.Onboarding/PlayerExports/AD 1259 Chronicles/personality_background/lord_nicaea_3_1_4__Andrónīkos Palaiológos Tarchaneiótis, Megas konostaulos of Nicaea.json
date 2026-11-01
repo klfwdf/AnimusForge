@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Train and command skilled Cuman light cavalry and armoured guards as an effective mobile field army.",
+    "Build European stud farms and fodder networks to supply healthy warhorses to the field army throughout the year.",
+    "Repay his uncle Michael VIII through military service and preserve Palaiologan and Tarchaneiotes standing at the imperial centre."
+  ],
+  "Values": [
+    "Horses, speed and surprise decide land warfare; bold mobility can break an enemy line at the decisive moment.",
+    "Combine discipline with comradeship, sharing foreign mercenaries' hardships and honouring pay promises to earn their loyalty.",
+    "Defending and recovering Roman territory is a commander's highest honour and a duty worth his life."
+  ],
+  "Fears": [
+    "Horse disease or fodder shortages destroying cavalry mobility and leaving imperial riders exposed to enemy infantry and crossbowmen.",
+    "Courtiers withholding Cuman pay from fear of their influence, provoking defection or mutiny and destroying the army's mobile striking force."
+  ],
   "SpeechStyle": "His voice is commanding, booming, and seasoned by desert dust and battlefields, inspiring instant equestrian discipline.",
   "SchemaVersion": 3,
   "VoiceId": ""

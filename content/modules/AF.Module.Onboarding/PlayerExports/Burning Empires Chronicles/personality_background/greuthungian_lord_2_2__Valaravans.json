@@ -9,29 +9,29 @@
   "PersonalSpeechStyle": "Speaks with thunderous equestrian ferocity; direct, intrepid, and eager for the clash of steel, commanding unswerving devotion from his riders.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "bravery",
-      "Strength": 3
+      "Id": "loyal",
+      "Strength": 2
     },
     {
-      "Id": "loyalty",
+      "Id": "ambitious",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "bravery",
-      "Strength": 3
+      "Id": "loyal",
+      "Strength": 2
     },
     {
-      "Id": "loyalty",
+      "Id": "ambitious",
       "Strength": 2
     }
   ],

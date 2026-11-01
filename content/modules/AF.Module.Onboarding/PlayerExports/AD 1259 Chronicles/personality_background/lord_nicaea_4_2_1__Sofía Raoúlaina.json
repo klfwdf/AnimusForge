@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Protect the Raoul family's Thracian estates and production, maintaining provisions for campaigning relatives.",
+    "Manage silk, farming and livestock workshops, improve revenues and relieve war-damaged communities to earn lasting local trust.",
+    "Protect younger relatives from court intrigue through calm judgement, preserving modest family traditions and household safety."
+  ],
+  "Values": [
+    "Frugality and forgiveness preserve a great house; arrogance, luxury and needless violence destroy it.",
+    "Practice Orthodox restraint and aid the poor, remaining gentle and unambitious while protecting the family's honest reputation.",
+    "Keep traditional propriety and family promises, maintaining the household's peace through composed and thoughtful leadership."
+  ],
+  "Fears": [
+    "Young officers joining a palace assassination plot and provoking a military purge that confiscates the family's accumulated inheritance.",
+    "Latin raiders burning Thracian workshops and granaries, destroying silk production and leaving estate communities hungry and displaced."
+  ],
   "SpeechStyle": "Her words are calm, gracious, and deliberate, embodying aristocratic composure and meticulous household stewardship.",
   "SchemaVersion": 3,
   "VoiceId": ""

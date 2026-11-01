@@ -3,14 +3,14 @@
   "HeroId": "lord_pol_10_6",
   "DisplayName": "Prędota Warszowic",
   "HeroName": "Prędota Warszowic",
-  "Personality": "Prędota Warszowic lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 10. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
-  "Description": "Prędota Warszowic lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 10. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
-  "Background": "Prędota Warszowic lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 10. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
-  "SpeechStyle": "Speaks with aristocratic grace and diplomatic poise; elegant, precise, and profoundly devout.",
-  "PersonalSpeechStyle": "Speaks with aristocratic grace and diplomatic poise; elegant, precise, and profoundly devout.",
+  "Personality": "Prędota Warszowic is a child of the house. Aged 10. Their father is Warsz Grotowic. Their mother is Nawoja. The house belongs to the noble network of Kraków and Sandomierz. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "Description": "Prędota Warszowic is a child of the house. Aged 10. Their father is Warsz Grotowic. Their mother is Nawoja. The house belongs to the noble network of Kraków and Sandomierz. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "Background": "Prędota Warszowic is a child of the house. Aged 10. Their father is Warsz Grotowic. Their mother is Nawoja. The house belongs to the noble network of Kraków and Sandomierz. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "SpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "PersonalSpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -18,17 +18,13 @@
       "Strength": 2
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -36,23 +32,18 @@
       "Strength": 2
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Coordinate emergency grain rationing for displaced refugees",
-    "Amass family silver to redeem captured kinsmen"
+    "Find care and trustworthy explanations from relatives.",
+    "Gradually understand their place among relatives."
   ],
   "Values": [
-    "Family preservation and Christian charity outshine fleeting glory",
-    "Prudent estate governance sustains dynastic endurance"
+    "Values familiar company and small promises that are kept."
   ],
   "Fears": [
-    "Fears castle breaches subjecting noblewomen and holy relics to barbarian plunder"
+    "Separation from relatives or threats they cannot understand."
   ]
 }

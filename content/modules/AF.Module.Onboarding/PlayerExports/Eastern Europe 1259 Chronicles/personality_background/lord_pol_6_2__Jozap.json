@@ -3,14 +3,14 @@
   "HeroId": "lord_pol_6_2",
   "DisplayName": "Jozap",
   "HeroName": "Jozap",
-  "Personality": "Jozap stood in 1259 AD as a veteran Polish feudal knight and landed baron within the fractured principalities of the Piast dynasty, aged approximately 47. Trained rigorously in Latin chivalric traditions, he donned heavy double-layered chainmail hauberks reinforced with early iron breastplates, excelling in couched lance charges, arming sword combat, and crossbow bastion defense. During the catastrophic Second Mongol Invasion of Poland under commander Burundai in 1259, he experienced firsthand the harrowing destruction of Sandomierz and the burning of Vistula trade settlements. Stationed atop fortified stone battlements, he directed household retainers and spear levies in securing vital river crossings and fortified forest passes. Balancing ducal allegiances toward the Krakow court against autonomous baronial obligations, he managed grain stockpiles, supervised winter crop rotations, and vetted peasant refugee convoys while guarding against sudden steppe horse-archer ambushes. Maintaining austere military discipline across his rural fiefdoms while fortifying frontier baileys, he pledged his sword and ancestral heraldic honor to protect Polish Christian hearths against eastern devastation. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
-  "Description": "Jozap stood in 1259 AD as a veteran Polish feudal knight and landed baron within the fractured principalities of the Piast dynasty, aged approximately 47. Trained rigorously in Latin chivalric traditions, he donned heavy double-layered chainmail hauberks reinforced with early iron breastplates, excelling in couched lance charges, arming sword combat, and crossbow bastion defense. During the catastrophic Second Mongol Invasion of Poland under commander Burundai in 1259, he experienced firsthand the harrowing destruction of Sandomierz and the burning of Vistula trade settlements. Stationed atop fortified stone battlements, he directed household retainers and spear levies in securing vital river crossings and fortified forest passes. Balancing ducal allegiances toward the Krakow court against autonomous baronial obligations, he managed grain stockpiles, supervised winter crop rotations, and vetted peasant refugee convoys while guarding against sudden steppe horse-archer ambushes. Maintaining austere military discipline across his rural fiefdoms while fortifying frontier baileys, he pledged his sword and ancestral heraldic honor to protect Polish Christian hearths against eastern devastation. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
-  "Background": "Jozap stood in 1259 AD as a veteran Polish feudal knight and landed baron within the fractured principalities of the Piast dynasty, aged approximately 47. Trained rigorously in Latin chivalric traditions, he donned heavy double-layered chainmail hauberks reinforced with early iron breastplates, excelling in couched lance charges, arming sword combat, and crossbow bastion defense. During the catastrophic Second Mongol Invasion of Poland under commander Burundai in 1259, he experienced firsthand the harrowing destruction of Sandomierz and the burning of Vistula trade settlements. Stationed atop fortified stone battlements, he directed household retainers and spear levies in securing vital river crossings and fortified forest passes. Balancing ducal allegiances toward the Krakow court against autonomous baronial obligations, he managed grain stockpiles, supervised winter crop rotations, and vetted peasant refugee convoys while guarding against sudden steppe horse-archer ambushes. Maintaining austere military discipline across his rural fiefdoms while fortifying frontier baileys, he pledged his sword and ancestral heraldic honor to protect Polish Christian hearths against eastern devastation. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
-  "SpeechStyle": "Speaks with curt, martial chivalric discipline; proud, resolute, and devoutly Catholic.",
-  "PersonalSpeechStyle": "Speaks with curt, martial chivalric discipline; proud, resolute, and devoutly Catholic.",
+  "Personality": "Jozap is a member of a noble house. Their father is Kusz. The house belongs to the noble network of Masovia. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 This person also will state a position under threat rather than let fear make the decision\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Description": "Jozap is a member of a noble house. Their father is Kusz. The house belongs to the noble network of Masovia. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 This person also will state a position under threat rather than let fear make the decision\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Background": "Jozap is a member of a noble house. Their father is Kusz. The house belongs to the noble network of Masovia. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 This person also will state a position under threat rather than let fear make the decision\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "SpeechStyle": "Direct and willing to state agreement or refusal.",
+  "PersonalSpeechStyle": "Direct and willing to state agreement or refusal.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     },
     {
@@ -18,17 +18,13 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
-      "Strength": 2
-    },
-    {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     },
     {
@@ -36,23 +32,19 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
-      "Strength": 2
-    },
-    {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Secure fortified river crossings along the Vistula",
-    "Shield estate tenantry against nomadic slave raids"
+    "Maintain dependable relationships within the house.",
+    "Preserve independent judgement and dignity under threat."
   ],
   "Values": [
-    "Heraldic honor and chivalric duty supersede life",
-    "The defense of Christian soil is a knight's supreme calling"
+    "Values clear promises that are kept and dislikes changing terms afterward.",
+    "Prefers agreed procedures and orderly work to arbitrary last-minute changes."
   ],
   "Fears": [
-    "Fears nomadic raiders cutting communication lines and starving isolated garrisons"
+    "Conflicting duties and orders leaving avoidable mistakes uncorrected."
   ]
 }

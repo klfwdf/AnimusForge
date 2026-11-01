@@ -9,29 +9,29 @@
   "PersonalSpeechStyle": "Speaks with earthy, passionate Slavic sincerity; resonant, protective of his kinsmen, and fiercely defiant against foreign oppressors.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "proud",
       "Strength": 3
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "proud",
       "Strength": 3
     }
   ],

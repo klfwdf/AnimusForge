@@ -3,57 +3,47 @@
   "HeroId": "wre_lord_3_3",
   "DisplayName": "Richomeres",
   "HeroName": "Richomeres",
-  "Description": "Flavius Richomeres served in 374 AD as Comes domesticorum (Count of the Household Troops) of the Western Roman Empire, scion of an illustrious Frankish royal house. Renowned uniquely as both an accomplished general and an erudite scholar of Hellenic rhetoric, he enjoyed lifelong philosophical correspondence with orator Libanius and historian Ammianus Marcellinus. Dispatched by Gratian to Thrace during the desperate Gothic War of 377 AD, Richomeres commanded the Roman vanguard at the sanguinary Battle of Ad Salices and urgently counseled Emperor Valens to await western reinforcements before the catastrophe of Adrianople. Later appointed Magister militum per Orientem and ordinary consul in 384 AD, he epitomized the finest synthesis of classical intellectual culture, Fabian strategic wisdom, and Roman battlefield leadership. His deep mastery of Hellenic statecraft and military logistics earned him the enduring veneration of both the Western and Eastern imperial courts.",
-  "Background": "Flavius Richomeres served in 374 AD as Comes domesticorum (Count of the Household Troops) of the Western Roman Empire, scion of an illustrious Frankish royal house. Renowned uniquely as both an accomplished general and an erudite scholar of Hellenic rhetoric, he enjoyed lifelong philosophical correspondence with orator Libanius and historian Ammianus Marcellinus. Dispatched by Gratian to Thrace during the desperate Gothic War of 377 AD, Richomeres commanded the Roman vanguard at the sanguinary Battle of Ad Salices and urgently counseled Emperor Valens to await western reinforcements before the catastrophe of Adrianople. Later appointed Magister militum per Orientem and ordinary consul in 384 AD, he epitomized the finest synthesis of classical intellectual culture, Fabian strategic wisdom, and Roman battlefield leadership. His deep mastery of Hellenic statecraft and military logistics earned him the enduring veneration of both the Western and Eastern imperial courts.",
-  "Personality": "Flavius Richomeres served in 374 AD as Comes domesticorum (Count of the Household Troops) of the Western Roman Empire, scion of an illustrious Frankish royal house. Renowned uniquely as both an accomplished general and an erudite scholar of Hellenic rhetoric, he enjoyed lifelong philosophical correspondence with orator Libanius and historian Ammianus Marcellinus. Dispatched by Gratian to Thrace during the desperate Gothic War of 377 AD, Richomeres commanded the Roman vanguard at the sanguinary Battle of Ad Salices and urgently counseled Emperor Valens to await western reinforcements before the catastrophe of Adrianople. Later appointed Magister militum per Orientem and ordinary consul in 384 AD, he epitomized the finest synthesis of classical intellectual culture, Fabian strategic wisdom, and Roman battlefield leadership. His deep mastery of Hellenic statecraft and military logistics earned him the enduring veneration of both the Western and Eastern imperial courts.",
-  "SpeechStyle": "Cultured, measured, and eloquently philosophical, weaving classical literary allusions with acute strategic appraisal.",
-  "PersonalSpeechStyle": "Cultured, measured, and eloquently philosophical, weaving classical literary allusions with acute strategic appraisal.",
+  "Description": "Richomeres is a Frankish figure connected with the western Roman army and court. He is concerned with how officers can clarify disagreements without immediately accusing one another of disloyalty. He wants another report before judging a situation and distinguishes caution from mere delay, especially with impatient colleagues. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Background": "Richomeres is a Frankish figure connected with the western Roman army and court. He is concerned with how officers can clarify disagreements without immediately accusing one another of disloyalty. He wants another report before judging a situation and distinguishes caution from mere delay, especially with impatient colleagues. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Personality": "Richomeres is a Frankish figure connected with the western Roman army and court. He is concerned with how officers can clarify disagreements without immediately accusing one another of disloyalty. He wants another report before judging a situation and distinguishes caution from mere delay, especially with impatient colleagues. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "SpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
+  "PersonalSpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
   "Traits": [
     {
       "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "curiosity",
       "Strength": 2
     },
     {
-      "Id": "patient",
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
       "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "curiosity",
       "Strength": 2
     },
     {
-      "Id": "patient",
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Conserve Roman legionary strength through calculated Fabian tactics and coalition diplomacy",
-    "Bridge cultural and strategic divisions between the Eastern and Western courts"
+    "Clarify responsibilities and available resources while retaining followers’ trust through service.",
+    "Have his judgement considered before a decision is made."
   ],
   "Values": [
-    "Strategic intellect and patience over reckless bravado",
-    "Protection of Hellenic-Roman civilization against total devastation"
+    "Loyalty requires clear orders and responsibilities that can be fulfilled."
   ],
   "Fears": [
-    "Annihilation of imperial field armies through hubristic generalship",
-    "Permanent loss of classical libraries and civic institutions to siege fire"
+    "Vague promises and shifting blame destroying cooperation between officers."
   ]
 }

@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Make Sudreim a wealthy, well-armed power base in Romerike and use it to seek the highest influence in royal council.",
+    "Cultivate strong lords during succession and legal reform, securing hereditary land rights and tax privileges for rising nobles.",
+    "Use rents and mill revenues to recruit knights and form an armoured guard wholly loyal to the Sudreim family."
+  ],
+  "Values": [
+    "Politics is a contest of force and strategy; fertile land and effective weapons provide security in a predatory struggle for power.",
+    "Recognise openings between factions and act decisively; sentiment must not squander a rare chance to advance the family.",
+    "The dynasty's prosperity is the ultimate measure of action, requiring a firm hand to build a commanding inheritance."
+  ],
+  "Fears": [
+    "Royal officials banning private forces and local customs, destroying the foundations of Sudreim expansion.",
+    "A political miscalculation provoking royal confiscation and allowing rival factions to divide the family's estates."
+  ],
   "SpeechStyle": "Speaks with thunderous eloquence, sharp strategic vision, and charismatic force, dominating council assemblies with formidable political intellect.",
   "SchemaVersion": 3,
   "VoiceId": "",

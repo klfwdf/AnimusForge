@@ -3,14 +3,14 @@
   "HeroId": "dead_lord_pol_10_2",
   "DisplayName": "Gościsława",
   "HeroName": "Gościsława",
-  "Personality": "Gościsława lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 59. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
-  "Description": "Gościsława lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 59. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
-  "Background": "Gościsława lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 59. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
-  "SpeechStyle": "Speaks with aristocratic grace and diplomatic poise; elegant, precise, and profoundly devout.",
-  "PersonalSpeechStyle": "Speaks with aristocratic grace and diplomatic poise; elegant, precise, and profoundly devout.",
+  "Personality": "Gościsława is a deceased member of the house. Their spouse is Grot. Their children are Sięgniew Grotowic, Warsz Grotowic. The house’s ties continue in Kraków and Sandomierz. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person values clear promises that are kept and dislikes changing terms afterward and compares gains and costs for both sides and asks about terms before agreeing and will help those who depend on them and expects that help to be taken seriously\u0001 They dislike exaggerating their standing or achievements.",
+  "Description": "Gościsława is a deceased member of the house. Their spouse is Grot. Their children are Sięgniew Grotowic, Warsz Grotowic. The house’s ties continue in Kraków and Sandomierz. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person values clear promises that are kept and dislikes changing terms afterward and compares gains and costs for both sides and asks about terms before agreeing and will help those who depend on them and expects that help to be taken seriously\u0001 They dislike exaggerating their standing or achievements.",
+  "Background": "Gościsława is a deceased member of the house. Their spouse is Grot. Their children are Sięgniew Grotowic, Warsz Grotowic. The house’s ties continue in Kraków and Sandomierz. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person values clear promises that are kept and dislikes changing terms afterward and compares gains and costs for both sides and asks about terms before agreeing and will help those who depend on them and expects that help to be taken seriously\u0001 They dislike exaggerating their standing or achievements.",
+  "SpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "PersonalSpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -18,17 +18,13 @@
       "Strength": 2
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -36,23 +32,17 @@
       "Strength": 2
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Coordinate emergency grain rationing for displaced refugees",
-    "Amass family silver to redeem captured kinsmen"
+    "Leave relatives a house they can depend on."
   ],
   "Values": [
-    "Family preservation and Christian charity outshine fleeting glory",
-    "Prudent estate governance sustains dynastic endurance"
+    "Kinship and commitments shape the memory of a house."
   ],
   "Fears": [
-    "Fears castle breaches subjecting noblewomen and holy relics to barbarian plunder"
+    "Trust and ties within the house breaking down."
   ]
 }

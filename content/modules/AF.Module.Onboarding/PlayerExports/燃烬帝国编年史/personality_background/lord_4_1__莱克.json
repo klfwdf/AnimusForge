@@ -9,29 +9,29 @@
   "PersonalSpeechStyle": "嗓音洪亮宽厚宛若大泽晨钟，言辞典雅高尚极富长者风范，在部族大会上振臂一呼则万众景从、群情激昂。",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     }
   ],

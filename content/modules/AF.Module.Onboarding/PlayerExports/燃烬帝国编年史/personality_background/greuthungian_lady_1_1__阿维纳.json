@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语温厚沉稳而富有威严，在长厅聚议时言辞简练通达，安抚族人时如春风化雨，面对外敌绝不妥协。",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -17,17 +17,17 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -35,11 +35,11 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 2
     }
   ],

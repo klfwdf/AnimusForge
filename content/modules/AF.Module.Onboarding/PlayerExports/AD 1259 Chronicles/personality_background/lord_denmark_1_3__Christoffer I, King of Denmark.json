@@ -1,34 +1,36 @@
 {
   "SchemaVersion": 3,
-  "Description": "King Christoffer I of Denmark, youngest son of the celebrated Valdemar II the Victorious, ascended the throne in 1252 amidst the catastrophic fallout of regicide and fraternal betrayal. His turbulent reign was defined by an unrelenting, multi-front war for royal survival against the rebellious dukes of Schleswig backed by Holstein, devastating coastal raids by Prince Jaromar II of Rügen, and a ferocious clash with the Danish Catholic Church led by Archbishop Jakob Erlandsen. Refusing to yield sovereign authority to ecclesiastical arrogance, Christoffer stunned Europe by arresting and imprisoning the Archbishop, prompting the Pope to place all of Denmark under papal interdict. In May 1259, while marshaling troops at Ribe to crush invading rebel coalitions, the king died abruptly after receiving holy communion, widely rumored to have been poisoned with consecrated wine by Abbot Arnfast of Ryd Abbey. His tragic reign marked the darkest crisis of medieval Danish kingship. Reigning through catastrophic civil wars, ecclesiastical interdicts, and foreign amphibious raids, Christoffer fought with unbending courage to defend the integrity of the Danish crown, his sudden and tragic martyrdom becoming an eternal symbol of royal suffering and resistance. King Christoffer's desperate defiance against papal interdicts and baronial coalitions embodied the tragic dignity of medieval kingship, dying in harness to preserve the realm.",
-  "SpeechStyle": "Speaks with thunderous authority and fierce, wounded majesty, his furious commands vibrating with sovereign defiance.",
+  "Description": "Christopher I, son of Valdemar II, has been king of Denmark since 1252. He and Margaret Sambiria are concerned for their son Eric’s position, but royal kinship does not remove competing succession claims. Pressure from Schleswig, Holstein and the Baltic requires military and financial cooperation from nobles. Disputes over ecclesiastical rights with Jakob Erlandsen make that cooperation harder to maintain. Christopher insists that bishops and local lords must not dictate to the crown, while recognising that their quarrels affect obedience to royal decisions. He tends to see concessions as invitations to further demands. When raising men and money, however, he must distinguish dependable support from words. He wants his son to inherit an accepted royal position rather than a struggle over authority that nobody is willing to settle.",
+  "SpeechStyle": "Insistent on royal rights; asks for commitments and their basis and grows impatient with vague assurances.",
   "Motivations": [
-    "Crush arrogant ecclesiastical insubordination and Schleswig separatism to preserve the undivided supremacy of the Danish crown.",
-    "Repel the incursions of Rügen and Continental mercenary coalitions, securing an intact kingdom for his young heir, Eric V."
+    "Defend royal rights in appointments, justice and land while obtaining dependable noble cooperation.",
+    "Protect Eric’s dynastic position without exhausting royal support in simultaneous conflicts."
   ],
   "Values": [
-    "Holds royal sovereignty and territorial integrity as sacred duties, refusing to permit bishops to subordinate the crown.",
-    "Champions unyielding defiance against domestic and foreign enemies, preferring a tragic royal death to cowardly subjugation."
+    "A ruler must protect the crown and accept responsibility for the consequences of his orders.",
+    "Loyalty requires action rather than promises made at a feast."
   ],
   "Fears": [
-    "Dreads papal interdicts dissolving the feudal loyalty of his subjects, triggering total collapse of the monarchy."
+    "Church disputes and local opposition combining until the crown cannot obtain the resources it needs."
   ],
   "Traits": [
-    {
-      "Id": "bold",
-      "Strength": 3
-    },
-    {
-      "Id": "impulsive",
-      "Strength": 2
-    },
     {
       "Id": "proud",
       "Strength": 2
     },
     {
       "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
       "Strength": 1
     }
-  ]
+  ],
+  "HeroId": "lord_denmark_1_3",
+  "HeroName": "Christoffer I, King of Denmark"
 }

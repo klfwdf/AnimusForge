@@ -13,11 +13,7 @@
       "Strength": 3
     },
     {
-      "Id": "daring",
-      "Strength": 3
-    },
-    {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -31,11 +27,7 @@
       "Strength": 3
     },
     {
-      "Id": "daring",
-      "Strength": 3
-    },
-    {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -44,7 +36,7 @@
     }
   ],
   "Motivations": [
-    "Scour agrarian settlements and garrisons around 匈人帝国 with wolfpack cavalry raids",
+    "Scour agrarian settlements and garrisons around Huns with wolfpack cavalry raids",
     "Amass prime war mounts, iron armor plunder, and captives for the orda"
   ],
   "Values": [

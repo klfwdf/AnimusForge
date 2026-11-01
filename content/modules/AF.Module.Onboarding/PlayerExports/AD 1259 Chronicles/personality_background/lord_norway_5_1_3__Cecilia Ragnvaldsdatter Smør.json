@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Represent the family impeccably among Bergen nobles, speaking and behaving confidently with foreign envoys and powerful households.",
+    "Arrange suitable marriages that bind leading families across eastern and western Norway to the Smor house.",
+    "Support northern scholars and church writers through patronage, giving the wealthy Smor family a reputation for cultivated learning."
+  ],
+  "Values": [
+    "True noble bearing comes from virtue and education, requiring dignity and self-respect even amid lavish social display.",
+    "Patient judgement can preserve family unity and detect political dangers threatening her father and brothers.",
+    "God entrusts charity to the wealthy; helping poor scholars and orphaned girls gives the family lasting moral standing."
+  ],
+  "Fears": [
+    "Being sacrificed to an ill-judged political marriage with a cruel or hostile noble household and enduring isolation and mistreatment.",
+    "Bankruptcy ending the family's lavish life and foreign trade, leaving her impoverished after a privileged upbringing."
+  ],
   "SpeechStyle": "Speaks with soft-spoken elegance, serene composure, and aristocratic grace, reflecting immaculate noble upbringing and quiet inner strength.",
   "SchemaVersion": 3,
   "VoiceId": "",

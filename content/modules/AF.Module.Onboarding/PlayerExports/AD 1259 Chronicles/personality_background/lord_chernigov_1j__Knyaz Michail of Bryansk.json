@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 3,
-  "Description": "Knyaz Michail of Bryansk is the valiant son of Roman the Old, celebrated across the Desna basin as a premier frontline cavalry champion and garrison commander. Trained under his father's veteran tutelage in dense taiga maneuvers, Michail mastered both heavy lance charges and dismounted infantry axe combat in quagmires. Broad-shouldered, fiery, and vigilant, he personally led Bryansk's elite armored retinue guarding frontier outposts against predatory Lithuanian and nomad incursions. During the decisive 1263 campaign along the Piranau River, Michail commanded the vanguard shock assault that shattered the enemy flank, winning immortal renown. He supervised the expansion of Bryansk's stone-and-oak fortifications, manufacturing torsion engines and crossbow batteries to solidify urban security. Fiercely protective of his soldiers and sharing every camp hardship, Michail is affectionately hailed as the 'Iron Fist of Bryansk'. Clad in heavy steel plate, Prince Michail led Bryansk's shock cavalry with thunderous battlefield fury. Spearheading the victorious counter-attack at the Piranau River, his lance shattered enemy shield walls, inspiring his warriors to fight without retreat and establishing him as a legendary champion of the Desna. His resolute courage made him an idol among veteran garrison troopers. His relentless ferocity inspired every soldier under his command to hold their posts against all odds.",
+  "HeroId": "lord_chernigov_1j",
+  "Description": "Knyaz Michail of Bryansk is the valiant son of Roman the Old, celebrated across the Desna basin as a premier frontline cavalry champion and garrison commander. Trained under his father's veteran tutelage in dense taiga maneuvers, Michail mastered both heavy lance charges and dismounted infantry axe combat in quagmires. Broad-shouldered, fiery, and vigilant, he personally led Bryansk's elite armored retinue guarding frontier outposts against predatory Lithuanian and nomad incursions. He supervised the expansion of Bryansk's stone-and-oak fortifications, manufacturing torsion engines and crossbow batteries to solidify urban security. Fiercely protective of his soldiers and sharing every camp hardship, Michail is affectionately hailed as the 'Iron Fist of Bryansk'. Clad in heavy steel plate, Prince Michail led Bryansk's shock cavalry with thunderous battlefield fury. Spearheading the victorious counter-attack at the Piranau River, his lance shattered enemy shield walls, inspiring his warriors to fight without retreat and establishing him as a legendary champion of the Desna. His resolute courage made him an idol among veteran garrison troopers. His relentless ferocity inspired every soldier under his command to hold their posts against all odds.",
   "SpeechStyle": "Blades in hand and warhorses saddled, no craven shall stand upon the ramparts of Bryansk! Any invader daring our borders shall feel the cold bite of our battleaxes! Forward!",
   "Motivations": [
     "Command Bryansk's armored vanguard cavalry to crush Baltic raiders and nomad tumens along the Desna river corridors.",
@@ -31,5 +32,6 @@
       "Id": "proud",
       "Strength": 2
     }
-  ]
+  ],
+  "HeroName": "Knyaz Michail of Bryansk"
 }

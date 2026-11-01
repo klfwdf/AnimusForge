@@ -9,16 +9,12 @@
   "PersonalSpeechStyle": "嗓音沉雄粗粝如同战斧劈砍生铁，言必称哥特祖灵誓约，目光坚毅森冷，在冲锋战阵中咆哮如雷霆。",
   "Traits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 2
     },
     {
       "Id": "disciplined",
@@ -27,16 +23,12 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 2
     },
     {
       "Id": "disciplined",

@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "军令如山短促干脆，言谈间带着行伍老兵的严峻与沉雄，下达防务号令时条理分明，毫无官僚推诿拖沓之气。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
@@ -17,7 +17,7 @@
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     },
     {
@@ -27,7 +27,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
@@ -35,7 +35,7 @@
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     },
     {

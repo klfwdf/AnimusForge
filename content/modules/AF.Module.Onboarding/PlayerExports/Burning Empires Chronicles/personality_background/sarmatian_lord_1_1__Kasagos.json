@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with bold, equestrian vigor; animated, fierce, and radiating the proud charisma of a steppe cataphract king in battle.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -23,7 +23,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

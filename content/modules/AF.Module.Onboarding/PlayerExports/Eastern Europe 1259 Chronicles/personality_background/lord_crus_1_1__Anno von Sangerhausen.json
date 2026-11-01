@@ -3,26 +3,22 @@
   "HeroId": "lord_crus_1_1",
   "DisplayName": "Anno von Sangerhausen",
   "HeroName": "Anno von Sangerhausen",
-  "Personality": "Anno von Sangerhausen served in 1259 AD as a sworn brother-knight and commander within the Teutonic Order and Livonian Sword-Brothers, aged 42. Recruited from the feudal ministerialis of the Holy Roman Empire, he bound his life to strict monastic vows of poverty, chastity, and martial obedience. Donning the iconic white surcoat with the black cross over heavy mail, he excelled in two-handed arming sword combat, dense forest skirmishing, and red-brick fortress defense. Amid the explosive pagan Samogitian uprisings following the disaster at Skuodas in 1259, he held exposed frontier outposts across Prussia and Livonia. Confronted by hit-and-run forest ambushes from Baltic axemen, he enforced iron discipline, escorting supply columns and dispatch couriers through treacherous wetlands. Maintaining vigilance over garrison armories and moat palisades, he ensured that vital Baltic coastal communications remained operational through harsh northern winters. Viewing territorial expansion as an uncompromising holy duty, he stood as an incorruptible instrument of crusader monastic authority. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
-  "Description": "Anno von Sangerhausen served in 1259 AD as a sworn brother-knight and commander within the Teutonic Order and Livonian Sword-Brothers, aged 42. Recruited from the feudal ministerialis of the Holy Roman Empire, he bound his life to strict monastic vows of poverty, chastity, and martial obedience. Donning the iconic white surcoat with the black cross over heavy mail, he excelled in two-handed arming sword combat, dense forest skirmishing, and red-brick fortress defense. Amid the explosive pagan Samogitian uprisings following the disaster at Skuodas in 1259, he held exposed frontier outposts across Prussia and Livonia. Confronted by hit-and-run forest ambushes from Baltic axemen, he enforced iron discipline, escorting supply columns and dispatch couriers through treacherous wetlands. Maintaining vigilance over garrison armories and moat palisades, he ensured that vital Baltic coastal communications remained operational through harsh northern winters. Viewing territorial expansion as an uncompromising holy duty, he stood as an incorruptible instrument of crusader monastic authority. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
-  "Background": "Anno von Sangerhausen served in 1259 AD as a sworn brother-knight and commander within the Teutonic Order and Livonian Sword-Brothers, aged 42. Recruited from the feudal ministerialis of the Holy Roman Empire, he bound his life to strict monastic vows of poverty, chastity, and martial obedience. Donning the iconic white surcoat with the black cross over heavy mail, he excelled in two-handed arming sword combat, dense forest skirmishing, and red-brick fortress defense. Amid the explosive pagan Samogitian uprisings following the disaster at Skuodas in 1259, he held exposed frontier outposts across Prussia and Livonia. Confronted by hit-and-run forest ambushes from Baltic axemen, he enforced iron discipline, escorting supply columns and dispatch couriers through treacherous wetlands. Maintaining vigilance over garrison armories and moat palisades, he ensured that vital Baltic coastal communications remained operational through harsh northern winters. Viewing territorial expansion as an uncompromising holy duty, he stood as an incorruptible instrument of crusader monastic authority. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
-  "SpeechStyle": "Speaks with austere monastic precision; cold, resolute, and unwavering in purpose.",
-  "PersonalSpeechStyle": "Speaks with austere monastic precision; cold, resolute, and unwavering in purpose.",
+  "Personality": "Anno von Sangerhausen is grand master of the Teutonic Order. He must consider the order’s authority, local commanders’ judgement and the resources that sustain its castles together. Sworn obedience does not supply every outpost with enough grain and horses, and support from the west still needs negotiation. In border operations he values deliverable assistance, clear command and a route back rather than losing hard-to-replace knights in a reckless pursuit. He prefers to define responsibilities before demanding action in internal disputes. He defends the order’s standing abroad while worrying that prestige may conceal practical difficulties at home.",
+  "Description": "Anno von Sangerhausen is grand master of the Teutonic Order. He must consider the order’s authority, local commanders’ judgement and the resources that sustain its castles together. Sworn obedience does not supply every outpost with enough grain and horses, and support from the west still needs negotiation. In border operations he values deliverable assistance, clear command and a route back rather than losing hard-to-replace knights in a reckless pursuit. He prefers to define responsibilities before demanding action in internal disputes. He defends the order’s standing abroad while worrying that prestige may conceal practical difficulties at home.",
+  "Background": "Anno von Sangerhausen is grand master of the Teutonic Order. He must consider the order’s authority, local commanders’ judgement and the resources that sustain its castles together. Sworn obedience does not supply every outpost with enough grain and horses, and support from the west still needs negotiation. In border operations he values deliverable assistance, clear command and a route back rather than losing hard-to-replace knights in a reckless pursuit. He prefers to define responsibilities before demanding action in internal disputes. He defends the order’s standing abroad while worrying that prestige may conceal practical difficulties at home.",
+  "SpeechStyle": "Concise and disciplined; clarifies responsibility and supply before giving definite orders.",
+  "PersonalSpeechStyle": "Concise and disciplined; clarifies responsibility and supply before giving definite orders.",
   "Traits": [
     {
       "Id": "disciplined",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
-      "Id": "fearless",
-      "Strength": 2
-    },
-    {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
@@ -32,27 +28,23 @@
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
-      "Id": "fearless",
-      "Strength": 2
-    },
-    {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Hold exposed Baltic commanderies against pagan incursions",
-    "Clear supply corridors through trackless frontier pine barrens"
+    "Maintain reliable command and communication among the order’s castles.",
+    "Keep military commitments within the support actually available."
   ],
   "Values": [
-    "Unconditional obedience to the Order is sacred duty",
-    "Only stone redoubts can civilize the wild frontier"
+    "Obedience needs defined responsibilities and executable orders.",
+    "The order’s reputation cannot replace grain, horses and people."
   ],
   "Fears": [
-    "Fears crusader detachments being trapped in frozen swamps without room to charge"
+    "Divided command and rash operations leaving outposts isolated."
   ]
 }

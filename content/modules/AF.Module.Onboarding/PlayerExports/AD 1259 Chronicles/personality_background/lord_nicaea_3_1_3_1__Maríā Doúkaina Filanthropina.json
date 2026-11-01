@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Develop the Philanthropenos and Tarchaneiotes estates to provide dependable finance and military supplies for imperial recovery.",
+    "Use wealth and family standing to protect her commanding husband from court intrigue and support his military career and descendants.",
+    "Fund charitable clinics and monastic relief, aiding fallen soldiers' families and seeking lasting divine protection for the household."
+  ],
+  "Values": [
+    "Wealth is entrusted by God for relief and defence; hoarding, arrogance and luxury are shameful compared with generous service.",
+    "Keep accounts precise and govern dependants with practical care, diligence and measured generosity.",
+    "Remain Orthodox and faithful, managing the household calmly and steadfastly during her husband's campaigns."
+  ],
+  "Fears": [
+    "Her husband's death in a sudden military reversal leaving the family without its protector and exposing widow and children to court predators.",
+    "Fiscal collapse bringing inflation and mutiny, burning the family's trading houses and workshops and spreading suffering."
+  ],
   "SpeechStyle": "Her speech is gracious, dignified, and compassionate, projecting quiet authority backed by immense wealth and Christian charity.",
   "SchemaVersion": 3,
   "VoiceId": ""

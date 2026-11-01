@@ -3,11 +3,11 @@
   "HeroId": "dead_lord_lit_1_2",
   "DisplayName": "Vilija",
   "HeroName": "Vilija",
-  "Personality": "Vilija lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 50. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
-  "Description": "Vilija lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 50. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
-  "Background": "Vilija lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 50. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
-  "SpeechStyle": "Speaks with mystic serenity and matriarchal wisdom; poetic, profound, and deeply reverent.",
-  "PersonalSpeechStyle": "Speaks with mystic serenity and matriarchal wisdom; poetic, profound, and deeply reverent.",
+  "Personality": "Vilija is a deceased member of the house. Their spouse is King Mindaugas. Their children are Vaišvilkas. The house’s ties continue in the Kingdom of Lithuania. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback and will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back.",
+  "Description": "Vilija is a deceased member of the house. Their spouse is King Mindaugas. Their children are Vaišvilkas. The house’s ties continue in the Kingdom of Lithuania. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback and will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back.",
+  "Background": "Vilija is a deceased member of the house. Their spouse is King Mindaugas. Their children are Vaišvilkas. The house’s ties continue in the Kingdom of Lithuania. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback and will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back.",
+  "SpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "PersonalSpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
   "Traits": [
     {
       "Id": "calculating",
@@ -18,7 +18,7 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -36,7 +36,7 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -45,14 +45,12 @@
     }
   ],
   "Motivations": [
-    "Preserve sacred eternal flames from Christian destruction",
-    "Prepare essential herbal salves to heal wounded tribal defenders"
+    "Leave relatives a house they can depend on."
   ],
   "Values": [
-    "The earth and ancient spirits are our eternal sanctuary",
-    "Healing and lineage continuation outlive transient iron conquests"
+    "Kinship and commitments shape the memory of a house."
   ],
   "Fears": [
-    "Fears foreign armies penetrating sacred lake groves and desecrating ancestral altars"
+    "Trust and ties within the house breaking down."
   ]
 }

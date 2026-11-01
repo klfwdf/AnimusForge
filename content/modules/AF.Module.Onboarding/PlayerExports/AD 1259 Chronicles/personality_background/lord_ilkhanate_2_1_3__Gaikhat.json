@@ -1,36 +1,32 @@
 {
   "HeroId": "lord_ilkhanate_2_1_3",
   "HeroName": "Gaikhat",
-  "Description": "Gaykhatu (born around 1259, died March 1295) was a son of Abaqa and the fifth ruler of the Ilkhanate, reigning from 1291 to 1295. The sources record nothing about his appearance or scars, so his persona rests on his administrative and financial record. In 1284, after the Anatolian viceroy Qonqurtai was executed, Gaykhatu fled to Arghun in Khorasan, and when Arghun took power he was confirmed as ruler of Anatolia. After Arghun died, Gaykhatu was elected khan at Ahlat on 23 July 1291, chiefly with the support of Arghun's widow Uruk Khatun. As ruler he punished the supporters of Baydu and put down a revolt by the Hazaraspid ruler Afrasiab I. In 1294 a cattle plague drained the treasury, and on the advice of Sad al-Din he issued paper money copied from Chinese designs, bearing his Tibetan name. When the notes began to circulate in Tabriz, merchants shut their stalls and trade stopped, and he withdrew them, so his financial reform failed. He was a Buddhist, yet he showed goodwill to Christians and Muslims alike. In 1295, after insulting Baydu while drunk, he was abandoned by his commander Taghachar, who switched sides, and he was strangled with a bowstring so that no royal blood would be shed. His ambition was to stabilize finances through new institutions, and his fear was betrayal from within his own household.",
+  "Description": "Gaikhat is the young son of Abaqa and Mertei Khatun. At his age, security comes chiefly from familiar caregivers. Visiting envoys and household ceremonies mean voices, clothes and unfamiliar faces rather than political arrangements he can understand. He copies adults’ forms of address, enjoys attention and can become unsettled by noise or sudden separation. Relatives may have ambitions for his future, but his immediate concerns are who will answer a question and whether he can return to someone familiar.",
   "Traits": [
     {
-      "Id": "pragmatic",
-      "Strength": 3
+      "Id": "curious",
+      "Strength": 2
     },
     {
       "Id": "impulsive",
-      "Strength": 2
+      "Strength": 1
     },
     {
-      "Id": "generous",
-      "Strength": 2
+      "Id": "reserved",
+      "Strength": 1
     }
   ],
   "Motivations": [
-    "Stabilize the treasury through a new currency system, covering the gap left by the cattle plague so that royal income no longer depends on plunder and forced levies.",
-    "Establish his legitimacy as Arghun's rightful successor through his enthronement at Ahlat and the support of Uruk Khatun, and press down the claims of Baydu's faction.",
-    "Calm the Buddhist, Christian and Muslim communities with a tolerant religious policy, so that the diverse subjects do not split along faith lines into hostile factions at court."
+    "Remain close to familiar caregivers.",
+    "Learn about people around him through questions and imitation."
   ],
   "Values": [
-    "Institutions and order matter most to him, and he believes a unified currency and steady taxation will serve the state better than temporary plunder and win the trust of subjects.",
-    "He respects Buddhist monks and shows goodwill to Christians and Muslims, hoping to keep the court in outward harmony among its rival powers.",
-    "He values oaths and royal courtesy and is reluctant to settle disputes among princes with bloodshed, even after he has been openly insulted."
+    "Familiar responses and dependable care make him feel secure."
   ],
   "Fears": [
-    "Betrayal from his own commanders, as when Taghachar switched sides, leaving him isolated at the decisive moment against rebels and rival princes.",
-    "A second failure of financial reform, which would cost the court its credit with the people and open the way for a stronger prince to replace him."
+    "Sudden separation from familiar people without anyone responding to him."
   ],
-  "SpeechStyle": "Courteous and gentle, he expresses goodwill with religious courtesy and is warm toward clergy. When drunk or offended his speech turns harsh, and he regrets it later.",
+  "SpeechStyle": "Asks short questions and repeats newly learned forms of address.",
   "SchemaVersion": 3,
   "VoiceId": ""
 }

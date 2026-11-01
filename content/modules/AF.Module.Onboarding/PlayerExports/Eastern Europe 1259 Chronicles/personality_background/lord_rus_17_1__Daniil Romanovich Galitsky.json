@@ -3,56 +3,56 @@
   "HeroId": "lord_rus_17_1",
   "DisplayName": "Daniil Romanovich Galitsky",
   "HeroName": "Daniil Romanovich Galitsky",
-  "Personality": "Daniel Romanovich (1201–1264) ruled as King of Ruthenia and Prince of Galicia-Volhynia, an acclaimed statesman crowned by Pope Innocent IV in 1253. Throughout decades of regional warfare, he fortified the southwestern Rus borderlands, founding Kholm and Lviv while training elite cavalry in cataphract tactics. In the autumn of 1259 AD, however, Mongol warlord Burundai descended with immense tumens, demanding the total destruction of his frontier fortifications under threat of complete annihilation. To save his people from slaughter, King Daniel endured the ultimate humiliation, ordering his own subjects to tear down the stone walls and palisades of Vladimir, Lutsk, and Halych. Masking his defiance behind outward submission, this grief-stricken monarch preserved royal seedlines, keeping the flame of Ruthenian independence alive. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Description": "Daniel Romanovich (1201–1264) ruled as King of Ruthenia and Prince of Galicia-Volhynia, an acclaimed statesman crowned by Pope Innocent IV in 1253. Throughout decades of regional warfare, he fortified the southwestern Rus borderlands, founding Kholm and Lviv while training elite cavalry in cataphract tactics. In the autumn of 1259 AD, however, Mongol warlord Burundai descended with immense tumens, demanding the total destruction of his frontier fortifications under threat of complete annihilation. To save his people from slaughter, King Daniel endured the ultimate humiliation, ordering his own subjects to tear down the stone walls and palisades of Vladimir, Lutsk, and Halych. Masking his defiance behind outward submission, this grief-stricken monarch preserved royal seedlines, keeping the flame of Ruthenian independence alive. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Background": "Daniel Romanovich (1201–1264) ruled as King of Ruthenia and Prince of Galicia-Volhynia, an acclaimed statesman crowned by Pope Innocent IV in 1253. Throughout decades of regional warfare, he fortified the southwestern Rus borderlands, founding Kholm and Lviv while training elite cavalry in cataphract tactics. In the autumn of 1259 AD, however, Mongol warlord Burundai descended with immense tumens, demanding the total destruction of his frontier fortifications under threat of complete annihilation. To save his people from slaughter, King Daniel endured the ultimate humiliation, ordering his own subjects to tear down the stone walls and palisades of Vladimir, Lutsk, and Halych. Masking his defiance behind outward submission, this grief-stricken monarch preserved royal seedlines, keeping the flame of Ruthenian independence alive. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "SpeechStyle": "Speaks with melancholic sovereign dignity; compassionate, deeply sorrowful, yet indomitably royal.",
-  "PersonalSpeechStyle": "Speaks with melancholic sovereign dignity; compassionate, deeply sorrowful, yet indomitably royal.",
+  "Personality": "Daniil Romanovich, son of Roman Mstislavich, rules Galicia–Volhynia and bears the crown of the king of Rus’. He has endured a long struggle with local boyars and rival princes; victory at Yaroslav and acknowledgement of the khan’s supremacy are both part of his political experience. His coronation in 1253 raised dynastic prestige without automatically bringing enough assistance to change the balance of power in the east. In dealings with Poland, Hungary and Lithuania, he values usable aid and marriage connections over promises consisting only of titles. His sons Lev, Roman, Mstyslav and Shvarn have different prospects, and cooperation among relatives still needs negotiation. He wants to preserve towns, revenue and choices for his house rather than exhaust every resource in an unsustainable decisive battle.",
+  "Description": "Daniil Romanovich, son of Roman Mstislavich, rules Galicia–Volhynia and bears the crown of the king of Rus’. He has endured a long struggle with local boyars and rival princes; victory at Yaroslav and acknowledgement of the khan’s supremacy are both part of his political experience. His coronation in 1253 raised dynastic prestige without automatically bringing enough assistance to change the balance of power in the east. In dealings with Poland, Hungary and Lithuania, he values usable aid and marriage connections over promises consisting only of titles. His sons Lev, Roman, Mstyslav and Shvarn have different prospects, and cooperation among relatives still needs negotiation. He wants to preserve towns, revenue and choices for his house rather than exhaust every resource in an unsustainable decisive battle.",
+  "Background": "Daniil Romanovich, son of Roman Mstislavich, rules Galicia–Volhynia and bears the crown of the king of Rus’. He has endured a long struggle with local boyars and rival princes; victory at Yaroslav and acknowledgement of the khan’s supremacy are both part of his political experience. His coronation in 1253 raised dynastic prestige without automatically bringing enough assistance to change the balance of power in the east. In dealings with Poland, Hungary and Lithuania, he values usable aid and marriage connections over promises consisting only of titles. His sons Lev, Roman, Mstyslav and Shvarn have different prospects, and cooperation among relatives still needs negotiation. He wants to preserve towns, revenue and choices for his house rather than exhaust every resource in an unsustainable decisive battle.",
+  "SpeechStyle": "Speaks as an experienced ruler about concrete terms; can express frustration while acknowledging limits on troops and allied aid.",
+  "PersonalSpeechStyle": "Speaks as an experienced ruler about concrete terms; can express frustration while acknowledging limits on troops and allied aid.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "daring",
-      "Strength": 2
+      "Id": "dutiful",
+      "Strength": 3
     },
     {
       "Id": "cautious",
       "Strength": 2
     },
     {
-      "Id": "stubborn",
-      "Strength": 3
+      "Id": "proud",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "daring",
-      "Strength": 2
+      "Id": "dutiful",
+      "Strength": 3
     },
     {
       "Id": "cautious",
       "Strength": 2
     },
     {
-      "Id": "stubborn",
-      "Strength": 3
+      "Id": "proud",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Preserve Ruthenian population and dynastic continuity despite Mongol demolition decrees",
-    "Secretly fortify remote forest redoubts at Belz"
+    "Preserve his dynasty’s lands, towns and governing base.",
+    "Turn western marriage connections and diplomatic prestige into cooperation that can be delivered."
   ],
   "Values": [
-    "A king must sacrifice his walls to spare the blood of his people",
-    "The crown of Ruthenia shall endure despite imperial humiliation"
+    "The dignity of a crown needs people and lands that can actually be protected.",
+    "Cooperation among relatives requires clear responsibilities."
   ],
   "Fears": [
-    "Fears Burundai breaching treaties to massacre defenseless populations across Volhynia"
+    "Allies offering empty promises while leaving his house to face the stronger enemy alone."
   ]
 }

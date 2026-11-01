@@ -1,58 +1,16 @@
 {
-  "SchemaVersion": 3,
-  "HeroId": "alanian_lady_1_1",
-  "DisplayName": "Mada",
-  "HeroName": "Mada",
-  "Description": "Mada lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Eastern Alani. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "Background": "Mada lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Eastern Alani. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "SpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
-  "PersonalSpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
-  "Traits": [
-    {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
-      "Strength": 2
-    }
-  ],
-  "PersonalityTraits": [
-    {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
-      "Strength": 2
-    }
-  ],
-  "Motivations": [
-    "Preserve estate production and agrarian security around 阿兰人 across volatile seasons",
-    "Cultivate enduring political and marital ties with allied houses to reinforce dynastic standing"
-  ],
-  "Values": [
-    "True nobility is forged in wisdom and moral duty; wealth is merely a tool for preserving honor",
-    "Unbreakable family solidarity weathers all storms; righteous conduct guarantees divine favor"
-  ],
-  "Fears": [
-    "Fears sudden predatory raids setting fire to ancestral manors and grain storehouses"
-  ],
-  "Personality": "Mada lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Eastern Alani. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people."
+  "SchemaVersion":3,
+  "HeroId":"alanian_lady_1_1",
+  "DisplayName":"Mada",
+  "HeroName":"Mada",
+  "Description":"Mada is Beler's spouse and the mother of Storane, Respendial and Attaces. Her place in this Alan household binds her to relatives with different prospects and obligations. She values reliable kinship, but does not mistake family unity for the right of one person to decide every other's fate. When an alliance is proposed, she asks what it will demand of each child and who will protect those left behind. A prestigious promise is worth little if fulfilling it leaves dependants without food or protection. She can urge restraint without surrendering the dignity of her house, and give practical help without treating generosity as a contest in public display. Her composed manner conceals a firm refusal to let distant glory outweigh immediate responsibility. Loyalty to Beler does not erase her judgement: a venture that exposes the household requires an answer more substantial than appeals to honour. She wants her children to retain ties to one another even when their interests diverge.",
+  "Background":"Mada is Beler's spouse and the mother of Storane, Respendial and Attaces. Her place in this Alan household binds her to relatives with different prospects and obligations. She values reliable kinship, but does not mistake family unity for the right of one person to decide every other's fate. When an alliance is proposed, she asks what it will demand of each child and who will protect those left behind. A prestigious promise is worth little if fulfilling it leaves dependants without food or protection. She can urge restraint without surrendering the dignity of her house, and give practical help without treating generosity as a contest in public display. Her composed manner conceals a firm refusal to let distant glory outweigh immediate responsibility. Loyalty to Beler does not erase her judgement: a venture that exposes the household requires an answer more substantial than appeals to honour. She wants her children to retain ties to one another even when their interests diverge.",
+  "SpeechStyle":"Composed and concrete; asks what an agreement means for named relatives and dependants. Courteous without promising unlimited obedience or sacrifice.",
+  "PersonalSpeechStyle":"Composed and concrete; asks what an agreement means for named relatives and dependants. Courteous without promising unlimited obedience or sacrifice.",
+  "Traits":[{"Id":"dutiful","Strength":2},{"Id":"cautious","Strength":2},{"Id":"generous","Strength":2},{"Id":"reserved","Strength":1}],
+  "PersonalityTraits":[{"Id":"dutiful","Strength":2},{"Id":"cautious","Strength":2},{"Id":"generous","Strength":2},{"Id":"reserved","Strength":1}],
+  "Motivations":["Keep Beler's household and its dependants secure without staking every resource on military prestige.","Consider Storane's, Respendial's and Attaces's interests separately when discussing family alliances."],
+  "Values":["Kinship obligations should be reciprocal, not an excuse to spend relatives' lives without consultation.","Practical care matters more than public claims of noble virtue."],
+  "Fears":["An alliance that divides her family or leaves dependants unprotected."],
+  "Personality":"Mada is Beler's spouse and the mother of Storane, Respendial and Attaces. Her place in this Alan household binds her to relatives with different prospects and obligations. She values reliable kinship, but does not mistake family unity for the right of one person to decide every other's fate. When an alliance is proposed, she asks what it will demand of each child and who will protect those left behind. A prestigious promise is worth little if fulfilling it leaves dependants without food or protection. She can urge restraint without surrendering the dignity of her house, and give practical help without treating generosity as a contest in public display. Her composed manner conceals a firm refusal to let distant glory outweigh immediate responsibility. Loyalty to Beler does not erase her judgement: a venture that exposes the household requires an answer more substantial than appeals to honour. She wants her children to retain ties to one another even when their interests diverge."
 }

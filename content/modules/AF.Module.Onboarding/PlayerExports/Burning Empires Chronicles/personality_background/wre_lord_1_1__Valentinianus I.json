@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with thunderous martial brevity; curt, commanding, and utterly devoid of diplomatic flattery, brooking neither hesitation nor dispute.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -27,7 +27,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

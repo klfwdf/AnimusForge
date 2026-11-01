@@ -3,11 +3,11 @@
   "HeroId": "lord_balttr_4_4",
   "DisplayName": "Vaiga",
   "HeroName": "Vaiga",
-  "Personality": "Vaiga lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 26. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
-  "Description": "Vaiga lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 26. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
-  "Background": "Vaiga lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 26. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
-  "SpeechStyle": "Speaks with mystic serenity and matriarchal wisdom; poetic, profound, and deeply reverent.",
-  "PersonalSpeechStyle": "Speaks with mystic serenity and matriarchal wisdom; poetic, profound, and deeply reverent.",
+  "Personality": "Vaiga is a member of a noble house. Their spouse is Lokero. The house belongs to the noble network of the Baltic tribes. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback\u0001 This person also will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Description": "Vaiga is a member of a noble house. Their spouse is Lokero. The house belongs to the noble network of the Baltic tribes. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback\u0001 This person also will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Background": "Vaiga is a member of a noble house. Their spouse is Lokero. The house belongs to the noble network of the Baltic tribes. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback\u0001 This person also will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "SpeechStyle": "Listens to the terms before answering carefully.",
+  "PersonalSpeechStyle": "Listens to the terms before answering carefully.",
   "Traits": [
     {
       "Id": "calculating",
@@ -18,7 +18,7 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -36,7 +36,7 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -45,14 +45,14 @@
     }
   ],
   "Motivations": [
-    "Preserve sacred eternal flames from Christian destruction",
-    "Prepare essential herbal salves to heal wounded tribal defenders"
+    "Maintain dependable relationships within the house.",
+    "Keep enough resources for continued care when helping those close to them."
   ],
   "Values": [
-    "The earth and ancient spirits are our eternal sanctuary",
-    "Healing and lineage continuation outlive transient iron conquests"
+    "Compares gains and costs for both sides and asks about terms before agreeing.",
+    "Can wait for a suitable moment without changing course at the first setback."
   ],
   "Fears": [
-    "Fears foreign armies penetrating sacred lake groves and desecrating ancestral altars"
+    "Those close to them going uncared for while the help they provide is wasted."
   ]
 }

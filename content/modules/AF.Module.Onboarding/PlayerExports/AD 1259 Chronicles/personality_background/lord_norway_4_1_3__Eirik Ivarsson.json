@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Lead bravely in Haakon's and Prince Magnus's army, earning knighthood and rewards through proven military service.",
+    "Inspect Oslofjord forts and crossings, remove bandits and protect travellers and merchants on the eastern frontier.",
+    "Study continental cavalry and siege methods, making his militia patrols a rapid and dependable frontier force."
+  ],
+  "Values": [
+    "Knightly honour exceeds life itself; a warrior must face strong enemies without retreat and prove his courage in battle.",
+    "A young officer must obey royal orders without hesitation; disciplined coordination is essential in confused fighting.",
+    "Remain modest and willing to learn from veterans, sharing ordinary soldiers' hardships rather than boasting of noble birth."
+  ],
+  "Fears": [
+    "Overconfidence leading his vanguard cavalry into marshland encirclement, disgracing the royal banner and disappointing his father and brothers.",
+    "Long peace eroding his knights' resolve while routine paperwork wastes the youth he wishes to spend on military service."
+  ],
   "SpeechStyle": "Speaks with measured military sobriety, disciplined precision, and modest demeanor, focusing on tactical defense and logistical duty.",
   "SchemaVersion": 3,
   "VoiceId": "",

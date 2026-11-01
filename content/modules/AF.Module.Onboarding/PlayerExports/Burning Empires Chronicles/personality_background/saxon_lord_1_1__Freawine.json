@@ -9,29 +9,29 @@
   "PersonalSpeechStyle": "Speaks with raw, guttural maritime fury; ferocious, boastful, and brimming with uncontainable appetite for battle and plunder.",
   "Traits": [
     {
-      "Id": "bravery",
-      "Strength": 3
-    },
-    {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
       "Id": "ruthless",
       "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
-      "Strength": 3
-    },
-    {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
       "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
       "Strength": 2
     }
   ],

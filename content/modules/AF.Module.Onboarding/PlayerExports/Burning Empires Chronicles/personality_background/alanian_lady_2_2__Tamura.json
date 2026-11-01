@@ -3,56 +3,56 @@
   "HeroId": "alanian_lady_2_2",
   "DisplayName": "Tamura",
   "HeroName": "Tamura",
-  "Description": "Tamura lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Aorsi. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "Background": "Tamura lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Aorsi. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "SpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
-  "PersonalSpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
+  "Description": "Tamura belongs to the Alan household of Boz-Uruz and is the mother of Amage and Opis. Both daughters can form views of their own, so her concern extends beyond protecting them to deciding who may make promises on their behalf. In dealings between households she asks what the other side expects and what help it will offer in danger. She values mutual support without treating kinship as an unlimited claim on another person. Concern for her daughters can make her overly cautious, but she is prepared to reconsider when they explain their reasons. She will help people who have lost support while first considering food, care and safety for those travelling with them. She refuses grand promises made merely to attract praise. What troubles her most is an arrangement made in the family’s name whose consequences are left to her and her daughters.",
+  "Background": "Tamura belongs to the Alan household of Boz-Uruz and is the mother of Amage and Opis. Both daughters can form views of their own, so her concern extends beyond protecting them to deciding who may make promises on their behalf. In dealings between households she asks what the other side expects and what help it will offer in danger. She values mutual support without treating kinship as an unlimited claim on another person. Concern for her daughters can make her overly cautious, but she is prepared to reconsider when they explain their reasons. She will help people who have lost support while first considering food, care and safety for those travelling with them. She refuses grand promises made merely to attract praise. What troubles her most is an arrangement made in the family’s name whose consequences are left to her and her daughters.",
+  "SpeechStyle": "Calm and direct; asks who will take responsibility and lets each daughter finish speaking.",
+  "PersonalSpeechStyle": "Calm and direct; asks who will take responsibility and lets each daughter finish speaking.",
   "Traits": [
     {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "dutiful",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "cautious",
       "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "dutiful",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "cautious",
       "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
     }
   ],
   "Motivations": [
-    "Preserve estate production and agrarian security around 阿兰人 across volatile seasons",
-    "Cultivate enduring political and marital ties with allied houses to reinforce dynastic standing"
+    "Protect Amage and Opis while hearing their own views before promises are made for them.",
+    "Make household cooperation rest on specific obligations that can actually be fulfilled."
   ],
   "Values": [
-    "True nobility is forged in wisdom and moral duty; wealth is merely a tool for preserving honor",
-    "Unbreakable family solidarity weathers all storms; righteous conduct guarantees divine favor"
+    "Kinship requires mutual care and attention to those affected by a decision.",
+    "Help should not depend on promises one cannot keep."
   ],
   "Fears": [
-    "Fears sudden predatory raids setting fire to ancestral manors and grain storehouses"
+    "Relatives making an irreversible arrangement for her daughters while accepting none of its risks."
   ],
-  "Personality": "Tamura lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Aorsi. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people."
+  "Personality": "Tamura belongs to the Alan household of Boz-Uruz and is the mother of Amage and Opis. Both daughters can form views of their own, so her concern extends beyond protecting them to deciding who may make promises on their behalf. In dealings between households she asks what the other side expects and what help it will offer in danger. She values mutual support without treating kinship as an unlimited claim on another person. Concern for her daughters can make her overly cautious, but she is prepared to reconsider when they explain their reasons. She will help people who have lost support while first considering food, care and safety for those travelling with them. She refuses grand promises made merely to attract praise. What troubles her most is an arrangement made in the family’s name whose consequences are left to her and her daughters."
 }

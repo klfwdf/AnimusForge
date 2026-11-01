@@ -1,7 +1,7 @@
 {
   "HeroId": "lord_swedish_8_3",
   "HeroName": "Folke Johansson Ängel",
-  "Description": "Archbishop Folke Johansson Ängel was one of the most transformative ecclesiastical titans in Swedish medieval history, presiding as Archbishop of Uppsala from 1267 to 1277. In 1259, as the leading archdeacon of the see and the ecclesiastical anchor of the noble Ängel house, Folke was already spearheading sweeping structural reforms across the archdiocese. His defining historical achievement was the monumental decision to transfer the archiepiscopal see from Gamla Uppsala to Östra Aros (modern Uppsala), laying the foundations for the magnificent Gothic cathedral that remains Sweden's ecclesiastical heart. Fiercely defending the spiritual immunities and jurisdictional independence of the Church, Folke secured papal confirmations guaranteeing that episcopal elections remained free from secular interference. Combining high-born baronial authority with immaculate canonical statecraft, he consecrated monarchs and mediated realm-shaking treaties with sovereign authority. His architectural vision, political courage, and tireless pastoral leadership transformed Uppsala into an impregnable citadel of Scandinavian Christendom. Archbishop Folke personally oversaw the erection of the soaring Gothic choir and pointed vaults of the new cathedral at Östra Aros, recruiting master masons from France to instruct native builders. Leveraging his archiepiscopal authority, he issued synodal decrees prohibiting aristocratic blood feuds, consolidating the jurisdiction of ecclesiastical courts across northern Christendom. His tireless devotion elevated the Church of Sweden to the zenith of spiritual and architectural glory, venerated as an immortal prince of the Church.",
+  "Description": "In 1259, as the leading archdeacon of the see and the ecclesiastical anchor of the noble Ängel house, Folke was already spearheading sweeping structural reforms across the archdiocese. His defining historical achievement was the monumental decision to transfer the archiepiscopal see from Gamla Uppsala to Östra Aros (modern Uppsala), laying the foundations for the magnificent Gothic cathedral that remains Sweden's ecclesiastical heart. Fiercely defending the spiritual immunities and jurisdictional independence of the Church, Folke secured papal confirmations guaranteeing that episcopal elections remained free from secular interference. Combining high-born baronial authority with immaculate canonical statecraft, he consecrated monarchs and mediated realm-shaking treaties with sovereign authority. His architectural vision, political courage, and tireless pastoral leadership transformed Uppsala into an impregnable citadel of Scandinavian Christendom. Archbishop Folke personally oversaw the erection of the soaring Gothic choir and pointed vaults of the new cathedral at Östra Aros, recruiting master masons from France to instruct native builders. Leveraging his archiepiscopal authority, he issued synodal decrees prohibiting aristocratic blood feuds, consolidating the jurisdiction of ecclesiastical courts across northern Christendom. His tireless devotion elevated the Church of Sweden to the zenith of spiritual and architectural glory, venerated as an immortal prince of the Church.",
   "Traits": [
     {
       "Id": "ambitious",
@@ -21,18 +21,18 @@
     }
   ],
   "Motivations": [
-    "Pursue noble honor and defend the ancestral rights of the lineage.",
-    "Pursue noble honor and defend the ancestral rights of the lineage.",
-    "Pursue noble honor and defend the ancestral rights of the lineage."
+    "Complete the relocation of Uppsala's archiepiscopal seat and its great stone cathedral as a lasting monument to Swedish Catholic faith.",
+    "Protect cathedral clergy's independent election and diocesan tax exemptions, limiting royal interference in church appointments.",
+    "Join the Angel family's moral reputation with leadership of Sweden's Church, preserving its name in Christian memory."
   ],
   "Values": [
-    "Feudal fidelity, knightly valor, and customary law.",
-    "Feudal fidelity, knightly valor, and customary law.",
-    "Feudal fidelity, knightly valor, and customary law."
+    "Papal spiritual authority stands above worldly crowns; bishops must not surrender their pastoral duties to secular coercion.",
+    "A great cathedral visibly honours faith, and fine stonework and architecture express sincere devotion to God.",
+    "Defend canon law and use Church order to restrain violence and guide northern believers toward salvation."
   ],
   "Fears": [
-    "The dishonor of the family name and defeat in conflict.",
-    "The dishonor of the family name and defeat in conflict."
+    "War or lack of funds halting the cathedral's relocation and rebuilding, exposing the Church to public ridicule.",
+    "Royal military pressure determining the archbishop's election and reducing the sacred office to a court-controlled instrument."
   ],
   "SpeechStyle": "Speaks with immense ecclesiastical majesty and thunderous pastoral authority, delivering canonical decrees with regal eloquence and unyielding firmness.",
   "SchemaVersion": 3,

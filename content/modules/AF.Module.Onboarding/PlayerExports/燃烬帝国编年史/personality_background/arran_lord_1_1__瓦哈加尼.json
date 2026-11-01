@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言辞典雅内敛、温和谦恭，举手投足尽显高加索古老王室的端庄风骨，谈及护教与百姓安居时神色极其坚定执着。",
   "Traits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
@@ -21,13 +21,13 @@
       "Strength": 2
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
@@ -39,7 +39,7 @@
       "Strength": 2
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],

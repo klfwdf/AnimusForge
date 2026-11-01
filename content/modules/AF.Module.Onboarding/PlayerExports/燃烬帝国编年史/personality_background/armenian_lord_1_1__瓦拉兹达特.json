@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语坦率直白带着军旅武人的刚毅之气，不屑于繁琐的宫廷弄权辞令，性情热烈果敢，遇事偏好以武力与誓约决断。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -21,13 +21,13 @@
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -39,7 +39,7 @@
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],

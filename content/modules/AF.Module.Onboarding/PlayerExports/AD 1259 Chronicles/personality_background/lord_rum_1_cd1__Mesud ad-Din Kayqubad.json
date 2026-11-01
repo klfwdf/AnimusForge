@@ -10,6 +10,10 @@
     {
       "Id": "reserved",
       "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
     }
   ],
   "Motivations": [

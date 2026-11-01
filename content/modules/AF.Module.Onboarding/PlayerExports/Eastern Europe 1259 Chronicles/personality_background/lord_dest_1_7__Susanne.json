@@ -3,18 +3,18 @@
   "HeroId": "lord_dest_1_7",
   "DisplayName": "Susanne",
   "HeroName": "Susanne",
-  "Personality": "Susanne lived in 1259 AD as an esteemed khatun and aristocratic matriarch within the Golden Horde and Cuman nomadic confederacies, aged 11. Daughter of a distinguished steppe princely line, she wore the towering boqta headdress adorned with peacock plumage and silver filigree over robes of imported silk. Within the vast tent-cities along the lower Volga, she oversaw the rotation of immense herds, seasonal migrations, felt production, and the distribution of war spoils. As tumen armies campaigned in Poland and Galicia in 1259, she maintained domestic stability, coordinating remount supplies and dairy rations for distant garrisons. Versed in both steppe yassa customs and emerging Islamic court diplomacy under Berke Khan, she secured prime seasonal pasture rights and commercial shares for her clan. Supervising camp artisans in repairing war-wagons, curing sinew bowstrings, and salting beef, she anchored the material foundation of nomadic military power. Her shrewd political foresight and administrative strength anchored tribal continuity across the dynamic Pontic steppe. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court.",
-  "Description": "Susanne lived in 1259 AD as an esteemed khatun and aristocratic matriarch within the Golden Horde and Cuman nomadic confederacies, aged 11. Daughter of a distinguished steppe princely line, she wore the towering boqta headdress adorned with peacock plumage and silver filigree over robes of imported silk. Within the vast tent-cities along the lower Volga, she oversaw the rotation of immense herds, seasonal migrations, felt production, and the distribution of war spoils. As tumen armies campaigned in Poland and Galicia in 1259, she maintained domestic stability, coordinating remount supplies and dairy rations for distant garrisons. Versed in both steppe yassa customs and emerging Islamic court diplomacy under Berke Khan, she secured prime seasonal pasture rights and commercial shares for her clan. Supervising camp artisans in repairing war-wagons, curing sinew bowstrings, and salting beef, she anchored the material foundation of nomadic military power. Her shrewd political foresight and administrative strength anchored tribal continuity across the dynamic Pontic steppe. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court.",
-  "Background": "Susanne lived in 1259 AD as an esteemed khatun and aristocratic matriarch within the Golden Horde and Cuman nomadic confederacies, aged 11. Daughter of a distinguished steppe princely line, she wore the towering boqta headdress adorned with peacock plumage and silver filigree over robes of imported silk. Within the vast tent-cities along the lower Volga, she oversaw the rotation of immense herds, seasonal migrations, felt production, and the distribution of war spoils. As tumen armies campaigned in Poland and Galicia in 1259, she maintained domestic stability, coordinating remount supplies and dairy rations for distant garrisons. Versed in both steppe yassa customs and emerging Islamic court diplomacy under Berke Khan, she secured prime seasonal pasture rights and commercial shares for her clan. Supervising camp artisans in repairing war-wagons, curing sinew bowstrings, and salting beef, she anchored the material foundation of nomadic military power. Her shrewd political foresight and administrative strength anchored tribal continuity across the dynamic Pontic steppe. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court. Supervising camp attendants in curing smoked horse-sausages and hard curd blocks, she supplied enduring travel rations for long-range tumen operations, winning high praise from the Sarai court.",
-  "SpeechStyle": "Speaks with regal steppe cadence; proud, authoritative, and accustomed to commanding vast camps.",
-  "PersonalSpeechStyle": "Speaks with regal steppe cadence; proud, authoritative, and accustomed to commanding vast camps.",
+  "Personality": "Susanne is a child of the house. Aged 11. Their father is Steward Saxe Ågesen. Their mother is Regnhild. The house belongs to the noble network of Estonia. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Compares small gains and losses and asks what an exchange will bring.",
+  "Description": "Susanne is a child of the house. Aged 11. Their father is Steward Saxe Ågesen. Their mother is Regnhild. The house belongs to the noble network of Estonia. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Compares small gains and losses and asks what an exchange will bring.",
+  "Background": "Susanne is a child of the house. Aged 11. Their father is Steward Saxe Ågesen. Their mother is Regnhild. The house belongs to the noble network of Estonia. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Compares small gains and losses and asks what an exchange will bring.",
+  "SpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "PersonalSpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
   "Traits": [
     {
       "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -32,7 +32,7 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -45,14 +45,13 @@
     }
   ],
   "Motivations": [
-    "Maintain stability and horse breeding within the rear ordo encampments",
-    "Secure lucrative winter pasture allocations at the Sarai court"
+    "Find care and trustworthy explanations from relatives.",
+    "Gradually understand their place among relatives."
   ],
   "Values": [
-    "The strength of the ordo sustains warriors in the saddle",
-    "Prudent matriarchs preserve the clan's eternal vitality"
+    "Values familiar company and small promises that are kept."
   ],
   "Fears": [
-    "Fears brutal winter zud blizzards decimating livestock herds across the open steppe"
+    "Separation from relatives or threats they cannot understand."
   ]
 }

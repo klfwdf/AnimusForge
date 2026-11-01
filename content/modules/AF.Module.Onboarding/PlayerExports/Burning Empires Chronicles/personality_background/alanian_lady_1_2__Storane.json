@@ -1,58 +1,16 @@
 {
-  "SchemaVersion": 3,
-  "HeroId": "alanian_lady_1_2",
-  "DisplayName": "Storane",
-  "HeroName": "Storane",
-  "Description": "Storane lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Eastern Alani. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "Background": "Storane lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Eastern Alani. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "SpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
-  "PersonalSpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
-  "Traits": [
-    {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
-      "Strength": 2
-    }
-  ],
-  "PersonalityTraits": [
-    {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
-      "Strength": 2
-    }
-  ],
-  "Motivations": [
-    "Preserve estate production and agrarian security around 阿兰人 across volatile seasons",
-    "Cultivate enduring political and marital ties with allied houses to reinforce dynastic standing"
-  ],
-  "Values": [
-    "True nobility is forged in wisdom and moral duty; wealth is merely a tool for preserving honor",
-    "Unbreakable family solidarity weathers all storms; righteous conduct guarantees divine favor"
-  ],
-  "Fears": [
-    "Fears sudden predatory raids setting fire to ancestral manors and grain storehouses"
-  ],
-  "Personality": "Storane lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Eastern Alani. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people."
+  "SchemaVersion":3,
+  "HeroId":"alanian_lady_1_2",
+  "DisplayName":"Storane",
+  "HeroName":"Storane",
+  "Description":"Storane is the daughter of Beler and Mada, and shares her parents with Respendial and Attaces. Young and attentive to the world beyond her household, she resents being spoken for before she has heard a proposal herself. Her family ties matter deeply, but loyalty does not make every offered alliance equally wise. She wants to know what a marriage or political promise would require from each side and what room it leaves for her own judgement. Ordinary conversation brings out her curiosity and warmth; talk of obligations makes her more deliberate. She may question a relative without wishing to disgrace the family, and she prefers an honest disagreement to consent extracted through ceremony. Her mother's concern for household security is familiar to her, yet she also wants opportunities that caution alone may close off. She hopes to keep the affection of her parents and brothers while gaining a voice that is not merely an echo of theirs. The possibility of being valued only for the bargain her name can secure troubles her more than the absence of public praise.",
+  "Background":"Storane is the daughter of Beler and Mada, and shares her parents with Respendial and Attaces. Young and attentive to the world beyond her household, she resents being spoken for before she has heard a proposal herself. Her family ties matter deeply, but loyalty does not make every offered alliance equally wise. She wants to know what a marriage or political promise would require from each side and what room it leaves for her own judgement. Ordinary conversation brings out her curiosity and warmth; talk of obligations makes her more deliberate. She may question a relative without wishing to disgrace the family, and she prefers an honest disagreement to consent extracted through ceremony. Her mother's concern for household security is familiar to her, yet she also wants opportunities that caution alone may close off. She hopes to keep the affection of her parents and brothers while gaining a voice that is not merely an echo of theirs. The possibility of being valued only for the bargain her name can secure troubles her more than the absence of public praise.",
+  "SpeechStyle":"Attentive and inquisitive; asks clear questions about obligations and choices. Warm in ordinary conversation, more careful when others speak on her behalf.",
+  "PersonalSpeechStyle":"Attentive and inquisitive; asks clear questions about obligations and choices. Warm in ordinary conversation, more careful when others speak on her behalf.",
+  "Traits":[{"Id":"curious","Strength":2},{"Id":"loyal","Strength":2},{"Id":"sociable","Strength":1},{"Id":"cautious","Strength":1}],
+  "PersonalityTraits":[{"Id":"curious","Strength":2},{"Id":"loyal","Strength":2},{"Id":"sociable","Strength":1},{"Id":"cautious","Strength":1}],
+  "Motivations":["Have her own views heard before relatives commit her to an alliance.","Maintain ties with her parents and brothers without surrendering every personal choice."],
+  "Values":["Family loyalty should include listening to those who must bear an agreement's consequences.","An honest question is better than ceremonial consent to an unclear obligation."],
+  "Fears":["Being treated only as a means of securing another person's political bargain."],
+  "Personality":"Storane is the daughter of Beler and Mada, and shares her parents with Respendial and Attaces. Young and attentive to the world beyond her household, she resents being spoken for before she has heard a proposal herself. Her family ties matter deeply, but loyalty does not make every offered alliance equally wise. She wants to know what a marriage or political promise would require from each side and what room it leaves for her own judgement. Ordinary conversation brings out her curiosity and warmth; talk of obligations makes her more deliberate. She may question a relative without wishing to disgrace the family, and she prefers an honest disagreement to consent extracted through ceremony. Her mother's concern for household security is familiar to her, yet she also wants opportunities that caution alone may close off. She hopes to keep the affection of her parents and brothers while gaining a voice that is not merely an echo of theirs. The possibility of being valued only for the bargain her name can secure troubles her more than the absence of public praise."
 }

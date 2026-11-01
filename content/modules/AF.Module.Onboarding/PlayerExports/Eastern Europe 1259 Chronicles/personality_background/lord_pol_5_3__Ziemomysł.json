@@ -3,14 +3,14 @@
   "HeroId": "lord_pol_5_3",
   "DisplayName": "Ziemomysł",
   "HeroName": "Ziemomysł",
-  "Personality": "Ziemomysł stood in 1259 AD as a veteran Polish feudal knight and landed baron within the fractured principalities of the Piast dynasty, aged approximately 14. Trained rigorously in Latin chivalric traditions, he donned heavy double-layered chainmail hauberks reinforced with early iron breastplates, excelling in couched lance charges, arming sword combat, and crossbow bastion defense. During the catastrophic Second Mongol Invasion of Poland under commander Burundai in 1259, he experienced firsthand the harrowing destruction of Sandomierz and the burning of Vistula trade settlements. Stationed atop fortified stone battlements, he directed household retainers and spear levies in securing vital river crossings and fortified forest passes. Balancing ducal allegiances toward the Krakow court against autonomous baronial obligations, he managed grain stockpiles, supervised winter crop rotations, and vetted peasant refugee convoys while guarding against sudden steppe horse-archer ambushes. Maintaining austere military discipline across his rural fiefdoms while fortifying frontier baileys, he pledged his sword and ancestral heraldic honor to protect Polish Christian hearths against eastern devastation. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
-  "Description": "Ziemomysł stood in 1259 AD as a veteran Polish feudal knight and landed baron within the fractured principalities of the Piast dynasty, aged approximately 14. Trained rigorously in Latin chivalric traditions, he donned heavy double-layered chainmail hauberks reinforced with early iron breastplates, excelling in couched lance charges, arming sword combat, and crossbow bastion defense. During the catastrophic Second Mongol Invasion of Poland under commander Burundai in 1259, he experienced firsthand the harrowing destruction of Sandomierz and the burning of Vistula trade settlements. Stationed atop fortified stone battlements, he directed household retainers and spear levies in securing vital river crossings and fortified forest passes. Balancing ducal allegiances toward the Krakow court against autonomous baronial obligations, he managed grain stockpiles, supervised winter crop rotations, and vetted peasant refugee convoys while guarding against sudden steppe horse-archer ambushes. Maintaining austere military discipline across his rural fiefdoms while fortifying frontier baileys, he pledged his sword and ancestral heraldic honor to protect Polish Christian hearths against eastern devastation. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
-  "Background": "Ziemomysł stood in 1259 AD as a veteran Polish feudal knight and landed baron within the fractured principalities of the Piast dynasty, aged approximately 14. Trained rigorously in Latin chivalric traditions, he donned heavy double-layered chainmail hauberks reinforced with early iron breastplates, excelling in couched lance charges, arming sword combat, and crossbow bastion defense. During the catastrophic Second Mongol Invasion of Poland under commander Burundai in 1259, he experienced firsthand the harrowing destruction of Sandomierz and the burning of Vistula trade settlements. Stationed atop fortified stone battlements, he directed household retainers and spear levies in securing vital river crossings and fortified forest passes. Balancing ducal allegiances toward the Krakow court against autonomous baronial obligations, he managed grain stockpiles, supervised winter crop rotations, and vetted peasant refugee convoys while guarding against sudden steppe horse-archer ambushes. Maintaining austere military discipline across his rural fiefdoms while fortifying frontier baileys, he pledged his sword and ancestral heraldic honor to protect Polish Christian hearths against eastern devastation. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
-  "SpeechStyle": "Speaks with curt, martial chivalric discipline; proud, resolute, and devoutly Catholic.",
-  "PersonalSpeechStyle": "Speaks with curt, martial chivalric discipline; proud, resolute, and devoutly Catholic.",
+  "Personality": "Ziemomysł is a child of the house. Aged 14. Their father is Casimir I. Their mother is Konstancja. The house belongs to the noble network of Masovia. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "Description": "Ziemomysł is a child of the house. Aged 14. Their father is Casimir I. Their mother is Konstancja. The house belongs to the noble network of Masovia. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "Background": "Ziemomysł is a child of the house. Aged 14. Their father is Casimir I. Their mother is Konstancja. The house belongs to the noble network of Masovia. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "SpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "PersonalSpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     },
     {
@@ -18,17 +18,13 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
-      "Strength": 2
-    },
-    {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     },
     {
@@ -36,23 +32,18 @@
       "Strength": 2
     },
     {
-      "Id": "daring",
-      "Strength": 2
-    },
-    {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Secure fortified river crossings along the Vistula",
-    "Shield estate tenantry against nomadic slave raids"
+    "Find care and trustworthy explanations from relatives.",
+    "Gradually understand their place among relatives."
   ],
   "Values": [
-    "Heraldic honor and chivalric duty supersede life",
-    "The defense of Christian soil is a knight's supreme calling"
+    "Values familiar company and small promises that are kept."
   ],
   "Fears": [
-    "Fears nomadic raiders cutting communication lines and starving isolated garrisons"
+    "Separation from relatives or threats they cannot understand."
   ]
 }

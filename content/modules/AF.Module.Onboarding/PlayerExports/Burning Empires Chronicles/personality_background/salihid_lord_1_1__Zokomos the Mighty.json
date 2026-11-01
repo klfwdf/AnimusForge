@@ -9,15 +9,15 @@
   "PersonalSpeechStyle": "Speaks with devout Christian gentleness and authoritative chieftain poise; persuasive, moral, and committed to peacemaking.",
   "Traits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
@@ -27,15 +27,15 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {

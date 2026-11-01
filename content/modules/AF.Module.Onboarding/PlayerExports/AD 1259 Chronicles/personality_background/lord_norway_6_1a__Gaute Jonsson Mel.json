@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "As an elder statesman, support Haakon IV and Magnus and prevent a return to Norwegian civil war.",
+    "Improve Mel's irrigation, farming and local law into a model estate benefiting Sunnhordland's inhabitants for generations.",
+    "Speak impartially for ordinary people at royal council and thing assemblies, resisting oppressive laws and cruel punishments."
+  ],
+  "Values": [
+    "Royal authority rests on humane government and clear law rather than slaughter or intimidation.",
+    "An elder minister must accept responsibility for public safety and remonstrate with narrow-minded rulers or arrogant nobles to prevent needless bloodshed.",
+    "Serve honestly with reverence for God and care for others, joining personal and family honour to Norway's prosperity throughout his life."
+  ],
+  "Fears": [
+    "The next royal generation repeating Haakon and Skule's fatal conflict and destroying Norway's hard-won prosperity.",
+    "Greedy descendants abolishing Mel's humane laws after his death and reducing formerly protected freeholders to servitude."
+  ],
   "SpeechStyle": "Speaks with venerable authority, ancient patriarchal dignity, and profound wisdom, commanding the deepest reverence as the elder statesman of Norway.",
   "SchemaVersion": 3,
   "VoiceId": "",

@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Lead heavy cavalry against invaders in Thrace and Macedonia, protecting European lands and earning distinction for his ancestors.",
+    "Train rapid cavalry attacks and coordinated encirclement, keeping a dependable force ready for imperial service.",
+    "Remain loyal to the Tarchaneiotes house and help recover Constantinople through military achievement, restoring Roman cavalry's reputation."
+  ],
+  "Values": [
+    "Military service requires courage and achievement; a soldier must advance against danger rather than retreat.",
+    "Combine strict discipline with comradeship, care for soldiers and lead personally to earn their resolve under fire.",
+    "Keep his oath to the emperor, treating defence of the frontier and Roman recovery as duties worth his life."
+  ],
+  "Fears": [
+    "Poor cavalry reconnaissance leading the column into a mountain ambush, destroying carefully trained troops and disgracing the family.",
+    "Courtiers stealing military pay and cutting fodder and weapons supplies, weakening soldiers' resolve and losing frontier fortresses."
+  ],
   "SpeechStyle": "His voice is rough, resonant, and decisive, projecting the unflinching command authority of an officer seasoned by fierce melee combat.",
   "SchemaVersion": 3,
   "VoiceId": ""

@@ -1,7 +1,7 @@
 {
   "HeroId": "lord_nicaea_1_0_2_2",
   "HeroName": "Maríā Palaiológina Kantakouzeni",
-  "Description": "Maríā Palaiológina Kantakouzene stands as one of the most audacious and formidable political strategists in 13th-century Balkan history. As the second daughter of John Kantakouzenos and Irene Eulogia, she was reared in the sophisticated chanceries of Nicaea, absorbing the ruthlessness and grandeur of Palaiologan statecraft. In 1269, she ascended the throne of Tarnovo as Empress consort to Tsar Constantine Tih of Bulgaria, rapidly taking control of governmental councils amidst her husband's debilitating paralysis. When the cataclysmic uprising of Ivaylo the swineherd shattered the Bulgarian nobility in 1277, Maria executed a breathtaking political maneuver: opening the gates of the capital and marrying the charismatic rebel leader himself to preserve the imperial crown for her young son Michael. Audacious, unyielding, and calculating, Maria navigated Byzantine diplomacy, steppe nomadic incursions, and Balkan feudal rivalries with an indomitable will to power. Within the palace citadel of Tarnovo, Maria established an omnipresent network of loyal retainers, personally auditing provincial tax ledgers and dispatching imperial couriers. When desperate rebel legions assaulted the capital gates, she mounted the ramparts crowned in royal diadem, steeling the wavering resolve of the Bulgarian guards through fiery eloquence. To safeguard her child's throne, she personally negotiated with the rebel general Ivaylo, deploying royal majesty and diplomatic acumen to manipulate the insurrection from within the royal palace.",
+  "Description": "Maríā Palaiológina Kantakouzene stands as one of the most audacious and formidable political strategists in 13th-century Balkan history. As the second daughter of John Kantakouzenos and Irene Eulogia, she was reared in the sophisticated chanceries of Nicaea, absorbing the ruthlessness and grandeur of Palaiologan statecraft. Audacious, unyielding, and calculating, Maria navigated Byzantine diplomacy, steppe nomadic incursions, and Balkan feudal rivalries with an indomitable will to power. Within the palace citadel of Tarnovo, Maria established an omnipresent network of loyal retainers, personally auditing provincial tax ledgers and dispatching imperial couriers. When desperate rebel legions assaulted the capital gates, she mounted the ramparts crowned in royal diadem, steeling the wavering resolve of the Bulgarian guards through fiery eloquence. To safeguard her child's throne, she personally negotiated with the rebel general Ivaylo, deploying royal majesty and diplomatic acumen to manipulate the insurrection from within the royal palace.",
   "Traits": [
     {
       "Id": "ambitious",
@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Seize and secure supreme Balkan power, ruling Bulgaria and neighbouring lords firmly to preserve sovereignty for herself and her children.",
+    "Balance Byzantine and Balkan Slavic powers against one another so that her family retains a commanding and secure position.",
+    "Suppress rebellious nobles and challengers ruthlessly, keeping Tarnovo and the monarchy under unquestioned control."
+  ],
+  "Values": [
+    "Power and ruthless resolve alone can master unruly nobles; weakness and hesitation threaten survival in a violent age.",
+    "At decisive moments, bold action may override convention and moral restraint; hesitation must not prevent a reversal of fortune.",
+    "Preserving her children's royal inheritance is the highest honour, even at the cost of universal condemnation."
+  ],
+  "Fears": [
+    "A noble coup or foreign intervention overthrowing her and leaving her young son and herself imprisoned, humiliated or killed.",
+    "Golden Horde cavalry overrunning the Balkans, breaching Tarnovo's defences and destroying the centre of her rule."
+  ],
   "SpeechStyle": "Her voice carries imperial haughtiness and razor-sharp political calculation, brook no dissent when dictating high dynastic policy.",
   "SchemaVersion": 3,
   "VoiceId": ""

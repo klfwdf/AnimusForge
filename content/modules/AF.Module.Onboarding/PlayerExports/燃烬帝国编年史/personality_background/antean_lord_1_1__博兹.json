@@ -9,29 +9,29 @@
   "PersonalSpeechStyle": "言语朴实浑厚带着斯拉夫森林部族的炽热血性，目光炯炯有神，对待族人如慈父，对待奴役者则怒目圆睁、宁死不弯。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "proud",
       "Strength": 3
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "proud",
       "Strength": 3
     }
   ],

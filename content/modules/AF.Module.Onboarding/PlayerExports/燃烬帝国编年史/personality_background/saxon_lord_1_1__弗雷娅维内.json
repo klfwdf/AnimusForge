@@ -9,29 +9,29 @@
   "PersonalSpeechStyle": "言语狂放不羁、嗜血凶悍，腰间单刃砍刀从不离手，下达劫掠与登船突击军令时神情狂热，令人不寒而栗。",
   "Traits": [
     {
-      "Id": "bravery",
-      "Strength": 3
-    },
-    {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
       "Id": "ruthless",
       "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
-      "Strength": 3
-    },
-    {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
       "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
       "Strength": 2
     }
   ],

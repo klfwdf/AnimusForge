@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Protect emperor and palace from assassination and mutiny, keeping the centre of Roman government secure.",
+    "Train palace guards and Varangians in weapons and discipline so that they can stop rebels at the moment of greatest danger.",
+    "Keep his military oath and execute orders against rebellion, using force to maintain stable imperial government."
+  ],
+  "Values": [
+    "Obedience and discipline are a soldier's foundation; collusion with enemies and retreat in battle are grave betrayals requiring impartial punishment.",
+    "Value courage, sacrifice and pure loyalty to the emperor, avoiding court factions and illicit wealth.",
+    "Treat protection of the imperial purple as a lifelong sacred duty, accepting any danger in the ruler's defence."
+  ],
+  "Fears": [
+    "A neglected patrol allowing assassins to kill the emperor and plunge the leaderless state into civil war.",
+    "Rebel nobles bribing ordinary guards and provoking a palace coup that destroys the security he is sworn to preserve."
+  ],
   "SpeechStyle": "His voice is curt, low, and metallic, ringing with the absolute authority of a veteran guard commander who demands instant obedience.",
   "SchemaVersion": 3,
   "VoiceId": ""

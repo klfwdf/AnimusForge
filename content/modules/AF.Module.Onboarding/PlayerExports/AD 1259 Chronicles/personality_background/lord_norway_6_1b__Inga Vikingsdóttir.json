@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Devote herself to Mel's charitable monastery and infirmary, ensuring care for the elderly, poor, orphaned and sick.",
+    "Help Baron Gaut manage crop-rotation accounts and mill rents, maintaining a secure estate base for his public service.",
+    "Teach younger relatives Christian generosity and integrity so that Mel's family traditions remain worthy across generations."
+  ],
+  "Values": [
+    "Compassion is a household mistress's highest duty; privilege from God calls for maternal care toward suffering people.",
+    "Frugality, order and fair discipline preserve Mel's peace; servants and dependants need rules that are gentle but firm.",
+    "Worldly wealth passes away; acts of mercy toward God and suffering people are what matter for salvation."
+  ],
+  "Fears": [
+    "Smallpox or fire destroying the monastery and infirmary she supports and leaving vulnerable patients without shelter.",
+    "Predatory neighbours seizing Mel's lands after Baron Gaut's death and dragging the estate into war."
+  ],
   "SpeechStyle": "Speaks with serene patriarchal dignity, tranquil reserve, and moral warmth, directing household governance with seasoned aristocratic composure.",
   "SchemaVersion": 3,
   "VoiceId": "",

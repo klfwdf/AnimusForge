@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with crisp, soldierly Brythonic authority; commanding, vigilant, and radiating the unvarnished pride of an imperial frontier commander.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -17,7 +17,7 @@
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {
@@ -27,7 +27,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -35,7 +35,7 @@
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {

@@ -3,22 +3,18 @@
   "HeroId": "lord_rus_15_4",
   "DisplayName": "Maria Rostislavna",
   "HeroName": "Maria Rostislavna",
-  "Personality": "Maria Rostislavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 7. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "Description": "Maria Rostislavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 7. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "Background": "Maria Rostislavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 7. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "SpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
-  "PersonalSpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
+  "Personality": "Maria Rostislavna is a child of the house. Aged 7. Their father is Rostislav Izyaslavich. Their mother is Verhuslava Vsevolodovna. The house belongs to the noble network of Kyiv. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "Description": "Maria Rostislavna is a child of the house. Aged 7. Their father is Rostislav Izyaslavich. Their mother is Verhuslava Vsevolodovna. The house belongs to the noble network of Kyiv. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "Background": "Maria Rostislavna is a child of the house. Aged 7. Their father is Rostislav Izyaslavich. Their mother is Verhuslava Vsevolodovna. The house belongs to the noble network of Kyiv. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "SpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "PersonalSpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -28,15 +24,11 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -45,14 +37,13 @@
     }
   ],
   "Motivations": [
-    "Manage emergency stores of food and fur garments for refugees",
-    "Maintain monastic endowments and ancestral inheritance titles"
+    "Find care and trustworthy explanations from relatives.",
+    "Gradually understand their place among relatives."
   ],
   "Values": [
-    "Orthodox piety is our immutable refuge",
-    "Mercy and family order preserve our people through trial"
+    "Values familiar company and small promises that are kept."
   ],
   "Fears": [
-    "Fears nomadic raiders overrunning estates and abducting noblewomen into eastern captivity"
+    "Separation from relatives or threats they cannot understand."
   ]
 }

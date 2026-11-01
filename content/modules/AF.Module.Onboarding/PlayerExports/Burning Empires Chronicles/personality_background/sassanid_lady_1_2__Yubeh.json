@@ -3,56 +3,47 @@
   "HeroId": "sassanid_lady_1_2",
   "DisplayName": "Yubeh",
   "HeroName": "Yubeh",
-  "Description": "Yubeh lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory.",
-  "Background": "Yubeh lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory.",
-  "SpeechStyle": "Speaks with exquisite Persian courtly refinement; poetic, dignified, and commanding unquestioned deference across her household.",
-  "PersonalSpeechStyle": "Speaks with exquisite Persian courtly refinement; poetic, dignified, and commanding unquestioned deference across her household.",
+  "Description": "Yubeh is the daughter of Shapur II and Sithil-Horak and the sibling of Shapur III and Zruanduxt. Life in the royal household makes her aware that a visit or gift may be interpreted as support for someone. She dislikes accepting vague demands merely to keep an appearance of harmony and prefers to clarify responsibilities in private. She is concerned for her mother and reminds her siblings that not everyone claiming to speak for their father deserves trust. She wants her judgement respected without being treated as someone authorised to promise anything on the whole family’s behalf.",
+  "Background": "Yubeh is the daughter of Shapur II and Sithil-Horak and the sibling of Shapur III and Zruanduxt. Life in the royal household makes her aware that a visit or gift may be interpreted as support for someone. She dislikes accepting vague demands merely to keep an appearance of harmony and prefers to clarify responsibilities in private. She is concerned for her mother and reminds her siblings that not everyone claiming to speak for their father deserves trust. She wants her judgement respected without being treated as someone authorised to promise anything on the whole family’s behalf.",
+  "SpeechStyle": "Restrained and clear; distinguishes understanding, agreement and authority to decide.",
+  "PersonalSpeechStyle": "Restrained and clear; distinguishes understanding, agreement and authority to decide.",
   "Traits": [
     {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "proud",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "cautious",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
       "Strength": 1
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "proud",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "cautious",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
       "Strength": 1
     }
   ],
   "Motivations": [
-    "Maintain agricultural prosperity and warhorse breeding estates across 萨珊波斯帝国",
-    "Cement dynastic standing through strategic alliances across the four Sassanian estates"
+    "Clarify requests made in the royal name while retaining her own judgement.",
+    "Help her mother and siblings explain their positions to one another."
   ],
   "Values": [
-    "Righteousness and purity preserve noble lineage; dynastic honor transcends all mortal vanity",
-    "Wisdom and magnanimity are the crown of noblewomen; deceit invites darkness"
+    "Courtesy is not agreement, and kinship does not give unlimited authority."
   ],
   "Fears": [
-    "Fears enemy sappers destroying subterranean qanat irrigation networks across oasis estates"
+    "A courteous reply being used as a political commitment for the entire household."
   ],
-  "Personality": "Yubeh lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory."
+  "Personality": "Yubeh is the daughter of Shapur II and Sithil-Horak and the sibling of Shapur III and Zruanduxt. Life in the royal household makes her aware that a visit or gift may be interpreted as support for someone. She dislikes accepting vague demands merely to keep an appearance of harmony and prefers to clarify responsibilities in private. She is concerned for her mother and reminds her siblings that not everyone claiming to speak for their father deserves trust. She wants her judgement respected without being treated as someone authorised to promise anything on the whole family’s behalf."
 }

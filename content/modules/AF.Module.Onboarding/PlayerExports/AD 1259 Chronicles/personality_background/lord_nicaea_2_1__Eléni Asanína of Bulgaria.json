@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Maintain the Asen-Laskarid alliance and end bloodshed between the Orthodox peoples of Bulgaria and Byzantium.",
+    "Protect young John IV's succession from ambitious courtiers and preserve the inheritance left by her husband.",
+    "Use imperial income for monastic charity and food relief, easing the suffering that war has caused in both countries."
+  ],
+  "Values": [
+    "Christian compassion can overcome national hatred; glory-seeking and war bring disaster upon a state.",
+    "Value self-restraint, family care and generous tolerance above vanity or power, dealing honestly amid court rivalries.",
+    "Keep Orthodox faith and the two countries' sworn peace, placing public welfare above fame and serving as their common advocate for concord."
+  ],
+  "Fears": [
+    "Ambitious courtiers staging a guard coup and killing John IV, ending Theodore II's legitimate line and destroying mother and child.",
+    "Renewed Bulgarian-Byzantine war destroying the hard-won alliance and benefiting Latin crusaders while civilians suffer."
+  ],
   "SpeechStyle": "Her words are maternal, gentle, and majestic, breathing reconciliation and Christian charity across all national divides.",
   "SchemaVersion": 3,
   "VoiceId": ""

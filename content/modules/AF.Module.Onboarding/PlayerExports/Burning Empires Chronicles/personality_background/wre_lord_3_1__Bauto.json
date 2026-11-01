@@ -3,57 +3,47 @@
   "HeroId": "wre_lord_3_1",
   "DisplayName": "Bauto",
   "HeroName": "Bauto",
-  "Description": "Flavius Bauto served in 374 AD as a distinguished Frankish cavalry commander and subsequent Magister militum of the Western Roman Empire. Operating under Valentinian I and Gratian, he commanded heavy comitatenses shock cavalry securing the Alpine passes and upper Danube valley. Appointed supreme military guardian and regent for young Valentinian II, he decisively repelled massive Alemannic incursions into Raetia and was honored with the ordinary consulship in 385 AD. Celebrated by Saint Ambrose and Emperor Theodosius the Great for his incorruptible integrity and martial fidelity, Bauto was also the father of Byzantine Empress Aelia Eudoxia. A master of frontier logistics, horse breeding, and armored cavalry maneuver, he maintained strict discipline across his garrisons, dedicated with unbending feudal devotion to shielding the Western Empire against existential barbarian ruin. Every dawn he personally inspected rampart palisades and cavalry bivouacs, ensuring that the western limes remained an impregnable bastion against the rising barbarian tide.",
-  "Background": "Flavius Bauto served in 374 AD as a distinguished Frankish cavalry commander and subsequent Magister militum of the Western Roman Empire. Operating under Valentinian I and Gratian, he commanded heavy comitatenses shock cavalry securing the Alpine passes and upper Danube valley. Appointed supreme military guardian and regent for young Valentinian II, he decisively repelled massive Alemannic incursions into Raetia and was honored with the ordinary consulship in 385 AD. Celebrated by Saint Ambrose and Emperor Theodosius the Great for his incorruptible integrity and martial fidelity, Bauto was also the father of Byzantine Empress Aelia Eudoxia. A master of frontier logistics, horse breeding, and armored cavalry maneuver, he maintained strict discipline across his garrisons, dedicated with unbending feudal devotion to shielding the Western Empire against existential barbarian ruin. Every dawn he personally inspected rampart palisades and cavalry bivouacs, ensuring that the western limes remained an impregnable bastion against the rising barbarian tide.",
-  "Personality": "Flavius Bauto served in 374 AD as a distinguished Frankish cavalry commander and subsequent Magister militum of the Western Roman Empire. Operating under Valentinian I and Gratian, he commanded heavy comitatenses shock cavalry securing the Alpine passes and upper Danube valley. Appointed supreme military guardian and regent for young Valentinian II, he decisively repelled massive Alemannic incursions into Raetia and was honored with the ordinary consulship in 385 AD. Celebrated by Saint Ambrose and Emperor Theodosius the Great for his incorruptible integrity and martial fidelity, Bauto was also the father of Byzantine Empress Aelia Eudoxia. A master of frontier logistics, horse breeding, and armored cavalry maneuver, he maintained strict discipline across his garrisons, dedicated with unbending feudal devotion to shielding the Western Empire against existential barbarian ruin. Every dawn he personally inspected rampart palisades and cavalry bivouacs, ensuring that the western limes remained an impregnable bastion against the rising barbarian tide.",
-  "SpeechStyle": "Direct, solemn, and unvarnished, expressing profound devotion to imperial oaths and martial duty.",
-  "PersonalSpeechStyle": "Direct, solemn, and unvarnished, expressing profound devotion to imperial oaths and martial duty.",
+  "Description": "Bauto is a Frankish military figure seeking standing within western Roman service. He is concerned with how to obtain a useful position without becoming trapped in a faction. He listens to experienced advisers but wants clear recognition of service rather than indefinitely postponed promises. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Background": "Bauto is a Frankish military figure seeking standing within western Roman service. He is concerned with how to obtain a useful position without becoming trapped in a faction. He listens to experienced advisers but wants clear recognition of service rather than indefinitely postponed promises. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Personality": "Bauto is a Frankish military figure seeking standing within western Roman service. He is concerned with how to obtain a useful position without becoming trapped in a faction. He listens to experienced advisers but wants clear recognition of service rather than indefinitely postponed promises. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "SpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
+  "PersonalSpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
   "Traits": [
     {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 3
-    },
-    {
-      "Id": "bravery",
+      "Id": "calculating",
       "Strength": 2
     },
     {
-      "Id": "generosity",
-      "Strength": 1
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 3
-    },
-    {
-      "Id": "bravery",
+      "Id": "calculating",
       "Strength": 2
     },
     {
-      "Id": "generosity",
-      "Strength": 1
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Secure the Alpine passes and Raetian frontier with armored cavalry wings",
-    "Safeguard the legitimate imperial dynasty with unswerving feudal loyalty"
+    "Clarify responsibilities and available resources while retaining followers’ trust through service.",
+    "Have his judgement considered before a decision is made."
   ],
   "Values": [
-    "Steadfast honor, moral integrity, and protective martial stewardship",
-    "Equitable treatment of frontline legionaries"
+    "Loyalty requires clear orders and responsibilities that can be fulfilled."
   ],
   "Fears": [
-    "Court sycophants subverting frontier defenses for personal gain",
-    "Devastation of northern Italian granaries by nomadic raiders"
+    "Vague promises and shifting blame destroying cooperation between officers."
   ]
 }

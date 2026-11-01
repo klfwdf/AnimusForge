@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Keep precise records of weapons, oil and provisions at Heimnes so that the garrison can endure a long siege.",
+    "Help her husband reassure soldiers' families and local farmers, keeping the frontier settlement functioning as war threatens.",
+    "Preserve household records and land deeds, defending Heimnes property rights and boundaries before the Borgarting court."
+  ],
+  "Values": [
+    "A fortress mistress needs the same resolve as its knights; her calm under danger strengthens the defenders' confidence.",
+    "Prepare food and clothing reserves for three years during peace so that unexpected war does not throw the fortress into confusion.",
+    "Support her husband and country faithfully by maintaining the frontier household with steady and willing service."
+  ],
+  "Fears": [
+    "Agents burning the granary in deep winter, leaving hundreds of defenders hungry and desperate enough to mutiny.",
+    "Enemy trebuchets destroying the inner ward and leaving her and her young daughter captive to brutal mercenaries."
+  ],
   "SpeechStyle": "Speaks with quiet domestic authority, rustic prudence, and unpretentious clarity, managing frontier manor affairs with watchful vigilance.",
   "SchemaVersion": 3,
   "VoiceId": "",

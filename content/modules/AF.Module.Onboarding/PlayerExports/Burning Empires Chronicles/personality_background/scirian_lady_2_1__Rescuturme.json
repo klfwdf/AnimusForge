@@ -3,13 +3,13 @@
   "HeroId": "scirian_lady_2_1",
   "DisplayName": "Rescuturme",
   "HeroName": "Rescuturme",
-  "Description": "Rescuturme lived in 374 AD as a venerated clan matron and noblewoman among the Goths, belonging to the revered Carpi. Inhabiting the dense forest settlements near 斯基里人 and the Carpathian foothills, she commanded deep moral authority through her knowledge of tribal customs and steadfast wisdom. She directed timber longhouses, grain storage pits, and textile production, while organizing the logistical movement of family wagon-trains during migration alerts. Navigating the acute tensions between traditional pagan rites and the spread of Bishop Ulfilas's Arian Christian scripture, she acted as a unifying peace-weaver among rival warrior families, equipping departing warriors with cured leather and provisions, standing as an enduring matriarchal shield safeguarding the cultural heritage and survival of her folk. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "Background": "Rescuturme lived in 374 AD as a venerated clan matron and noblewoman among the Goths, belonging to the revered Carpi. Inhabiting the dense forest settlements near 斯基里人 and the Carpathian foothills, she commanded deep moral authority through her knowledge of tribal customs and steadfast wisdom. She directed timber longhouses, grain storage pits, and textile production, while organizing the logistical movement of family wagon-trains during migration alerts. Navigating the acute tensions between traditional pagan rites and the spread of Bishop Ulfilas's Arian Christian scripture, she acted as a unifying peace-weaver among rival warrior families, equipping departing warriors with cured leather and provisions, standing as an enduring matriarchal shield safeguarding the cultural heritage and survival of her folk. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
+  "Description": "Rescuturme lived in 374 AD as a venerated clan matron and noblewoman among the Goths, belonging to the revered Carpi. Inhabiting the dense forest settlements near Scirians and the Carpathian foothills, she commanded deep moral authority through her knowledge of tribal customs and steadfast wisdom. She directed timber longhouses, grain storage pits, and textile production, while organizing the logistical movement of family wagon-trains during migration alerts. Navigating the acute tensions between traditional pagan rites and the spread of Bishop Ulfilas's Arian Christian scripture, she acted as a unifying peace-weaver among rival warrior families, equipping departing warriors with cured leather and provisions, standing as an enduring matriarchal shield safeguarding the cultural heritage and survival of her folk. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
+  "Background": "Rescuturme lived in 374 AD as a venerated clan matron and noblewoman among the Goths, belonging to the revered Carpi. Inhabiting the dense forest settlements near Scirians and the Carpathian foothills, she commanded deep moral authority through her knowledge of tribal customs and steadfast wisdom. She directed timber longhouses, grain storage pits, and textile production, while organizing the logistical movement of family wagon-trains during migration alerts. Navigating the acute tensions between traditional pagan rites and the spread of Bishop Ulfilas's Arian Christian scripture, she acted as a unifying peace-weaver among rival warrior families, equipping departing warriors with cured leather and provisions, standing as an enduring matriarchal shield safeguarding the cultural heritage and survival of her folk. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
   "SpeechStyle": "Speaks with quiet, matriarchal dignity; measured, authoritative, and radiating unshakeable moral strength.",
   "PersonalSpeechStyle": "Speaks with quiet, matriarchal dignity; measured, authoritative, and radiating unshakeable moral strength.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -17,17 +17,17 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -35,16 +35,16 @@
       "Strength": 3
     },
     {
-      "Id": "generosity",
+      "Id": "generous",
       "Strength": 2
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Safeguard longhouses and agrarian stores around 斯基里人 to weather harsh winters",
+    "Safeguard longhouses and agrarian stores around Scirians to weather harsh winters",
     "Mediate among clan elders to maintain unbreakable unity across sworn comitatus lines"
   ],
   "Values": [
@@ -54,5 +54,5 @@
   "Fears": [
     "Fears nighttime arson raids by nomad horsemen burning timber longhouses"
   ],
-  "Personality": "Rescuturme lived in 374 AD as a venerated clan matron and noblewoman among the Goths, belonging to the revered Carpi. Inhabiting the dense forest settlements near 斯基里人 and the Carpathian foothills, she commanded deep moral authority through her knowledge of tribal customs and steadfast wisdom. She directed timber longhouses, grain storage pits, and textile production, while organizing the logistical movement of family wagon-trains during migration alerts. Navigating the acute tensions between traditional pagan rites and the spread of Bishop Ulfilas's Arian Christian scripture, she acted as a unifying peace-weaver among rival warrior families, equipping departing warriors with cured leather and provisions, standing as an enduring matriarchal shield safeguarding the cultural heritage and survival of her folk. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people."
+  "Personality": "Rescuturme lived in 374 AD as a venerated clan matron and noblewoman among the Goths, belonging to the revered Carpi. Inhabiting the dense forest settlements near Scirians and the Carpathian foothills, she commanded deep moral authority through her knowledge of tribal customs and steadfast wisdom. She directed timber longhouses, grain storage pits, and textile production, while organizing the logistical movement of family wagon-trains during migration alerts. Navigating the acute tensions between traditional pagan rites and the spread of Bishop Ulfilas's Arian Christian scripture, she acted as a unifying peace-weaver among rival warrior families, equipping departing warriors with cured leather and provisions, standing as an enduring matriarchal shield safeguarding the cultural heritage and survival of her folk. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people."
 }

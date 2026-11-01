@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 3,
-  "Description": "Grand Prince Dmitry of Tver, famously known as 'Dmitry the Terrible Eyes' (Dmitry of the Fearsome Gaze), was the fiery eldest son of Saint Mikhail and Saint Anna. Renowned for his piercing, intimidating gaze and unyielding temperament, he grew up consumed by a burning desire to avenge the treacherous murder of his saintly father in Sarai. Ascending the grand-ducal throne, Dmitry demonstrated aggressive battlefield mastery, drilling heavy river cavalry and fiercely repelling territorial incursions from Moscow. In 1325, while summoned to the Golden Horde at Sarai, Dmitry crossed paths with his mortal enemy, Prince Yuri of Moscow, the architect of his father's martyrdom. Overcome with righteous fury, Dmitry drew his sword and struck Yuri dead in the open square before the Khan's tent, exacting vengeance in a legendary confrontation that stunned the Mongol world. Though Khan Uzbeg subsequently ordered his execution, Dmitry's fearless defiance and uncompromising chivalric honor immortalized him as a heroic champion of Tver. Dmitry drilled the cavalry vanguard with unyielding discipline, erecting fortified watchtowers along the river frontier and striking terror into predatory rivals with his ferocious martial resolve and righteous vengeance.  His uncompromising ferocity and filial devotion forged an enduring legend of chivalric vengeance in Russian chronicles.",
+  "Description": "Grand Prince Dmitry of Tver, famously known as 'Dmitry the Terrible Eyes' (Dmitry of the Fearsome Gaze), was the fiery eldest son of Saint Mikhail and Saint Anna. Renowned for his piercing, intimidating gaze and unyielding temperament, he grew up consumed by a burning desire to avenge the treacherous murder of his saintly father in Sarai. Ascending the grand-ducal throne, Dmitry demonstrated aggressive battlefield mastery, drilling heavy river cavalry and fiercely repelling territorial incursions from Moscow. Overcome with righteous fury, Dmitry drew his sword and struck Yuri dead in the open square before the Khan's tent, exacting vengeance in a legendary confrontation that stunned the Mongol world. Though Khan Uzbeg subsequently ordered his execution, Dmitry's fearless defiance and uncompromising chivalric honor immortalized him as a heroic champion of Tver. Dmitry drilled the cavalry vanguard with unyielding discipline, erecting fortified watchtowers along the river frontier and striking terror into predatory rivals with his ferocious martial resolve and righteous vengeance. His uncompromising ferocity and filial devotion forged an enduring legend of chivalric vengeance in Russian chronicles.",
   "SpeechStyle": "The blood of my martyred father cries out for vengeance! Those who conspire to crush Tver beneath imperial boots shall taste my blade. Our steel shall never bow!",
   "Motivations": [
     "Ruthlessly destroy the conspiratorial network of Moscow to avenge his father's murder and vindicate Tver's honor.",
@@ -27,5 +27,7 @@
       "Id": "impulsive",
       "Strength": 2
     }
-  ]
+  ],
+  "HeroId": "lord_tver_1f",
+  "HeroName": "Dmitry of Tver"
 }

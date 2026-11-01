@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with sharp, adventurous naval cadence; audacious, resolute, and gazing hungrily toward the mist-shrouded shores of Britain.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -23,7 +23,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

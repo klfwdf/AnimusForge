@@ -3,56 +3,48 @@
   "HeroId": "lord_pol_8_1",
   "DisplayName": "Bolesław V the Chaste",
   "HeroName": "Bolesław V the Chaste",
-  "Personality": "Bolesław V the Chaste (1226–1279) ruled as High Duke of Poland and Prince of Sandomierz and Krakow, renowned across Latin Christendom for his monastic devotion and mutual vow of chastity with his consort Saint Kinga. Facing deep fragmentation among Piast ducal branches following the catastrophe of Legnica, he tenaciously maintained royal authority within Wawel Castle. In the autumn of 1259 AD, when Mongol commander Burundai unleashed devastating invasion tumens across Little Poland, torching Sandomierz and harrowing the Vistula basin, Bolesław evacuated Kinga to Sieradz while marshaling his household knights and burghers to defend Krakow's stone citadel. Managing emergency grain stores and Baltic salt revenues under constant threat of nomadic cavalry breakthroughs, this battle-tested Piast monarch stood as an unyielding guardian of Polish sovereignty, preserving the easternmost bastion of Catholic civilization amid devastating regional fires. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
-  "Description": "Bolesław V the Chaste (1226–1279) ruled as High Duke of Poland and Prince of Sandomierz and Krakow, renowned across Latin Christendom for his monastic devotion and mutual vow of chastity with his consort Saint Kinga. Facing deep fragmentation among Piast ducal branches following the catastrophe of Legnica, he tenaciously maintained royal authority within Wawel Castle. In the autumn of 1259 AD, when Mongol commander Burundai unleashed devastating invasion tumens across Little Poland, torching Sandomierz and harrowing the Vistula basin, Bolesław evacuated Kinga to Sieradz while marshaling his household knights and burghers to defend Krakow's stone citadel. Managing emergency grain stores and Baltic salt revenues under constant threat of nomadic cavalry breakthroughs, this battle-tested Piast monarch stood as an unyielding guardian of Polish sovereignty, preserving the easternmost bastion of Catholic civilization amid devastating regional fires. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
-  "Background": "Bolesław V the Chaste (1226–1279) ruled as High Duke of Poland and Prince of Sandomierz and Krakow, renowned across Latin Christendom for his monastic devotion and mutual vow of chastity with his consort Saint Kinga. Facing deep fragmentation among Piast ducal branches following the catastrophe of Legnica, he tenaciously maintained royal authority within Wawel Castle. In the autumn of 1259 AD, when Mongol commander Burundai unleashed devastating invasion tumens across Little Poland, torching Sandomierz and harrowing the Vistula basin, Bolesław evacuated Kinga to Sieradz while marshaling his household knights and burghers to defend Krakow's stone citadel. Managing emergency grain stores and Baltic salt revenues under constant threat of nomadic cavalry breakthroughs, this battle-tested Piast monarch stood as an unyielding guardian of Polish sovereignty, preserving the easternmost bastion of Catholic civilization amid devastating regional fires. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
-  "SpeechStyle": "Speaks with solemn ducal gravity and devout Catholic poise; commanding, measured, and devoid of courtly pretense.",
-  "PersonalSpeechStyle": "Speaks with solemn ducal gravity and devout Catholic poise; commanding, measured, and devoid of courtly pretense.",
+  "Personality": "Bolesław V, son of Leszek the White and Grzymislawa, rules Kraków and Sandomierz. His father is long dead, and contests over power during his childhood have made household protection and local support especially important. His wife Kinga comes from the Hungarian royal family; religion and marriage provide court connections without replacing practical cooperation among the rulers of the principalities. He wants to secure the towns and authority of Lesser Poland while preserving grain, crossings and available manpower under external pressure. He prefers defined, workable obligations from his dependants rather than treating piety as a guarantee of victory.",
+  "Description": "Bolesław V, son of Leszek the White and Grzymislawa, rules Kraków and Sandomierz. His father is long dead, and contests over power during his childhood have made household protection and local support especially important. His wife Kinga comes from the Hungarian royal family; religion and marriage provide court connections without replacing practical cooperation among the rulers of the principalities. He wants to secure the towns and authority of Lesser Poland while preserving grain, crossings and available manpower under external pressure. He prefers defined, workable obligations from his dependants rather than treating piety as a guarantee of victory.",
+  "Background": "Bolesław V, son of Leszek the White and Grzymislawa, rules Kraków and Sandomierz. His father is long dead, and contests over power during his childhood have made household protection and local support especially important. His wife Kinga comes from the Hungarian royal family; religion and marriage provide court connections without replacing practical cooperation among the rulers of the principalities. He wants to secure the towns and authority of Lesser Poland while preserving grain, crossings and available manpower under external pressure. He prefers defined, workable obligations from his dependants rather than treating piety as a guarantee of victory.",
+  "SpeechStyle": "Solemn, attentive to promises and religious obligations; asks about grain, manpower and relief when discussing defense.",
+  "PersonalSpeechStyle": "Solemn, attentive to promises and religious obligations; asks about grain, manpower and relief when discussing defense.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "dutiful",
       "Strength": 3
-    },
-    {
-      "Id": "humble",
-      "Strength": 3
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 2
     },
     {
       "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "dutiful",
       "Strength": 3
-    },
-    {
-      "Id": "humble",
-      "Strength": 3
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 2
     },
     {
       "Id": "cautious",
       "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend Wawel Castle against Mongol onslaughts",
-    "Reconstruct devastated settlements along the Vistula basin"
+    "Secure his governing base in Kraków and Sandomierz.",
+    "Maintain deliverable cooperation with his wife’s family and local lords."
   ],
   "Values": [
-    "Purity and religious fidelity are a monarch's true armor",
-    "Preserving Christian lives overrides personal pride"
+    "Piety should accompany responsibility toward dependants.",
+    "Common defense needs definite contributions, not merely slogans."
   ],
   "Fears": [
-    "Fears Poland collapsing into permanent tribute vassalage under Golden Horde dominion"
+    "Local support collapsing and leaving both inhabitants and court without protection."
   ]
 }

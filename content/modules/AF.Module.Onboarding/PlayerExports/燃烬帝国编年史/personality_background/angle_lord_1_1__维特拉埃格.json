@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语铿锵锋利充满开拓者的勃勃野心，目光如海雕般锐利凝视西方大洋，战船出海前鼓舞士气时豪情万丈。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -23,7 +23,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

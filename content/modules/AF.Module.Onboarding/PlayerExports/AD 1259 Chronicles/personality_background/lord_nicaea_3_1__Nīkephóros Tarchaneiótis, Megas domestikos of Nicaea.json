@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Strengthen Balkan and Anatolian defences and recover Constantinople, completing the restoration attempted by three earlier emperors.",
+    "Teach and advance younger relatives in strategy and loyalty so that the Tarchaneiotes family continues producing capable commanders.",
+    "Keep military houses loyal to the Palaiologans, reconcile civil and military factions and prevent mutiny or internal conflict."
+  ],
+  "Values": [
+    "Careful strategy and endurance are national strengths; adventures pursued for glory are grave military mistakes.",
+    "Command openly and impartially, combining care for soldiers with firm law and practical judgement.",
+    "Remain loyal to Roman legitimacy and Orthodoxy, defending frontier and people without seeking empty fame."
+  ],
+  "Fears": [
+    "Religious concessions splitting the Church and army, wasting three generations' military efforts and plunging the state back into division.",
+    "Courtiers neglecting frontier farms and fortresses for luxury, leaving eastern Anatolia exposed to Seljuk raids and conquest."
+  ],
   "SpeechStyle": "His voice carries profound military seniority and calm gravitas, commanding instinctive obedience from veterans and emperors alike.",
   "SchemaVersion": 3,
   "VoiceId": ""

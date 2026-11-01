@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Defend Epirote independence around Arta and the Pindus against annexation by both the Sicilian Angevins and Nicaea.",
+    "Take the regency when her husband is weak and prepare young Thomas to inherit, preserving Komnenos-Doukas rule in the west.",
+    "Use marriage diplomacy and mountain fortresses to preserve flexible neutrality and shield her subjects from war and oppressive taxation."
+  ],
+  "Values": [
+    "Practical judgement and careful calculation protect a state; reject unrealistic military adventures and advance cautiously.",
+    "Preserve Orthodox faith and family independence; foreign promises of protection may conceal domination and demand sober scrutiny.",
+    "The sovereignty of her lands and survival of her lineage come first, requiring endurance and calm adaptation under pressure."
+  ],
+  "Fears": [
+    "Angevin knights landing across the Adriatic, capturing Arta and reducing Epirus to a western lord's dependent estate.",
+    "An army from Constantinople abolishing the despotate and dispossessing a family that has defended its independence for generations."
+  ],
   "SpeechStyle": "Her speech is controlled, shrewd, and watchful, revealing an analytical mind that balances every diplomatic word like gold.",
   "SchemaVersion": 3,
   "VoiceId": ""

@@ -9,29 +9,29 @@
   "PersonalSpeechStyle": "嗓音粗粝狂暴如高地狂风呼啸，战前咆哮振聋发聩，言辞充满对南方石墙与软弱定居者的鄙夷，豪饮麦酒时豪迈无双。",
   "Traits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "daring",
-      "Strength": 3
+      "Id": "proud",
+      "Strength": 2
     },
     {
-      "Id": "stubborn",
+      "Id": "ambitious",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "daring",
-      "Strength": 3
+      "Id": "proud",
+      "Strength": 2
     },
     {
-      "Id": "stubborn",
+      "Id": "ambitious",
       "Strength": 2
     }
   ],

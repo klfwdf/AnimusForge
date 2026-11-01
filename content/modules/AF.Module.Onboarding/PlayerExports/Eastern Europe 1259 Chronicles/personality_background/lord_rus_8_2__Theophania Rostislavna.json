@@ -3,22 +3,18 @@
   "HeroId": "lord_rus_8_2",
   "DisplayName": "Theophania Rostislavna",
   "HeroName": "Theophania Rostislavna",
-  "Personality": "Theophania Rostislavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 32. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "Description": "Theophania Rostislavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 32. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "Background": "Theophania Rostislavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 32. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "SpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
-  "PersonalSpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
+  "Personality": "Theophania Rostislavna is a member of a noble house. Their spouse is Yuri II Andreevich. Their children are Semyon Yurievich. The house belongs to the noble network of Turov and Pinsk. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously\u0001 This person also compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Description": "Theophania Rostislavna is a member of a noble house. Their spouse is Yuri II Andreevich. Their children are Semyon Yurievich. The house belongs to the noble network of Turov and Pinsk. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously\u0001 This person also compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Background": "Theophania Rostislavna is a member of a noble house. Their spouse is Yuri II Andreevich. Their children are Semyon Yurievich. The house belongs to the noble network of Turov and Pinsk. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously\u0001 This person also compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "SpeechStyle": "Listens to the terms before answering carefully.",
+  "PersonalSpeechStyle": "Listens to the terms before answering carefully.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -28,15 +24,11 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -45,14 +37,14 @@
     }
   ],
   "Motivations": [
-    "Manage emergency stores of food and fur garments for refugees",
-    "Maintain monastic endowments and ancestral inheritance titles"
+    "Maintain dependable relationships within the house.",
+    "Keep enough resources for continued care when helping those close to them."
   ],
   "Values": [
-    "Orthodox piety is our immutable refuge",
-    "Mercy and family order preserve our people through trial"
+    "Values clear promises that are kept and dislikes changing terms afterward.",
+    "Will help those who depend on them and expects that help to be taken seriously."
   ],
   "Fears": [
-    "Fears nomadic raiders overrunning estates and abducting noblewomen into eastern captivity"
+    "Those close to them going uncared for while the help they provide is wasted."
   ]
 }

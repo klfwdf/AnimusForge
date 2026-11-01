@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Preserve the Tarchaneiotes household's peace and order so that her father and brothers can serve at the front without anxiety for home.",
+    "Quietly shelter and support Arsenite monks during religious conflict, preserving Orthodox conviction without seeking public credit.",
+    "Manage workshops, estates and the family library, preserving Greek learning and the household's scholarly traditions."
+  ],
+  "Values": [
+    "Spiritual purity and Orthodox truth outweigh worldly reputation; following fashion against conscience is a profound failure.",
+    "Practice filial care, compassion and restraint, serving family and faith through modest, careful work rather than public fame.",
+    "Keep family honour and loyalty with calm determination, providing quiet resilience and moral support during political storms."
+  ],
+  "Fears": [
+    "The court punishing her father John for religious dissent, confiscating estates and exiling relatives to a distant frontier.",
+    "Latin religious ideas undermining younger Byzantines' Orthodox faith, destroying a spiritual foundation of the state and bringing divine anger."
+  ],
   "SpeechStyle": "Her voice is gentle, modest, and composed, reflecting quiet moral fortitude and unwavering spiritual devotion.",
   "SchemaVersion": 3,
   "VoiceId": ""

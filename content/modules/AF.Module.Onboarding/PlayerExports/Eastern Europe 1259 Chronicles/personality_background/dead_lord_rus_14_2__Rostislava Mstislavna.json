@@ -3,22 +3,18 @@
   "HeroId": "dead_lord_rus_14_2",
   "DisplayName": "Rostislava Mstislavna",
   "HeroName": "Rostislava Mstislavna",
-  "Personality": "Rostislava Mstislavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 43. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "Description": "Rostislava Mstislavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 43. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "Background": "Rostislava Mstislavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 43. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
-  "SpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
-  "PersonalSpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
+  "Personality": "Rostislava Mstislavna is a deceased member of the house. Their spouse is Yaroslav Vsevolodovich. Their children are Alexander Yaroslavich Nevsky, Yaroslav Yaroslavich. The house’s ties continue in Kyiv. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously and compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements.",
+  "Description": "Rostislava Mstislavna is a deceased member of the house. Their spouse is Yaroslav Vsevolodovich. Their children are Alexander Yaroslavich Nevsky, Yaroslav Yaroslavich. The house’s ties continue in Kyiv. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously and compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements.",
+  "Background": "Rostislava Mstislavna is a deceased member of the house. Their spouse is Yaroslav Vsevolodovich. Their children are Alexander Yaroslavich Nevsky, Yaroslav Yaroslavich. The house’s ties continue in Kyiv. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously and compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements.",
+  "SpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "PersonalSpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -28,15 +24,11 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     },
     {
@@ -45,14 +37,12 @@
     }
   ],
   "Motivations": [
-    "Manage emergency stores of food and fur garments for refugees",
-    "Maintain monastic endowments and ancestral inheritance titles"
+    "Leave relatives a house they can depend on."
   ],
   "Values": [
-    "Orthodox piety is our immutable refuge",
-    "Mercy and family order preserve our people through trial"
+    "Kinship and commitments shape the memory of a house."
   ],
   "Fears": [
-    "Fears nomadic raiders overrunning estates and abducting noblewomen into eastern captivity"
+    "Trust and ties within the house breaking down."
   ]
 }

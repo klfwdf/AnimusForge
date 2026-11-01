@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语如生铁般冷硬无情，神情如岩石般不可动摇，下令屠戮叛贼与迎击强敌时目光森冷如刀，令人肃然起敬又胆战心惊。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -23,7 +23,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {

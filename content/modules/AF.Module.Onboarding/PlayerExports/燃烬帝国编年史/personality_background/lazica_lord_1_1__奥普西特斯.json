@@ -13,11 +13,11 @@
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     }
   ],
@@ -27,11 +27,11 @@
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     }
   ],

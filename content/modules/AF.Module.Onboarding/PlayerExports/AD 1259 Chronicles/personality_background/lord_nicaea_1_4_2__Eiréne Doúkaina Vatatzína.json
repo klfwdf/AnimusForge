@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Protect the Vatatzes bloodline and Strategopoulos estates, preserving the family's secure rear during disorder.",
+    "Protect her campaigning husband and son from court suspicion and slander while preserving the family's military reputation.",
+    "Support fallen soldiers' orphans, estate dependants and monasteries, praying for relatives campaigning in Europe."
+  ],
+  "Values": [
+    "Prudence and modesty preserve a military household at court; boasting of achievements and arrogant conduct invite disaster.",
+    "Manage the household frugally and practically, raising children to observe duty and serve the state loyally.",
+    "Keep Orthodox faith and family obligations, remaining calm under pressure while supporting household and state."
+  ],
+  "Fears": [
+    "Imperial jealousy of her husband's and son's role in recovering Constantinople leading to a purge that sacrifices the entire military household.",
+    "Turkish raiders burning ancestral estates and destroying the revenues and provisions needed to support relatives at the front."
+  ],
   "SpeechStyle": "Her speech is measured, serene, and steeped in aristocratic tact, effortlessly disarming court intrigues with quiet moral authority.",
   "SchemaVersion": 3,
   "VoiceId": ""

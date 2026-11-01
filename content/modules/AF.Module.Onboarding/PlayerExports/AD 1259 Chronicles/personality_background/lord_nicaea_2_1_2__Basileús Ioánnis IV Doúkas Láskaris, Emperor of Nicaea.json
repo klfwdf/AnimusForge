@@ -1,25 +1,34 @@
 {
   "HeroId": "lord_nicaea_2_1_2",
   "HeroName": "Basileús Ioánnis IV Doúkas Láskaris, Emperor of Nicaea",
-  "Description": "Basileús Ioánnis IV Doúkas Láskaris was the legitimate boy-emperor of Nicaea whose tragic fate exposed the ruthless realpolitik of the Palaiologan restoration. Born in 1250 to Emperor Theodore II Laskaris, the eight-year-old child ascended the throne in 1258 under the regency of George Mouzalon, only to witness his guardian butchered before the altar. Eclipsed by the meteoric rise of Michael VIII Palaiologos following the triumph of Pelagonia, John IV was sidelined amidst the euphoria of Constantinople's recapture in 1261. On December 25, 1261—his eleventh birthday—Michael VIII ordered the child blinded and immured within the fortress of Dakibyza. This crime horrified Christendom, provoking Patriarch Arsenios to excommunicate the usurper and igniting the decades-long Arsenite Schism. Blinded and stripped of worldly glory, John took the monastic name Joasaph, embracing a life of contemplative prayer. Decades later, when Emperor Andronikos II visited his cell kneeling in tears to beg forgiveness, the aging monk granted absolution with saintly grace, immortalizing his soul as a sublime martyr of Roman history. Despite total blindness and mountain seclusion, Brother Joasaph carved wooden Orthodox crucifixes upon the coarse stone walls of his cell. Through the solemn vigils of Great Lent, he knelt upon the freezing stone floor praying for the salvation of Byzantine souls, radiating spiritual purity that inspired monks across the Bosphorus. When Emperor Andronikos II knelt before him begging absolution for imperial crimes, the blind hermit touched his crown with tender mercy, dissolving bitter worldly enmities through divine grace.",
+  "Description": "John IV is Theodore II’s son and inherited the Nicaean throne after his father’s death. His youth makes him dependent on regents and advisers without ensuring that those who claim to protect him lack ambitions of their own. Changes at court after Mouzalon’s murder make it harder to know which adults deserve trust. Michael’s influence grows while the Laskarid name still brings ceremonial respect. John cannot always understand what these rituals and disputes mean for his own life. He needs patient explanations rather than instructions merely to nod at an arrangement. Familiar relatives and attendants matter to him, and he wants his questions taken seriously. Safety means not being suddenly separated from those he knows and being able to trust tomorrow in promises made today.",
   "Traits": [
     {
       "Id": "cautious",
-      "Strength": 3
-    },
-    {
-      "Id": "reserved",
-      "Strength": 3
-    },
-    {
-      "Id": "honorable",
       "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
-  "SpeechStyle": "His voice is gentle, frail, and steeped in otherworldly spiritual serenity, devoid of mortal malice or bitter vengeance.",
+  "Motivations": [
+    "Receive trustworthy guidance about arrangements made in his name.",
+    "Keep contact with familiar people and have his questions answered."
+  ],
+  "Values": [
+    "Protection must be dependable rather than merely a title.",
+    "Even a child should understand what others ask him to accept."
+  ],
+  "Fears": [
+    "Being separated from familiar people without an explanation.",
+    "Those around him fighting one another over his imperial position."
+  ],
+  "SpeechStyle": "Young and cautious; checks promises repeatedly and looks to familiar people for reassurance.",
   "SchemaVersion": 3,
   "VoiceId": ""
 }

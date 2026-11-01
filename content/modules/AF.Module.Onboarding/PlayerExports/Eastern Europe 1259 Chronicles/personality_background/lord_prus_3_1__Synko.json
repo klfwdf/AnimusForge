@@ -3,56 +3,31 @@
   "HeroId": "lord_prus_3_1",
   "DisplayName": "Synko",
   "HeroName": "Synko",
-  "Personality": "Synko commanded as a fierce pagan warlord and noble chieftain within the Grand Duchy of Lithuania and Samogitia in 1259 AD, aged 30. Nurtured amid the ancient peat bogs of Trakai and the dense pine forests of the Neman basin, he wore hardened cuirbouilli leather armor reinforced with iron studs, wielding heavy hooked battleaxes, boar spears, and recurve bows. Devoted to the thunder deity Perkūnas and sacred oak flames, he viewed the expansion of Teutonic and Livonian crusaders as an existential desecration. During the triumph at Skuodas in 1259, he orchestrated woodland ambushes that encircled armored knights, unhorsing and slaughtering crusader contingents in the mire. Skeptical of King Mindaugas' diplomatic maneuvers with western legates, he allied with hardline pagan chieftains, training tribal warriors in mobile guerrilla tactics. Expert in deploying pitfall snares and tracking crusader foraging columns through trackless spruce swamps, he struck without warning and vanished into the wild. An elusive forest hunter of unmatched ferocity, he stood as an unbreakable pagan shield defending ancestral Baltic territories. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
-  "Description": "Synko commanded as a fierce pagan warlord and noble chieftain within the Grand Duchy of Lithuania and Samogitia in 1259 AD, aged 30. Nurtured amid the ancient peat bogs of Trakai and the dense pine forests of the Neman basin, he wore hardened cuirbouilli leather armor reinforced with iron studs, wielding heavy hooked battleaxes, boar spears, and recurve bows. Devoted to the thunder deity Perkūnas and sacred oak flames, he viewed the expansion of Teutonic and Livonian crusaders as an existential desecration. During the triumph at Skuodas in 1259, he orchestrated woodland ambushes that encircled armored knights, unhorsing and slaughtering crusader contingents in the mire. Skeptical of King Mindaugas' diplomatic maneuvers with western legates, he allied with hardline pagan chieftains, training tribal warriors in mobile guerrilla tactics. Expert in deploying pitfall snares and tracking crusader foraging columns through trackless spruce swamps, he struck without warning and vanished into the wild. An elusive forest hunter of unmatched ferocity, he stood as an unbreakable pagan shield defending ancestral Baltic territories. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
-  "Background": "Synko commanded as a fierce pagan warlord and noble chieftain within the Grand Duchy of Lithuania and Samogitia in 1259 AD, aged 30. Nurtured amid the ancient peat bogs of Trakai and the dense pine forests of the Neman basin, he wore hardened cuirbouilli leather armor reinforced with iron studs, wielding heavy hooked battleaxes, boar spears, and recurve bows. Devoted to the thunder deity Perkūnas and sacred oak flames, he viewed the expansion of Teutonic and Livonian crusaders as an existential desecration. During the triumph at Skuodas in 1259, he orchestrated woodland ambushes that encircled armored knights, unhorsing and slaughtering crusader contingents in the mire. Skeptical of King Mindaugas' diplomatic maneuvers with western legates, he allied with hardline pagan chieftains, training tribal warriors in mobile guerrilla tactics. Expert in deploying pitfall snares and tracking crusader foraging columns through trackless spruce swamps, he struck without warning and vanished into the wild. An elusive forest hunter of unmatched ferocity, he stood as an unbreakable pagan shield defending ancestral Baltic territories. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
-  "SpeechStyle": "Roars with primordial pagan vigor; fierce, defiant, and bound to ancestral warrior codes.",
-  "PersonalSpeechStyle": "Roars with primordial pagan vigor; fierce, defiant, and bound to ancestral warrior codes.",
+  "Personality": "Synko is the lord of the house. Their spouse is Gintara. The house belongs to the noble network of the Prussian tribes. In temperament, this person will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled.",
+  "Description": "Synko is the lord of the house. Their spouse is Gintara. The house belongs to the noble network of the Prussian tribes. In temperament, this person will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled.",
+  "Background": "Synko is the lord of the house. Their spouse is Gintara. The house belongs to the noble network of the Prussian tribes. In temperament, this person will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled.",
+  "SpeechStyle": "Direct and willing to state agreement or refusal.",
+  "PersonalSpeechStyle": "Direct and willing to state agreement or refusal.",
   "Traits": [
     {
-      "Id": "fearless",
+      "Id": "bold",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 3
-    },
-    {
-      "Id": "bravery",
-      "Strength": 2
-    },
-    {
-      "Id": "stubborn",
-      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "fearless",
+      "Id": "bold",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 3
-    },
-    {
-      "Id": "bravery",
-      "Strength": 2
-    },
-    {
-      "Id": "stubborn",
-      "Strength": 2
     }
   ],
   "Motivations": [
-    "Drive every Teutonic and Livonian invader into the Baltic Sea",
-    "Amass Samogitian warbands for decisive strikes against crusader castles"
+    "Maintain dependable relationships within the house.",
+    "Preserve independent judgement and dignity under threat."
   ],
   "Values": [
-    "Perkūnas honors those who fall with axes in hand",
-    "Never bow to foreign gods; blood alone sanctifies the forest"
+    "Will state a position under threat rather than let fear make the decision."
   ],
   "Fears": [
-    "Fears royal compromises allowing crusaders to fell holy oak groves and extinguish eternal flames"
+    "Uncontrolled promises bringing losses to those close to them that they cannot make good."
   ]
 }

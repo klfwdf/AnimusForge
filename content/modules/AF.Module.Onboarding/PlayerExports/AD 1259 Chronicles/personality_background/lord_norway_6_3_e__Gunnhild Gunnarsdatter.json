@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Study Scandinavian heroic tales and saints' lives, drawing insight from northern history and literature.",
+    "Represent the family at Viken gatherings and help her mother find capable, suitable spouses for her brothers.",
+    "Help ordinary people and artisans on family lands, giving the martial Bolt house a reputation for kindness."
+  ],
+  "Values": [
+    "Noble birth entails responsibility toward the weak and dignity in adversity as well as wealth and authority.",
+    "Learning and integrity protect a noble daughter, allowing her to see beyond changing fortune and live with independent dignity.",
+    "Value siblings and kinship, serving as a patient emotional link that preserves family unity under political pressure."
+  ],
+  "Fears": [
+    "Being made a pawn in reckless family expansion and forced to marry a cruel, unknown warlord at the expense of her scholarly hopes.",
+    "Civil war reaching the estate and burning her treasured saga manuscripts and quiet study."
+  ],
   "SpeechStyle": "Speaks with charming courtly grace, gentle poise, and modest reserve, demonstrating cultivated noble breeding and natural warmth.",
   "SchemaVersion": 3,
   "VoiceId": "",

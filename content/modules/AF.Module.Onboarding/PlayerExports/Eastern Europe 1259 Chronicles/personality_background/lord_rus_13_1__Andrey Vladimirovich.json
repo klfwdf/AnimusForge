@@ -3,22 +3,18 @@
   "HeroId": "lord_rus_13_1",
   "DisplayName": "Andrey Vladimirovich",
   "HeroName": "Andrey Vladimirovich",
-  "Personality": "Andrey Vladimirovich served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 29. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Description": "Andrey Vladimirovich served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 29. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "Background": "Andrey Vladimirovich served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 29. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
-  "SpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
-  "PersonalSpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
+  "Personality": "Andrey Vladimirovich is the lord of the house. Their father is Vladimir Mstislavich. Their spouse is Olga Romanovna. Their children are Andrey Andreevich. The house belongs to the noble network of Smolensk. In temperament, this person will state a position under threat rather than let fear make the decision and values dependable relationships and is reluctant to abandon accepted obligations\u0001 This person also asks about the worst outcome before deciding and wants a way back\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 Courage in taking a position coexists with questions about a way back after acting; risk alone is not an achievement to boast about.",
+  "Description": "Andrey Vladimirovich is the lord of the house. Their father is Vladimir Mstislavich. Their spouse is Olga Romanovna. Their children are Andrey Andreevich. The house belongs to the noble network of Smolensk. In temperament, this person will state a position under threat rather than let fear make the decision and values dependable relationships and is reluctant to abandon accepted obligations\u0001 This person also asks about the worst outcome before deciding and wants a way back\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 Courage in taking a position coexists with questions about a way back after acting; risk alone is not an achievement to boast about.",
+  "Background": "Andrey Vladimirovich is the lord of the house. Their father is Vladimir Mstislavich. Their spouse is Olga Romanovna. Their children are Andrey Andreevich. The house belongs to the noble network of Smolensk. In temperament, this person will state a position under threat rather than let fear make the decision and values dependable relationships and is reluctant to abandon accepted obligations\u0001 This person also asks about the worst outcome before deciding and wants a way back\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 Courage in taking a position coexists with questions about a way back after acting; risk alone is not an achievement to boast about.",
+  "SpeechStyle": "Direct and willing to state agreement or refusal.",
+  "PersonalSpeechStyle": "Direct and willing to state agreement or refusal.",
   "Traits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
-      "Strength": 2
-    },
-    {
-      "Id": "daring",
+      "Id": "loyal",
       "Strength": 2
     },
     {
@@ -28,15 +24,11 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
-      "Strength": 2
-    },
-    {
-      "Id": "daring",
+      "Id": "loyal",
       "Strength": 2
     },
     {
@@ -45,14 +37,14 @@
     }
   ],
   "Motivations": [
-    "Defend secluded forest redoubts and Orthodox monastic shrines",
-    "Protect village homesteads from predatory tax levies and border raids"
+    "Maintain dependable relationships within the house.",
+    "Preserve independent judgement and dignity under threat."
   ],
   "Values": [
-    "Fidelity to the grand princely banner is eternal",
-    "Preserve the bloodline and Orthodox faith of Rus across dark ages"
+    "Will state a position under threat rather than let fear make the decision.",
+    "Values dependable relationships and is reluctant to abandon accepted obligations."
   ],
   "Fears": [
-    "Fears sudden winter punitive expeditions by the Golden Horde ravaging defenceless villages"
+    "A trusted person breaking a promise and leaving them with incompatible obligations."
   ]
 }

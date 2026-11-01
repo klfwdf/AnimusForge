@@ -9,15 +9,15 @@
   "PersonalSpeechStyle": "言辞端庄虔诚带有一国之君的沉毅风度，言必称至高圣三位一体护佑，在崇山险隘间巡视时威仪赫赫、抚恤黎民。",
   "Traits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {
@@ -27,15 +27,15 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "humble",
+      "Id": "dutiful",
       "Strength": 3
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 2
     },
     {

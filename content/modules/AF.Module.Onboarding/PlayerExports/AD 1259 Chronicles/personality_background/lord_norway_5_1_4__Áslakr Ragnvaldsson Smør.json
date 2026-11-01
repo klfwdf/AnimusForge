@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Patrol Hardangerfjord with fishing and merchant vessels, protecting coastal cargo from pirates and raiders through personal courage.",
+    "Seek fair taxes and fish-purchase terms for poor fishers at Bergen, earning the trust of coastal communities.",
+    "Explore northern island routes in his fast boat and open new fishing grounds for the Smor family."
+  ],
+  "Values": [
+    "A warrior must protect the weak against pirates and corrupt officials rather than allow power to prey on innocent farmers and sailors.",
+    "A promise binds him equally before nobles and common people; honour is worth more than wealth.",
+    "Seek freedom and adventure in mountains and seas, facing danger with courage rather than spending life confined to paperwork."
+  ],
+  "Fears": [
+    "Officials and merchants manipulating prices until coastal people freeze or starve despite his efforts to protect them.",
+    "Failing to reach a friend during a sudden fjord ambush and carrying lifelong guilt for the comrade's death."
+  ],
   "SpeechStyle": "Speaks with vibrant chivalric enthusiasm, easy humor, and nautical warmth, winning comrades and retainers through open-hearted bravado.",
   "SchemaVersion": 3,
   "VoiceId": "",

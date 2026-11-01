@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "言语干脆有力带着军旅粗粝感，红袍猎猎作响，面对麾下战士威严庄重，论及北方蛮族来犯时冷笑拔剑、满腔豪气。",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -17,7 +17,7 @@
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {
@@ -27,7 +27,7 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -35,7 +35,7 @@
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {

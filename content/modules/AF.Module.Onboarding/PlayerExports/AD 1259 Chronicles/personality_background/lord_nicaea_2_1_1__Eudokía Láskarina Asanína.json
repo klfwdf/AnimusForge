@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Preserve Laskarid dignity and dynastic legitimacy abroad, refusing to submit to those who usurped the throne and defending the former emperor's name.",
+    "Seek protection and sympathy at western and Mediterranean courts, demanding justice for her imprisoned and mutilated brother John IV.",
+    "Support exiled Orthodox monks and Greek scholars in the west, preserving Byzantine learning and helping displaced compatriots."
+  ],
+  "Values": [
+    "Dynastic legitimacy and family honour outweigh favours from powerful rulers; hardship abroad is preferable to flattering them.",
+    "Keep Orthodox faith and Greek traditions, refusing religious compromise as a betrayal of her ancestors.",
+    "Protecting relatives and the surviving dynasty is a sacred duty requiring endurance and integrity during exile."
+  ],
+  "Fears": [
+    "Her imprisoned brother John IV being murdered in his secluded fortress, extinguishing the Laskarid male line.",
+    "The Latin Church assimilating exiled children until their ancestors' Orthodox faith and Greek language are forgotten."
+  ],
   "SpeechStyle": "Her words are sorrowful yet impeccably dignified, reflecting the unbending pride of an exiled imperial princess who never renounced her heritage.",
   "SchemaVersion": 3,
   "VoiceId": ""

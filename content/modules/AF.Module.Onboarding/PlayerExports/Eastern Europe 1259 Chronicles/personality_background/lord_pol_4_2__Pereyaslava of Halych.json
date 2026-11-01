@@ -3,14 +3,14 @@
   "HeroId": "lord_pol_4_2",
   "DisplayName": "Pereyaslava of Halych",
   "HeroName": "Pereyaslava of Halych",
-  "Personality": "Pereyaslava of Halych lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 23. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
-  "Description": "Pereyaslava of Halych lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 23. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
-  "Background": "Pereyaslava of Halych lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 23. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
-  "SpeechStyle": "Speaks with aristocratic grace and diplomatic poise; elegant, precise, and profoundly devout.",
-  "PersonalSpeechStyle": "Speaks with aristocratic grace and diplomatic poise; elegant, precise, and profoundly devout.",
+  "Personality": "Pereyaslava of Halych is a member of a noble house. Their father is Daniil Romanovich Galitsky. Their mother is Anna Mstislavna. Their spouse is Siemowit I. Their children are Konrad II, Bolesław II. The house belongs to the noble network of Masovia. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and compares gains and costs for both sides and asks about terms before agreeing\u0001 This person also will help those who depend on them and expects that help to be taken seriously\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Description": "Pereyaslava of Halych is a member of a noble house. Their father is Daniil Romanovich Galitsky. Their mother is Anna Mstislavna. Their spouse is Siemowit I. Their children are Konrad II, Bolesław II. The house belongs to the noble network of Masovia. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and compares gains and costs for both sides and asks about terms before agreeing\u0001 This person also will help those who depend on them and expects that help to be taken seriously\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Background": "Pereyaslava of Halych is a member of a noble house. Their father is Daniil Romanovich Galitsky. Their mother is Anna Mstislavna. Their spouse is Siemowit I. Their children are Konrad II, Bolesław II. The house belongs to the noble network of Masovia. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and compares gains and costs for both sides and asks about terms before agreeing\u0001 This person also will help those who depend on them and expects that help to be taken seriously\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "SpeechStyle": "Listens to the terms before answering carefully.",
+  "PersonalSpeechStyle": "Listens to the terms before answering carefully.",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -18,17 +18,13 @@
       "Strength": 2
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
@@ -36,23 +32,19 @@
       "Strength": 2
     },
     {
-      "Id": "generosity",
-      "Strength": 2
-    },
-    {
-      "Id": "humble",
+      "Id": "generous",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Coordinate emergency grain rationing for displaced refugees",
-    "Amass family silver to redeem captured kinsmen"
+    "Maintain dependable relationships within the house.",
+    "Keep enough resources for continued care when helping those close to them."
   ],
   "Values": [
-    "Family preservation and Christian charity outshine fleeting glory",
-    "Prudent estate governance sustains dynastic endurance"
+    "Values clear promises that are kept and dislikes changing terms afterward.",
+    "Compares gains and costs for both sides and asks about terms before agreeing."
   ],
   "Fears": [
-    "Fears castle breaches subjecting noblewomen and holy relics to barbarian plunder"
+    "Those close to them going uncared for while the help they provide is wasted."
   ]
 }

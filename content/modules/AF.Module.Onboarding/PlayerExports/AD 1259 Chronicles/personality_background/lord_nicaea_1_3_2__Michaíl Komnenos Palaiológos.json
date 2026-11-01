@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Win distinction while leading the recovery of European lands, honouring Caesar Constantine's family and joining the empire's leading generals.",
+    "Train heavy cavalry and light strike troops to cooperate precisely and break enemy formations through coordinated attacks.",
+    "Defend Palaiologan authority and suppress restorationist or separatist rebellions to preserve imperial unity."
+  ],
+  "Values": [
+    "Military achievement is a nobleman's highest distinction; cowardice before an enemy is disgraceful.",
+    "Practice decisive action and strict self-discipline, dealing openly with others and sharing the hardships of ordinary riders.",
+    "Keep sacred loyalty to the emperor and devote his life to defending and restoring the Roman state."
+  ],
+  "Fears": [
+    "An ambush in Europe destroying his army, betraying his imperial father's and soldiers' trust and disgracing the family's military name.",
+    "Young nobles neglecting military skills for Constantinopolitan luxury, weakening the frontier and inviting another crusader catastrophe."
+  ],
   "SpeechStyle": "His voice is brisk, energetic, and resolute, vibrant with the martial confidence of an imperial officer eager for battle.",
   "SchemaVersion": 3,
   "VoiceId": ""

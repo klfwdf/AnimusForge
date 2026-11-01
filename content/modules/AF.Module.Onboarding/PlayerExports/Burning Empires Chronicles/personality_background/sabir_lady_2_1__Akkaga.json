@@ -13,16 +13,12 @@
       "Strength": 3
     },
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 2
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 2
     }
   ],
   "PersonalityTraits": [
@@ -31,20 +27,16 @@
       "Strength": 3
     },
     {
-      "Id": "bravery",
+      "Id": "bold",
       "Strength": 2
     },
     {
-      "Id": "stubborn",
+      "Id": "loyal",
       "Strength": 3
-    },
-    {
-      "Id": "daring",
-      "Strength": 2
     }
   ],
   "Motivations": [
-    "Protect livestock herds around the seasonal pastures of 萨比尔人 from blights",
+    "Protect livestock herds around the seasonal pastures of Sabirs from blights",
     "Maintain equitable plunder distribution to prevent internal feuds among war-leaders"
   ],
   "Values": [

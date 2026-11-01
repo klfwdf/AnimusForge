@@ -9,15 +9,15 @@
   "PersonalSpeechStyle": "言语沉稳铿锵字字如铁铸，重情重义、一诺千金，每谈及盟约与誓言皆正气凛然，令人肃然动容。",
   "Traits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {
@@ -27,15 +27,15 @@
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 3
     },
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "loyalty",
+      "Id": "loyal",
       "Strength": 3
     },
     {

@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Lead heavy cavalry against invaders in the Balkans and Asia Minor, recovering Roman lands and honouring the Raoul family.",
+    "Train field cavalry in breaking enemy lines and coordinating riders with archers, creating a dependable imperial striking force.",
+    "Defend Orthodox doctrine at court and protect faithful clergy and relatives through principled military influence."
+  ],
+  "Values": [
+    "A soldier stands on honour, faith and public service; obeying tyranny against conscience is disgraceful.",
+    "Lead charges personally, trust comrades, share soldiers' hardships and punish corruption, oppression and cowardice.",
+    "Place truth and just faith above personal reward, accepting a commander's duty to defend country and Orthodoxy at any cost."
+  ],
+  "Fears": [
+    "Forced church union dividing soldiers by faith and provoking civil war or mutiny that ruins imperial recovery and benefits foreign enemies.",
+    "Returning Latin crusaders attacking across the sea while an empty treasury leaves front-line soldiers unpaid and unsupported."
+  ],
   "SpeechStyle": "His voice booms with battlefield authority and unbending moral honor, completely fearless before imperial wrath or hostile knights.",
   "SchemaVersion": 3,
   "VoiceId": ""

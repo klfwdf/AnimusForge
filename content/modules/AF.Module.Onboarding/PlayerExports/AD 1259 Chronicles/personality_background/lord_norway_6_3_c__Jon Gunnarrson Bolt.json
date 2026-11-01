@@ -1,7 +1,7 @@
 {
   "HeroId": "lord_norway_6_3_c",
   "HeroName": "Jon Gunnarrson Bolt",
-  "Description": "Sir Jon Gunnarsson Bolt was a dynamic young knight, equestrian commander, and the eldest son and heir of Sir Gunnar Bolt. In 1259, Jon was already distinguishing himself within the royal cavalry host, commanding mounted contingents patrolling the frontier borders of southeastern Norway. Inheriting his father's imposing physique and martial prowess, he excelled in heavy lance shock tactics and sword combat, winning high honors in chivalric tourneys. Resolute, demanding, yet deeply protective of his men, he forged his household retainers into a formidable strike force characterized by rigid discipline and tactical cohesion. As the designated heir to the Bolt estates, he engaged actively in district administration, mastering estate accounts and legal disputations at regional tings. His chivalric charisma, operational vigor, and strategic focus marked him as a key figure destined to elevate the Bolt dynasty to higher national prominence. During numerous border skirmishes near the Göta River, Jon fought at the forefront of his lancers, using precise cavalry charges to repel trespassing raiders and capture opposing commanders. He directed rigorous daily drills in forced marches and archery for newly mustered recruits, enforcing strict discipline and fostering exceptional esprit de corps. Embodying his family's fierce martial tradition, he stood ever vigilant to defend every league of Norwegian sovereign soil.",
+  "Description": "Sir Jon Gunnarsson Bolt was a dynamic young knight, equestrian commander, and the eldest son and heir of Sir Gunnar Bolt. In 1259, Jon was already distinguishing himself within the royal cavalry host, commanding mounted contingents patrolling the frontier borders of southeastern Norway. Inheriting his father's imposing physique and martial prowess, he excelled in heavy lance shock tactics and sword combat, winning high honors in chivalric tourneys. Resolute, demanding, yet deeply protective of his men, he forged his household retainers into a formidable strike force characterized by rigid discipline and tactical cohesion. As the designated heir to the Bolt estates, he engaged actively in district administration, mastering estate accounts and legal disputations at regional tings. During numerous border skirmishes near the Göta River, Jon fought at the forefront of his lancers, using precise cavalry charges to repel trespassing raiders and capture opposing commanders. He directed rigorous daily drills in forced marches and archery for newly mustered recruits, enforcing strict discipline and fostering exceptional esprit de corps. Embodying his family's fierce martial tradition, he stood ever vigilant to defend every league of Norwegian sovereign soil.",
   "Traits": [
     {
       "Id": "bold",
@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Win distinction in Gota frontier patrols and battles, earning the respect of Viken's younger knights.",
+    "Defend Bolt passes and outposts against raiders seeking to steal local people's livestock and property.",
+    "Earn the king's and Duke Magnus's regard through courage and obtain command of a mobile frontier cavalry force."
+  ],
+  "Values": [
+    "Battle tests courage; stand firm before arrows and blades and defend the Bolt name through loyal service.",
+    "Give comrades the chance to survive and cover their retreat himself rather than abandon wounded soldiers.",
+    "Keep northern knightly oaths, treating surrendered enemies with dignity but punishing oath-breakers without mercy."
+  ],
+  "Fears": [
+    "A fallen horse leaving him captive and forcing the family to pay a large ransom while its military banner is disgraced.",
+    "Long frontier peace leaving his skills unused and wasting the years he wishes to spend in military achievement."
+  ],
   "SpeechStyle": "Speaks with crisp martial precision, youthful chivalric confidence, and sharp strategic focus, projecting natural command presence.",
   "SchemaVersion": 3,
   "VoiceId": "",

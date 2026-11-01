@@ -1,25 +1,38 @@
 {
   "HeroId": "lord_nicaea_1_1",
   "HeroName": "Basileús Michaíl VIII Palaiológos, Emperor of Nicaea",
-  "Description": "Basileús Michaíl VIII Palaiológos stands as the supreme architect of the Byzantine Restoration and one of the most formidable statesmen of the Middle Ages. Boasting pedigree from the imperial houses of Komnenos, Doukas, and Angelos, Michael rose through relentless martial merit, commanding frontier armies against the Seljuks and Latins with daring brilliance. Seizing the regency following the assassination of George Mouzalon in 1258, he had himself crowned co-emperor alongside child-emperor John IV Laskaris. In 1259, Michael orchestrated the masterstroke at the Battle of Pelagonia, shattering the grand coalition of Epirus, Manfred of Sicily, and Prince William II of Villehardouin of Achaea. Two years later, on July 25, 1261, his general Alexios Strategopoulos liberated Constantinople, ending the fifty-seven-year Latin usurpation and restoring the Roman Empire. A master of continental diplomacy, Michael outmaneuvered the Papacy through the Council of Lyons, secured alliances with Genoa and the Mongols, and covertly funded the Sicilian Vespers to utterly crush the invading crusade of Charles of Anjou. Michael VIII rebuilt Constantinople's sea ramparts and imperial naval dockyards, laboring relentlessly to reform provincial treasuries and reorganize elite Varangian regiments. Confronting Angevin invasion fleets, he funneled massive gold subsidies to Peter III of Aragon and Sicilian rebels, igniting the Sicilian Vespers that shattered Charles of Anjou's crusade in a single night. On the battlefield, Michael donned double-plated cataphract mail to lead decisive charges, forging the ultimate golden hour of Byzantine restoration.",
+  "Description": "Michael VIII Palaiologos gained the leading position in the struggle after Theodore II’s death and became co-emperor of Nicaea in 1259. The young John IV’s Laskarid ancestry still carries political weight, so Michael needs established officials while doubting their acceptance of the new distribution of power. Recovery of Constantinople offers a cause around which to gather support, but western opponents, military pay and Anatolian defence limit his choices. A general’s success strengthens the court while increasing the commander’s independent standing. An agreement abroad may buy time at the cost of concessions difficult to explain at home. Michael negotiates flexibly and asks advisers what troops and revenues will make a proposal possible. He welcomes declarations of loyalty but watches closely when others make commitments for the empire without his consent.",
   "Traits": [
-    {
-      "Id": "ambitious",
-      "Strength": 3
-    },
     {
       "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "bold",
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
-  "SpeechStyle": "His voice commands the room with imperial thunder and chilling tactical calculation, radiating supreme authority and sovereign ambition.",
+  "Motivations": [
+    "Secure his position through practical cooperation from soldiers and established officials.",
+    "Prepare conditions for recovering Constantinople without sacrificing Anatolian defence and revenue."
+  ],
+  "Values": [
+    "Imperial authority needs results and workable arrangements as well as dynastic claims.",
+    "Survival requires flexibility, but the costs of promises must be understood."
+  ],
+  "Fears": [
+    "Foreign campaigns exhausting funds while disputes over imperial authority undermine cooperation.",
+    "Commanders or allies exploiting the court’s need for help to demand unaffordable terms."
+  ],
+  "SpeechStyle": "Weighs alternatives and asks about available resources; speaks firmly when imperial authority is at issue.",
   "SchemaVersion": 3,
   "VoiceId": ""
 }

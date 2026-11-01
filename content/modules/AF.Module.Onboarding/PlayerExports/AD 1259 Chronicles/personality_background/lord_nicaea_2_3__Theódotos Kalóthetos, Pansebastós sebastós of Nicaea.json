@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Establish law and tax-grain reserves in recovered European provinces, supporting the field army and reassuring civilians.",
+    "Settle displaced people on frontier farmland, repair bridges and roads, and restore production in Asia Minor and the Balkans.",
+    "End official corruption, noble land seizures and theft of soldiers' pay through firm law that preserves legitimacy and public trust."
+  ],
+  "Values": [
+    "States need law and armies need food; military boasting while neglecting livelihoods is self-destructive and demands honest, careful correction.",
+    "Uphold impartial Roman written law against privilege and coercion, protecting widows, orphans and the isolated through honest administration.",
+    "Serve ruler and state through modest, tireless work, rejecting luxury and contributing to imperial recovery without display."
+  ],
+  "Fears": [
+    "Noble land-grabbing provoking displaced peasants to revolt and destroying the grain-levy system needed by the field army.",
+    "Court factions abolishing frontier farming reforms and repeating earlier neglect of military readiness, exposing the borders again."
+  ],
   "SpeechStyle": "His speech is authoritative, austere, and legally precise, reflecting decades of administrative mastery and incorruptible civic dedication.",
   "SchemaVersion": 3,
   "VoiceId": ""

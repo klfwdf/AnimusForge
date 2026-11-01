@@ -3,26 +3,22 @@
   "HeroId": "dead_lord_crus_1_1",
   "DisplayName": "Siegfried von Heldrungen",
   "HeroName": "Siegfried von Heldrungen",
-  "Personality": "Siegfried von Heldrungen descended from an ancient Thuringian ministerialis house, serving as a foundational commander during the Teutonic Order's early Baltic crusades. Having spent critical adolescent years as an elite hostage among steppe frontier courts, he acquired fluent mastery of Kipchak-Turkic dialects and a profound grasp of horse-archer logistics and nomadic diplomacy. Clad in the white mantle with the black cross, he directed pioneering fortress engineering across the Marienburg frontier and along the Gulf of Riga. As pagan Samogitian revolts exploded into peat bog ambushes in 1259 AD, Siegfried utilized his veteran understanding of Baltic terrain to establish fortified redoubts, anchoring crusader heavy cavalry against sudden forest guerrilla encirclements. Combining monastic asceticism with sharp frontier cunning, he stood as a pivotal bulwark of Latin expansion in northeastern Europe. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
-  "Description": "Siegfried von Heldrungen descended from an ancient Thuringian ministerialis house, serving as a foundational commander during the Teutonic Order's early Baltic crusades. Having spent critical adolescent years as an elite hostage among steppe frontier courts, he acquired fluent mastery of Kipchak-Turkic dialects and a profound grasp of horse-archer logistics and nomadic diplomacy. Clad in the white mantle with the black cross, he directed pioneering fortress engineering across the Marienburg frontier and along the Gulf of Riga. As pagan Samogitian revolts exploded into peat bog ambushes in 1259 AD, Siegfried utilized his veteran understanding of Baltic terrain to establish fortified redoubts, anchoring crusader heavy cavalry against sudden forest guerrilla encirclements. Combining monastic asceticism with sharp frontier cunning, he stood as a pivotal bulwark of Latin expansion in northeastern Europe. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
-  "Background": "Siegfried von Heldrungen descended from an ancient Thuringian ministerialis house, serving as a foundational commander during the Teutonic Order's early Baltic crusades. Having spent critical adolescent years as an elite hostage among steppe frontier courts, he acquired fluent mastery of Kipchak-Turkic dialects and a profound grasp of horse-archer logistics and nomadic diplomacy. Clad in the white mantle with the black cross, he directed pioneering fortress engineering across the Marienburg frontier and along the Gulf of Riga. As pagan Samogitian revolts exploded into peat bog ambushes in 1259 AD, Siegfried utilized his veteran understanding of Baltic terrain to establish fortified redoubts, anchoring crusader heavy cavalry against sudden forest guerrilla encirclements. Combining monastic asceticism with sharp frontier cunning, he stood as a pivotal bulwark of Latin expansion in northeastern Europe. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
-  "SpeechStyle": "Speaks with icy crusader brevity; sharp, direct, and forged in strict monastic obedience.",
-  "PersonalSpeechStyle": "Speaks with icy crusader brevity; sharp, direct, and forged in strict monastic obedience.",
+  "Personality": "Siegfried von Heldrungen is a deceased member of the house. Their children are Hartmann von Heldrungen, Hermann von Heldrungen. The house’s ties continue in the Teutonic Order. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person prefers agreed procedures and orderly work to arbitrary last-minute changes and values clear promises that are kept and dislikes changing terms afterward and will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely.",
+  "Description": "Siegfried von Heldrungen is a deceased member of the house. Their children are Hartmann von Heldrungen, Hermann von Heldrungen. The house’s ties continue in the Teutonic Order. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person prefers agreed procedures and orderly work to arbitrary last-minute changes and values clear promises that are kept and dislikes changing terms afterward and will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely.",
+  "Background": "Siegfried von Heldrungen is a deceased member of the house. Their children are Hartmann von Heldrungen, Hermann von Heldrungen. The house’s ties continue in the Teutonic Order. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person prefers agreed procedures and orderly work to arbitrary last-minute changes and values clear promises that are kept and dislikes changing terms afterward and will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely.",
+  "SpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "PersonalSpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
   "Traits": [
     {
       "Id": "disciplined",
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     },
     {
-      "Id": "daring",
-      "Strength": 2
-    },
-    {
-      "Id": "stubborn",
+      "Id": "bold",
       "Strength": 2
     }
   ],
@@ -32,27 +28,21 @@
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     },
     {
-      "Id": "daring",
-      "Strength": 2
-    },
-    {
-      "Id": "stubborn",
+      "Id": "bold",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Solidify early stone bastions protecting Marienburg",
-    "Prevent pagan ambushes from cutting Baltic maritime supply lines"
+    "Leave relatives a house they can depend on."
   ],
   "Values": [
-    "Obedience to the Grand Master is obedience to God",
-    "Iron and stone must tame the pagan wilderness"
+    "Kinship and commitments shape the memory of a house."
   ],
   "Fears": [
-    "Fears heavy crusader cavalry being encircled and butchered in trackless Baltic swamps"
+    "Trust and ties within the house breaking down."
   ]
 }

@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Lead the Smor fleet against storms and hostile ships, earning distinction as a Norwegian naval commander.",
+    "Improve Bergen shipbuilding with double fighting platforms and iron-clad rams to strengthen close naval combat.",
+    "Remove pirates from Hebridean and Shetland waters and protect safe trade for western settlements."
+  ],
+  "Values": [
+    "The sea offers a field for achievement; storms and enemy arrows test a northern warrior's resolve and courage.",
+    "Share sailors' dangers and be first aboard an enemy ship, earning their trust through personal leadership.",
+    "Keep loyalty to the Smor banner and King Haakon's maritime dignity, preferring death at sea to submission to hostile fleets."
+  ],
+  "Fears": [
+    "The flagship wrecking in a storm, killing veteran sailors and exposing a disastrous failure of command.",
+    "A humiliating royal truce forcing him to withdraw and surrender island strongholds recovered through his crews' sacrifices."
+  ],
   "SpeechStyle": "Speaks with crisp martial confidence, nautical precision, and princely energy, inspiring trust through direct speech and tactical clarity.",
   "SchemaVersion": 3,
   "VoiceId": "",

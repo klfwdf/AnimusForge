@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Keep family lands in Macedonia and Thrace orderly and productive so that campaigning fathers and brothers receive steady provisions.",
+    "Manage estates, workshops and stud farms with exact accounts, protecting tenants' livelihoods and the family's local support.",
+    "Support mountain monasteries and Orthodox monks, praying for the safe return of relatives campaigning at the front."
+  ],
+  "Values": [
+    "Careful preparation preserves family peace in disorder; frivolity and competitive display invite ruin and require frugality and restraint.",
+    "Practice inherited loyalty, filial duty and modesty, supporting the family through steady, fair and unassuming service.",
+    "Keep Orthodox faith, household rules and moral judgement, remaining calm through difficult political circumstances."
+  ],
+  "Fears": [
+    "Enemy light cavalry breaking through to undefended estates, burning grain stores and carrying off inhabitants and generations of family wealth.",
+    "The court purging Orthodox family elders during church-union disputes, confiscating inherited lands and scattering the household."
+  ],
   "SpeechStyle": "Her words are calm, orderly, and understated, reflecting sharp logistical competence and serene aristocratic discretion.",
   "SchemaVersion": 3,
   "VoiceId": ""

@@ -31,5 +31,7 @@
       "Id": "patient",
       "Strength": 2
     }
-  ]
+  ],
+  "HeroId": "lord_chernigov_2d",
+  "HeroName": "安德烈·格列博维奇"
 }

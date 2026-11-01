@@ -20,9 +20,20 @@
       "Strength": 1
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Control Bergen and Sognefjord stockfish routes and make the Smor family a leading Norwegian mercantile and landed power.",
+    "Supply Haakon IV with funds and ocean-going warships in return for hereditary lands and important judicial office at Gulating.",
+    "Defend Norwegian merchants against Hanseatic expansion and retain control over northern seafood export prices."
+  ],
+  "Values": [
+    "Money and warships underpin crown and noble houses; a secure economic base preserves lasting family standing.",
+    "Combine cautious commercial strategy with maritime courage, opening routes through contracts and protecting wealth through armed ships.",
+    "Adapt patiently between crown and great nobles, keeping the Smor family influential in wealth and politics without fighting every immediate dispute."
+  ],
+  "Fears": [
+    "Hanseatic armed merchant ships blockading Bergen and destroying the family's long-established western trade routes.",
+    "The crown requisitioning private ships and salt stores under wartime powers and inflicting irreversible losses on generations of family wealth."
+  ],
   "SpeechStyle": "Speaks with aristocratic hauteur, forensic deliberateness, and formidable gravity, asserting the pride and authority of the western magnates.",
   "SchemaVersion": 3,
   "VoiceId": "",

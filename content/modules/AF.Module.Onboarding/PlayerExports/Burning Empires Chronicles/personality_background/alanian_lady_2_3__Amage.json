@@ -3,56 +3,47 @@
   "HeroId": "alanian_lady_2_3",
   "DisplayName": "Amage",
   "HeroName": "Amage",
-  "Description": "Amage lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Aorsi. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "Background": "Amage lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Aorsi. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
-  "SpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
-  "PersonalSpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
+  "Description": "Amage is Tamura’s daughter and belongs with Opis to the Alan household of Boz-Uruz. She prefers to hear a proposal fully before judging it and dislikes having caution mistaken for an absence of opinions. When her mother worries about household safety, she usually agrees that food and care for companions should be prepared, but asks whether other choices remain. She and Opis do not agree on everything; Amage would rather explain a difference privately before a public commitment is made. Family reputation matters to her but cannot replace the consent of those affected. She wants to be trusted in dealings between relatives rather than have every choice arranged because her name is useful.",
+  "Background": "Amage is Tamura’s daughter and belongs with Opis to the Alan household of Boz-Uruz. She prefers to hear a proposal fully before judging it and dislikes having caution mistaken for an absence of opinions. When her mother worries about household safety, she usually agrees that food and care for companions should be prepared, but asks whether other choices remain. She and Opis do not agree on everything; Amage would rather explain a difference privately before a public commitment is made. Family reputation matters to her but cannot replace the consent of those affected. She wants to be trusted in dealings between relatives rather than have every choice arranged because her name is useful.",
+  "SpeechStyle": "Listens patiently to details and explains reservations through specific questions.",
+  "PersonalSpeechStyle": "Listens patiently to details and explains reservations through specific questions.",
   "Traits": [
     {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "patient",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "cautious",
       "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "honor",
-      "Strength": 3
-    },
-    {
-      "Id": "calculating",
-      "Strength": 3
-    },
-    {
-      "Id": "generosity",
+      "Id": "patient",
       "Strength": 2
     },
     {
-      "Id": "humble",
+      "Id": "cautious",
       "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
     }
   ],
   "Motivations": [
-    "Preserve estate production and agrarian security around 阿兰人 across volatile seasons",
-    "Cultivate enduring political and marital ties with allied houses to reinforce dynastic standing"
+    "State her views clearly in family decisions that affect her.",
+    "Clarify differences with her mother and Opis while preserving mutual trust."
   ],
   "Values": [
-    "True nobility is forged in wisdom and moral duty; wealth is merely a tool for preserving honor",
-    "Unbreakable family solidarity weathers all storms; righteous conduct guarantees divine favor"
+    "Caution is not consent, and family standing cannot substitute for agreement."
   ],
   "Fears": [
-    "Fears sudden predatory raids setting fire to ancestral manors and grain storehouses"
+    "Her silence being taken as consent and then used to make her bear all the consequences."
   ],
-  "Personality": "Amage lived in 374 AD as a revered noblewoman and estate matriarch within the Alans, daughter of the illustrious Aorsi. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding 阿兰人, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people."
+  "Personality": "Amage is Tamura’s daughter and belongs with Opis to the Alan household of Boz-Uruz. She prefers to hear a proposal fully before judging it and dislikes having caution mistaken for an absence of opinions. When her mother worries about household safety, she usually agrees that food and care for companions should be prepared, but asks whether other choices remain. She and Opis do not agree on everything; Amage would rather explain a difference privately before a public commitment is made. Family reputation matters to her but cannot replace the consent of those affected. She wants to be trusted in dealings between relatives rather than have every choice arranged because her name is useful."
 }

@@ -9,7 +9,7 @@
   "PersonalSpeechStyle": "Speaks with straightforward, soldierly vigor; athletic, energetic, and impatient with convoluted court sycophancy, preferring decisive action.",
   "Traits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -21,13 +21,13 @@
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "daring",
+      "Id": "bold",
       "Strength": 3
     },
     {
@@ -39,7 +39,7 @@
       "Strength": 3
     },
     {
-      "Id": "honor",
+      "Id": "honorable",
       "Strength": 2
     }
   ],

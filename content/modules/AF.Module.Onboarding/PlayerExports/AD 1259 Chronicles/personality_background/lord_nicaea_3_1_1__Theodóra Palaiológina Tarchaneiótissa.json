@@ -16,9 +16,20 @@
       "Strength": 2
     }
   ],
-  "Motivations": [],
-  "Values": [],
-  "Fears": [],
+  "Motivations": [
+    "Maintain the Palaiologan-Tarchaneiotes family alliance and secure both houses' authority at the imperial centre.",
+    "Develop inherited estates, farming and mines in Asia Minor and Europe, building grain and cash reserves for campaigning armies.",
+    "Fund Orthodox monasteries and relief houses and care for war orphans, seeking enduring divine protection for the family."
+  ],
+  "Values": [
+    "Family unity sustains a house through disorder; jealousy and internal disputes invite defeat and require fair, inclusive judgement.",
+    "Keep dignified aristocratic manners and religious restraint, treating others modestly while managing the household strictly.",
+    "Remain loyal to Orthodoxy and Roman legitimacy, meeting crises with foresight and a household leader's steady composure."
+  ],
+  "Fears": [
+    "Young commanders from the two families competing for honours and estates, weakening their alliance and enabling hostile courtiers to divide them.",
+    "Prolonged war exhausting the treasury and bringing forced taxes upon noble estates, damaging the family's base and provoking local rebellion."
+  ],
   "SpeechStyle": "Her speech is stately, refined, and commanding, combining imperial poise with the practical wisdom of a high noble administrator.",
   "SchemaVersion": 3,
   "VoiceId": ""
