@@ -45237,6 +45237,56 @@
       "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/PlayerExports/AD 1259 编年史/voice_mapping/VoiceMapping.json",
       "target": "PlayerExports/AD 1259 编年史/voice_mapping/VoiceMapping.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/AD 1259 编年史/knowledge/rules/rule_barcelona_fifteen_day_food__巴塞罗那十五日船粮.json",
+      "target": "PlayerExports/AD 1259 编年史/knowledge/rules/rule_barcelona_fifteen_day_food__巴塞罗那十五日船粮.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/AD 1259 编年史/knowledge/rules/rule_forest_charcoal_household__英格兰背运木炭与林路费.json",
+      "target": "PlayerExports/AD 1259 编年史/knowledge/rules/rule_forest_charcoal_household__英格兰背运木炭与林路费.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/AD 1259 编年史/knowledge/rules/rule_household_widow_dower__英格兰寡妇寡产与再婚.json",
+      "target": "PlayerExports/AD 1259 编年史/knowledge/rules/rule_household_widow_dower__英格兰寡妇寡产与再婚.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/AD 1259 编年史/knowledge/rules/rule_lateran_arms_embargo__拉丁港口军需禁运与规避.json",
+      "target": "PlayerExports/AD 1259 编年史/knowledge/rules/rule_lateran_arms_embargo__拉丁港口军需禁运与规避.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/AD 1259 编年史/knowledge/rules/rule_lateran_marriage_publication__拉丁教会婚前公告与子女身份.json",
+      "target": "PlayerExports/AD 1259 编年史/knowledge/rules/rule_lateran_marriage_publication__拉丁教会婚前公告与子女身份.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/AD 1259 编年史/knowledge/rules/rule_lateran_physicians_and_surgery__拉丁医者与教士外科权限.json",
+      "target": "PlayerExports/AD 1259 编年史/knowledge/rules/rule_lateran_physicians_and_surgery__拉丁医者与教士外科权限.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/燃烬帝国编年史/knowledge/rules/be_basil_marital_custom__巴西尔婚姻习俗的不对等.json",
+      "target": "PlayerExports/燃烬帝国编年史/knowledge/rules/be_basil_marital_custom__巴西尔婚姻习俗的不对等.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/燃烬帝国编年史/knowledge/rules/be_roman_hymetius_appeal__许墨提乌斯上诉与元老院.json",
+      "target": "PlayerExports/燃烬帝国编年史/knowledge/rules/be_roman_hymetius_appeal__许墨提乌斯上诉与元老院.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/燃烬帝国编年史/knowledge/rules/be_roman_isaurian_bandits__伊苏里亚劫掠与河渡.json",
+      "target": "PlayerExports/燃烬帝国编年史/knowledge/rules/be_roman_isaurian_bandits__伊苏里亚劫掠与河渡.json"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/PlayerExports/燃烬帝国编年史/knowledge/rules/be_roman_senatorial_torture__罗马元老受刑争议.json",
+      "target": "PlayerExports/燃烬帝国编年史/knowledge/rules/be_roman_senatorial_torture__罗马元老受刑争议.json"
     }
   ]
 }
