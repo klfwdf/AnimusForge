@@ -377,6 +377,11 @@ public sealed partial class FieldCampMissionLogic
 			reason = "combat_setup_unavailable";
 			return false;
 		}
+		if (_envoy != null)
+		{
+			Requeue(_envoyIssue);
+			DropEnvoy(sendHome: false);
+		}
 		MoveToExecutionGround(targets);
 		_slaughter = new TroopInspectionPrisonerSlaughterRuntime(Mission, attackers, targets, RestoreAfterSlaughter);
 		if (!_slaughter.TryStart(out reason))

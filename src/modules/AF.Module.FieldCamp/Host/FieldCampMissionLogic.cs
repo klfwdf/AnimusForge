@@ -155,6 +155,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			{
 				// Camp life pauses while an execution ceremony holds the camp.
 				UpkeepBatchOfAgents();
+				TickEnvoys();
 			}
 		}
 	}
@@ -198,32 +199,12 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			int props = FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale);
 			SpawnEveryone();
 			int horses = SpawnHorses();
-			AnnounceOpenIssues();
+			QueueEnvoys();
 			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + props + "/" + _layout.Props.Count + " horses=" + horses + " cleared=" + cleared + " scale=" + _campScale.ToString("0.00") + " scene=" + (Mission.SceneName ?? ""));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log(LogSource, "camp set-up failed: " + ex);
-		}
-	}
-
-	/// <summary>Once per camp mission: one localized opening line per open issue (Q34, no LLM).</summary>
-	private static void AnnounceOpenIssues()
-	{
-		FieldCampBehavior behavior = FieldCampBehavior.Instance;
-		if (behavior == null || behavior.State != FieldCampBehavior.CampState.Camped)
-		{
-			return;
-		}
-		IReadOnlyList<FieldCampIssues.Issue> issues = behavior.Issues;
-		for (int i = 0; i < issues.Count; i++)
-		{
-			if (!issues[i].IsOpen)
-			{
-				continue;
-			}
-			CharacterObject speaker = issues[i].IsCompanionIssue ? Hero.Find(issues[i].Subject)?.CharacterObject : CharacterObject.Find(issues[i].Subject);
-			AnimusForgeQuickInfo.Show(FieldCampText.IssueOpening(issues[i]), speaker);
 		}
 	}
 

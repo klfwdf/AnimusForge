@@ -3473,15 +3473,6 @@ Choose how to proceed:" />
   <string id="AF_FC_PatrolFailed" text="The camp scene could not be opened here." />
   <string id="AF_FC_Assembled" text="The troops fall in by troop type." />
   <string id="AF_FC_Dismissed" text="The troops are dismissed and return to camp." />
-  <string id="AF_FC_Open_UnpaidWages" text="{TROOP}: Our pay is overdue, commander. The men&#x27;s purses are empty." />
-  <string id="AF_FC_Open_Hunger" text="{TROOP}: The rations are almost gone. We will go hungry soon." />
-  <string id="AF_FC_Open_ManyWounded" text="{TROOP}: Too many of us are wounded, and there is little to treat them with." />
-  <string id="AF_FC_Open_RecentDefeat" text="{TROOP}: Since the last defeat the men have been muttering around the fires." />
-  <string id="AF_FC_Open_NoRest" text="{TROOP}: We have marched for days without a proper rest." />
-  <string id="AF_FC_Open_LowMorale" text="{TROOP}: The men are losing heart. Few believe we can win this." />
-  <string id="AF_FC_Open_CultureFriction" text="{TROOP}: Our lot and the {OTHER} keep quarrelling. It will come to blows." />
-  <string id="AF_FC_Open_CompanionFeud" text="{TROOP} and {OTHER} are at each other&#x27;s throats again." />
-  <string id="AF_FC_Open_Petition" text="{TROOP}: The men are in good spirits. Give us a fight worth winning, or a share of the spoils!" />
   <string id="AF_FC_IssueResolved_Encourage" text="You reassured the men." />
   <string id="AF_FC_IssueResolved_Grant" text="You granted the request." />
   <string id="AF_FC_IssueResolved_Refuse" text="You turned the request down." />

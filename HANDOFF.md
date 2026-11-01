@@ -1,3 +1,10 @@
+## 2026-11-01 扎营：摆设实体碰撞 + 士兵用场景闲聊当面反映营中问题
+
+用户实测反馈：营地物品和营帐没有碰撞；士兵反馈不要再用顶部的指挥式提示，改成复用场景喊话的闲聊，并在输入里带上反馈话题。
+- 碰撞：`FieldCampProps` 每个实体件生成后调用 `MakeSolid`，做法与 Vengeance 绞架坡道相同：设为 Stationary，整棵树去掉 Disabled/Dynamic/Moveable，再整树 `SetPhysicsState(true)`。玩家自定义刑场摆件同样处理。日志 `solid props with body=x/y`。地铺、火、火把、烤架、大锅、伤兵床仍可穿过。
+- 士兵反馈：删除进营时的 QuickInfo 开场白（`IssueOpening`，以及 UI 字符串 `AF_FC_Open_*` 中英各 9 条）。新增 `FieldCampMissionLogic.Envoys.cs`：未处理的问题逐件排队；挑该兵种（同伴纠纷挑当事同伴）离玩家最近的人，由营地自己走到玩家跟前；到位后调用 `ShoutBehavior.TryStartFieldCampEnvoyForExternal`，复用场景闲聊的“主动走近玩家”会话（`AF_CONV_Ambient_OpenPlayer`），话题为新提示词 `AF_FC_EnvoyTopic`（含问题原文）。玩家用普通喊话回答，后处理照旧带营中问题标签。没谈妥的问题过一段时间再来，每件最多来 2 次。这个会话不受场景闲聊 MCM 开关限制，但玩家或场景正忙时不会开始。处决仪式或屠俘开始时会打断，之后重新排队。
+- 验证：工作区编译到 `.tmp/fc-envoy-b`，1.3 与 1.4 Release 均 0 错误。未部署、未实机。
+
 ## 2026-11-01 登记燃烬帝国 / 东欧 1259 / AD 1259 世界书并重新部署（CN）
 
 - 来源统一到 `content/modules/AF.Module.Onboarding/PlayerExports/`：仓库根 `PlayerExports/` 的燃烬帝国（中英）和东欧 1259（中英，10-31 23:56 完整版）搬入 content。content 里旧的东欧副本（中文只有人设）移到 `F:/AnimusForge-backup-20261101/worldbooks-old-20261101/repo-content-old/`。根 `PlayerExports/` 已删空。

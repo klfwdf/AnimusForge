@@ -11,7 +11,8 @@ namespace AnimusForge;
 /// XML; 1.3 not live-tested). The first candidate that instantiates is cached for the
 /// rest of the mission and a pool whose candidates all fail is skipped and logged once.
 /// Every prop is created with its final frame, so the engine builds its collision in
-/// place (setting the frame after a physics-less spawn left props without collision).
+/// place (setting the frame after a physics-less spawn left props without collision),
+/// and is then made a stationary, enabled body (see <see cref="MakeSolid"/>).
 /// Only bedrolls, torches, fires and flat clutter stay walk-through.
 /// Height comes from the terrain only (never from tents or tree canopies), at the lowest
 /// corner of the prop's footprint so nothing floats on a slope.
@@ -142,6 +143,19 @@ internal static class FieldCampProps
 	/// <param name="scale">Camp-local distances are multiplied by this to fit small scenes; prop sizes are unchanged.</param>
 	/// <returns>Number of entities created.</returns>
 	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
+	{
+		_solidRequested = 0;
+		_solidWithBody = 0;
+		int placed = PlaceAll(scene, layout, campFrame, scale);
+		Logger.Log(LogSource, "solid props with body=" + _solidWithBody + "/" + _solidRequested);
+		return placed;
+	}
+
+	/// <summary>Main-thread set-up counters for the solid-prop log line (one camp at a time).</summary>
+	private static int _solidRequested;
+	private static int _solidWithBody;
+
+	private static int PlaceAll(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
 	{
 		var resolved = new Dictionary<string, string>(StringComparer.Ordinal);
 		var failed = new HashSet<string>(StringComparer.Ordinal);
@@ -330,11 +344,45 @@ internal static class FieldCampProps
 				return loose;
 			}
 			// Created at its final frame with physics, as vanilla workshop props are.
-			return GameEntity.Instantiate(scene, prefab, frame, false);
+			GameEntity entity = GameEntity.Instantiate(scene, prefab, frame, false);
+			MakeSolid(entity);
+			return entity;
 		}
 		catch
 		{
 			return null;
+		}
+	}
+
+	/// <summary>
+	/// A runtime prefab instance does not reliably end up with an active static body, so
+	/// tents and props were walk-through. Same steps as the Vengeance gallows ramps, which
+	/// do block agents: stationary mobility, clear Disabled/Dynamic/Moveable on the whole
+	/// tree, then enable physics on the whole tree. Once per prop at set-up.
+	/// </summary>
+	internal static void MakeSolid(GameEntity entity)
+	{
+		if (entity == null)
+		{
+			return;
+		}
+		_solidRequested++;
+		try
+		{
+			entity.SetMobility(GameEntity.Mobility.Stationary);
+			entity.RemoveBodyFlags(BodyFlags.Disabled | BodyFlags.Dynamic | BodyFlags.Moveable, applyToChildren: true);
+			entity.SetPhysicsState(isEnabled: true, setChildren: true);
+			if (entity.HasBody())
+			{
+				_solidWithBody++;
+			}
+		}
+		catch (Exception ex)
+		{
+			if (_solidRequested - _solidWithBody <= 3)
+			{
+				Logger.Log(LogSource, "solid prop setup failed " + entity.Name + ": " + ex.Message);
+			}
 		}
 	}
 }

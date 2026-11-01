@@ -206,7 +206,7 @@ public sealed partial class FieldCampMissionLogic
 			_upkeepCursor = (_upkeepCursor + 1) % count;
 			CampAgent entry = _agents[_upkeepCursor];
 			Agent agent = entry.Agent;
-			if (agent == null || !agent.IsActive() || IsDuelist(agent) || (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(entry)))
+			if (agent == null || !agent.IsActive() || IsDuelist(agent) || IsEnvoy(entry) || (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(entry)))
 			{
 				continue;
 			}

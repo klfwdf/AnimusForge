@@ -47,6 +47,7 @@ public partial class ShoutBehavior
         internal string Topic;
         internal int Epoch;
         internal bool MovementScripted;
+        internal bool External;                 // started by another module (field camp envoy); ignores the ambient MCM switch
     }
 
     private float _nextAmbientProbeMissionTime;
@@ -393,7 +394,7 @@ public partial class ShoutBehavior
     {
         AmbientSession session = _ambientSession;
         DuelSettings settings = DuelSettings.LoadedForSceneRuntime();
-        if (settings == null || !settings.AmbientSceneEnabled)
+        if (settings == null || (!settings.AmbientSceneEnabled && !session.External))
         {
             EndAmbientSession("disabled", applyCooldown: false);
             return;

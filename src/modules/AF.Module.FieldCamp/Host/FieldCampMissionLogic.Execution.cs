@@ -66,6 +66,12 @@ public sealed partial class FieldCampMissionLogic
 		_ceremonyActive = true;
 		_ceremonyReturnDeadline = -1f;
 		_ceremonyMoved.Clear();
+		if (_envoy != null)
+		{
+			// The ceremony moves the crowd itself; the matter is raised again afterwards.
+			Requeue(_envoyIssue);
+			DropEnvoy(sendHome: false);
+		}
 		try
 		{
 			HideCampCopyOfCondemned(victim);

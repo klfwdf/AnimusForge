@@ -351,6 +351,7 @@
   "AF_FC_IssuePromptHeader": "[Camp matters awaiting a decision] These are the soldiers' complaints or requests in this camp; the number is the issue index. An issue counts as handled only when the player clearly takes a stance on it:",
   "AF_FC_IssuePromptLine": "{INDEX}. {TEXT} (possible responses: {OPTIONS})",
   "AF_FC_IssuePromptNone": "[Camp matters awaiting a decision] There are no open complaints or requests right now.",
+  "AF_FC_EnvoyTopic": "as a spokesman for the men, you come up to {PLAYER} in person about this camp matter: {ISSUE}. Say in your own voice how the men are doing and what they want, and you may ask {PLAYER} to decide; do not decide for {PLAYER}",
   "AF_FC_IssueOptEncourage": "encourage",
   "AF_FC_IssueOptGrant": "grant",
   "AF_FC_IssueOptRefuse": "refuse",
