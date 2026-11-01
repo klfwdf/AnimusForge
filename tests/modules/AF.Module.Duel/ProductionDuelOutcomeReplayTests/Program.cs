@@ -319,6 +319,7 @@ internal static class Program
         string host = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs"));
         string shoutBehavior = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs"));
         string nativeCoordinator = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Native", "NativeConversationTurnCoordinator.cs"));
+        string nativeRuntime = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Native", "ShoutBehavior.NativeTurn.cs"));
         string nativeCommit = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs"));
         // J17-B7 (aa3539ca) moved the unified Scene/Native postprocess wrapper and work item into Internal/Postprocess.
         string scenePostprocess = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"))
@@ -408,10 +409,14 @@ internal static class Program
             "_lastDuelAfterLines.Remove(stringId);",
             "lines.DuelOutcomeId");
 
-        // Native's phase host now uses the split prepare/complete path; Scene's
-        // synchronous facade uses the same work item and normalizer.
+        // The Native facade creates its request-local runtime, which invokes the
+        // coordinator; both channels still consume the shared work-item normalizer.
         Require(ExtractMethod(shoutBehavior, "private Task<string> SubmitNativeConversationTextInternalAsync(")
-                .Contains("NativeConversationTurnCoordinator.RunAsync(", StringComparison.Ordinal)
+                .Contains("new NativeConversationTurnRuntime(", StringComparison.Ordinal)
+                && ExtractMethod(shoutBehavior, "private Task<string> SubmitNativeConversationTextInternalAsync(")
+                    .Contains(").RunAsync();", StringComparison.Ordinal)
+                && ExtractMethod(nativeRuntime, "internal async Task<string> RunAsync(")
+                    .Contains("NativeConversationTurnCoordinator.RunAsync(this)", StringComparison.Ordinal)
                 && ExtractMethod(nativeCoordinator, "internal static async Task<string> RunAsync(")
                     .Contains("host.PostprocessAndCommitAsync()", StringComparison.Ordinal)
                 && ExtractMethod(nativeCommit, "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync(")
@@ -426,6 +431,12 @@ internal static class Program
                     .Contains("CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
                 && ExtractMethod(sharedPostprocessOwner, "internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(")
                     .Contains("NormalizeDuelPostprocessTagsForScene(", StringComparison.Ordinal)
+                && ExtractMethod(scenePostprocess, "internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(")
+                    .Contains("ConversationActionPostprocessOwner.PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+                && ExtractMethod(scenePostprocess, "internal static string CompleteSceneUnifiedActionPostprocess(")
+                    .Contains("ConversationActionPostprocessOwner.CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+                && ExtractMethod(sharedPostprocessOwner, "internal static string CompleteSceneUnifiedActionPostprocess(")
+                    .Contains("workItem.Normalize(actionContent)", StringComparison.Ordinal)
                 && ExtractMethod(shoutBehavior, "private static string NormalizeDuelPostprocessTagsForScene(")
                     .Contains("ConversationActionPostprocessOwner.NormalizeDuelPostprocessTagsForScene(", StringComparison.Ordinal),
             "Native and Scene no longer reach the shared Duel action normalizer.");
@@ -663,7 +674,7 @@ internal static class Program
         Require(arenaAfterStart.IndexOf("EnsureDuelOutcomeStarted(", StringComparison.Ordinal)
                 < arenaAfterStart.IndexOf("base.Mission.SetMissionMode(", StringComparison.Ordinal)
                 && arenaAfterStart.IndexOf("EnsureDuelOutcomeStarted(", StringComparison.Ordinal)
-                < arenaAfterStart.IndexOf("SetupArenaDuel();", StringComparison.Ordinal),
+                < arenaAfterStart.IndexOf("TrySetupArenaDuel();", StringComparison.Ordinal),
             "Arena owner Start is not before Mission/gameplay setup.");
         string wildernessType = ExtractBlockAfter(normalizedBehavior, "private sealed class WildernessDuelBattleMissionLogic");
         string wildernessInitialize = ExtractMethod(wildernessType, "public override void OnBehaviorInitialize(");
@@ -687,12 +698,22 @@ internal static class Program
 
         string openingTick = ExtractMethod(behavior, "public static void GlobalArenaLeaveTick(");
         string arenaTick = ExtractMethod(arenaType, "public override void OnMissionTick(");
+        string arenaSetup = ExtractMethod(arenaType, "private void TrySetupArenaDuel(");
+        string arenaAbort = ExtractMethod(arenaType, "private void AbortArenaDuel(");
         Require(openingTick.Contains("opening_timeout_before_afterstart", StringComparison.Ordinal)
                 && openingTick.Contains("MarkDetachedDuelDispatchUnknownAfterStart(", StringComparison.Ordinal)
-                && arenaTick.Contains("_setupAttempts >= 3", StringComparison.Ordinal)
-                && arenaTick.Contains("_setupDeadline", StringComparison.Ordinal)
-                && arenaTick.Contains("arena_setup_timeout", StringComparison.Ordinal)
-                && arenaTick.Contains("MarkDetachedDuelDispatchUnknownAfterStart(", StringComparison.Ordinal),
+                && arenaTick.Contains("TrySetupArenaDuel();", StringComparison.Ordinal)
+                && arenaSetup.Contains("_setupDeadline = now + 30f;", StringComparison.Ordinal)
+                && arenaSetup.Contains("now >= _setupDeadline", StringComparison.Ordinal)
+                && arenaSetup.Contains("now < _nextSetupAttemptTime", StringComparison.Ordinal)
+                && arenaSetup.Contains("_nextSetupAttemptTime = now + 0.25f;", StringComparison.Ordinal)
+                && !arenaType.Contains("_setupAttempts >= 3", StringComparison.Ordinal)
+                && arenaSetup.Contains("AbortArenaDuel(\"arena_setup_timeout\"", StringComparison.Ordinal)
+                && arenaAbort.Contains("MarkDetachedDuelDispatchUnknownAfterStart(", StringComparison.Ordinal)
+                && arenaAbort.Contains("MarkDuelOutcomeUnknown(", StringComparison.Ordinal)
+                && arenaAbort.IndexOf("_abortRequested = true;", StringComparison.Ordinal)
+                    < arenaAbort.IndexOf("MarkDuelOutcomeUnknown(", StringComparison.Ordinal)
+                && arenaAbort.Contains("_duelOutcomeStart = null;", StringComparison.Ordinal),
             "Opening/setup retry bounds no longer terminalize an exact dispatch as Unknown.");
 
         string delayedReady = ExtractMethod(host, "private static bool IsDetachedDuelDispatchReadyForDelayedHost(");
@@ -740,8 +761,18 @@ internal static class Program
             "Wilderness participant acquisition is no longer bounded to a terminal 30-second abort.");
 
         string arenaSettlement = ExtractMethod(arenaType, "private void EndDuelLocal(");
+        string arenaCombatGate = ExtractMethod(arenaType, "internal bool IsCombatParticipant(");
         string wildernessSettlement = ExtractMethod(behavior, "private static void SettleWildernessDuelRuntime(");
-        Require(arenaSettlement.Contains("if (_abortRequested || _duelOutcomeStart == null)", StringComparison.Ordinal)
+        Require(arenaSettlement.Contains("if (!IsCombatParticipant(_playerAgent))", StringComparison.Ordinal)
+                && arenaSettlement.IndexOf("IsCombatParticipant(_playerAgent)", StringComparison.Ordinal)
+                    < arenaSettlement.IndexOf("TryRecordDuelOutcome(", StringComparison.Ordinal)
+                && arenaCombatGate.Contains("_duelOutcomeStart != null && !_abortRequested", StringComparison.Ordinal)
+                && arenaCombatGate.Contains("_setupDone", StringComparison.Ordinal)
+                && arenaCombatGate.Contains("!_localPreFightActive && !_localDuelResultRecorded", StringComparison.Ordinal)
+                && arenaCombatGate.Contains("!base.Mission.IsMissionEnding && !_arenaMissionLeaveRequested", StringComparison.Ordinal)
+                && arenaCombatGate.Contains("ReferenceEquals(base.Mission, Mission.Current)", StringComparison.Ordinal)
+                && arenaCombatGate.Contains("ReferenceEquals(agent, _playerAgent)", StringComparison.Ordinal)
+                && arenaCombatGate.Contains("ReferenceEquals(agent, _opponentAgent)", StringComparison.Ordinal)
                 && wildernessSettlement.Contains(
                     "if (runtime == null || runtime.SettlementDone || runtime.AbortRequested)",
                     StringComparison.Ordinal),
@@ -1663,7 +1694,7 @@ internal static class Program
             assembly,
             arenaAfterStart,
             call => call.DeclaringType == DuelBehaviorType + "+ArenaDuelMissionBehavior" && call.Name == "EnsureDuelOutcomeStarted",
-            call => call.DeclaringType == DuelBehaviorType + "+ArenaDuelMissionBehavior" && call.Name == "SetupArenaDuel",
+            call => call.DeclaringType == DuelBehaviorType + "+ArenaDuelMissionBehavior" && call.Name == "TrySetupArenaDuel",
             "Arena owner Start must precede arena gameplay setup.");
         MetadataAssembly.MethodView wildernessInitialize = assembly.RequireMethod(
             DuelBehaviorType + "+WildernessDuelBattleMissionLogic",
@@ -1696,10 +1727,21 @@ internal static class Program
             DuelBehaviorType + "+ArenaDuelMissionBehavior",
             "OnMissionTick",
             "System.Single");
-        Require(assembly.GetLoadedStrings(setupTick).Contains("arena_setup_timeout", StringComparer.Ordinal)
-                && assembly.GetDirectCalls(setupTick).Any(call =>
+        MetadataAssembly.MethodView setupRetry = assembly.RequireMethod(
+            DuelBehaviorType + "+ArenaDuelMissionBehavior", "TrySetupArenaDuel");
+        MetadataAssembly.MethodView setupAbort = assembly.RequireMethod(
+            DuelBehaviorType + "+ArenaDuelMissionBehavior", "AbortArenaDuel", "System.String", "System.String");
+        Require(assembly.GetDirectCalls(setupTick).Any(call => call.Name == "TrySetupArenaDuel")
+                && assembly.GetLoadedStrings(setupRetry).Contains("arena_setup_timeout", StringComparer.Ordinal)
+                && assembly.GetReferencedFields(setupRetry).Any(field => field.Name == "_setupDeadline")
+                && assembly.GetReferencedFields(setupRetry).Any(field => field.Name == "_nextSetupAttemptTime")
+                && assembly.GetDirectCalls(setupRetry).Any(call => call.Name == "AbortArenaDuel")
+                && assembly.GetReferencedFields(setupAbort).Any(field => field.Name == "_abortRequested")
+                && assembly.GetReferencedFields(setupAbort).Any(field => field.Name == "_duelOutcomeStart")
+                && assembly.GetDirectCalls(setupAbort).Any(call =>
                     call.DeclaringType == DuelBehaviorType && call.Name == "MarkDetachedDuelDispatchUnknownAfterStart")
-                && assembly.GetLoadedInt32Constants(setupTick).Contains(3),
+                && assembly.GetDirectCalls(setupAbort).Any(call =>
+                    call.DeclaringType == DuelBehaviorType && call.Name == "MarkDuelOutcomeUnknown"),
             "Arena setup retry/timeout bound no longer terminalizes the exact dispatch Unknown.");
 
         MetadataAssembly.MethodView wildernessTick = assembly.RequireMethod(

@@ -2175,7 +2175,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		if (attackerSnapshot != null)
 		{
 			FreezeFormalDuelSpectatorAgentOrMount(affectorAgent, attackerSnapshot, "spectator_attacker_hit");
-			if (affectedAgent != null && affectedAgent.IsActive() && damagedHp > 0f)
+			if (victimSnapshot == null && affectedAgent != null && affectedAgent.IsActive() && damagedHp > 0f)
 			{
 				try
 				{
@@ -3866,7 +3866,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 	{
 		base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
-		if (TryHandleFormalDuelSpectatorDamage(affectedAgent, affectorAgent, blow.InflictedDamage, "on_agent_hit", FormatMissionWeapon(in attackerWeapon)))
+		// Both callbacks report this hit; only OnScoreHit owns actual damage compensation.
+		if (TryHandleFormalDuelSpectatorDamage(affectedAgent, affectorAgent, 0f, "on_agent_hit", FormatMissionWeapon(in attackerWeapon)))
 		{
 			return;
 		}
