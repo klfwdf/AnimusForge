@@ -15,6 +15,7 @@ namespace RichExecutions.Scene;
 public sealed partial class TownExecutionMissionBehavior
 {
     private bool _continuationChoiceOpen;
+    private object? _continuationChoiceIdentity;
     private bool _continuationTransitionActive;
     private (ExecutionSitePreset Preset, Vec3 Origin, Vec2 Forward)? _chainedLayout;
 
@@ -42,8 +43,13 @@ public sealed partial class TownExecutionMissionBehavior
         var elements = behavior.GetDeploymentPrisonerOptions(null)
             .Where(option => option.Hero != Request.Victim && !option.Hero.IsDead)
             .Select(option => new InquiryElement(option.Hero, option.Hero.Name.ToString(), null)).ToList();
-        elements.Add(new InquiryElement(null,
-            new TextObject("{=REX_Continue_Leave}Leave the execution site.").ToString(), null));
+        var leaveElement = new InquiryElement(null,
+            new TextObject("{=REX_Continue_Leave}Leave the execution site.").ToString(), null);
+        elements.Add(leaveElement);
+        // A fresh identity is a one-shot generation, even if an old inquiry
+        // delivers another callback after the player opens its replacement.
+        var choiceIdentity = new object();
+        _continuationChoiceIdentity = choiceIdentity;
         _continuationChoiceOpen = true;
         try
         {
@@ -52,23 +58,38 @@ public sealed partial class TownExecutionMissionBehavior
                 new TextObject("{=REX_FieldCamp_Continue_Description}Choose another prisoner for this execution site, or finish the ceremony and return to camp.").ToString(),
                 elements, true, 1, 1,
                 new TextObject("{=REX_Continue_Confirm}Continue").ToString(),
-                new TextObject("{=REX_Continue_Cancel}Leave").ToString(),
+                new TextObject("{=REX_FieldCamp_Continue_Cancel}Cancel").ToString(),
                 selected =>
                 {
-                    _continuationChoiceOpen = false;
-                    ContinueFieldCamp(selected?.FirstOrDefault()?.Identifier as Hero);
+                    if (!TryCloseFieldCampContinuation(choiceIdentity)) return;
+                    // Empty, malformed or foreign selections must never mean Leave.
+                    if (selected is null || selected.Count != 1) return;
+                    var element = selected[0];
+                    if (ReferenceEquals(element, leaveElement))
+                        ContinueFieldCamp(null);
+                    else if (elements.Any(candidate => ReferenceEquals(candidate, element)) &&
+                        element.Identifier is Hero hero)
+                        ContinueFieldCamp(hero);
                 },
                 _ =>
                 {
-                    _continuationChoiceOpen = false;
-                    ContinueFieldCamp(null);
+                    // Cancel only dismisses this inquiry; keep the ceremony and F entry.
+                    TryCloseFieldCampContinuation(choiceIdentity);
                 }), pauseGameActiveState: true);
         }
         catch
         {
-            _continuationChoiceOpen = false;
+            TryCloseFieldCampContinuation(choiceIdentity);
             throw;
         }
+    }
+
+    private bool TryCloseFieldCampContinuation(object choiceIdentity)
+    {
+        if (!_continuationChoiceOpen || !ReferenceEquals(_continuationChoiceIdentity, choiceIdentity)) return false;
+        _continuationChoiceIdentity = null;
+        _continuationChoiceOpen = false;
+        return true;
     }
 
     private void ContinueFieldCamp(Hero? hero)

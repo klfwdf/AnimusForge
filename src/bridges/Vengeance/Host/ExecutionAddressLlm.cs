@@ -429,6 +429,7 @@ internal static class ExecutionAddressLlm
         if (ExecutionSpeechBubbleBridge.Ready == IsHostBubbleReady) ExecutionSpeechBubbleBridge.Ready = null;
         if (ExecutionSpeechBubbleBridge.Show == ShowOnHostBubble) ExecutionSpeechBubbleBridge.Show = null;
         if (ExecutionSpeechBubbleBridge.ClearShown == ClearHostBubbles) ExecutionSpeechBubbleBridge.ClearShown = null;
+        ShoutBehavior.ResetExecutionSpeechAudioForExternal();
         foreach (var playback in Active.Values) playback.CancelRequest();
         Active.Clear();
         Cancelled.Clear();
@@ -524,6 +525,8 @@ internal static class ExecutionAddressLlm
 
     internal static void Cancel(Guid sessionId)
     {
+        // Local catalog lines and released aftermath streams also own audio.
+        ShoutBehavior.CancelExecutionSpeechAudioForExternal(sessionId);
         Cancelled[sessionId] = 1;
         if (Active.TryRemove(sessionId, out var playback)) playback.Cancel();
         // A session released earlier (aftermath played) has nothing to stop;

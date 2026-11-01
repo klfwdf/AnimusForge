@@ -3603,7 +3603,7 @@ internal static string BuildCeremonyRoleFactForPrompt(int agentIndex)
 
 			string victim = (request.Victim?.Name?.ToString() ?? string.Empty).Trim();
 
-			string venue = (request.Venue?.Name?.ToString() ?? string.Empty).Trim();
+			string venue = (request.VenueName?.ToString() ?? string.Empty).Trim();
 
 			if (string.IsNullOrWhiteSpace(charge)) charge = AdapterPromptCaptureTexts.PcapText("scene_identity_output_15");
 
@@ -3643,7 +3643,9 @@ internal static string BuildCeremonyRoleFactForPrompt(int agentIndex)
 
 			{
 
-				fact = AdapterPromptCaptureTexts.PcapFormat("scene_execution_role_crowd", "You are a civilian watching this public execution in {VENUE}; the condemned prisoner is {VICTIM}, awaiting {METHOD} for {CHARGE}.", ("VENUE", venue), ("VICTIM", victim), ("CHARGE", charge), ("METHOD", method));
+				fact = request.IsFieldCamp
+					? AdapterPromptCaptureTexts.PcapFormat("scene_execution_role_camp_crowd", "You are a soldier watching this public execution in {VENUE}; the condemned prisoner is {VICTIM}, awaiting {METHOD} for {CHARGE}.", ("VENUE", venue), ("VICTIM", victim), ("CHARGE", charge), ("METHOD", method))
+					: AdapterPromptCaptureTexts.PcapFormat("scene_execution_role_crowd", "You are a civilian watching this public execution in {VENUE}; the condemned prisoner is {VICTIM}, awaiting {METHOD} for {CHARGE}.", ("VENUE", venue), ("VICTIM", victim), ("CHARGE", charge), ("METHOD", method));
 
 			}
 

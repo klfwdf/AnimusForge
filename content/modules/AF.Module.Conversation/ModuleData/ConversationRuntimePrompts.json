@@ -366,7 +366,7 @@
   "AF_FC_Fact_Dismissed": "，开除了{COUNT}名闹事者",
   "AF_CONV_Ambient_OpenNpc": "【场景闲聊】玩家没有对你说话。你此刻主动开口，对{TARGET}说一句话，开启一段自然的闲聊。话题：{TOPIC}。只以{SELF}的身份说话，只对{TARGET}说，不要对玩家说话，也不要代替任何人说话。",
   "AF_CONV_Ambient_ReplyNpc": "【场景闲聊】玩家没有插话。{PREV}刚才对你说：{LINE}。请只以{SELF}的身份回应{PREV}，可以认同、反驳或追问，不要对玩家说话，也不要代替任何人说话。",
-  "AF_CONV_Ambient_OpenPlayer": "【主动搭话】你注意到玩家就在身边，于是走上前主动和玩家说一句话。话题：{TOPIC}。只以{SELF}的身份说话，不要代替玩家回答。",
+  "AF_CONV_Ambient_OpenPlayer": "【主动搭话】你注意到玩家就在身边，主动和玩家说一句话。话题：{TOPIC}。只以{SELF}的身份说话，不要代替玩家回答。",
   "AF_CONV_Ambient_NoActions": "这是闲聊：不要承诺或执行交易、赠与、入队、决斗、领地、外交等任何机制行为。",
   "AF_CONV_Ambient_Topic_Kin": "你们是亲属，可以聊家里的近况",
   "AF_CONV_Ambient_Topic_Friend": "你们交情不错，可以叙叙旧或分享见闻",

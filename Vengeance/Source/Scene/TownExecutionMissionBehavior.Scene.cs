@@ -22,6 +22,14 @@ public sealed partial class TownExecutionMissionBehavior
             return _initialized;
         }
 
+        // Waiting polls are O(1), at most twice a second. Do not rerun request
+        // validation, custom profile construction or host cleanup while walking.
+        if (_fieldCampPreparationStarted && !_fieldCampPreparationReady &&
+            !TryPrepareFieldCampCeremony())
+        {
+            return false;
+        }
+
         var currentPlayer = _playerAgent ?? Mission.MainAgent ?? Agent.Main;
         if (currentPlayer is null || !currentPlayer.IsActive())
         {
@@ -114,15 +122,11 @@ public sealed partial class TownExecutionMissionBehavior
             _conversationLogic = Mission.GetMissionBehavior<MissionConversationLogic>();
             if (Request.IsFieldCamp)
             {
-                // Recheck at actual staging, including callbacks fired by Begin.
-                if (!VengeanceIntegration.CanStartFieldCampCeremony())
-                {
-                    CancelSceneAndReturn(ExecutionFailureReason.VenueUnavailable,
-                        new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now."));
-                    return false;
-                }
-                // The camp clears the site, hides its own copy of the condemned
-                // and brings soldiers to watch before any ceremony actor exists.
+                // Admission is evaluated exactly once, before reserving the camp.
+                // Later polls must not reject the reservation as a busy ceremony.
+                if (!TryPrepareFieldCampCeremony()) return false;
+                // Only ready commits the hidden pen copy and borrows arrived
+                // spectators. Before ready no runtime actor/prop exists.
                 NotifyFieldCampCeremonyStaged();
             }
 
@@ -148,12 +152,13 @@ public sealed partial class TownExecutionMissionBehavior
                 $"entryDistanceBeforeEscort={entryDistanceBeforeEscort:0.00}m, " +
                 $"fullStage={_placement.SupportsFullStage}, raised={_stageSurfaceHeight > 0f}, " +
                 $"compatibilityFallback={_placement.IsCompatibilityFallback}, " +
-                $"crowd={_crowdAgents.Count}).");
+                $"crowd={_crowdAgents.Count}, borrowedCrowd={_borrowedCrowd.Count}).");
             return true;
         }
         catch (Exception exception)
         {
             RexLog.Error("Runtime execution-scene construction failed.", exception);
+            NotifyFieldCampCeremonyReleased();
             CancelSceneAndReturn(
                 ExecutionFailureReason.ScenePlacementFailed,
                 new TextObject(
@@ -1991,40 +1996,121 @@ public sealed partial class TownExecutionMissionBehavior
         }
     }
 
-    private void NotifyFieldCampCeremonyStaged()
+    private bool TryPrepareFieldCampCeremony()
     {
-        if (_fieldCampCeremonyStaged || _placement is null)
-        {
-            return;
-        }
+        if (!Request.IsFieldCamp || _fieldCampPreparationReady) return true;
+        if (_initializationFailed || _fieldCampCeremonyReleased || _placement is null) return false;
+        if (_fieldCampPreparationStarted &&
+            _initializationElapsed + 0.0001f < _nextFieldCampPreparationPollElapsed) return false;
 
-        _fieldCampCeremonyStaged = true;
         try
         {
-            VengeanceIntegration.FieldCampCeremonyStaged?.Invoke(
-                Request.Victim, _placement.Origin, _placement.Forward);
+            if (!_fieldCampPreparationStarted)
+            {
+                // Old/standalone hosts without this optional admission hook keep
+                // their original behavior. New camp owners reserve only once.
+                if (VengeanceIntegration.FieldCampCeremonyAdmissionProbe is not null &&
+                    !VengeanceIntegration.CanStartFieldCampCeremony())
+                {
+                    CancelSceneAndReturn(ExecutionFailureReason.VenueUnavailable,
+                        new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now."));
+                    return false;
+                }
+                _fieldCampPreparationStarted = true;
+                _fieldCampPreparationUsesHook = VengeanceIntegration.FieldCampCeremonyPreparation is not null;
+                _fieldCampPreparationStartElapsed = _initializationElapsed;
+            }
+            _nextFieldCampPreparationPollElapsed = _initializationElapsed + 0.5f;
+            // The base 9 m covers the ordinary site. Include authored pieces
+            // and actor marks so a distant crucifix/custom prop cannot crush a
+            // camp resident outside the old root-only exclusion circle.
+            if (_fieldCampPreparationRadius <= 0f)
+            {
+                _fieldCampPreparationRadius = 9f;
+                if (_customSitePreset is not null)
+                {
+                    foreach (var piece in _customSitePreset.Pieces)
+                    {
+                        var t = piece.Transform;
+                        _fieldCampPreparationRadius = MathF.Max(_fieldCampPreparationRadius,
+                            MathF.Sqrt(t.X * t.X + t.Y * t.Y) + MathF.Max(6f, 6f * MathF.Abs(t.Scale)));
+                    }
+                    foreach (var marker in _customSitePreset.Markers)
+                    {
+                        var t = marker.Transform;
+                        _fieldCampPreparationRadius = MathF.Max(_fieldCampPreparationRadius,
+                            MathF.Sqrt(t.X * t.X + t.Y * t.Y) + 2f);
+                    }
+                }
+            }
+            var preparation = VengeanceIntegration.FieldCampCeremonyPreparation;
+            var state = preparation is null
+                ? (_fieldCampPreparationUsesHook ? FieldCampCeremonyReadiness.Failed : FieldCampCeremonyReadiness.Ready)
+                : preparation(Request.SessionId, Request.Victim, _placement.Origin, _placement.Forward, _fieldCampPreparationRadius);
+            if (state == FieldCampCeremonyReadiness.Ready)
+            {
+                _fieldCampPreparationReady = true;
+                // Snapshot once. Borrowed actors never enter _spawnedAgents or
+                // _crowdAgents, whose teardown may fade/remove their contents.
+                var crowd = VengeanceIntegration.FieldCampCeremonyBorrowedCrowd?.Invoke(Request.SessionId);
+                if (crowd is not null)
+                    for (var i = 0; i < Math.Min(16, crowd.Count); i++)
+                    {
+                        var agent = crowd[i];
+                        if (agent is not null && agent.IsActive() && !ReferenceEquals(agent, _playerAgent) &&
+                            agent.Character != Request.Victim.CharacterObject && !_borrowedCrowd.Contains(agent))
+                            _borrowedCrowd.Add(agent);
+                    }
+                return true;
+            }
+            if (state == FieldCampCeremonyReadiness.Pending &&
+                _initializationElapsed - _fieldCampPreparationStartElapsed < FieldCampPreparationTimeoutSeconds)
+                return false;
+
+            RexLog.Warning($"Session {Request.SessionId} camp preparation failed or timed out; no runtime scene was built.");
         }
         catch (Exception exception)
         {
-            RexLog.Error("The field-camp host could not prepare its spectators; the ceremony continues.", exception);
+            RexLog.Error("The field-camp preparation hook failed; cancelling before scene construction.", exception);
         }
+        NotifyFieldCampCeremonyReleased();
+        CancelSceneAndReturn(ExecutionFailureReason.ScenePlacementFailed,
+            new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now."));
+        return false;
+    }
+
+    private void NotifyFieldCampCeremonyStaged()
+    {
+        if (_fieldCampCeremonyStaged || _placement is null) return;
+        // The once-only flag precedes the callback so partial failures do not
+        // repeatedly hide the condemned. A failure must prevent runtime build.
+        _fieldCampCeremonyStaged = true;
+        VengeanceIntegration.FieldCampCeremonyStaged?.Invoke(
+            Request.Victim, _placement.Origin, _placement.Forward);
     }
 
     private void NotifyFieldCampCeremonyReleased()
     {
-        if (!_fieldCampCeremonyStaged || _fieldCampCeremonyReleased)
-        {
-            return;
-        }
-
+        // Preparation already owns walkers even if staging/build never occurred.
+        if ((!_fieldCampPreparationStarted && !_fieldCampCeremonyStaged) || _fieldCampCeremonyReleased) return;
         _fieldCampCeremonyReleased = true;
         try
         {
-            VengeanceIntegration.FieldCampCeremonyReleased?.Invoke();
+            if (VengeanceIntegration.FieldCampCeremonyPreparationReleased is { } release)
+                release(Request.SessionId);
+            else
+                VengeanceIntegration.FieldCampCeremonyReleased?.Invoke();
         }
         catch (Exception exception)
         {
             RexLog.Error("The field-camp host could not release its spectators.", exception);
+        }
+        finally
+        {
+            // Only drop references. Returning, restoring and disposing these
+            // actors belongs exclusively to their camp owner, including cancel.
+            _borrowedCrowd.Clear();
+            _preparedSpeechCrowd = null;
         }
     }
 

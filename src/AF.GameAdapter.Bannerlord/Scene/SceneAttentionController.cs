@@ -517,7 +517,7 @@ internal sealed class SceneAttentionController
 	// object-using) agents only turn their gaze and keep using the object.
 	private static void HoldAgentInPlaceUnlessSeated(Agent agent)
 	{
-		if (IsAgentUsingSceneObject(agent))
+		if (IsAgentUsingSceneObject(agent) || IsCampCeremonyMovementOwned(agent))
 		{
 			return;
 		}
@@ -525,6 +525,9 @@ internal sealed class SceneAttentionController
 		WorldPosition worldPosition = agent.GetWorldPosition();
 		agent.SetScriptedPosition(ref worldPosition, addHumanLikeDelay: false);
 	}
+
+	private static bool IsCampCeremonyMovementOwned(Agent agent) =>
+		FieldCampMissionLogic.Current?.IsCeremonyAgentHeld(agent) == true;
 
 	private static bool IsAgentUsingSceneObject(Agent agent)
 	{
@@ -751,7 +754,8 @@ internal sealed class SceneAttentionController
 		}
 		try
 		{
-			agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+			if (!IsCampCeremonyMovementOwned(agent))
+				agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
 		}
 		catch
 		{
@@ -765,7 +769,7 @@ internal sealed class SceneAttentionController
 			return;
 		}
 		ClearAgentSceneConversationFocus(agent);
-		if (ShouldPreserveMeetingSceneAutonomy() || IsAgentUsingSceneObject(agent))
+		if (ShouldPreserveMeetingSceneAutonomy() || IsAgentUsingSceneObject(agent) || IsCampCeremonyMovementOwned(agent))
 		{
 			return;
 		}
@@ -952,6 +956,11 @@ internal sealed class SceneAttentionController
 	{
 		if (agent == null || !agent.IsActive())
 		{
+			return;
+		}
+		if (IsCampCeremonyMovementOwned(agent))
+		{
+			ClearAgentSceneConversationFocus(agent);
 			return;
 		}
 		_sceneMovement.ClearSceneSummonScriptedBehavior(agent);
@@ -1327,7 +1336,8 @@ internal sealed class SceneAttentionController
 			try
 			{
 				controlledSpeaker.SetLookAgent(null);
-				controlledSpeaker.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+				if (!IsCampCeremonyMovementOwned(controlledSpeaker))
+					controlledSpeaker.SetMaximumSpeedLimit(-1f, isMultiplier: false);
 			}
 			catch
 			{
@@ -1348,7 +1358,7 @@ internal sealed class SceneAttentionController
 					try
 					{
 						staringAgent.SetLookAgent(ResolveStareLookTarget(staringAgent));
-						if (!IsAgentUsingSceneObject(staringAgent))
+						if (!IsAgentUsingSceneObject(staringAgent) && !IsCampCeremonyMovementOwned(staringAgent))
 						{
 							staringAgent.SetMaximumSpeedLimit(0f, isMultiplier: false);
 						}
@@ -1372,6 +1382,7 @@ internal sealed class SceneAttentionController
 				try
 				{
 					staringAgent.SetLookAgent(null);
+					if (IsCampCeremonyMovementOwned(staringAgent)) continue;
 					staringAgent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
 					if (!ShouldPreserveMeetingSceneAutonomy() && !IsAgentUsingSceneObject(staringAgent))
 					{

@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+using SandBox;
+using SandBox.Conversation.MissionLogics;
+using SandBox.Missions.MissionLogics;
+using SandBox.View;
 using SandBox.View.Missions;
+using SandBox.ViewModelCollection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.Party;
@@ -52,6 +57,9 @@ internal static class FieldCampMissionLauncher
 			Mission mission = MissionState.OpenNew(FieldCampMissionLogic.MissionName, rec, m => new MissionBehavior[]
 			{
 				new MissionOptionsComponent(),
+				new CampaignMissionComponent(),
+				new FieldCampConversationLogic(),
+				FieldCampMissionLogic.CreateCampPrisonerStateDecider(),
 				new FieldCampMissionLogic(snapshot),
 				// Hold TAB to leave (also ends the mission if the player is knocked out).
 				new BasicLeaveMissionLogic(),
@@ -85,6 +93,39 @@ internal static class FieldCampMissionLauncher
 	}
 }
 
+// Keep native F on registered camp residents. Ceremony actors own their F entry,
+// including the continuation inquiry after native conversations are re-enabled.
+internal sealed class FieldCampConversationLogic : MissionConversationLogic
+{
+	public override bool IsThereAgentAction(Agent userAgent, Agent otherAgent)
+	{
+		FieldCampMissionLogic camp = FieldCampMissionLogic.Current;
+		if (camp?.CanStartNativeConversation(otherAgent) != true) return false;
+		if (base.IsThereAgentAction(userAgent, otherAgent)) return true;
+		// Mortal captive teams are hostile only to the player for native hit registration.
+		// That must not remove F from this exact camp's bound, registered prisoners.
+		return camp.IsCampPrisoner(otherAgent) && userAgent == Mission.MainAgent && otherAgent.IsActive() && otherAgent.IsHuman &&
+			Mission.Mode != MissionMode.Battle && Mission.Mode != MissionMode.Duel && Mission.Mode != MissionMode.Conversation &&
+			otherAgent.GetDistanceTo(userAgent) > 0.2f && otherAgent.GetDistanceTo(userAgent) < 2f;
+	}
+
+	public override void OnAgentInteraction(Agent userAgent, Agent agent, sbyte agentBoneIndex)
+	{
+		FieldCampMissionLogic camp = FieldCampMissionLogic.Current;
+		if (camp == null || !IsThereAgentAction(userAgent, agent) || !camp.TryAcquireSceneConversation(agent)) return;
+		try
+		{
+			if (camp.IsCampPrisoner(agent) && Campaign.Current?.ConversationManager?.IsConversationInProgress == false)
+				StartConversation(agent, setActionsInstantly: false);
+			else base.OnAgentInteraction(userAgent, agent, agentBoneIndex);
+		}
+		finally
+		{
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress != true) camp.ReleaseSceneConversation(agent);
+		}
+	}
+}
+
 /// <summary>Mission views for the camp: escape menu, agent labels, options, cheering.</summary>
 [ViewCreatorModule]
 public class FieldCampMissionViews
@@ -94,20 +135,24 @@ public class FieldCampMissionViews
 	{
 		return new MissionView[]
 		{
-			new MissionCampaignView(),
-			ViewCreator.CreateMissionSingleplayerEscapeMenu(CampaignOptions.IsIronmanMode),
+				new MissionCampaignView(),
+				new MissionConversationCameraView(),
+				SandBoxViewCreator.CreateMissionConversationView(mission),
+				ViewCreator.CreateMissionSingleplayerEscapeMenu(CampaignOptions.IsIronmanMode),
 			ViewCreator.CreateMissionAgentLabelUIHandler(mission),
 			ViewCreator.CreateOptionsUIHandler(),
-			new MissionSingleplayerViewHandler(),
-			ViewCreator.CreateMissionMainAgentEquipmentController(mission),
+				new MissionSingleplayerViewHandler(),
+				ViewCreator.CreateMissionAgentStatusUIHandler(mission),
+				ViewCreator.CreateMissionMainAgentEquipmentController(mission),
 			ViewCreator.CreateMissionMainAgentCheerBarkControllerView(mission),
 			ViewCreator.CreateMissionBoundaryCrossingView(),
 			// Hold-TAB progress ring; without it a TAB tap gives no feedback.
 			ViewCreator.CreateMissionLeaveView(),
 			new MissionBoundaryWallView(),
 			new MissionItemContourControllerView(),
-			new MissionAgentContourControllerView(),
-			ViewCreator.CreatePhotoModeView(),
+				new MissionAgentContourControllerView(),
+				SandBoxViewCreator.CreateMissionBarterView(),
+				ViewCreator.CreatePhotoModeView(),
 			new MissionFaceCacheView()
 		};
 	}

@@ -80,6 +80,8 @@ internal sealed partial class SceneConversationSessionRuntime
 
 		public Action<bool> OnCompleted;
 
+        public CancellationToken OwnerCancellationToken;
+
 		public List<object> Messages;
         internal ConversationPromptCache.Request PromptCache;
 
@@ -1409,20 +1411,21 @@ internal sealed partial class SceneConversationSessionRuntime
 		}
 	}
 
-	internal bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null)
+	internal bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null, CancellationToken ownerCancellationToken = default, Action<long> onRequestRegistered = null)
 	{
 		if (!IsBannerlordMainThreadForNativeActions())
 		{
 			_ports.PostMainThread(delegate
 			{
-				TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, skipSceneFactRecord, returnSceneSummonOnTimeout, onNoSpeech, runSiegeReactionPostprocess, canStillPublish, onCompleted);
+				TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, skipSceneFactRecord, returnSceneSummonOnTimeout, onNoSpeech, runSiegeReactionPostprocess, canStillPublish, onCompleted, ownerCancellationToken, onRequestRegistered);
 			});
 			return true;
 		}
 		LlmRetryPrompt.CaptureMainThreadContext();
 		Mission mission = Mission.Current;
 		var agents = mission?.Agents;
-		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || agents == null)
+		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || agents == null
+            || ownerCancellationToken.IsCancellationRequested || !CanPublishImmediateSceneReaction(canStillPublish))
 		{
 			InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 			QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
@@ -1509,6 +1512,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			}
 			request.OnNoSpeech = onNoSpeech;
 			request.OnCompleted = onCompleted;
+            request.OwnerCancellationToken = ownerCancellationToken;
 			if (!RegisterImmediateSceneReactionRequest(request))
 			{
 				FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
@@ -1517,6 +1521,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				immediateSceneReactionGateEntered = false;
 				return false;
 			}
+            onRequestRegistered?.Invoke(request.RequestId);
 			StartImmediateSceneReactionBackgroundRequest(request.RequestId, request.TargetAgentIndex, request.Messages, request.MaxTokens, request.Temperature);
 			immediateSceneReactionGateEntered = false;
 			return true;
@@ -1649,6 +1654,17 @@ internal sealed partial class SceneConversationSessionRuntime
 		return true;
 	}
 
+    // Cancels only the owning opening, never unrelated scene reactions or a newer request.
+    internal void CancelImmediateSceneReaction(long requestId)
+    {
+        ImmediateSceneReactionRequest request;
+        lock (_immediateSceneReactionGateLock)
+        {
+            if (!_pendingImmediateSceneReactionRequests.TryGetValue(requestId, out request)) return;
+        }
+        SettleImmediateSceneReaction(request, false, allowNoSpeech: false);
+    }
+
 	internal void StartImmediateSceneReactionBackgroundRequest(long requestId, int targetAgentIndex, List<object> messages, int maxTokens, float temperature)
 	{
 		if (requestId <= 0L || targetAgentIndex < 0 || messages == null || messages.Count == 0)
@@ -1659,6 +1675,12 @@ internal sealed partial class SceneConversationSessionRuntime
 		try
 		{
 			var requestLifetime = _sceneRequestLifetime;
+            CancellationToken ownerToken;
+            lock (_immediateSceneReactionGateLock)
+            {
+                ownerToken = _pendingImmediateSceneReactionRequests.TryGetValue(requestId, out var pending)
+                    ? pending.OwnerCancellationToken : CancellationToken.None;
+            }
 			_ = Task.Run(delegate
 			{
 				bool requestSucceeded = false;
@@ -1667,13 +1689,21 @@ internal sealed partial class SceneConversationSessionRuntime
 				try
 				{
 					using IDisposable requestWorker = requestLifetime.Enter();
-					using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(requestLifetime.Token);
+                    using var linked = ownerToken.CanBeCanceled
+                        ? CancellationTokenSource.CreateLinkedTokenSource(requestLifetime.Token, ownerToken) : null;
+                    CancellationToken cancellationToken = linked?.Token ?? requestLifetime.Token;
+					using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
 					requestSucceeded = AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, temperature, out response, out error);
-					if (!requestSucceeded)
+					if (!requestSucceeded && !cancellationToken.IsCancellationRequested)
 					{
 						Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] auxiliary_simple_dialogue failed: " + (error ?? ""));
 					}
 				}
+                catch (OperationCanceledException)
+                {
+                    error = "owner_cancelled";
+                }
 				catch (Exception ex)
 				{
 					error = ex.Message ?? "background_request_exception";
@@ -1683,7 +1713,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				{
 					_ports.PostMainThread(delegate
 					{
-						CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded && !requestLifetime.Token.IsCancellationRequested, response, error);
+						CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded && !requestLifetime.Token.IsCancellationRequested && !ownerToken.IsCancellationRequested, response, error);
 					});
 				}
 				catch (Exception ex2)
@@ -1766,7 +1796,8 @@ internal sealed partial class SceneConversationSessionRuntime
 		{
 			return false;
 		}
-        return request.ConversationEpoch == ConversationEpoch && Volatile.Read(ref request.CompletionClaimed) == 0;
+        return !request.OwnerCancellationToken.IsCancellationRequested
+            && request.ConversationEpoch == ConversationEpoch && Volatile.Read(ref request.CompletionClaimed) == 0;
 	}
 
 	internal bool CanPublishImmediateSceneReactionRequest(ImmediateSceneReactionRequest request)
@@ -1891,13 +1922,25 @@ internal sealed partial class SceneConversationSessionRuntime
 			_ports.RecordResponseForAllNearbySafe(request.AllNpcData, request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText);
 			_ports.PersistNpcSpeechToNamedHeroes(request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText, request.AllNpcData);
 		}
-        if (!string.IsNullOrEmpty(PlayerExperiencePrompt.Evidence(request.FactText)))
+        if (request.OwnerCancellationToken.CanBeCanceled || !string.IsNullOrEmpty(PlayerExperiencePrompt.Evidence(request.FactText)))
         {
             var presented = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Func<bool> publicationGuard = request.OwnerCancellationToken.CanBeCanceled
+                ? () => CanPublishImmediateSceneReactionRequest(request) : request.CanStillPublish;
             _ports.EnqueueSpeechLineWithOptions(request.TargetNpc, text, request.AllNpcData, commitHistory: false,
                 suppressStare: request.SuppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: request.ConversationEpoch,
-                completionSource: presented, canStillPublish: request.CanStillPublish);
-            return await presented.Task;
+                completionSource: presented, canStillPublish: publicationGuard);
+            if (!request.OwnerCancellationToken.CanBeCanceled) return await presented.Task;
+            using var cancellation = request.OwnerCancellationToken.Register(() => presented.TrySetResult(false));
+            Task completed = await Task.WhenAny(presented.Task, Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs));
+            if (completed != presented.Task)
+            {
+                // Revoke the timed-out opening's queue publication before returning
+                // failure; a later queue dispatch must not resurrect the session.
+                SettleImmediateSceneReaction(request, false, allowNoSpeech: false);
+                return false;
+            }
+            return presented.Task.Result && CanPublishImmediateSceneReactionRequest(request);
         }
 		_ports.EnqueueSpeechLine(request.TargetNpc, text, request.AllNpcData, skipHistory: true, suppressStare: request.SuppressStare, canStillPublish: request.CanStillPublish);
 		return true;

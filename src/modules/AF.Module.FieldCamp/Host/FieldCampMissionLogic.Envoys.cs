@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using SandBox.Missions.AgentBehaviors;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Library;
@@ -21,7 +23,6 @@ public sealed partial class FieldCampMissionLogic
 	private const float EnvoyGapSeconds = 25f;
 	private const float EnvoyWalkTimeoutSeconds = 35f;
 	private const float EnvoyArriveDistance = 2.4f;
-	private const float EnvoyStandOff = 1.6f;
 	private const float EnvoyReleaseGraceSeconds = 4f;
 	private const int EnvoyMaxVisits = 2;
 
@@ -35,7 +36,8 @@ public sealed partial class FieldCampMissionLogic
 	private float _envoyDeadline;
 	private float _envoyIdleSince = -1f;
 	private float _nextEnvoyTime;
-	private Vec2 _envoyGoal;
+		private bool _envoyPresented;
+		private bool _envoyNavigationActive;
 
 	/// <summary>Once at camp set-up: every open issue gets a visit, in issue order.</summary>
 	private void QueueEnvoys()
@@ -76,20 +78,23 @@ public sealed partial class FieldCampMissionLogic
 		_envoyQueue.RemoveAt(0);
 		FieldCampIssues.Issue issue = OpenIssue(index);
 		CampAgent envoy = issue != null ? PickEnvoy(issue) : null;
-		if (envoy == null)
+		if (envoy == null || !TryPrepareCampNavigation(envoy.Agent))
 		{
-			_nextEnvoyTime = _elapsed + 1f;
-			return;
+			Requeue(index);
+			_nextEnvoyTime = _elapsed + EnvoyGapSeconds;
+				return;
 		}
-		_envoyVisits[index] = (_envoyVisits.TryGetValue(index, out int visits) ? visits : 0) + 1;
 		_envoy = envoy;
 		_envoyIssue = index;
 		_envoyStage = EnvoyStage.Walking;
 		_envoyDeadline = _elapsed + EnvoyWalkTimeoutSeconds;
-		_envoyGoal = new Vec2(float.MaxValue, float.MaxValue);
-		envoy.Returning = false;
-		ReleasePose(envoy);
-		WalkEnvoy();
+			_envoyPresented = false;
+			envoy.Returning = false;
+			envoy.Seated = false;
+			ReleasePose(envoy);
+			StopCampNavigation(envoy.Agent);
+			ScriptBehavior.AddAgentTarget(envoy.Agent, Agent.Main);
+			_envoyNavigationActive = true;
 		Logger.Log(LogSource, "envoy issue=" + (index + 1) + " kind=" + issue.Kind + " agent=" + envoy.Agent.Index);
 	}
 
@@ -98,10 +103,12 @@ public sealed partial class FieldCampMissionLogic
 		Agent agent = _envoy.Agent;
 		if (agent == null || !agent.IsActive() || Agent.Main == null || !Agent.Main.IsActive())
 		{
-			DropEnvoy(sendHome: false);
-			return;
-		}
-		if (_assembled)
+				Requeue(_envoyIssue);
+				DropEnvoy(sendHome: false);
+				return;
+			}
+			if (IsSceneConversationHeld(agent) && _envoyStage == EnvoyStage.Walking) return;
+			if (_assembled)
 		{
 			// The assemble order already gave him a place in the ranks.
 			DropEnvoy(sendHome: false);
@@ -117,19 +124,25 @@ public sealed partial class FieldCampMissionLogic
 			float distance = agent.Position.AsVec2.Distance(Agent.Main.Position.AsVec2);
 			if (distance <= EnvoyArriveDistance)
 			{
-				Vec2 toPlayer = Agent.Main.Position.AsVec2 - agent.Position.AsVec2;
-				MoveTo(_envoy, agent.Position, toPlayer.IsNonZero() ? toPlayer.Normalized() : _envoy.HomeFacing, run: false);
-				if (ShoutBehavior.TryStartFieldCampEnvoyForExternal(agent, FieldCampText.IssuePromptText(OpenIssue(_envoyIssue))))
+					StopCampNavigation(agent);
+					_envoyNavigationActive = false;
+					Vec2 toPlayer = Agent.Main.Position.AsVec2 - agent.Position.AsVec2;
+					if (toPlayer.IsNonZero()) agent.LookDirection = new Vec3(toPlayer.Normalized(), 0f);
+					CampAgent openingEnvoy = _envoy;
+					int openingIssue = _envoyIssue;
+					if (ShoutBehavior.TryStartFieldCampEnvoyForExternal(agent, FieldCampText.IssuePromptText(OpenIssue(_envoyIssue)),
+						() => MarkEnvoyPresented(openingEnvoy, openingIssue)))
 				{
 					_envoyStage = EnvoyStage.Talking;
 					_envoyIdleSince = -1f;
 					return;
 				}
 			}
-			else
-			{
-				WalkEnvoy();
-			}
+				else if (!_envoyNavigationActive)
+				{
+					ScriptBehavior.AddAgentTarget(agent, Agent.Main);
+					_envoyNavigationActive = true;
+				}
 			if (_elapsed >= _envoyDeadline)
 			{
 				Requeue(_envoyIssue);
@@ -157,31 +170,25 @@ public sealed partial class FieldCampMissionLogic
 		DropEnvoy(sendHome: true);
 	}
 
-	/// <summary>Walks toward a spot just short of the player; re-issued only when the player has moved.</summary>
-	private void WalkEnvoy()
-	{
-		Vec2 player = Agent.Main.Position.AsVec2;
-		Vec2 from = _envoy.Agent.Position.AsVec2 - player;
-		Vec2 goal = player + (from.IsNonZero() ? from.Normalized() : Vec2.Forward) * EnvoyStandOff;
-		if (goal.DistanceSquared(_envoyGoal) < 1f)
+		private void MarkEnvoyPresented(CampAgent envoy, int issue)
 		{
-			return;
+			if (!ReferenceEquals(_envoy, envoy) || _envoyIssue != issue || _envoyPresented ||
+				!ReferenceEquals(Mission.Current, Mission) || Mission.IsMissionEnding) return;
+			_envoyPresented = true;
+			_envoyVisits[issue] = (_envoyVisits.TryGetValue(issue, out int visits) ? visits : 0) + 1;
 		}
-		_envoyGoal = goal;
-		Vec3 world = new Vec3(goal.x, goal.y, Agent.Main.Position.z);
-		world.z = GroundHeight(Mission.Scene, world);
-		Vec2 facing = from.IsNonZero() ? -from.Normalized() : Vec2.Forward;
-		MoveTo(_envoy, world, facing, run: from.Length > 15f);
-	}
 
 	private void DropEnvoy(bool sendHome)
 	{
-		CampAgent entry = _envoy;
-		_envoy = null;
+			CampAgent entry = _envoy;
+			if (entry?.Agent != null) ShoutBehavior.CancelFieldCampEnvoyForExternal(entry.Agent);
+			_envoy = null;
 		_envoyIssue = -1;
 		_envoyStage = EnvoyStage.None;
-		_nextEnvoyTime = _elapsed + EnvoyGapSeconds;
-		if (!sendHome || entry?.Agent == null || !entry.Agent.IsActive())
+			_nextEnvoyTime = _elapsed + EnvoyGapSeconds;
+			_envoyNavigationActive = false;
+			if (entry?.Agent != null && entry.Agent.IsActive() && !IsSceneConversationHeld(entry.Agent)) StopCampNavigation(entry.Agent);
+			if (!sendHome || entry?.Agent == null || !entry.Agent.IsActive() || IsSceneConversationHeld(entry.Agent))
 		{
 			return;
 		}
@@ -193,7 +200,7 @@ public sealed partial class FieldCampMissionLogic
 
 	private void Requeue(int index)
 	{
-		if (OpenIssue(index) != null && (!_envoyVisits.TryGetValue(index, out int visits) || visits < EnvoyMaxVisits))
+		if (OpenIssue(index) != null && !_envoyQueue.Contains(index) && (!_envoyVisits.TryGetValue(index, out int visits) || visits < EnvoyMaxVisits))
 		{
 			_envoyQueue.Add(index);
 		}
@@ -235,6 +242,7 @@ public sealed partial class FieldCampMissionLogic
 			CampAgent entry = _agents[i];
 			Agent agent = entry.Agent;
 			if (agent == null || agent == Agent.Main || !agent.IsActive() || entry.Activity == Activity.Wounded || IsDuelist(agent)
+					|| IsSceneConversationHeld(agent) || _ceremonyMoved.Contains(entry)
 				|| !(agent.Character is CharacterObject character)
 				|| !ReferenceEquals(agent.Origin?.BattleCombatant as PartyBase, PartyBase.MainParty))
 			{

@@ -491,6 +491,7 @@
     <string id="REX_Continue_Description" text="The sentence is settled. Choose another escorted prisoner, or leave." />
     <string id="REX_Continue_Leave" text="Leave the execution site." />
     <string id="REX_Continue_Title" text="Choose the next prisoner" />
+    <string id="REX_FieldCamp_Continue_Cancel" text="Cancel" />
     <string id="REX_FieldCamp_Continue_Description" text="Choose another prisoner for this execution site, or finish the ceremony and return to camp." />
   </strings>
 </base>

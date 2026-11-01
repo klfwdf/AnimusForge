@@ -366,7 +366,7 @@
   "AF_FC_Fact_Dismissed": ", discharging {COUNT} troublemakers",
   "AF_CONV_Ambient_OpenNpc": "[Scene chat] The player has not spoken to you. You now speak first and say one line to {TARGET} to start a natural chat. Topic: {TOPIC}. Speak only as {SELF} and only to {TARGET}; do not address the player and do not speak for anyone else.",
   "AF_CONV_Ambient_ReplyNpc": "[Scene chat] The player has not joined in. {PREV} just said to you: {LINE}. Reply to {PREV} only as {SELF}; you may agree, disagree or ask a question. Do not address the player and do not speak for anyone else.",
-  "AF_CONV_Ambient_OpenPlayer": "[Approach] You notice the player close by, step over and say one line to the player on your own initiative. Topic: {TOPIC}. Speak only as {SELF} and do not answer for the player.",
+  "AF_CONV_Ambient_OpenPlayer": "[Conversation opening] You notice the player close by and say one line to the player on your own initiative. Topic: {TOPIC}. Speak only as {SELF} and do not answer for the player.",
   "AF_CONV_Ambient_NoActions": "This is small talk: do not promise or carry out any trade, gift, recruitment, duel, fief, diplomacy or other game action.",
   "AF_CONV_Ambient_Topic_Kin": "you are kin and can talk about family news",
   "AF_CONV_Ambient_Topic_Friend": "you are on good terms and can catch up or share news",

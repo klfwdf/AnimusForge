@@ -32,13 +32,15 @@ internal sealed partial class FieldCampLayout
 	/// <summary>The player's tent at the end of the road, with banners, a war table and a chest.</summary>
 	private void PlaceCommand(string home)
 	{
-		Props.Add(new Prop { Kind = PropKind.Tent, CultureId = home, Position = new Vec2(0f, -2.5f), Yaw = 0f, Variant = 99, Scale = 1.6f });
-		Props.Add(new Prop { Kind = PropKind.Flag, CultureId = home, Position = new Vec2(0f, 6.6f) });
+			int tentAnchor = Props.Count + 1;
+			Props.Add(new Prop { Kind = PropKind.Tent, CultureId = home, Position = new Vec2(0f, -2.5f), Yaw = 0f, Variant = 99, Scale = 1.6f });
+		Props.Add(new Prop { Kind = PropKind.Flag, CultureId = home, Position = new Vec2(-3f, 6.6f) });
 		Props.Add(new Prop { Kind = PropKind.Standard, CultureId = home, Position = new Vec2(-4.4f, 1.8f) });
 		Props.Add(new Prop { Kind = PropKind.Standard, CultureId = home, Position = new Vec2(4.4f, 1.8f) });
-		Props.Add(new Prop { Kind = PropKind.Table, CultureId = home, Position = new Vec2(0f, 3.6f), Yaw = 0f, Variant = 0 });
-		Props.Add(new Prop { Kind = PropKind.Chest, CultureId = home, Position = new Vec2(2.6f, 3.2f), Yaw = 0.4f });
-		Props.Add(new Prop { Kind = PropKind.Rack, CultureId = home, Position = new Vec2(-2.8f, 3.0f), Yaw = 0f, Variant = 0 });
+			Props.Add(new Prop { Kind = PropKind.Table, CultureId = home, Position = new Vec2(0f, -0.6f), TentAnchor = tentAnchor });
+			Props.Add(new Prop { Kind = PropKind.Bed, CultureId = home, Position = new Vec2(-0.58f, -0.05f), TentAnchor = tentAnchor });
+			Props.Add(new Prop { Kind = PropKind.Chest, CultureId = home, Position = new Vec2(0.58f, -0.45f), TentAnchor = tentAnchor });
+			Props.Add(new Prop { Kind = PropKind.Rack, CultureId = home, Position = new Vec2(0.58f, 0.25f), TentAnchor = tentAnchor });
 		PlayerStart = new Vec2(0f, 12f);
 		PlayerFacing = new Vec2(0f, -1f);
 		StandbyOrigin = new Vec2(-8.8f, 8.6f);
@@ -69,9 +71,10 @@ internal sealed partial class FieldCampLayout
 			float y = FrontZoneBottom + 4f + line * 7f;
 			Props.Add(new Prop { Kind = PropKind.HorseBarrier, Position = Flank(sx, 0.3f, y), Yaw = 0f, Variant = line * 2 });
 			Props.Add(new Prop { Kind = PropKind.HorseBarrier, Position = Flank(sx, 0.62f, y), Yaw = 0f, Variant = line * 2 + 1 });
-			for (int i = 0; i < 6; i++)
+			for (int i = 0; i < 4; i++)
 			{
-				HorseSlots.Add(new Slot { Kind = SlotKind.Horse, Position = Flank(sx, 0.16f + i * 0.125f, y + 1.6f), Facing = new Vec2(0f, -1f) });
+				// Whole bodies clear the rail, and adjacent 1.6 m clearance discs do not overlap.
+					HorseSlots.Add(new Slot { Kind = SlotKind.Horse, Position = Flank(sx, 0.15f + i * 0.24f, y + 3.6f), Facing = new Vec2(0f, -1f) });
 			}
 		}
 		Props.Add(new Prop { Kind = PropKind.Trough, Position = Flank(sx, 0.45f, Front - 4.5f), Yaw = MathF.PI * 0.5f });

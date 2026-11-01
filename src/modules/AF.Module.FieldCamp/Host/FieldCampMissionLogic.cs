@@ -51,10 +51,15 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal int PoseVariant;
 		/// <summary>On a short stroll; walks back to Home on arrival.</summary>
 		internal bool Returning;
+		internal float MoveDeadline;
+		internal bool MoveBlocked;
 	}
 
 	private readonly List<MobileParty> _parties;
 	private readonly List<CampAgent> _agents = new List<CampAgent>();
+	private readonly Dictionary<Agent, CampAgent> _campAgentsByAgent = new Dictionary<Agent, CampAgent>();
+	private readonly HashSet<Agent> _sceneConversationAgents = new HashSet<Agent>();
+	private Agent _nativeConversationAgent;
 	private FieldCampLayout _layout;
 	private MatrixFrame _campFrame = MatrixFrame.Identity;
 	private float _campScale = 1f;
@@ -75,35 +80,30 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		_parties = parties ?? new List<MobileParty>();
 	}
 
-	/// <summary>
-	/// Same moment towns fire the campaign mission-started event: scene shout adds its
-	/// bubble view and history session here, so camp replies look and persist like towns.
-	/// </summary>
-	public override void OnBehaviorInitialize()
+	public override void AfterStart()
 	{
-		base.OnBehaviorInitialize();
-		try
-		{
-			ShoutBehavior.NotifyFieldCampMissionStartedForExternal(Mission);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log(LogSource, "[WARN] scene shout start hook failed: " + ex.Message);
-		}
+		base.AfterStart();
+		Mission.SetMissionMode(MissionMode.StartUp, atStart: true);
+		// CampaignMissionComponent owns the campaign events and conversation lifetime.
+		Campaign.Current.ConversationManager.ConversationBegin += OnCampConversationBegin;
+		Campaign.Current.ConversationManager.ConversationEnd += OnCampConversationEnd;
 	}
 
 	protected override void OnEndMission()
 	{
+		CleanupCampPrisonerCombatIsolation();
 		CleanupSlaughter("mission_end");
 		CleanupExecution("mission_end");
-		try
+		FieldCampSite.ReleaseCaches(Mission.Scene);
+		var conversations = Campaign.Current?.ConversationManager;
+		if (conversations != null)
 		{
-			ShoutBehavior.NotifyFieldCampMissionEndedForExternal(Mission);
+			conversations.ConversationBegin -= OnCampConversationBegin;
+			conversations.ConversationEnd -= OnCampConversationEnd;
 		}
-		catch (Exception ex)
-		{
-			Logger.Log(LogSource, "[WARN] scene shout end hook failed: " + ex.Message);
-		}
+		_sceneConversationAgents.Clear();
+		_campAgentsByAgent.Clear();
+		_nativeConversationAgent = null;
 		base.OnEndMission();
 	}
 
@@ -150,6 +150,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		if (_upkeepTimer <= 0f)
 		{
 			_upkeepTimer = UpkeepIntervalSeconds;
+			MaintainCampPrisonerCombatIsolation();
+			TickCeremonyPreparation();
 			TickCeremonyReturn();
 			if (!_ceremonyActive)
 			{
@@ -158,6 +160,13 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 				TickEnvoys();
 			}
 		}
+	}
+
+	public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit,
+		in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
+	{
+		base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
+		OnCampPrisonerScoreHit(affectedAgent, affectorAgent, isBlocked, in blow, in collisionData, damagedHp);
 	}
 
 	public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow blow)
@@ -169,14 +178,13 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 		_slaughter?.OnAgentRemoved(affectedAgent, affectorAgent, agentState);
 		_duelists.Remove(affectedAgent);
-		if (_prisoners.Remove(affectedAgent))
-		{
-			WritePrisonerCasualty(affectedAgent, agentState);
-		}
+		OnCampPrisonerRemoved(affectedAgent, affectorAgent, agentState, blow);
+		_sceneConversationAgents.Remove(affectedAgent);
 		for (int i = _agents.Count - 1; i >= 0; i--)
 		{
 			if (_agents[i].Agent == affectedAgent)
 			{
+				_campAgentsByAgent.Remove(affectedAgent);
 				_agents.RemoveAt(i);
 			}
 		}
@@ -204,7 +212,9 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 		catch (Exception ex)
 		{
-			Logger.Log(LogSource, "camp set-up failed: " + ex);
+				Logger.Log(LogSource, "camp set-up failed: " + ex);
+				AnimusForgeQuickInfo.Show(FieldCampText.PatrolFailed());
+				Mission.EndMission();
 		}
 	}
 
@@ -230,8 +240,9 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		{
 			return;
 		}
-		Vec3 pos = ToWorld(_layout.PlayerStart);
-		Vec2 dir = ToWorldDirection(_layout.PlayerFacing);
+			if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, ToWorld(_layout.PlayerStart), 0.45f, out Vec3 pos))
+				throw new InvalidOperationException("Player start has no grounded clearance.");
+			Vec2 dir = ToWorldDirection(_layout.PlayerFacing);
 		AgentBuildData data = new AgentBuildData(hero)
 			.Team(_team)
 			.TroopOrigin(new PartyAgentOrigin(PartyBase.MainParty, hero, -1, default(UniqueTroopDescriptor), false, true))
@@ -358,8 +369,12 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 		try
 		{
-			Vec3 pos = ToWorld(local);
-			Vec2 dir = ToWorldDirection(facing.LengthSquared < 0.01f ? new Vec2(0f, 1f) : facing);
+				if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, ToWorld(local), 0.35f, out Vec3 pos))
+				{
+					Logger.Log(LogSource, "spawn skipped blocked slot troop=" + character.StringId);
+					return null;
+				}
+				Vec2 dir = ToWorldDirection(facing.LengthSquared < 0.01f ? new Vec2(0f, 1f) : facing);
 			AgentBuildData data = new AgentBuildData(character)
 				.Team(_team)
 				// The camp scene only shows the roster: an invincible origin never writes
@@ -388,7 +403,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 
 	private void Track(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass, FieldCampLayout.WorkKind work = FieldCampLayout.WorkKind.None)
 	{
-		Vec3 home = ToWorld(local);
+		Vec3 home = agent.Position;
 		var entry = new CampAgent
 		{
 			Agent = agent,
@@ -401,7 +416,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(4f, 14f)
 		};
 		entry.TargetFacing = entry.HomeFacing;
-		_agents.Add(entry);
-		HoldAt(entry);
+			_agents.Add(entry);
+			_campAgentsByAgent[agent] = entry;
+			HoldAt(entry);
 	}
 }

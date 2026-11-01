@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -23,7 +24,22 @@ public sealed partial class FieldCampMissionLogic
 	private const int AttackersPerPrisoner = 2;
 	private const int MaxAttackers = 16;
 
+	private sealed class CampPrisoner
+	{
+		internal CharacterObject Character;
+		internal PartyBase Captor;
+		internal bool SpawnedWounded;
+		internal Agent FatalAffector;
+		internal int FatalBlowOwnerId = -1;
+		internal float FatalHitTime = -1f;
+		internal bool FatalCanKill;
+	}
+
 	private readonly List<Agent> _prisoners = new List<Agent>();
+	// Only these exact Agent instances may change the campaign prison roster.
+	private readonly Dictionary<Agent, CampPrisoner> _campPrisoners = new Dictionary<Agent, CampPrisoner>();
+	private Team _prisonerTeam;
+	private Team _prisonerPlayerTeam;
 	private int _standbyUsed;
 	private TroopInspectionPrisonerSlaughterRuntime _slaughter;
 
@@ -184,7 +200,13 @@ public sealed partial class FieldCampMissionLogic
 			FieldCampLayout.Slot slot = _layout.HorseSlots[i];
 			try
 			{
-				Vec3 pos = ToWorld(slot.Position);
+				// Props already exist. Never use their top surface as the horse's floor.
+				Vec3 desired = _campFrame.TransformToParent(new Vec3(slot.Position.x * _campScale, slot.Position.y * _campScale, 0f));
+				if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, desired, 1.5f, out Vec3 pos))
+				{
+					Logger.Log(LogSource, "horse slot skipped: no safe ground slot=" + i);
+					continue;
+				}
 				Vec2 dir = ToWorldDirection(slot.Facing);
 				var element = new ItemRosterElement(kinds[i % kinds.Count], 1);
 				Agent horse = Mission.SpawnMonster(element, default(ItemRosterElement), in pos, in dir);
@@ -227,6 +249,7 @@ public sealed partial class FieldCampMissionLogic
 		{
 			return;
 		}
+		EnsureCampPrisonerCombatTeams();
 		var picks = new List<CharacterObject>();
 		var regulars = new List<TroopRosterElement>();
 		for (int i = 0; i < roster.Count; i++)
@@ -263,26 +286,47 @@ public sealed partial class FieldCampMissionLogic
 				}
 			}
 		}
+		var occurrences = new Dictionary<CharacterObject, int>();
 		for (int i = 0; i < picks.Count; i++)
 		{
-			Agent agent = SpawnPrisoner(picks[i], _layout.PrisonerSlots[i]);
+			CharacterObject character = picks[i];
+			occurrences.TryGetValue(character, out int occurrence);
+			occurrences[character] = occurrence + 1;
+			int rosterIndex = roster.FindIndexOfTroop(character);
+			if (rosterIndex < 0)
+			{
+				continue;
+			}
+			TroopRosterElement element = roster.GetElementCopyAtIndex(rosterIndex);
+			bool wounded = character.IsHero ? character.HeroObject.IsWounded : occurrence >= element.Number - element.WoundedNumber;
+			Agent agent = SpawnPrisoner(character, _layout.PrisonerSlots[i], wounded);
 			if (agent != null)
 			{
 				_prisoners.Add(agent);
+				_campPrisoners.Add(agent, new CampPrisoner { Character = character, Captor = PartyBase.MainParty, SpawnedWounded = wounded });
+				ApplyPrisonerPose(agent);
 			}
 		}
+		MaintainCampPrisonerCombatIsolation();
 	}
 
-	private Agent SpawnPrisoner(CharacterObject character, FieldCampLayout.Slot slot)
+	private Agent SpawnPrisoner(CharacterObject character, FieldCampLayout.Slot slot, bool wounded)
 	{
 		try
 		{
-			Vec3 pos = ToWorld(slot.Position);
-			Vec2 dir = ToWorldDirection(slot.Facing);
+				if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, ToWorld(slot.Position), 0.35f, out Vec3 pos))
+				{
+					Logger.Log(LogSource, "prisoner spawn skipped blocked slot troop=" + character.StringId);
+					return null;
+				}
+				Vec2 dir = ToWorldDirection(slot.Facing);
+			var origin = new PrisonerAgentOrigin(character);
+			// This camp owns casualties, including the real killer and wounded samples.
+			// Mark before SpawnAgent so no native/third-party origin callback can settle twice.
+			origin.MarkCampaignCasualtyHandledExternally("field_camp_captive_owner");
 			AgentBuildData data = new AgentBuildData(character)
-				.Team(_team)
-				// The prisoner origin writes a slaughter kill back to the prison roster.
-				.TroopOrigin(new PrisonerAgentOrigin(character))
+				.Team(_prisonerTeam)
+				.TroopOrigin(origin)
 				.Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(character.Race, "_settlement"))
 				.CivilianEquipment(true)
 				.NoHorses(true)
@@ -290,9 +334,13 @@ public sealed partial class FieldCampMissionLogic
 				.InitialDirection(in dir)
 				.Controller(AgentControllerType.AI);
 			Agent agent = Mission.SpawnAgent(data);
-			if (agent != null)
+			if (agent != null && character.IsHero)
 			{
-				ApplyPrisonerPose(agent);
+				agent.Health = Math.Max(1, character.HeroObject.HitPoints);
+			}
+			else if (agent != null && wounded)
+			{
+				agent.Health = Math.Max(1f, agent.HealthLimit * 0.3f);
 			}
 			return agent;
 		}
@@ -303,16 +351,17 @@ public sealed partial class FieldCampMissionLogic
 		}
 	}
 
-	/// <summary>Unarmed, unhurtable and frozen in a cowering idle until a slaughter order makes regulars mortal.</summary>
+	/// <summary>Registered camp captives remain mortal, unarmed, bound and AI-paused, including after slaughter restore.</summary>
 	private void ApplyPrisonerPose(Agent agent)
 	{
-		if (agent == null || !agent.IsActive())
+		if (agent == null || !agent.IsActive() || !_campPrisoners.ContainsKey(agent) || !_prisoners.Contains(agent)
+			|| RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(agent))
 		{
 			return;
 		}
 		try
 		{
-			agent.SetMortalityState(Agent.MortalityState.Invulnerable);
+			agent.SetMortalityState(Agent.MortalityState.Mortal);
 			agent.SetIsAIPaused(isPaused: true);
 			agent.DisableScriptedMovement();
 			agent.SetAgentFlags(agent.GetAgentFlags() & ~AgentFlag.CanGetAlarmed);
@@ -539,31 +588,285 @@ public sealed partial class FieldCampMissionLogic
 		return pool.GetRange(0, wanted);
 	}
 
+	// ---------- ordinary camp-captive damage (never the Vengeance victim) ----------
+
 	/// <summary>
-	/// The camp mission has no BattleAgentLogic, so a prisoner's death or knock-out is
-	/// written to the prison roster here (captured lords are invulnerable and never targeted).
+	/// Native singleplayer cancels melee against friends AND non-enemy humans. Two
+	/// neutral-side teams isolate the player/captives; the camp army stays peaceful.
+	/// Created once, without changing Mission.PlayerTeam or any existing team pair.
 	/// </summary>
-	private static void WritePrisonerCasualty(Agent agent, AgentState state)
+	private void EnsureCampPrisonerCombatTeams()
 	{
-		if (!(agent.Origin is PrisonerAgentOrigin origin) || !(agent.Character is CharacterObject c) || c.IsHero)
+		if (_prisonerTeam != null && _prisonerPlayerTeam != null)
+		{
+			return;
+		}
+		_prisonerPlayerTeam = Mission.Teams.Add(BattleSideEnum.None, _team.Color, _team.Color2, _team.Banner, false, false);
+		_prisonerTeam = Mission.Teams.Add(BattleSideEnum.None, 0xFF7A2020u, 0xFF2A0808u, null, false, false);
+		_prisonerPlayerTeam.SetIsEnemyOf(_prisonerTeam, true);
+		_prisonerTeam.SetIsEnemyOf(_prisonerPlayerTeam, true);
+	}
+
+	/// <summary>
+	/// Called after spawn and by the 0.5 s camp upkeep. O(1), no agent/team scans:
+	/// duels, slaughter and Vengeance own temporary teams until they release them.
+	/// </summary>
+	private void MaintainCampPrisonerCombatIsolation()
+	{
+		if (_prisonerTeam == null || _prisonerPlayerTeam == null || Mission == null || Mission.IsMissionEnding
+			|| _ceremonyActive || SlaughterBusy || _duelists.Count != 0 || Mission.Mode == MissionMode.Conversation)
+		{
+			return;
+		}
+		Agent player = Mission.MainAgent;
+		if (player == null || !player.IsActive())
+		{
+			return;
+		}
+		if (_prisoners.Count == 0)
+		{
+			if (player.Team == _prisonerPlayerTeam)
+			{
+				player.SetTeam(_team, true);
+			}
+			return;
+		}
+		if (player.Team == _team)
+		{
+			player.SetTeam(_prisonerPlayerTeam, true);
+		}
+		// Other scoped combat owners may clear this pair; restore only our own pair.
+		if (!_prisonerPlayerTeam.IsEnemyOf(_prisonerTeam))
+		{
+			_prisonerPlayerTeam.SetIsEnemyOf(_prisonerTeam, true);
+		}
+		if (!_prisonerTeam.IsEnemyOf(_prisonerPlayerTeam))
+		{
+			_prisonerTeam.SetIsEnemyOf(_prisonerPlayerTeam, true);
+		}
+	}
+
+	/// <summary>Call before fading the pen duplicate. Its origin is already externally owned.</summary>
+	private void ForgetCampPrisonerForCeremony(Agent agent)
+	{
+		if (agent != null)
+		{
+			_campPrisoners.Remove(agent);
+			_prisoners.Remove(agent);
+		}
+	}
+
+	/// <summary>Mission teardown only; never turn removal/exit into a campaign casualty.</summary>
+	private void CleanupCampPrisonerCombatIsolation()
+	{
+		_campPrisoners.Clear();
+		_prisoners.Clear();
+		try
+		{
+			Agent player = Mission?.MainAgent;
+			if (player != null && player.IsActive() && player.Team == _prisonerPlayerTeam)
+			{
+				player.SetTeam(_team, true);
+			}
+			if (_prisonerTeam != null && _prisonerPlayerTeam != null)
+			{
+				_prisonerPlayerTeam.SetIsEnemyOf(_prisonerTeam, false);
+				_prisonerTeam.SetIsEnemyOf(_prisonerPlayerTeam, false);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "prisoner isolation cleanup failed: " + ex.Message);
+		}
+	}
+
+	/// <summary>
+	/// Main OnScoreHit forwards its native input here. Health has already been reduced
+	/// by Agent.HandleBlow, and the death decider runs AFTER this callback. No synthetic
+	/// damage, damage multiplier override or most-recent-nonfatal-hit attribution.
+	/// </summary>
+	private void OnCampPrisonerScoreHit(Agent affected, Agent affector, bool isBlocked, in Blow blow, in AttackCollisionData collision, float damage)
+	{
+		if (Mission == null || Mission.IsMissionEnding || affected == null || affected.IsFadingOut()
+			|| !_campPrisoners.TryGetValue(affected, out CampPrisoner prisoner) || !_prisoners.Contains(affected)
+			|| RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affected)
+			|| isBlocked || damage <= 0f || blow.InflictedDamage <= 0 || blow.IsFallDamage || collision.IsFallDamage
+			|| collision.CollisionResult != CombatCollisionResult.StrikeAgent || affector == null || affector == affected
+			|| blow.OwnerId != affector.Index)
+		{
+			return;
+		}
+		Agent actor = affector.IsMount ? affector.RiderAgent : affector;
+		if (actor == null || !actor.IsHuman || actor == affected)
+		{
+			return;
+		}
+		Hero hero = prisoner.Character.HeroObject;
+		if (hero != null && hero.IsAlive && hero.PartyBelongedToAsPrisoner == prisoner.Captor)
+		{
+			hero.HitPoints = Math.Max(1, (int)Math.Ceiling(affected.Health));
+		}
+		if (affected.Health < 1f)
+		{
+			prisoner.FatalAffector = actor;
+			prisoner.FatalBlowOwnerId = blow.OwnerId;
+			prisoner.FatalHitTime = Mission.CurrentTime;
+			prisoner.FatalCanKill = blow.DamageType != DamageTypes.Blunt
+				|| (blow.WeaponRecord.WeaponFlags & WeaponFlags.CanKillEvenIfBlunt) != 0;
+		}
+	}
+
+	/// <summary>One death decision, exact registered instance and this frame's real lethal attack only.</summary>
+	private bool ShouldKillCampPrisoner(Agent affected)
+	{
+		if (Mission == null || Mission.IsMissionEnding || affected == null || affected.Health >= 1f || affected.IsFadingOut()
+			|| !_campPrisoners.TryGetValue(affected, out CampPrisoner prisoner) || !_prisoners.Contains(affected)
+			|| RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affected)
+			|| !prisoner.FatalCanKill || !HasFreshCampPrisonerFatalHit(prisoner))
+		{
+			return false;
+		}
+		return prisoner.FatalAffector == Mission.MainAgent
+			|| (_slaughter?.ControlsAgent(prisoner.FatalAffector) == true && _slaughter.ControlsAgent(affected));
+	}
+
+	private bool HasFreshCampPrisonerFatalHit(CampPrisoner prisoner)
+	{
+		float age = Mission.CurrentTime - prisoner.FatalHitTime;
+		return prisoner.FatalAffector != null && prisoner.FatalHitTime >= 0f && age >= 0f && age <= 0.1f;
+	}
+
+	/// <summary>
+	/// Add the returned behavior in the camp launcher. Vengeance captures it as its
+	/// downstream decider; unrelated actors return None and retain native surgery.
+	/// </summary>
+	internal static MissionBehavior CreateCampPrisonerStateDecider() => new CampPrisonerStateDecider();
+
+	private sealed class CampPrisonerStateDecider : MissionLogic, IAgentStateDecider
+	{
+		public AgentState GetAgentState(Agent affected, float deathProbability, out bool usedSurgery)
+		{
+			usedSurgery = false;
+			FieldCampMissionLogic camp = Mission?.GetMissionBehavior<FieldCampMissionLogic>();
+			if (camp != null && camp.ShouldKillCampPrisoner(affected))
+			{
+				return AgentState.Killed;
+			}
+			// Native calls only the first decider. Preserve a later duel/other owner,
+			// never call an earlier Vengeance wrapper (which would recurse into us).
+			bool afterThis = false;
+			foreach (MissionBehavior behavior in Mission.MissionBehaviors)
+			{
+				if (ReferenceEquals(behavior, this))
+				{
+					afterThis = true;
+				}
+				else if (afterThis && behavior is IAgentStateDecider downstream)
+				{
+					return downstream.GetAgentState(affected, deathProbability, out usedSurgery);
+				}
+			}
+			return AgentState.None;
+		}
+	}
+
+	/// <summary>
+	/// Replaces the main OnAgentRemoved prison-list/remove/write block. Claims the
+	/// instance before any campaign event can re-enter; FadeOut/exit/rout never settle.
+	/// </summary>
+	private void OnCampPrisonerRemoved(Agent affected, Agent affector, AgentState state, KillingBlow blow)
+	{
+		if (affected == null || !_campPrisoners.TryGetValue(affected, out CampPrisoner prisoner))
+		{
+			return;
+		}
+		_campPrisoners.Remove(affected);
+		bool displayedCaptive = _prisoners.Remove(affected);
+		if (!displayedCaptive || Mission == null || Mission.IsMissionEnding || affected.IsFadingOut()
+			|| RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affected)
+			|| (state != AgentState.Killed && state != AgentState.Unconscious)
+			|| (!(blow.IsValid && blow.InflictedDamage > 0) && !HasFreshCampPrisonerFatalHit(prisoner)))
 		{
 			return;
 		}
 		try
 		{
-			if (state == AgentState.Killed)
+			CharacterObject character = prisoner.Character;
+			TroopRoster roster = prisoner.Captor?.PrisonRoster;
+			if (prisoner.Captor != PartyBase.MainParty || roster == null || roster.GetTroopCount(character) <= 0)
 			{
-				origin.SetKilled();
+				return;
 			}
-			else if (state == AgentState.Unconscious)
+			Agent actor = null;
+			Agent blowOwner = affector;
+			if (blow.IsValid && blow.InflictedDamage > 0 && blow.OwnerId >= 0
+				&& (blowOwner == null || blowOwner.Index != blow.OwnerId))
 			{
-				origin.SetWounded();
+				blowOwner = Mission.FindAgentWithIndex(blow.OwnerId);
 			}
-			Logger.Log(LogSource, "prisoner casualty troop=" + c.StringId + " state=" + state);
+			if (blow.IsValid && blow.InflictedDamage > 0 && blowOwner != null && blow.OwnerId == blowOwner.Index)
+			{
+				actor = blowOwner.IsMount ? blowOwner.RiderAgent : blowOwner;
+			}
+			else if (HasFreshCampPrisonerFatalHit(prisoner)
+				&& (!blow.IsValid || blow.OwnerId == prisoner.FatalBlowOwnerId || blow.OwnerId == prisoner.FatalAffector.Index))
+			{
+				actor = prisoner.FatalAffector;
+			}
+			Hero killer = (actor?.Character as CharacterObject)?.HeroObject;
+			if (character.IsHero)
+			{
+				Hero hero = character.HeroObject;
+				if (hero == null || !hero.IsAlive || hero.PartyBelongedToAsPrisoner != prisoner.Captor)
+				{
+					return;
+				}
+				if (hero.DeathMark != KillCharacterAction.KillCharacterActionDetail.None)
+				{
+					// Another authoritative campaign owner has already accepted this death.
+					return;
+				}
+				if (state == AgentState.Unconscious)
+				{
+					// Do not add a death mark to a merely wounded hero.
+					hero.MakeWounded();
+				}
+				else
+				{
+					// Unlike ApplyByBattle(null), this fires native execution relations,
+					// honor loss, captivity removal and HeroKilled with the real killer.
+					KillCharacterAction.ApplyByExecution(hero, killer, true, true);
+					if (hero.IsAlive && hero.DeathMark == KillCharacterAction.KillCharacterActionDetail.None)
+					{
+						Logger.Log(LogSource, "[ERROR] captive scene death not accepted by campaign hero=" + character.StringId);
+					}
+				}
+			}
+			else
+			{
+				int index = roster.FindIndexOfTroop(character);
+				TroopRosterElement element = roster.GetElementCopyAtIndex(index);
+				if (state == AgentState.Killed)
+				{
+					// A sampled pre-wounded man must remove one wounded count too.
+					if ((prisoner.SpawnedWounded && element.WoundedNumber <= 0)
+						|| (!prisoner.SpawnedWounded && element.Number <= element.WoundedNumber))
+					{
+						return;
+					}
+					roster.AddToCounts(character, -1, false, prisoner.SpawnedWounded ? -1 : 0);
+				}
+				else if (!prisoner.SpawnedWounded && element.Number > element.WoundedNumber)
+				{
+					roster.WoundTroop(character, 1, default(UniqueTroopDescriptor));
+				}
+			}
+			Logger.Log(LogSource, "prisoner casualty troop=" + character.StringId + " state=" + state
+				+ " killer=" + (killer?.StringId ?? "none") + " player=" + (actor == Mission.MainAgent));
 		}
 		catch (Exception ex)
 		{
-			Logger.Log(LogSource, "prisoner casualty write failed troop=" + c.StringId + " error=" + ex.Message);
+			Logger.Log(LogSource, "[ERROR] prisoner casualty write failed troop=" + prisoner.Character.StringId + " error=" + ex);
 		}
 	}
 

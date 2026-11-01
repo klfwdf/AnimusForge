@@ -359,6 +359,7 @@
   "scene_execution_role_victim": "You are the condemned prisoner at this public execution, awaiting {METHOD} in {VENUE} for {CHARGE}.",
   "scene_execution_role_guard": "You are a guard at this public execution in {VENUE}, guarding {VICTIM}, who awaits {METHOD} for {CHARGE}.",
   "scene_execution_role_crowd": "You are a civilian watching this public execution in {VENUE}; the condemned prisoner is {VICTIM}, awaiting {METHOD} for {CHARGE}.",
+  "scene_execution_role_camp_crowd": "You are a soldier watching this public execution in {VENUE}; the condemned prisoner is {VICTIM}, awaiting {METHOD} for {CHARGE}.",
   "rebel_no_summary": "none",
   "rebel_no_fief_summary": "No available fief summary",
   "Project_Remainder_1": "equipment",

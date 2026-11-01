@@ -6,12 +6,15 @@ using TaleWorlds.MountAndBlade;
 
 namespace RichExecutions.Core;
 
-/// <summary>
-/// Owns the one-active-host rule shared by the standalone module and the
-/// AnimusForge-hosted build. The standalone submodule checks this before it
-/// registers anything, so an AnimusForge build can take over without loading
-/// a second copy of the menus, campaign behavior, or mission controller.
-/// </summary>
+/// <summary>Bounded camp preparation acknowledgement; no engine actors are created while pending.</summary>
+internal enum FieldCampCeremonyReadiness
+{
+    Pending = 0,
+    Ready = 1,
+    Failed = 2
+}
+
+/// <summary>Owns the one-active-host rule for the standalone and embedded builds.</summary>
 public static class VengeanceIntegration
 {
     private static readonly object Sync = new();
@@ -23,15 +26,16 @@ public static class VengeanceIntegration
 
     public static bool IsEnabled { get; private set; } = true;
 
-    // Field-camp host hooks. A field camp has no town, location or townspeople:
-    // the host says whether the given mission is a camp, hides its own copy of
-    // the condemned hero when the ceremony is staged, brings its soldiers to
-    // watch, and sends them back when the ceremony releases the scene. All are
-    // called once per ceremony, never per tick.
+    // Optional camp owner. Preparation is polled at most every 0.5 s, keyed by
+    // session; staging and release remain once-only notifications. No AF types
+    // enter the shared standalone source. Missing preparation keeps legacy flow.
     public static Func<Mission?, bool>? FieldCampMissionProbe { get; set; }
     public static Action<Hero, Vec3, Vec2>? FieldCampCeremonyStaged { get; set; }
     public static Action? FieldCampCeremonyReleased { get; set; }
-    // Read the camp owner's activity state; scene identity alone is not admission.
+    internal static Func<Guid, Hero, Vec3, Vec2, float, FieldCampCeremonyReadiness>? FieldCampCeremonyPreparation { get; set; }
+    internal static Func<Guid, IReadOnlyList<Agent>>? FieldCampCeremonyBorrowedCrowd { get; set; }
+    internal static Action<Guid>? FieldCampCeremonyPreparationReleased { get; set; }
+    // Read the camp owner's activity state only before starting preparation.
     internal static Func<Mission?, bool>? FieldCampCeremonyAdmissionProbe { get; set; }
 
     internal static bool CanStartFieldCampCeremony()

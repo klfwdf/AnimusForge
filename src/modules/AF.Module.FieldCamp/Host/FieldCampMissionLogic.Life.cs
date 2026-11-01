@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using SandBox;
+using SandBox.Missions.AgentBehaviors;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -62,7 +65,7 @@ public sealed partial class FieldCampMissionLogic
 	/// <summary>Idempotent: several speakers may emit the same order in one shout.</summary>
 	internal bool Assemble()
 	{
-		if (!_spawned || _assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive)
+		if (!_spawned || _assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive || _sceneConversationAgents.Count > 0 || _envoy != null)
 		{
 			return false;
 		}
@@ -86,7 +89,7 @@ public sealed partial class FieldCampMissionLogic
 
 	internal bool Dismiss()
 	{
-		if (!_spawned || !_assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive)
+		if (!_spawned || !_assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive || _sceneConversationAgents.Count > 0)
 		{
 			return false;
 		}
@@ -191,6 +194,90 @@ public sealed partial class FieldCampMissionLogic
 		}
 	}
 
+	// Scene interaction owns these agents until its original owner releases them.
+	internal bool IsSceneConversationHeld(Agent agent) => agent != null && _sceneConversationAgents.Contains(agent);
+
+	internal bool IsCampAgentBusyForConversation(Agent agent) => agent == null || IsSceneConversationHeld(agent) ||
+		_envoy?.Agent == agent || IsDuelist(agent) || SlaughterBusy || _ceremonyActive || IsCeremonyAgentHeld(agent);
+
+	internal bool IsCampAgentSeated(Agent agent)
+	{
+		if (agent == null || !_campAgentsByAgent.TryGetValue(agent, out CampAgent entry) || !entry.Seated) return false;
+		return entry.Work == FieldCampLayout.WorkKind.Sit || entry.Work == FieldCampLayout.WorkKind.Eat ||
+			entry.Work == FieldCampLayout.WorkKind.Lie || entry.Activity == Activity.Fire || entry.Activity == Activity.Wounded;
+	}
+
+	internal bool IsCampPrisoner(Agent agent) => agent != null && _prisoners.Contains(agent);
+
+	internal bool CanStartNativeConversation(Agent agent) =>
+		agent != null && (_campAgentsByAgent.ContainsKey(agent) || _prisoners.Contains(agent)) &&
+		!_ceremonyActive && !SlaughterBusy && !IsDuelist(agent) && !IsCeremonyAgentHeld(agent);
+
+	internal bool TryAcquireSceneConversation(Agent agent)
+	{
+		if (agent == null || !agent.IsActive() || !ReferenceEquals(Mission.Current, Mission) || Mission.IsMissionEnding ||
+			SlaughterBusy || IsDuelist(agent) || _ceremonyActive || IsCeremonyAgentHeld(agent)) return false;
+		if (!_campAgentsByAgent.TryGetValue(agent, out CampAgent campAgent) && !_prisoners.Contains(agent)) return false;
+		if (_sceneConversationAgents.Contains(agent)) return true;
+		try
+		{
+			if (!TryPrepareCampNavigation(agent)) return false;
+			if (!agent.IsUsingGameObject && agent.CurrentlyUsedGameObject == null)
+			{
+				if (campAgent != null)
+				{
+					ReleasePose(campAgent);
+					campAgent.Seated = false;
+				}
+				StopCampNavigation(agent);
+				if (_prisoners.Contains(agent)) agent.SetIsAIPaused(false);
+			}
+			_sceneConversationAgents.Add(agent);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "conversation acquisition failed agent=" + agent.Index + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	internal void ReleaseSceneConversation(Agent agent)
+	{
+		if (agent == _nativeConversationAgent && Campaign.Current?.ConversationManager?.IsConversationInProgress == true) return;
+		if (agent == null || !_sceneConversationAgents.Remove(agent) || !agent.IsActive() ||
+			!ReferenceEquals(Mission.Current, Mission) || Mission.IsMissionEnding || SlaughterBusy || IsDuelist(agent) || _ceremonyActive) return;
+			if (agent.IsUsingGameObject || agent.CurrentlyUsedGameObject != null) return;
+			StopCampNavigation(agent);
+			if (_envoy?.Agent == agent)
+		{
+			_envoyNavigationActive = false;
+			return;
+		}
+		if (_campAgentsByAgent.TryGetValue(agent, out CampAgent entry))
+		{
+			entry.Target = entry.Home;
+			entry.TargetFacing = entry.HomeFacing;
+			entry.Returning = false;
+			entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 60f);
+			MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
+		}
+		else if (_prisoners.Contains(agent)) ApplyPrisonerPose(agent);
+	}
+
+	private void OnCampConversationBegin()
+	{
+		var agent = Campaign.Current?.ConversationManager?.OneToOneConversationAgent as Agent;
+		if (TryAcquireSceneConversation(agent)) _nativeConversationAgent = agent;
+	}
+
+	private void OnCampConversationEnd()
+	{
+		Agent agent = _nativeConversationAgent;
+		_nativeConversationAgent = null;
+		ReleaseSceneConversation(agent);
+	}
+
 	// ---------- camp life ----------
 
 	private void UpkeepBatchOfAgents()
@@ -206,19 +293,36 @@ public sealed partial class FieldCampMissionLogic
 			_upkeepCursor = (_upkeepCursor + 1) % count;
 			CampAgent entry = _agents[_upkeepCursor];
 			Agent agent = entry.Agent;
-			if (agent == null || !agent.IsActive() || IsDuelist(agent) || IsEnvoy(entry) || (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(entry)))
+			if (agent == null || !agent.IsActive() || IsDuelist(agent) || IsEnvoy(entry) || IsSceneConversationHeld(agent)
+					|| (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(entry)))
 			{
 				continue;
 			}
-			if (!_assembled && entry.Activity == Activity.Wander && _elapsed >= entry.NextWanderTime && _layout.WanderSlots.Count > 0)
-			{
-				entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(8f, 20f);
-				Vec2 local = _layout.WanderSlots[MBRandom.RandomInt(_layout.WanderSlots.Count)].Position
-					+ new Vec2(MBRandom.RandomFloatRanged(-1.5f, 1.5f), MBRandom.RandomFloatRanged(-1.5f, 1.5f));
-				entry.Target = ToWorld(local);
-				MoveTo(entry, entry.Target, entry.TargetFacing, run: false);
-				continue;
-			}
+				if (!entry.Seated && _elapsed >= entry.MoveDeadline)
+				{
+					// One bounded return attempt, never teleport a blocked walker home.
+					if (entry.Target.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
+					{
+						entry.Returning = false;
+						MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
+					}
+					else
+					{
+						agent.DisableScriptedMovement();
+						agent.ClearTargetFrame();
+						entry.Seated = true;
+						entry.MoveBlocked = true;
+						entry.NextWanderTime = _elapsed + 30f;
+					}
+					continue;
+				}
+				if (entry.MoveBlocked) continue;
+				if (!_assembled && entry.Seated && entry.Activity == Activity.Wander && _elapsed >= entry.NextWanderTime)
+				{
+					entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 45f);
+					if (TryNearbyStroll(entry, out Vec3 stroll)) MoveTo(entry, stroll, entry.HomeFacing, run: false);
+					continue;
+				}
 			if (!_assembled && entry.Seated && _elapsed >= entry.NextWanderTime && entry.Activity != Activity.Wounded && entry.Activity != Activity.Post)
 			{
 				Refresh(entry);
@@ -262,17 +366,12 @@ public sealed partial class FieldCampMissionLogic
 			ApplyPose(entry);
 			return;
 		}
-		if (roll < 0.75f && _layout.WanderSlots.Count > 0)
-		{
-			// A short stroll; Wander agents already roam, others return home after it.
-			entry.Returning = entry.Activity != Activity.Wander;
-			ReleasePose(entry);
-			Vec2 local = _layout.WanderSlots[MBRandom.RandomInt(_layout.WanderSlots.Count)].Position;
-			entry.Target = ToWorld(local);
-			MoveTo(entry, entry.Target, entry.TargetFacing, run: false);
-			entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(10f, 18f);
-			return;
-		}
+			if (roll < 0.75f && TryNearbyStroll(entry, out Vec3 stroll))
+			{
+				entry.Returning = entry.Activity != Activity.Wander;
+				MoveTo(entry, stroll, entry.HomeFacing, run: false);
+				return;
+			}
 		CampAgent mate = NearestIdleMate(entry, 9f);
 		if (mate == null)
 		{
@@ -293,7 +392,43 @@ public sealed partial class FieldCampMissionLogic
 		mate.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 60f);
 	}
 
-	private CampAgent NearestIdleMate(CampAgent entry, float radius)
+		private static bool TryPrepareCampNavigation(Agent agent)
+		{
+			var component = agent.GetComponent<CampaignAgentComponent>();
+			if (component == null) return false;
+			var navigator = component.AgentNavigator ?? component.CreateAgentNavigator();
+			if (navigator.GetBehaviorGroup<DailyBehaviorGroup>() == null) navigator.AddBehaviorGroup<DailyBehaviorGroup>();
+			return true;
+		}
+
+		private static void StopCampNavigation(Agent agent)
+		{
+			var navigator = agent?.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
+			navigator?.GetBehaviorGroup<DailyBehaviorGroup>()?.DisableScriptedBehavior();
+			navigator?.ClearTarget();
+			agent?.DisableScriptedMovement();
+			agent?.ClearTargetFrame();
+		}
+
+		private bool TryNearbyStroll(CampAgent entry, out Vec3 target)
+		{
+			target = entry.Home;
+			int count = _layout.WanderSlots.Count;
+			if (count == 0) return false;
+			int start = MBRandom.RandomInt(count);
+			for (int i = 0; i < Math.Min(count, 12); i++)
+			{
+				Vec3 candidate = ToWorld(_layout.WanderSlots[(start + i) % count].Position);
+				if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) > 64f ||
+					candidate.AsVec2.DistanceSquared(entry.Agent.Position.AsVec2) < 4f ||
+					!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) ||
+					!FieldCampSite.TryValidateGroundedPassage(Mission.Scene, entry.Agent.Position, target, 0.4f)) continue;
+				return true;
+			}
+			return false;
+		}
+
+		private CampAgent NearestIdleMate(CampAgent entry, float radius)
 	{
 		CampAgent best = null;
 		float bestDistance = radius * radius;
@@ -302,7 +437,9 @@ public sealed partial class FieldCampMissionLogic
 		{
 			CampAgent other = _agents[i];
 			if (other == entry || !other.Seated || other.Agent == null || !other.Agent.IsActive()
-				|| other.Activity == Activity.Sentry || other.Activity == Activity.Wounded || other.Activity == Activity.Post)
+				|| IsSceneConversationHeld(other.Agent) || IsEnvoy(other) || IsDuelist(other.Agent)
+					|| (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(other))
+					|| other.Activity == Activity.Sentry || other.Activity == Activity.Wounded || other.Activity == Activity.Post)
 			{
 				continue;
 			}
@@ -347,8 +484,13 @@ public sealed partial class FieldCampMissionLogic
 		}
 		try
 		{
-			entry.Seated = false;
-			var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, target, false);
+				ReleasePose(entry);
+				entry.Seated = false;
+				entry.Target = target;
+				entry.TargetFacing = facing;
+					entry.MoveDeadline = _elapsed + 25f;
+					entry.MoveBlocked = false;
+				var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, target, false);
 			Agent.AIScriptedFrameFlags flags = Agent.AIScriptedFrameFlags.NoAttack;
 			if (!run)
 			{
@@ -500,12 +642,8 @@ public sealed partial class FieldCampMissionLogic
 	{
 		try
 		{
-			float height = position.z;
-			if (scene.GetHeightAtPoint(position.AsVec2, BodyFlags.CommonCollisionExcludeFlags, ref height))
-			{
-				return height;
-			}
-			return scene.GetGroundHeightAtPosition(position);
+				if (FieldCampSite.TryGetCachedTerrainHeight(scene, position.AsVec2, out float height)) return height;
+				return scene.GetTerrainHeight(position.AsVec2);
 		}
 		catch
 		{

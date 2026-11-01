@@ -164,6 +164,7 @@
     <string id="AF_CONV_UI_Shout_RelayEnded" text="This relay round ended." />
     <string id="AF_CONV_UI_Ambient_FeedLabel" text="{NAME} (chat)" />
     <string id="AF_CONV_UI_Ambient_Approach" text="{NAME} comes over to talk to you." />
+    <string id="AF_CONV_UI_Ambient_InPlace" text="{NAME} would like to talk to you." />
     <string id="AF_CONV_UI_Shout_RelaySelectedUnavailable" text="This relay round ended: the selected next speaker left or cannot respond." />
     <string id="AF_CONV_UI_Shout_BudgetLimit" text="This relay round ended: the scene response participant budget was reached." />
     <string id="AF_CONV_UI_Shout_BudgetDenied" text="This relay round ended: the scene response budget did not allow another speaker." />

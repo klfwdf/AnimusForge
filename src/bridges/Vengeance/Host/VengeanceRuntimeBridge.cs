@@ -80,6 +80,7 @@ internal static class VengeanceRuntimeBridge
         UnsubscribeExecutionMemoryFacts();
         ExecutionSpeechDirector.LineShown = (request, sequence, cue, speaker, witnesses) =>
             Campaign.Current?.GetCampaignBehavior<MyBehavior>()?.RecordExecutionSpeech(request, sequence, cue, speaker, witnesses);
+        ExecutionSpeechDirector.AudioForShownLine = ShoutBehavior.TryPlayExecutionSpeechForExternal;
         RichExecutionEvents.ExecutionDeathCommitting += OnExecutionDeathCommitting;
         RichExecutionEvents.ExecutionCompleted += OnExecutionCompleted;
         RichExecutionEvents.ExecutionCancelled += OnExecutionCancelled;
@@ -88,6 +89,9 @@ internal static class VengeanceRuntimeBridge
     private static void UnsubscribeExecutionMemoryFacts()
     {
         ExecutionSpeechDirector.LineShown = null;
+        if (ExecutionSpeechDirector.AudioForShownLine == ShoutBehavior.TryPlayExecutionSpeechForExternal)
+            ExecutionSpeechDirector.AudioForShownLine = null;
+        ShoutBehavior.ResetExecutionSpeechAudioForExternal();
         RichExecutionEvents.ExecutionDeathCommitting -= OnExecutionDeathCommitting;
         RichExecutionEvents.ExecutionCompleted -= OnExecutionCompleted;
         RichExecutionEvents.ExecutionCancelled -= OnExecutionCancelled;
@@ -115,13 +119,23 @@ internal static class VengeanceRuntimeBridge
     {
         try { Campaign.Current?.GetCampaignBehavior<MyBehavior>()?.CompleteExecutionTranscript(args?.Outcome?.Request,
             args?.Outcome?.Success == true && args.Outcome.DeathCommitted, args?.Outcome?.Actor ?? ExecutionActor.Undecided); }
-        finally { ForgetExecutionFacts(args?.Outcome?.Request?.Victim); }
+        finally
+        {
+            if (args?.Outcome?.Request != null)
+                ShoutBehavior.CancelExecutionSpeechAudioForExternal(args.Outcome.Request.SessionId);
+            ForgetExecutionFacts(args?.Outcome?.Request?.Victim);
+        }
     }
 
     private static void OnExecutionCancelled(object sender, ExecutionCancelledEventArgs args)
     {
         try { Campaign.Current?.GetCampaignBehavior<MyBehavior>()?.CompleteExecutionTranscript(args?.Request, false); }
-        finally { ForgetExecutionFacts(args?.Request?.Victim); }
+        finally
+        {
+            if (args?.Request != null)
+                ShoutBehavior.CancelExecutionSpeechAudioForExternal(args.Request.SessionId);
+            ForgetExecutionFacts(args?.Request?.Victim);
+        }
     }
 
     private static void ForgetExecutionFacts(Hero victim)

@@ -164,6 +164,7 @@
     <string id="AF_CONV_UI_Shout_RelayEnded" text="本轮接力已结束" />
     <string id="AF_CONV_UI_Ambient_FeedLabel" text="{NAME}（闲聊）" />
     <string id="AF_CONV_UI_Ambient_Approach" text="{NAME}走过来想和你说话。" />
+    <string id="AF_CONV_UI_Ambient_InPlace" text="{NAME}想和你说话。" />
     <string id="AF_CONV_UI_Shout_RelaySelectedUnavailable" text="本轮接力已结束：选中的接话者已离场或无法回应" />
     <string id="AF_CONV_UI_Shout_BudgetLimit" text="本轮接力已结束：已达到场景回应人数预算" />
     <string id="AF_CONV_UI_Shout_BudgetDenied" text="本轮接力已结束：场景回应预算未允许继续接话" />

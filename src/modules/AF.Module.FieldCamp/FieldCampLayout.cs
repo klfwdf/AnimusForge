@@ -49,7 +49,8 @@ internal sealed partial class FieldCampLayout
 		WeaponHeap,
 		Bed,
 		ExecutionBlock,
-		Gallows
+			Gallows,
+			Bag
 	}
 
 	internal struct Prop
@@ -61,7 +62,9 @@ internal sealed partial class FieldCampLayout
 		internal float Yaw;
 		internal int Variant;
 		/// <summary>Uniform prefab scale; 0 means 1.</summary>
-		internal float Scale;
+			internal float Scale;
+			/// <summary>One-based index of the tent prop; Position/Yaw are in its doorway-local frame.</summary>
+			internal int TentAnchor;
 	}
 
 	internal enum SlotKind
@@ -253,18 +256,19 @@ internal sealed partial class FieldCampLayout
 						float x = c == 0 ? inner : outer;
 						Vec2 toLane = new Vec2(lane > x ? 1f : -1f, 0f);
 						Vec2 pos = new Vec2(x, y);
-						Props.Add(new Prop { Kind = PropKind.Tent, CultureId = culture, Position = pos, Yaw = YawOf(toLane), Variant = placed });
+							int tentAnchor = Props.Count + 1;
+							Props.Add(new Prop { Kind = PropKind.Tent, CultureId = culture, Position = pos, Yaw = YawOf(toLane), Variant = placed });
+							// The host fits these to the measured interior; keep the entrance/centre aisle clear.
+							Props.Add(new Prop { Kind = PropKind.Bedroll, CultureId = culture, Position = new Vec2(-0.55f, -0.15f), TentAnchor = tentAnchor, Variant = placed });
+							Props.Add(new Prop { Kind = PropKind.Chest, CultureId = culture, Position = new Vec2(0.58f, -0.5f), TentAnchor = tentAnchor });
+							Props.Add(new Prop { Kind = PropKind.Bag, CultureId = culture, Position = new Vec2(0.58f, 0.3f), TentAnchor = tentAnchor, Variant = 0 });
 						if (tentsForParty == 0)
 						{
-							Props.Add(new Prop { Kind = PropKind.Standard, CultureId = culture, Position = pos - toLane * 3f + new Vec2(0f, -1.5f) });
+							Props.Add(new Prop { Kind = PropKind.Standard, CultureId = culture, Position = pos + toLane * 1.8f + new Vec2(0f, -3.1f) });
 							if (partyIndex > 0)
 							{
 								LordSlots[party] = new Slot { Kind = SlotKind.Lord, Position = pos + toLane * 3f, Facing = toLane };
 							}
-						}
-						if (placed % 3 == 0)
-						{
-							Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = culture, Position = pos - toLane * 3f + new Vec2(0f, 1.5f), Yaw = placed * 0.7f, Variant = placed / 3 });
 						}
 						tentsForParty++;
 						placed++;
