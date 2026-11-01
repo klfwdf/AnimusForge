@@ -1,3 +1,16 @@
+## 2026-11-02 营地同场景连续处决（本地源码验收） {#field-camp-continuation-20261102}
+
+- 请求：接续最新 HANDOFF，处决完后对刽子手按 F 选择下一名俘虏；同一 Mission、不读条。范围仅营地接续与必要 AF 桥，不改变城镇离场结算，不部署/打包/push。
+- 产品提交 `e3dca92e64`；意图检查点 `202e8b361`。已有 dirty 与其他作者工作保留。
+- 接线证据（产品提交的一基行号）：`Vengeance/Source/Scene/TownExecutionMissionBehavior.Continuation.cs:20-130` 的 `CanContinueFieldCamp` / `ShowFieldCampContinuation` / `ContinueFieldCamp`：仅营地 Aftermath、恢复玩家及对话、已释放仪式、当前 Mission 有效时开放；单个选人弹窗，回调重验场景/俘虏/请求。先提交当前处决且确认 DeathCommitted，再 FinalizeSession；清理完成才移除当前 controller/deathLogic，Begin 新请求并注入同一 Mission。取消/离开选项结算并收掉刑场，留在营地。失败不启动下一场，注入异常取消新请求。
+- `TownExecutionMissionBehavior.Player.cs:21-26,69-70` / `TownExecutionMissionBehavior.Death.cs:2238-2245` 接 F 交互及提示（多阶段刑罚也可在 Aftermath 进入）；`TownExecutionMissionBehavior.cs:1004-1035` 在 AfterStart 接受保存的方法/预设/位置/朝向，跳过编辑器。`ExecutionSessionCoordinator.cs:195-237` 的 `InjectChainedSession`：先准备布局、保持专用死亡判定器首位，再显式调用两个新行为的 OnBehaviorInitialize/AfterStart（原版 AddMissionBehavior 仅 OnCreated）。AF 的 `VengeanceRuntimeBridge` 注册/卸载 `FieldCampControllerChanged`，替换冲突桥缓存；共享 Vengeance 源不引用 AF 类型。
+- 运行频率：选择列表仅按 F 时枚举主队俘虏；结算、清理、注入和桥缓存更新仅每场交接一次。未新增 Tick IO、反射或全量扫描。沿用既有营地 staging/release 围观及俘虏副本隐藏。
+- 文本：新增 `REX_FieldCamp_Continue_Description` 的 CN/EN UI，复用已有选择标题、按钮与刽子手提示；两 XML 已由 content-map 登记。本次逐项检查资源 key 唯一与消费路径通过，未修改内容包语言策略。
+- 验证：原 `build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Release`（无 Stage/Deploy）：1.3/1.4 与 Bootstrap 通过，双 coup seam gates 与 registration smoke 通过。最终日志 `.tmp/fc-chain-build-final.log`，产物 `bin/Release/single_module_artifacts/`。`dotnet run --project tests/Vengeance/FieldCampContinuationTests -c Release`：18 项通过，链接真实接续 orchestration，Mission/服务为替身（含结算/移除/Begin 顺序、重复回调、失效场景、取消、资格失效、Begin 拒绝及注入失败取消）；围观回归 `ExecutionCrowdDispersalTests` TOTAL 105。日志 `.tmp/fc-chain-tests.log` / `.tmp/fc-chain-crowd.log`。
+- 双语表 `check_bilingual_tables.py`：26 表、0 失败。`l10n_gate.py`：4 处既有外交源码中文常量失败，位置 `DiplomacySponsorReceiptRules.cs`，本提交未改该文件；日志 `.tmp/fc-chain-l10n.log`。未用局部通过宣称全仓语言门通过。
+- NOT-RUN：游戏内连续 2–3 次、每种刑罚、途中 TAB/离开刑场、围观回岗、战役即时死亡事件/记忆与旧档；独立 RichExecutions.csproj（约定路径缺失）。离线回归不等于原生引擎或实机验收。未部署、未打包、未推送。
+- 回滚：仅 `git revert e3dca92e64`，不要恢复整个 dirty 工作区。本文替代 HANDOFF 顶部上一条“同场景连续处决未完成”的源码状态，历史原记录保留。
+
 <a id="persona-full-regeneration-20261031"></a>
 ## 扩展字段生成开关与事件完整人设重生纠正 — 2026-10-31
 
