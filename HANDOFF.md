@@ -1,3 +1,13 @@
+## 2026-11-02 全部现有功能改动编译部署（CN）
+
+用户要求“带着所有改动提交编译部署”。源码 `49d7521fb44e40f9c3c518eb5bf62fb33a9bdfbf`：当前 HEAD 已含世界书与营地接续等产品修改，本轮补提交唯一剩余实质代码差异 `tests/modules/AF.Module.Prompt/ResidualLocalization/CourierProjection.cs`。其余源码/资源差异核实仅换行；保留本地私有 HANDOFF/主台账增量和 97 个空 NuGet 迁移标记，不提交生成物、不推送。
+
+原 `build_single_module.ps1 -Configuration Debug -Deploy` 完成 1.3.15.110062、1.4.6.115628 和 Bootstrap，两个实现均 0 错误（各 379 警告），双 coup seam/registration smoke 通过。CN 模块 v1.7.0 已覆盖到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新 438 个托管文件；没有改构建部署入口、打包、升版本或启动游戏。
+
+安装核验 PASS：9013 个 Stage 文件中 8988 个安装哈希相同；其余 2 个自定义提示词和 23 个较新/同时间戳布匿世界书文件按原规则保留。8997 个内容映射与源码逐项一致，11 个既有玩家配置哈希不变。1.3 DLL `40e3d5db…`、1.4 DLL `c6f2beff…`、Bootstrap `b9235d54…` 均与构建产物/marker 一致。营地接续 32 项、围观 105 项、双语表 26/0 通过；全仓语言门仍有既有外交中文常量 4 处失败。
+
+详细证据见[本轮主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-all-20261102)和 `.tmp/deploy-all-20261102-verification.json`；构建日志 `.tmp/deploy-all-20261102-build.log`。旧生成 Stage 保留在 `artifacts/deploy-backups/AnimusForge/stale-stage-20261102-49d7521/`，不是游戏安装备份；本轮无自动回滚。未验实机、旧档或全量业务回归；如需回退须选择明确源码候选重新构建部署，不重置共享工作区。
+
 ## 2026-11-02 原178世界书文件完善与本地提交
 
 已按《世界书指导.md》完成原178文件的正文、时间线、RAG及必要双语对应，最终304个JSON（302知识规则、2份东欧综述）；151对规则、2114个角色上下文离线检查通过。修正旧规则中不被运行时产生的职业角色值，使用现有Occupation粗桶；无新增运行代码/热路径IO。完整范围、消费者代码坐标、来源、证据和局限见[主台账本项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbook-pending-178-completion-20261102)。检查点 `304b879fef`；本地证据 `.tmp/worldbook-complete-20261102/`。
