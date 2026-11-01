@@ -1,3 +1,42 @@
+<a id="field-camp-nine-fixes-20261102"></a>
+## 2026-11-02 营地九项实测修复：源码收口，待构建与实机
+
+**SOURCE_COMPLETE / OFFLINE_CHECKS_PASS / BUILD_AND_GAME_NOT_RUN**。本地产品 `175a6e0cc7bf55ebbff87fd0740eba88b451cdb0`；本项接续 Claude Code 会话 `f0b1388c-f505-4503-bd09-7b9ff1272b3a` 的已批准计划 `parsed-strolling-pelican.md`。用户确认“写handoff转手”是供本次接续使用，不作为暂停指令。计划明确只实施源码、CN/EN、无需编译的定向检查与本地提交；本轮未构建、Stage、部署、打包、push、启动游戏或调用付费模型。
+
+### 目标与真实改动
+
+九项范围：帐篷内饰；常规HUD＋原生F交谈并保留AF输入；士兵步行围观；取消续场选人保留刑场；马位/地形/通道；日常移动与慢开场时序；当前处决的评论/求情；全部营地俘虏含英雄可受伤/死亡并回写；处决气泡TTS。
+
+- 布局与场地：帐篷和内饰共用实测候选参考帧，初始化校验门口、内饰占地和真实碰撞；禁止单独压缩间距。马/玩家/俘虏出生使用地形与初始化净空缓存，受阻候选跳过或明确退出，不刷到物件顶面。实际文化prefab、碰撞和初始化耗时待引擎验收。
+- 原生交谈：CampaignMissionComponent、营地ConversationLogic、对话相机/视图/状态HUD接入同一Mission；Shout开始/结束按Mission身份幂等；营地移动、闲聊、使者与仪式使用登记Agent占用。开场先生成、实际呈现，再启动玩家回复窗口；异步结果带owner取消与重验。保留现有T/Y及自由输入链路。
+- 仪式：围观者最多16人，先步行与清场，准备就绪后才建场；观众借入原发言候选，不生成第二组观众。续场取消只关闭当前询问身份，明确“离开”才收场；Begin被拒保留重选入口。观众回营步行、有界重试，无瞬移兜底。
+- 俘虏：营地专属登记/队伍对隔离伤害；主线程命中和移除回调结算真实普通兵/英雄伤亡，正式受刑者及隐藏副本交给Vengeance唯一owner，退出/FadeOut不冒充死亡。英雄死亡沿原生ApplyByExecution归因；实机后果仍未验。
+- TTS：成功显示处决气泡后调用AF薄桥，覆盖本地与流式台词、刽子手/受刑者/群众；复用既有TtsEngine与音色，按Mission/Session/sequence接受、去重与取消，等待有界。采用已有无场景Agent的detached音频回退，本项不新增原生口型同步；standalone没有AF时继续文字。固定Prompt和UI中英资源接真实reader、语言选择及content-map。
+- 接续补齐：SceneAttentionController的冻结、释放、持续限速和重置避让精确营地仪式移动owner；IssueCeremonyWalk先清旧聊天限速；Prompt用VenueName及中英“士兵观众”身份；补SandBox.View引用。未改一键构建入口、持久化键或公开子MOD API。
+
+### 验证与局限
+
+| 检查 | 实际结果 |
+| --- | --- |
+| `python tests/Vengeance/FieldCampContinuationTests/source_contracts.py` | 65项源码/资源接线契约PASS；不是C#执行回放 |
+| `python tools/localization/check_bilingual_tables.py` | 26张表，缺失英文0，失败0 |
+| `python tools/localization/l10n_gate.py` | FAIL：DiplomacySponsorReceiptRules.cs:17–19原有4处中文字面量；未改规则放行 |
+| tree-sitter C#语法解析 | 26文件，无新增错误；ShoutBehavior.cs:830 typed-out lambda两处解析器报错与修改前完全一致，不是编译结论 |
+| `git -c core.whitespace=cr-at-eol diff --cached --check` | 产品提交前PASS，沿用CRLF，不把行尾CR当尾随空白 |
+| 源码链核对 | HUD/F、准备/借用观众、取消/重选、伤亡owner、音频接受/清理及中英身份消费者；不代表引擎/模型行为通过 |
+
+性能：营地维护每0.5秒最多20人；准备/回营每轮各处理最多20个登记项，观众上限16；队伍隔离维护O(1)。地形/碰撞全采样与prefab检查只在初始化，地形缓存上限98304格；初始化原生调用成本、不同地形可用率及实际FPS尚未测量。无新增Tick磁盘IO或全场反射扫描。
+
+NOT_RUN：修改后的C#接续/语音harness执行、AF双API与Bootstrap、独立Vengeance构建、实机HUD/F/寻路/碰撞/俘虏后果、真实LLM/TTS、旧档、Stage、CN/EN正式双包、部署及push。后续获准验证应走既有统一构建入口并验证独立Vengeance；再测不同文化/地形、连续2–3次处决、取消重选、TAB、俘虏伤亡及语音成功/失败/迟到。不能用本次65项静态检查宣称九项游戏内已通过。
+
+### 证据、并行改动与恢复
+
+源码范围与一基行号、符号/哈希及未覆盖责任见[代码范围图](architecture/af-framework-code-scope.md#field-camp-nine-fixes-20261102)，详细收据 `.tmp/field-camp-nine-fixes-20261102/{verification.json,code-map.json,syntax-result.json,source-contracts.log,bilingual-tables.log,l10n-gate.log,diff-check.log}`。原始before及dirty-before.patch保留Claude实施前字节，codex-before保留接续前字节。接续检查点 `4f59a873d2`；共享main期间另有世界书检查点，未回滚或提交其产品/私有台账增量。产品提交仅35个具名任务文件。
+
+回滚以 `175a6e0cc7` 的聚焦inverse/revert为单位；不要hard reset共享main，也不要整文件恢复before覆盖后续他人改动。本轮未改变已安装游戏文件。
+
+---
+
 <a id="worldbook-pending-178-completion-20261102"></a>
 ## 2026-11-02 原178个待提交世界书文件完善
 

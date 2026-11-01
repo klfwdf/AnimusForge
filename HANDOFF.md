@@ -1,3 +1,9 @@
+## 2026-11-02 营地九项修复接续完成（源码，未编译部署）
+
+本地产品 `175a6e0cc7`，接续 Claude 会话 `f0b1388c-f505-4503-bd09-7b9ff1272b3a`。帐篷/地形净空、原生HUD/F、步行围观准备、取消保场、日常/闲聊占用、处决评论候选、全部俘虏伤亡与处决TTS补丁已收口；本轮另补注视避让仪式移动、清旧限速、营地士兵身份中英Prompt和视图命名空间。按原批准计划只做本地源码与离线检查，不构建、部署、打包、push或调用模型。
+
+65项源码/资源契约、26张双语表与diff检查PASS；26个C#文件无新增解析错误。全仓语言门仍报外交原有4处中文常量。C#执行harness、双API/Bootstrap/独立Vengeance构建、实机/真实TTS/旧档全部NOT_RUN；不能视为游戏内九项通过。[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-nine-fixes-20261102) / [代码范围与恢复](docs/architecture/af-framework-code-scope.md#field-camp-nine-fixes-20261102)。证据及before位于 `.tmp/field-camp-nine-fixes-20261102/`；回滚仅聚焦产品提交，不重置共享main或覆盖其他会话dirty。
+
 ## 2026-11-02 全部现有功能改动编译部署（CN）
 
 用户要求“带着所有改动提交编译部署”。源码 `49d7521fb44e40f9c3c518eb5bf62fb33a9bdfbf`：当前 HEAD 已含世界书与营地接续等产品修改，本轮补提交唯一剩余实质代码差异 `tests/modules/AF.Module.Prompt/ResidualLocalization/CourierProjection.cs`。其余源码/资源差异核实仅换行；保留本地私有 HANDOFF/主台账增量和 97 个空 NuGet 迁移标记，不提交生成物、不推送。

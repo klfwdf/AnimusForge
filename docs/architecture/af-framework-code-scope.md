@@ -1,3 +1,25 @@
+<a id="field-camp-nine-fixes-20261102"></a>
+## 营地九项修复源码范围 — 2026-11-02
+
+产品 `175a6e0cc7bf55ebbff87fd0740eba88b451cdb0`；[唯一台账与验证边界](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-nine-fixes-20261102)。本表是已读源码入口；源码hash及完整35文件清册在 `.tmp/field-camp-nine-fixes-20261102/{code-map.json,verification.json}`。静态接线通过不等于C#编译/执行、原生引擎或模型验收。
+
+| 源码与一基行范围 | 真实职责/消费者 |
+| --- | --- |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:228-321` | `private static bool PlaceTent(`：帐篷候选、入口与内饰事务 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:598-642` | `internal static bool TryResolveGroundedPosition(`：地形高度与缓存净空 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLauncher.cs:27-85` | `internal static bool TryOpen(`：原生Mission、对话与HUD装配 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:279-294` | `private void IssueCeremonyWalk(`：围观步行、旧限速解除 |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneAttentionController.cs:529-531` | `private static bool IsCampCeremonyMovementOwned(`：聊天注视避让营地移动owner |
+| `Vengeance/Source/Scene/TownExecutionMissionBehavior.Continuation.cs:37-86` | `private void ShowFieldCampContinuation(`：取消保留刑场与过期回调身份 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneAmbient.cs:761-800` | `private void TickAmbientOpeningPresentation(`：开场呈现后才启动回复窗口 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.People.cs:777-876` | `private void OnCampPrisonerRemoved(`：普通与英雄俘虏单次伤亡回写 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ExecutionSpeech.cs:21-71` | `internal static ExecutionSpeechAudioReceipt TryPlayExecutionSpeechForExternal(`：处决气泡TTS、音色与取消 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/SceneAgentIdentityPromptCaptureAdapter.cs:3570-3695` | `internal static string BuildCeremonyRoleFactForPrompt(`：营地名称与士兵身份真实Prompt消费者 |
+
+未覆盖：双API/Bootstrap/Standalone构建、C#回放、引擎碰撞/寻路/HUD/F、真实模型/音频及旧档。未变公开API或存档身份；回滚用产品提交的聚焦inverse，保留其他作者改动。
+
+---
+
 <a id="field-camp-module-20261101"></a>
 ## 大地图扎营逻辑模块 — 2026-11-01
 
