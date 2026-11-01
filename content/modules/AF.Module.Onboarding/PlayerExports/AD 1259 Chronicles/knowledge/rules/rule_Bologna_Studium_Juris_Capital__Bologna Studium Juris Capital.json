@@ -7,15 +7,14 @@
     "Guelph Stronghold Bologna"
   ],
   "RagShortTexts": [
-    "Bologna's legal teaching draws students, copyists and patrons into the city.",
-    "Student privileges protect particular rights rather than granting immunity from all law."
+    "Legal study at Bologna depended on teachers, manuscripts, lodging and household means."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Bologna's studium, its university of law, drew students from across Europe and claimed to be the oldest continuously operating university in the West. Its scholars revived the study of Roman law through the Corpus Juris Civilis, and masters called glossators, Accursius among them, set the texts into commentaries that shaped legal teaching for centuries. The city itself was a Guelph commune, governed by its own councils and largely independent of imperial lordship in daily affairs. Patrician families raised soaring brick towers, including the twin Asinelli and Garisenda, and rival clans turned the streets into a battlefield whenever a feud flared. Academic prestige and urban warfare shared the same walls, and the commune depended on both to keep its voice in Italian politics."
+      "Content": "Bologna’s legal teachers studied Justinianic law and glosses, attracting students and copyists from many regions. Books, fees and lodging made study dependent on household resources and dealings with the city and landlords. Enzo, captured at Fossalta in 1249, remained imprisoned there. Returning students faced the relationship between learned law, local custom and church rights."
     },
     {
       "Priority": 0,

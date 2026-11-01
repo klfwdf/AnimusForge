@@ -1,40 +1,17 @@
 {
   "Id": "rule_Gascon_Feudal_Homage_and_Treaty_of_Paris_Ratification",
   "Keywords": [
-    "Treaty of Paris Ratification 1259",
-    "Henry III Liege Homage to Louis IX",
-    "Duchy of Aquitaine Fief Terms",
-    "Plantagenet Renunciation of Normandy"
+    "Gascon peace news and ports"
   ],
   "RagShortTexts": [
-    "The Paris settlement of 1259 connects Henry III's continental rights with homage.",
-    "Peace can ease transport without abolishing Gascon rents, tolls or local disputes."
+    "Gascons hoped Anglo-French talks would reduce requisition and wine-transport risks."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "On 4 December 1259, King Henry III of England did liege homage to King Louis IX of France in Paris, ratifying the Treaty of Paris. Henry gave up his ancestral claims to Normandy, Anjou, Maine, and Poitou, which had been lost to the Capetians earlier in the century, and he held Gascony as a peer of France. The settlement brought an uneasy peace between the two crowns. Henry's homage bound him to Louis as a vassal for his continental lands, and both courts understood that the peace would last only as long as the terms held."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "English barons chafed at the sight of their sovereign kneeling before the French king, and every magnate asked what the homage cost the realm. A Gascon lord who swore fealty to the English crown now served two masters, and he had to weigh each demand from Paris against the royal writs from London."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "For a Garonne vineyard household, peace between kings matters when casks can reach the quay and carts can pass without seizure. The settlement of 1259 concerns Henry's continental rights and homage, rather than a promise to abolish all tolls. Tenants still owe their usual payments, and a royal seal alone cannot prevent every local quarrel or raid."
+      "Content": "Gascons hoped Anglo-French talks would reduce requisition and wine-transport risks. News of negotiation did not establish implemented terms or ceremony. Guards retained existing command and households still owed rents and dues. Prospective peace changed expectations without granting immediate immunity or passage."
     }
   ],
   "TextMappings": []

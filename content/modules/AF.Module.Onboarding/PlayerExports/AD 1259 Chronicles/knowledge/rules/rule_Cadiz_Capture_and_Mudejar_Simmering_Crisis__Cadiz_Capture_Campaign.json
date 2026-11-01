@@ -1,40 +1,17 @@
 {
   "Id": "rule_Cadiz_Capture_and_Mudejar_Simmering_Crisis",
   "Keywords": [
-    "Cadiz Capture Campaign",
-    "Jerez Protectorate Agreement",
-    "Mudejar Secret Conspiracies",
-    "Alfonso X Atlantic Outlet"
+    "Cádiz approaches and local bargaining"
   ],
   "RagShortTexts": [
-    "In 1259 the Cadiz frontier exposes households to uncertain changes of power and rights.",
-    "Later conquest and revolt must not become completed experiences of the opening year."
+    "Cádiz and Jerez linked Atlantic access, agriculture and competing southern powers."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Around 1259 Alfonso X of Castile pushed toward the Atlantic coast, aiming to secure Cádiz and to place Jerez under a protectorate with royal garrisons. Muhammad I of Granada feared that Castile would encircle his emirate, and he sent arms and messages to Mudéjar communities under Castilian rule. The covert support encouraged plots that could erupt in coordinated rebellion across the frontier. Castilian commanders responded by tightening garrisons and watching the Mudéjar quarters. The result was a crisis that combined external war with a fragile internal peace, and each side read the other's moves as preparation for the next strike."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Securing Cádiz would give the crown an Atlantic naval base that commanded the approaches to the Straits of Gibraltar. In Jerez, however, the Mudéjar townsmen looked as if they obeyed the crown while they waited for the sultan's signal to expel the garrison. Lords who held estates near the town had to choose between their Castilian oaths and the risk that their tenants would rise."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "Moorish smiths keep bellows pumping through the night, converting pruning hooks into spearpoints. Heavy Castilian tithes on olive presses have pushed common folk past breaking point. Mudejar families hide grain in clay jars beneath their floors, since tax agents seize the harvest before the village can store it."
+      "Content": "Cádiz and Jerez linked Atlantic access, agriculture and competing southern powers. Castilian demands and local Muslim obligations required bargaining, with garrison entry requiring particular confirmation. An unconfirmed conquest date could not establish a completed transfer of rights."
     }
   ],
   "TextMappings": []

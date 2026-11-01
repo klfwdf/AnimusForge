@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_senatorial_torture",
+  "Keywords": [
+    "Roman senators torture dispute"
+  ],
+  "RagShortTexts": [
+    "Senatorial envoys challenged unlawful torture in Roman trials and obtained an amended order."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fear arising from trials at Rome led Praetextatus and others to petition Valentinian. They opposed punishments exceeding offenses and torture infringing senatorial protections. The emperor initially denied giving the disputed order; Eupraxius challenged him in person, and the order was amended."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Prisoners’ relatives asked who could carry a petition and whether an influential person would intervene. A concession to senatorial envoys did not release every prisoner. People in the same city differed in access to petitions and supporters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Officials faced disputes between senatorial protections and court commands. Accusation, coercive examination and sentence involved distinct procedures. Challenging the emperor required credible representatives, and an amended order still had to reach those carrying it out."
+    }
+  ],
+  "TextMappings": []
+}

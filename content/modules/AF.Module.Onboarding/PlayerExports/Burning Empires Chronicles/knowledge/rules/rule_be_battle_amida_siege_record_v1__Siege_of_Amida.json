@@ -1,21 +1,16 @@
 {
   "Id": "be_battle_amida_siege_record_v1",
   "Keywords": [
-    "Siege of Amida_1",
-    "Sassanid Earth Mounds 1_1",
-    "Artillery Duels_1",
-    "battle_amida_siege historical records_1"
+    "Grumbates son at Amida"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Siege of Amida.",
-    "Shapur II besieged the Roman stronghold of Amida for seventy-three bloody days.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "The death of Grumbates’s son in 359 brought mourning and revenge demands to the coalition."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Siege of Amida (359 AD) Battle Chronicle illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Before the siege of Amida in 359, Grumbates’s son was killed by a shot from the defenders. His followers recovered the body and paused for mourning, placing it on a platform for seven days of funeral feasting and lament. After cremation, the remains were collected in a silver urn for return home. The loss brought funeral and revenge demands into coalition affairs."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Warriors fought until night to recover the prince, then joined the mourning. Transfer of body and ashes concerned kinship honor and burial at home; the resources of a royal war camp differed from those of an ordinary village."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Grumbates’s mourning affected his willingness to proceed, and Shapur had to consider his ally’s loss. Funeral observance entered coalition politics; the silver urn and seven-day feast were not a compulsory legal rite for all subjects."
     }
   ],
   "SemanticPrototypes": [],

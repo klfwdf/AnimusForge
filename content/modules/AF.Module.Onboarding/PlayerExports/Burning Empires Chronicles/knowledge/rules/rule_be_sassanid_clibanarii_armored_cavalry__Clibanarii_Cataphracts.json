@@ -1,21 +1,16 @@
 {
   "Id": "be_sassanid_clibanarii_armored_cavalry",
   "Keywords": [
-    "Clibanarii Cataphracts",
-    "Kontos Lance Charge",
-    "Fully Armored Steeds",
-    "Shock Cavalry"
+    "Armored cavalry protection and movement"
   ],
   "RagShortTexts": [
-    "Sassanid Clibanarii cataphracts featured total mail and scale armor for rider and mount.",
-    "Wielding the twelve-foot kontos lance, charging squadrons shattered infantry phalanxes.",
-    "Armed with maces and longswords, they served as the premier shock arm against Rome."
+    "Roman and Persian armored cavalry depended on horse endurance, cohesion and ground."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Sassanid Clibanarii cataphracts constituted the most formidable heavy shock cavalry of Late Antiquity. Encased completely in articulated iron mail with hammered visor masks, both rider and courser presented an impenetrable moving bulwark. Gripping the twelve-foot kontos lance with two hands, massed squadrons charged in disciplined unison across open Mesopotamian plains. The crushing momentum shattered Roman legionary shields, trampling infantry ranks into bloody earth. In the ensuing melee, riders deployed heavy maces, axes, and long straight swords, breaking enemy formations with overwhelming mechanical shock. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Roman and Persian forces both included cavalry wearing substantial armor. Metal protection covered parts of the body while adding weight for rider and mount; vision, turning and cohesion still required training. Lances, bows and horse armor varied between units, so appearance alone did not reveal a rider’s full equipment."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "A cataphract lowers his iron face mask and levels his kontos: spur courser flanks together; their shield line has buckled, ride down their officers beneath iron hooves! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "An armored rider checked straps and joints so loose pieces did not hinder control. Narrow paths, ditches and soft ground impeded movement; frightened or exhausted horses disrupted ranks. Flanks still needed watching, and exposed parts of the body remained vulnerable."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The spahbed watches the shock impact from his elephant tower: the Roman center is split; unleash horse archers to envelop the flanks, leave not a single legionary alive! Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Concentrating armored cavalry required fodder, repair materials and usable routes. Commanders needed ground that allowed cohesion and other troops to protect the flanks. Expensive equipment did not make every frontal attack a certain success."
     }
   ],
   "SemanticPrototypes": [],

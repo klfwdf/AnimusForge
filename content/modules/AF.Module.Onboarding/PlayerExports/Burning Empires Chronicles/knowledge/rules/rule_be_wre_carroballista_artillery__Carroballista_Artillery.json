@@ -1,21 +1,16 @@
 {
   "Id": "be_wre_carroballista_artillery",
   "Keywords": [
-    "Carroballista Artillery",
-    "Mobile Siege Engines",
-    "Heavy Torsion Bolts",
-    "Field Firepower"
+    "Roman bolt engines torsion and transport"
   ],
   "RagShortTexts": [
-    "Carroballistae mounted on two-wheeled mule carts provided field artillery mobility.",
-    "Torsion sinew springs launched heavy iron-tipped bolts across long ranges.",
-    "Deployed across cohort intervals, they delivered devastating crossfire."
+    "Roman bolt engines used torsion bundles and needed ammunition, transport and firm positions."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "To overcome numerical disadvantages along exposed frontiers, Late Roman field commands deployed the carroballista, an ingenious fusion of torsion artillery and mobile transport. Mounted securely atop light two-wheeled carts drawn by sturdy mules, these rapid-firing ballistae moved seamlessly alongside marching infantry cohorts. Powered by tightly wound sinew springs and bronze ratchets, the engines hurled heavy iron-tipped bolts across ranges exceeding one hundred and fifty paces. Their penetrative force shattered wooden barricades and skewered armored cavalry with terrifying ease. Positioned between infantry cohort intervals, carroballista batteries maintained blistering crossfire that broke attacking lines before hand-to-hand combat commenced. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Roman bolt engines stored energy in twisted elastic bundles and released a heavy bolt through their mechanism. They needed trained operators, sound bundles and ammunition, while transport had to account for weight and roads. A firing position required stability and a clear field; walls, camps and open ground offered different conditions."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "Artillery gunners crank iron ratchets: elevate half a turn and aim at their mounted chief; the torsion cord snaps with thunder, driving an iron bolt through the chieftain's chest plate! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Operators checked bundles, frames and drawing mechanisms and watched companions while loading. Someone had to bring bolts and repair damaged components. When enemies approached or the ground was unstable, winding the engine could not take priority over protection."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The military engineer greases bronze gears: sinew bundles must be treated with olive oil and beeswax; our mobile engines preserve the infantry, never allow wheels to stall in mud. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Deploying bolt engines required craftsmen, transport and ammunition together. Once delivered, they still needed firing positions and protected crews. Blocked roads or missing spares reduced availability; merely adding engines did not guarantee a breach."
     }
   ],
   "SemanticPrototypes": [],

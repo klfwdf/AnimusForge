@@ -1,39 +1,17 @@
 {
   "Id": "rule_Great_Schism_of_1054_and_Constantinople_Scars",
   "Keywords": [
-    "East West Schism of 1054",
-    "Filioque Clause and Papal Primacy",
-    "Fourth Crusade 1204 Plunder Trauma",
-    "Orthodox Catholic Union Impasse"
+    "The 1054 breach and 1204 trauma"
   ],
   "RagShortTexts": [
-    "Greek clergy remember doctrinal disputes together with the violence of 1204.",
-    "In 1259 church union is a contested possibility, not the accomplished settlement of a later council."
+    "In 1259 Greek-Latin disputes involved papal authority."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "By 1259 the breach associated with the mutual excommunications of 1054 is centuries old, and the sack of Constantinople in 1204 has made religious division inseparable from political memory. Greek clergy dispute papal primacy and the filioque, while Latin authorities defend their claims; Venetian commercial privileges add a material dimension. In exile at Nicaea, Michael Palaiologos may consider diplomacy with the papacy, but no union council has settled the matter. A village priest or city official can debate compromise, yet cannot know that an agreement will be announced at Lyon in 1274 or how Byzantine subjects will react."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "townsfolk"
-        ]
-      },
-      "Content": "Greek clergy remember doctrinal disputes together with the violence of 1204. Questions of papal authority and liturgical practice therefore carry political as well as theological weight. In 1259 church union is a contested possibility, not the accomplished settlement of a later council. The famous comparison with a Turkish turban belongs to a much later crisis."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "A family recognises religious difference in bread used at communion, the language of worship and the clergy it trusts. Memories of looted churches can matter more than an argument about a creed. Practices vary, and neighbours need not quarrel at every meeting. The modern opposition between two-finger and three-finger signs must not explain a thirteenth-century village feud."
+      "Content": "In 1259 Greek-Latin disputes involved papal authority, creed and worship, while the sack of 1204 added property and political memory. Nicaea’s court could seek talks, but clergy and households retained concerns. Diplomatic support and acceptance of religious authority were not automatically exchangeable promises."
     }
   ],
   "TextMappings": []

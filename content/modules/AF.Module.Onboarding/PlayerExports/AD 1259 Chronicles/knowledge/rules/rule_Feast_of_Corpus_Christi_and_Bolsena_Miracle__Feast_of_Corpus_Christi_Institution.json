@@ -7,15 +7,14 @@
     "Monstrance Eucharistic Civic Procession"
   ],
   "RagShortTexts": [
-    "The practice is real but uneven, and its eventual reach remains unknown.",
-    "Its observance has not yet become a universal calendar rule."
+    "Local Eucharistic observances in Liège required clergy, funds and time."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 1259 devotion to the Eucharist is expressed through local feasts, sermons, processions and the choices of individual bishops. At Liège, the earlier visions and advocacy associated with Juliana of Cornillon have helped keep a special observance under discussion, but it is not yet a universal feast of the Latin Church. Reports about a bleeding host at Bolsena and the later papal action belong to future years, as does the familiar account of Thomas Aquinas composing a complete liturgy for a newly established feast. A priest may support a local celebration or question its expense; a town may organise a procession according to its own customs. The practice is real but uneven, and its eventual reach remains unknown."
+      "Content": "The Liège region had local initiatives and observances honoring the Eucharist, promoted by Juliana of Cornillon. Bishops and clergy arranged dates, worship and expenses, while other dioceses followed their own practices. Eucharistic devotion could inspire sermons and gifts; organizing an observance still required people, candles and time."
     },
     {
       "Priority": 0,
@@ -24,7 +23,7 @@
           "townsfolk"
         ]
       },
-      "Content": "In 1259 a cleric may know the feast promoted at Liege through Juliana of Mont Cornillon and local episcopal support. Its observance has not yet become a universal calendar rule. Teaching about the Eucharist, arranging a service and securing approval remain local concerns; later papal legislation and elaborate civic processions must not be projected onto every parish."
+      "Content": "Clergy arranging a local Eucharistic observance consulted their bishop and fellow clergy over dates, prayers and participation. Candles, vestments, singing and a place required preparation, paid for through donations or church resources. Conflicts with work, markets or other worship also needed discussion with the congregation."
     },
     {
       "Priority": 0,
@@ -33,7 +32,7 @@
           "villager"
         ]
       },
-      "Content": "A villager hearing of a new Eucharistic observance asks when the parish will celebrate it and what work must stop. Candles, cloth and attendance cost households time and money, even when devotion is sincere. Customs differ between dioceses in 1259; a spectacular later procession cannot be assumed to pass every village church at the same appointed hour."
+      "Content": "Households hearing of a local Eucharistic observance asked when it would take place and what work must pause. Candles, clothing and attendance cost money and time alongside harvest and household needs. If worship coincided with sowing or reaping, someone had to tend fields while others accompanied children and elders."
     }
   ],
   "TextMappings": []

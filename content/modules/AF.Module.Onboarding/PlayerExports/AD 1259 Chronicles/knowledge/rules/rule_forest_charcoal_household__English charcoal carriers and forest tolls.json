@@ -1,0 +1,38 @@
+{
+  "Id": "rule_forest_charcoal_household",
+  "Keywords": [
+    "English charcoal carriers and forest tolls"
+  ],
+  "RagShortTexts": [
+    "The Forest Charter exempted back-carried wood and charcoal from the specified passage toll."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Forest Charter clause14 limits chiminage to certain foresters and customary charges on outsiders’ commercial carts or packhorses carrying wood, bark and charcoal. People earning a living by carrying these on their backs are exempt from that toll. Fuel was both a household need and a laborer’s commodity; this exemption did not grant unrestricted cutting in anyone’s wood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A charcoal carrier used personal labor to bring fuel to a buyer. The exemption removed a passage charge, not purchase costs or the need for cutting rights. Household fuel scarcity differed from the charges on commercial carts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A forester had to distinguish authorized locations, commercial carts and back-carriers. Taxing every charcoal load ignored the exemption and expanded custody into arbitrary extraction."
+    }
+  ],
+  "TextMappings": []
+}

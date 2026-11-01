@@ -7,15 +7,14 @@
     "Saxon Jurisprudence Eike"
   ],
   "RagShortTexts": [
-    "The Sachsenspiegel records customary land and feudal law in a vernacular legal tradition.",
-    "Its written rules do not erase differences among courts, status and local practice."
+    "The Sachsenspiegel recorded land and feudal law amid differing local practice."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Eike von Repgow compiled the Sachsenspiegel, the most authoritative vernacular record of German customary law. Its two parts, the Landrecht for civil matters and the Lehnrecht for feudal obligations, set out how the imperial electors were chosen, what knights owed in military service, and how free tenure was held. Written in German rather than Latin, the book reached lords and judges who never read the older legal texts. Its rules did not come from a single ruler's decree, but from the practice of local courts that had long kept the peace."
+      "Content": "Eike von Repgow’s Sachsenspiegel recorded land law and feudal law in German, addressing status, inheritance, litigation and lordship. Readers could use it to organize customs and claims, while particular cases still involved local practice, privileges and jurisdiction. Manuscripts needed copying and interpretation; owning the book did not make every court accept the same judgment."
     },
     {
       "Priority": 0,

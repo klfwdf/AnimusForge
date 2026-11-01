@@ -1,29 +1,17 @@
 {
   "Id": "rule_House_of_Visconti_Signoria_of_Milan",
   "Keywords": [
-    "House of Visconti Milan",
-    "Biscione Serpent Heraldry",
-    "Ottone Visconti Archbishop"
+    "Visconti kin and Milan politics"
   ],
   "RagShortTexts": [
-    "The Visconti brandished the child-devouring Biscione viper, battling the della Torre for."
+    "Visconti kin and church ties gave standing in Lombard politics."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Milan in the 1250s was a city of guilds, noble towers and factions that turned every election into a street fight. The Visconti and the della Torre were the two families whose feuds shaped the commune, and each side fed its partisans with grain, cash and the promise of office. The Visconti rallied behind Archbishop Ottone Visconti, whose church gave the family a claim to spiritual authority and to the revenues that came with it. Their heraldry, the Biscione, a serpent devouring a figure, became a sign of the family's ambition and fear in equal measure. Every Visconti rise depended on managing the archdiocese, the guilds and the mercenaries the city could afford, and the lessons learned in these contests laid the groundwork for a Lombard signoria run on hard bargaining and unsparing force."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Church revenue was the quiet engine of Visconti power. Income from benefices and offices in the archdiocese paid for crossbowmen and heavy cavalry, and every new appointment was a favour owed to the family. Sealed letters went out to rural lords and town councils, and each debt was recorded as carefully as a tax assessment."
+      "Content": "Visconti kin and church ties gave standing in Lombard politics, while Milan in 1259 retained communal institutions and rival families. Prestige did not establish a permanent signoria; offices, alliances and local support remained to be won."
     }
   ],
   "TextMappings": []

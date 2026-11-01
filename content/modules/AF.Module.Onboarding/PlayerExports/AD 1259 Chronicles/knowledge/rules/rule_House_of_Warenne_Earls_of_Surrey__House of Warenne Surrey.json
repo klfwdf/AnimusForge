@@ -1,30 +1,17 @@
 {
   "Id": "rule_House_of_Warenne_Earls_of_Surrey",
   "Keywords": [
-    "House of Warenne Surrey",
-    "Lewes Castle Warenne",
-    "Conqueror Kin Warenne Chequy",
-    "Royalist Warenne Earls"
+    "Surrey’s earl and royal councils"
   ],
   "RagShortTexts": [
-    "The Warenne Earls held Lewes and Yorkshire fiefs, stalwartly fielding chequy banners for."
+    "John de Warenne’s earldom linked land, service and royal counsel."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Warennes were a Norman family whose founder fought alongside William the Conqueror, and their name became one of the great earldoms of England. John de Warenne held the earldom of Surrey and the fortress of Lewes, a castle on the Sussex downs that commanded the road to the south coast. Linked by blood to Henry III, the family used their heraldry, gold and azure chequy, to remind the realm of their loyalty to the crown. In the rising of 1258 to 1265, Warenne retainers stood against rebel barons who wished to limit royal power, and the earl's lands in Sussex and Yorkshire supplied the knights and horses needed for the royal cause. Their castles, rents and feudal services gave them a weight that no baronial council could ignore."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "A Warenne lord summoned his tenants and knights from Sussex to Yorkshire whenever the crown demanded service under feudal custom. Each knight's fee was recorded in the earl's rolls, and each campaign was reckoned as a cost against the rents that paid for war."
+      "Content": "John de Warenne’s earldom linked land, service and royal counsel. Reform disputes in 1259 required balancing king, peers and local resources. Kinship aided cooperation without determining every choice in conflicts yet to occur."
     }
   ],
   "TextMappings": []

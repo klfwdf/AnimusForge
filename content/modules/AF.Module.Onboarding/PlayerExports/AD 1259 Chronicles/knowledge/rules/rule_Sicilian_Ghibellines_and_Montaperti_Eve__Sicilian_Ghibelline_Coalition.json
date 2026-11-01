@@ -1,40 +1,17 @@
 {
   "Id": "rule_Sicilian_Ghibellines_and_Montaperti_Eve",
   "Keywords": [
-    "Sicilian Ghibelline Coalition",
-    "Montaperti Battle Eve 1259",
-    "Siena Florence Tuscan Feud",
-    "Manfred German Cavalry Aid"
+    "Sicilian and Tuscan allies"
   ],
   "RagShortTexts": [
-    "Manfred of Sicily reinforced Ghibelline Siena with heavy German knights on the eve of Montaperti."
+    "Manfred and Tuscan Ghibellines shared interests."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Tuscany in 1259 is divided between two loose coalitions. The Guelphs rally around Florence, whose popolo guilds had grown rich on wool cloth and international banking. The Ghibellines look to Siena and to Manfred of Sicily for protection, and that link turns a local feud into a question of imperial loyalty. Manfred sent roughly 800 German mercenary knights under Count Giordano d'Agliano to reinforce the Sienese, giving the Ghibellines a striking force they had lacked. Florentine militias and Sienese garrisons then prepared for a campaign that would end at Montaperti in 1260, on the Arbia river."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Florentine merchants assumed civic militias could starve Siena into submission, but Manfred's German cavalry changed that calculation. Those knights were veteran shock troops, trained to hit in close formation and unimpressed by guild infantry. A Tuscan lord caught between the two cities must weigh every letter from Palermo against every promise from the Guelph council."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Tuscan vineyards are full of men waiting for orders. In Siena, the German mercenaries sharpen their broadswords by lamplight, knowing the river Arbia will run red when the clash comes. Keep your helmet where a hand can find it in the dark, wrap your blade in oiled cloth, and learn the password before the march, because a wrong word at a Ghibelline gate can get a man killed by his own side."
+      "Content": "Manfred and Tuscan Ghibellines shared interests, with support possible in money, troops or recognition. Aid required transport, receipt and terms rather than automatically defeating an opponent. Each city also contained differing factions."
     }
   ],
   "TextMappings": []

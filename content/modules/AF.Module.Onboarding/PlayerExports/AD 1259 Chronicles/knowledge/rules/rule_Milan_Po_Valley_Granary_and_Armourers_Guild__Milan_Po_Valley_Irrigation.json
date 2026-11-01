@@ -7,15 +7,14 @@
     "Lombard Free League Hegemony"
   ],
   "RagShortTexts": [
-    "Milanese commerce and craft depend on Lombard agriculture, routes and demand for equipment.",
-    "Full articulated plate armour is not standard workshop equipment in 1259."
+    "Milan’s fields and workshops supported food, equipment and communal defense."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Milan stood amid the productive lands and routes of Lombardy, where grain, fodder and craft production supported a wealthy commune. Its metalworkers made mail, helmets and other arms, with construction varying by workshop and patron; a complete articulated plate harness should not be projected onto every Milanese soldier in 1259. Water-powered hammers and later manufacturing traditions must likewise be tied to evidence for particular places and dates, rather than treated as uniform guild practice. Milanese politics involved competing urban factions, including the Torriani and Visconti, but the Visconti did not establish durable supremacy until later in the thirteenth century."
+      "Content": "Fields, roads and channels around Milan supported grain and fodder supplies, while metalworkers made and repaired mail, helmets and weapons. Workshops bought iron and fuel for orders, with payment shaping workers’ income. The commune and rival families sought support, and political conflict affected transport, commissions and defense."
     },
     {
       "Priority": 0,

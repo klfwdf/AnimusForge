@@ -7,15 +7,14 @@
     "Shattering Venetian Naval Primacy"
   ],
   "RagShortTexts": [
-    "A treaty and its consequences belong to the uncertain future, not current fact.",
-    "Michael Palaiologos has not exchanged Galata concessions for a fleet."
+    "Nicaea sought naval partners through bargaining over ships and commercial concessions."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 1259 Nicaea still seeks a way to recover Constantinople from the Latin Empire, and control of the sea is central to that ambition. Genoa and Venice compete for trade and influence, giving Michael Palaiologos reason to sound out potential naval partners. Yet no Treaty of Nymphaeum has been concluded, and Genoa has not received the later privileges at Galata or the Black Sea. Negotiators may discuss ships, customs exemptions and commercial quarters, but each concession would require bargaining and could provoke rivals. Nicaean officials must weigh the immediate value of galleys against long-term revenue and political dependence. A treaty and its consequences belong to the uncertain future, not current fact."
+      "Content": "Nicaea sought Constantinople, while Genoa and Venice competed over eastern Mediterranean trade and ports. Nicaean officials considering naval partners weighed ships, customs and trading quarters. Investors, shipowners and the court had different demands; assistance needed available vessels and payment."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "A Nicaean notable may argue Genoese ships could isolate Latin-held Constantinople; rivals fear lost customs income. Michael Palaiologos has not exchanged Galata concessions for a fleet. Proposals must specify ships, tolls and legal rights. Lords debate alliance costs rather than celebrate a bargain already made."
+      "Content": "Nicaean magnates could welcome Genoese naval support while fearing lost customs revenue from exemptions. Negotiations required terms for ports, vessels, costs and jurisdiction, with Venice’s response in mind. Supporters of an alliance and beneficiaries of port dues might accept different costs."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "A Nicaean sailor may hear Genoese captains are open to bargaining, but no treaty fleet is summoned and no squadron is pledged against Venice. Patrols watch merchants and carry messages between forts. A commander checks stores and awaits orders. Italian ships may be allies, rivals or neutral traders; a soldier cannot treat a future pact as a standing battle plan."
+      "Content": "Nicaean coastal soldiers watched shipping, carried news between forts and checked bolts and stores. Italian captains might bargain over passage, escort or provisions, while permission to land depended on local orders. Reports that the court sought partners did not replace a commander’s instructions."
     },
     {
       "Priority": 0,
@@ -44,7 +43,7 @@
           "villager"
         ]
       },
-      "Content": "A Greek coastal household in 1259 may hope that Nicaea can find ships and allies against Latin sea power. Italian merchants offer trade while seeking favourable terms for themselves. The pact later concluded at Nymphaeum has not yet been signed, so a boatman cannot describe its privileges or military consequences as events already transforming the shore."
+      "Content": "Greek coastal households hoped for safe ports and feared requisitioned boats, higher dues or interrupted routes. Italian merchants sought favorable terms, while boatmen and small traders depended on immediate sales. Nicaea’s ambition to regain the old capital shaped talk, but assistance depended on who supplied ships and paid the costs."
     }
   ],
   "TextMappings": []

@@ -1,0 +1,38 @@
+{
+  "Id": "rule_lateran_physicians_and_surgery",
+  "Keywords": [
+    "Latin physicians and clerical surgery"
+  ],
+  "RagShortTexts": [
+    "Latin canons distinguished clerical surgery restrictions and spiritual care."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lateran IV prohibited subdeacons, deacons and priests from surgery involving cutting or cautery and required physicians at the bedside to remind patients to seek spiritual care. Households might need treatment, confession and prayer together. Access to lay practitioners depended on travel and cost. Care involved distinct responsibilities as well as food, lodging and daily assistance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Families could need comfort, prayer and practical treatment together. Ability to perform rites did not establish permission or skill for cutting surgery, while cost and travel constrained access to practitioners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Church officers had to identify the orders and operations covered rather than expanding the rule into a ban on medicine. Lay experience, methods and results remained separate questions; piety did not substitute for care."
+    }
+  ],
+  "TextMappings": []
+}

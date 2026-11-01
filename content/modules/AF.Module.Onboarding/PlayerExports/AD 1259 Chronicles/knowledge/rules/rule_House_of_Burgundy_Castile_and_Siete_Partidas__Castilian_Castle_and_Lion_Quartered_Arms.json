@@ -1,40 +1,17 @@
 {
   "Id": "rule_House_of_Burgundy_Castile_and_Siete_Partidas",
   "Keywords": [
-    "Castilian Castle and Lion Quartered Arms",
-    "Alfonso X the Wise King",
-    "Las Siete Partidas Legal Code",
-    "Imperial Crown Fecho del Imperio Quest"
+    "Alfonso’s patronage of legal learning"
   ],
   "RagShortTexts": [
-    "Alfonso court supports legal projects drawing on Roman law, canon law and Iberian custom.",
-    "Imperial ambitions pressure royal finances and require negotiation with magnates."
+    "Castilian royal legal projects employed translators, jurists and copyists."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Under Alfonso X, the Castilian crown displays the castles of Castile and lions of Leon, while the Burgundy-Ivrea dynasty rules both kingdoms. Alfonso court supports legal projects drawing on Roman law, canon law and Iberian custom. The Siete Partidas is associated with this ambition, but compilation and revision continue in 1259; it is not a finished code governing every court. Imperial ambitions pressure royal finances and require negotiation with magnates. Jurists discuss drafts as communities retain local customs. Participants cannot see the project later reach."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "A Castilian magnate may resent Alfonso efforts to strengthen royal courts through Roman-law learning. The Partidas is still being compiled, so advisers debate drafts. Barons can resist a levy, negotiate exemptions or invoke local custom; the code is not yet a finished instrument displacing their courts. Future tax pressure is uncertain."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "townsfolk"
-        ]
-      },
-      "Content": "Alfonso's court offers employment to translators, copyists and makers of books and instruments. Work moves between languages and learned traditions, and patrons decide which projects receive support. An artisan in 1259 can discuss a commission under way without claiming that every later Alfonsine text is already finished or that earlier European astronomical tables never existed."
+      "Content": "Castilian royal legal projects employed translators, jurists and copyists. Patronage brought Roman and canon learning into the vernacular and made magnates attentive to royal jurisdiction. Participation in writing did not establish identical practice in every town."
     }
   ],
   "TextMappings": []

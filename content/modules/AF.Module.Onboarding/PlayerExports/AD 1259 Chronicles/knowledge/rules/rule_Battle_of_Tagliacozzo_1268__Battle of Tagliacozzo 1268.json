@@ -1,30 +1,17 @@
 {
   "Id": "rule_Battle_of_Tagliacozzo_1268",
   "Keywords": [
-    "Battle of Tagliacozzo 1268",
-    "Conradin Last Hohenstaufen",
-    "Erard de Valery Ambush",
-    "Naples Market Square Execution"
+    "Abruzzo routes and Hohenstaufen claims"
   ],
   "RagShortTexts": [
-    "In 1268 at Tagliacozzo, Charles of Anjou ambushed young Conradin, executing the last."
+    "Abruzzo roads linked southern Italy with northern approaches."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Tagliacozzo was fought on August 23, 1268, in the hills of the Abruzzo, between the young Conradin, the last legitimate Hohenstaufen heir, and the forces of Charles of Anjou. Conradin was sixteen and led an army that drove back the Angevin front line in the first charge. Charles's veteran crusader Érard de Valéry had kept a concealed knightly reserve, which struck the attackers from an unexpected direction and broke them. Conradin fled north but was captured, and he was executed in the market square of Naples. His death ended the imperial line of Frederick II and left Angevin rule over the Kingdom of Sicily to rest on conquest and heavy taxation."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "soldier"
-        ]
-      },
-      "Content": "Peter III of Aragon, married to Manfred's daughter Constance, took up the Staufen claim after Conradin's death. Sicilian nobles had to choose between Angevin favour and the memory of the Hohenstaufen. Decades later, the glove Conradin had thrown was said to have helped spark the Sicilian Vespers, and the lords of Sicily and Calabria weighed each new charter against the risk of a rising."
+      "Content": "Abruzzo roads linked southern Italy with northern approaches, requiring passage, local reception and food. Conradin’s dynastic claim differed from Manfred’s actual rule. In 1259 a young claimant’s fate was not an available conclusion."
     }
   ],
   "TextMappings": []

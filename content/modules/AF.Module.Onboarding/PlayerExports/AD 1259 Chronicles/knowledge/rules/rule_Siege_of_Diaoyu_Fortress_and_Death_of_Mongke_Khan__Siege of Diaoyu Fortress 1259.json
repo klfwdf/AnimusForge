@@ -1,30 +1,17 @@
 {
   "Id": "rule_Siege_of_Diaoyu_Fortress_and_Death_of_Mongke_Khan",
   "Keywords": [
-    "Siege of Diaoyu Fortress 1259",
-    "Death of Mongke Khan Diaoyu",
-    "Toluid Civil War Ariq Boke",
-    "Hulagu Syrian Withdrawal Pivot"
+    "Diaoyu defenses and distant reports"
   ],
   "RagShortTexts": [
-    "Möngke Khan's death at Diaoyu Fortress in 1259 fractured the Mongol Empire, compelling."
+    "Sichuan hill forts and rivers constrained Mongol advance."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "On August 11, 1259, Möngke Khan died while the siege of Diaoyu Fortress in Sichuan was still unfinished. The mountain redoubt had held out for months against Mongol assaults, and its resistance slowed the campaign that had carried the empire across Eurasia. Möngke's death set off a succession crisis. Kublai and Ariq Böke turned on each other in the Toluid Civil War, while Hulagu pulled his veteran armies out of Syria to press his dynastic claims in the east. That withdrawal left General Kitbuqa with a thinner force than the Mamluks could ignore, and Baybars and Qutuz used the opening to win the battle of Ain Jalut in 1260."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "soldier"
-        ]
-      },
-      "Content": "A single fortified rock in southwestern China held back a campaign that might have swept on toward Cairo, Damascus, and Jerusalem. Lords across the Levant had to decide whether to hold their walls or prepare for a new frontier, while ordinary soldiers learned only that their march had been postponed by a fight far beyond their horizon."
+      "Content": "Sichuan hill forts and rivers constrained Mongol advance, with Diaoyu involving boats, supplies and siege work. News took time to reach the west. Leaders could not infer the khan’s condition or a distant succession from unreceived reports."
     }
   ],
   "TextMappings": []

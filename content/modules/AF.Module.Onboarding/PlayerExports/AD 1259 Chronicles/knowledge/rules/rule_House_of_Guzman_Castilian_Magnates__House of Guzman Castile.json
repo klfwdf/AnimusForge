@@ -1,30 +1,17 @@
 {
   "Id": "rule_House_of_Guzman_Castilian_Magnates",
   "Keywords": [
-    "House of Guzman Castile",
-    "Guzman el Bueno Castilian",
-    "Tarifa Siege Guzman",
-    "Andalusian Reconquista Guzman"
+    "Guzmán ties and Castilian service"
   ],
   "RagShortTexts": [
-    "The Guzmán lineage rose along the Andalusian frontier, forging a mighty noble house."
+    "Guzmán and other Castilian lineages gained influence through land, kin and royal service."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Forged in the long wars of the Reconquista, the House of Guzmán built its estates around Seville, Cádiz, and the Gibraltar strait. Alfonso Pérez de Guzmán, known as Guzmán el Bueno, held Tarifa in 1294 against the claimant Infante Juan and his Marinid allies, refusing to surrender his son when the enemy threatened to kill him. The family's lands produced grain, olive oil, and Atlantic tuna, and their fisheries on the Gulf of Cádiz earned steady revenue. Their vassals fortified the coastal approaches, so the Guzmáns acted as a bulwark against Marinid raids from Morocco. Their name became a byword for loyalty in the frontier wars."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Commanding veteran border horsemen and lucrative Atlantic tuna fisheries, the Guzmáns acted as Castile's southern shield. Each levy of cavalry was paid from the tuna catch and the tithes of the frontier villages. Captains who lost a horse in a raid had to report the loss to the family steward, who wrote it into the muster roll before the next pay day."
+      "Content": "Guzmán and other Castilian lineages gained influence through land, kin and royal service. Marriage connected resources without guaranteeing identical politics among relatives. Service and fiscal demands met privileges and practical capacity in negotiation."
     }
   ],
   "TextMappings": []

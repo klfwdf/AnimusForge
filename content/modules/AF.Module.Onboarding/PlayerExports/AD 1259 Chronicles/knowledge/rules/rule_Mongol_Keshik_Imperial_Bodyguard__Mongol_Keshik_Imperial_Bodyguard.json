@@ -1,40 +1,17 @@
 {
   "Id": "rule_Mongol_Keshik_Imperial_Bodyguard",
   "Keywords": [
-    "Mongol Keshik Imperial Bodyguard",
-    "Great Khan Möngke and Khubilai Guard",
-    "Kebteul Night and Turghaut Day Sentries",
-    "Heavy Willow Leaf Lamellar Armor"
+    "Mongol keshik service and court"
   ],
   "RagShortTexts": [
-    "The Keshik served as the Great Khan's elite day-and-night bodyguard and military."
+    "Keshik service joined protection of the khan with court duties and access."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Keshik was the household guard of the Great Khan, first raised by Genghis Khan with about ten thousand men. It was more than a bodyguard. Its members also formed the administrative core of the court, handling clerical work and carrying orders across the empire. Guards worked in two shifts. The daytime guard, called the Turghaut, stood at the gate and within the ordu, while the night sentries, the Kebteul, kept watch through the dark hours. Noble recruits wore double coats of lacquered iron lamellar, carried two composite bows, heavy sabers and hooked lances, and trained until their discipline matched their rank. Such a force gave the Khan a standing army that answered to him alone."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Keshik trained the men who would later run the empire, including darughachi governors who held conquered cities in the Khan's name. In the disputed succession of 1260, rival Toluid princes competed to win over the Keshik commanders, because whoever held the household guard could give a claim the look of legitimacy."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Keshik troopers stand in silence around the Khan's nine-tailed white yak banner. Their heavy cavalry anchors the centre, and when the order to charge comes they move as one, crushing the enemy lines in front of them. Keep your place in the formation and do not break ranks to chase a single rider."
+      "Content": "Keshik service joined protection of the khan with court duties and access. Proximity brought prestige and obligations. Court resources mattered politically, without giving members an already completed role in succession struggles still ahead."
     }
   ],
   "TextMappings": []

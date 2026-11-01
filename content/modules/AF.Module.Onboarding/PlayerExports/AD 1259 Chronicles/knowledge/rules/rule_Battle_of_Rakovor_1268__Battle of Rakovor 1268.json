@@ -1,30 +1,17 @@
 {
   "Id": "rule_Battle_of_Rakovor_1268",
   "Keywords": [
-    "Battle of Rakovor 1268",
-    "Novgorod Pskov Coalition",
-    "Daumantas of Pskov Charge",
-    "Livonian Danish Crusader Rout"
+    "Rakvere strongpoint and Baltic routes"
   ],
   "RagShortTexts": [
-    "In 1268 at Rakovor, allied Rus armies under Daumantas checked Danish and Livonian crusaders."
+    "Rakvere linked northern Estonian routes amid Danish, German and Rus interests."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Rakovor was fought on February 18, 1268, near Wesenberg in Estonia, where a Rus host raised by Novgorod and Pskov met the Livonian Order's knights and the Danish feudal lords who had joined them. The Rus army fought under Daumantas of Pskov, an exiled warrior whom later tradition remembered as a warrior-saint. Winter had turned the lowland into frozen marsh, and deep cavalry charges threw the crusader line back across it. The clash belonged to a longer contest over the Estonian lands between Novgorod's interests and the Order's expansion. Each side measured its gains in fortresses, tribute, and the loyalty of local vassals, and a winter battle against a well-led Rus army showed the Livonian knights how much risk such campaigns carried."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "soldier"
-        ]
-      },
-      "Content": "Novgorod and Pskov kept their western frontier closed after Rakovor. Lords on the Estonian marches had to recalculate their levies, and whoever held the forts on the road to Lake Peipus gained leverage. The battle halted Teutonic advances toward Lake Ladoga for decades, and envoys carried the news by sealed letter to Riga and Novgorod."
+      "Content": "Rakvere linked northern Estonian routes amid Danish, German and Rus interests. Timber, food, crossings and season shaped expeditions. Frontier tension was not a battle report, and envoys could still bargain over trade and peace."
     }
   ],
   "TextMappings": []

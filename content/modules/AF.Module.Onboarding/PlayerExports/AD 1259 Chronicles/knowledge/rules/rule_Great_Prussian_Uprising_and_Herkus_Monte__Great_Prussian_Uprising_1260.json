@@ -1,40 +1,17 @@
 {
   "Id": "rule_Great_Prussian_Uprising_and_Herkus_Monte",
   "Keywords": [
-    "Great Prussian Uprising 1260",
-    "Herkus Monte Rebel Chieftain",
-    "Natangian Tribal Resistance",
-    "Teutonic Stone Castle Sieges"
+    "Prussian hostages education and belonging"
   ],
   "RagShortTexts": [
-    "A Teutonic commander or Prussian notable in 1259 worries about remote castles through winter.",
-    "Tribute may arrive late, guides may refuse service, and rumours can alter patrol routes."
+    "Prussian hostages education and belonging concerns current rights and obligations."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "A Teutonic commander or Prussian notable in 1259 worries about remote castles through winter. Tribute may arrive late, guides may refuse service, and rumours can alter patrol routes. The Order seeks recruits from German lands, but no fortress is yet starving under siege in a later revolt. Lords debate whether another campaign will secure obedience or deepen resentment. Their concern is supply and allegiance, not future victories or holdouts. No witness can yet describe the later campaigns or their final territorial limits."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "townsfolk"
-        ]
-      },
-      "Content": "A cleric or interpreter on the Prussian frontier knows that hostages may acquire the language and habits of their captors without surrendering every attachment to home. Herkus Monte's later career illustrates that tension. In the 1259 setting, however, the great rising of 1260 is still ahead; its leaders, victories and punishments cannot be reported as completed events."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "A Teutonic commander worries about remote castles through winter. Tribute may arrive late, guides may refuse service, and rumours alter patrols. The Order seeks recruits, but no fortress is starving under siege in a future revolt. Lords debate whether campaigning will secure obedience or deepen resentment. Their concern is present supply and allegiance, not later victories."
+      "Content": "Hostage and educational arrangements exposed Prussian noble children to German language and church institutions. Familiarity did not predetermine allegiance, and return brought kin and lordly demands. Herkus Monte’s name did not provide contemporaries with a completed future military career."
     }
   ],
   "TextMappings": []

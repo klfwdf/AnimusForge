@@ -7,15 +7,14 @@
     "Baltic Resistance Prelude"
   ],
   "RagShortTexts": [
-    "It did not by itself end the Order's power or guarantee a lasting coalition.",
-    "Baltic chieftains saw at Skuodas that mail-clad heavy cavalry could be trapped in forested marsh."
+    "News of fighting at Skuodas shaped frontier judgments about levies, safety and alliances."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Samogitian forces under Alminas defeated Livonian Order troops near Skuodas in 1259, during a campaign connected with raids into Courland. The surviving accounts preserve the defeat and the loss of many Order men, including brother-knights, but troop totals and the precise sequence of the fighting are uncertain. Forest, marsh and local knowledge may have shaped the encounter; the evidence does not justify a cinematic reconstruction of every maneuver. The defeat mattered because trained members of a military order were costly to replace and because it encouraged resistance among peoples subject to crusading pressure. It did not by itself end the Order's power or guarantee a lasting coalition."
+      "Content": "Fighting near Skuodas in 1259 brought losses to the Livonian Order. News traveled to forts and villages, changing judgments about levies, retaliation and safety. Leaders still needed provisions, guards and relations with neighboring communities; one defeat did not remove the Order’s posts or existing obligations."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Baltic chieftains saw at Skuodas that mail-clad heavy cavalry could be trapped in forested marsh. The battle encouraged the Semigallians and Curonians to renounce oaths they had been forced to swear and to forge an anti-crusader league. Envoys carried proposals from one court to the next, and any chieftain who signed a treaty risked the Order's retaliation on his fields."
+      "Content": "News of the Order’s reverse at Skuodas led local leaders to reconsider tribute, oaths and cooperation with neighbors. Victory could strengthen bargaining confidence while raising fears of retaliation. A shared opponent did not place every community under one chief; alliances still required agreement on men and supplies."
     },
     {
       "Priority": 0,

@@ -1,40 +1,17 @@
 {
   "Id": "rule_Kutna_Hora_and_Central_European_Silver_Boom",
   "Keywords": [
-    "Kutna Hora Rich Silver Veins",
-    "Ius Regale Montanorum Royal Code",
-    "Saxon German Skilled Miners",
-    "Prague Groschen Sound Currency"
+    "Bohemian mining and Jihlava"
   ],
   "RagShortTexts": [
-    "Bohemian silver production requires ore, fuel, labour, drainage and royal rights.",
-    "Kutna Hora's later boom and Prague groschen reform are not achieved facts in 1259."
+    "Bohemian and Moravian mining involved rights."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Silver mining expanded in Bohemia during the thirteenth century, but Kutná Hora's exceptional boom belongs chiefly to the century's close. Ottokar II's reign saw royal interest in mines and grants of privileges, yet the mining code Ius Regale Montanorum and the major coinage reform belong to Wenceslas II in 1300. Prague groschen were introduced in that reform, not already a common currency in 1259. Miners needed shafts, drainage, timber, fuel and skilled labor, while rulers sought revenue and control over production. In 1259 a lord could hear reports of promising veins and compete for rights, but should not assume the later mining town, centralized mint or mature silver economy already existed. The growth of Kutná Hora was a process, not a completed transformation."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Silver bullion financed Ottokar's ambitions in the Empire. Loans went to Rhenish electors, and the wages of hired mercenary cavalry were paid from the mint. Each shipment from the Bohemian mines strengthened the Přemyslid claim to Central European leadership."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "townsfolk"
-        ]
-      },
-      "Content": "In 1259 a Bohemian metalworker can discuss the cost of ore, charcoal and skilled labour without describing the later great boom at Kutna Hora as already achieved. Rich claims attract a lord's attention, but extraction needs shafts, drainage and fuel. The Prague groschen and the Italian Court belong to a later royal programme, not the current minting system."
+      "Content": "Bohemian and Moravian mining involved rights, labor, timber, drainage and fuel, with Jihlava’s silver important to rulers. A vein still needed shafts, processing and transport before becoming regular output. Households used circulating local money and weighed silver rather than an assumed single great mint serving every mine."
     }
   ],
   "TextMappings": []

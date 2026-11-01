@@ -1,21 +1,16 @@
 {
   "Id": "be_ere_solidus_gold_standard",
   "Keywords": [
-    "Gold Solidus",
-    "Imperial Currency",
-    "Direct Bullion Tax",
-    "Constantinople Mint"
+    "Solidus coins and supplies in kind"
   ],
   "RagShortTexts": [
-    "The 4.5-gram gold solidus formed the universal currency across the Mediterranean.",
-    "The Eastern treasury extracted agrarian land taxes exclusively in unadulterated gold.",
-    "Unshakable fiscal liquidity enabled the empire to hire vast mercenary hosts."
+    "The solidus weighed about 4.5 g; armies also relied on grain and transport supplied in kind."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The enduring resilience of the Eastern Roman Empire rested on the unshakeable foundation of the pure gold solidus currency. Established by Constantine at 4.5 grams of 24-carat gold, the coin served as the bedrock of Mediterranean commerce. Under Emperor Valens, the imperial financial ministry enforced stringent tax collection, demanding that provincial land tributes, customs tariffs, and curial indemnities be rendered exclusively in authenticated gold bullion. While impoverishing municipal curiales and agrarian tenants, this rigorous extraction accumulated massive gold reserves in Constantinople, allowing the empire to bankroll military factories, fortify frontiers, and subsidize mercenary warbands. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "The solidus was an imperial gold coin of high fineness, with a standard weight of about 4.5 grams, used for substantial payments, gifts and accounting. Money and actual army provisions were distinct: provinces also supplied grain, fodder and transport, with some obligations commuted into money under prescribed arrangements. Assessments, collection methods and delivery points shaped the burden."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "The mint supervisor tests a freshly struck coin with iron scales: every solidus must measure true to the grain; debase one coin and every minter loses his hands to the executioner's block! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "A soldier receiving gold still needed someone selling food; on campaign, rations and transport remained essential. Merchants receiving substantial gold payments checked weight and appearance, while small transactions also used silver, copper or barter. A full purse did not ensure fodder along the road."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The praetorian treasurer seals balance ledgers: thirty thousand gold solidi arrived from Syria and Egypt; with bullion secure, we can subsidize Gothic federates against Persia without delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Military finance required accounts of both money and provisions. Stored grain needed carriers, and coins had to reach their recipients. Arrears, commutation and changed delivery points could burden a locality; authorizing expenditure did not mean the army had received its supplies."
     }
   ],
   "SemanticPrototypes": [],

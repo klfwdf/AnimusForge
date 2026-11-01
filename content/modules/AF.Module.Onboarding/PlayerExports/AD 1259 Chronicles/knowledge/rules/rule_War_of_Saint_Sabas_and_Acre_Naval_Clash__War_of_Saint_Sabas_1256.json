@@ -1,40 +1,17 @@
 {
   "Id": "rule_War_of_Saint_Sabas_and_Acre_Naval_Clash",
   "Keywords": [
-    "War of Saint Sabas 1256",
-    "Battle of Acre Naval Clash",
-    "Venetian Genoese Levant Feud",
-    "Templar Hospitaller Rivalry"
+    "Acre Saint Sabas harbor conflict"
   ],
   "RagShortTexts": [
-    "The War of Saint Sabas divided Acre into bloody street fights between Venice and Genoa."
+    "The Saint Sabas dispute affected Acre’s berths, unloading and access."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Between 1256 and 1270, the crusader states of the Levant split into rival camps. Venice, Pisa, and the Templars fought against Genoa, the Hospitallers, and Philip of Montfort, and the fighting spilled into the streets of Acre. The naval battle of Acre in 1258 saw Venetian galleys defeat the Genoese fleet, and the defeat drove Genoa to seek an alliance with the Byzantine emperor Michael VIII of Nicaea. Each side enlisted local lords and military orders, and the civil war weakened the Latin states at the moment they most needed unity against the Mamluks. The quarrel also drained the treasuries that paid for the walls of the coastal fortresses."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Italian merchant credit kept the Outremer fortresses in repair, yet the maritime feud between Venice and Genoa was tearing the realm apart. Templars and Hospitallers fired crossbow bolts at each other in the Acre streets, and that news reached the Mamluk emirs in Cairo, who were glad to hear of it. A baron who lent money to both sides was paying for the war he hoped to avoid."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Around the Acre harbor, Venetian marines and Genoese crossbowmen trade catapult fire day and night. No one can unload cargo without taking an iron bolt through the arming coat. Keep your head below the parapet, count your bolts before each sortie, and do not step onto the quay while the catapults are loaded."
+      "Content": "Since 1256 the Saint Sabas dispute had involved Acre’s quarters, shipping and military orders. Contested berths and access disrupted unloading and exposed residents to higher costs and violence. Allies had different needs, requiring repeated negotiation over defense, shipping and passage through the port."
     }
   ],
   "TextMappings": []

@@ -1,50 +1,17 @@
 {
   "Id": "rule_Treaty_of_Paris_1259_Feudal_Settlement",
   "Keywords": [
-    "Treaty of Paris 1259",
-    "Henry III Homage to Saint Louis",
-    "Gascony Feudal Dispute",
-    "Hundred Years War Catalyst"
+    "Anglo-French Paris peace negotiations"
   ],
   "RagShortTexts": [
-    "In exchange he kept Gascony, the Duchy of Aquitaine, as a fief held from Louis IX.",
-    "The settlement brought a measure of peace, but it did not settle what a vassal owed his lord."
+    "Anglo-French Paris peace negotiations concerns current rights and obligations."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Sealed on 4 December 1259, the Paris settlement ended a generation of Anglo-French rivalry by fixing Henry III's position on the Continent. Henry gave up the Plantagenet claims to Normandy, Maine, Anjou, and Poitou, lands that Philip Augustus had taken from King John in the years after 1204. In exchange he kept Gascony, the Duchy of Aquitaine, as a fief held from Louis IX. Keeping it required homage, which meant the English king had to kneel before the French king and accept the position of a vassal. The settlement brought a measure of peace, but it did not settle what a vassal owed his lord. Each court read the document through its own legal tradition, and the wording left room for disputes over jurisdiction, feudal dues, and the fortified towns of the Gascon frontier for decades to come."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "French jurists hailed Louis IX's arbitration as a triumph, binding the sovereign King of England beneath the jurisdiction of the Parlement of Paris. English magnates, conversely, decried it as national betrayal, bitter at the formal loss of ancestral Angevin lands."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Garrisons in Bordeaux and Bayonne fly Capetian-approved charters, but the wine shippers and longbowmen swear allegiance solely to the Plantagenet coin. An anointed king kneeling to another anointed king is an unnatural peace built upon burning embers."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "A Gascon household hopes the settlement between Henry III and Louis IX will make the next journey with wine less dangerous. Homage and renunciations concern rights that lords will continue to argue over. Peace may reduce the chance of a royal campaign, but it does not promise an end to rent, port duties or the requisition of a cart by a local officer."
+      "Content": "Paris negotiations in 1259 concerned Henry III’s continental rights: renunciations in return for recognition of retained lands and homage to Louis IX. Negotiated terms, formal assent and performed homage were distinct. England itself was not the proposed French fief; Gascon revenue, jurisdiction and loyalties still required decisions."
     }
   ],
   "TextMappings": []

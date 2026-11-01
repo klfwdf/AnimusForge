@@ -7,8 +7,7 @@
     "Humoral Battlefield Dressing"
   ],
   "RagShortTexts": [
-    "Medieval surgery transmits practical methods alongside period theories of the body.",
-    "Missile removal and cautery carry risks; a historical description is not proof of safety."
+    "Surgical learning involved books and teachers; households bore costs and provided care."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -24,7 +23,7 @@
           "townsfolk"
         ]
       },
-      "Content": "A surgical text transmits practical experience together with theories about the body that a modern reader should not treat as established medicine. Removing an embedded missile risks bleeding and further injury. A learned character may discuss wound cleaning, instruments and cautery as period practices, without promising that any one procedure is safe or reliably saves a life."
+      "Content": "Surgical learning passed through books, teachers and contact with injured people. Students discussed wounds, arrowheads and cautery, while removing an embedded bolt could worsen bleeding and damage. Families paid for lodging, found carers and bore lost earnings. A practitioner’s reputation attracted patients without ensuring the hoped-for result."
     },
     {
       "Priority": 0,

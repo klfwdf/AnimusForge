@@ -1,21 +1,16 @@
 {
   "Id": "be_roman_annona_militaris_v1",
   "Keywords": [
-    "Annona Militaris_1",
-    "Grain Requisition 1_1",
-    "Frontier Convoys_1",
-    "roman_annona_militaris historical records_1"
+    "Julian twenty-day provisions"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Annona Militaris.",
-    "Compulsory grain requisitions extracted millions of bushels to sustain frontier troops.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "Julian prepared twenty days of stored grain as durable food before a Gallic campaign."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Late Roman Annona Militaris Grain Levies illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "For a campaign in Gaul before the new harvest, Julian ordered twenty days of stored grain prepared as durable food and carried by the soldiers. Stocks allowed an earlier departure, but processing, distribution and loads still had to be arranged. New supplies were needed when those stores ran out."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Soldiers carried processed, durable food rather than expecting an immediate harvest on the route. Preparation and carriage put some supply work on the troops; another supply source was still needed when that stock ran out."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "The commander used stores to choose a departure time, with processing before movement. Grain on an account still needed preparation, issue and carriage. Once stocks ran out, the army again faced the harvest season and its next supply."
     }
   ],
   "SemanticPrototypes": [],

@@ -1,40 +1,17 @@
 {
   "Id": "rule_Damascus_Ancient_City_and_Umayyad_Sanctuary",
   "Keywords": [
-    "Damascus Umayyad Mosque",
-    "Barada River Oasis Network",
-    "Syrian Armory Market Nexus",
-    "John the Baptist Head Relic"
+    "Damascus water and markets"
   ],
   "RagShortTexts": [
-    "Damascus, nourished by the Barada River oasis, anchored Syrian arms manufacture and trade."
+    "The Barada and irrigated gardens sustained Damascus."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Set within the lush Ghouta oasis, watered by the Barada River, Damascus is one of the oldest continuously inhabited cities in the world. Its Umayyad Mosque is adorned with glittering Byzantine mosaics and enshrines a relic traditionally held to be the head of John the Baptist, revered by Christians and Muslims alike. The city's bazaars and forges made it the premier arms manufacturing centre of the Levant. Merchants dealt in steel, glass, silk, and fruit, and caravans from Baghdad and Cairo met its markets on the great routes. Its gardens and orchards fed a population that had watched many conquerors come and go, from Romans and Arabs to Crusaders and Turks."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Controlling Damascus secures the continental trade artery between Egypt and upper Mesopotamia, and every ruler who wants the Levant must bargain for its gates. When Mongol forces occupied the city in 1260, its mercantile guilds kept secret communication with Cairo. A governor who ignores those guilds will find his tax rolls empty and his caravans diverted."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Walking the vaulted souks, the scent of crushed cardamom blends with forge smoke. A true Damascus curved scimitar is quenched until the steel ripples like running water, and in the hands of a veteran it slices through padded jacks with ease. The smith who made it will tell you a blade is only as good as the man who swings it, and a man is only as good as his nerves in the dust of a charge."
+      "Content": "The Barada and irrigated gardens sustained Damascus, where mosque, markets and gates connected communities. Reports of armies affected stocks and bargaining. Merchants could not infer a new tax authority from an unconfirmed occupation rumor."
     }
   ],
   "TextMappings": []

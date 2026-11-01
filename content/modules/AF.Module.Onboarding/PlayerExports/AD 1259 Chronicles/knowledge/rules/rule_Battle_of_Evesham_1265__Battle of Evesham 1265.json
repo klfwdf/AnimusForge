@@ -1,30 +1,17 @@
 {
   "Id": "rule_Battle_of_Evesham_1265",
   "Keywords": [
-    "Battle of Evesham 1265",
-    "Prince Edward Longshanks Vengeance",
-    "Simon de Montfort Death Mutilation",
-    "Avon River Green Hill Ambush"
+    "Evesham river bends and baronial disputes"
   ],
   "RagShortTexts": [
-    "In 1265 at Evesham, Prince Edward encircled Simon de Montfort along the Avon loops,."
+    "Evesham crossings linked fields and markets amid disputes over royal government."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Simon de Montfort's rebellion against Henry III had ended in the field at Lewes a year earlier, and the royal cause had been restored by a campaign led by Prince Edward. At Evesham on August 4, 1265, Edward trapped Montfort's outnumbered force in a loop of the River Avon. The fight took place under a heavy summer sky, and the royalist knights gave no quarter to the rebels. Montfort was killed on Green Hill, and his corpse was mutilated. The defeat ended the baronial revolt that had tried to govern England through the Mise of Lewes. Edward then turned to rebuilding royal authority across the realm."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "soldier"
-        ]
-      },
-      "Content": "Edward kept the parliamentary machinery that Montfort had used to summon the commons, and he used it to govern in Henry's name. Lords who had supported the rebels had to sue for pardon and surrender their lands, while loyal barons were rewarded with wardships and offices. Letters of summons and writs of pardon went out under the royal seal, and each county sheriff read them carefully."
+      "Content": "The Avon and its crossings near Evesham constrained movement while linking fields and markets. In 1259 the crown and reforming barons disputed government. Local people watched levies, courts and road news, concerned that political conflict would disrupt markets and farm work."
     }
   ],
   "TextMappings": []

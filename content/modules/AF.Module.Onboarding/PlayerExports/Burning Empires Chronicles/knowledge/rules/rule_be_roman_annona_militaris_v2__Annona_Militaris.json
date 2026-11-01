@@ -1,21 +1,16 @@
 {
   "Id": "be_roman_annona_militaris_v2",
   "Keywords": [
-    "Annona Militaris_2",
-    "Grain Requisition 2_2",
-    "Frontier Convoys_2",
-    "roman_annona_militaris historical records_2"
+    "Lauriacum grain ships"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Annona Militaris.",
-    "Compulsory grain requisitions extracted millions of bushels to sustain frontier troops.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "Blocking grain access to Seleucia left soldiers and residents hungry together."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Late Roman Annona Militaris Grain Levies illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "When Isaurian forces approached Seleucia, grain ships used the Calycadnus and the attackers blocked access near its mouth. Supplies failed to enter, leaving soldiers and residents hungry together. Defenders still held the walls, but stores depended on transport beyond them."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "A garrison can hold its gates and still lose its rations when the boat route closes. Escorts need to report the river mouth and unloading point together; an intact wall says nothing about grain available for issue."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "City officers faced civilians and troops sharing a broken supply line. Relief had to restore transport, not merely add orders or nominal allocations; the same shortage could worsen urban disorder."
     }
   ],
   "SemanticPrototypes": [],

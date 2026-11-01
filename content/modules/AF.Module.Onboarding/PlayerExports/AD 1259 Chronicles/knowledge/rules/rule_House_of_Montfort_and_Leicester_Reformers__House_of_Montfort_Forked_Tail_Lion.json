@@ -1,40 +1,17 @@
 {
   "Id": "rule_House_of_Montfort_and_Leicester_Reformers",
   "Keywords": [
-    "House of Montfort Forked Tail Lion",
-    "Simon de Montfort Earl of Leicester",
-    "Albigensian Crusade Heritage",
-    "English Parliamentary Democracy Pioneer"
+    "Leicester and reforming cooperation"
   ],
   "RagShortTexts": [
-    "The Montfort family produced crusaders and political leaders on both sides of the Channel.",
-    "His supporters and opponents dispute whether the reforms protect lawful counsel or weaken the crown."
+    "Simon de Montfort."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Montfort family produced crusaders and political leaders on both sides of the Channel. Amaury de Montfort fought in the Albigensian campaigns, while Simon de Montfort, Earl of Leicester, married Eleanor, sister of Henry III, in 1238. In 1258 and 1259 Simon is a leading voice among barons pressing Henry to accept the Provisions of Oxford and reform royal government. His supporters and opponents dispute whether the reforms protect lawful counsel or weaken the crown. Knights and town representatives may be discussed as possible participants in future councils, but the parliament of 1265 has not been summoned, and Simon’s defeat and death at Evesham lie in the future. For now, the struggle concerns who controls appointments, finance and the king’s ministers."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Montfort combined intense ascetic piety with baronial constitutionalism. Critics called him an ambitious demagogue who used the reform program to strip the king of his rightful powers, while reformers hailed him as the champion of lawful liberties. His letters to the shire courts and town councils were copied and read aloud."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "People hearing the reforms of 1258 and 1259 may welcome limits on royal officers while wondering whose complaints the barons will hear. Simon de Montfort's name offers a focus for hopes and quarrels, but his later parliament has not yet met. A villager still faces the manor court and must judge reform through the burdens that actually reach the household."
+      "Content": "Simon de Montfort, earl of Leicester, took part in the reform disputes after 1258 through both continental lineage and English ties. Reformers were not permanently unanimous. Court, councils and local administration contested responsibilities without a known postwar outcome."
     }
   ],
   "TextMappings": []

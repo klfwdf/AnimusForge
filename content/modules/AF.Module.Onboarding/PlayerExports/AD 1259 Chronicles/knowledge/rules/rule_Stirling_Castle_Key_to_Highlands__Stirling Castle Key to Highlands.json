@@ -1,30 +1,17 @@
 {
   "Id": "rule_Stirling_Castle_Key_to_Highlands",
   "Keywords": [
-    "Stirling Castle Key to Highlands",
-    "Stirling Bridge Forth Crossing",
-    "Gateway to Highlands Stirling",
-    "Stirling Sieges Royal Fortress"
+    "Stirling crossing and fortress"
   ],
   "RagShortTexts": [
-    "Stirling Castle commanded the narrow Forth crossing, revered as the indispensable military."
+    "Stirling’s river crossings linked lowland and northern routes under an elevated stronghold."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Stirling Castle commanded the lowest crossing of the River Forth, the point where an army moving north from the Lowlands had to cross or go around a wide flood plain. The castle rose on a volcanic crag, and whoever held it controlled the road into the Highlands. Stirling Bridge, fought in 1297, showed how the boggy carse and a narrow bridge could trap a larger force, and the castle changed hands repeatedly through the Wars of Scottish Independence. Its garrison and royal officers could block a royal army, tax river traffic, and set the terms of any northern campaign, which made the fortress a prize that every Scottish and English king wanted to hold."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "soldier"
-        ]
-      },
-      "Content": "A Scottish lord who holds land west of the castle owes his service to the garrison, and the captain keeps a careful eye on which clans answer the summons. Soldiers marching out learn the carse early: wet ground sucks at the boots, and the bridge is narrow enough for one horse at a time. Keep your shield up on the approach and never leave the causeway to chase a flanking rider."
+      "Content": "Stirling’s river crossings linked lowland and northern routes under an elevated stronghold. A crossing affected passage and dues without guaranteeing control of everyone in every season. Armies, markets and households shared the same geography."
     }
   ],
   "TextMappings": []

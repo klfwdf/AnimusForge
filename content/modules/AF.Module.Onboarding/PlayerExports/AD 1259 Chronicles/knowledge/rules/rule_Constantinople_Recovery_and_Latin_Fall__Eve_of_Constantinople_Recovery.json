@@ -1,50 +1,17 @@
 {
   "Id": "rule_Constantinople_Recovery_and_Latin_Fall",
   "Keywords": [
-    "Eve of Constantinople Recovery",
-    "Terminal Fall of Latin Empire",
-    "Baudouin II Pawned Relics",
-    "Byzantine Empire Renaissance 1261"
+    "Nicaea and the contested Latin capital"
   ],
   "RagShortTexts": [
-    "In 1259 Constantinople remains under Latin rule while Nicaea seeks recovery.",
-    "Memories of 1204 shape Greek hopes without supplying certain knowledge of a future return."
+    "Nicaea and the contested Latin capital concerns current rights and obligations."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "By AD 1259 the Latin Empire of Constantinople had shrunk to a perimeter behind the Theodosian Walls, and the emperor's authority reached little beyond the city itself. Baldwin II had pawned the True Cross and the Crown of Thorns to Venetian bankers to cover his debts, and palace rafters were burned for firewood because the treasury could no longer buy timber. Venice held the trade and the loans, while Michael VIII of Nicaea prepared his army across the Bosphorus. Baldwin's hollow reign lived under the constant fear that Nicaea would break through the walls and end it. The Latins' only hope lay in Western aid, and the defeat at Pelagonia had shown how little that aid could deliver when it arrived."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Behind dilapidated bastions, Baldwin II ruled over weed-choked piazzas and palaces stripped of their gold. After Pelagonia, no Western prince could be counted on to march east, and Venetian galleys could not blockade the Golden Horn forever. Every baron and clerk still serving the Latin court calculated how long Venice's loans would last, and how soon the Nicaean army would come."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Garrisons on the Golden Gate are starving, and their wages have gone unpaid for months. Across the strait, Nicaean bonfires burn bright at night. One lax watch or one unlatched sally port is all it would take for the double-headed eagle to reclaim the ramparts, and the men on the walls know it."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "Greek townsfolk in the lanes below Hagia Sophia still tell old prophecies of the Latins' fall. Their elders remember the looted sacred vessels, and every household recalls the coins it paid to ransom a relative. Grain costs more each winter while the Latin court taxes what remains. Men mutter that true Orthodox liturgy will echo under the great dome again."
+      "Content": "Constantinople remained the Latin center while Nicaea sought restoration and Venice defended commercial interests. Sea access, supply and allies mattered alongside walls. Court plans and merchant guesses were not actual entry through the gates."
     }
   ],
   "TextMappings": []

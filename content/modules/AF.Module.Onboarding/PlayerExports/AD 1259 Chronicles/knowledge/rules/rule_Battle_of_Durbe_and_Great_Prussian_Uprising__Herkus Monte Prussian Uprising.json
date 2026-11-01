@@ -1,29 +1,17 @@
 {
   "Id": "rule_Battle_of_Durbe_and_Great_Prussian_Uprising",
   "Keywords": [
-    "Herkus Monte Prussian Uprising",
-    "Samogitian Ambush Livonian Defeat",
-    "Battle of Pokarwis 1261 Teutonic"
+    "Prussian conquest and local allegiance"
   ],
   "RagShortTexts": [
-    "In 1260 at Durbe, a disastrous crusader defeat triggered the Great Prussian Uprising under."
+    "Prussian leaders chose service."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The defeat at Durbe on July 13, 1260 opened the way to a wider revolt. Curonian and Samogitian forces had turned on the Teutonic army at the lake, and the loss of about 150 brother-knights shook the Order's authority across Prussia. The Great Prussian Uprising, which ran from 1260 to 1274, followed. Its leader, Herkus Monte, was a Natangian nobleman who had been trained in German warfare at Magdeburg. Under his command the Baltic tribes defeated the Teutonic field army at Pokarwis in 1261, burned colonial settlements, and laid siege to the Order's stone fortresses along the coast. The rising forced the Order to commit large resources to a war on several fronts and tested the stone-castle system that the Order had built to hold conquered land."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "soldier"
-        ]
-      },
-      "Content": "Monte used what he had learned in German service against his former masters. Prussian lords in the Samland and Natangian districts had to choose between their oaths to the Order and the rising, and each choice risked confiscation. The threat was the gravest the Order had faced in its Prussian history."
+      "Content": "Prussian leaders chose service, negotiation or resistance under pressure from the Order, with different local relationships. Castles controlled nearby routes but required food and dependable troops. News of resentment did not establish agreement on a general revolt."
     }
   ],
   "TextMappings": []

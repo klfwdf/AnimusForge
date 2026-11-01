@@ -1,21 +1,16 @@
 {
   "Id": "be_wre_limitanei_border_system",
   "Keywords": [
-    "Limitanei Garrisons",
-    "Castella Forts",
-    "Signal Beacon Net",
-    "Rhine River Defense"
+    "Rhine forts and garrison supply"
   ],
   "RagShortTexts": [
-    "Western Roman Limitanei borderers held stone castella along major rivers.",
-    "Fortresses sealed river crossings and fords with ballistae and signal towers.",
-    "These hereditary garrisons patrolled frontiers, delaying barbarian warbands."
+    "Roman frontier posts needed garrisons, patrols, repairs and provisions to guard crossings."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The frontier security of the Western Empire rested upon the Limitanei borderers occupying hardened stone castella along the Rhine and Danube river boundaries. Under the fortification decrees of Valentinian I, watchtowers sealed every vulnerable ford and crossing. Granted hereditary agricultural plots exempt from municipal taxation, these soldier-settlers manned ramparts with heavy ballista engines and composite bows. Signal pyres kept ready atop turrets relayed alerts deep into provincial headquarters, buying vital days for mobile cavalry vexillations to intercept breaching warbands. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Garrisons along the Rhine and Danube held forts, patrolled roads and watched crossings. Posts protected routes and stores, but long riverbanks, forests and tributaries offered concealed approaches. Repairs, grain storage and contact with nearby units formed everyday frontier work."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "A limitaneus drops his hoe in the field and grabs his spear: smoke rises from the river watchtower; secure wives in the cellars, barbarian raiders have crossed the lower shallows, man the parapets! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Patrols identified roads, water levels and possible landing places and reported locations and directions. Winter, floods and darkness changed passage. Shelter behind walls did not ensure rations; men still needed footwear, clothing and delivered food."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The frontier prefect reviews quartermaster manifests: every castellum must hold three months of dried biscuit and thousands of bolts; when the Danube freezes, patrols must carry torches day and night. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Fort construction required craftsmen, materials, transport and garrisons. Spreading troops among too many posts weakened each, while failed supply could force men to seek food away from duty. Frontier defense also needed mobile support."
     }
   ],
   "SemanticPrototypes": [],

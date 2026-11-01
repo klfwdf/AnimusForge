@@ -1,29 +1,17 @@
 {
   "Id": "rule_Battle_of_Pelagonia_1259_Byzantine_Dawn",
   "Keywords": [
-    "John Palaiologos Decisive Victory",
-    "William of Villehardouin Captured",
-    "Path to Constantinople 1261"
+    "Pelagonian coalitions and reports"
   ],
   "RagShortTexts": [
-    "In 1259 at Pelagonia, Nicaea routed the Latin-Epirote coalition, capturing Achaea's prince."
+    "Nicaea, Epirus and allies contested Macedonian routes with differing aims."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The battle of Pelagonia in autumn 1259 decided the fate of the Byzantine world. Sebastokrator John Palaiologos, commanding the Nicaean army, faced a coalition that included the Despotate of Epirus, the Sicilian forces of Manfred, and the Principality of Achaea. The allies were divided by rivalry among their Greek and Frankish leaders, and John used that division to isolate the Latin vanguard. He destroyed it in the valley, and Prince William II of Villehardouin was captured on the field. The surrender of William brought the fortresses of the Morea, including Mystras, into Byzantine hands and removed the main Frankish threat to the Nicaean route to Constantinople. The victory made the recapture of the city in 1261 possible."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "soldier"
-        ]
-      },
-      "Content": "The capture of the Prince of Achaea broke the backbone of Latin rule in the Morea. Frankish barons who had sworn to William had to decide whether to surrender their castles to the Palaiologoi or to fight without a leader. Those who negotiated kept their land under a new lord, while the rest saw their fiefs pass to the Greek administration."
+      "Content": "Nicaea, Epirus and allies contested Macedonian routes with differing aims. Concentration and embassies changed expectations, but reports required confirmation. An advantage in one region was not possession of Constantinople."
     }
   ],
   "TextMappings": []

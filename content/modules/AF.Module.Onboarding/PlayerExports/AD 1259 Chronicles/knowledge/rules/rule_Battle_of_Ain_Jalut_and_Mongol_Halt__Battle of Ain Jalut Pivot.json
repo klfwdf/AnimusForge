@@ -1,30 +1,17 @@
 {
   "Id": "rule_Battle_of_Ain_Jalut_and_Mongol_Halt",
   "Keywords": [
-    "Battle of Ain Jalut Pivot",
-    "Qutuz and Baibars Mamluk",
-    "Kitbuqa Slain at Ain Jalut",
-    "Mamluk Steppe Tactics Triumph"
+    "Galilean springs and marching roads"
   ],
   "RagShortTexts": [
-    "In 1260 at Ain Jalut, Mamluk horse archers crushed Kitbuqa, definitively halting Mongol."
+    "Galilean water sources aided movement while burdening village supplies."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Mongol armies had overrun Persia, Armenia, and much of Syria before 1260, and their horsemen seemed impossible to stop. On September 3, 1260, Mamluk Sultan Qutuz and his commander Baibars met the Ilkhanate general Kitbuqa at Ain Jalut, a spring in the Galilee plain. The Mamluks feigned a retreat to draw the Mongol vanguard into the open, then turned on it in a close cavalry counter-attack while archers and massed horsemen wore the enemy down. Kitbuqa was captured and later executed. The battle halted the Mongol advance toward Egypt and showed that disciplined mounted archers could beat the Mongol army in the field, a lesson that shaped Mamluk tactics for decades."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "soldier"
-        ]
-      },
-      "Content": "Ain Jalut saved Cairo and Damascus from Mongol conquest and gave the Mamluk regime the prestige to rule Egypt and Syria. For an emir, the victory meant new iqta grants and a fresh claim to command. Soldiers remember the Galilee dust, the thirst, and the final charge that broke the Mongol line."
+      "Content": "Springs and open ground along Galilean routes helped watering and assembly but burdened nearby villages with supply demands. News of Mongol campaigns and Egyptian politics raised fears of war. Travelers asked about water, troops and passage; villagers balanced feeding passing forces against household needs."
     }
   ],
   "TextMappings": []

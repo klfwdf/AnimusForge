@@ -1,21 +1,16 @@
 {
   "Id": "be_wre_palatini_guards_regiment",
   "Keywords": [
-    "Palatini Regiments",
-    "Imperial Guards",
-    "Purple Cloak Troops",
-    "Elite Auxilia"
+    "Imperial field troops and palace guards"
   ],
   "RagShortTexts": [
-    "Palatini guard regiments served as strategic shock reserves beside the emperor.",
-    "Receiving top grain rations and gilded armor, troops included elite Germanics.",
-    "They formed the decisive tactical hammer while dominating court politics."
+    "Troops accompanying the emperor and palace guards had distinct duties requiring specific orders."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Directly attached to the imperial court, the Palatini guard regiments constituted the ultimate strategic reserve of the Late Roman Empire. Ranked above provincial field armies, these household cohorts comprised decorated veterans and towering Germanic warriors adorned in gilded crests and polished mail hauberks. Quartered near imperial capitals in Trier, Mediolanum, and Constantinople, they drew double pay in gold solidi and premium wine rations. In general actions, the Palatini stood held in reserve behind the center, unleashed only to deliver the crushing final blow when the enemy line fractured under sustained pressure. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "An emperor needed protection while traveling and campaigning, alongside infantry and cavalry assembled with the army. Guarding palace access, securing a route and supporting battle were distinct duties. Prestige did not replace an assignment. Proximity to court offered rewards and promotion but also exposed soldiers to personnel disputes."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "A Palatine guardsman draws a silvered broadsword: the Augustus commands the center; let treasonous mutineers approach within thirty paces and taste imperial steel! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Guards identified authorized visitors, watched roads and crowds and followed the commander on duty. Campaign service still involved training, camping and rations. Ceremonial display and battle deployment needed different preparations."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The Comes Domesticorum stands by the purple banner: our cohorts are the iron shield of the crown; so long as golden stipends flow without debasement, the imperial throne remains secure. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "The emperor and senior officers allocated guard and campaign duties according to reliability, experience and available men. Keeping too many troops nearby reduced support elsewhere, while removing guards endangered travel. Rewards could win support without determining every succession or court dispute."
     }
   ],
   "SemanticPrototypes": [],

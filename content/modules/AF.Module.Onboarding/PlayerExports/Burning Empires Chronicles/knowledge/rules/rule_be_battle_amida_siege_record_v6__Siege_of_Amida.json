@@ -1,21 +1,16 @@
 {
   "Id": "be_battle_amida_siege_record_v6",
   "Keywords": [
-    "Siege of Amida_6",
-    "Sassanid Earth Mounds 6_6",
-    "Artillery Duels_6",
-    "battle_amida_siege historical records_6"
+    "Amida siege mound collapse"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Siege of Amida.",
-    "Shapur II besieged the Roman stronghold of Amida for seventy-three bloody days.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "Earthworks and collapses at Amida changed heights and consumed labor."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Siege of Amida (359 AD) Battle Chronicle illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Late in the siege of Amida, the attackers raised earthworks toward the walls and defenders answered with their own construction. Collapsing earth and defensive structures changed heights and access. Moving soil, strengthening works and clearing debris required sustained labor; a local failure could place a whole sector under new pressure."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Moving earth, watching and fighting competed for the same manpower. Changed ground could invalidate earlier observation and missile positions; soldiers needed to assess the new access instead of relying on yesterday’s arrangement."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Commanders had to treat earthworks as a labor and supply commitment. More fill outside did not automatically mean entry, and a collapse required assessment of what access it actually created."
     }
   ],
   "SemanticPrototypes": [],

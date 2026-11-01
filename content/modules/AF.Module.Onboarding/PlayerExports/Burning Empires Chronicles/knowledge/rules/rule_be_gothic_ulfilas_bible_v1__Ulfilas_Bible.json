@@ -1,21 +1,16 @@
 {
   "Id": "be_gothic_ulfilas_bible_v1",
   "Keywords": [
-    "Ulfilas Bible_1",
-    "Gothic Alphabet 1_1",
-    "Danubian Missions_1",
-    "gothic_ulfilas_bible historical records_1"
+    "Ulfilas Gothic letters"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Ulfilas Bible.",
-    "Bishop Ulfilas devised the Gothic alphabet to translate the Holy Scriptures.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "Ulfilas translated scripture into Gothic; listeners could still depend on literate readers."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Ulfilas and the Gothic Bible Translation illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Ulfilas devised letters for Gothic and worked on translating scripture, allowing Gothic-speaking believers to hear texts and instruction in their own language. Copying books required literate people and materials; a reader at a gathering could read aloud to listeners unable to read. Understanding a sermon, reading and writing, and owning a book were different things. Believers might still need help from a bishop or another teacher."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Preaching in Gothic allowed listeners without Greek to hear scripture. A soldier or traveler who understood the spoken words might still need a reader to explain a written text. At another gathering, the visitor had to learn who taught there and how to join worship. Households sharing Gothic speech could still differ in religion."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "A chief receiving bishops and teachers such as Ulfilas faced the needs of congregations, book copying and contacts across kin groups. Lodging or writing materials could assist teaching without making every believer obey the same chief. One household member’s baptism did not mean that the whole family had accepted the same instruction."
     }
   ],
   "SemanticPrototypes": [],

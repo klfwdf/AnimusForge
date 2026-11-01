@@ -1,40 +1,17 @@
 {
   "Id": "rule_HRE_Imperial_Diet_and_Great_Interregnum_Schism",
   "Keywords": [
-    "HRE Imperial Diet Law",
-    "Dual Election Crisis 1259",
-    "Prince Elector Schisms",
-    "Imperial Immediacy Rights"
+    "Imperial assemblies and recognition"
   ],
   "RagShortTexts": [
-    "During the Great Interregnum, dual elections paralyze the HRE, allowing princes to expand."
+    "Imperial assemblies depended on attendance and recognition by princes, churches and towns."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Empire had no working emperor after Conrad IV died in 1254, and the next two decades are called the Great Interregnum. In 1257 rival electors split their votes between Richard of Cornwall and Alfonso X of Castile, and neither candidate commanded enough German revenue or troops to hold the crown. Richard made only a few brief visits to Germany, while Alfonso never came to the Empire at all. With no royal court to hear appeals, princes and free cities formed their own leagues to keep trade roads open and punish raiders. The Imperial Diet still met for negotiation, yet decisions depended on which lord could bring the most armed men to the hearing. Only in 1273 did the electors choose Rudolf of Habsburg, a king with enough land to press claims."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Without a working emperor, each count and bishop ran his castle and toll bridge like a small kingdom. Electors took gold from London and Toledo, yet none wanted a ruler strong enough to revoke their coinage or mining rights. Grain tithes and tenant dues filled the manor coffers. Sealed letters passed between electoral courts, each backing whichever candidate would leave neighbors weakest."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "In the mud before a river crossing, a man-at-arms in this Empire rarely knows which lord pays his wages. Robber-knight castles line the Rhine, and their garrisons demand passage money from every barge. Mercenaries sign on for a single campaign and walk off when the chest runs dry. Sentries demand the password before lifting the gate, and a wrong answer can bring a crossbow bolt from the wall."
+      "Content": "Imperial assemblies depended on attendance and recognition by princes, churches and towns. Issuing a summons was not securing participation; travel, resources and aims shaped response. Disputed kingship did not eliminate local administration."
     }
   ],
   "TextMappings": []

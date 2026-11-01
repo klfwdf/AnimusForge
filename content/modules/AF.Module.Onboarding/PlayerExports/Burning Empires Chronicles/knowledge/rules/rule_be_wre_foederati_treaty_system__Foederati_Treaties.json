@@ -1,21 +1,16 @@
 {
   "Id": "be_wre_foederati_treaty_system",
   "Keywords": [
-    "Foederati Treaties",
-    "Frontier Land Grants",
-    "Auxiliary Subsidies",
-    "Tribal Alliances"
+    "Roman frontier agreements and obligations"
   ],
   "RagShortTexts": [
-    "The empire concluded foederati agreements settling tribes within provinces.",
-    "Tribes retained chiefs and weapons in return for defending imperial borders.",
-    "The crown paid gold subsidies, though delayed payments often triggered revolt."
+    "The Roman-Gothic settlement of 369 involved a river meeting, trade restrictions and hostages."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Faced with declining provincial manpower and fiscal exhaustion, Late Roman administrations expanded the Foederati alliance network into a cornerstone of imperial defense. Under negotiated foedus treaties, entire warbands of Franks, Alemanni, and Goths were granted lands in frontier regions like Toxandria and the Lower Danube plains. In exchange for territorial autonomy and exemption from provincial taxation, tribal kings mobilized their warriors to guard imperial boundaries under Roman strategic supervision. The chancellery distributed seasonal gold subsidies and grain stipends to maintain their compliance, creating a precarious balance of power. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Agreements with frontier leaders could cover peace, trade, captives or hostages, depending on the parties. In 369 Valens and Athanaric met on boats in the Danube. War and interrupted trade had burdened Gothic communities, and the settlement placed restrictions on commercial access."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "A tribal warlord raises his iron blade toward the Roman envoy: our treaty guarantees two thousand grain carts; delay delivery past the full moon and our warband will harvest provincial estates instead! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Frontier residents felt a settlement through access to markets and safer roads. Guards still needed to know the permitted crossing places and travelers, while hostages were not visitors free to leave. News of peace did not open every former route to every caravan."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The civil vicar laments in official correspondence: barbarian foederati grow bolder every season; imperial gold feeds the beast, but should our treasury falter, they will turn to devour our provinces. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Negotiators needed to establish who could bind particular followers and how orders reached garrisons. Trade and hostages formed part of the 369 negotiations, with performance depending on leaders and frontier personnel. One agreement did not grant identical rights to every border community."
     }
   ],
   "SemanticPrototypes": [],

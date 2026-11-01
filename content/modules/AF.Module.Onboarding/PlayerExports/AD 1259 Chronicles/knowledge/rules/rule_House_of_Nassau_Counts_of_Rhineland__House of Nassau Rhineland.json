@@ -1,30 +1,17 @@
 {
   "Id": "rule_House_of_Nassau_Counts_of_Rhineland",
   "Keywords": [
-    "House of Nassau Rhineland",
-    "Nassau Castle Golden Lion",
-    "Nassau Brother Partition",
-    "Great Interregnum Nassau"
+    "Nassau counts and Rhenish ties"
   ],
   "RagShortTexts": [
-    "The House of Nassau guarded Lahn valley strongholds, expanding their feudal reach during."
+    "Nassau standing involved Rhenish estates, castles and princely ties."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Nassau Castle rose above the Lahn, where the valley narrowed into a corridor between the Rhineland and Westphalia. Whoever held the bridges there could tax the wine, salt and wool moving toward Mainz and the northern markets, so the counts built their power on river tolls before they built it on land. Their knights rode in small, mobile companies able to answer a summons from any family holding along the Lahn. The castles were kept lean, with ditches, timber gates and a stone keep that could hold out long enough for relief. Through careful loyalty to the crown, the family gathered the standing that would later let Adolf of Nassau be chosen king of the Romans in 1292. In 1259 that rise still rested on toll management, ready money from river trade, and knights willing to serve for pay."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "A Nassau count judged his neighbours by their willingness to share a toll and a border. Letters went to the archbishops of Mainz and Trier, offering escorts for merchant caravans in return for recognition of Nassau rights on the Lahn. Each brother who held a castle kept a share of its revenue and of its obligations, so every quarrel over an inheritance was negotiated as carefully as a treaty."
+      "Content": "Nassau standing involved Rhenish estates, castles and princely ties. Royal candidates sought support through rights and promises. Participation did not guarantee a future crown; present marriage and service commitments retained their own conditions."
     }
   ],
   "TextMappings": []

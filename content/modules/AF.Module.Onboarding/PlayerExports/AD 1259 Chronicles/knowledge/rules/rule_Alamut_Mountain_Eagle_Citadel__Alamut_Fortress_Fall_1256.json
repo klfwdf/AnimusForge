@@ -7,8 +7,7 @@
     "Alborz Mountain Redoubt"
   ],
   "RagShortTexts": [
-    "Alamut's surrender in 1256 disrupted a Nizari stronghold and its learned community.",
-    "Juvayni's account distinguishes selected preserved works from condemned writings."
+    "After Alamut’s fall, scattered readers needed surviving copies and patronage."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -34,7 +33,7 @@
           "townsfolk"
         ]
       },
-      "Content": "The surrender of Alamut in 1256 scattered a learned community as well as ending a fortress's resistance. The historian Juvayni described examining books and instruments there and selecting material to preserve, while condemning other writings. A scholar should distinguish this partisan account from later tales that every volume became fuel for a Mongol cooking fire."
+      "Content": "After Alamut surrendered in 1256, books from its library were selected, dispersed or destroyed. News caused concern among scholars for scriptures and learning. Displaced readers needed surviving copies, scribes and patrons; reports of a damaged library did not reveal the fate of every volume."
     }
   ],
   "TextMappings": []

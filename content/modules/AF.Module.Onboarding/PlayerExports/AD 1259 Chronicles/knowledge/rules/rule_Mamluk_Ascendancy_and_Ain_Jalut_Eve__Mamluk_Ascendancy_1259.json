@@ -7,15 +7,14 @@
     "Cairo Slave Guard Shock Force"
   ],
   "RagShortTexts": [
-    "Mamluk power in Egypt depends on armed households, leadership and fiscal support.",
-    "Fear of Mongol expansion affects recruitment and supplies without foretelling a battle's result."
+    "Egyptian military power needed ties, revenue and transport amid concern about Mongol news."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In Cairo the Bahri Mamluks, warriors drawn from Kipchak slave stock, held supreme power. Sultan Saif ad-Din Qutuz had put Hulagu's envoys to death and allied with the commander Rukn al-Din Baibars, assembling the most formidable professional army in the Islamic world. The Mamluk regime rested on its military household, whose members were trained from youth, freed, and granted iqta fiefs in return for service. Egypt's wealth came from Nile grain, the Red Sea trade and the taxes of its cities, and that wealth paid for the cavalry, the armourers and the fortresses on which the sultanate's survival depended. Every campaign against the Mongols began with the question of whether the treasury could afford the horses."
+      "Content": "Egypt’s Mamluk commanders drew strength from military ties, training and resources amid rivalry at court. Cavalry, weapons and forts required iqta revenue, grain taxes and transport. News of Baghdad’s sack heightened concern about Mongol power, while court and local communities judged events through the envoys and merchants reaching them."
     },
     {
       "Priority": 0,

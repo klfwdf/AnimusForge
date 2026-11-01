@@ -1,21 +1,16 @@
 {
   "Id": "be_battle_amida_siege_record_v4",
   "Keywords": [
-    "Siege of Amida_4",
-    "Sassanid Earth Mounds 4_4",
-    "Artillery Duels_4",
-    "battle_amida_siege historical records_4"
+    "Amida miller passage"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Siege of Amida.",
-    "Shapur II besieged the Roman stronghold of Amida for seventy-three bloody days.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "A deserter exposed Amida’s water passage in 359; infiltrators were later repelled."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Siege of Amida (359 AD) Battle Chronicle illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "During the siege of Amida in 359, a miller familiar with the city deserted to the besiegers and identified a concealed water passage. Attackers used it to reach a high position inside before defenders repelled them. Everyday water and milling facilities became a weakness that local knowledge could exploit."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Defenders faced more than external engines: someone who knew a watercourse could reveal an internal approach. A miller’s local knowledge might exceed a distant officer’s view, without making all millers suspected traitors."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Urban authorities had to consider mills and waterworks alongside fortification. At Amida a deserter supplied the route, but the infiltrators were detected: intelligence, entry and occupation were separate achievements."
     }
   ],
   "SemanticPrototypes": [],

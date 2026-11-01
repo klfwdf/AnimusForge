@@ -1,40 +1,17 @@
 {
   "Id": "rule_Battle_of_Kressenbrunn_and_Iron_King_Ottokar",
   "Keywords": [
-    "Battle of Kressenbrunn 1260",
-    "Iron and Golden King Ottokar",
-    "Babenberg Succession War",
-    "Bohemian Iron Cavalry Charge"
+    "Morava crossings and the Styrian dispute"
   ],
   "RagShortTexts": [
-    "Ottokar II's iron cavalry shattered Hungarian hosts at Kressenbrunn to secure Austria."
+    "Ottokar and Béla IV contested rights around Austria and Styria."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The struggle over the Babenberg inheritance of Austria and Styria brought King Ottokar II of Bohemia into conflict with King Béla IV of Hungary. Both kings claimed a say in the duchies that the last Babenberg duke had left without a clear heir. On July 12, 1260, at Kressenbrunn near the Morava River, Ottokar's heavy cavalry charged across the water and routed the mixed Hungarian and Cuman army. The victory gave the Přemyslid dynasty control of the Austrian lands and strengthened Bohemian influence over the Danube frontier. The loss also weakened Béla's position in the duchies, which he had hoped to hold for his own family."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Ottokar drew his power from the Kutná Hora silver mines (gold for his treasury) and from the mail-clad knight regiments that the silver paid for (iron for his army). Victory at Kressenbrunn forced Hungary to cede Styria, and the gains pushed Bohemian influence toward the Adriatic coast. Lords who held Styrian estates had to choose whether to swear to Prague or to Buda."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Across the Morava shallows, Cuman horse arrows skidded off the plate coats of the Bohemian knights. When Ottokar's lance wedges plunged through the water, the Hungarian line split apart, and men who had stood firm a moment earlier broke into a panicked run. The river bank was littered with dead horses and fallen shields by nightfall."
+      "Content": "Ottokar and Béla IV contested rights around Austria and Styria, with Morava roads and crossings shaping concentration. Both needed noble support and provisions. In 1259 neither a decisive battle there nor its territorial result was an accomplished fact."
     }
   ],
   "TextMappings": []

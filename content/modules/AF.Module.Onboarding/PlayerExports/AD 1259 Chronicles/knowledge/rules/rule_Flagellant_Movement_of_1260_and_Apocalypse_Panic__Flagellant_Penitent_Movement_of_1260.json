@@ -1,40 +1,17 @@
 {
   "Id": "rule_Flagellant_Movement_of_1260_and_Apocalypse_Panic",
   "Keywords": [
-    "Flagellant Penitent Movement of 1260",
-    "Joachim of Fiore Apocalypse Year 1260",
-    "Knotted Scourge Self Mortification",
-    "Laude Hymn Marches and Anti Corruption"
+    "Penitential practice and apocalyptic anxiety"
   ],
   "RagShortTexts": [
-    "Penitential expectations can unsettle households already facing war and scarcity.",
-    "Flagellant processions of 1260 are future events for characters in 1259."
+    "Penance and apocalyptic discussion affected believers alongside household food and care."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "A priest or lord hearing apocalyptic preaching in 1259 distinguishes present devotion from next year. Repentance sermons can bring neighbours together, while clerics debate who may preach or hear confession. Rulers watch for disorder. No one can yet report a Perugian movement spreading through Italian cities or its assemblies being outlawed. Observers record claims and local responses, leaving the expected turning point unresolved. Households may disagree about the warning and continue ordinary work while waiting for clearer signs."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "townsfolk"
-        ]
-      },
-      "Content": "In 1259 a priest or lord hears repentance sermons and considers their effect. Neighbours may pray together, while clerics debate who may preach or hear confession. Rulers watch for disorder. No one can report a Perugian movement spreading through Italian cities or authorities outlawing its assemblies. Observers record present claims and responses, leaving the expected turning point unresolved."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "In 1259 a poor household can hear penitential preaching and fears of divine judgment without knowing what processions the following year will bring. Public acts of devotion may offer fellowship, but also take workers away from fields and workshops. A rumour about impending punishment is a belief circulating among people, not certain knowledge of the future."
+      "Content": "Famine, war news and sermons prompted penance and discussion of the last days. Some sought forgiveness through harsh ascetic practice; others feared injury or neglected work. Believers might increase prayer and alms while households still needed food, seed and care for children, elders and animals."
     }
   ],
   "TextMappings": []

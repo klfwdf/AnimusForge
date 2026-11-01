@@ -1,40 +1,17 @@
 {
   "Id": "rule_Saracen_Archers_of_Lucera_Hohenstaufen_Guard",
   "Keywords": [
-    "Saracen Archers of Lucera",
-    "Hohenstaufen Crown Loyalists",
-    "Manfred of Sicily Arab Light Cavalry",
-    "Papal Excommunication Immune Guard"
+    "Lucera Muslim service"
   ],
   "RagShortTexts": [
-    "Lucera's Saracens provided Manfred of Sicily an incorruptible Muslim military guard immune."
+    "Lucera’s Muslim community was tied to Hohenstaufen rule, with some members serving as archers."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Frederick II resettled a Muslim military colony at Lucera in Apulia, and it became a dependable source of troops for the Hohenstaufen crown. Under King Manfred of Sicily, thousands of Saracen mounted archers and light cavalry served as royal guards. The colony owed its loyalty to the crown and was little troubled by papal excommunications or interdicts, which made it a reliable force in the wars against the Church's allies. Its soldiers fought on the king's terms and drew their pay from the royal treasury."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "At the Battle of Montaperti in 1260, Manfred sent seasoned Lucera archers alongside his Swabian knights to support Ghibelline Siena. Their volleys helped break the Florentine infantry. A lord who backed Siena or Florence in that war had to count the cost of Lucera's bows as well as the cost of Swabian lances."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Lucera skirmishers ride lithe Barbs and Arabians and loose rapid volleys from composite horse-bows. They circle the enemy wings like desert falcons, and their continuous fire breaks up the ranks that the knights have to charge through. Keep moving, keep your horse in the open ground, and do not stop to trade shots with a horseman who has already turned away."
+      "Content": "Lucera’s Muslim community was tied to Hohenstaufen rule, with some members serving as archers. Service did not erase households, livelihood or worship, and religious identity did not define one tactic. Manfred’s forces required actual orders and personnel."
     }
   ],
   "TextMappings": []

@@ -1,21 +1,16 @@
 {
   "Id": "be_ere_valens_arian_persecution",
   "Keywords": [
-    "Valens Arianism",
-    "Theological Purges",
-    "Nicene Resistance",
-    "Antiochene Synods"
+    "Valens Homoian church disputes"
   ],
   "RagShortTexts": [
-    "Emperor Valens aggressively enforced Arianism, expelling Nicene bishops across Thrace.",
-    "Doctrinal civil strife split imperial legions and provoked urban riots in Antioch.",
-    "Gothic tribes negotiating entry into the empire were converted directly to Arianism."
+    "Valens backed Homoian clergy; Nicene disputes involved bishops, churches and exile."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, Eastern Emperor Valens orchestrated a ruthless theological crusade to impose Arianism across the imperial dioceses. Operating from his palace in Antioch, Valens perceived the Nicene Creed as a direct challenge to imperial sovereignty. Military detachments enforced decrees banishing orthodox bishops and confiscating cathedral treasuries across Thrace, Cappadocia, and Syria. Urban populations erupted in sectarian rioting, turning street corners into doctrinal battlegrounds. Concurrently, when Gothic emissaries negotiated treaty baptism, Valens mandated that bishop Ulfilas catechize the Germanic tribes strictly in the Arian faith, guaranteeing deep-seated theological estrangement between barbarian federates and native Roman subjects. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "The Homoian position supported by Valens stressed that the Son was like the Father and avoided defining their relation through substance terminology. Adherents of the Nicene creed upheld the Son’s consubstantiality with the Father and opposed the court-backed church position. Disputes involved episcopal appointments, access to churches and the return of exiles, with different circumstances in each city."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "A military decurion kicks open basilica doors: imperial mandate! Monks refusing the Arian declaration are to be bound for desert labor camps; strike down anyone who resists! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Worship and preaching heard in one city might differ from the next. Believers asked who presided and which bishop recognized the congregation. Soldiers maintaining order could encounter rival congregations claiming a church. A sectarian name did not replace knowledge of particular people."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "An exiled bishop clutches his wooden cross: the purple robe has fallen to heresy; an Augustus who persecutes the true church invites divine retribution upon legions guarding the frontier. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Appointments and exile changed local networks of support. Officials handling church disputes faced congregations and existing clergy. Court support strengthened a party without immediately changing every resident’s faith. Taxation, garrisons and public order still required decisions beyond a doctrinal declaration."
     }
   ],
   "SemanticPrototypes": [],

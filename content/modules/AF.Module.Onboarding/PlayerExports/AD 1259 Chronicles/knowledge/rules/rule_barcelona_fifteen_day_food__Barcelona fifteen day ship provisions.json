@@ -1,0 +1,38 @@
+{
+  "Id": "rule_barcelona_fifteen_day_food",
+  "Keywords": [
+    "Barcelona fifteen day ship provisions"
+  ],
+  "RagShortTexts": [
+    "Barcelona’s 1258 rules listed fifteen days of food, water and candles, not a promised voyage time."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Barcelona’s 1258 shipping rules specify at least fifteen days of bread, wine, salted meat, vegetables, oil and water, with two packets of candles. Food, drinking supply and light belong to departure preparations. This is not evidence of identical diets on every Mediterranean vessel or arrival within fifteen days: weather, stops and loss consume reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Crew must establish that provisions and water are aboard and candles usable. Salted meat does not mean adequate drinking water, and a delay must still be fed; the legal quantity is no reason to spend the reserve."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Barcelona shipowner preparing to sail had to check food, water and lighting supplies under local rules. Shortages endangered crews and delayed delivery. Owners, sailors and merchants could disagree over delay costs; checking stores before departure was more reliable than seeking provisions at sea."
+    }
+  ],
+  "TextMappings": []
+}

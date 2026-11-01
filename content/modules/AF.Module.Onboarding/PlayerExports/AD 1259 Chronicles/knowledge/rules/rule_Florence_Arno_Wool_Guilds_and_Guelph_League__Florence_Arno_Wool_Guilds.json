@@ -1,40 +1,17 @@
 {
   "Id": "rule_Florence_Arno_Wool_Guilds_and_Guelph_League",
   "Keywords": [
-    "Florence Arno Wool Guilds",
-    "Calimala Cloth Finishing Guild",
-    "Guelph White Lily Commune",
-    "Florentine Gold Florin Purity"
+    "Florentine wool production"
   ],
   "RagShortTexts": [
-    "Florentine wool production links specialised labour, credit and communal politics.",
-    "Later guild-prior government and later statutes are not projected intact into 1259."
+    "Florentine wool relied on divided labor, river water and guilds amid political disputes."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Florence stood on the River Arno and rose as the industrial and banking centre of Tuscany. Its guilds, the Arte di Calimala and the Arte della Lana, bought raw wool from northern Europe and finished, dyed, and sold it as luxury cloth to markets across the continent. In 1252 the city began minting the gold florin, a coin of pure gold that soon became the standard of international finance. Florence's bankers lent to kings and popes, and the city allied itself with the papal Guelph cause, which fought the German emperors and the Ghibelline families who supported them. Its banners bore the red lily on white, and the city's wealth lay in the trade that the guilds controlled."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "A Florentine notable must work through the commune's councils, family alliances and the influence of trade. Guelph and Ghibelline labels carry real loyalties, but do not explain every dispute over office or property. The later government of guild priors is not yet in place in 1259; neither wealth nor noble ancestry gives one person uncontested command of the city."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "townsfolk"
-        ]
-      },
-      "Content": "Florentine wool work passes through many hands: sorting, washing, spinning, weaving, dyeing and finishing. A cloth merchant's profit depends on quality, credit and timely delivery, while a worker depends on wages for one stage of that process. Surviving later statutes can illuminate the trade, but their exact clauses must not be quoted as regulations already in force in 1259."
+      "Content": "Florentine wool production depended on cleaning, preparation, spinning, weaving, dyeing and inspection. The Arno supplied water and received workshop waste. Guilds protected reputation while constraining workers. Factional conflict affected orders and transport, while workshops differed in scale, materials and employment conditions."
     }
   ],
   "TextMappings": []

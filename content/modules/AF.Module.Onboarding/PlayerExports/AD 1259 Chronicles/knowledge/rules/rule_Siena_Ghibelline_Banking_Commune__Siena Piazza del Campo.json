@@ -1,30 +1,17 @@
 {
   "Id": "rule_Siena_Ghibelline_Banking_Commune",
   "Keywords": [
-    "Siena Piazza del Campo",
-    "Sienese Banking Patricians",
-    "Tuscan Ghibelline League",
-    "Montaperti Vengeance Siena"
+    "Sienese communal finance and factions"
   ],
   "RagShortTexts": [
-    "Siena stood as Florence's fierce Ghibelline rival, distinguished by its Piazza del Campo."
+    "Sienese banking and merchants supplied exchange and credit within Tuscan factional politics."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Perched on three clay hills in southern Tuscany, the commune of Siena built its wealth on banking and cloth as much as on arms. Its merchant houses, among them the Bonsignori, extended credit to churchmen and foreign princes, and their letters of exchange moved money across the Alps and the Mediterranean. The Piazza del Campo, shaped like a shallow shell and sloping toward the Palazzo Pubblico, served as the civic stage where the city council and guild officials met in public. Siena stood Ghibelline almost by temperament, since its magnates resented Florentine control of the trade road south to Rome. That rivalry turned into open war, and the Sienese army crushed the Florentines at Montaperti in September 1260, a victory the commune remembered for generations."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "merchant",
-          "soldier"
-        ]
-      },
-      "Content": "Under the black-and-white balzana, the city militia stands in the piazza with pikes on the shoulder. A Sienese foot soldier knows his commune's charter is written in the blood of men like him. Oil your bowstring, wrap a dry cloth around the grip, and check the ties on your mail skirt before every march. Wet leather stretches, and a loose strap can cost a leg in the first charge down the hill."
+      "Content": "Sienese banking and merchants supplied exchange and credit within Tuscan factional politics. Loans, war costs and allied promises competed for funds. Wealth did not remove repayment obligations or turn expected aid into a completed victory."
     }
   ],
   "TextMappings": []

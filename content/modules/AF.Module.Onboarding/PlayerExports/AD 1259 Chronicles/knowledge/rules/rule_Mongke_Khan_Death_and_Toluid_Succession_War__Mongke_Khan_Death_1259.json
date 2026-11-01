@@ -1,40 +1,17 @@
 {
   "Id": "rule_Mongke_Khan_Death_and_Toluid_Succession_War",
   "Keywords": [
-    "Mongke Khan Death 1259",
-    "Diaoyu Fortress Aftermath",
-    "Toluid Civil War Outbreak",
-    "Hulagu Syrian Army Withdrawal"
+    "Möngke campaigning and court news"
   ],
   "RagShortTexts": [
-    "The death of Möngke Khan in 1259 halted Hulagu's Syrian advance, triggering Mongol civil war."
+    "Möngke’s southern campaign generated long-distance movement of troops and envoys."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Great Khan Mongke died in August 1259 while his army besieged Diaoyu Fortress in Sichuan, and the empire he had held together began to split. No clear rule settled the succession. Hulagu, Mongke's brother and commander of the western armies, pulled the bulk of his troops out of Syria and marched them back toward Azerbaijan, so the Mongol presence in the Levant thinned sharply. Kitbugha was left in Syria with a depleted force. Kublai and Ariq Boke then turned on each other in open civil war over the throne. The plan to conquer Egypt stalled, and princes who had shared one campaign now fought over the Mongol heartland."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "In Cairo and Acre, news of Mongke's death was taken as a reprieve from heaven. The Mongol advance that had reached the edge of Egypt stalled, and Sultan Qutuz gained the narrow window he needed to meet the Mongols at Ain Jalut. Lords in the Levant had to decide whether to join Cairo or hold their own walls."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "When riders came in with mourning scarves, the Mongol tumens turned east almost at once. Thousands of lancers left their Syrian campfires overnight, leaving only local garrisons to face the Mamluk army. Keep your mail laced and watch the dark beyond the camp, because a quiet night does not mean the danger has passed."
+      "Content": "Möngke’s southern campaign generated long-distance movement of troops and envoys. Distant commanders depended on received reports, distinguishing orders, rumors of health and claims of succession. Knowledge differed by place in 1259; an unreceived result was not an established basis for action."
     }
   ],
   "TextMappings": []

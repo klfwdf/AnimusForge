@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_isaurian_bandits",
+  "Keywords": [
+    "Isaurian raiding and river crossings"
+  ],
+  "RagShortTexts": [
+    "Isaurian raiders were checked at the Melas by troops stationed near Side."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Isaurian raiders once entered Pamphylia by concealed mountain paths but were stopped by deep water at the Melas. While they sought fishing boats and materials for rafts, Roman troops stationed near Side moved against them. Knowledge of paths enabled surprise, but rivers and garrisons still constrained movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Fishing boats, timber and crossings could become objects of seizure. Travelers needed news of particular river sections and garrison positions, distinguishing merchants and villagers from armed parties. A detour increased food and lodging costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Preventing raids required guarding usable crossings, exchanging news with nearby troops and protecting transport. Difficulty assembling on mountain roads did not let raiders cross every deep river. Indiscriminate detention of residents also hindered access to guides and information."
+    }
+  ],
+  "TextMappings": []
+}

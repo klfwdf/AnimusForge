@@ -1,21 +1,16 @@
 {
   "Id": "be_sassanid_asbaran_noble_retainers",
   "Keywords": [
-    "Asbaran Nobles",
-    "Persian Cavalry Elite",
-    "Feudal Fealty",
-    "Martial Heritage"
+    "Maintaining Sasanian aristocratic cavalry"
   ],
   "RagShortTexts": [
-    "Asbaran were hereditary petty nobles trained from childhood in horsemanship.",
-    "Sustained by agricultural estates, each knight maintained horses and armor.",
-    "They formed the professional core of Sassanid field armies and royal guards."
+    "Sasanian elite cavalry needed family resources, horses, armor, followers and fodder."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Asbaran noble cavalry represented the martial spine of the Sassanid imperial army. Comprising scions of historic Persian aristocratic houses and landed dehqan gentry, these warriors trained from early boyhood in equestrian arts, archery, and heavy melee swordsmanship. Unlike Roman mercenary levies, Asbaran knights were supported by hereditary agrarian manors, enabling each man to outfit himself with hardened steel mail, pedigreed mounts, and ornate arms. On the field, they functioned as elite officers commanding cavalry wings, capable of shifting rapidly from arrow skirmishing to heavy shock charges in defense of royal sovereignty. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Sasanian aristocratic cavalry linked family standing with military service. Horses, weapons, armor and attendants required continuing support, with fodder and transport added for campaigning. Wealthier families could furnish equipment and men, but riders differed in resources and kit."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "An Asbaran knight fastens his gilded belt: our lands derive from royal favor; today before the western invaders, let enemy blood attest our dynastic glory! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "A rider tended the horse and checked saddle, reins and armor each day. Long marches exhausted animals; courage alone could not make an injured or underfed mount charge. Attendants and pack animals brought everyday supplies to the cavalry."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The quartermaster bows low before the cavalry tent: your destriers are fed prime alfalfa; serfs have polished the mail hauberks, the squadron rides on your word! Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Mustering elite cavalry required coordination with families controlling horses, men and wealth. A gathering place short of water or grazing became harder to supply as numbers grew. Estates and households also bore the cost of prolonged absence. A royal command still had to produce horses and men who could actually arrive."
     }
   ],
   "SemanticPrototypes": [],

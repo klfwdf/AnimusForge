@@ -1,21 +1,16 @@
 {
   "Id": "be_wre_comitatenses_doctrine",
   "Keywords": [
-    "Comitatenses Tactics",
-    "Plumbatae Darts",
-    "Fulcum Formation",
-    "Spatha Swords"
+    "Roman field army assembly and coordination"
   ],
   "RagShortTexts": [
-    "Late Roman Comitatenses heavy infantry combined missile fire with melee shock.",
-    "Front ranks locked shields in fulcum walls while rear cohorts hurled heavy darts.",
-    "Troops engaged with spatha swords, executing relentless forward combat grinding."
+    "Roman field armies brought infantry, cavalry and supplies together for particular ground."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the Western Roman field army (Comitatenses) garrisoned across Trier and Mediolanum represented the tactical pinnacle of Late Antique military engineering. Clad in standardized mail hauberks forged in state arsenals and bearing brass-rimmed oval shields, legionaries deployed in the disciplined fulcum shield-wall. Behind this immovable barrier, rear ranks unleashed salvos of lead-weighted plumbatae darts capable of shattering heavy shields at forty paces. As enemy warbands recoiled, frontline cohorts drew long spatha broadswords, stepping forward in locked cadenced ranks to execute lethal close-quarters butchery supported by mobile cart-mounted ballistae. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Roman field armies concentrated infantry, cavalry and other troops for campaigns and substantial threats. Units differed in tasks, equipment and experience. Marches required camps, provisions and road security. In battle, commanders needed mutual support between arms and room to transmit orders and regroup."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "A battle-scarred decurion hammers his gladius against shield brass: hold the fulcum wall! Let fly the plumbatae when the barbarians breach thirty paces; break formation and be executed on the spot! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "A soldier kept up with the unit, received rations in camp and checked weapons. In contact, standards, audible commands and spacing mattered alongside fighting skill. A retreating flank or congested road could undermine the original deployment."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The legion commander gestures with drawn steel: the central line must stand like granite; once their charging wedges break against our dart salvos, horns will sound for full echelon advance. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Assembling a field army required men, provisions and transport together, rather than a head count alone. At Strasbourg in 357, pressure on units, reinforcement and continued resistance all affected the result. Commanders needed ways to handle local disorder rather than one formation for every terrain."
     }
   ],
   "SemanticPrototypes": [],

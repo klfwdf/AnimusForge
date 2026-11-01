@@ -1,21 +1,16 @@
 {
   "Id": "be_religion_desert_monasticism_v2",
   "Keywords": [
-    "Desert Fathers_2",
-    "Saint Anthony Hermits 2_2",
-    "Stylite Ascetics_2",
-    "religion_desert_monasticism historical records_2"
+    "Ascetic shelter and crafts"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Desert Fathers.",
-    "Thousands abandoned municipal luxury to pursue extreme spiritual asceticism.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "Ascetics needed shelter, food and craft materials; assistance also consumed labor."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Desert Monasticism in Egypt and Syria illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Ascetics needed shelter, food and crafts they could exchange. Cutting stone, making palm-leaf baskets and obtaining necessities required different work, while helping weaker companions reduced time for one’s own needs. Living away from a city did not supply water, materials or exchange by itself."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Baskets required palm leaves and weaving before they could be exchanged, while a small dwelling required stone and carriage. Simple lodging seen by a traveler depended on everyday labor. Hunger and fatigue still affected workers, and sick people especially needed care."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Assistance to ascetics could require building materials, tools and carriage as well as food. Materials enabled those able to work, while people unable to support themselves needed further help. Aid required attention to lodging, season and available labor."
     }
   ],
   "SemanticPrototypes": [],

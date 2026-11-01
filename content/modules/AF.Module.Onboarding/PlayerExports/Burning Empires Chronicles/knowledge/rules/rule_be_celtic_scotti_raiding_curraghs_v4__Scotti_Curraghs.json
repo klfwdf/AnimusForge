@@ -1,41 +1,16 @@
 {
   "Id": "be_celtic_scotti_raiding_curraghs_v4",
   "Keywords": [
-    "Scotti Curraghs_4",
-    "Hide-Covered Boats 4_4",
-    "Night Amphibious Raids_4",
-    "celtic_scotti_raiding historical records_4"
+    "Supply restored on the Sicoris"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Scotti Curraghs.",
-    "Gaelic reavers crossed the Irish Sea in hide-covered curraghs under fog cover.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "Light boats on the Sicoris helped restore a bridge, foraging and supply."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Irish Scotti Leather Curragh Sea Raids illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "On the Sicoris, the position gained with light boats enabled a bridge, the recovery of foragers and renewed supply. Boats, a defended foothold and the bridge formed successive steps toward restoring provisions rather than an isolated display of daring."
     }
   ],
   "SemanticPrototypes": [],

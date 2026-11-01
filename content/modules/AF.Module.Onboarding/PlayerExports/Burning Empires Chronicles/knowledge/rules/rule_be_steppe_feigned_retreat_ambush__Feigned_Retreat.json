@@ -1,21 +1,16 @@
 {
   "Id": "be_steppe_feigned_retreat_ambush",
   "Keywords": [
-    "Feigned Retreat",
-    "Parthian Shot Tactics",
-    "Wolfpack Encirclement",
-    "Exhaustion Ambush"
+    "Cavalry pursuit and deceptive withdrawal"
   ],
   "RagShortTexts": [
-    "Nomad horsemen avoided static combat, attriting enemies with circling missile fire.",
-    "Faking panic retreat, they lured undisciplined pursuers into boggy ambush defiles.",
-    "Hidden reserves encircled the disorganized columns, butchering them with arrows."
+    "Mounted withdrawal can draw pursuers out of order; pursuit needs cohesion and support."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The tactical hallmark of Hunnic and Alan steppe warfare was the meticulously rehearsed feigned retreat and devastating ambush. During opening skirmishes, dispersed squadrons circled enemy cohorts, unleashing relentless arrow storms while refusing close engagement. When provoked heavy cavalry surged forward in pursuit, the nomads broke into apparent chaotic flight, deliberately abandoning draft horses and supplies. As pursuing echelons stretched and fatigued their mounts across rugged terrain, war horns sounded. The fleeing riders spun around in their saddles, delivering lethal Parthian shots into the lead pursuers while hidden wings materialized from hills to envelop and slaughter the scattered host. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Cavalry leaving contact might be retreating or seeking an opportunity to regroup and counterattack. Pursuers focused only on nearby enemies could stretch their ranks and leave infantry and baggage behind. Advances, withdrawals and renewed formations repeatedly altered mounted engagements during the Persian campaign of 363."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "A steppe decurion shoots backward at full gallop: draw them into the gorge; once their heavy warhorses blow lather in exhaustion, our trap snaps shut! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "A pursuer watched whether companions could keep up, how tired the horse was and whether ditches or cover lay ahead. Scattered riders did not prove the absence of other troops. Halting to regroup could preserve an advantage better than continuing the chase."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The Roman centurion screams at his pursuers: halt ranks! It is a nomadic trap; do not break formation for loose plunder, their main force waits beyond the ridge! Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "A pursuit order needed to specify who followed, who remained in support and where to stop. Securing water or baggage might matter more than catching a few riders. If orders could not reach the leading men, pursuit could dissolve into isolated fights."
     }
   ],
   "SemanticPrototypes": [],

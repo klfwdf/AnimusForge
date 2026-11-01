@@ -1,40 +1,17 @@
 {
   "Id": "rule_Treaty_of_Nymphaeum_and_Genoese_Byzantine_Pact",
   "Keywords": [
-    "Pact of Nymphaeum 1261",
-    "Genoese Byzantine Anti Venetian Pact",
-    "Pera Galata Quarter Concessions",
-    "Black Sea Duty Free Trade"
+    "Genoa bargains with Nicaea"
   ],
   "RagShortTexts": [
-    "No Nymphaeum treaty has granted Genoa Aegean exemptions or a Galata quarter.",
-    "Officials may discuss the cost, but terms, timing and military result are undecided."
+    "Genoa and Nicaea could seek cooperation against Venetian advantages."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Nicaean diplomacy in 1259 weighs naval assistance against customs and commercial rights an ally might demand. Genoa and Venice seek access to eastern markets, while Michael Palaiologos needs options to weaken Latin rule in Constantinople. No Nymphaeum treaty has granted Genoa Aegean exemptions or a Galata quarter. Officials may discuss the cost, but terms, timing and military result are undecided. Advisers compare toll revenue, fleet strength and dependence risk. Later concessions are not present facts."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "townsfolk"
-        ]
-      },
-      "Content": "In 1259 the learned question is what naval assistance might cost an emperor in tolls, privileges and commercial leverage. Genoa and Venice have interests of their own, and an alliance would require a specific bargain. Neither the treaty of 1261 nor later arrangements at Galata are present facts; their separate dates must not be collapsed into one accomplished concession."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Nicaean advisers debate whether Genoese aid could recover the capital. Some would pay with customs privileges; others fear dependence and lost revenue. No bargain has been struck, and Galata terms are undecided. A lord can estimate costs and seek safeguards, but cannot recount treaty effects as settled. The choice depends on negotiation and the risks across the straits."
+      "Content": "Genoa and Nicaea could seek cooperation against Venetian advantages, bargaining over ships, access and privileges. A common opponent did not enact a treaty: agreement, recognition and service were needed. Desired footholds were not already possessions."
     }
   ],
   "TextMappings": []

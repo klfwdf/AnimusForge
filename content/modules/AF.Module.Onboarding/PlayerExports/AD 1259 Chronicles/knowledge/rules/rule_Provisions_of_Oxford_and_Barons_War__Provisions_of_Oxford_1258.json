@@ -1,50 +1,17 @@
 {
   "Id": "rule_Provisions_of_Oxford_and_Barons_War",
   "Keywords": [
-    "Provisions of Oxford 1258",
-    "Simon de Montfort Baronial Revolt",
-    "Council of Fifteen Magnates",
-    "Early English Parliament Emergence"
+    "Oxford reform and councils"
   ],
   "RagShortTexts": [
-    "The Provisions of Oxford in 1258 contest the control of royal government.",
-    "The later baronial war is not a completed event for people living in 1259."
+    "The 1258 Oxford reforms sought limits on appointments and finance."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Provisions of Oxford were imposed on Henry III in 1258 after disputes over royal government and the cost of his Sicilian ambitions. They established a council of fifteen barons and regular meetings of the realm's leading men, limiting the king's freedom to appoint and govern. The settlement reflected a baronial reform movement, not a neutral modern parliament, and its authority remained contested. Henry repudiated the provisions in 1261; the dispute later escalated into the Second Barons' War, which began in 1264, but that outcome was not inevitable in 1259. Lords and officials had to navigate competing claims of royal prerogative, sworn reform and local interests."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Simon de Montfort champions the reform of the realm under sworn communal oath, asserting that the Crown must govern by the counsel of its natural peers. Royalist lords denounce the Council of Fifteen as baronial tyranny usurping anointed royal prerogative."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "White crosses are sewn onto the tunics of Montfortian knights who fortify the Tower of London. Common squires and burgesses have been summoned to council halls, and the power to bear arms in England no longer rests with the crown alone. Keep your place in the ranks and listen for the captain's orders."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "Magnates quarrel over charters in Latin, while village bailiffs still levy heriot and tallage. A hungry serf knows little of councils; if the lords take their fight to the open fields, it is our thatched roofs that burn. The Provisions of Oxford of 1258 were meant to curb the king's favourites and restore baronial councils, but the manor court still tallied our days of labour and fines."
+      "Content": "The 1258 Oxford reforms sought limits on appointments and finance, with implementation contested in 1259. King, barons and officials operated amid competing authority. A reform text differed from practice; neither compromise nor conflict was a known final outcome."
     }
   ],
   "TextMappings": []

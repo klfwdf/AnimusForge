@@ -1,50 +1,17 @@
 {
   "Id": "rule_Battle_of_Durbe_and_Crusader_Cataclysm",
   "Keywords": [
-    "Battle of Durbe 1260",
-    "Teutonic Livonian Total Defeat",
-    "Death of Master Hornhausen",
-    "Great Prussian Uprising Spark"
+    "Curonian auxiliaries and joint service"
   ],
   "RagShortTexts": [
-    "A Prussian or Livonian notable measures power by the garrisons and levies the Order can field.",
-    "Curonian auxiliaries may resent imposed service, while Lithuania remains a concern."
+    "Curonians were drawn into the Order’s levies and frontier warfare."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 1259 the Teutonic and Livonian orders are still extending and defending their Baltic holdings, while Prussian and Curonian communities face tribute demands, forced service and pressure to accept Christianity. The region is unsettled: local resistance, raids and competing alliances make any road or harvest uncertain. Yet the battle later called Durbe has not happened; the defeat of July 1260 and its named commanders belong to the future. A ruler can hear complaints about the Order's levies or receive reports of a border clash, but cannot cite Durbe as proof that the crusader position has collapsed. For now, both the Order and its opponents test one another's strength without knowing which coalition will prevail."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "A Prussian or Livonian notable measures power by the garrisons and levies the Order can field. Curonian auxiliaries may resent imposed service, while Lithuania remains a concern. A lord may fear coercion is making enemies or seek neighbours for mutual defence. He cannot know a defeat at Durbe will trigger an uprising or name Herkus Monte as its leader. The next levy is the immediate test."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "A Courland foot soldier carries supplies between timber forts and watches for scouts. Local auxiliaries may distrust the German knights beside them; pay and language shape the camp. Patrols report tracks or missing cattle. No soldier in 1259 can describe a rout at Lake Durbe or count its future dead. He may fear bad ground or divided loyalties, but fear is not memory."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "A Courland household hides seed grain when patrols pass. A lost cow, requisitioned cart or labour demand matters more than distant claims of victory. Some villagers resent the Order; others rely on its market or protection. Raids make people cautious, but Durbe lies in the next year. No one can celebrate that future victory. Families weigh food, shelter and whether to flee before the next levy."
+      "Content": "Curonians were drawn into the Order’s levies and frontier warfare. Local interests, language and service terms shaped cooperation. Commanders needed actual contributors and supplies; a shared camp did not ensure trust, and suspicion was not an accomplished betrayal."
     }
   ],
   "TextMappings": []

@@ -1,41 +1,16 @@
 {
   "Id": "be_trade_silk_road_sogdian_v7",
   "Keywords": [
-    "Sogdian Merchants_7",
-    "Silk Caravan Oases 7_7",
-    "Persian Tariffs_7",
-    "trade_silk_road historical records_7"
+    "Miwnay appeals to her mother"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Sogdian Merchants.",
-    "Sogdian caravans navigated trans-Eurasian trails carrying raw silk and spices.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "Abandoned in Dunhuang, Miwnay appealed to her mother because her husband had not brought her away."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Sogdian Merchant Networks and Silk Trade illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Abandoned in Dunhuang, Miwnay appealed to her mother because her husband had not brought her away. She needed someone to undertake the cost and responsibility of a journey, rather than an abstract guarantee of commercial safety. Merchant migration separated families; kinship offered possible help without ensuring it arrived."
     }
   ],
   "SemanticPrototypes": [],

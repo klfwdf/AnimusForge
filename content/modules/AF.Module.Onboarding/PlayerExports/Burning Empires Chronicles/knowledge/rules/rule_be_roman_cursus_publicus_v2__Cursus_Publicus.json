@@ -1,21 +1,16 @@
 {
   "Id": "be_roman_cursus_publicus_v2",
   "Keywords": [
-    "Cursus Publicus_2",
-    "Imperial Post 2_2",
-    "Dispatch Network_2",
-    "roman_cursus_publicus historical records_2"
+    "Philagrius sealed instructions"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Cursus Publicus.",
-    "Fast post couriers relayed imperial decrees and urgent dispatches across provinces.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "Julian’s signed order to Philagrius could be opened only after Vadomarius crossed the Rhine."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Imperial Cursus Publicus Postal Network illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Julian sent his secretary Philagrius to the Rhine with a signed paper that was to be read only if Vadomarius appeared on the western bank. The envoy held general authority for emergencies, but the specific instruction had its own opening condition. When Vadomarius attended a banquet, Philagrius left on a pretext, read the paper at his lodging, and then carried out the arrest. This was a particular political operation, not the normal handling of every Roman letter."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Frontier soldiers must distinguish a bearer’s general authority from the act authorized in a document. Philagrius waited for the named man to cross before reading the order: arrival, identification and location preceded execution. A letter was not unlimited power to arrest."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Julian entrusted the condition in a signed paper rather than publicly announcing an arrest. The ruler retained control of timing, while the local agent had to establish that the condition was met. Conditional delegation is more accurate than treating an issued order as an accomplished act."
     }
   ],
   "SemanticPrototypes": [],

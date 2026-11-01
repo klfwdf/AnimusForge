@@ -1,40 +1,17 @@
 {
   "Id": "rule_House_of_Capet_and_Saint_Denis_Dynasty",
   "Keywords": [
-    "House of Capet Fleur de Lis",
-    "Louis IX Saint Capetian Lineage",
-    "Saint Denis Royal Necropolis",
-    "French Crown Demesne Expansion"
+    "Capetian rule and Saint-Denis memory"
   ],
   "RagShortTexts": [
-    "Envoys seek Parisian support, while magnates weigh royal favour.",
-    "A courtier may speculate about southern ambitions but cannot cite the 1266 conquest as completed."
+    "Capetian authority drew on lineage, ceremony and justice alongside local rights."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "A French lord watches royal sons and marriage alliances, since each may shape claims to land and titles. The Capetian house reaches beyond France through cadet branches, but Charles of Anjou has not seized Sicily and the Hohenstaufen conflict remains unresolved. Envoys seek Parisian support, while magnates weigh royal favour. A courtier may speculate about southern ambitions but cannot cite the 1266 conquest as completed. Diplomacy is active; results remain open. The king still governs through present institutions and must negotiate with living rivals."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "A French lord watches royal sons and marriage alliances, since each may shape claims to land and titles. Cadet branches already extend Capetian influence, but Charles of Anjou has not seized Sicily and the Hohenstaufen conflict remains unresolved. Envoys seek Parisian support; magnates weigh royal favour. Southern ambitions are debated, but the 1266 conquest is not completed. Results remain open."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "Commoners revere King Louis dispensing open-air justice beneath the Oak of Vincennes, where any aggrieved pauper can petition the crown without aristocratic intimidation. Joinville recorded that the king often sat in the Vincennes woods after Mass, and anyone with a grievance could speak to him without ushers blocking the way. Villagers carried the king's answers home."
+      "Content": "Saint-Denis, coronation traditions and royal lineage supported Capetian authority, alongside the rights of lords, towns and churches. Louis IX strengthened influence through royal justice and religious standing. Royal marriages, kinship and succession arrangements also depended on recognition by nobles and clergy."
     }
   ],
   "TextMappings": []

@@ -1,50 +1,17 @@
 {
   "Id": "rule_Mudejar_Revolt_and_Andalusian_Crisis",
   "Keywords": [
-    "Mudejar Revolt 1264",
-    "Andalusian Muslim Insurgency",
-    "Fall of Jerez and Murcia",
-    "James of Aragon Intervention"
+    "Mudéjar households and local obligations"
   ],
   "RagShortTexts": [
-    "A Castilian lord weighs royal demands against Muslim tenants who maintain orchards and irrigation.",
-    "Officials may press for taxes, while local agreements protect worship and property."
+    "Muslim communities under Castilian rule faced varied demands over taxes."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 1259 Muslim communities living under Castilian rule negotiate the terms of landholding, worship, taxation and local authority. Alfonso X’s expanding administration and the recent conquest of Andalusian towns create pressure, while Granada watches developments across the frontier. Some Mudejar families fear that privileges will be narrowed; others focus on irrigation, harvests and keeping property secure. Tensions and rumours of outside support may circulate, but the coordinated revolt of 1264 has not occurred. No one can yet report the later fighting at Jerez, the loss of Murcia or the response of James I of Aragon. A local official may seek accommodation or demand compliance, and each settlement can face a different bargain."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "A Castilian lord weighs royal demands against Muslim tenants who maintain orchards and irrigation. Officials may press for taxes, while local agreements protect worship and property. Granada proximity raises suspicion but proves no revolt plot. Lords bargain over rents or urge restraint. The 1264 rising and later expulsions are unknown;"
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "A soldier may guard a gate, escort tax collectors or patrol Andalusian roads. Muslim and Christian residents both fear arbitrary seizure, but no general uprising has begun. A quarrel is not a campaign. Sentries check visitors and avoid provoking crowds; those at the gate may be traders or messengers. Unrest is possible, but later massacres are not present experience."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "villager"
-        ]
-      },
-      "Content": "A Muslim cultivator under Christian rule worries about the terms securing land, worship and water, and whether new demands will override them. Some families consider flight while others remain to tend orchards they cannot carry away. In 1259 the great revolt of 1264 is not a remembered defeat; fear and negotiation must be described without knowledge of its later outcome."
+      "Content": "Muslim communities under Castilian rule faced varied demands over taxes, land, worship and garrisons. Households could bargain, leave or endure pressure while lords depended on cultivation. Discontent did not establish participation in a general revolt."
     }
   ],
   "TextMappings": []

@@ -1,40 +1,17 @@
 {
   "Id": "rule_Livonian_Sword_Brothers_and_Baltic_Crusade",
   "Keywords": [
-    "Livonian Brothers of the Sword",
-    "Red Sword and Red Star Surcoat",
-    "Riga Bishop Daugava Fortresses",
-    "Battle of Saule 1236 Aftermath"
+    "Sword Brothers legacy and incorporation"
   ],
   "RagShortTexts": [
-    "The Sword Brothers merged into the Teutonic Order after Saule, waging ruthless campaigns in."
+    "Livonian garrisons required coordination over local service, property and church relations."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Founded by Bishop Albert of Riga, the Sword Brothers wore red swords and crosses on white mantles and fought to subdue the Baltic peoples by force. Their army was annihilated at Saule in 1236, and the defeat killed much of the order's leadership. The survivors were reconstituted as the Livonian branch of the Teutonic Order. Under the new organisation they garrisoned Cēsis and Riga along the Daugava and contested the Baltic forests against pagan tribes. Their castles and river crossings became the anchors of the crusading frontier, and the Order drew fresh crusaders from Westphalia to replace its losses."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "priest"
-        ]
-      },
-      "Content": "The Archbishop of Riga and the Livonian Landmeister disagreed sharply over coastal policy, and every dispute over tithes, castles and conquered land was argued before the papal legate. Yet despite heavy battlefield defeats, the Order still absorbed fresh crusaders from Westphalia, and each new contingent renewed its claim to the lands of the pagan tribes."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Sub-zero Baltic blizzards freeze chainmail to human flesh, and a man who bares his hand in the wind can lose his fingers before the sun sets. Fighting Samogitian axemen over frozen river ice is deadly. If a horse cracks through into the black water, the rider is dragged under by his own armour before his comrades can reach him."
+      "Content": "After the Sword Brothers’ defeat at Saule in 1236, their incorporation into the Teutonic system left service, property and church relations to be managed locally in Livonia. Residents faced garrison support, tribute and conversion demands, while commanders dealt with bishops and other authorities. Frontier resistance in 1259 made provisions, reinforcements and reliable news especially important."
     }
   ],
   "TextMappings": []

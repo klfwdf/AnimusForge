@@ -1,30 +1,17 @@
 {
   "Id": "rule_Battle_of_Benevento_1266",
   "Keywords": [
-    "Battle of Benevento 1266",
-    "Charles of Anjou Papal Champion",
-    "Manfred of Sicily Last Stand",
-    "Lucera Saracen Archers Benevento"
+    "Benevento and Manfred’s contested rule"
   ],
   "RagShortTexts": [
-    "In 1266 at Benevento, Charles of Anjou slew King Manfred, replacing Hohenstaufen rule with."
+    "Benevento and Manfred’s contested rule concerns current rights and obligations."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Charles of Anjou brought an army into southern Italy in 1265 with papal backing, and his campaign against the Hohenstaufen kingdom reached its climax at Benevento on February 26, 1266. The battle was fought along the Calore River, where Manfred of Sicily commanded the royal army. Charles's French knights pressed the Sicilian lines, and when the Italian baronial contingents on Manfred's side gave way, the king threw himself into the melee and died there. The fight ended Hohenstaufen rule over the kingdom of Sicily. Angevin control then depended on garrisons in the towns and on the taxes the new regime could collect. The battle also showed how quickly a feudal army could fall apart once its commander's own vassals began to abandon him."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "soldier"
-        ]
-      },
-      "Content": "After Benevento, a lord in Naples or Sicily had to decide quickly whether to swear to the new Angevin rulers. Those who had backed Manfred risked confiscation, while those who switched sides kept their fiefs by paying the right fines. Letters from the papal curia and the new court moved faster than any messenger from the old house."
+      "Content": "Roads around Benevento and papal territory gave a material boundary to disputes over southern Italian rule. Manfred held the Sicilian kingdom while the pope contested his legitimacy. Local magnates faced service and recognition choices without an accomplished dynastic replacement."
     }
   ],
   "TextMappings": []

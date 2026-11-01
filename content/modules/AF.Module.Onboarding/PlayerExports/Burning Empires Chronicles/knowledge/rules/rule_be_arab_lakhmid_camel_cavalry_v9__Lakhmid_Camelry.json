@@ -1,41 +1,16 @@
 {
   "Id": "be_arab_lakhmid_camel_cavalry_v9",
   "Keywords": [
-    "Lakhmid Camelry_9",
-    "Desert Shock Riders 9_9",
-    "Oasis Water Denial_9",
-    "arab_lakhmid_camel historical records_9"
+    "Accounts of tent marriage agreements"
   ],
   "RagShortTexts": [
-    "Late antique historical records of 374 AD document developments in Lakhmid Camelry.",
-    "Lakhmid horsemen exploited desert environments to outmaneuver conventional armies.",
-    "Frontline garrisons and regional powers adapted their field doctrines accordingly."
+    "Marriage in mobile households involved residence, living arrangements and kin obligations."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, documentation concerning Lakhmid Arab Desert Camelry Doctrine illuminated the structural mechanics of warfare and diplomacy across Late Antiquity. This institutional facet exercised profound influence over troop mobilization, taxation levies, and tactical deployments across contested frontiers. From sodden timber palisades along the Danubian limes to sun-bleached stone redoubts in the Mesopotamian theater, military commands adapted their strategies to these logistical realities. The daily lives of soldiers, tenant farmers, and border merchants remained inextricably linked to this administrative apparatus, leaving an enduring imprint upon contemporary chronicle records. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans sharpen battered blades beside camp palisades: survival hinges on maintaining rank discipline and watching the flanks; break order and face instant summary execution. Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Provincial magistrates review dispatches by candlelight: military allocations must adhere strictly to imperial rescripts; frontier security brooks no administrative delay. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Marriage in a mobile household involved agreement over residence, living arrangements and family responsibilities. After moving camp, spouses still had to care for children and maintain food supplies. One household’s terms did not bind other towns or kin groups."
     }
   ],
   "SemanticPrototypes": [],

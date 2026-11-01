@@ -1,40 +1,17 @@
 {
   "Id": "rule_Siete_Partidas_Codification_of_Castile",
   "Keywords": [
-    "Siete Partidas Codification",
-    "Alfonso X Statutory Law",
-    "Toledo Roman Jurisprudence",
-    "Castilian Royal Legal Code"
+    "Partidas compilation and local custom"
   ],
   "RagShortTexts": [
-    "A Castilian lord hears that Alfonso jurists are assembling a royal legal compilation.",
-    "Local courts and custom still matter."
+    "Alfonso X’s court began compiling the Partidas around 1256."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Alfonso X’s court is gathering jurists and texts for a broad legal compilation that will become known as the Siete Partidas. Work begins in the 1250s and continues through revision; in 1259 there is no final code uniformly applied by Castilian courts. Its compilers draw on Roman civil law, canon law and older Iberian custom, but the wording, arrangement and intended authority remain subjects of scholarly work and royal debate. A draft may influence advisers or provide a model for later rulings without replacing local practice everywhere. Formal legal status comes much later, so characters in this setting should speak of an ambitious project in progress, not a settled standard already governing contracts and maritime commerce."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "A Castilian lord hears that Alfonso jurists are assembling a royal legal compilation. He may fear a finished code would strengthen appeals to the crown, but in 1259 its text and authority remain unsettled. Local courts and custom still matter. Advisers debate drafts; no magnate can assume the Partidas governs every judgement."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "townsfolk"
-        ]
-      },
-      "Content": "Alfonso's legal project brings royal authority, church teaching and inherited rules into learned Castilian prose. Copyists and jurists must reconcile sources rather than merely replace Latin words. In 1259 work is still under way; later completion dates and later legal authority cannot be represented as proof that every local court already applies a finished code."
+      "Content": "Alfonso X’s court began compiling the Partidas around 1256, bringing Roman and canon law into Castilian legal writing. In 1259 the project remained in compilation alongside local customs, privileges and other laws. Jurists could discuss drafts without treating them as a completed code promulgated throughout the realm."
     }
   ],
   "TextMappings": []

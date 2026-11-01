@@ -1,40 +1,17 @@
 {
   "Id": "rule_Genoa_Lanterna_and_Ligurian_Maritime_Pioneers",
   "Keywords": [
-    "Genoa Lanterna Lighthouse",
-    "Ligurian Crag Seaport",
-    "St George Merchant Consortium",
-    "Black Sea Caffa Trade Route"
+    "Genoa harbor and maritime investment"
   ],
   "RagShortTexts": [
-    "Genoa's harbor, guarded by the Lanterna lighthouse, directed bold maritime voyages to the."
+    "Genoese shipowners, investors and crews shared maritime risk through contracts."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Wedged between the Ligurian coastal crags and deep water, the Republic of Genoa built a maritime tradition on its harbour. The Lanterna, the monumental tower at the harbour mouth, guided ships home through the night and marked the city for every sailor on the coast. From that base Genoese galleys sailed beyond Gibraltar and east into the Levant. Noble clans such as the Doria, Fieschi, and Spinola pioneered venture-capital shipping syndicates, pooling shares in voyages and in the cargoes they carried. Merchants established trading colonies at Caffa on the Black Sea, where grain and furs moved through the port toward Italian markets. The republic's wealth depended on ships that returned safely, and on the notaries who recorded each share and each debt."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Factional feuds between Guelph and Ghibelline families turned the city's towers into armed citadels. Yet abroad, Genoese galleys fought with predatory ferocity, and the 1261 pact with Michael VIII Palaiologos aimed to break the Venetian grip on the Aegean."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Ligurian seamen are reckless corsairs who climb snapping rigging in gale-force winds. In deck-boarding melees, with pavises and heavy cutlasses in hand, they fight like sea wolves. A sailor who survives a storm off Corsica will spend the evening in a tavern telling everyone how close he came to drowning."
+      "Content": "Genoese shipowners, investors and crews shared maritime risk through contracts. Harbor facilities aided passage without removing weather or hostile fleets. Nicaean talks offered possibilities, but particular port privileges still needed agreement."
     }
   ],
   "TextMappings": []

@@ -7,8 +7,7 @@
     "Extinction of Latin Empire"
   ],
   "RagShortTexts": [
-    "Merchants, Greek residents and exiles argue over how secure the Latin regime is.",
-    "Venetian ships, Latin garrisons and the city’s own factions all shape the balance of power."
+    "Households under Latin rule balanced imperial hopes with dues and daily livelihoods."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -44,7 +43,7 @@
           "villager"
         ]
       },
-      "Content": "Families under Latin rule remember the 1204 sack: lost church goods, displaced kin and unfamiliar officials collecting dues. Nicaea may be a source of aid, but it has not restored its rule in the capital. Villagers hope for return, fear a siege, or bargain with local officers. Market rumours cannot reveal how Latin quarrels will end. Hope is not knowledge of a future recapture."
+      "Content": "Families under Latin rule remembered the sack of 1204 and scattered relatives while dealing with rent, dues and work. Across the strait, Nicaea’s imperial court offered hope to some and fears of siege or requisition to others. Port and market reports varied; residents planned around arriving ships, actual orders and prices."
     }
   ],
   "TextMappings": []

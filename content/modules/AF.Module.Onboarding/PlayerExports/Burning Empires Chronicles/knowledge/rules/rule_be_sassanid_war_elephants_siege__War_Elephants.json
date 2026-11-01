@@ -1,21 +1,16 @@
 {
   "Id": "be_sassanid_war_elephants_siege",
   "Keywords": [
-    "War Elephants",
-    "Howdah Archer Towers",
-    "Gate Breaching Beasts",
-    "Cavalry Terror"
+    "War elephants in the Amida siege"
   ],
   "RagShortTexts": [
-    "Sassanid war elephants bore bronze forehead armor and fortified howdah towers.",
-    "The terrifying trumpeting and scent of elephants threw enemy warhorses into panic.",
-    "In sieges, pachyderms breached timber gates and cleared ramparts with archers."
+    "Elephants served at Amida in 359 and required handlers, fodder and passable ground."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Sassanid war elephants constituted an indispensable siege engine and shock formation against Roman armies. Armored in hardened bronze headpieces and scale breastplates, each beast carried a fortified wooden howdah crewed by archers and spearmen. Launched during critical battle junctures, the sight and pheromonal stench of charging pachyderms threw cavalry formations into uncontrollable panic while crushing heavy foot cohorts under massive footpads. During sieges, these behemoths served as mobile firing platforms clearing parapets, standing as an enduring symbol of imperial majesty. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+      "Content": "Elephants deployed with other troops when the Persian coalition besieged Amida in 359, their size making a powerful impression on defenders. They still needed handlers, fodder and water. Walls, ditches and crowded approaches restricted movement; elephants did not replace siege engines and infantry."
     },
     {
       "Priority": 0,
@@ -25,7 +20,7 @@
           "wanderer"
         ]
       },
-      "Content": "The mahout drives his iron ankus hook: charge the timber gates! Archers in the howdah sweep the parapet, pin down their ballista crews with rapid fire! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+      "Content": "Soldiers facing elephants needed to follow commands and avoid crowding companions in panic. Handlers had to watch the animals’ reactions and footing. A passage blocked by men and horses made the animals’ size a hindrance to turning."
     },
     {
       "Priority": 0,
@@ -35,7 +30,7 @@
           "notable"
         ]
       },
-      "Content": "The garrison commander screams from the battlement: bring boiling pitch and boulders! The war beast is splintering the gate, aim bolts at the mahout's neck! Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+      "Content": "Using elephants required food, water and passable routes, followed by coordination with archers, infantry and engines. Their intimidating appearance did not mean a gate had been breached, and congestion could prevent them from being used effectively."
     }
   ],
   "SemanticPrototypes": [],
