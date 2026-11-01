@@ -1,3 +1,11 @@
+# 已部署CN：合并远端 + 扎营刑场 + 其他会话修复与世界书（2026-11-01）
+
+用户要求“部署”。部署产品为 `5fba2ac129`（含合并 `267efb4916`、扎营刑场 `fb138b0ca3`、犯罪池/YJ low/移除 minimal、AD 1259 与东欧 1259 世界书）。
+- 部署前清理（用户确认）：删除其他会话已合入 main 的两个候选 worktree（`work/persona-full-regeneration-20261031/candidate`、`work/yj-thinking-compat-20261031/candidate`，分支 `codex/yj-thinking-compat-20261031` 保留）；`work/` 其余内容整体移到 `F:/AnimusForge-backup-20261101/work`；`scratch/` 已删除（未备份，过程脚本与审计留档，成品已在 5fba2ac129）。原因：项目编译整个仓库的 `.cs`，这些目录里的源码副本和反编译文件会让构建失败或混入 DLL。
+- 旧 Stage（10-28）有 902 个内容文件过期，全部是内容表/提示词/世界书生成物，移到 `artifacts/deploy-backups/AnimusForge/stale-stage-20261101-cn-tidy/`，然后用原 `build_single_module.ps1 -Configuration Debug -Deploy` 重跑，未改脚本。
+- 结果：构建 0 错误，双 coup seam 门与注册冒烟通过；部署 success，更新 108 个托管文件，目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。安装的 1.3/1.4 实现与 Bootstrap 与构建产物 SHA256 一致（1.3 `210b7178…`，1.4 `2d09003f…`）；安装文本含营地刑场新字符串。
+- 未验证：实机（营地 B 键刑场编辑器、仪式与士兵围观、外交新功能、犯罪池），旧档。新世界书未进 content-map，不在安装包里。未推送、未打包。
+
 # 仓库整理：提交其他会话已完成的修复与世界书（2026-11-01）
 
 其他会话已结束，按用户确认整理本地 main：
