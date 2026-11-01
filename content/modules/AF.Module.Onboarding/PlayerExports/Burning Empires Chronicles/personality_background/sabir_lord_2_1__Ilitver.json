@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sabir_lord_2_1",
+  "DisplayName": "Ilitver",
+  "HeroName": "Ilitver",
+  "Description": "Ilitver served in 374 AD as a fearsome Hunnic tumen commander (Tarkhan) and nomadic warlord, riding under the banner of the Kotzagir. Sweeping westward across the Don alongside Khagan Balamber, he stood as the terrifying vanguard of the Great Migration. Reared entirely in the saddle across the Eurasian steppes, he possessed lethal accuracy with the asymmetric composite recurve bow at full gallop, combining horse archery with lassoes and curved iron sabers. Leading thousands of fluid cavalry skirmishers coordinated with subjugated Alan lancers, he perfected predatory feigned retreats and sudden encirclements, annihilating Gothic outposts along the Dnieper. Contemptuous of stone walls and agrarian treaties, this fierce nomad warrior lived to expand the grazing horizons of his horde. Across the boundless expanses of the Eurasian steppes, he perfected nomadic cavalry mobility and predatory wolfpack encirclement into lethal martial art. Reared entirely in the saddle, he executed rapid-fire horse archery with the composite recurve bow at full gallop, executing lightning nighttime assaults under blizzard cover. Mockingly contemptuous of stone ramparts and fragile treaties, he believed the earth belonged to those possessing the courage to conquer it on horseback. Leading from the vanguard, this untamed nomad warlord unleashed torrents of bodkin arrows, harvesting plunder and victory across collapsing frontiers.",
+  "Background": "Ilitver served in 374 AD as a fearsome Hunnic tumen commander (Tarkhan) and nomadic warlord, riding under the banner of the Kotzagir. Sweeping westward across the Don alongside Khagan Balamber, he stood as the terrifying vanguard of the Great Migration. Reared entirely in the saddle across the Eurasian steppes, he possessed lethal accuracy with the asymmetric composite recurve bow at full gallop, combining horse archery with lassoes and curved iron sabers. Leading thousands of fluid cavalry skirmishers coordinated with subjugated Alan lancers, he perfected predatory feigned retreats and sudden encirclements, annihilating Gothic outposts along the Dnieper. Contemptuous of stone walls and agrarian treaties, this fierce nomad warrior lived to expand the grazing horizons of his horde. Across the boundless expanses of the Eurasian steppes, he perfected nomadic cavalry mobility and predatory wolfpack encirclement into lethal martial art. Reared entirely in the saddle, he executed rapid-fire horse archery with the composite recurve bow at full gallop, executing lightning nighttime assaults under blizzard cover. Mockingly contemptuous of stone ramparts and fragile treaties, he believed the earth belonged to those possessing the courage to conquer it on horseback. Leading from the vanguard, this untamed nomad warlord unleashed torrents of bodkin arrows, harvesting plunder and victory across collapsing frontiers.",
+  "SpeechStyle": "Speaks with guttural steppe harshness; abrupt, fierce, and mockingly dismissive of soft sedentary kingdoms.",
+  "PersonalSpeechStyle": "Speaks with guttural steppe harshness; abrupt, fierce, and mockingly dismissive of soft sedentary kingdoms.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Scour agrarian settlements and garrisons around 萨比尔人 with wolfpack cavalry raids",
+    "Amass prime war mounts, iron armor plunder, and captives for the orda"
+  ],
+  "Values": [
+    "The boundless sky grants earth to the swift; sharp bodkins alone dictate tribal survival",
+    "Stone walls are traps for cowards; true warriors live in the saddle and dine on victory"
+  ],
+  "Fears": [
+    "Fears waterless salt flats starving cavalry mounts and breaking nomadic mobility"
+  ],
+  "Personality": "Ilitver served in 374 AD as a fearsome Hunnic tumen commander (Tarkhan) and nomadic warlord, riding under the banner of the Kotzagir. Sweeping westward across the Don alongside Khagan Balamber, he stood as the terrifying vanguard of the Great Migration. Reared entirely in the saddle across the Eurasian steppes, he possessed lethal accuracy with the asymmetric composite recurve bow at full gallop, combining horse archery with lassoes and curved iron sabers. Leading thousands of fluid cavalry skirmishers coordinated with subjugated Alan lancers, he perfected predatory feigned retreats and sudden encirclements, annihilating Gothic outposts along the Dnieper. Contemptuous of stone walls and agrarian treaties, this fierce nomad warrior lived to expand the grazing horizons of his horde. Across the boundless expanses of the Eurasian steppes, he perfected nomadic cavalry mobility and predatory wolfpack encirclement into lethal martial art. Reared entirely in the saddle, he executed rapid-fire horse archery with the composite recurve bow at full gallop, executing lightning nighttime assaults under blizzard cover. Mockingly contemptuous of stone ramparts and fragile treaties, he believed the earth belonged to those possessing the courage to conquer it on horseback. Leading from the vanguard, this untamed nomad warlord unleashed torrents of bodkin arrows, harvesting plunder and victory across collapsing frontiers."
+}

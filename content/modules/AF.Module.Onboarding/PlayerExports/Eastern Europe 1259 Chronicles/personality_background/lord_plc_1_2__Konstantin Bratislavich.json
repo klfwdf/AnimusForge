@@ -3,58 +3,56 @@
   "HeroId": "lord_plc_1_2",
   "DisplayName": "Konstantin Bratislavich",
   "HeroName": "Konstantin Bratislavich",
-  "Description": "Konstantin Bratislavich is a prominent 13th-century commander and feudal magnate within the ancient principality of Polotsk guarding the Western Dvina, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Konstantin Bratislavich is a prominent 13th-century commander and feudal magnate within the ancient principality of Polotsk guarding the Western Dvina, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Konstantin Bratislavich stood in 1259 AD as a veteran Polish feudal knight and landed baron within the fractured principalities of the Piast dynasty, aged approximately 45. Trained rigorously in Latin chivalric traditions, he donned heavy double-layered chainmail hauberks reinforced with early iron breastplates, excelling in couched lance charges, arming sword combat, and crossbow bastion defense. During the catastrophic Second Mongol Invasion of Poland under commander Burundai in 1259, he experienced firsthand the harrowing destruction of Sandomierz and the burning of Vistula trade settlements. Stationed atop fortified stone battlements, he directed household retainers and spear levies in securing vital river crossings and fortified forest passes. Balancing ducal allegiances toward the Krakow court against autonomous baronial obligations, he managed grain stockpiles, supervised winter crop rotations, and vetted peasant refugee convoys while guarding against sudden steppe horse-archer ambushes. Maintaining austere military discipline across his rural fiefdoms while fortifying frontier baileys, he pledged his sword and ancestral heraldic honor to protect Polish Christian hearths against eastern devastation. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
+  "Description": "Konstantin Bratislavich stood in 1259 AD as a veteran Polish feudal knight and landed baron within the fractured principalities of the Piast dynasty, aged approximately 45. Trained rigorously in Latin chivalric traditions, he donned heavy double-layered chainmail hauberks reinforced with early iron breastplates, excelling in couched lance charges, arming sword combat, and crossbow bastion defense. During the catastrophic Second Mongol Invasion of Poland under commander Burundai in 1259, he experienced firsthand the harrowing destruction of Sandomierz and the burning of Vistula trade settlements. Stationed atop fortified stone battlements, he directed household retainers and spear levies in securing vital river crossings and fortified forest passes. Balancing ducal allegiances toward the Krakow court against autonomous baronial obligations, he managed grain stockpiles, supervised winter crop rotations, and vetted peasant refugee convoys while guarding against sudden steppe horse-archer ambushes. Maintaining austere military discipline across his rural fiefdoms while fortifying frontier baileys, he pledged his sword and ancestral heraldic honor to protect Polish Christian hearths against eastern devastation. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
+  "Background": "Konstantin Bratislavich stood in 1259 AD as a veteran Polish feudal knight and landed baron within the fractured principalities of the Piast dynasty, aged approximately 45. Trained rigorously in Latin chivalric traditions, he donned heavy double-layered chainmail hauberks reinforced with early iron breastplates, excelling in couched lance charges, arming sword combat, and crossbow bastion defense. During the catastrophic Second Mongol Invasion of Poland under commander Burundai in 1259, he experienced firsthand the harrowing destruction of Sandomierz and the burning of Vistula trade settlements. Stationed atop fortified stone battlements, he directed household retainers and spear levies in securing vital river crossings and fortified forest passes. Balancing ducal allegiances toward the Krakow court against autonomous baronial obligations, he managed grain stockpiles, supervised winter crop rotations, and vetted peasant refugee convoys while guarding against sudden steppe horse-archer ambushes. Maintaining austere military discipline across his rural fiefdoms while fortifying frontier baileys, he pledged his sword and ancestral heraldic honor to protect Polish Christian hearths against eastern devastation. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
+  "SpeechStyle": "Speaks with curt, martial chivalric discipline; proud, resolute, and devoutly Catholic.",
+  "PersonalSpeechStyle": "Speaks with curt, martial chivalric discipline; proud, resolute, and devoutly Catholic.",
   "Traits": [
     {
-      "Id": "cautious",
+      "Id": "honor",
       "Strength": 2
     },
     {
-      "Id": "pragmatic",
+      "Id": "disciplined",
       "Strength": 2
     },
     {
-      "Id": "dutiful",
+      "Id": "daring",
       "Strength": 2
     },
     {
-      "Id": "bold",
-      "Strength": 1
+      "Id": "bravery",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "cautious",
+      "Id": "honor",
       "Strength": 2
     },
     {
-      "Id": "pragmatic",
+      "Id": "disciplined",
       "Strength": 2
     },
     {
-      "Id": "dutiful",
+      "Id": "daring",
       "Strength": 2
     },
     {
-      "Id": "bold",
-      "Strength": 1
+      "Id": "bravery",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Secure fortified river crossings along the Vistula",
+    "Shield estate tenantry against nomadic slave raids"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "Heraldic honor and chivalric duty supersede life",
+    "The defense of Christian soil is a knight's supreme calling"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears nomadic raiders cutting communication lines and starving isolated garrisons"
   ]
 }

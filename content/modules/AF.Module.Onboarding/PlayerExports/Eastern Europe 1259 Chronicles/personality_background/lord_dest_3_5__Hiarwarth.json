@@ -3,50 +3,56 @@
   "HeroId": "lord_dest_3_5",
   "DisplayName": "Hiarwarth",
   "HeroName": "Hiarwarth",
-  "Description": "Hiarwarth is a prominent 13th-century commander and feudal magnate within the Danish-dominated feudal baronies of the Duchy of Estonia, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Hiarwarth is a prominent 13th-century commander and feudal magnate within the Danish-dominated feudal baronies of the Duchy of Estonia, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Hiarwarth served in 1259 AD as a veteran mingghan commander and horse-archer chieftain under the Golden Horde and Cuman auxiliary forces, aged 4. Reared in the saddle along the steppes of the Volga and Don, he wore layered hardened rawhide armor with iron studs, wielding horn composite recurve bows, sabers, and lassoes with deadly proficiency. During Burundai's 1259 blitzkrieg into Galicia-Volhynia and Lesser Poland, he commanded fast reconnaissance outriders probing western stone fortresses. Mastering the classic steppe tactics of feigned retreat, encirclement, and saturation arrow volleys, his mounted archers repeatedly shattered European knightly charges. Adapting to the diplomatic changes of Berke Khan's court, he enforced tribute collections and patrolled contested marchlands with unyielding efficiency. Expert at reading celestial paths and locating frozen river fords, he maintained rigorous formation discipline across multi-tribal cavalry contingents. A tempest of the Pontic steppes, he embodied the formidable discipline and mobility of 13th-century nomadic conquests. Attuned to shifting steppe gales and celestial signs, he navigated cavalry tumens into sheltered river ravines before blizzards struck, retaining formidable operational readiness across wide plains. Attuned to shifting steppe gales and celestial signs, he navigated cavalry tumens into sheltered river ravines before blizzards struck, retaining formidable operational readiness across wide plains.",
+  "Description": "Hiarwarth served in 1259 AD as a veteran mingghan commander and horse-archer chieftain under the Golden Horde and Cuman auxiliary forces, aged 4. Reared in the saddle along the steppes of the Volga and Don, he wore layered hardened rawhide armor with iron studs, wielding horn composite recurve bows, sabers, and lassoes with deadly proficiency. During Burundai's 1259 blitzkrieg into Galicia-Volhynia and Lesser Poland, he commanded fast reconnaissance outriders probing western stone fortresses. Mastering the classic steppe tactics of feigned retreat, encirclement, and saturation arrow volleys, his mounted archers repeatedly shattered European knightly charges. Adapting to the diplomatic changes of Berke Khan's court, he enforced tribute collections and patrolled contested marchlands with unyielding efficiency. Expert at reading celestial paths and locating frozen river fords, he maintained rigorous formation discipline across multi-tribal cavalry contingents. A tempest of the Pontic steppes, he embodied the formidable discipline and mobility of 13th-century nomadic conquests. Attuned to shifting steppe gales and celestial signs, he navigated cavalry tumens into sheltered river ravines before blizzards struck, retaining formidable operational readiness across wide plains. Attuned to shifting steppe gales and celestial signs, he navigated cavalry tumens into sheltered river ravines before blizzards struck, retaining formidable operational readiness across wide plains.",
+  "Background": "Hiarwarth served in 1259 AD as a veteran mingghan commander and horse-archer chieftain under the Golden Horde and Cuman auxiliary forces, aged 4. Reared in the saddle along the steppes of the Volga and Don, he wore layered hardened rawhide armor with iron studs, wielding horn composite recurve bows, sabers, and lassoes with deadly proficiency. During Burundai's 1259 blitzkrieg into Galicia-Volhynia and Lesser Poland, he commanded fast reconnaissance outriders probing western stone fortresses. Mastering the classic steppe tactics of feigned retreat, encirclement, and saturation arrow volleys, his mounted archers repeatedly shattered European knightly charges. Adapting to the diplomatic changes of Berke Khan's court, he enforced tribute collections and patrolled contested marchlands with unyielding efficiency. Expert at reading celestial paths and locating frozen river fords, he maintained rigorous formation discipline across multi-tribal cavalry contingents. A tempest of the Pontic steppes, he embodied the formidable discipline and mobility of 13th-century nomadic conquests. Attuned to shifting steppe gales and celestial signs, he navigated cavalry tumens into sheltered river ravines before blizzards struck, retaining formidable operational readiness across wide plains. Attuned to shifting steppe gales and celestial signs, he navigated cavalry tumens into sheltered river ravines before blizzards struck, retaining formidable operational readiness across wide plains.",
+  "SpeechStyle": "Speaks with blunt nomadic velocity; sharp, commanding, and attuned to the rhythm of mounted war.",
+  "PersonalSpeechStyle": "Speaks with blunt nomadic velocity; sharp, commanding, and attuned to the rhythm of mounted war.",
   "Traits": [
     {
-      "Id": "ambitious",
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "fearless",
       "Strength": 2
     },
     {
-      "Id": "dutiful",
-      "Strength": 1
+      "Id": "calculating",
+      "Strength": 2
     },
     {
-      "Id": "patient",
-      "Strength": 3
+      "Id": "disciplined",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "ambitious",
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "fearless",
       "Strength": 2
     },
     {
-      "Id": "dutiful",
-      "Strength": 1
+      "Id": "calculating",
+      "Strength": 2
     },
     {
-      "Id": "patient",
-      "Strength": 3
+      "Id": "disciplined",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Deliver full tribute quotas and remounts to the Sarai court",
+    "Conduct swift raiding strikes across frontier marches"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "A true warrior lives in the saddle beneath the Eternal Blue Sky",
+    "Iron discipline in the tumen guarantees survival and glory"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears prolonged western blizzards and bottomless mud depriving cavalry of mobility"
   ]
 }

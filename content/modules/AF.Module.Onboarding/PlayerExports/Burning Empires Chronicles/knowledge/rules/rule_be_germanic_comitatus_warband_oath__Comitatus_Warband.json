@@ -1,0 +1,43 @@
+{
+  "Id": "be_germanic_comitatus_warband_oath",
+  "Keywords": [
+    "Comitatus Warband",
+    "Ring-Giver Lord",
+    "Die for Chieftain",
+    "Warrior Brotherhood"
+  ],
+  "RagShortTexts": [
+    "Germanic warriors swore sacred blood oaths binding themselves to war chieftains.",
+    "The lord bestowed golden arm-rings and plunder to sustain absolute fealty.",
+    "Surviving a battle where the chieftain fell was branded an eternal disgrace."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The foundation of Germanic martial might resided within the ancient comitatus warband institution. In timber feast halls, free warriors swore blood oaths before tribal deities, binding their swords to the war chief. The chieftain ruled as the 'ring-giver', distributing conquered torcs, fine spatha blades, and captured horses to sustain unconditional fealty. Between chief and retainers existed a sacred pact of mutual survival: to return alive from a field where the leader had fallen brought indelible dishonor. In battle, these devoted retinues formed an unyielding nucleus around their warlord, fighting to the last man to defend his person. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A warrior slides a gold arm-ring onto his wrist and raises his axe: my lord granted me this ring and warhorse; today my shield guards his life against a thousand spears! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The war chief raises a drinking horn: drink deep tonight, warriors; tomorrow we breach the Roman limes, sharing plunder equally under the eyes of the gods! Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

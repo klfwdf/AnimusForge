@@ -1,0 +1,43 @@
+{
+  "Id": "be_sassanid_clibanarii_armored_cavalry",
+  "Keywords": [
+    "Clibanarii Cataphracts",
+    "Kontos Lance Charge",
+    "Fully Armored Steeds",
+    "Shock Cavalry"
+  ],
+  "RagShortTexts": [
+    "Sassanid Clibanarii cataphracts featured total mail and scale armor for rider and mount.",
+    "Wielding the twelve-foot kontos lance, charging squadrons shattered infantry phalanxes.",
+    "Armed with maces and longswords, they served as the premier shock arm against Rome."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Sassanid Clibanarii cataphracts constituted the most formidable heavy shock cavalry of Late Antiquity. Encased completely in articulated iron mail with hammered visor masks, both rider and courser presented an impenetrable moving bulwark. Gripping the twelve-foot kontos lance with two hands, massed squadrons charged in disciplined unison across open Mesopotamian plains. The crushing momentum shattered Roman legionary shields, trampling infantry ranks into bloody earth. In the ensuing melee, riders deployed heavy maces, axes, and long straight swords, breaking enemy formations with overwhelming mechanical shock. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A cataphract lowers his iron face mask and levels his kontos: spur courser flanks together; their shield line has buckled, ride down their officers beneath iron hooves! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The spahbed watches the shock impact from his elephant tower: the Roman center is split; unleash horse archers to envelop the flanks, leave not a single legionary alive! Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

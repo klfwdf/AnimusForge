@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "maskut_lord_1_1",
+  "DisplayName": "Sanatruk",
+  "HeroName": "Sanatruk",
+  "Description": "Sanatruk ruled in 374 AD as sovereign King of the Maskut (Massagetic Alans) along the Caspian littoral guarding the strategic fortress pass of Derbent (Caspian Gates). Heirs to ancient Scythian martial chivalry, the Maskut were formidable equestrian shock troops and mountain fortress defenders. Sanatruk had previously led vast nomadic coalitions into the southern Caucasus, clashing with Armenian and Persian armies. Holding the singular coastal chokepoint between the Eurasian steppe and the Middle East, Sanatruk commanded immense geopolitical leverage. Extracting hefty gold subsidies from Sassanid Ctesiphon while harboring northern allies, he governed Derbent with unyielding independence. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Sanatruk ruled in 374 AD as sovereign King of the Maskut (Massagetic Alans) along the Caspian littoral guarding the strategic fortress pass of Derbent (Caspian Gates). Heirs to ancient Scythian martial chivalry, the Maskut were formidable equestrian shock troops and mountain fortress defenders. Sanatruk had previously led vast nomadic coalitions into the southern Caucasus, clashing with Armenian and Persian armies. Holding the singular coastal chokepoint between the Eurasian steppe and the Middle East, Sanatruk commanded immense geopolitical leverage. Extracting hefty gold subsidies from Sassanid Ctesiphon while harboring northern allies, he governed Derbent with unyielding independence. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with icy, imperious highland swagger; unyielding, sharp, and treating envoys of great empires with haughty disdain from his fortress throne.",
+  "PersonalSpeechStyle": "Speaks with icy, imperious highland swagger; unyielding, sharp, and treating envoys of great empires with haughty disdain from his fortress throne.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the fortress pass of Derbent to extort massive tariffs and frontier subsidies from Persia",
+    "Hone Maskut cavalry warbands to launch lightning predatory raids across the Transcaucasus"
+  ],
+  "Values": [
+    "He who holds the Caspian Gates commands empires; none pass without paying tribute in gold",
+    "Mercy invites conquest; only the severed heads of arrogant generals secure frontier peace"
+  ],
+  "Fears": [
+    "Fears Persian sappers undermining coastal masonry ramparts of the Derbent pass"
+  ],
+  "Personality": "Sanatruk ruled in 374 AD as sovereign King of the Maskut (Massagetic Alans) along the Caspian littoral guarding the strategic fortress pass of Derbent (Caspian Gates). Heirs to ancient Scythian martial chivalry, the Maskut were formidable equestrian shock troops and mountain fortress defenders. Sanatruk had previously led vast nomadic coalitions into the southern Caucasus, clashing with Armenian and Persian armies. Holding the singular coastal chokepoint between the Eurasian steppe and the Middle East, Sanatruk commanded immense geopolitical leverage. Extracting hefty gold subsidies from Sassanid Ctesiphon while harboring northern allies, he governed Derbent with unyielding independence. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

@@ -1,0 +1,59 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "wre_lord_3_2",
+  "DisplayName": "Arbogastes",
+  "HeroName": "Arbogastes",
+  "Description": "Flavius Arbogastes was in 374 AD a rising Frankish field officer within the Western Roman armies, nephew to Comes Richomeres and disciple of Magister Bauto. Endowed with volcanic battlefield ferocity and tactical genius, he rose rapidly to become Magister militum and supreme warlord of the West. Campaigning across Gaul and Britain, Arbogastes crushed the usurpation of Flavius Victor in 388 AD on behalf of Theodosius the Great, cementing his iron grip over the western legions. An unyielding traditionalist and champion of Roman arms, he maintained absolute dominion over his veteran cohorts, enforcing ferocious combat discipline while patrolling the Rhine fortress line with ruthless efficiency, commanding the fanatical loyalty of his Frankish and Gallic shock infantry. He demanded absolute readiness from every cohort, drilling them in rapid counter-assault maneuvers to crush any Germanic crossing before invaders could establish a bridgehead.",
+  "Background": "Flavius Arbogastes was in 374 AD a rising Frankish field officer within the Western Roman armies, nephew to Comes Richomeres and disciple of Magister Bauto. Endowed with volcanic battlefield ferocity and tactical genius, he rose rapidly to become Magister militum and supreme warlord of the West. Campaigning across Gaul and Britain, Arbogastes crushed the usurpation of Flavius Victor in 388 AD on behalf of Theodosius the Great, cementing his iron grip over the western legions. An unyielding traditionalist and champion of Roman arms, he maintained absolute dominion over his veteran cohorts, enforcing ferocious combat discipline while patrolling the Rhine fortress line with ruthless efficiency, commanding the fanatical loyalty of his Frankish and Gallic shock infantry. He demanded absolute readiness from every cohort, drilling them in rapid counter-assault maneuvers to crush any Germanic crossing before invaders could establish a bridgehead.",
+  "Personality": "Flavius Arbogastes was in 374 AD a rising Frankish field officer within the Western Roman armies, nephew to Comes Richomeres and disciple of Magister Bauto. Endowed with volcanic battlefield ferocity and tactical genius, he rose rapidly to become Magister militum and supreme warlord of the West. Campaigning across Gaul and Britain, Arbogastes crushed the usurpation of Flavius Victor in 388 AD on behalf of Theodosius the Great, cementing his iron grip over the western legions. An unyielding traditionalist and champion of Roman arms, he maintained absolute dominion over his veteran cohorts, enforcing ferocious combat discipline while patrolling the Rhine fortress line with ruthless efficiency, commanding the fanatical loyalty of his Frankish and Gallic shock infantry. He demanded absolute readiness from every cohort, drilling them in rapid counter-assault maneuvers to crush any Germanic crossing before invaders could establish a bridgehead.",
+  "SpeechStyle": "Fierce, cutting, and aggressively decisive, demanding absolute obedience and showing zero patience for weakness.",
+  "PersonalSpeechStyle": "Fierce, cutting, and aggressively decisive, demanding absolute obedience and showing zero patience for weakness.",
+  "Traits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Establish unquestioned military supremacy across Gaul and the Rhine limes",
+    "Forge his legions into the most lethal and obedient shock force in the Roman world"
+  ],
+  "Values": [
+    "Sovereignty through raw martial power and unforgiving severity",
+    "Scorn for civilian vacillation and imperial appeasement"
+  ],
+  "Fears": [
+    "Decay of warrior ethos among Roman cohorts due to political decadence",
+    "Loss of army loyalty to senatorial intriguers"
+  ]
+}

@@ -1,0 +1,233 @@
+[
+  {
+    "EventId": "be_event_374_quadi_invasion",
+    "WeekIndex": 0,
+    "EventKind": "MilitaryInvasion",
+    "ScopeKingdomId": "wre_kingdom",
+    "Title": "Quadi and Sarmatian Incursion into Pannonia",
+    "ShortSummary": "Quadi Germanic warbands and Sarmatian cataphracts crossed the frozen Danube, laying waste to the Roman province of Pannonia in furious retribution.",
+    "BulletinAnecdote": "Ammianus records that when news of King Gabinius's treacherous murder reached tribal assemblies, wild fury ignited across the northern banks. The drumming of spears on shields shook the Danubian limes.",
+    "Summary": "In the autumn of 374 AD, the assassination of Quadian King Gabinius by Roman border Dux Marcellinus sparked catastrophic retaliation by the Quadi and allied Iazyges Sarmatians. Striking during the autumn harvest across the Danube, barbarian shock forces sacked hundreds of Roman castella and villae, routing regional frontier garrisons and forcing Emperor Valentinian I to suspend campaigns in Gaul to personally lead elite comitatenses field armies to Carnuntum.",
+    "TagText": "[Frontier Vengeance] Pannonia scoured by fire and sword as Rome and the Quadi enter total existential war.",
+    "PromptText": "Geopolitical crisis along the Danubian limes: Quadi and Sarmatian hosts devastate Pannonia following imperial treachery. Valentinian I mobilizes elite field armies at Carnuntum to crush the uprising with unsparing severity.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "wre_kingdom",
+      "quadian_kingdom",
+      "jazyg_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_gabinius_assassination",
+    "WeekIndex": 0,
+    "EventKind": "Assassination",
+    "ScopeKingdomId": "quadian_kingdom",
+    "Title": "The Treacherous Murder of King Gabinius",
+    "ShortSummary": "Roman frontier Dux Marcellinus violated sacred hospitality, assassinating Quadian King Gabinius at a peace banquet and igniting frontier warfare.",
+    "BulletinAnecdote": "Wine flowed at the banquet table, but cold steel waited behind imperial draperies. As the barbarian king fell in his blood, century-old Roman diplomatic honor dissolved in an instant.",
+    "Summary": "In early 374 AD, King Gabinius of the Quadi crossed the Danube to peaceably protest Roman construction of unauthorized stone castella upon tribal lands. Roman Dux Marcellinus feigned diplomatic conciliation, inviting the king to a sumptuous feast. As festivities concluded, imperial assassins struck down the unsuspecting monarch. This treacherous outrage united disparate Germanic and Sarmatian clans in an unquenchable oath of vengeance.",
+    "TagText": "[Imperial Perfidy] Assassination of King Gabinius shatters Danubian truces, plunging the frontier into chaos.",
+    "PromptText": "The perfidious murder of King Gabinius by Roman officers shattered frontier treaties, instigating the devastating pan-barbarian invasion across the Danube.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "wre_kingdom",
+      "quadian_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_alan_fall",
+    "WeekIndex": 0,
+    "EventKind": "NomadicConquest",
+    "ScopeKingdomId": "hunnic_kingdom",
+    "Title": "The Hunnic Crossing of the Don and Fall of the Alans",
+    "ShortSummary": "Khagan Balamber led Hunnic nomadic hordes across the Don, obliterating the Alan confederation and initiating the Great Migration.",
+    "BulletinAnecdote": "Dark clouds of asymmetric composite recurve arrows darkened the steppe skies. Alan cataphract lancers faced a terrifying equestrian predator employing fluid wolfpack encirclement.",
+    "Summary": "In the early 370s AD, the unstoppable nomadic juggernaut of the Huns under Khagan Balamber surged across the frozen Volga and Don rivers. The famed Alan cataphracts, despite their heavy barded chivalry, were overwhelmed and encircled by predatory Hunnic horse archers. With the Alan king slain, the confederation shattered; thousands were absorbed into the Hunnic tumens while surviving clans fled westward in panic, carrying terror to the Gothic heartlands.",
+    "TagText": "[Steppe Cataclysm] The Alan confederacy collapses, toppling the first domino of the European Great Migration.",
+    "PromptText": "Balamber's annihilation of the Alans established Hunnic hegemony over the Pontic-Caspian steppe, directly exposing the Ostrogothic empire along the Dnieper to existential destruction.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "hunnic_kingdom",
+      "alanian_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_ermanaric_crisis",
+    "WeekIndex": 0,
+    "EventKind": "DynasticCrisis",
+    "ScopeKingdomId": "greuthungian_kingdom",
+    "Title": "King Ermanaric's Twilight Stand and Gothic Imperial Collapse",
+    "ShortSummary": "The centenarian Ostrogothic Emperor Ermanaric, wounded and despairing, watched his trans-Eurasian empire unravel before the Hunnic onslaught.",
+    "BulletinAnecdote": "Jordanes mourns in the Getica: the northern Alexander, ruler of a hundred nations, saw his life's monumental realm swallowed by nomadic dust and internal rebellion.",
+    "Summary": "In 374 AD, Ermanaric, supreme Amali King of the Greuthungian Goths who forged an empire stretching from the Black Sea to the Baltic, succumbed to despair in his Dnieper stronghold. Weakened from an assassination attempt by vengeful Rosomoni brothers, the ancient titan witnessed vassal tribes revolting while Hunnic-Alan hordes smashed his frontier lines. Confronted by absolute ruin, Ermanaric took his own life, casting the Ostrogothic nation into a desperate fighting retreat.",
+    "TagText": "[Imperial Twilight] The Amali Gothic empire fractures beneath the nomadic storm, initiating mass westward flight.",
+    "PromptText": "The death of Ermanaric unhinged Gothic dominance north of the Black Sea, leaving commanders Vinitharius, Alatheus, and Saphrax to lead rearguard struggles along the Dnieper.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "greuthungian_kingdom",
+      "hunnic_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_bozh_crucifixion",
+    "WeekIndex": 0,
+    "EventKind": "Uprising",
+    "ScopeKingdomId": "antean_kingdom",
+    "Title": "The Anti Slavic Uprising and Martyrdom of King Bozh",
+    "ShortSummary": "King Bozh led the Slavic Antes in revolt against Gothic hegemony, only to be crushed and crucified alongside seventy elders by General Vinitharius.",
+    "BulletinAnecdote": "Bozh and seventy chieftains stood defiant upon the cross, their blood consecrating the forest soil and igniting an immortal flame of Slavic resistance.",
+    "Summary": "Seizing upon Gothic disarray under Hunnic pressure in 374 AD, King Bozh of the early Slavic Antes declared independence, routing regional Gothic garrisons in initial forest ambuscades. Ostrogothic Amali champion Vinitharius mobilized veteran shock cavalry, encircling the lightly armored Slavic infantry upon open ground. Bozh and seventy noble elders were captured and crucified along forest borders, a horrific demonstration of terror designed to suppress northern revolts.",
+    "TagText": "[Slavic Martyrdom] Anti Slavic rebellion suppressed by Gothic steel; King Bozh revered as foundational martyr.",
+    "PromptText": "Vinitharius's brutal execution of King Bozh temporarily restored Gothic authority over the northern forests before his armies turned to meet the primary Hunnic advance.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "antean_kingdom",
+      "greuthungian_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_shapur_valens_standoff",
+    "WeekIndex": 0,
+    "EventKind": "ImperialConfrontation",
+    "ScopeKingdomId": "sassanid_kingdom",
+    "Title": "The Euphrates Standoff: Shapur II Confronts Valens",
+    "ShortSummary": "Shahanshah Shapur II massed Sassanid cataphracts and war elephants along the Euphrates, locked in high-stakes confrontation with Eastern Emperor Valens.",
+    "BulletinAnecdote": "War drums echoed across the Euphrates as the banners of Ctesiphon and Antioch faced each other across shimmering sands; the two superpowers braced for total war.",
+    "Summary": "In 374 AD, the septuagenarian conqueror Shapur II the Great mobilized the full might of Eranshahr—Clibanarii heavy cataphracts, dehqan feudal cavalry, and armored siege elephants—along the Mesopotamian frontier. Demanding Roman abandonment of Armenia and Caucasian Iberia, Shapur faced Emperor Valens in Antioch, who marshaled eastern field armies. Hundreds of thousands of imperial troops stood entrenched in an explosive geopolitical standoff.",
+    "TagText": "[Superpower Standoff] Sassanid Persia and Eastern Rome mass armies along the Euphrates, bringing the East to the brink of war.",
+    "PromptText": "The tense confrontation between Shapur II and Valens immobilized Eastern Roman comitatenses legions along the Syrian marches, creating a fatal vacuum along the Danube.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "sassanid_kingdom",
+      "ere_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_king_pap_assassination",
+    "WeekIndex": 0,
+    "EventKind": "Assassination",
+    "ScopeKingdomId": "armenian_kingdom",
+    "Title": "Assassination of King Pap and Ascension of Varazdat",
+    "ShortSummary": "Young Armenian King Pap was assassinated by Roman officers; Emperor Valens installed Olympic boxing champion Varazdat upon the Arsacid throne.",
+    "BulletinAnecdote": "King Pap died poisoned at an imperial military banquet, a tragic sacrifice to the ruthless geopolitical maneuvering of competing Mediterranean empires.",
+    "Summary": "Seeking to preserve Armenian independence between Rome and Ctesiphon in 374 AD, young King Pap asserted ecclesiastical autonomy and diplomatic balance. Viewing his independence as dangerous treason, Eastern Emperor Valens orchestrated Pap's assassination by Roman General Traianus at a banquet. Valens installed Varazdat, an athletic Arsacid prince and Olympic champion in Constantinople, provoking outrage among Armenian grandees.",
+    "TagText": "[Caucasian Intrigue] King Pap assassinated by Roman allies; Varazdat ascends a throne engulfed by factional fire.",
+    "PromptText": "The murder of King Pap further alienated Armenian nakharars from the Roman alliance, encouraging Shapur II to prepare military interventions across the highlands.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "armenian_kingdom",
+      "ere_kingdom",
+      "sassanid_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_queen_mavia_revolt",
+    "WeekIndex": 0,
+    "EventKind": "Rebellion",
+    "ScopeKingdomId": "tanukhid_kingdom",
+    "Title": "Queen Mavia's Desert Revolt Against the Eastern Empire",
+    "ShortSummary": "Queen Mavia led Tanukhid Arab cavalry in an explosive revolt across the Syrian limes, shattering Roman field armies and forcing Emperor Valens to concede.",
+    "BulletinAnecdote": "Sozomen marvels at the warrior queen leading charges with lance in hand; her swift desert guerrillas routed disciplined legionaries across arid frontiers.",
+    "Summary": "When Emperor Valens attempted to impose Arian bishops upon Arab Christian communities in 374 AD, Queen Mavia of the Tanukhid confederation spearheaded a massive uprising. Commanding swift desert lancers and agile camelry squadrons, she conducted devastating hit-and-run campaigns across Phoenicia, Palestine, and the borders of Egypt, crushing two Roman field armies and compelling the imperial court in Antioch into humiliating capitulation.",
+    "TagText": "[Desert Fury] Queen Mavia's explosive uprising humbles Eastern Roman legions across the Levant.",
+    "PromptText": "Mavia's desert campaigns fractured Roman eastern border security, forcing Valens to divert critical frontier reserves away from northern defensive lines.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "tanukhid_kingdom",
+      "ere_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_valentinian_macrian_treaty",
+    "WeekIndex": 0,
+    "EventKind": "PeaceTreaty",
+    "ScopeKingdomId": "alemannic_kingdom",
+    "Title": "The Peace of Mainz: Valentinian's Parity Treaty with King Macrian",
+    "ShortSummary": "Western Augustus Valentinian I met Alamannic King Macrian upon a Rhine barge near Mainz, signing a historic parity peace treaty.",
+    "BulletinAnecdote": "One of Ammianus's most dramatic scenes: two mortal nemeses who had fought for a decade across blood-soaked riverbanks met in mid-current to clasp hands in peace.",
+    "Summary": "Under pressing urgency from the Danubian Quadian crisis in 374 AD, Emperor Valentinian I abandoned his decade-long campaign to annihilate the Alamanni. Meeting King Macrian on a barge anchored in the center of the Rhine near Mainz (Mogontiacum), Valentinian granted Macrian official recognition as allied king of the Alamanni, securing Western Roman Rhine frontiers and freeing legionary reserves for Pannonia.",
+    "TagText": "[Rhine Parity] Peace of Mainz reconciles Valentinian and King Macrian, securing Western border security.",
+    "PromptText": "The Treaty of Mainz represented a rare instance of parity diplomacy for Rome, reflecting the pragmatic necessity of securing the West against migration collapse.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "wre_kingdom",
+      "alemannic_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_fritigern_ulfilas_mission",
+    "WeekIndex": 0,
+    "EventKind": "DiplomaticPetition",
+    "ScopeKingdomId": "vesian_kingdom",
+    "Title": "The Thervingian Schism: Fritigern's Petition to the Danube",
+    "ShortSummary": "Christian Gothic leader Fritigern split from pagan Judge Athanaric, dispatching envoys to Antioch to petition Emperor Valens for crossing.",
+    "BulletinAnecdote": "Ulfilas's disciples carried bloodstained petitions to Antioch: tens of thousands of Gothic families stood trapped along the Danube with Hunnic sabers at their backs.",
+    "Summary": "As the Hunnic storm approached the Dniester in 374 AD, the Thervingian Goths split irrevocably. While Judge Athanaric fortified defensive earthen walls in the forests, Christian chieftains Fritigern and Alavivus determined that peaceful asylum within the Roman Empire was the sole salvation for their folk. Fritigern dispatched envoys to Antioch, offering military alliance in exchange for settlement in Thrace, setting the stage for the catastrophic Battle of Adrianople.",
+    "TagText": "[Migration Genesis] Gothic petitions reach Antioch as tens of thousands of families amass along the northern Danube.",
+    "PromptText": "Fritigern's crossing petition initiated the fateful entry of the Gothic nation into Roman territory, transforming the political and military fate of the Mediterranean.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "vesian_kingdom",
+      "thervingian_kingdom",
+      "ere_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_count_theodosius_africa",
+    "WeekIndex": 0,
+    "EventKind": "MilitaryCampaign",
+    "ScopeKingdomId": "wre_kingdom",
+    "Title": "Count Theodosius Quells the Moorish Revolt of Firmus",
+    "ShortSummary": "Western Roman Magister Equitum Count Theodosius campaigned across Saharan oases, crushing the dangerous rebellion of Moorish prince Firmus.",
+    "BulletinAnecdote": "Ammianus praises Count Theodosius: an incorruptible military genius who triumphed over Saharan heat and treacherous terrain with classical Roman discipline.",
+    "Summary": "In 373-374 AD, Count Theodosius the Elder led elite western comitatenses legions to Africa to suppress the dangerous revolt of the Moorish chieftain Firmus. Sacking rebel desert strongholds and outmaneuvering nomadic tribes across Saharan corridors, Theodosius trapped Firmus, driving him to suicide and safeguarding the vital grain fleets supplying the city of Rome.",
+    "TagText": "[Imperial Granary] Count Theodosius pacifies North Africa, securing vital grain fleets for Rome.",
+    "PromptText": "The African victory confirmed Count Theodosius as the premier field commander of the Western Empire, though his triumph provoked deadly envy within the court of Mediolanum.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "wre_kingdom"
+    ],
+    "Materials": []
+  },
+  {
+    "EventId": "be_event_374_niall_british_raids",
+    "WeekIndex": 0,
+    "EventKind": "MaritimeRaid",
+    "ScopeKingdomId": "hibernian_kingdom",
+    "Title": "Niall of the Nine Hostages Strikes Roman Britain",
+    "ShortSummary": "Legendary Irish High King Niall launched vast fleets of currach sea-boats alongside Pictish raiders, devastating western Roman British shores.",
+    "BulletinAnecdote": "Gaelic currach sails blackened Atlantic coastal waters as villas across the Severn burned, cementing Niall's legendary maritime fame across the Celtic world.",
+    "Summary": "In 374 AD, High King Niall Noígíallach of Tara mobilized hundreds of ocean-going currachs, coordinating with northern Pictish warriors to launch massive raids against western Roman Britain. Bypassing Hadrian's Wall by sea, Gaelic warbands plundered villas across Wales and the Severn Valley, extorting gold, silver, and thousands of captives, severely testing Roman British frontier defenses.",
+    "TagText": "[Atlantic Raids] High King Niall's maritime warbands scourge western Britain, testing Roman coastal defenses.",
+    "PromptText": "Niall's sea raids exposed the vulnerability of Roman Britain's western coastline, tying down legionary detachments and accelerating the contraction of Roman power in the British Isles.",
+    "CreatedDay": 0,
+    "CreatedDate": "374 AD",
+    "BulletinKingdomIds": [
+      "hibernian_kingdom",
+      "wre_kingdom",
+      "caledonian_kingdom"
+    ],
+    "Materials": []
+  }
+]

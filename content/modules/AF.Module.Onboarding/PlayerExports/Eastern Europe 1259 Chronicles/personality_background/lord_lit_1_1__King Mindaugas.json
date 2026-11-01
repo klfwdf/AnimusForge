@@ -3,66 +3,56 @@
   "HeroId": "lord_lit_1_1",
   "DisplayName": "King Mindaugas",
   "HeroName": "King Mindaugas",
-  "Description": "King Mindaugas is a prominent 13th-century commander and feudal magnate within the Pagan Grand Duchy of Lithuania defending Baltic sacred groves, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "King Mindaugas is a prominent 13th-century commander and feudal magnate within the Pagan Grand Duchy of Lithuania defending Baltic sacred groves, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Mindaugas (c. 1203–1263) reigned as the first and only crowned King of Lithuania, forging a united realm from disparate pagan forest clans through ruthless statecraft. Having accepted Latin baptism in 1251 to gain papal recognition from Innocent IV, he maintained shrewd pragmatic ties to ancestral Baltic pagan customs. In 1259 AD, as Burundai's Mongol host compelled Galicia to dismantle its southern bastions and pagan Samogitians crushed crusader forces at Skuodas, Mindaugas maneuvered with extraordinary cunning. Mobilizing forest warriors, he initiated fortified stone works across the lake redoubts of Trakai while covertly backing Duke Treniota's anti-Teutonic uprisings. Navigating between Roman papal legates, pagan shamans, and Ruthenian princes, this iron-willed sovereign cemented Lithuanian independence amid the crossfire of medieval Europe. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
+  "Description": "Mindaugas (c. 1203–1263) reigned as the first and only crowned King of Lithuania, forging a united realm from disparate pagan forest clans through ruthless statecraft. Having accepted Latin baptism in 1251 to gain papal recognition from Innocent IV, he maintained shrewd pragmatic ties to ancestral Baltic pagan customs. In 1259 AD, as Burundai's Mongol host compelled Galicia to dismantle its southern bastions and pagan Samogitians crushed crusader forces at Skuodas, Mindaugas maneuvered with extraordinary cunning. Mobilizing forest warriors, he initiated fortified stone works across the lake redoubts of Trakai while covertly backing Duke Treniota's anti-Teutonic uprisings. Navigating between Roman papal legates, pagan shamans, and Ruthenian princes, this iron-willed sovereign cemented Lithuanian independence amid the crossfire of medieval Europe. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
+  "Background": "Mindaugas (c. 1203–1263) reigned as the first and only crowned King of Lithuania, forging a united realm from disparate pagan forest clans through ruthless statecraft. Having accepted Latin baptism in 1251 to gain papal recognition from Innocent IV, he maintained shrewd pragmatic ties to ancestral Baltic pagan customs. In 1259 AD, as Burundai's Mongol host compelled Galicia to dismantle its southern bastions and pagan Samogitians crushed crusader forces at Skuodas, Mindaugas maneuvered with extraordinary cunning. Mobilizing forest warriors, he initiated fortified stone works across the lake redoubts of Trakai while covertly backing Duke Treniota's anti-Teutonic uprisings. Navigating between Roman papal legates, pagan shamans, and Ruthenian princes, this iron-willed sovereign cemented Lithuanian independence amid the crossfire of medieval Europe. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
+  "SpeechStyle": "Commands with predatory pagan intensity; resonant, cunning, and fiercely decisive.",
+  "PersonalSpeechStyle": "Commands with predatory pagan intensity; resonant, cunning, and fiercely decisive.",
   "Traits": [
     {
-      "Id": "ambitious",
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
       "Strength": 3
     },
     {
       "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
       "Strength": 3
-    },
-    {
-      "Id": "opportunistic",
-      "Strength": 2
-    },
-    {
-      "Id": "bold",
-      "Strength": 2
-    },
-    {
-      "Id": "suspicious",
-      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "ambitious",
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
       "Strength": 3
     },
     {
       "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
       "Strength": 3
-    },
-    {
-      "Id": "opportunistic",
-      "Strength": 2
-    },
-    {
-      "Id": "bold",
-      "Strength": 2
-    },
-    {
-      "Id": "suspicious",
-      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Construct impenetrable lake fortifications at Trakai",
+    "Exploit Samogitian revolts to sever crusader communications"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "Sovereignty is forged by blood and iron, not baptismal water",
+    "Alliances are disposable tools for Baltic supremacy"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears internal factional coups orchestrated by disgruntled pagan and Christian boyars"
   ]
 }

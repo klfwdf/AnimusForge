@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sassanid_lord_1_1",
+  "DisplayName": "Shapur II",
+  "HeroName": "Shapur II",
+  "Description": "Shapur II the Great ruled in 374 AD as Shahanshah (King of Kings) of the Sassanid Persian Empire, crowned while still in his mother's womb and governing Eranshahr for an extraordinary seventy years. Under his autocratic genius, the Sassanian dynasty achieved the zenith of its geopolitical and cultural glory, anchored at the monumental vaulted halls of Taq Kasra in Ctesiphon. Championing Zoroastrian orthodoxy, Shapur organized unstoppable divisions of Clibanarii heavy cataphracts, dehqan feudal cavalry, and fortified siege war elephants. He humbled successive Roman emperors in bloody campaigns, capturing the fortress of Amida and extorting the surrender of Nisibis in 363 AD. In 374 AD, the septuagenarian conqueror remained vigilant and merciless, massing armies across Armenia and the Mesopotamian frontier to extinguish Roman influence and seal Persian hegemony over the Near East. Throughout his distinguished career in the Sassanian military elite, he consecrated his life to the supreme chivalric honor of the Asbaran heavy cavalry. An absolute master of equine barding, armor metallurgy, and two-handed contus lance thrusts, he preceded every campaign with sacred Zoroastrian purification rites at the fire altar. On the field of battle, he directed devastating cataphract shock charges that shattered enemy phalanxes beneath unstoppable iron mass. This fierce Iranian margrave stood ready to shed his blood for the Shahanshah, determined that the victorious standard of Eranshahr should wave unchallenged across the Near East.",
+  "Background": "Shapur II the Great ruled in 374 AD as Shahanshah (King of Kings) of the Sassanid Persian Empire, crowned while still in his mother's womb and governing Eranshahr for an extraordinary seventy years. Under his autocratic genius, the Sassanian dynasty achieved the zenith of its geopolitical and cultural glory, anchored at the monumental vaulted halls of Taq Kasra in Ctesiphon. Championing Zoroastrian orthodoxy, Shapur organized unstoppable divisions of Clibanarii heavy cataphracts, dehqan feudal cavalry, and fortified siege war elephants. He humbled successive Roman emperors in bloody campaigns, capturing the fortress of Amida and extorting the surrender of Nisibis in 363 AD. In 374 AD, the septuagenarian conqueror remained vigilant and merciless, massing armies across Armenia and the Mesopotamian frontier to extinguish Roman influence and seal Persian hegemony over the Near East. Throughout his distinguished career in the Sassanian military elite, he consecrated his life to the supreme chivalric honor of the Asbaran heavy cavalry. An absolute master of equine barding, armor metallurgy, and two-handed contus lance thrusts, he preceded every campaign with sacred Zoroastrian purification rites at the fire altar. On the field of battle, he directed devastating cataphract shock charges that shattered enemy phalanxes beneath unstoppable iron mass. This fierce Iranian margrave stood ready to shed his blood for the Shahanshah, determined that the victorious standard of Eranshahr should wave unchallenged across the Near East.",
+  "SpeechStyle": "Speaks with majestic Persian court cadence; imperious, poetic, and supremely confident as the terrestrial vicar of Ahura Mazda ruling over kings.",
+  "PersonalSpeechStyle": "Speaks with majestic Persian court cadence; imperious, poetic, and supremely confident as the terrestrial vicar of Ahura Mazda ruling over kings.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expel Roman imperial legions permanently from Armenia and secure the Mesopotamian marches",
+    "Cement Zoroastrian fire worship and the four feudal estates across Eranshahr"
+  ],
+  "Values": [
+    "The divine glory (Khwarrah) of the King of Kings transcends mortal treaties",
+    "The honor of the Asbaran cavalry is proven through victory and territorial conquest"
+  ],
+  "Fears": [
+    "Dreads sudden nomad incursions across Khorasan disrupting campaigns against Rome"
+  ],
+  "Personality": "Shapur II the Great ruled in 374 AD as Shahanshah (King of Kings) of the Sassanid Persian Empire, crowned while still in his mother's womb and governing Eranshahr for an extraordinary seventy years. Under his autocratic genius, the Sassanian dynasty achieved the zenith of its geopolitical and cultural glory, anchored at the monumental vaulted halls of Taq Kasra in Ctesiphon. Championing Zoroastrian orthodoxy, Shapur organized unstoppable divisions of Clibanarii heavy cataphracts, dehqan feudal cavalry, and fortified siege war elephants. He humbled successive Roman emperors in bloody campaigns, capturing the fortress of Amida and extorting the surrender of Nisibis in 363 AD. In 374 AD, the septuagenarian conqueror remained vigilant and merciless, massing armies across Armenia and the Mesopotamian frontier to extinguish Roman influence and seal Persian hegemony over the Near East. Throughout his distinguished career in the Sassanian military elite, he consecrated his life to the supreme chivalric honor of the Asbaran heavy cavalry. An absolute master of equine barding, armor metallurgy, and two-handed contus lance thrusts, he preceded every campaign with sacred Zoroastrian purification rites at the fire altar. On the field of battle, he directed devastating cataphract shock charges that shattered enemy phalanxes beneath unstoppable iron mass. This fierce Iranian margrave stood ready to shed his blood for the Shahanshah, determined that the victorious standard of Eranshahr should wave unchallenged across the Near East."
+}

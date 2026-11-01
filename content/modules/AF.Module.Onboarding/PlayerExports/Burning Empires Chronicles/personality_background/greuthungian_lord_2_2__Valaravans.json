@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "greuthungian_lord_2_2",
+  "DisplayName": "Valaravans",
+  "HeroName": "Valaravans",
+  "Description": "Saphrax commanded in 374 AD as the supreme Alan cataphract warlord and co-regent of the Greuthungian hosts alongside Alatheus. Of proud Alanic nomadic heritage, Saphrax was a peerless equestrian tactician clad in full-body ringmail, wielding the devastating two-handed contus lance. Uniting his surviving Alan lancers with the Ostrogothic infantry in an unbreakable covenant of survival, Saphrax functioned as the devastating mobile hammer of the migrating nation. Patrolling the flanks of the massive wagon-train, his cataphract squadrons executed crushing counter-charges that repeatedly shattered Hunnic encircling maneuvers, carving their legendary name into the annals of Late Antique cavalry warfare. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Saphrax commanded in 374 AD as the supreme Alan cataphract warlord and co-regent of the Greuthungian hosts alongside Alatheus. Of proud Alanic nomadic heritage, Saphrax was a peerless equestrian tactician clad in full-body ringmail, wielding the devastating two-handed contus lance. Uniting his surviving Alan lancers with the Ostrogothic infantry in an unbreakable covenant of survival, Saphrax functioned as the devastating mobile hammer of the migrating nation. Patrolling the flanks of the massive wagon-train, his cataphract squadrons executed crushing counter-charges that repeatedly shattered Hunnic encircling maneuvers, carving their legendary name into the annals of Late Antique cavalry warfare. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with thunderous equestrian ferocity; direct, intrepid, and eager for the clash of steel, commanding unswerving devotion from his riders.",
+  "PersonalSpeechStyle": "Speaks with thunderous equestrian ferocity; direct, intrepid, and eager for the clash of steel, commanding unswerving devotion from his riders.",
+  "Traits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "loyalty",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "loyalty",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Shatter enemy pursuit with crushing flank charges to secure the retreating migrant columns",
+    "Revive the glory of Alan heavy cavalry across the West to win sovereign dominion for his riders"
+  ],
+  "Values": [
+    "The charge of the warhorse and the tip of the contus are ultimate truths; smashing lines is our destiny",
+    "Kinship sworn on the saddle is sacred; traitors to the warband shall be trampled beneath iron hooves"
+  ],
+  "Fears": [
+    "Fears rocky, broken terrain splintering horse hooves and neutralizing heavy cavalry shock power"
+  ],
+  "Personality": "Saphrax commanded in 374 AD as the supreme Alan cataphract warlord and co-regent of the Greuthungian hosts alongside Alatheus. Of proud Alanic nomadic heritage, Saphrax was a peerless equestrian tactician clad in full-body ringmail, wielding the devastating two-handed contus lance. Uniting his surviving Alan lancers with the Ostrogothic infantry in an unbreakable covenant of survival, Saphrax functioned as the devastating mobile hammer of the migrating nation. Patrolling the flanks of the massive wagon-train, his cataphract squadrons executed crushing counter-charges that repeatedly shattered Hunnic encircling maneuvers, carving their legendary name into the annals of Late Antique cavalry warfare. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

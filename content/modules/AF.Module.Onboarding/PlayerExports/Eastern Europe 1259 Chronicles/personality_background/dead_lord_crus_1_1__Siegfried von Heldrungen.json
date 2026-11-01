@@ -3,58 +3,56 @@
   "HeroId": "dead_lord_crus_1_1",
   "DisplayName": "Siegfried von Heldrungen",
   "HeroName": "Siegfried von Heldrungen",
-  "Description": "Siegfried von Heldrungen is a prominent 13th-century commander and feudal magnate within the turbulent borderlands of 1259 Eastern Europe, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Siegfried von Heldrungen is a prominent 13th-century commander and feudal magnate within the turbulent borderlands of 1259 Eastern Europe, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Siegfried von Heldrungen descended from an ancient Thuringian ministerialis house, serving as a foundational commander during the Teutonic Order's early Baltic crusades. Having spent critical adolescent years as an elite hostage among steppe frontier courts, he acquired fluent mastery of Kipchak-Turkic dialects and a profound grasp of horse-archer logistics and nomadic diplomacy. Clad in the white mantle with the black cross, he directed pioneering fortress engineering across the Marienburg frontier and along the Gulf of Riga. As pagan Samogitian revolts exploded into peat bog ambushes in 1259 AD, Siegfried utilized his veteran understanding of Baltic terrain to establish fortified redoubts, anchoring crusader heavy cavalry against sudden forest guerrilla encirclements. Combining monastic asceticism with sharp frontier cunning, he stood as a pivotal bulwark of Latin expansion in northeastern Europe. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
+  "Description": "Siegfried von Heldrungen descended from an ancient Thuringian ministerialis house, serving as a foundational commander during the Teutonic Order's early Baltic crusades. Having spent critical adolescent years as an elite hostage among steppe frontier courts, he acquired fluent mastery of Kipchak-Turkic dialects and a profound grasp of horse-archer logistics and nomadic diplomacy. Clad in the white mantle with the black cross, he directed pioneering fortress engineering across the Marienburg frontier and along the Gulf of Riga. As pagan Samogitian revolts exploded into peat bog ambushes in 1259 AD, Siegfried utilized his veteran understanding of Baltic terrain to establish fortified redoubts, anchoring crusader heavy cavalry against sudden forest guerrilla encirclements. Combining monastic asceticism with sharp frontier cunning, he stood as a pivotal bulwark of Latin expansion in northeastern Europe. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
+  "Background": "Siegfried von Heldrungen descended from an ancient Thuringian ministerialis house, serving as a foundational commander during the Teutonic Order's early Baltic crusades. Having spent critical adolescent years as an elite hostage among steppe frontier courts, he acquired fluent mastery of Kipchak-Turkic dialects and a profound grasp of horse-archer logistics and nomadic diplomacy. Clad in the white mantle with the black cross, he directed pioneering fortress engineering across the Marienburg frontier and along the Gulf of Riga. As pagan Samogitian revolts exploded into peat bog ambushes in 1259 AD, Siegfried utilized his veteran understanding of Baltic terrain to establish fortified redoubts, anchoring crusader heavy cavalry against sudden forest guerrilla encirclements. Combining monastic asceticism with sharp frontier cunning, he stood as a pivotal bulwark of Latin expansion in northeastern Europe. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
+  "SpeechStyle": "Speaks with icy crusader brevity; sharp, direct, and forged in strict monastic obedience.",
+  "PersonalSpeechStyle": "Speaks with icy crusader brevity; sharp, direct, and forged in strict monastic obedience.",
   "Traits": [
     {
-      "Id": "reserved",
+      "Id": "disciplined",
       "Strength": 3
     },
     {
-      "Id": "curious",
+      "Id": "honor",
       "Strength": 2
     },
     {
-      "Id": "pragmatic",
-      "Strength": 1
+      "Id": "daring",
+      "Strength": 2
     },
     {
-      "Id": "impulsive",
-      "Strength": 3
+      "Id": "stubborn",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "reserved",
+      "Id": "disciplined",
       "Strength": 3
     },
     {
-      "Id": "curious",
+      "Id": "honor",
       "Strength": 2
     },
     {
-      "Id": "pragmatic",
-      "Strength": 1
+      "Id": "daring",
+      "Strength": 2
     },
     {
-      "Id": "impulsive",
-      "Strength": 3
+      "Id": "stubborn",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Solidify early stone bastions protecting Marienburg",
+    "Prevent pagan ambushes from cutting Baltic maritime supply lines"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "Obedience to the Grand Master is obedience to God",
+    "Iron and stone must tame the pagan wilderness"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears heavy crusader cavalry being encircled and butchered in trackless Baltic swamps"
   ]
 }

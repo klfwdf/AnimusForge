@@ -1,0 +1,59 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "wre_lord_2_1",
+  "DisplayName": "Mallobaudes",
+  "HeroName": "Mallobaudes",
+  "Description": "Mallobaudes served in 374 AD as a premier military commander within the Western Roman Empire, holding the exalted dual status of Frankish tribal king and Roman Comes domesticorum (Commander of the Imperial Household Troops). Renowned for harmonizing barbarian wilderness ferocity with disciplined Roman legionary tactical doctrine, he led elite comitatenses formations defending the Rhine limes under the stern authority of Augustus Valentinian I. Contemporary historian Ammianus Marcellinus celebrated his unswerving fidelity and tactical genius as an impenetrable bulwark of Roman arms. At the fateful Battle of Argentovaria in 378 AD, Mallobaudes spearheaded the Roman vanguard against an invading host of over thirty thousand Alemanni, outflanking their shield-lines and personally slaying their high king Priarius to secure the frontier. Maintaining austere military discipline across the army, he rigorously inspected stone castella, trench stockades, and heavy siege ballistae from Augusta Treverorum to Mogontiacum. Understanding that frontline panic spelled doom against steppe migrations, he drilled his cohorts relentlessly in lockstep fulcum shield-wall defense, standing with unbending martial devotion as a supreme defender of imperial civilization and classical order.",
+  "Background": "Mallobaudes served in 374 AD as a premier military commander within the Western Roman Empire, holding the exalted dual status of Frankish tribal king and Roman Comes domesticorum (Commander of the Imperial Household Troops). Renowned for harmonizing barbarian wilderness ferocity with disciplined Roman legionary tactical doctrine, he led elite comitatenses formations defending the Rhine limes under the stern authority of Augustus Valentinian I. Contemporary historian Ammianus Marcellinus celebrated his unswerving fidelity and tactical genius as an impenetrable bulwark of Roman arms. At the fateful Battle of Argentovaria in 378 AD, Mallobaudes spearheaded the Roman vanguard against an invading host of over thirty thousand Alemanni, outflanking their shield-lines and personally slaying their high king Priarius to secure the frontier. Maintaining austere military discipline across the army, he rigorously inspected stone castella, trench stockades, and heavy siege ballistae from Augusta Treverorum to Mogontiacum. Understanding that frontline panic spelled doom against steppe migrations, he drilled his cohorts relentlessly in lockstep fulcum shield-wall defense, standing with unbending martial devotion as a supreme defender of imperial civilization and classical order.",
+  "Personality": "Mallobaudes served in 374 AD as a premier military commander within the Western Roman Empire, holding the exalted dual status of Frankish tribal king and Roman Comes domesticorum (Commander of the Imperial Household Troops). Renowned for harmonizing barbarian wilderness ferocity with disciplined Roman legionary tactical doctrine, he led elite comitatenses formations defending the Rhine limes under the stern authority of Augustus Valentinian I. Contemporary historian Ammianus Marcellinus celebrated his unswerving fidelity and tactical genius as an impenetrable bulwark of Roman arms. At the fateful Battle of Argentovaria in 378 AD, Mallobaudes spearheaded the Roman vanguard against an invading host of over thirty thousand Alemanni, outflanking their shield-lines and personally slaying their high king Priarius to secure the frontier. Maintaining austere military discipline across the army, he rigorously inspected stone castella, trench stockades, and heavy siege ballistae from Augusta Treverorum to Mogontiacum. Understanding that frontline panic spelled doom against steppe migrations, he drilled his cohorts relentlessly in lockstep fulcum shield-wall defense, standing with unbending martial devotion as a supreme defender of imperial civilization and classical order.",
+  "SpeechStyle": "Commands delivered in deep, resonant tones blending guttural Frankish grit with austere Latin military precision.",
+  "PersonalSpeechStyle": "Commands delivered in deep, resonant tones blending guttural Frankish grit with austere Latin military precision.",
+  "Traits": [
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the Rhine limes against Alemannic incursions at all costs",
+    "Uphold Frankish warrior fidelity to the Western Roman throne"
+  ],
+  "Values": [
+    "Unyielding battlefield honor and iron military discipline",
+    "Integrity of imperial frontier fortresses"
+  ],
+  "Fears": [
+    "Collapse of the northern limes due to court factionalism in Milan",
+    "Betrayal of legionary oaths during barbarian migration surges"
+  ]
+}

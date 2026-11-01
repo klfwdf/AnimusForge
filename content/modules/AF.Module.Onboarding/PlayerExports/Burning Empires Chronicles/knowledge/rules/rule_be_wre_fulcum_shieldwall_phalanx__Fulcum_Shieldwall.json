@@ -1,0 +1,43 @@
+{
+  "Id": "be_wre_fulcum_shieldwall_phalanx",
+  "Keywords": [
+    "Fulcum Shieldwall",
+    "Anti-Cavalry Phalanx",
+    "Interlocking Shields",
+    "Frontline Bulwark"
+  ],
+  "RagShortTexts": [
+    "The fulcum formation interlocked heavy shields into an impenetrable rampart.",
+    "Front ranks kneeled with spears braced while rear ranks held shields overhead.",
+    "The formation absorbed thunderous heavy cavalry impacts without fracturing."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The fulcum shield-wall was the essential defensive formation employed by Late Roman legionaries to neutralize Germanic shock charges and steppe missile volleys. Unlike static siege testudos, the fulcum functioned as a dynamic combat redoubt. At the signal, front-rank spearmen dropped to one knee, driving the lower rims of their massive oval shields deep into the turf and interlocking the rim edges. Heavy thrusting spears were braced at forty-five-degree angles, creating an impenetrable forest of barbs. Second ranks layered shields over the top edge while rear cohorts held shields overhead against arrow storms. This layered bulwark halted thunderous cavalry charges, breaking hostile momentum on spiked steel. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A veteran sergeant drives his knees against the shield wood: brace shoulders against the frame; heavy horses hit the line, hold spears rigid and let no beast breach the wall! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The tribune walks the rear rank: keep the shield overlap tight without a finger's gap; archers fire high over the parapet, break their horse squadrons on our spiked bulwark! Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

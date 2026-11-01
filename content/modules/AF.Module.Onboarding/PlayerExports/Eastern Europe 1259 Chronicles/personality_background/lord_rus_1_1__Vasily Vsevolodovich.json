@@ -3,58 +3,56 @@
   "HeroId": "lord_rus_1_1",
   "DisplayName": "Vasily Vsevolodovich",
   "HeroName": "Vasily Vsevolodovich",
-  "Description": "Vasily Vsevolodovich is a prominent 13th-century commander and feudal magnate within the divided principalities of Rus enduring the Mongol yoke, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Vasily Vsevolodovich is a prominent 13th-century commander and feudal magnate within the divided principalities of Rus enduring the Mongol yoke, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Alexander Nevsky (1221–1263) reigned as Grand Prince of Vladimir, Prince of Novgorod, and Prince of Kiev, revered as Russia's immortal protector and Orthodox saint. Having shattered Swedish crusaders on the Neva (1240) and Teutonic knights on Lake Peipus (1242), he safeguarded the northern marchlands of Rus. In 1259 AD, however, Nevsky confronted an agonizing crisis when Mongol darughachi arrived in Novgorod to conduct an imperial tax census, triggering armed revolts in the veche square. Understanding that defiance against Sarai would unleash catastrophic retaliatory annihilation, Alexander rode to St. Sophia with his veteran druzhina, subduing the insurrection with severe resolve and forcing the republic to yield tribute. Enduring the bitter scorn of his citizens to shield them from the sword, his tragic pragmatism ensured the survival of Rus. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
+  "Description": "Alexander Nevsky (1221–1263) reigned as Grand Prince of Vladimir, Prince of Novgorod, and Prince of Kiev, revered as Russia's immortal protector and Orthodox saint. Having shattered Swedish crusaders on the Neva (1240) and Teutonic knights on Lake Peipus (1242), he safeguarded the northern marchlands of Rus. In 1259 AD, however, Nevsky confronted an agonizing crisis when Mongol darughachi arrived in Novgorod to conduct an imperial tax census, triggering armed revolts in the veche square. Understanding that defiance against Sarai would unleash catastrophic retaliatory annihilation, Alexander rode to St. Sophia with his veteran druzhina, subduing the insurrection with severe resolve and forcing the republic to yield tribute. Enduring the bitter scorn of his citizens to shield them from the sword, his tragic pragmatism ensured the survival of Rus. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
+  "Background": "Alexander Nevsky (1221–1263) reigned as Grand Prince of Vladimir, Prince of Novgorod, and Prince of Kiev, revered as Russia's immortal protector and Orthodox saint. Having shattered Swedish crusaders on the Neva (1240) and Teutonic knights on Lake Peipus (1242), he safeguarded the northern marchlands of Rus. In 1259 AD, however, Nevsky confronted an agonizing crisis when Mongol darughachi arrived in Novgorod to conduct an imperial tax census, triggering armed revolts in the veche square. Understanding that defiance against Sarai would unleash catastrophic retaliatory annihilation, Alexander rode to St. Sophia with his veteran druzhina, subduing the insurrection with severe resolve and forcing the republic to yield tribute. Enduring the bitter scorn of his citizens to shield them from the sword, his tragic pragmatism ensured the survival of Rus. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
+  "SpeechStyle": "Speaks with quiet, iron-clad conviction; stern, prophetic, and laden with tragic statesmanship.",
+  "PersonalSpeechStyle": "Speaks with quiet, iron-clad conviction; stern, prophetic, and laden with tragic statesmanship.",
   "Traits": [
     {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
       "Id": "cautious",
-      "Strength": 2
-    },
-    {
-      "Id": "pragmatic",
-      "Strength": 2
-    },
-    {
-      "Id": "dutiful",
-      "Strength": 2
-    },
-    {
-      "Id": "bold",
-      "Strength": 1
+      "Strength": 3
     }
   ],
   "PersonalityTraits": [
     {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
       "Id": "cautious",
-      "Strength": 2
-    },
-    {
-      "Id": "pragmatic",
-      "Strength": 2
-    },
-    {
-      "Id": "dutiful",
-      "Strength": 2
-    },
-    {
-      "Id": "bold",
-      "Strength": 1
+      "Strength": 3
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Suppress radical insurrections in Novgorod to avert punitive Mongol devastation",
+    "Secure Orthodox ecclesiastical autonomy and monastic lands"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "A ruler must bear public hatred if it preserves his civilization",
+    "Submit to eastern tribute to protect sacred Orthodox faith from western heresy"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears reckless urban revolts provoking total punitive annihilation by Golden Horde armies"
   ]
 }

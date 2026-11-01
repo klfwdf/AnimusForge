@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sclavenian_lord_1_1",
+  "DisplayName": "Perbund",
+  "HeroName": "Perbund",
+  "Description": "Perbund ruled in 374 AD as paramount Chieftain of the Sclaveni (Early Slavic tribes) inhabiting dense forests and riverways north of the Lower Danube. Mastering unconventional guerrilla warfare, camouflage, and marshland mobility, Perbund commanded hardy warrior clans armed with poison-tipped javelins, wooden bucklers, and recurve bows. Exploiting the sudden vulnerability of Germanic overlords under nomad pressure, Perbund organized a sprawling network of concealed timber marsh-fortresses (grads). He fiercely resisted foreign tribute collectors, rallying woodland communities into an autonomous defensive confederacy that laid the demographic and tactical groundwork for the eventual Slavic expansion across the Balkan peninsula. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Perbund ruled in 374 AD as paramount Chieftain of the Sclaveni (Early Slavic tribes) inhabiting dense forests and riverways north of the Lower Danube. Mastering unconventional guerrilla warfare, camouflage, and marshland mobility, Perbund commanded hardy warrior clans armed with poison-tipped javelins, wooden bucklers, and recurve bows. Exploiting the sudden vulnerability of Germanic overlords under nomad pressure, Perbund organized a sprawling network of concealed timber marsh-fortresses (grads). He fiercely resisted foreign tribute collectors, rallying woodland communities into an autonomous defensive confederacy that laid the demographic and tactical groundwork for the eventual Slavic expansion across the Balkan peninsula. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks in low, conspiratorial woodland murmurs; sharp-eyed, instinctive, and intimately attuned to the secret signals of the forest.",
+  "PersonalSpeechStyle": "Speaks in low, conspiratorial woodland murmurs; sharp-eyed, instinctive, and intimately attuned to the secret signals of the forest.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate Germanic raiding columns along the Prut to reclaim forest and lake sovereignty",
+    "Unite scattered Sclavenian clans into a fortified marshland defense network against cavalry"
+  ],
+  "Values": [
+    "The deep bogs and forests are sacred armor; armored cataphracts drown helplessly in mud",
+    "Solidarity of the clan surpasses gold; a true warlord preserves the hearths in the wild"
+  ],
+  "Fears": [
+    "Fears severe frosts freezing deep marshland bogs into solid plains for enemy cavalry charges"
+  ],
+  "Personality": "Perbund ruled in 374 AD as paramount Chieftain of the Sclaveni (Early Slavic tribes) inhabiting dense forests and riverways north of the Lower Danube. Mastering unconventional guerrilla warfare, camouflage, and marshland mobility, Perbund commanded hardy warrior clans armed with poison-tipped javelins, wooden bucklers, and recurve bows. Exploiting the sudden vulnerability of Germanic overlords under nomad pressure, Perbund organized a sprawling network of concealed timber marsh-fortresses (grads). He fiercely resisted foreign tribute collectors, rallying woodland communities into an autonomous defensive confederacy that laid the demographic and tactical groundwork for the eventual Slavic expansion across the Balkan peninsula. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

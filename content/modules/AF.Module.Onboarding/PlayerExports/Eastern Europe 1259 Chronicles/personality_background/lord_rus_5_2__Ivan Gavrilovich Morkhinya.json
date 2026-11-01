@@ -3,42 +3,56 @@
   "HeroId": "lord_rus_5_2",
   "DisplayName": "Ivan Gavrilovich Morkhinya",
   "HeroName": "Ivan Gavrilovich Morkhinya",
-  "Description": "Ivan Gavrilovich Morkhinya is a prominent 13th-century commander and feudal magnate within the divided principalities of Rus enduring the Mongol yoke, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Ivan Gavrilovich Morkhinya is a prominent 13th-century commander and feudal magnate within the divided principalities of Rus enduring the Mongol yoke, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Ivan Gavrilovich Morkhinya served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 19. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
+  "Description": "Ivan Gavrilovich Morkhinya served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 19. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
+  "Background": "Ivan Gavrilovich Morkhinya served in 1259 AD as a battle-hardened boyar and druzhina cavalry commander within the principalities of the Rurikid dynasty, aged 19. Trained in Rus timber kremlins, he wore conical iron helmets with aventails and heavy laminar armor, proficient with composite recurve bows, sabers, and spiked maces. Having survived continuous steppe raids and crusader border skirmishes, he understood the deadly mobility of nomadic horse archers as well as western shock charges. During Burundai's 1259 campaign compelling Galician fortresses to be dismantled, he marshaled his veteran retinue in remote forest sanctuaries. Managing food supplies and frontier outposts under the shadow of Golden Horde tax demands, he maintained local defense while safeguarding rural settlements. Conducting active patrols across frozen marshes to intercept rogue steppe foraging bands, he protected vulnerable Orthodox hamlets from destruction. Devoted to Orthodox sanctuaries and dynastic oaths, he embodied the resilient martial backbone protecting Ruthenian identity. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
+  "SpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
+  "PersonalSpeechStyle": "Speaks with deep, resonant northern gravitas; rugged, unyielding, and fiercely loyal.",
   "Traits": [
     {
-      "Id": "pragmatic",
-      "Strength": 1
+      "Id": "bravery",
+      "Strength": 3
     },
     {
-      "Id": "impulsive",
-      "Strength": 3
+      "Id": "loyalty",
+      "Strength": 2
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "pragmatic",
-      "Strength": 1
+      "Id": "bravery",
+      "Strength": 3
     },
     {
-      "Id": "impulsive",
-      "Strength": 3
+      "Id": "loyalty",
+      "Strength": 2
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Defend secluded forest redoubts and Orthodox monastic shrines",
+    "Protect village homesteads from predatory tax levies and border raids"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "Fidelity to the grand princely banner is eternal",
+    "Preserve the bloodline and Orthodox faith of Rus across dark ages"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears sudden winter punitive expeditions by the Golden Horde ravaging defenceless villages"
   ]
 }

@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "pict_lord_2_2",
+  "DisplayName": "Talorg",
+  "HeroName": "Talorg",
+  "Description": "Talorg served in 374 AD as a battle-tested commander and military leader within the Picts, scion of the distinguished Dicalydones. Hardened through continuous frontier campaigns across the Late Antique world, he was an expert in shock tactics, cavalry coordination, and the defense of strongholds surrounding 皮克特人. On the eve of the vast upheavals sweeping across Europe and the East, he directed armored warbands along critical frontier defiles, maintaining constant vigilance against hostile probing incursions. His disciplined warriors were equipped with heavy mail, shields, and long spears, forming unyielding formations upon the battlefield. As an indispensable martial champion for his noble line, he balanced front-line combat audacity with the vital logistical burdens of grain procurement and armory maintenance. This resolute commander knew that only iron military readiness and indivisible solidarity could shield his ancestral lands from devastation. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Talorg served in 374 AD as a battle-tested commander and military leader within the Picts, scion of the distinguished Dicalydones. Hardened through continuous frontier campaigns across the Late Antique world, he was an expert in shock tactics, cavalry coordination, and the defense of strongholds surrounding 皮克特人. On the eve of the vast upheavals sweeping across Europe and the East, he directed armored warbands along critical frontier defiles, maintaining constant vigilance against hostile probing incursions. His disciplined warriors were equipped with heavy mail, shields, and long spears, forming unyielding formations upon the battlefield. As an indispensable martial champion for his noble line, he balanced front-line combat audacity with the vital logistical burdens of grain procurement and armory maintenance. This resolute commander knew that only iron military readiness and indivisible solidarity could shield his ancestral lands from devastation. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with seasoned, soldierly authority; concise, resolute, and inspiring steady courage among his warbands.",
+  "PersonalSpeechStyle": "Speaks with seasoned, soldierly authority; concise, resolute, and inspiring steady courage among his warbands.",
+  "Traits": [
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify defensive perimeter outposts around 皮克特人 to eradicate enemy raiding detachments",
+    "Guarantee ample grain logistics and arms supplies to maximize military readiness"
+  ],
+  "Values": [
+    "Defending ancestral hearths is sacred duty; cowardice in the face of peril brings eternal ignominy",
+    "Steel secures survival; honorable combat preserves the unbroken fame of our bloodline"
+  ],
+  "Fears": [
+    "Fears enemy vanguard units severing supply corridors and trapping frontline garrisons"
+  ],
+  "Personality": "Talorg served in 374 AD as a battle-tested commander and military leader within the Picts, scion of the distinguished Dicalydones. Hardened through continuous frontier campaigns across the Late Antique world, he was an expert in shock tactics, cavalry coordination, and the defense of strongholds surrounding 皮克特人. On the eve of the vast upheavals sweeping across Europe and the East, he directed armored warbands along critical frontier defiles, maintaining constant vigilance against hostile probing incursions. His disciplined warriors were equipped with heavy mail, shields, and long spears, forming unyielding formations upon the battlefield. As an indispensable martial champion for his noble line, he balanced front-line combat audacity with the vital logistical burdens of grain procurement and armory maintenance. This resolute commander knew that only iron military readiness and indivisible solidarity could shield his ancestral lands from devastation. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

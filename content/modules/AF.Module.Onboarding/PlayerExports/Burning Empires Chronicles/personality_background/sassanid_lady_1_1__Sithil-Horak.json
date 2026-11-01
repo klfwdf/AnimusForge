@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sassanid_lady_1_1",
+  "DisplayName": "Sithil-Horak",
+  "HeroName": "Sithil-Horak",
+  "Description": "Sithil-Horak lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory.",
+  "Background": "Sithil-Horak lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory.",
+  "SpeechStyle": "Speaks with exquisite Persian courtly refinement; poetic, dignified, and commanding unquestioned deference across her household.",
+  "PersonalSpeechStyle": "Speaks with exquisite Persian courtly refinement; poetic, dignified, and commanding unquestioned deference across her household.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
+      "Strength": 2
+    },
+    {
+      "Id": "humble",
+      "Strength": 1
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
+      "Strength": 2
+    },
+    {
+      "Id": "humble",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Maintain agricultural prosperity and warhorse breeding estates across 萨珊波斯帝国",
+    "Cement dynastic standing through strategic alliances across the four Sassanian estates"
+  ],
+  "Values": [
+    "Righteousness and purity preserve noble lineage; dynastic honor transcends all mortal vanity",
+    "Wisdom and magnanimity are the crown of noblewomen; deceit invites darkness"
+  ],
+  "Fears": [
+    "Fears enemy sappers destroying subterranean qanat irrigation networks across oasis estates"
+  ],
+  "Personality": "Sithil-Horak lived in 374 AD as a high-ranking noblewoman (Banu) of the Sassanid Persian aristocracy, belonging to the illustrious Sasanian Imperial House. Endowed with ancient Iranian royal lineage, she was renowned across the courts of Ctesiphon for poetic sophistication, religious piety, and administrative genius. She governed vast oasis date groves, qanat subterranean irrigation channels, and prestigious equine stud farms around 萨珊波斯帝国, coordinating agricultural production to supply top-tier war mounts and grain rations to imperial cataphract divisions. Amidst geopolitical warfare against Rome for Near Eastern dominance, she maintained critical alliances among dehqan landowning barons, standing as an astute matriarch whose intelligence secured her dynasty's prominence before the throne of Shahanshah Shapur II. Under the sacred Zoroastrian order of Eranshahr, she upheld the ancestral purity and high courtly protocol of the Iranian aristocracy. Overseeing the revenues of watermills, date orchards, and grain silos, she secured vital supplies and prime cavalry mounts for noble cataphract lancers, while tending the eternal flames of the family fire-temple in supplication to Ahura Mazda. Amidst unending imperial campaigns across the Near East, she provided paternal care to soldier families and agrarian retinues, standing within vaulted ancestral reception halls as the indispensable matriarchal foundation of Sassanian dynastic glory."
+}

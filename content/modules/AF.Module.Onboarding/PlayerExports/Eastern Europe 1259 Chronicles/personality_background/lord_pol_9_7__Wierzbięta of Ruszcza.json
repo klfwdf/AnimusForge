@@ -3,50 +3,56 @@
   "HeroId": "lord_pol_9_7",
   "DisplayName": "Wierzbięta of Ruszcza",
   "HeroName": "Wierzbięta of Ruszcza",
-  "Description": "Wierzbięta of Ruszcza is a prominent 13th-century commander and feudal magnate within the fragmented Duchy of Poland and Piast principalities, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Wierzbięta of Ruszcza is a prominent 13th-century commander and feudal magnate within the fragmented Duchy of Poland and Piast principalities, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Wierzbięta of Ruszcza lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 13. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
+  "Description": "Wierzbięta of Ruszcza lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 13. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
+  "Background": "Wierzbięta of Ruszcza lived in 1259 AD as a highly respected Polish noblewoman and patrician matron within the sovereign domains of the Piast dynasty, aged 13. Scion of an illustrious aristocratic lineage, she possessed thorough mastery of Latin ecclesiastical texts, chancery correspondence, and estate administration. Within ancestral stone castle compounds, she directed the management of agricultural manors, woolen textile looms, grain mills, and river toll registries, maintaining economic stability. When Mongol raiding tumens ravaged Lesser Poland in 1259, she remained within fortified castle walls, directing relief efforts while household men were deployed to frontier campaigns. Organizing emergency granaries and medical care for rural refugees, she contributed private gold chalices to communal ransom pools to redeem captives from nomadic slave trains. Her vigilance in auditing fortress food stores and overseeing convent prayers prevented panic and subversion during prolonged sieges. Skilled in negotiating dynastic marriage pacts and mediating regional baronial rivalries, she stood as an indispensable guardian of family continuity and Christian piety. Maintaining meticulous estate registers of tithes and convent endowments, she upheld patrician honor and household piety as an unshakable beacon of stability in an age of regional trial.",
+  "SpeechStyle": "Speaks with aristocratic grace and diplomatic poise; elegant, precise, and profoundly devout.",
+  "PersonalSpeechStyle": "Speaks with aristocratic grace and diplomatic poise; elegant, precise, and profoundly devout.",
   "Traits": [
     {
-      "Id": "reserved",
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
       "Strength": 2
     },
     {
-      "Id": "curious",
-      "Strength": 1
+      "Id": "generosity",
+      "Strength": 2
     },
     {
-      "Id": "pragmatic",
-      "Strength": 3
+      "Id": "humble",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "reserved",
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
       "Strength": 2
     },
     {
-      "Id": "curious",
-      "Strength": 1
+      "Id": "generosity",
+      "Strength": 2
     },
     {
-      "Id": "pragmatic",
-      "Strength": 3
+      "Id": "humble",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Coordinate emergency grain rationing for displaced refugees",
+    "Amass family silver to redeem captured kinsmen"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "Family preservation and Christian charity outshine fleeting glory",
+    "Prudent estate governance sustains dynastic endurance"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears castle breaches subjecting noblewomen and holy relics to barbarian plunder"
   ]
 }

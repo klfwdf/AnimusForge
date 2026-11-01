@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "marcomannic_lord_1_1",
+  "DisplayName": "Vannius",
+  "HeroName": "Vannius",
+  "Description": "Vannius ruled in 374 AD as paramount King of the Marcomanni in the Bohemian basin and upper Elbe forests. Heirs to the legendary warrior society that had challenged Emperor Marcus Aurelius two centuries earlier, the Marcomanni occupied an impenetrable highland redoubt ringed by forested mountains. Vannius commanded formidable shield-walls of heavy spearmen and broadaxe shock warriors. During the explosive crisis of 374 AD, as neighboring Quadi hosts plunged across the Danube into Pannonia, Vannius maintained calculated neutrality. Sealing the Bohemian mountain passes with felled timber fortifications, he marshaled his warbands in iron discipline, prepared to defend his ancestral basin against any incursion while awaiting strategic opportunities. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Vannius ruled in 374 AD as paramount King of the Marcomanni in the Bohemian basin and upper Elbe forests. Heirs to the legendary warrior society that had challenged Emperor Marcus Aurelius two centuries earlier, the Marcomanni occupied an impenetrable highland redoubt ringed by forested mountains. Vannius commanded formidable shield-walls of heavy spearmen and broadaxe shock warriors. During the explosive crisis of 374 AD, as neighboring Quadi hosts plunged across the Danube into Pannonia, Vannius maintained calculated neutrality. Sealing the Bohemian mountain passes with felled timber fortifications, he marshaled his warbands in iron discipline, prepared to defend his ancestral basin against any incursion while awaiting strategic opportunities. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with guarded, highland deliberation; taciturn, observant, and completely resistant to impulsive provocations.",
+  "PersonalSpeechStyle": "Speaks with guarded, highland deliberation; taciturn, observant, and completely resistant to impulsive provocations.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Seal all Bohemian mountain defiles to shield tribal farmsteads from devastating border wars",
+    "Monitor the Rome-Quadi conflict to opportunistically expand territorial control after exhaustion"
+  ],
+  "Values": [
+    "Reckless bravado leads to ruin; enduring fortitude and explosive counter-strikes preserve the tribe",
+    "Ancestral lands bought with the blood of our forebears shall never be yielded"
+  ],
+  "Fears": [
+    "Fears routed Quadian warbands fleeing into Bohemian passes, drawing pursuing Roman legions"
+  ],
+  "Personality": "Vannius ruled in 374 AD as paramount King of the Marcomanni in the Bohemian basin and upper Elbe forests. Heirs to the legendary warrior society that had challenged Emperor Marcus Aurelius two centuries earlier, the Marcomanni occupied an impenetrable highland redoubt ringed by forested mountains. Vannius commanded formidable shield-walls of heavy spearmen and broadaxe shock warriors. During the explosive crisis of 374 AD, as neighboring Quadi hosts plunged across the Danube into Pannonia, Vannius maintained calculated neutrality. Sealing the Bohemian mountain passes with felled timber fortifications, he marshaled his warbands in iron discipline, prepared to defend his ancestral basin against any incursion while awaiting strategic opportunities. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

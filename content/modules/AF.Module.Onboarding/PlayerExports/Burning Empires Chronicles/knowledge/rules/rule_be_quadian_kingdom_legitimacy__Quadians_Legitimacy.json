@@ -1,0 +1,43 @@
+{
+  "Id": "be_quadian_kingdom_legitimacy",
+  "Keywords": [
+    "Quadians Legitimacy",
+    "Quadians Viduarius Sovereign Authority",
+    "Quadians Ruling Seat",
+    "Quadians Feudal Oaths"
+  ],
+  "RagShortTexts": [
+    "In 374 AD, Quadians governed from South Bohemian Forests, under the paramount rule of Quadian Kings.",
+    "The polity asserted sovereign legitimacy anchored in Quadians dynastic heritage and royal assemblies.",
+    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 374 AD, the sovereign authority of Quadians anchored itself within South Bohemian Forests, confronting the accelerating tremors of Late Antiquity. Governed by Quadian Kings, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Quadians heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Veterans and household guards whisper by campfires: when Quadian Kings's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,43 @@
+{
+  "Id": "be_sassanid_eranshahr_sacred_kingship",
+  "Keywords": [
+    "Shahanshah Royalty",
+    "Sacred Kingship",
+    "Ctesiphon Court",
+    "Persian Protocol"
+  ],
+  "RagShortTexts": [
+    "The Sassanid Shahanshah ruled as the terrestrial vicar of Ahura Mazda with absolute auth.",
+    "Court ceremonial at Ctesiphon required profound prostration, signifying noble obedience.",
+    "Bearing monumental jeweled crowns, the monarch unified the four social estates."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The sovereign authority of the Sassanid Shahanshah rested upon divine Zoroastrian sanction, styling the monarch as king of kings over Eranshahr. Within the monumental vaulted hall of Taq Kasra at Ctesiphon, elaborate court ritual maintained distance between the ruler and subjects. Embroidered curtains shielded the monarch from common view, requiring petitioner lords to prostrate face down upon mosaic floors in humble adoration. Suspended from vaulted ceilings by a gold chain, the colossal royal crown symbolized the divine glory (Khwarrah) bestowed by Ahura Mazda. This hierarchical ceremonial bound priests, warriors, scribes, and cultivators into an unyielding social order. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Persian palace guards hold gemmed sabers: lower your gaze! The divine glory of the King of Kings blindeth mortal eyes; look upon the sovereign unbidden and forfeit your head! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Mobad raises a golden brazier: Ahura Mazda grants victory to Eranshahr; where the King of Kings unsheathes his blade, Roman legionary eagles turn to ash! Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

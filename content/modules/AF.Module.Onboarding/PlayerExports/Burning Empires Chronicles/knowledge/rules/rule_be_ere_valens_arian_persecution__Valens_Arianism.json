@@ -1,0 +1,43 @@
+{
+  "Id": "be_ere_valens_arian_persecution",
+  "Keywords": [
+    "Valens Arianism",
+    "Theological Purges",
+    "Nicene Resistance",
+    "Antiochene Synods"
+  ],
+  "RagShortTexts": [
+    "Emperor Valens aggressively enforced Arianism, expelling Nicene bishops across Thrace.",
+    "Doctrinal civil strife split imperial legions and provoked urban riots in Antioch.",
+    "Gothic tribes negotiating entry into the empire were converted directly to Arianism."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 374 AD, Eastern Emperor Valens orchestrated a ruthless theological crusade to impose Arianism across the imperial dioceses. Operating from his palace in Antioch, Valens perceived the Nicene Creed as a direct challenge to imperial sovereignty. Military detachments enforced decrees banishing orthodox bishops and confiscating cathedral treasuries across Thrace, Cappadocia, and Syria. Urban populations erupted in sectarian rioting, turning street corners into doctrinal battlegrounds. Concurrently, when Gothic emissaries negotiated treaty baptism, Valens mandated that bishop Ulfilas catechize the Germanic tribes strictly in the Arian faith, guaranteeing deep-seated theological estrangement between barbarian federates and native Roman subjects. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A military decurion kicks open basilica doors: imperial mandate! Monks refusing the Arian declaration are to be bound for desert labor camps; strike down anyone who resists! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An exiled bishop clutches his wooden cross: the purple robe has fallen to heresy; an Augustus who persecutes the true church invites divine retribution upon legions guarding the frontier. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

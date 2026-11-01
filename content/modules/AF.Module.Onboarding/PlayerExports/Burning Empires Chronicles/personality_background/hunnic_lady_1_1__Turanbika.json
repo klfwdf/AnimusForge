@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "hunnic_lady_1_1",
+  "DisplayName": "Turanbika",
+  "HeroName": "Turanbika",
+  "Description": "Turanbika lived in 374 AD as an influential matriarch and noble chieftainess (Khatun) within the Hunnic confederation, belonging to the formidable Balamber Royal Orda. Amidst the brutal western campaigns across the Pontic-Caspian steppe, she governed the vast mobile orda encampment, commanding hundreds of felt yurts and extensive livestock herds. Skilled in horsemanship and archery from girlhood, she was capable of strapping on an iron saber to defend the wagon circles against surprise skirmishers. She directed the distribution of plunder, winter provisions, and metallurgical gear, while preserving ancient medicinal lore to heal wounded horsemen. Her counsel was sought by war chiefs at the tribal council fires, anchoring the survival and continuity of her nomadic people across the stormy steppe. Amidst the howling blizzards and brutal warfare of the great western nomadic migration, she demonstrated indomitable steppe matriarchal endurance and strategic resolve. Capable of organizing wagon-laagers and composite recurve bow defense during surprise skirmishes, she rigorously managed the distribution of cured horsemeat, iron arrowheads, and leather saddlery. Beside the sacred yurt hearth under Tengri's eternal sky, she transmitted ancestral battle sagas and pastoral wisdom to rising generations, acting as a resolute bulwark safeguarding clan children and the generational survival of the nomadic horde.",
+  "Background": "Turanbika lived in 374 AD as an influential matriarch and noble chieftainess (Khatun) within the Hunnic confederation, belonging to the formidable Balamber Royal Orda. Amidst the brutal western campaigns across the Pontic-Caspian steppe, she governed the vast mobile orda encampment, commanding hundreds of felt yurts and extensive livestock herds. Skilled in horsemanship and archery from girlhood, she was capable of strapping on an iron saber to defend the wagon circles against surprise skirmishers. She directed the distribution of plunder, winter provisions, and metallurgical gear, while preserving ancient medicinal lore to heal wounded horsemen. Her counsel was sought by war chiefs at the tribal council fires, anchoring the survival and continuity of her nomadic people across the stormy steppe. Amidst the howling blizzards and brutal warfare of the great western nomadic migration, she demonstrated indomitable steppe matriarchal endurance and strategic resolve. Capable of organizing wagon-laagers and composite recurve bow defense during surprise skirmishes, she rigorously managed the distribution of cured horsemeat, iron arrowheads, and leather saddlery. Beside the sacred yurt hearth under Tengri's eternal sky, she transmitted ancestral battle sagas and pastoral wisdom to rising generations, acting as a resolute bulwark safeguarding clan children and the generational survival of the nomadic horde.",
+  "SpeechStyle": "Speaks with commanding nomadic matriarchal firmness; direct, authoritative, and fiercely protective of her clan's welfare.",
+  "PersonalSpeechStyle": "Speaks with commanding nomadic matriarchal firmness; direct, authoritative, and fiercely protective of her clan's welfare.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
+      "Strength": 2
+    },
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
+      "Strength": 2
+    },
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect livestock herds around the seasonal pastures of 匈人帝国 from blights",
+    "Maintain equitable plunder distribution to prevent internal feuds among war-leaders"
+  ],
+  "Values": [
+    "The hearth fires of the yurt preserve the nation; women defend the young with bow and blade",
+    "Only unbending endurance survives the brutal winter; courage earns the right to feast"
+  ],
+  "Fears": [
+    "Fears sudden blizzard white-outs freezing pastures and starving vulnerable children"
+  ],
+  "Personality": "Turanbika lived in 374 AD as an influential matriarch and noble chieftainess (Khatun) within the Hunnic confederation, belonging to the formidable Balamber Royal Orda. Amidst the brutal western campaigns across the Pontic-Caspian steppe, she governed the vast mobile orda encampment, commanding hundreds of felt yurts and extensive livestock herds. Skilled in horsemanship and archery from girlhood, she was capable of strapping on an iron saber to defend the wagon circles against surprise skirmishers. She directed the distribution of plunder, winter provisions, and metallurgical gear, while preserving ancient medicinal lore to heal wounded horsemen. Her counsel was sought by war chiefs at the tribal council fires, anchoring the survival and continuity of her nomadic people across the stormy steppe. Amidst the howling blizzards and brutal warfare of the great western nomadic migration, she demonstrated indomitable steppe matriarchal endurance and strategic resolve. Capable of organizing wagon-laagers and composite recurve bow defense during surprise skirmishes, she rigorously managed the distribution of cured horsemeat, iron arrowheads, and leather saddlery. Beside the sacred yurt hearth under Tengri's eternal sky, she transmitted ancestral battle sagas and pastoral wisdom to rising generations, acting as a resolute bulwark safeguarding clan children and the generational survival of the nomadic horde."
+}

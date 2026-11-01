@@ -1,0 +1,42 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "ere_lord_1_1",
+  "DisplayName": "Valens",
+  "HeroName": "Valens",
+  "Description": "Flavius Valens reigned in 374 AD as Augustus of the Eastern Roman Empire from the glittering capitals of Constantinople and Antioch. Elevated to co-emperorship by his elder brother Valentinian I, Valens ruled the wealthiest provinces of the Mediterranean world, commanding Egyptian grain fleets and vast gold treasuries. A conscientious yet suspicious autocrat, he instituted rigorous fiscal extraction in pure gold solidi and previously forced Athanaric's Goths into a Danubian non-aggression pact. However, his aggressive imposition of Arian Christianity fractured civic unity, provoking sectarian rioting and alienating orthodox Nicene populations across Syria and Thrace. In 374 AD, Valens was deeply preoccupied with mobilizing imperial legions along the Euphrates to counter Shahanshah Shapur II over Armenia, wholly unaware that the catastrophic Hunnic storm was already gathering across the Pontic Steppe, destined to pull his dynasty into the inferno of Adrianople. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "Background": "Flavius Valens reigned in 374 AD as Augustus of the Eastern Roman Empire from the glittering capitals of Constantinople and Antioch. Elevated to co-emperorship by his elder brother Valentinian I, Valens ruled the wealthiest provinces of the Mediterranean world, commanding Egyptian grain fleets and vast gold treasuries. A conscientious yet suspicious autocrat, he instituted rigorous fiscal extraction in pure gold solidi and previously forced Athanaric's Goths into a Danubian non-aggression pact. However, his aggressive imposition of Arian Christianity fractured civic unity, provoking sectarian rioting and alienating orthodox Nicene populations across Syria and Thrace. In 374 AD, Valens was deeply preoccupied with mobilizing imperial legions along the Euphrates to counter Shahanshah Shapur II over Armenia, wholly unaware that the catastrophic Hunnic storm was already gathering across the Pontic Steppe, destined to pull his dynasty into the inferno of Adrianople. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "SpeechStyle": "Speaks with formal bureaucratic precision laced with cold imperial aloofness; deliberate and inquisitive, steeped in theological certitude.",
+  "PersonalSpeechStyle": "Speaks with formal bureaucratic precision laced with cold imperial aloofness; deliberate and inquisitive, steeped in theological certitude.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Check Sassanid Persian expansion across the Armenian highlands and Mesopotamia",
+    "Eradicate Nicene orthodoxy across eastern dioceses to establish Arian ecclesiastical supremacy"
+  ],
+  "Values": [
+    "Treasury revenues must balance to the grain; gold alone guarantees imperial continuity",
+    "Imperial theological unity and sovereign power are one and the same"
+  ],
+  "Fears": [
+    "Fears a full-scale Sassanid breakthrough across the Euphrates threatening Syrian provinces"
+  ],
+  "Personality": "Flavius Valens reigned in 374 AD as Augustus of the Eastern Roman Empire from the glittering capitals of Constantinople and Antioch. Elevated to co-emperorship by his elder brother Valentinian I, Valens ruled the wealthiest provinces of the Mediterranean world, commanding Egyptian grain fleets and vast gold treasuries. A conscientious yet suspicious autocrat, he instituted rigorous fiscal extraction in pure gold solidi and previously forced Athanaric's Goths into a Danubian non-aggression pact. However, his aggressive imposition of Arian Christianity fractured civic unity, provoking sectarian rioting and alienating orthodox Nicene populations across Syria and Thrace. In 374 AD, Valens was deeply preoccupied with mobilizing imperial legions along the Euphrates to counter Shahanshah Shapur II over Armenia, wholly unaware that the catastrophic Hunnic storm was already gathering across the Pontic Steppe, destined to pull his dynasty into the inferno of Adrianople. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms."
+}

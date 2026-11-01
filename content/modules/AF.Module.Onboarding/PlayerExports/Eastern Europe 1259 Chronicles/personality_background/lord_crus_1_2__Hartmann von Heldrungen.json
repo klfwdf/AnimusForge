@@ -3,58 +3,56 @@
   "HeroId": "lord_crus_1_2",
   "DisplayName": "Hartmann von Heldrungen",
   "HeroName": "Hartmann von Heldrungen",
-  "Description": "Hartmann von Heldrungen is a prominent 13th-century commander and feudal magnate within the Teutonic Order and Livonian Brothers of the Sword, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Hartmann von Heldrungen is a prominent 13th-century commander and feudal magnate within the Teutonic Order and Livonian Brothers of the Sword, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Hartmann von Heldrungen (died 1282) stood as a preeminent magnate of the Teutonic Order, later ascending as its eleventh Grand Master. Reared in imperial courts under the patronage of Emperor Frederick II, he possessed formidable legal acumen alongside martial discipline. In 1259 AD, Hartmann coordinated critical logistical operations linking crusader commanderies across Prussia and Livonia. Confronted by Swietopelk of Pomerania's embargo along the lower Vistula and pagan Samogitian uprisings threatening coastal communications, Hartmann navigated complex diplomacy with Hanseatic merchants in Lübeck and papal legates. Securing vital loans, grain convoys, and siege armaments, he spearheaded the transition from timber blockhouses to standardized red-brick fortress networks. His calculated statecraft established the administrative backbone of the nascent Teutonic Monastic State. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
+  "Description": "Hartmann von Heldrungen (died 1282) stood as a preeminent magnate of the Teutonic Order, later ascending as its eleventh Grand Master. Reared in imperial courts under the patronage of Emperor Frederick II, he possessed formidable legal acumen alongside martial discipline. In 1259 AD, Hartmann coordinated critical logistical operations linking crusader commanderies across Prussia and Livonia. Confronted by Swietopelk of Pomerania's embargo along the lower Vistula and pagan Samogitian uprisings threatening coastal communications, Hartmann navigated complex diplomacy with Hanseatic merchants in Lübeck and papal legates. Securing vital loans, grain convoys, and siege armaments, he spearheaded the transition from timber blockhouses to standardized red-brick fortress networks. His calculated statecraft established the administrative backbone of the nascent Teutonic Monastic State. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
+  "Background": "Hartmann von Heldrungen (died 1282) stood as a preeminent magnate of the Teutonic Order, later ascending as its eleventh Grand Master. Reared in imperial courts under the patronage of Emperor Frederick II, he possessed formidable legal acumen alongside martial discipline. In 1259 AD, Hartmann coordinated critical logistical operations linking crusader commanderies across Prussia and Livonia. Confronted by Swietopelk of Pomerania's embargo along the lower Vistula and pagan Samogitian uprisings threatening coastal communications, Hartmann navigated complex diplomacy with Hanseatic merchants in Lübeck and papal legates. Securing vital loans, grain convoys, and siege armaments, he spearheaded the transition from timber blockhouses to standardized red-brick fortress networks. His calculated statecraft established the administrative backbone of the nascent Teutonic Monastic State. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
+  "SpeechStyle": "Articulates with diplomatic precision and legal sharpness; measured, authoritative, and tactically calculating.",
+  "PersonalSpeechStyle": "Articulates with diplomatic precision and legal sharpness; measured, authoritative, and tactically calculating.",
   "Traits": [
     {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
       "Id": "disciplined",
-      "Strength": 3
-    },
-    {
-      "Id": "loyal",
-      "Strength": 3
-    },
-    {
-      "Id": "bold",
       "Strength": 2
     },
     {
-      "Id": "proud",
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
       "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
       "Id": "disciplined",
-      "Strength": 3
-    },
-    {
-      "Id": "loyal",
-      "Strength": 3
-    },
-    {
-      "Id": "bold",
       "Strength": 2
     },
     {
-      "Id": "proud",
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Break Pomeranian tolls strangling Vistula navigation",
+    "Amass Hanseatic silver loans to fund crusader garrisons"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "Contracts, masonry, and discipline sustain the Order",
+    "Spiritual conquest requires unflinching fiscal mastery"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears prolonged Baltic blockades triggering famine and mutiny among mercenary ranks"
   ]
 }

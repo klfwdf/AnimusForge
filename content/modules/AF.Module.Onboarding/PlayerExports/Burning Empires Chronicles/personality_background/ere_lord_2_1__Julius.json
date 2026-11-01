@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "ere_lord_2_1",
+  "DisplayName": "Julius",
+  "HeroName": "Julius",
+  "Description": "Sebastianus served in 374 AD as a legendary general and future Magister Peditum of the Eastern Roman Empire, lauded by Ammianus Marcellinus as a military genius. A veteran of Julian's Persian expedition, Sebastianus eschewed ponderous legionary formations in favor of elite, highly mobile special detachments. Selecting a few hundred seasoned veterans, he executed devastating night ambushes and supply interdictions, decimating enemy raiding bands without suffering attrition. Living frugally among his legionaries and sharing dry hardtack and muddy bivouacs, Sebastianus commanded profound military devotion, standing as the most technically accomplished and incorruptible field commander in the Late Roman world. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "Background": "Sebastianus served in 374 AD as a legendary general and future Magister Peditum of the Eastern Roman Empire, lauded by Ammianus Marcellinus as a military genius. A veteran of Julian's Persian expedition, Sebastianus eschewed ponderous legionary formations in favor of elite, highly mobile special detachments. Selecting a few hundred seasoned veterans, he executed devastating night ambushes and supply interdictions, decimating enemy raiding bands without suffering attrition. Living frugally among his legionaries and sharing dry hardtack and muddy bivouacs, Sebastianus commanded profound military devotion, standing as the most technically accomplished and incorruptible field commander in the Late Roman world. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "SpeechStyle": "Speaks with quiet, surgical tactical clarity; economical in words, precise in coordinates, and devoid of grandiloquent pretense.",
+  "PersonalSpeechStyle": "Speaks with quiet, surgical tactical clarity; economical in words, precise in coordinates, and devoid of grandiloquent pretense.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "modest",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "modest",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Deploy elite hand-picked strike forces to interdict enemy supply lines and raiding parties",
+    "Eradicate corruption and enforce austere discipline across frontline garrisons"
+  ],
+  "Values": [
+    "Quality supersedes mass; three hundred resolute veterans outweigh thousands of reluctant levies",
+    "A commander shares every hardship with his men; courage is inspired by example, not rhetoric"
+  ],
+  "Fears": [
+    "Dreads reckless senior commanders committing main field armies to catastrophic tactical encirclement"
+  ],
+  "Personality": "Sebastianus served in 374 AD as a legendary general and future Magister Peditum of the Eastern Roman Empire, lauded by Ammianus Marcellinus as a military genius. A veteran of Julian's Persian expedition, Sebastianus eschewed ponderous legionary formations in favor of elite, highly mobile special detachments. Selecting a few hundred seasoned veterans, he executed devastating night ambushes and supply interdictions, decimating enemy raiding bands without suffering attrition. Living frugally among his legionaries and sharing dry hardtack and muddy bivouacs, Sebastianus commanded profound military devotion, standing as the most technically accomplished and incorruptible field commander in the Late Roman world. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms."
+}

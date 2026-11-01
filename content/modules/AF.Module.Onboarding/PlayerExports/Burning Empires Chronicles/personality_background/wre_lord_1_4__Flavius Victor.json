@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "wre_lord_1_4",
+  "DisplayName": "Flavius Victor",
+  "HeroName": "Flavius Victor",
+  "Description": "Flavius Victor served in 374 AD as a senior military commander and tribune within the Western Roman Empire, scion of the noble Valentinian Imperial Dynasty. Operating under the unbending martial rule of Augustus Valentinian I, he directed elite comitatenses legionary formations safeguarding the forward stone castella around 西罗马帝国. Trained rigorously in late Roman tactical manuals, he excelled in orchestrating interlocking fulcum shield-wall defense, spatha broadsword combat, and devastating volleys of lead-weighted plumbatae darts that shattered barbarian shock charges. Confronted by explosive border warfare along the Rhine and Danubian limes in 374 AD, he conducted ceaseless reconnaissance across frontier moats and signal bastions. Maintaining austere military discipline while managing grain magazines and armory production, this battle-tested Roman officer stood as an incorruptible guardian, defending the territorial integrity and civilian hearths of the empire with unyielding valor. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "Background": "Flavius Victor served in 374 AD as a senior military commander and tribune within the Western Roman Empire, scion of the noble Valentinian Imperial Dynasty. Operating under the unbending martial rule of Augustus Valentinian I, he directed elite comitatenses legionary formations safeguarding the forward stone castella around 西罗马帝国. Trained rigorously in late Roman tactical manuals, he excelled in orchestrating interlocking fulcum shield-wall defense, spatha broadsword combat, and devastating volleys of lead-weighted plumbatae darts that shattered barbarian shock charges. Confronted by explosive border warfare along the Rhine and Danubian limes in 374 AD, he conducted ceaseless reconnaissance across frontier moats and signal bastions. Maintaining austere military discipline while managing grain magazines and armory production, this battle-tested Roman officer stood as an incorruptible guardian, defending the territorial integrity and civilian hearths of the empire with unyielding valor. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "SpeechStyle": "Speaks with curt, disciplined Roman soldierly gravitas; authoritative, precise, and devoid of bureaucratic hesitation.",
+  "PersonalSpeechStyle": "Speaks with curt, disciplined Roman soldierly gravitas; authoritative, precise, and devoid of bureaucratic hesitation.",
+  "Traits": [
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold the stone castella perimeter around 西罗马帝国 against all barbarian penetrations",
+    "Ensure seamless logistics and grain supplies for comitatenses cohorts"
+  ],
+  "Values": [
+    "Discipline is the foundation of Rome; breaking formation is punished by the sword",
+    "A commander shares the bivouac with his troops; steel must defend the Aquila"
+  ],
+  "Fears": [
+    "Fears nomadic raiders severing supply roads and trapping border garrisons without grain"
+  ],
+  "Personality": "Flavius Victor served in 374 AD as a senior military commander and tribune within the Western Roman Empire, scion of the noble Valentinian Imperial Dynasty. Operating under the unbending martial rule of Augustus Valentinian I, he directed elite comitatenses legionary formations safeguarding the forward stone castella around 西罗马帝国. Trained rigorously in late Roman tactical manuals, he excelled in orchestrating interlocking fulcum shield-wall defense, spatha broadsword combat, and devastating volleys of lead-weighted plumbatae darts that shattered barbarian shock charges. Confronted by explosive border warfare along the Rhine and Danubian limes in 374 AD, he conducted ceaseless reconnaissance across frontier moats and signal bastions. Maintaining austere military discipline while managing grain magazines and armory production, this battle-tested Roman officer stood as an incorruptible guardian, defending the territorial integrity and civilian hearths of the empire with unyielding valor. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms."
+}

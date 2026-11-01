@@ -3,58 +3,56 @@
   "HeroId": "lord_prus_6_3",
   "DisplayName": "Vaidevutė",
   "HeroName": "Vaidevutė",
-  "Description": "Vaidevutė is a prominent 13th-century commander and feudal magnate within the fiercely independent Prussian tribes rising in rebellion, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Vaidevutė is a prominent 13th-century commander and feudal magnate within the fiercely independent Prussian tribes rising in rebellion, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Vaidevutė lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 26. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
+  "Description": "Vaidevutė lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 26. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
+  "Background": "Vaidevutė lived in 1259 AD as an esteemed pagan priestess and tribal matron within the heartlands of Lithuania and Samogitia, aged 26. Guardian of sacred ancestral lore, she possessed profound knowledge of herbal pharmacology, astrological omens, and the perpetual fires of holy oak groves. Shunning personal combat, she directed domestic logistics across lakeside compounds, managing smoked meats, honey, pelt stores, and wound-salve preparations. As anti-crusader rebellions erupted across the Baltic rim in 1259, she conducted blessing ceremonies for departing warriors, inspiring fearless martial morale. When casualties from the peat bog battle of Skuodas returned, she coordinated medical treatment within island sanctuaries, saving scores of wounded axemen. Her mastery of preserved provisions and winter root foraging prevented scurvy and starvation during deep crusader blockades. Arbitrating blood-feuds between contentious forest clans, she ensured internal unity and the survival of Lithuania's ancient spiritual heritage. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian. Throughout bitter winter freezes, she distributed dried mutton and honeycomb from concealed forest caches, applying ancestral amber-and-pine salves to frostbitten defenders as a revered tribal guardian.",
+  "SpeechStyle": "Speaks with mystic serenity and matriarchal wisdom; poetic, profound, and deeply reverent.",
+  "PersonalSpeechStyle": "Speaks with mystic serenity and matriarchal wisdom; poetic, profound, and deeply reverent.",
   "Traits": [
     {
-      "Id": "ruthless",
+      "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "suspicious",
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
       "Strength": 2
     },
     {
-      "Id": "proud",
-      "Strength": 1
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 3
+      "Id": "cautious",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "ruthless",
+      "Id": "calculating",
       "Strength": 3
     },
     {
-      "Id": "suspicious",
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
       "Strength": 2
     },
     {
-      "Id": "proud",
-      "Strength": 1
-    },
-    {
-      "Id": "disciplined",
-      "Strength": 3
+      "Id": "cautious",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Preserve sacred eternal flames from Christian destruction",
+    "Prepare essential herbal salves to heal wounded tribal defenders"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "The earth and ancient spirits are our eternal sanctuary",
+    "Healing and lineage continuation outlive transient iron conquests"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears foreign armies penetrating sacred lake groves and desecrating ancestral altars"
   ]
 }

@@ -1,0 +1,43 @@
+{
+  "Id": "be_wre_plumbata_darts_warfare",
+  "Keywords": [
+    "Plumbatae Darts (wre_plumbata_darts_warfare)",
+    "Armor Punching Missile",
+    "Cohort Skirmishing",
+    "Lead Weight Weapons"
+  ],
+  "RagShortTexts": [
+    "Late Roman infantry clipped five plumbatae darts behind heavy shields.",
+    "Weighted with cast lead bulges, darts punched through enemy wooden bucklers.",
+    "Thrown in salvos between 30 and 40 yards, they broke charging warbands."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The plumbata lead-weighted dart was the signature missile weapon of the Late Roman infantryman. Fastened inside the concave surface of each soldier's shield in sets of five, these deadly projectiles measured eighteen inches in length. Fitted with barbed iron heads and weighted with cast lead sleeves, the darts achieved immense kinetic punch when hurled in high arcing salvos. Highly trained legionaries could launch them up to forty yards, sending downpours of steel and lead that punched clean through wooden bucklers and quilted armor. Two rapid volleys crushed the initial fury of barbarian warbands, allowing roman ranks to close in melee against disrupted survivors. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Rear rank infantry unclip lead darts from shield fittings: angle darts high; wait for the centurion's whistle, then rain steel on their front ranks to break their charge! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The arsenal fabricensis examines new crates of darts: cast lead must grip the iron shank tightly; balance is everything when punching through barbarian iron helmets at thirty paces. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

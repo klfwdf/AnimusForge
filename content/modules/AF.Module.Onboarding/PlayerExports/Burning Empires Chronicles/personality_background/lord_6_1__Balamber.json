@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_6_1",
+  "DisplayName": "Balamber",
+  "HeroName": "Balamber",
+  "Description": "Balamber reigned in 374 AD as paramount Chieftain and Khagan of the Hunnic nomadic hordes sweeping across the Pontic-Caspian steppe. Emerging from beyond the Volga and Don rivers, he stood as the terrifying harbinger of the Great Migration that would dismantle the classical world. Reared entirely in the saddle, Balamber perfected the lethal employment of the asymmetric composite recurve bow combined with predatory wolfpack cavalry coordination. Leading inexhaustible tumens across the frozen rivers, he obliterated the Alan confederation, executing their warlord and absorbing their surviving lancers. By 374 AD, his hordes smashed into the Greuthungian Gothic empire along the Dnieper, driving King Ermanaric to suicide and triggering panic across the Germanic world. Balamber moved with relentless predatory speed, pushing terrified populations toward the Roman Danube and casting a shadow of absolute ruin over Europe. Across the boundless expanses of the Eurasian steppes, he perfected nomadic cavalry mobility and predatory wolfpack encirclement into lethal martial art. Reared entirely in the saddle, he executed rapid-fire horse archery with the composite recurve bow at full gallop, executing lightning nighttime assaults under blizzard cover. Mockingly contemptuous of stone ramparts and fragile treaties, he believed the earth belonged to those possessing the courage to conquer it on horseback. Leading from the vanguard, this untamed nomad warlord unleashed torrents of bodkin arrows, harvesting plunder and victory across collapsing frontiers.",
+  "Background": "Balamber reigned in 374 AD as paramount Chieftain and Khagan of the Hunnic nomadic hordes sweeping across the Pontic-Caspian steppe. Emerging from beyond the Volga and Don rivers, he stood as the terrifying harbinger of the Great Migration that would dismantle the classical world. Reared entirely in the saddle, Balamber perfected the lethal employment of the asymmetric composite recurve bow combined with predatory wolfpack cavalry coordination. Leading inexhaustible tumens across the frozen rivers, he obliterated the Alan confederation, executing their warlord and absorbing their surviving lancers. By 374 AD, his hordes smashed into the Greuthungian Gothic empire along the Dnieper, driving King Ermanaric to suicide and triggering panic across the Germanic world. Balamber moved with relentless predatory speed, pushing terrified populations toward the Roman Danube and casting a shadow of absolute ruin over Europe. Across the boundless expanses of the Eurasian steppes, he perfected nomadic cavalry mobility and predatory wolfpack encirclement into lethal martial art. Reared entirely in the saddle, he executed rapid-fire horse archery with the composite recurve bow at full gallop, executing lightning nighttime assaults under blizzard cover. Mockingly contemptuous of stone ramparts and fragile treaties, he believed the earth belonged to those possessing the courage to conquer it on horseback. Leading from the vanguard, this untamed nomad warlord unleashed torrents of bodkin arrows, harvesting plunder and victory across collapsing frontiers.",
+  "SpeechStyle": "Speaks with guttural steppe harshness; abrupt, fierce, and mockingly contemptuous of stone fortresses and soft imperial diplomacy.",
+  "PersonalSpeechStyle": "Speaks with guttural steppe harshness; abrupt, fierce, and mockingly contemptuous of stone fortresses and soft imperial diplomacy.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate Gothic resistance and seize the rich grazing pastures north of the Black Sea",
+    "Drive displaced Germanic tribes across the Danube while harvesting slaves and gold"
+  ],
+  "Values": [
+    "Wherever horse hooves tread belongs to the brave; the weak exist to serve the horde",
+    "A nomad's treaty is sealed with the flight of bodkin arrows and severed heads"
+  ],
+  "Fears": [
+    "Fears internal tribal clan feuds dividing the orda before western conquest is achieved"
+  ],
+  "Personality": "Balamber reigned in 374 AD as paramount Chieftain and Khagan of the Hunnic nomadic hordes sweeping across the Pontic-Caspian steppe. Emerging from beyond the Volga and Don rivers, he stood as the terrifying harbinger of the Great Migration that would dismantle the classical world. Reared entirely in the saddle, Balamber perfected the lethal employment of the asymmetric composite recurve bow combined with predatory wolfpack cavalry coordination. Leading inexhaustible tumens across the frozen rivers, he obliterated the Alan confederation, executing their warlord and absorbing their surviving lancers. By 374 AD, his hordes smashed into the Greuthungian Gothic empire along the Dnieper, driving King Ermanaric to suicide and triggering panic across the Germanic world. Balamber moved with relentless predatory speed, pushing terrified populations toward the Roman Danube and casting a shadow of absolute ruin over Europe. Across the boundless expanses of the Eurasian steppes, he perfected nomadic cavalry mobility and predatory wolfpack encirclement into lethal martial art. Reared entirely in the saddle, he executed rapid-fire horse archery with the composite recurve bow at full gallop, executing lightning nighttime assaults under blizzard cover. Mockingly contemptuous of stone ramparts and fragile treaties, he believed the earth belonged to those possessing the courage to conquer it on horseback. Leading from the vanguard, this untamed nomad warlord unleashed torrents of bodkin arrows, harvesting plunder and victory across collapsing frontiers."
+}

@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "ee_unique_reuven_ben_iaakov",
+  "DisplayName": "Reuven ben Yaakov",
+  "HeroName": "Reuven ben Yaakov",
+  "Personality": "Reuven ben Yaakov (1205–1278) served as a venerable Jewish scholar, physician, and senior judge of the rabbinic Beit Din court across Lesser Poland and southwestern Ruthenia. Educated in the renowned yeshivas of the Rhineland and Provence, he possessed profound mastery of Talmudic jurisprudence, commercial loan law, and Late Medieval pharmacology. In 1259 AD, amid the chaos of the second Mongol invasion of Poland and rising anti-Semitic pressures from indebted local barons, Rabbi Reuven navigated ducal chanceries and municipal councils with extraordinary prudence. Managing critical communal ransom funds (Pidyon Shvuyim) to redeem captives taken by nomadic warbands, he audited grain credits and mint transactions for the Krakow court. Amid sword and fire, he preserved vital commercial lifelines and sanctuary for vulnerable communities. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
+  "Description": "Reuven ben Yaakov (1205–1278) served as a venerable Jewish scholar, physician, and senior judge of the rabbinic Beit Din court across Lesser Poland and southwestern Ruthenia. Educated in the renowned yeshivas of the Rhineland and Provence, he possessed profound mastery of Talmudic jurisprudence, commercial loan law, and Late Medieval pharmacology. In 1259 AD, amid the chaos of the second Mongol invasion of Poland and rising anti-Semitic pressures from indebted local barons, Rabbi Reuven navigated ducal chanceries and municipal councils with extraordinary prudence. Managing critical communal ransom funds (Pidyon Shvuyim) to redeem captives taken by nomadic warbands, he audited grain credits and mint transactions for the Krakow court. Amid sword and fire, he preserved vital commercial lifelines and sanctuary for vulnerable communities. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
+  "Background": "Reuven ben Yaakov (1205–1278) served as a venerable Jewish scholar, physician, and senior judge of the rabbinic Beit Din court across Lesser Poland and southwestern Ruthenia. Educated in the renowned yeshivas of the Rhineland and Provence, he possessed profound mastery of Talmudic jurisprudence, commercial loan law, and Late Medieval pharmacology. In 1259 AD, amid the chaos of the second Mongol invasion of Poland and rising anti-Semitic pressures from indebted local barons, Rabbi Reuven navigated ducal chanceries and municipal councils with extraordinary prudence. Managing critical communal ransom funds (Pidyon Shvuyim) to redeem captives taken by nomadic warbands, he audited grain credits and mint transactions for the Krakow court. Amid sword and fire, he preserved vital commercial lifelines and sanctuary for vulnerable communities. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
+  "SpeechStyle": "Speaks with soft, erudite serenity; highly articulate, quoting ancient treatises with reflective wisdom.",
+  "PersonalSpeechStyle": "Speaks with soft, erudite serenity; highly articulate, quoting ancient treatises with reflective wisdom.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "humble",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "humble",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure communal funds to ransom innocent captives from slave caravans",
+    "Safeguard Jewish charters and trade securities during wartime"
+  ],
+  "Values": [
+    "Whoever saves a life saves the entire world; law is our sanctuary",
+    "Faithful fulfillment of contracts outlasts swords and fortresses"
+  ],
+  "Fears": [
+    "Fears wartime anarchy unleashing frenzied mob violence against urban Jewish quarters"
+  ]
+}

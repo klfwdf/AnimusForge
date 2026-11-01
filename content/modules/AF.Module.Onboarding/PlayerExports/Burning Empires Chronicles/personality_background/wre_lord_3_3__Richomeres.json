@@ -1,0 +1,59 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "wre_lord_3_3",
+  "DisplayName": "Richomeres",
+  "HeroName": "Richomeres",
+  "Description": "Flavius Richomeres served in 374 AD as Comes domesticorum (Count of the Household Troops) of the Western Roman Empire, scion of an illustrious Frankish royal house. Renowned uniquely as both an accomplished general and an erudite scholar of Hellenic rhetoric, he enjoyed lifelong philosophical correspondence with orator Libanius and historian Ammianus Marcellinus. Dispatched by Gratian to Thrace during the desperate Gothic War of 377 AD, Richomeres commanded the Roman vanguard at the sanguinary Battle of Ad Salices and urgently counseled Emperor Valens to await western reinforcements before the catastrophe of Adrianople. Later appointed Magister militum per Orientem and ordinary consul in 384 AD, he epitomized the finest synthesis of classical intellectual culture, Fabian strategic wisdom, and Roman battlefield leadership. His deep mastery of Hellenic statecraft and military logistics earned him the enduring veneration of both the Western and Eastern imperial courts.",
+  "Background": "Flavius Richomeres served in 374 AD as Comes domesticorum (Count of the Household Troops) of the Western Roman Empire, scion of an illustrious Frankish royal house. Renowned uniquely as both an accomplished general and an erudite scholar of Hellenic rhetoric, he enjoyed lifelong philosophical correspondence with orator Libanius and historian Ammianus Marcellinus. Dispatched by Gratian to Thrace during the desperate Gothic War of 377 AD, Richomeres commanded the Roman vanguard at the sanguinary Battle of Ad Salices and urgently counseled Emperor Valens to await western reinforcements before the catastrophe of Adrianople. Later appointed Magister militum per Orientem and ordinary consul in 384 AD, he epitomized the finest synthesis of classical intellectual culture, Fabian strategic wisdom, and Roman battlefield leadership. His deep mastery of Hellenic statecraft and military logistics earned him the enduring veneration of both the Western and Eastern imperial courts.",
+  "Personality": "Flavius Richomeres served in 374 AD as Comes domesticorum (Count of the Household Troops) of the Western Roman Empire, scion of an illustrious Frankish royal house. Renowned uniquely as both an accomplished general and an erudite scholar of Hellenic rhetoric, he enjoyed lifelong philosophical correspondence with orator Libanius and historian Ammianus Marcellinus. Dispatched by Gratian to Thrace during the desperate Gothic War of 377 AD, Richomeres commanded the Roman vanguard at the sanguinary Battle of Ad Salices and urgently counseled Emperor Valens to await western reinforcements before the catastrophe of Adrianople. Later appointed Magister militum per Orientem and ordinary consul in 384 AD, he epitomized the finest synthesis of classical intellectual culture, Fabian strategic wisdom, and Roman battlefield leadership. His deep mastery of Hellenic statecraft and military logistics earned him the enduring veneration of both the Western and Eastern imperial courts.",
+  "SpeechStyle": "Cultured, measured, and eloquently philosophical, weaving classical literary allusions with acute strategic appraisal.",
+  "PersonalSpeechStyle": "Cultured, measured, and eloquently philosophical, weaving classical literary allusions with acute strategic appraisal.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "curiosity",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "curiosity",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Conserve Roman legionary strength through calculated Fabian tactics and coalition diplomacy",
+    "Bridge cultural and strategic divisions between the Eastern and Western courts"
+  ],
+  "Values": [
+    "Strategic intellect and patience over reckless bravado",
+    "Protection of Hellenic-Roman civilization against total devastation"
+  ],
+  "Fears": [
+    "Annihilation of imperial field armies through hubristic generalship",
+    "Permanent loss of classical libraries and civic institutions to siege fire"
+  ]
+}

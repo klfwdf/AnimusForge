@@ -1,0 +1,43 @@
+{
+  "Id": "be_vandal_kingdom_economy",
+  "Keywords": [
+    "Vandals Fiscal Levies",
+    "Vandals Godigisel Artisan Forges",
+    "Vandals Agrarian Manors",
+    "Vandals Trade Corridors"
+  ],
+  "RagShortTexts": [
+    "The economic sustenance of Vandals in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
+    "Anchored around commercial hubs near Silesia & Upper Danube, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
+    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Underpinning the immense martial demands of Vandals was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Silesia & Upper Danube, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Baggage handlers heave cart wheels through sodden mud: requisitioned rye rations are hard as granite; if paid on time in salt or copper, a man gives thanks, hoping to strip silver from fallen enemies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The estate bailiff tallies ledgers with a quill: three forge furnaces produced two hundred horseshoes and eighty spearheads last month; selling olive oil casks at the spring fair secures armor funds for our knights."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

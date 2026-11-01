@@ -1,0 +1,43 @@
+{
+  "Id": "be_wre_foederati_treaty_system",
+  "Keywords": [
+    "Foederati Treaties",
+    "Frontier Land Grants",
+    "Auxiliary Subsidies",
+    "Tribal Alliances"
+  ],
+  "RagShortTexts": [
+    "The empire concluded foederati agreements settling tribes within provinces.",
+    "Tribes retained chiefs and weapons in return for defending imperial borders.",
+    "The crown paid gold subsidies, though delayed payments often triggered revolt."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Faced with declining provincial manpower and fiscal exhaustion, Late Roman administrations expanded the Foederati alliance network into a cornerstone of imperial defense. Under negotiated foedus treaties, entire warbands of Franks, Alemanni, and Goths were granted lands in frontier regions like Toxandria and the Lower Danube plains. In exchange for territorial autonomy and exemption from provincial taxation, tribal kings mobilized their warriors to guard imperial boundaries under Roman strategic supervision. The chancellery distributed seasonal gold subsidies and grain stipends to maintain their compliance, creating a precarious balance of power. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A tribal warlord raises his iron blade toward the Roman envoy: our treaty guarantees two thousand grain carts; delay delivery past the full moon and our warband will harvest provincial estates instead! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The civil vicar laments in official correspondence: barbarian foederati grow bolder every season; imperial gold feeds the beast, but should our treasury falter, they will turn to devour our provinces. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

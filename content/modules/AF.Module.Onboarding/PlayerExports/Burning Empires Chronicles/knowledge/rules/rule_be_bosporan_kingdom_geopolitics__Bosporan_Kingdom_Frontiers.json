@@ -1,0 +1,43 @@
+{
+  "Id": "be_bosporan_kingdom_geopolitics",
+  "Keywords": [
+    "Bosporan Kingdom Frontier Marches",
+    "Bosporan Kingdom Sauromates V Border Defense",
+    "Bosporan Kingdom Strategic Passes",
+    "Bosporan Kingdom Geopolitical Rivals"
+  ],
+  "RagShortTexts": [
+    "Situated across critical crossroads, Bosporan Kingdom maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
+    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
+    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The territorial perimeter of Bosporan Kingdom spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Panticapaeum (Kerch), the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

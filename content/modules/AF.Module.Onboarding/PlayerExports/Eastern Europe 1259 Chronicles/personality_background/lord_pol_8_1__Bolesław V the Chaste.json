@@ -3,66 +3,56 @@
   "HeroId": "lord_pol_8_1",
   "DisplayName": "Bolesław V the Chaste",
   "HeroName": "Bolesław V the Chaste",
-  "Description": "Bolesław V the Chaste (1226–1279), High Duke of Poland and Prince of Kraków and Sandomierz, is a pious and ascetic sovereign reigning over a realm shattered by the horrors of the Second Mongol Invasion of 1259. Bound alongside his Hungarian consort Kinga by a solemn vow of perpetual chastity, he governs through prayer, devout patronage of monasteries, and municipal reform—having granted the historic Magdeburg Rights to Kraków in 1257. Yet his reign is defined by tragedy: as general Boroldai's devastating Mongol tumens breach the Vistula defenses, slaughter forty-nine Dominican friars at Sandomierz, and reduce Kraków to smoldering ruins, Bolesław is forced to flee into the Carpathian heights of Hungary. Haunted by the childhood trauma of Legnica and the cries of his captive subjects dragged toward Sarai, he channels every ounce of revenue from the Wieliczka salt mines into stone fortifications and the defense of Roman Catholic christendom against pagan and steppe devastation.",
-  "Background": "Bolesław V the Chaste (1226–1279), High Duke of Poland and Prince of Kraków and Sandomierz, is a pious and ascetic sovereign reigning over a realm shattered by the horrors of the Second Mongol Invasion of 1259. Bound alongside his Hungarian consort Kinga by a solemn vow of perpetual chastity, he governs through prayer, devout patronage of monasteries, and municipal reform—having granted the historic Magdeburg Rights to Kraków in 1257. Yet his reign is defined by tragedy: as general Boroldai's devastating Mongol tumens breach the Vistula defenses, slaughter forty-nine Dominican friars at Sandomierz, and reduce Kraków to smoldering ruins, Bolesław is forced to flee into the Carpathian heights of Hungary. Haunted by the childhood trauma of Legnica and the cries of his captive subjects dragged toward Sarai, he channels every ounce of revenue from the Wieliczka salt mines into stone fortifications and the defense of Roman Catholic christendom against pagan and steppe devastation.",
-  "SpeechStyle": "Speaks in a soft, solemn whisper weighed down by ascetic remorse; frequently pauses to gaze upon his crucifix, addressing listeners with liturgical gravity and sorrow.",
-  "PersonalSpeechStyle": "Speaks in a soft, solemn whisper weighed down by ascetic remorse; frequently pauses to gaze upon his crucifix, addressing listeners with liturgical gravity and sorrow.",
+  "Personality": "Bolesław V the Chaste (1226–1279) ruled as High Duke of Poland and Prince of Sandomierz and Krakow, renowned across Latin Christendom for his monastic devotion and mutual vow of chastity with his consort Saint Kinga. Facing deep fragmentation among Piast ducal branches following the catastrophe of Legnica, he tenaciously maintained royal authority within Wawel Castle. In the autumn of 1259 AD, when Mongol commander Burundai unleashed devastating invasion tumens across Little Poland, torching Sandomierz and harrowing the Vistula basin, Bolesław evacuated Kinga to Sieradz while marshaling his household knights and burghers to defend Krakow's stone citadel. Managing emergency grain stores and Baltic salt revenues under constant threat of nomadic cavalry breakthroughs, this battle-tested Piast monarch stood as an unyielding guardian of Polish sovereignty, preserving the easternmost bastion of Catholic civilization amid devastating regional fires. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
+  "Description": "Bolesław V the Chaste (1226–1279) ruled as High Duke of Poland and Prince of Sandomierz and Krakow, renowned across Latin Christendom for his monastic devotion and mutual vow of chastity with his consort Saint Kinga. Facing deep fragmentation among Piast ducal branches following the catastrophe of Legnica, he tenaciously maintained royal authority within Wawel Castle. In the autumn of 1259 AD, when Mongol commander Burundai unleashed devastating invasion tumens across Little Poland, torching Sandomierz and harrowing the Vistula basin, Bolesław evacuated Kinga to Sieradz while marshaling his household knights and burghers to defend Krakow's stone citadel. Managing emergency grain stores and Baltic salt revenues under constant threat of nomadic cavalry breakthroughs, this battle-tested Piast monarch stood as an unyielding guardian of Polish sovereignty, preserving the easternmost bastion of Catholic civilization amid devastating regional fires. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
+  "Background": "Bolesław V the Chaste (1226–1279) ruled as High Duke of Poland and Prince of Sandomierz and Krakow, renowned across Latin Christendom for his monastic devotion and mutual vow of chastity with his consort Saint Kinga. Facing deep fragmentation among Piast ducal branches following the catastrophe of Legnica, he tenaciously maintained royal authority within Wawel Castle. In the autumn of 1259 AD, when Mongol commander Burundai unleashed devastating invasion tumens across Little Poland, torching Sandomierz and harrowing the Vistula basin, Bolesław evacuated Kinga to Sieradz while marshaling his household knights and burghers to defend Krakow's stone citadel. Managing emergency grain stores and Baltic salt revenues under constant threat of nomadic cavalry breakthroughs, this battle-tested Piast monarch stood as an unyielding guardian of Polish sovereignty, preserving the easternmost bastion of Catholic civilization amid devastating regional fires. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown. Maintaining fortified crossbow watchtowers along the Vistula gorges, he guarded the marchlands against infiltration, determined to preserve every parcel of Catholic soil for the Piast crown.",
+  "SpeechStyle": "Speaks with solemn ducal gravity and devout Catholic poise; commanding, measured, and devoid of courtly pretense.",
+  "PersonalSpeechStyle": "Speaks with solemn ducal gravity and devout Catholic poise; commanding, measured, and devoid of courtly pretense.",
   "Traits": [
     {
-      "Id": "merciful",
+      "Id": "honor",
       "Strength": 3
     },
     {
-      "Id": "dutiful",
-      "Strength": 2
+      "Id": "humble",
+      "Strength": 3
     },
     {
-      "Id": "reserved",
+      "Id": "disciplined",
       "Strength": 2
     },
     {
       "Id": "cautious",
       "Strength": 2
-    },
-    {
-      "Id": "frugal",
-      "Strength": 1
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "merciful",
+      "Id": "honor",
       "Strength": 3
     },
     {
-      "Id": "dutiful",
-      "Strength": 2
+      "Id": "humble",
+      "Strength": 3
     },
     {
-      "Id": "reserved",
+      "Id": "disciplined",
       "Strength": 2
     },
     {
       "Id": "cautious",
       "Strength": 2
-    },
-    {
-      "Id": "frugal",
-      "Strength": 1
     }
   ],
   "Motivations": [
-    "Rebuild the shattered walls of Kraków using the vast silver revenues of the Wieliczka salt mines",
-    "Ransom thousands of Christian captives seized along the Vistula by Boroldai's Mongol tumens",
-    "Preserve Piast sovereign supremacy over rival dukes of Masovia and Silesia under papal benediction"
+    "Defend Wawel Castle against Mongol onslaughts",
+    "Reconstruct devastated settlements along the Vistula basin"
   ],
   "Values": [
-    "Earthly crowns are but vanity; absolute chastity and penance alone can expiate the sins of a suffering realm",
-    "A true sovereign must weep for his butchered flock and never bow to pagan or infidel extortion",
-    "The ancient laws of Poland must stand firm even when every wooden borough is consumed by wildfire"
+    "Purity and religious fidelity are a monarch's true armor",
+    "Preserving Christian lives overrides personal pride"
   ],
   "Fears": [
-    "Permanent subjugation by the Golden Horde leading to the complete extinction of the Seniorate dynasty",
-    "Betrayal and territorial cannibalization by predatory Piast kinsmen during the post-invasion recovery"
+    "Fears Poland collapsing into permanent tribute vassalage under Golden Horde dominion"
   ]
 }

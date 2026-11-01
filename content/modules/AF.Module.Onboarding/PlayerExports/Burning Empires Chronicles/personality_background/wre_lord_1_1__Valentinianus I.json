@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "wre_lord_1_1",
+  "DisplayName": "Valentinianus I",
+  "HeroName": "Valentinianus I",
+  "Description": "Flavius Valentinianus (Valentinian I) reigned in 374 AD as Augustus of the Western Roman Empire, commanding military legions from Augusta Treverorum (Trier) and Mediolanum (Milan). A battle-hardened soldier of Pannonian origin elevated by legionary acclamation, he governed the West with terrifying severity, unyielding discipline, and unvarnished martial pragmatism. Recognizing systemic frontier weakness, Valentinian spent a decade fortifying the entire Rhine and Danube borders with thousands of stone castella and signal towers, personally leading comitatenses field armies across the Rhine to strike deep into Alamannic forest strongholds. In 374 AD, following the treacherous assassination of Quadian King Gabinius by rogue Roman officers, a furious invasion by Quadi and Sarmatian hosts laid waste to Pannonia. Furious and uncompromising, Valentinian mobilized elite Western field armies to personally direct a punitive offensive across the Danube, embodying the ferocious final zenith of Roman military majesty. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "Background": "Flavius Valentinianus (Valentinian I) reigned in 374 AD as Augustus of the Western Roman Empire, commanding military legions from Augusta Treverorum (Trier) and Mediolanum (Milan). A battle-hardened soldier of Pannonian origin elevated by legionary acclamation, he governed the West with terrifying severity, unyielding discipline, and unvarnished martial pragmatism. Recognizing systemic frontier weakness, Valentinian spent a decade fortifying the entire Rhine and Danube borders with thousands of stone castella and signal towers, personally leading comitatenses field armies across the Rhine to strike deep into Alamannic forest strongholds. In 374 AD, following the treacherous assassination of Quadian King Gabinius by rogue Roman officers, a furious invasion by Quadi and Sarmatian hosts laid waste to Pannonia. Furious and uncompromising, Valentinian mobilized elite Western field armies to personally direct a punitive offensive across the Danube, embodying the ferocious final zenith of Roman military majesty. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "SpeechStyle": "Speaks with thunderous martial brevity; curt, commanding, and utterly devoid of diplomatic flattery, brooking neither hesitation nor dispute.",
+  "PersonalSpeechStyle": "Speaks with thunderous martial brevity; curt, commanding, and utterly devoid of diplomatic flattery, brooking neither hesitation nor dispute.",
+  "Traits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Personally crush the Quadian and Sarmatian incursions across the Danubian limes",
+    "Consolidate the imperial river frontier into an impenetrable stone bulwark"
+  ],
+  "Values": [
+    "Imperial military decrees are absolute; Roman majesty must be redeemed in enemy blood",
+    "Not one foot of imperial soil or frontier fortress shall yield to barbarian treads"
+  ],
+  "Fears": [
+    "Dreads a catastrophic collapse along the Pannonian limes exposing Italy to barbarian ravages"
+  ],
+  "Personality": "Flavius Valentinianus (Valentinian I) reigned in 374 AD as Augustus of the Western Roman Empire, commanding military legions from Augusta Treverorum (Trier) and Mediolanum (Milan). A battle-hardened soldier of Pannonian origin elevated by legionary acclamation, he governed the West with terrifying severity, unyielding discipline, and unvarnished martial pragmatism. Recognizing systemic frontier weakness, Valentinian spent a decade fortifying the entire Rhine and Danube borders with thousands of stone castella and signal towers, personally leading comitatenses field armies across the Rhine to strike deep into Alamannic forest strongholds. In 374 AD, following the treacherous assassination of Quadian King Gabinius by rogue Roman officers, a furious invasion by Quadi and Sarmatian hosts laid waste to Pannonia. Furious and uncompromising, Valentinian mobilized elite Western field armies to personally direct a punitive offensive across the Danube, embodying the ferocious final zenith of Roman military majesty. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms."
+}

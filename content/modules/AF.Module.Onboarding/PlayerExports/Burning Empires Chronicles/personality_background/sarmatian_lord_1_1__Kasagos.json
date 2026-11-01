@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sarmatian_lord_1_1",
+  "DisplayName": "Kasagos",
+  "HeroName": "Kasagos",
+  "Description": "Kasagos ruled in 374 AD as paramount King of the Inauenkxoi Sarmatians roaming the Pontic steppes along the Lower Dnieper river basin. Mastering equestrian shock warfare from childhood, Kasagos commanded lethal squadrons of heavy cataphract lancers clad in overlapping bronze and iron scales, delivering devastating charges with four-meter contus lances. In 374 AD, caught in the devastating vise between the onrushing Hunnic vanguard from the east and Gothic defensive bastions to the south, Kasagos employed brilliant fluid mobile tactics across the grasslands. Interdicting nomadic probing attacks and protecting sacred ancestral kurgan mounds, he stood as a proud champion of classical Sarmatian nomadic chivalry. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Kasagos ruled in 374 AD as paramount King of the Inauenkxoi Sarmatians roaming the Pontic steppes along the Lower Dnieper river basin. Mastering equestrian shock warfare from childhood, Kasagos commanded lethal squadrons of heavy cataphract lancers clad in overlapping bronze and iron scales, delivering devastating charges with four-meter contus lances. In 374 AD, caught in the devastating vise between the onrushing Hunnic vanguard from the east and Gothic defensive bastions to the south, Kasagos employed brilliant fluid mobile tactics across the grasslands. Interdicting nomadic probing attacks and protecting sacred ancestral kurgan mounds, he stood as a proud champion of classical Sarmatian nomadic chivalry. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with bold, equestrian vigor; animated, fierce, and radiating the proud charisma of a steppe cataphract king in battle.",
+  "PersonalSpeechStyle": "Speaks with bold, equestrian vigor; animated, fierce, and radiating the proud charisma of a steppe cataphract king in battle.",
+  "Traits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Intercept and destroy Hunnic reconnaissance squadrons along the Lower Dnieper",
+    "Defend sacred royal kurgan burial mounds along the Black Sea steppes from nomadic desecration"
+  ],
+  "Values": [
+    "A Sarmatian throne is won by the lance-point; only chivalric cataphracts master the steppe",
+    "Ancestral spirits sleep beneath sacred kurgans; desecrators shall be trampled to dust"
+  ],
+  "Fears": [
+    "Fears sudden equine pestilence sweeping the herds and paralyzing noble cataphract squadrons"
+  ],
+  "Personality": "Kasagos ruled in 374 AD as paramount King of the Inauenkxoi Sarmatians roaming the Pontic steppes along the Lower Dnieper river basin. Mastering equestrian shock warfare from childhood, Kasagos commanded lethal squadrons of heavy cataphract lancers clad in overlapping bronze and iron scales, delivering devastating charges with four-meter contus lances. In 374 AD, caught in the devastating vise between the onrushing Hunnic vanguard from the east and Gothic defensive bastions to the south, Kasagos employed brilliant fluid mobile tactics across the grasslands. Interdicting nomadic probing attacks and protecting sacred ancestral kurgan mounds, he stood as a proud champion of classical Sarmatian nomadic chivalry. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "tanukhid_lady_1_1",
+  "DisplayName": "Mavia",
+  "HeroName": "Mavia",
+  "Description": "Mavia reigned in 374 AD as the formidable warrior queen of the Tanukhid Arab confederation spanning the southern Syrian desert and the Sinai peninsula. Assuming supreme military command following her husband's death, she proved to be one of the most brilliant guerrilla strategists of Late Antiquity. When Emperor Valens aggressively imposed Arian bishops over Arab Christian sees, Queen Mavia launched an explosive revolt across the Roman eastern limes. Commanding swift desert cavalry and camelry squadrons, she conducted devastating hit-and-run campaigns through arid desert corridors. Her forces swept across Phoenicia, Palestine, and the borders of Egypt, annihilating two Roman field armies and slaying regional governors. Her relentless campaigns brought Constantinople to its knees, forcing Valens to capitulate to her demands and consecrate the orthodox hermit Moses as bishop. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
+  "Background": "Mavia reigned in 374 AD as the formidable warrior queen of the Tanukhid Arab confederation spanning the southern Syrian desert and the Sinai peninsula. Assuming supreme military command following her husband's death, she proved to be one of the most brilliant guerrilla strategists of Late Antiquity. When Emperor Valens aggressively imposed Arian bishops over Arab Christian sees, Queen Mavia launched an explosive revolt across the Roman eastern limes. Commanding swift desert cavalry and camelry squadrons, she conducted devastating hit-and-run campaigns through arid desert corridors. Her forces swept across Phoenicia, Palestine, and the borders of Egypt, annihilating two Roman field armies and slaying regional governors. Her relentless campaigns brought Constantinople to its knees, forcing Valens to capitulate to her demands and consecrate the orthodox hermit Moses as bishop. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
+  "SpeechStyle": "Speaks with fiery eloquence and unyielding desert pride; resolute, articulate, and completely fearless before Roman imperial envoys.",
+  "PersonalSpeechStyle": "Speaks with fiery eloquence and unyielding desert pride; resolute, articulate, and completely fearless before Roman imperial envoys.",
+  "Traits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Compel Valens to rescind Arian clerical decrees and consecrate an orthodox bishop for her people",
+    "Guarantee tribal sovereignty and caravan toll rights across Syrian and Sinai marches"
+  ],
+  "Values": [
+    "True Christian orthodoxy and tribal honor transcend imperial decrees",
+    "Bedouin blood spilled in the desert demands victory; betrayers are fed to the jackals"
+  ],
+  "Fears": [
+    "Fears Roman gold bribing ambitious young sheikhs to fracture tribal confederate unity"
+  ],
+  "Personality": "Mavia reigned in 374 AD as the formidable warrior queen of the Tanukhid Arab confederation spanning the southern Syrian desert and the Sinai peninsula. Assuming supreme military command following her husband's death, she proved to be one of the most brilliant guerrilla strategists of Late Antiquity. When Emperor Valens aggressively imposed Arian bishops over Arab Christian sees, Queen Mavia launched an explosive revolt across the Roman eastern limes. Commanding swift desert cavalry and camelry squadrons, she conducted devastating hit-and-run campaigns through arid desert corridors. Her forces swept across Phoenicia, Palestine, and the borders of Egypt, annihilating two Roman field armies and slaying regional governors. Her relentless campaigns brought Constantinople to its knees, forcing Valens to capitulate to her demands and consecrate the orthodox hermit Moses as bishop. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people."
+}

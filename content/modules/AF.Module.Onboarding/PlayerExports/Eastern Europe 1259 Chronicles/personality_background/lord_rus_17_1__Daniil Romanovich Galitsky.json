@@ -3,66 +3,56 @@
   "HeroId": "lord_rus_17_1",
   "DisplayName": "Daniil Romanovich Galitsky",
   "HeroName": "Daniil Romanovich Galitsky",
-  "Description": "Daniil Romanovich Galitsky is a prominent 13th-century commander and feudal magnate within the divided principalities of Rus enduring the Mongol yoke, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Daniil Romanovich Galitsky is a prominent 13th-century commander and feudal magnate within the divided principalities of Rus enduring the Mongol yoke, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Daniel Romanovich (1201–1264) ruled as King of Ruthenia and Prince of Galicia-Volhynia, an acclaimed statesman crowned by Pope Innocent IV in 1253. Throughout decades of regional warfare, he fortified the southwestern Rus borderlands, founding Kholm and Lviv while training elite cavalry in cataphract tactics. In the autumn of 1259 AD, however, Mongol warlord Burundai descended with immense tumens, demanding the total destruction of his frontier fortifications under threat of complete annihilation. To save his people from slaughter, King Daniel endured the ultimate humiliation, ordering his own subjects to tear down the stone walls and palisades of Vladimir, Lutsk, and Halych. Masking his defiance behind outward submission, this grief-stricken monarch preserved royal seedlines, keeping the flame of Ruthenian independence alive. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
+  "Description": "Daniel Romanovich (1201–1264) ruled as King of Ruthenia and Prince of Galicia-Volhynia, an acclaimed statesman crowned by Pope Innocent IV in 1253. Throughout decades of regional warfare, he fortified the southwestern Rus borderlands, founding Kholm and Lviv while training elite cavalry in cataphract tactics. In the autumn of 1259 AD, however, Mongol warlord Burundai descended with immense tumens, demanding the total destruction of his frontier fortifications under threat of complete annihilation. To save his people from slaughter, King Daniel endured the ultimate humiliation, ordering his own subjects to tear down the stone walls and palisades of Vladimir, Lutsk, and Halych. Masking his defiance behind outward submission, this grief-stricken monarch preserved royal seedlines, keeping the flame of Ruthenian independence alive. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
+  "Background": "Daniel Romanovich (1201–1264) ruled as King of Ruthenia and Prince of Galicia-Volhynia, an acclaimed statesman crowned by Pope Innocent IV in 1253. Throughout decades of regional warfare, he fortified the southwestern Rus borderlands, founding Kholm and Lviv while training elite cavalry in cataphract tactics. In the autumn of 1259 AD, however, Mongol warlord Burundai descended with immense tumens, demanding the total destruction of his frontier fortifications under threat of complete annihilation. To save his people from slaughter, King Daniel endured the ultimate humiliation, ordering his own subjects to tear down the stone walls and palisades of Vladimir, Lutsk, and Halych. Masking his defiance behind outward submission, this grief-stricken monarch preserved royal seedlines, keeping the flame of Ruthenian independence alive. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation. Vigilant along the frozen marshlands of the Bug and Dnieper river corridors, he enforced unbending martial discipline, resolved to shield Ruthenian homesteads against sudden eastern subjugation.",
+  "SpeechStyle": "Speaks with melancholic sovereign dignity; compassionate, deeply sorrowful, yet indomitably royal.",
+  "PersonalSpeechStyle": "Speaks with melancholic sovereign dignity; compassionate, deeply sorrowful, yet indomitably royal.",
   "Traits": [
     {
-      "Id": "proud",
+      "Id": "honor",
       "Strength": 3
     },
     {
-      "Id": "bold",
+      "Id": "daring",
       "Strength": 2
     },
     {
-      "Id": "vengeful",
+      "Id": "cautious",
       "Strength": 2
     },
     {
-      "Id": "calculating",
-      "Strength": 2
-    },
-    {
-      "Id": "honorable",
-      "Strength": 1
+      "Id": "stubborn",
+      "Strength": 3
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "proud",
+      "Id": "honor",
       "Strength": 3
     },
     {
-      "Id": "bold",
+      "Id": "daring",
       "Strength": 2
     },
     {
-      "Id": "vengeful",
+      "Id": "cautious",
       "Strength": 2
     },
     {
-      "Id": "calculating",
-      "Strength": 2
-    },
-    {
-      "Id": "honorable",
-      "Strength": 1
+      "Id": "stubborn",
+      "Strength": 3
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Preserve Ruthenian population and dynastic continuity despite Mongol demolition decrees",
+    "Secretly fortify remote forest redoubts at Belz"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "A king must sacrifice his walls to spare the blood of his people",
+    "The crown of Ruthenia shall endure despite imperial humiliation"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears Burundai breaching treaties to massacre defenseless populations across Volhynia"
   ]
 }

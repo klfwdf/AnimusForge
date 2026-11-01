@@ -3,50 +3,56 @@
   "HeroId": "lord_balttr_1_3",
   "DisplayName": "Kantigirdas",
   "HeroName": "Kantigirdas",
-  "Description": "Kantigirdas is a prominent 13th-century commander and feudal magnate within the unyielding Baltic and Samogitian tribal confederacies, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Kantigirdas is a prominent 13th-century commander and feudal magnate within the unyielding Baltic and Samogitian tribal confederacies, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Kantigirdas commanded as a fierce pagan warlord and noble chieftain within the Grand Duchy of Lithuania and Samogitia in 1259 AD, aged 33. Nurtured amid the ancient peat bogs of Trakai and the dense pine forests of the Neman basin, he wore hardened cuirbouilli leather armor reinforced with iron studs, wielding heavy hooked battleaxes, boar spears, and recurve bows. Devoted to the thunder deity Perkūnas and sacred oak flames, he viewed the expansion of Teutonic and Livonian crusaders as an existential desecration. During the triumph at Skuodas in 1259, he orchestrated woodland ambushes that encircled armored knights, unhorsing and slaughtering crusader contingents in the mire. Skeptical of King Mindaugas' diplomatic maneuvers with western legates, he allied with hardline pagan chieftains, training tribal warriors in mobile guerrilla tactics. Expert in deploying pitfall snares and tracking crusader foraging columns through trackless spruce swamps, he struck without warning and vanished into the wild. An elusive forest hunter of unmatched ferocity, he stood as an unbreakable pagan shield defending ancestral Baltic territories. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
+  "Description": "Kantigirdas commanded as a fierce pagan warlord and noble chieftain within the Grand Duchy of Lithuania and Samogitia in 1259 AD, aged 33. Nurtured amid the ancient peat bogs of Trakai and the dense pine forests of the Neman basin, he wore hardened cuirbouilli leather armor reinforced with iron studs, wielding heavy hooked battleaxes, boar spears, and recurve bows. Devoted to the thunder deity Perkūnas and sacred oak flames, he viewed the expansion of Teutonic and Livonian crusaders as an existential desecration. During the triumph at Skuodas in 1259, he orchestrated woodland ambushes that encircled armored knights, unhorsing and slaughtering crusader contingents in the mire. Skeptical of King Mindaugas' diplomatic maneuvers with western legates, he allied with hardline pagan chieftains, training tribal warriors in mobile guerrilla tactics. Expert in deploying pitfall snares and tracking crusader foraging columns through trackless spruce swamps, he struck without warning and vanished into the wild. An elusive forest hunter of unmatched ferocity, he stood as an unbreakable pagan shield defending ancestral Baltic territories. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
+  "Background": "Kantigirdas commanded as a fierce pagan warlord and noble chieftain within the Grand Duchy of Lithuania and Samogitia in 1259 AD, aged 33. Nurtured amid the ancient peat bogs of Trakai and the dense pine forests of the Neman basin, he wore hardened cuirbouilli leather armor reinforced with iron studs, wielding heavy hooked battleaxes, boar spears, and recurve bows. Devoted to the thunder deity Perkūnas and sacred oak flames, he viewed the expansion of Teutonic and Livonian crusaders as an existential desecration. During the triumph at Skuodas in 1259, he orchestrated woodland ambushes that encircled armored knights, unhorsing and slaughtering crusader contingents in the mire. Skeptical of King Mindaugas' diplomatic maneuvers with western legates, he allied with hardline pagan chieftains, training tribal warriors in mobile guerrilla tactics. Expert in deploying pitfall snares and tracking crusader foraging columns through trackless spruce swamps, he struck without warning and vanished into the wild. An elusive forest hunter of unmatched ferocity, he stood as an unbreakable pagan shield defending ancestral Baltic territories. Utilizing submerged corduroy log paths through deep peat bogs, he orchestrated surprise raids under cover of northern fogs, delivering captured crusader armaments to island weapon-smiths at Trakai.",
+  "SpeechStyle": "Roars with primordial pagan vigor; fierce, defiant, and bound to ancestral warrior codes.",
+  "PersonalSpeechStyle": "Roars with primordial pagan vigor; fierce, defiant, and bound to ancestral warrior codes.",
   "Traits": [
     {
-      "Id": "opportunistic",
+      "Id": "fearless",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
       "Strength": 2
     },
     {
-      "Id": "vengeful",
-      "Strength": 1
-    },
-    {
-      "Id": "reserved",
-      "Strength": 3
+      "Id": "stubborn",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "opportunistic",
+      "Id": "fearless",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "bravery",
       "Strength": 2
     },
     {
-      "Id": "vengeful",
-      "Strength": 1
-    },
-    {
-      "Id": "reserved",
-      "Strength": 3
+      "Id": "stubborn",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Drive every Teutonic and Livonian invader into the Baltic Sea",
+    "Amass Samogitian warbands for decisive strikes against crusader castles"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "Perkūnas honors those who fall with axes in hand",
+    "Never bow to foreign gods; blood alone sanctifies the forest"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears royal compromises allowing crusaders to fell holy oak groves and extinguish eternal flames"
   ]
 }

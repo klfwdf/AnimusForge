@@ -3,58 +3,56 @@
   "HeroId": "lord_rus_11_2",
   "DisplayName": "Anastasia Vyacheslavna",
   "HeroName": "Anastasia Vyacheslavna",
-  "Description": "Anastasia Vyacheslavna is a prominent 13th-century commander and feudal magnate within the divided principalities of Rus enduring the Mongol yoke, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Anastasia Vyacheslavna is a prominent 13th-century commander and feudal magnate within the divided principalities of Rus enduring the Mongol yoke, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Anastasia Vyacheslavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 36. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
+  "Description": "Anastasia Vyacheslavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 36. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
+  "Background": "Anastasia Vyacheslavna lived in 1259 AD as an esteemed boyarynya and grand-princely matron within the Rus realms of Galicia-Volhynia, Novgorod, and Vladimir, aged 36. Descended from venerable Rurikid aristocratic lineages, she wore embroidered kokoshnik headdresses adorned with river pearls and sable-trimmed velvet mantles. Within princely timber courts, she supervised agricultural tithes, fur trade accounts, linen spinning workshops, and endowments for Orthodox monasteries. When Burundai's Mongol forces forced the demolition of southwestern fortresses in 1259, she maintained domestic order and moral fortitude amid intense regional panic. Directing the production of winter garments and dried provisions for warriors, she kept perpetual vigil before sacred icons while harboring displaced peasant families. Her management of herbal pharmacies and grain cellars ensured that injured retainers received vital care, sustaining household morale through the crisis. Skilled in arbitrating inheritance disputes between rival boyar clans, she preserved the social cohesion and spiritual heritage of the Ruthenian elite. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity. She safeguarded vital seed grain reserves and smoked sturgeon stocks within fortified palace cellars, dispensing measured famine relief while preserving household survival through wartime scarcity.",
+  "SpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
+  "PersonalSpeechStyle": "Speaks with serene maternal authority and Orthodox poise; gentle, measured, and resilient.",
   "Traits": [
     {
-      "Id": "cautious",
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
       "Strength": 2
     },
     {
-      "Id": "pragmatic",
+      "Id": "humble",
       "Strength": 2
     },
     {
-      "Id": "dutiful",
+      "Id": "calculating",
       "Strength": 2
-    },
-    {
-      "Id": "bold",
-      "Strength": 1
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "cautious",
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
       "Strength": 2
     },
     {
-      "Id": "pragmatic",
+      "Id": "humble",
       "Strength": 2
     },
     {
-      "Id": "dutiful",
+      "Id": "calculating",
       "Strength": 2
-    },
-    {
-      "Id": "bold",
-      "Strength": 1
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Manage emergency stores of food and fur garments for refugees",
+    "Maintain monastic endowments and ancestral inheritance titles"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "Orthodox piety is our immutable refuge",
+    "Mercy and family order preserve our people through trial"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears nomadic raiders overrunning estates and abducting noblewomen into eastern captivity"
   ]
 }

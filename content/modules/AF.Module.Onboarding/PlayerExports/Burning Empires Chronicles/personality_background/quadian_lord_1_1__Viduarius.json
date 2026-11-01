@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "quadian_lord_1_1",
+  "DisplayName": "Viduarius",
+  "HeroName": "Viduarius",
+  "Description": "Viduarius assumed supreme command in 374 AD as paramount war-chieftain of the Quadi and allied Sarmatian hosts along the Middle Danube. Following the perfidious assassination of King Gabinius by Roman Dux Marcellinus at a peace banquet, Viduarius rallied tribal assemblies in an uncontrollable eruption of fury. Unleashing his warriors across the Danube, he orchestrated the total devastation of Pannonia, ambushing Roman detachments, sacking castella, and routing regional garrisons. Confronted by the imminent counter-offensive of Emperor Valentinian I, Viduarius marshaled every spear and heavy horseman, determined to exact righteous vengeance for Roman treachery or die amidst the blazing wreckage of imperial borderlands. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Viduarius assumed supreme command in 374 AD as paramount war-chieftain of the Quadi and allied Sarmatian hosts along the Middle Danube. Following the perfidious assassination of King Gabinius by Roman Dux Marcellinus at a peace banquet, Viduarius rallied tribal assemblies in an uncontrollable eruption of fury. Unleashing his warriors across the Danube, he orchestrated the total devastation of Pannonia, ambushing Roman detachments, sacking castella, and routing regional garrisons. Confronted by the imminent counter-offensive of Emperor Valentinian I, Viduarius marshaled every spear and heavy horseman, determined to exact righteous vengeance for Roman treachery or die amidst the blazing wreckage of imperial borderlands. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with venomous rage and ferocious passion; defiant, bloodthirsty, and utterly consumed by the oath to avenge King Gabinius.",
+  "PersonalSpeechStyle": "Speaks with venomous rage and ferocious passion; defiant, bloodthirsty, and utterly consumed by the oath to avenge King Gabinius.",
+  "Traits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Avenge King Gabinius by scouring Pannonia with fire and slaying Roman commanders",
+    "Fortify Carpathian mountain passes against Valentinian's imperial legions"
+  ],
+  "Values": [
+    "Blood pays for blood; imperial treaties are poisoned deceptions",
+    "A Quadian warrior fears no Caesar; only through battle can ancestral honor be restored"
+  ],
+  "Fears": [
+    "Dreads internal traitors revealing mountain pass ambuscades to Roman scout cavalry"
+  ],
+  "Personality": "Viduarius assumed supreme command in 374 AD as paramount war-chieftain of the Quadi and allied Sarmatian hosts along the Middle Danube. Following the perfidious assassination of King Gabinius by Roman Dux Marcellinus at a peace banquet, Viduarius rallied tribal assemblies in an uncontrollable eruption of fury. Unleashing his warriors across the Danube, he orchestrated the total devastation of Pannonia, ambushing Roman detachments, sacking castella, and routing regional garrisons. Confronted by the imminent counter-offensive of Emperor Valentinian I, Viduarius marshaled every spear and heavy horseman, determined to exact righteous vengeance for Roman treachery or die amidst the blazing wreckage of imperial borderlands. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

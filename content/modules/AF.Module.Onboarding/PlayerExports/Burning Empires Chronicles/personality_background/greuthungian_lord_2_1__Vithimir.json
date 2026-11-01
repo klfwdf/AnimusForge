@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "greuthungian_lord_2_1",
+  "DisplayName": "Vithimir",
+  "HeroName": "Vithimir",
+  "Description": "Alatheus served in 374 AD as regent commander and premier cavalry warlord of the Greuthungian (Ostrogothic) Amali dynasty, co-guarding the child-king Viderich alongside Saphrax. Stepping into the catastrophic vacuum left by Ermanaric's death and the fall of Vinitharius, Alatheus held the shattered Gothic nation together with iron fortitude. Coordinating closely with his Alan cavalry counterpart, he directed a masterclass in fighting retreats, using massive wagon-laagers to repel relentless Hunnic pursuit across hundreds of miles to the Lower Danube, destined to deliver the decisive shock cavalry blow that would obliterate Emperor Valens at the Battle of Adrianople. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Alatheus served in 374 AD as regent commander and premier cavalry warlord of the Greuthungian (Ostrogothic) Amali dynasty, co-guarding the child-king Viderich alongside Saphrax. Stepping into the catastrophic vacuum left by Ermanaric's death and the fall of Vinitharius, Alatheus held the shattered Gothic nation together with iron fortitude. Coordinating closely with his Alan cavalry counterpart, he directed a masterclass in fighting retreats, using massive wagon-laagers to repel relentless Hunnic pursuit across hundreds of miles to the Lower Danube, destined to deliver the decisive shock cavalry blow that would obliterate Emperor Valens at the Battle of Adrianople. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with iron-clad frontline poise; calm amidst catastrophe, unyielding in discipline, and commanding instant obedience across the wagon-train.",
+  "PersonalSpeechStyle": "Speaks with iron-clad frontline poise; calm amidst catastrophe, unyielding in discipline, and commanding instant obedience across the wagon-train.",
+  "Traits": [
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain impenetrable wagon-laager defenses against Hunnic pursuit to escort the young king safely to the Danube",
+    "Secure rich western plains for the reconstitution of the Ostrogothic cataphract hosts"
+  ],
+  "Values": [
+    "While the Amali bloodline breathes and shields hold, the Gothic nation is unbroken",
+    "The wagon-ring is life itself; iron discipline alone leads our people through the inferno to survival"
+  ],
+  "Fears": [
+    "Fears torrential autumn rains turning the steppe into impassable mud, immobilizing the defensive wagon-train"
+  ],
+  "Personality": "Alatheus served in 374 AD as regent commander and premier cavalry warlord of the Greuthungian (Ostrogothic) Amali dynasty, co-guarding the child-king Viderich alongside Saphrax. Stepping into the catastrophic vacuum left by Ermanaric's death and the fall of Vinitharius, Alatheus held the shattered Gothic nation together with iron fortitude. Coordinating closely with his Alan cavalry counterpart, he directed a masterclass in fighting retreats, using massive wagon-laagers to repel relentless Hunnic pursuit across hundreds of miles to the Lower Danube, destined to deliver the decisive shock cavalry blow that would obliterate Emperor Valens at the Battle of Adrianople. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "danish_lord_1_1",
+  "DisplayName": "Dan",
+  "HeroName": "Dan",
+  "Description": "Dan (Dan I) reigned in 374 AD as the founding King of the Danes, sovereign of Zealand and the Jutland straits, immortalized by Saxo Grammaticus as progenitor of the Skjöldung dynasty. Renowned for valor and statecraft, he united disparate maritime clans into the foundational kingdom that bore his name (Danmark). Commanding fleets of shallow-draft clinker war-boats and fierce axe-bearing huscarls, Dan controlled vital sea passages between the North and Baltic Seas. He repelled northern raiders while dominating the lucrative amber and pelt trade networks, establishing an enduring maritime hegemony at the dawn of the Nordic heroic age. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Dan (Dan I) reigned in 374 AD as the founding King of the Danes, sovereign of Zealand and the Jutland straits, immortalized by Saxo Grammaticus as progenitor of the Skjöldung dynasty. Renowned for valor and statecraft, he united disparate maritime clans into the foundational kingdom that bore his name (Danmark). Commanding fleets of shallow-draft clinker war-boats and fierce axe-bearing huscarls, Dan controlled vital sea passages between the North and Baltic Seas. He repelled northern raiders while dominating the lucrative amber and pelt trade networks, establishing an enduring maritime hegemony at the dawn of the Nordic heroic age. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with thunderous seafaring warmth; commanding, magnanimous, and eloquent in dispensing gold arm-rings and oaths in the longhouse.",
+  "PersonalSpeechStyle": "Speaks with thunderous seafaring warmth; commanding, magnanimous, and eloquent in dispensing gold arm-rings and oaths in the longhouse.",
+  "Traits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Pacify Baltic coastal straits to cement Skjöldung supremacy across Nordic waters",
+    "Erect grand fortified longhalls on Zealand to shelter allied maritime clans"
+  ],
+  "Values": [
+    "Ring-giving generosity honors a king; stinginess forfeits the favor of the gods",
+    "Those who master the roaring seas fear no mortal foe; the brave feast with ancestors"
+  ],
+  "Fears": [
+    "Fears Arctic deep-freezes creating ice bridges across straits for surprise overland invasions"
+  ],
+  "Personality": "Dan (Dan I) reigned in 374 AD as the founding King of the Danes, sovereign of Zealand and the Jutland straits, immortalized by Saxo Grammaticus as progenitor of the Skjöldung dynasty. Renowned for valor and statecraft, he united disparate maritime clans into the foundational kingdom that bore his name (Danmark). Commanding fleets of shallow-draft clinker war-boats and fierce axe-bearing huscarls, Dan controlled vital sea passages between the North and Baltic Seas. He repelled northern raiders while dominating the lucrative amber and pelt trade networks, establishing an enduring maritime hegemony at the dawn of the Nordic heroic age. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

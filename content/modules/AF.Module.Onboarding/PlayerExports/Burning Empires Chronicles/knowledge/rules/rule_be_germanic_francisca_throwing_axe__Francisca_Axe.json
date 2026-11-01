@@ -1,0 +1,43 @@
+{
+  "Id": "be_germanic_francisca_throwing_axe",
+  "Keywords": [
+    "Francisca Axe",
+    "Curved Throwing Axe",
+    "Shield Splintering",
+    "Frankish Shock"
+  ],
+  "RagShortTexts": [
+    "Frankish infantry hurled the curved francisca axe at ten to twelve paces.",
+    "Its irregular tumbling flight caused erratic bounces upon striking the ground.",
+    "The massive blunt kinetic impact shattered Roman shields and crushed limbs."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The francisca throwing axe was the terrifying opening shock weapon of Frankish warbands. Designed with a distinctively arched blade and weighted iron poll fitted to a short haft, the weapon achieved devastating kinetic velocity when hurled in unison. At a range of barely twelve paces, advancing Frankish ranks launched salvos of flying axes immediately before closing for hand-to-hand combat. Tumbling through the air and ricocheting unpredictably upon striking turf or stone, the heavy axes splintered rimmed shields, fractured limb bones, and tore open defensive formations, allowing screaming axemen to rush into broken gaps with drawn seax daggers. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A Frankish warrior unleashes his axe mid-stride: let the francisca fly! Hear shields splinter under iron; draw seax daggers and butcher them through the breached line! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Roman centurion yells through gritted teeth: lock shield rims tightly! The Frankish axes are tumbling in; brace muscles, hold fast and thrust through the gaps! Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

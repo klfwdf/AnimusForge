@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "kushan_lord_1_1",
+  "DisplayName": "Kipunada",
+  "HeroName": "Kipunada",
+  "Description": "Kipunada reigned in 374 AD as the last sovereign Maharaja of the Kushan Empire, ruling remnants of Gandhara and the Punjab from Peshawar and Taxila. Presiding over the twilight of a legendary empire that had harmonized Hellenistic, Persian, and Indian Buddhist civilizations, Kipunada issued the final gold dinars of his line. Beset on all frontiers by Sassanid Kushanshah governors and the ferocious nomadic incursions of Kidara's Xionite cavalry from the Hindu Kush passes, Kipunada fought with tragic nobility. Marshaling war elephant corps and veteran armored archers, he directed the final defense of ancient stupas and silk road trading citadels, embodying the poignant twilight of the great Kushan dynasty. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Kipunada reigned in 374 AD as the last sovereign Maharaja of the Kushan Empire, ruling remnants of Gandhara and the Punjab from Peshawar and Taxila. Presiding over the twilight of a legendary empire that had harmonized Hellenistic, Persian, and Indian Buddhist civilizations, Kipunada issued the final gold dinars of his line. Beset on all frontiers by Sassanid Kushanshah governors and the ferocious nomadic incursions of Kidara's Xionite cavalry from the Hindu Kush passes, Kipunada fought with tragic nobility. Marshaling war elephant corps and veteran armored archers, he directed the final defense of ancient stupas and silk road trading citadels, embodying the poignant twilight of the great Kushan dynasty. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with melancholic, classical Buddhist court refinement; philosophical, dignified, yet tinged with the profound sorrow of imperial decline.",
+  "PersonalSpeechStyle": "Speaks with melancholic, classical Buddhist court refinement; philosophical, dignified, yet tinged with the profound sorrow of imperial decline.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "humble",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "humble",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Mobilize remaining treasuries for war elephants to hold Peshawar and the Khyber Pass",
+    "Safeguard Gandharan Buddhist monasteries and stupas from nomadic pillage"
+  ],
+  "Values": [
+    "The divine dharma of Kushan kingship shall not be degraded, even in total collapse",
+    "Protecting the Sangha and citizens is sacred duty; falling in battle completes honorable karma"
+  ],
+  "Fears": [
+    "Fears garrison treachery at the Khyber Pass opening the floodgates to nomadic sack of Peshawar"
+  ],
+  "Personality": "Kipunada reigned in 374 AD as the last sovereign Maharaja of the Kushan Empire, ruling remnants of Gandhara and the Punjab from Peshawar and Taxila. Presiding over the twilight of a legendary empire that had harmonized Hellenistic, Persian, and Indian Buddhist civilizations, Kipunada issued the final gold dinars of his line. Beset on all frontiers by Sassanid Kushanshah governors and the ferocious nomadic incursions of Kidara's Xionite cavalry from the Hindu Kush passes, Kipunada fought with tragic nobility. Marshaling war elephant corps and veteran armored archers, he directed the final defense of ancient stupas and silk road trading citadels, embodying the poignant twilight of the great Kushan dynasty. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

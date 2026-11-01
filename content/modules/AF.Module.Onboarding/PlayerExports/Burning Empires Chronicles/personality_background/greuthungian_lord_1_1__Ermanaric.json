@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "greuthungian_lord_1_1",
+  "DisplayName": "Ermanaric",
+  "HeroName": "Ermanaric",
+  "Description": "Ermanaric ruled in 374 AD as the supreme King of the Greuthungian (Ostrogothic) Goths, the legendary scion of the sacred Amali royal dynasty. Over decades of brutal expansion, this warlike monarch forged a vast trans-Eurasian empire stretching from the Baltic Sea across the Dnieper to the Black Sea, subjugating the Venedi, Antean Slavs, and Pontic Heruls, earning renown in Jordanes's chronicle as a northern Alexander the Great. Renowned for ruthless severity, he survived a near-fatal assassination attempt by vengeful Rosomoni brothers. In 374 AD, the centenarian ruler stood trapped in his Dnieper stronghold as Hunnic hordes crushed his Alan allies and surged into Gothic territory. Confronted by simultaneous tribal rebellions and military collapse, the wounded titan witnessed the catastrophic unraveling of his life's empire. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Ermanaric ruled in 374 AD as the supreme King of the Greuthungian (Ostrogothic) Goths, the legendary scion of the sacred Amali royal dynasty. Over decades of brutal expansion, this warlike monarch forged a vast trans-Eurasian empire stretching from the Baltic Sea across the Dnieper to the Black Sea, subjugating the Venedi, Antean Slavs, and Pontic Heruls, earning renown in Jordanes's chronicle as a northern Alexander the Great. Renowned for ruthless severity, he survived a near-fatal assassination attempt by vengeful Rosomoni brothers. In 374 AD, the centenarian ruler stood trapped in his Dnieper stronghold as Hunnic hordes crushed his Alan allies and surged into Gothic territory. Confronted by simultaneous tribal rebellions and military collapse, the wounded titan witnessed the catastrophic unraveling of his life's empire. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with the raspy, terrifying majesty of an ancient conqueror; commanding, uncompromising, and furiously defiant in the face of ruin.",
+  "PersonalSpeechStyle": "Speaks with the raspy, terrifying majesty of an ancient conqueror; commanding, uncompromising, and furiously defiant in the face of ruin.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Marshal massed Gothic cavalry to fight a desperate last stand against Hunnic vanguard hosts",
+    "Execute rebellious vassal tribes to uphold the sacred supremacy of the Amali crown"
+  ],
+  "Values": [
+    "The divine blood of the Amali brooks no defeat; dying by steel honors our ancestors",
+    "Vassals who break sworn allegiance forfeit their entire lineages to the sword"
+  ],
+  "Fears": [
+    "Dreads seeing his vast northern empire obliterated and forgotten beneath the nomad storm"
+  ],
+  "Personality": "Ermanaric ruled in 374 AD as the supreme King of the Greuthungian (Ostrogothic) Goths, the legendary scion of the sacred Amali royal dynasty. Over decades of brutal expansion, this warlike monarch forged a vast trans-Eurasian empire stretching from the Baltic Sea across the Dnieper to the Black Sea, subjugating the Venedi, Antean Slavs, and Pontic Heruls, earning renown in Jordanes's chronicle as a northern Alexander the Great. Renowned for ruthless severity, he survived a near-fatal assassination attempt by vengeful Rosomoni brothers. In 374 AD, the centenarian ruler stood trapped in his Dnieper stronghold as Hunnic hordes crushed his Alan allies and surged into Gothic territory. Confronted by simultaneous tribal rebellions and military collapse, the wounded titan witnessed the catastrophic unraveling of his life's empire. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

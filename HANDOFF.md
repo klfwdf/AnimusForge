@@ -1,3 +1,11 @@
+## 2026-11-01 登记燃烬帝国 / 东欧 1259 / AD 1259 世界书并重新部署（CN）
+
+- 来源统一到 `content/modules/AF.Module.Onboarding/PlayerExports/`：仓库根 `PlayerExports/` 的燃烬帝国（中英）和东欧 1259（中英，10-31 23:56 完整版）搬入 content。content 里旧的东欧副本（中文只有人设）移到 `F:/AnimusForge-backup-20261101/worldbooks-old-20261101/repo-content-old/`。根 `PlayerExports/` 已删空。
+- `content/content-map.json` 新增 4118 条：`燃烬帝国编年史` 1071、`东欧1259编年史` 857、`AD 1259 编年史` 2190（只登记中文目录，与现有五套一致）。
+- 游戏目录里手动放入的四个旧目录移到 `F:/AnimusForge-backup-20261101/worldbooks-old-20261101/game-installed/`；旧 Stage 移到 `artifacts/deploy-backups/AnimusForge/stale-stage-20261101-worldbooks/`。
+- 部署：`build_single_module.ps1 -Deploy`，构建 success，更新 4127 个托管文件。三套中文世界书安装文件与源逐个 SHA256 一致，无多余文件。日志 `.tmp/deploy-20261101c.log`。
+- 未完成：`english-worldbook-identity-map.json` 没有燃烬帝国和东欧 1259 的映射，EN 打包会因世界书仍含中文而失败；`Eastern Europe 1259 Chronicles` 有 404 条规则但只有 303 个不同 Id。
+
 # 已部署CN：合并远端 + 扎营刑场 + 其他会话修复与世界书（2026-11-01）
 
 用户要求“部署”。部署产品为 `5fba2ac129`（含合并 `267efb4916`、扎营刑场 `fb138b0ca3`、犯罪池/YJ low/移除 minimal、AD 1259 与东欧 1259 世界书）。

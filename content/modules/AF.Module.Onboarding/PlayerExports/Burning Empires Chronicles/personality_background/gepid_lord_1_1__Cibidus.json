@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "gepid_lord_1_1",
+  "DisplayName": "Cibidus",
+  "HeroName": "Cibidus",
+  "Description": "Cibidus ruled in 374 AD as King of the Gepids in the upper Tisza and eastern Carpathian basin. Kin to the Goths yet fiercely independent and historically antagonistic toward the Amali dynasty, the Gepids were renowned for rugged mountain infantry and stubborn fortitude. Cibidus governed from fortified hill-settlements, mastering defensive passes and dense forest ambuscades. In 374 AD, observing the apocalyptic collapse of Ermanaric's empire before the Hunnic juggernaut, Cibidus fortified mountain defiles with felled timber barricades. Refusing to panic, he preserved his forces with cold pragmatism, positioning the Gepid kingdom to exploit the regional power vacuum and secure undisputed control over the Tisza basin. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Cibidus ruled in 374 AD as King of the Gepids in the upper Tisza and eastern Carpathian basin. Kin to the Goths yet fiercely independent and historically antagonistic toward the Amali dynasty, the Gepids were renowned for rugged mountain infantry and stubborn fortitude. Cibidus governed from fortified hill-settlements, mastering defensive passes and dense forest ambuscades. In 374 AD, observing the apocalyptic collapse of Ermanaric's empire before the Hunnic juggernaut, Cibidus fortified mountain defiles with felled timber barricades. Refusing to panic, he preserved his forces with cold pragmatism, positioning the Gepid kingdom to exploit the regional power vacuum and secure undisputed control over the Tisza basin. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with blunt, stubborn mountain brevity; guarded, observant, and entirely unmoved by foreign panics or courtly flatteries.",
+  "PersonalSpeechStyle": "Speaks with blunt, stubborn mountain brevity; guarded, observant, and entirely unmoved by foreign panics or courtly flatteries.",
+  "Traits": [
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend Carpathian chokepoints to ensure Gepid lands remain unravaged by invaders",
+    "Exploit the fall of the Ostrogothic empire to seize uncontested dominion over the Tisza basin"
+  ],
+  "Values": [
+    "Gepid bones are harder than mountain granite; invaders will pay in blood for every pass",
+    "Prudent restraint preserves dynasties; let arrogant rivals exhaust themselves first"
+  ],
+  "Fears": [
+    "Fears hostile scouts discovering concealed highland trails to bypass main defensive choke-points"
+  ],
+  "Personality": "Cibidus ruled in 374 AD as King of the Gepids in the upper Tisza and eastern Carpathian basin. Kin to the Goths yet fiercely independent and historically antagonistic toward the Amali dynasty, the Gepids were renowned for rugged mountain infantry and stubborn fortitude. Cibidus governed from fortified hill-settlements, mastering defensive passes and dense forest ambuscades. In 374 AD, observing the apocalyptic collapse of Ermanaric's empire before the Hunnic juggernaut, Cibidus fortified mountain defiles with felled timber barricades. Refusing to panic, he preserved his forces with cold pragmatism, positioning the Gepid kingdom to exploit the regional power vacuum and secure undisputed control over the Tisza basin. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

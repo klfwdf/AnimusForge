@@ -1,0 +1,43 @@
+{
+  "Id": "be_bosporan_kingdom_internal",
+  "Keywords": [
+    "Bosporan Kingdom Nobility",
+    "Bosporan Kingdom Sauromates V Clan Lineages",
+    "Bosporan Kingdom Court Factions",
+    "Bosporan Kingdom Internal Strife"
+  ],
+  "RagShortTexts": [
+    "The ruling elite of Bosporan Kingdom comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
+    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
+    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Within the opulent halls and sprawling feudal estates of Bosporan Kingdom, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Retainers stand motionless along stone corridors: the lord and his son-in-law shattered wine cups behind closed oak doors; when patrician magnates clash over mine leases, common guardsmen pay with their heads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The patriarch turns his signet ring, counseling his heir: whoever occupies the throne matters far less than retaining our five castles and serfs; smile courteously at court, but keep steel hidden within your cloak."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

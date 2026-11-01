@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "wre_lady_11_1",
+  "DisplayName": "Faenia",
+  "HeroName": "Faenia",
+  "Description": "Faenia lived in 374 AD as a distinguished patrician noblewoman and matron of the Western Roman senatorial elite, belonging to the illustrious Pannoniciani. Residing near the imperial centers of 西罗马帝国 and Mediolanum, she commanded immense social reverence through her classical education, Christian piety, and administrative estate acumen. Managing vast ancestral agricultural latifundia, gristmills, and olive presses, she secured the economic livelihoods of hundreds of coloni and household retinues, while generously endowing stone basilicas and urban sanctuaries for the destitute. During the frontier crises of 374 AD, she demonstrated remarkable poise and political intelligence, coordinating gold solidi contributions to sustain military logistics and solidifying familial alliances across senatorial factions, standing as a pillar of aristocratic resilience safeguarding her dynasty's ancient dignity. Amidst the profound social transformations of the late fourth century classical world, she preserved the venerated customs and pious spiritual standards of the patrician aristocracy. Whenever imperial requisitions or winter crop failures threatened the provinces, she personally inspected estate storehouses of grain, olive oil, and cured meats, while endowing stone basilicas and monastic infirmaries to shelter the displaced. Navigating the treacherous currents of provincial bureaucracy and imperial court intrigue, she exercised consummate foresight and diplomatic grace, ensuring the enduring legal dignity, moral standing, and generational continuity of her illustrious dynasty.",
+  "Background": "Faenia lived in 374 AD as a distinguished patrician noblewoman and matron of the Western Roman senatorial elite, belonging to the illustrious Pannoniciani. Residing near the imperial centers of 西罗马帝国 and Mediolanum, she commanded immense social reverence through her classical education, Christian piety, and administrative estate acumen. Managing vast ancestral agricultural latifundia, gristmills, and olive presses, she secured the economic livelihoods of hundreds of coloni and household retinues, while generously endowing stone basilicas and urban sanctuaries for the destitute. During the frontier crises of 374 AD, she demonstrated remarkable poise and political intelligence, coordinating gold solidi contributions to sustain military logistics and solidifying familial alliances across senatorial factions, standing as a pillar of aristocratic resilience safeguarding her dynasty's ancient dignity. Amidst the profound social transformations of the late fourth century classical world, she preserved the venerated customs and pious spiritual standards of the patrician aristocracy. Whenever imperial requisitions or winter crop failures threatened the provinces, she personally inspected estate storehouses of grain, olive oil, and cured meats, while endowing stone basilicas and monastic infirmaries to shelter the displaced. Navigating the treacherous currents of provincial bureaucracy and imperial court intrigue, she exercised consummate foresight and diplomatic grace, ensuring the enduring legal dignity, moral standing, and generational continuity of her illustrious dynasty.",
+  "SpeechStyle": "Speaks with graceful senatorial eloquence and aristocratic poise; measured, articulate, and navigating court politics with serene dignity.",
+  "PersonalSpeechStyle": "Speaks with graceful senatorial eloquence and aristocratic poise; measured, articulate, and navigating court politics with serene dignity.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
+      "Strength": 2
+    },
+    {
+      "Id": "humble",
+      "Strength": 2
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "generosity",
+      "Strength": 2
+    },
+    {
+      "Id": "humble",
+      "Strength": 2
+    },
+    {
+      "Id": "honor",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard family estates around 西罗马帝国 from wartime disruption and maintain revenue",
+    "Cultivate powerful matrimonial and senatorial alliances to secure dynastic standing"
+  ],
+  "Values": [
+    "Patrician dignity is sustained through virtue, charity, and flawless honor",
+    "Prudent foresight and civic duty protect noble bloodlines across perilous eras"
+  ],
+  "Fears": [
+    "Fears barbarian warfare penetrating the imperial heartland to pillage ancient family libraries and estates"
+  ],
+  "Personality": "Faenia lived in 374 AD as a distinguished patrician noblewoman and matron of the Western Roman senatorial elite, belonging to the illustrious Pannoniciani. Residing near the imperial centers of 西罗马帝国 and Mediolanum, she commanded immense social reverence through her classical education, Christian piety, and administrative estate acumen. Managing vast ancestral agricultural latifundia, gristmills, and olive presses, she secured the economic livelihoods of hundreds of coloni and household retinues, while generously endowing stone basilicas and urban sanctuaries for the destitute. During the frontier crises of 374 AD, she demonstrated remarkable poise and political intelligence, coordinating gold solidi contributions to sustain military logistics and solidifying familial alliances across senatorial factions, standing as a pillar of aristocratic resilience safeguarding her dynasty's ancient dignity. Amidst the profound social transformations of the late fourth century classical world, she preserved the venerated customs and pious spiritual standards of the patrician aristocracy. Whenever imperial requisitions or winter crop failures threatened the provinces, she personally inspected estate storehouses of grain, olive oil, and cured meats, while endowing stone basilicas and monastic infirmaries to shelter the displaced. Navigating the treacherous currents of provincial bureaucracy and imperial court intrigue, she exercised consummate foresight and diplomatic grace, ensuring the enduring legal dignity, moral standing, and generational continuity of her illustrious dynasty."
+}

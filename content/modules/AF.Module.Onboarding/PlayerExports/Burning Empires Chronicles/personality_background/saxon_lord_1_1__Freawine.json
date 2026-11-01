@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "saxon_lord_1_1",
+  "DisplayName": "Freawine",
+  "HeroName": "Freawine",
+  "Description": "Freawine ruled in 374 AD as paramount Chieftain and King of the Saxons along the Elbe and Weser river basins bordering the North Sea, prominent in early royal genealogies. Presiding over an aggressively expanding tribal confederation, Freawine was an intrepid commander of combined amphibious and terrestrial warfare. His warriors were armed with the deadly single-edged seax war knife and barbed angon javelins, famous for rapid coastal descents in flat-bottomed raiding skiffs. Freawine directed ceaseless maritime operations across the English Channel and the North Sea, terrorizing Roman coastal defenses along the Saxon Shore while defending tribal marshland hearths against rival continental tribes with unsparing martial ferocity. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Freawine ruled in 374 AD as paramount Chieftain and King of the Saxons along the Elbe and Weser river basins bordering the North Sea, prominent in early royal genealogies. Presiding over an aggressively expanding tribal confederation, Freawine was an intrepid commander of combined amphibious and terrestrial warfare. His warriors were armed with the deadly single-edged seax war knife and barbed angon javelins, famous for rapid coastal descents in flat-bottomed raiding skiffs. Freawine directed ceaseless maritime operations across the English Channel and the North Sea, terrorizing Roman coastal defenses along the Saxon Shore while defending tribal marshland hearths against rival continental tribes with unsparing martial ferocity. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with raw, guttural maritime fury; ferocious, boastful, and brimming with uncontainable appetite for battle and plunder.",
+  "PersonalSpeechStyle": "Speaks with raw, guttural maritime fury; ferocious, boastful, and brimming with uncontainable appetite for battle and plunder.",
+  "Traits": [
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bravery",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Dominate the Elbe delta and command all pirate raid corridors into Roman Gaul and Britain",
+    "Amass vast imperial silver treasure and armor to reinforce absolute chieftain authority"
+  ],
+  "Values": [
+    "The seax claims what courage dares; true wealth is carved from the enemy with steel",
+    "Hunt like wolves on land, strike like sharks at sea; begging for peace is indelible shame"
+  ],
+  "Fears": [
+    "Fears catastrophic tidal inundations washing away low-lying timber villages into the North Sea"
+  ],
+  "Personality": "Freawine ruled in 374 AD as paramount Chieftain and King of the Saxons along the Elbe and Weser river basins bordering the North Sea, prominent in early royal genealogies. Presiding over an aggressively expanding tribal confederation, Freawine was an intrepid commander of combined amphibious and terrestrial warfare. His warriors were armed with the deadly single-edged seax war knife and barbed angon javelins, famous for rapid coastal descents in flat-bottomed raiding skiffs. Freawine directed ceaseless maritime operations across the English Channel and the North Sea, terrorizing Roman coastal defenses along the Saxon Shore while defending tribal marshland hearths against rival continental tribes with unsparing martial ferocity. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

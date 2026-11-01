@@ -3,58 +3,56 @@
   "HeroId": "lord_crus_1_10",
   "DisplayName": "Konrad Welzo",
   "HeroName": "Konrad Welzo",
-  "Description": "Konrad Welzo is a prominent 13th-century commander and feudal magnate within the Teutonic Order and Livonian Brothers of the Sword, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "Background": "Konrad Welzo is a prominent 13th-century commander and feudal magnate within the Teutonic Order and Livonian Brothers of the Sword, holding strategic command over critical frontier castellanies, fortified river redoubts, and hereditary manorial estates. Hardened by brutal seasonal campaigns across the frozen forests and impassable peat bogs of the borderlands, he maintains an elite retinue of armored horsemen, hardened crossbowmen, and auxiliary forest skirmishers. Caught in the deadly geopolitical vortex between the relentless tribute demands of the Golden Horde, the eastward crusade of the Teutonic Knights, and predatory cross-border raids by pagan Lithuanian warbands, he governs his fief with an iron fist, balancing diplomatic intrigue at ducal diets with ruthless defensive mobilization.",
-  "SpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
-  "PersonalSpeechStyle": "Speaks with curt, battle-hardened authority; concise and unyielding, punctuated by the cold pragmatism of a frontier marcher lord.",
+  "Personality": "Konrad Welzo served in 1259 AD as a sworn brother-knight and commander within the Teutonic Order and Livonian Sword-Brothers, aged 37. Recruited from the feudal ministerialis of the Holy Roman Empire, he bound his life to strict monastic vows of poverty, chastity, and martial obedience. Donning the iconic white surcoat with the black cross over heavy mail, he excelled in two-handed arming sword combat, dense forest skirmishing, and red-brick fortress defense. Amid the explosive pagan Samogitian uprisings following the disaster at Skuodas in 1259, he held exposed frontier outposts across Prussia and Livonia. Confronted by hit-and-run forest ambushes from Baltic axemen, he enforced iron discipline, escorting supply columns and dispatch couriers through treacherous wetlands. Maintaining vigilance over garrison armories and moat palisades, he ensured that vital Baltic coastal communications remained operational through harsh northern winters. Viewing territorial expansion as an uncompromising holy duty, he stood as an incorruptible instrument of crusader monastic authority. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
+  "Description": "Konrad Welzo served in 1259 AD as a sworn brother-knight and commander within the Teutonic Order and Livonian Sword-Brothers, aged 37. Recruited from the feudal ministerialis of the Holy Roman Empire, he bound his life to strict monastic vows of poverty, chastity, and martial obedience. Donning the iconic white surcoat with the black cross over heavy mail, he excelled in two-handed arming sword combat, dense forest skirmishing, and red-brick fortress defense. Amid the explosive pagan Samogitian uprisings following the disaster at Skuodas in 1259, he held exposed frontier outposts across Prussia and Livonia. Confronted by hit-and-run forest ambushes from Baltic axemen, he enforced iron discipline, escorting supply columns and dispatch couriers through treacherous wetlands. Maintaining vigilance over garrison armories and moat palisades, he ensured that vital Baltic coastal communications remained operational through harsh northern winters. Viewing territorial expansion as an uncompromising holy duty, he stood as an incorruptible instrument of crusader monastic authority. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
+  "Background": "Konrad Welzo served in 1259 AD as a sworn brother-knight and commander within the Teutonic Order and Livonian Sword-Brothers, aged 37. Recruited from the feudal ministerialis of the Holy Roman Empire, he bound his life to strict monastic vows of poverty, chastity, and martial obedience. Donning the iconic white surcoat with the black cross over heavy mail, he excelled in two-handed arming sword combat, dense forest skirmishing, and red-brick fortress defense. Amid the explosive pagan Samogitian uprisings following the disaster at Skuodas in 1259, he held exposed frontier outposts across Prussia and Livonia. Confronted by hit-and-run forest ambushes from Baltic axemen, he enforced iron discipline, escorting supply columns and dispatch couriers through treacherous wetlands. Maintaining vigilance over garrison armories and moat palisades, he ensured that vital Baltic coastal communications remained operational through harsh northern winters. Viewing territorial expansion as an uncompromising holy duty, he stood as an incorruptible instrument of crusader monastic authority. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails. During the harsh winter freeze of 1259 AD, he personally inspected garrison blacksmiths refitting ice-caulkins on iron horseshoes, ensuring crusader cavalry retained rapid mobility across frozen woodland trails.",
+  "SpeechStyle": "Speaks with austere monastic precision; cold, resolute, and unwavering in purpose.",
+  "PersonalSpeechStyle": "Speaks with austere monastic precision; cold, resolute, and unwavering in purpose.",
   "Traits": [
     {
-      "Id": "calculating",
+      "Id": "disciplined",
       "Strength": 3
     },
     {
-      "Id": "loyal",
+      "Id": "daring",
       "Strength": 2
     },
     {
-      "Id": "sociable",
-      "Strength": 1
+      "Id": "fearless",
+      "Strength": 2
     },
     {
-      "Id": "ambitious",
-      "Strength": 3
+      "Id": "honor",
+      "Strength": 2
     }
   ],
   "PersonalityTraits": [
     {
-      "Id": "calculating",
+      "Id": "disciplined",
       "Strength": 3
     },
     {
-      "Id": "loyal",
+      "Id": "daring",
       "Strength": 2
     },
     {
-      "Id": "sociable",
-      "Strength": 1
+      "Id": "fearless",
+      "Strength": 2
     },
     {
-      "Id": "ambitious",
-      "Strength": 3
+      "Id": "honor",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Defend the territorial integrity and tax privileges of his ancestral estates against rival incursions",
-    "Accumulate hardened silver grivnas to maintain his private retinue of mailed cavalry",
-    "Secure advantageous dynastic marriages and high offices within the prince's inner council"
+    "Hold exposed Baltic commanderies against pagan incursions",
+    "Clear supply corridors through trackless frontier pine barrens"
   ],
   "Values": [
-    "Feudal loyalty is bound by blood and oath; treachery on the battlefield demands ruthless retribution",
-    "A fortress wall is only as formidable as the discipline of the men holding the ramparts",
-    "The customs of our ancestors and the sanctity of our faith must never be compromised for gold"
+    "Unconditional obedience to the Order is sacred duty",
+    "Only stone redoubts can civilize the wild frontier"
   ],
   "Fears": [
-    "Devastating siege by steppe horse-archers equipped with counterweight trebuchets",
-    "Disinheritance and confiscation of hereditary patrimony through ducal decree or boyar betrayal"
+    "Fears crusader detachments being trapped in frozen swamps without room to charge"
   ]
 }

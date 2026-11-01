@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "bosporan_lord_1_1",
+  "DisplayName": "Sauromates V",
+  "HeroName": "Sauromates V",
+  "Description": "Sauromates V reigned in 374 AD as monarch of the Bosporan Kingdom, scion of the historic Tiberian-Julian dynasty ruling the Cimmerian Bosporus (Crimea). Presiding over an ancient fusion of Hellenic polis civilization and Sarmatian cataphract cavalry, he controlled vital grain and maritime chokepoints between the Azov and Black Seas. Cultured yet battle-ready, Sauromates commanded armored lancers alongside fortified coastal naval squadrons. In 374 AD, the total collapse of the Alanic steppe before the Hunnic horde brought existential devastation to his northern borders. Strengthening the massive masonry walls of Panticapaeum and mobilizing citizen militias, Sauromates pleaded for Eastern Roman naval intervention, fighting desperately to preserve the final bastion of classical civilization in the Pontic basin. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Sauromates V reigned in 374 AD as monarch of the Bosporan Kingdom, scion of the historic Tiberian-Julian dynasty ruling the Cimmerian Bosporus (Crimea). Presiding over an ancient fusion of Hellenic polis civilization and Sarmatian cataphract cavalry, he controlled vital grain and maritime chokepoints between the Azov and Black Seas. Cultured yet battle-ready, Sauromates commanded armored lancers alongside fortified coastal naval squadrons. In 374 AD, the total collapse of the Alanic steppe before the Hunnic horde brought existential devastation to his northern borders. Strengthening the massive masonry walls of Panticapaeum and mobilizing citizen militias, Sauromates pleaded for Eastern Roman naval intervention, fighting desperately to preserve the final bastion of classical civilization in the Pontic basin. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with refined Hellenic courtly eloquence; articulate and historically conscious, shadowed by acute awareness of imminent collapse.",
+  "PersonalSpeechStyle": "Speaks with refined Hellenic courtly eloquence; articulate and historically conscious, shadowed by acute awareness of imminent collapse.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Reinforce Cimmerian stone fortifications to defend Panticapaeum against nomad siege",
+    "Petition Constantinople for naval squadrons and grain shipments to sustain border garrisons"
+  ],
+  "Values": [
+    "A millennium of Hellenic culture must not be extinguished beneath barbarian hooves",
+    "Though beset by shadows, the Bosporan crown shall defend its citizens and temples to the end"
+  ],
+  "Fears": [
+    "Fears Hunnic light cavalry crossing the frozen Kerch Strait to storm coastal defenses"
+  ],
+  "Personality": "Sauromates V reigned in 374 AD as monarch of the Bosporan Kingdom, scion of the historic Tiberian-Julian dynasty ruling the Cimmerian Bosporus (Crimea). Presiding over an ancient fusion of Hellenic polis civilization and Sarmatian cataphract cavalry, he controlled vital grain and maritime chokepoints between the Azov and Black Seas. Cultured yet battle-ready, Sauromates commanded armored lancers alongside fortified coastal naval squadrons. In 374 AD, the total collapse of the Alanic steppe before the Hunnic horde brought existential devastation to his northern borders. Strengthening the massive masonry walls of Panticapaeum and mobilizing citizen militias, Sauromates pleaded for Eastern Roman naval intervention, fighting desperately to preserve the final bastion of classical civilization in the Pontic basin. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

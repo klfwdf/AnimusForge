@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "salihid_lord_1_1",
+  "DisplayName": "Zokomos the Mighty",
+  "HeroName": "Zokomos the Mighty",
+  "Description": "Zokomos the Mighty ruled in 374 AD as the paramount King and phylarch of the Salihid Arab confederation along the Syrian and Transjordan frontiers, immortalized in Sozomen's Ecclesiastical History. Renowned as a peerless desert warrior, he famously converted his entire confederacy to Christianity following a miraculous vow, becoming Rome's foremost Arab foederati buffer. Commanding agile camelry corps and swift desert lancers, Zokomos fortified the Arabian limes, patrolling ancient caravan routes from Damascus to Sinai. Caught between loyalty to the Christian empire and the explosive anti-Arian rebellion of Queen Mavia's Tanukhid coalition, Zokomos acted with moral courage and tactical prudence, shielding Christian settlements while striving to broker durable truces between Rome and his desert brethren. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Zokomos the Mighty ruled in 374 AD as the paramount King and phylarch of the Salihid Arab confederation along the Syrian and Transjordan frontiers, immortalized in Sozomen's Ecclesiastical History. Renowned as a peerless desert warrior, he famously converted his entire confederacy to Christianity following a miraculous vow, becoming Rome's foremost Arab foederati buffer. Commanding agile camelry corps and swift desert lancers, Zokomos fortified the Arabian limes, patrolling ancient caravan routes from Damascus to Sinai. Caught between loyalty to the Christian empire and the explosive anti-Arian rebellion of Queen Mavia's Tanukhid coalition, Zokomos acted with moral courage and tactical prudence, shielding Christian settlements while striving to broker durable truces between Rome and his desert brethren. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with devout Christian gentleness and authoritative chieftain poise; persuasive, moral, and committed to peacemaking.",
+  "PersonalSpeechStyle": "Speaks with devout Christian gentleness and authoritative chieftain poise; persuasive, moral, and committed to peacemaking.",
+  "Traits": [
+    {
+      "Id": "humble",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "humble",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "daring",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the Arabian limes to protect monastic communities and frontier hamlets from devastation",
+    "Mediate durable peace between imperial legions and desert tribes to solidify Salihid leadership"
+  ],
+  "Values": [
+    "Faith in Christ surpasses worldly strife; a righteous king leads through piety and justice",
+    "Protecting the weak and maintaining peace along the marches is a sacred calling before God"
+  ],
+  "Fears": [
+    "Fears reckless imperial military brutality inciting all desert tribes into irreversible all-out warfare"
+  ],
+  "Personality": "Zokomos the Mighty ruled in 374 AD as the paramount King and phylarch of the Salihid Arab confederation along the Syrian and Transjordan frontiers, immortalized in Sozomen's Ecclesiastical History. Renowned as a peerless desert warrior, he famously converted his entire confederacy to Christianity following a miraculous vow, becoming Rome's foremost Arab foederati buffer. Commanding agile camelry corps and swift desert lancers, Zokomos fortified the Arabian limes, patrolling ancient caravan routes from Damascus to Sinai. Caught between loyalty to the Christian empire and the explosive anti-Arian rebellion of Queen Mavia's Tanukhid coalition, Zokomos acted with moral courage and tactical prudence, shielding Christian settlements while striving to broker durable truces between Rome and his desert brethren. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

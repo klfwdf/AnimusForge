@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "antean_lord_1_1",
+  "DisplayName": "Bozh",
+  "HeroName": "Bozh",
+  "Description": "Bozh (Boz) ruled in 374 AD as the heroic King of the Antes, uniting early Slavic tribal clans between the Dnieper and Dniester rivers into a formidable confederacy. Exploiting Gothic vulnerability following the initial Hunnic assault, Bozh mobilized seventy chieftain clans, throwing off decades of Amali subjugation and declaring Slavic independence. Mastering forest ambushes and marshland warfare, his warbands initially defeated Gothic raiding forces. However, in the brutal counter-offensive led by Vinitharius, the lightly armored Slavic infantry was encircled on open terrain. Captured alongside his sons and seventy noble elders, Bozh faced martyrdom on the cross with unflinching defiance, revered as the foundational martyr of Slavic independence. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Bozh (Boz) ruled in 374 AD as the heroic King of the Antes, uniting early Slavic tribal clans between the Dnieper and Dniester rivers into a formidable confederacy. Exploiting Gothic vulnerability following the initial Hunnic assault, Bozh mobilized seventy chieftain clans, throwing off decades of Amali subjugation and declaring Slavic independence. Mastering forest ambushes and marshland warfare, his warbands initially defeated Gothic raiding forces. However, in the brutal counter-offensive led by Vinitharius, the lightly armored Slavic infantry was encircled on open terrain. Captured alongside his sons and seventy noble elders, Bozh faced martyrdom on the cross with unflinching defiance, revered as the foundational martyr of Slavic independence. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with earthy, passionate Slavic sincerity; resonant, protective of his kinsmen, and fiercely defiant against foreign oppressors.",
+  "PersonalSpeechStyle": "Speaks with earthy, passionate Slavic sincerity; resonant, protective of his kinsmen, and fiercely defiant against foreign oppressors.",
+  "Traits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "daring",
+      "Strength": 3
+    },
+    {
+      "Id": "honor",
+      "Strength": 3
+    },
+    {
+      "Id": "stubborn",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Shatter the chains of Gothic domination to reclaim ancestral forests and rivers",
+    "Forge defensive alliances with steppe forces to guarantee Slavic freedom"
+  ],
+  "Values": [
+    "Freedom supersedes subjugation; Slavic soil shall drink the blood of tyrants",
+    "Defending women, children, and village hearths is the paramount duty of the king"
+  ],
+  "Fears": [
+    "Fears his people scattered into slavery and ancestral sacred groves razed to ashes"
+  ],
+  "Personality": "Bozh (Boz) ruled in 374 AD as the heroic King of the Antes, uniting early Slavic tribal clans between the Dnieper and Dniester rivers into a formidable confederacy. Exploiting Gothic vulnerability following the initial Hunnic assault, Bozh mobilized seventy chieftain clans, throwing off decades of Amali subjugation and declaring Slavic independence. Mastering forest ambushes and marshland warfare, his warbands initially defeated Gothic raiding forces. However, in the brutal counter-offensive led by Vinitharius, the lightly armored Slavic infantry was encircled on open terrain. Captured alongside his sons and seventy noble elders, Bozh faced martyrdom on the cross with unflinching defiance, revered as the foundational martyr of Slavic independence. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

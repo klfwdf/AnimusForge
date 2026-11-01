@@ -1,0 +1,43 @@
+{
+  "Id": "be_steppe_hunnic_composite_bow_craft",
+  "Keywords": [
+    "Hunnic Composite Bow",
+    "Asymmetric Horn Bow",
+    "Long Siyah Draw",
+    "Piercing Arrowheads"
+  ],
+  "RagShortTexts": [
+    "The Hunnic recurve bow featured an asymmetric profile optimized for the saddle.",
+    "Layers of horn, sinew, and wood glued with fish paste gave devastating draw weight.",
+    "Its three-bladed bodkin arrows punched through mail armor and heavy oak shields."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The asymmetric composite recurve bow utilized by Hunnic cavalry in 374 AD represented an evolutionary leap in mobile missile technology. Engineered with a short lower limb for agility in the saddle and an elongated upper limb tipped with bone stiffeners (siyahs), the bow achieved extraordinary projectile velocity. Layered maple wood formed the core, backed with tensile cattle sinew and compressed horn plates glued under pressure with sturgeon adhesive. Drawing upwards of one hundred and twenty pounds, the weapon launched heavy bodkin-tipped arrows that punched through Roman hauberks and Gothic shields at distances previously considered impenetrable. This systemic reality captured the existential transformations sweeping the Eurasian continent during the late fourth century. Under the cascading pressures of nomadic displacements originating along the Pontic-Caspian steppe, both centralized Mediterranean empires and forest confederations adapted their logistics, recruitment, and frontier outposts to survive unprecedented strategic attrition. The relentless balancing of municipal resources against defensive priorities dictated survival, leaving an indelible imprint across the records of contemporary chroniclers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A steppe horse archer draws the bowstring with a horn thumb ring: release at the horse's gallop stride; the whistling arrow flies true, piercing the enemy sentry's neck! Men huddle against biting northern sleet in mud-soaked woolen mantles, checking rusted iron clasps. In this unforgiving wilderness, personal survival demands unyielding faith in comrades and instant obedience to the centurion's whistle when battle lines collide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The tribal bowyer dries sinew over smoldering coals: sturgeon glue must cure for a full winter; a master-crafted horn bow outlasts three generations of riders. Within vaulted stone chancelleries, magnates weigh political expediency against dynastic survival. When imperial commands requisition granaries and levy cohorts, great houses must safeguard ancestral domains and armed retainers, conceding nothing to imperial rivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}
