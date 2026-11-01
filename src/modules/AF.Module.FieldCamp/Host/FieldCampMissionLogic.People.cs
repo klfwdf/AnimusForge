@@ -343,14 +343,14 @@ public sealed partial class FieldCampMissionLogic
 		List<Agent> attackers = ArmedSoldiers(targets.Count);
 		regularPrisonerCount = targets.Count;
 		attackerCount = attackers.Count;
-		return _spawned && !SlaughterBusy && !Mission.IsMissionEnding && IsCampSoldier(speakerAgentIndex) && targets.Count > 0 && attackers.Count > 0;
+		return _spawned && !SlaughterBusy && !_ceremonyActive && !Mission.IsMissionEnding && IsCampSoldier(speakerAgentIndex) && targets.Count > 0 && attackers.Count > 0;
 	}
 
 	internal bool TryStartPrisonerSlaughter(int speakerAgentIndex, out int attackerCount, out int targetCount, out string reason)
 	{
 		attackerCount = 0;
 		targetCount = 0;
-		if (!_spawned || Mission.IsMissionEnding)
+		if (!_spawned || Mission.IsMissionEnding || _ceremonyActive)
 		{
 			reason = "not_normal_inspection";
 			return false;

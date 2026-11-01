@@ -3465,6 +3465,9 @@ Choose how to proceed:" />
   <string id="AF_MCM_FieldCamp_PatrolHours" text="Hours spent walking the camp" />
   <string id="AF_MCM_FieldCamp_PatrolHours_Hint" text="Campaign time charged once each time you leave the camp scene. Resting effects still apply during it. Default: 1." />
   <string id="AF_FC_Menu_Patrol" text="Walk the camp" />
+  <string id="AF_FC_Menu_Execution" text="Hold a public trial and execution in camp (custom site)..." />
+  <string id="AF_FC_ExecutionTooltip" text="Enter the camp, choose a place and press B to set up the execution site. In camp no influence is spent and no town is affected; your traits and the condemned's kin and realm still react." />
+  <string id="AF_FC_ExecutionNoPrisoner" text="Your party holds no adult hero prisoner who can be executed." />
   <string id="AF_FC_PatrolTooltip" text="Walk among the tents and troops. Leaving the camp scene costs about {HOURS} hours." />
   <string id="AF_FC_PatrolWounded" text="You are too badly wounded to walk the camp." />
   <string id="AF_FC_PatrolFailed" text="The camp scene could not be opened here." />

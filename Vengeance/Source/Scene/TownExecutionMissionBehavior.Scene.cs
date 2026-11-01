@@ -112,6 +112,13 @@ public sealed partial class TownExecutionMissionBehavior
             var missionEntryPosition = _playerAgent.Position;
             // Decoration agents need the exclusion set during scene construction.
             _conversationLogic = Mission.GetMissionBehavior<MissionConversationLogic>();
+            if (Request.IsFieldCamp)
+            {
+                // The camp clears the site, hides its own copy of the condemned
+                // and brings soldiers to watch before any ceremony actor exists.
+                NotifyFieldCampCeremonyStaged();
+            }
+
             BuildRuntimeScene();
             _conversationLogic?.DisableStartConversation(true);
             Mission.FocusableObjectInformationProvider.AddInfoCallback(GetExecutionFocusText);
@@ -565,10 +572,10 @@ public sealed partial class TownExecutionMissionBehavior
         Math.Max(18, Math.Min(90, (int)MathF.Round(Request.Victim.Age)));
 
     private uint GetVictimClothingColor1() =>
-        Request.Victim.MapFaction?.Color ?? Request.Venue.MapFaction.Color;
+        Request.Victim.MapFaction?.Color ?? Request.VenueColor1;
 
     private uint GetVictimClothingColor2() =>
-        Request.Victim.MapFaction?.Color2 ?? Request.Venue.MapFaction.Color2;
+        Request.Victim.MapFaction?.Color2 ?? Request.VenueColor2;
 
     private bool HasUsableVictimVisuals(Agent candidate, string role)
     {
@@ -947,7 +954,7 @@ public sealed partial class TownExecutionMissionBehavior
                 {
                     RexLog.Warning(
                         $"Guard slot {index} found no non-consumable polearm in venue culture " +
-                        $"'{Request.Venue.Culture.StringId}'; falling back to a weapon-matched idle.");
+                        $"'{Request.VenueCulture?.StringId ?? "<none>"}'; falling back to a weapon-matched idle.");
                 }
 
                 if (!TryWieldGuardMeleeWeapon(guard, out meleeSlot))
@@ -1868,7 +1875,8 @@ public sealed partial class TownExecutionMissionBehavior
 
     private void SpawnCrowd()
     {
-        if (_placement is null)
+        // A field camp has no townspeople; its own soldiers watch instead.
+        if (_placement is null || Request.IsFieldCamp)
         {
             return;
         }
@@ -1973,6 +1981,43 @@ public sealed partial class TownExecutionMissionBehavior
             RexLog.Info(
                 $"Session {Request.SessionId} spawned the full execution crowd " +
                 $"({_crowdAgents.Count}/{targetCount}).");
+        }
+    }
+
+    private void NotifyFieldCampCeremonyStaged()
+    {
+        if (_fieldCampCeremonyStaged || _placement is null)
+        {
+            return;
+        }
+
+        _fieldCampCeremonyStaged = true;
+        try
+        {
+            VengeanceIntegration.FieldCampCeremonyStaged?.Invoke(
+                Request.Victim, _placement.Origin, _placement.Forward);
+        }
+        catch (Exception exception)
+        {
+            RexLog.Error("The field-camp host could not prepare its spectators; the ceremony continues.", exception);
+        }
+    }
+
+    private void NotifyFieldCampCeremonyReleased()
+    {
+        if (!_fieldCampCeremonyStaged || _fieldCampCeremonyReleased)
+        {
+            return;
+        }
+
+        _fieldCampCeremonyReleased = true;
+        try
+        {
+            VengeanceIntegration.FieldCampCeremonyReleased?.Invoke();
+        }
+        catch (Exception exception)
+        {
+            RexLog.Error("The field-camp host could not release its spectators.", exception);
         }
     }
 

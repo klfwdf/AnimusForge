@@ -795,6 +795,14 @@ public sealed partial class TownExecutionMissionBehavior
         // Frozen-pose methods leave the Agent active; hosts use this mark to
         // stop treating the executed prisoner as a living shout target.
         VengeanceIntegration.MarkExecutedVictim(victim);
+        if (_conversationLogic is null && victim is not null && Request.IsFieldCamp)
+        {
+            // The camp mission has no native conversation logic, so there is
+            // no F conversation to block on the executed prisoner.
+            _victimConversationBlockApplied = true;
+            return true;
+        }
+
         if (_conversationLogic is null || victim is null)
         {
             RexLog.Error(
@@ -1767,6 +1775,7 @@ public sealed partial class TownExecutionMissionBehavior
                 }
                 ExecutionContinuation.Queue(Request);
                 _aftermathSessionReleased = true;
+                NotifyFieldCampCeremonyReleased();
             }
             catch (Exception exception)
             {
@@ -2252,7 +2261,9 @@ public sealed partial class TownExecutionMissionBehavior
         if (focusedAgent == _executionerAgent)
         {
             information.SecondaryInteractionText = BuildKeyAction(
-                new TextObject("{=REX_Action_Talk_Executioner}talk to the executioner"));
+                Mission.GetMissionBehavior<MissionConversationLogic>() is null
+                    ? new TextObject("{=REX_Action_Order_Executioner}order the executioner to proceed")
+                    : new TextObject("{=REX_Action_Talk_Executioner}talk to the executioner"));
         }
         else if (focusedAgent == _victimAgent)
         {

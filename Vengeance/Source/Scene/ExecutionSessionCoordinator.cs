@@ -42,7 +42,7 @@ internal static class ExecutionSessionCoordinator
         }
 
         RexLog.Info(
-            $"Prepared session {request.SessionId} for venue '{request.Venue.StringId}' " +
+            $"Prepared session {request.SessionId} for venue '{request.VenueId}' " +
             $"and prisoner '{request.Victim.StringId}'.");
         return true;
     }
@@ -102,6 +102,17 @@ internal static class ExecutionSessionCoordinator
         if (mission is null)
         {
             mismatchReason = "mission was null";
+            return false;
+        }
+
+        if (request.IsFieldCamp)
+        {
+            if (VengeanceIntegration.FieldCampMissionProbe?.Invoke(mission) == true)
+            {
+                return true;
+            }
+
+            mismatchReason = "the field-camp request was not claimed by a field-camp mission";
             return false;
         }
 

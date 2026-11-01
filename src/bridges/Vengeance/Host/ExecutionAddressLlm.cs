@@ -88,11 +88,17 @@ internal sealed class ExecutionAddressFacts
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Tone", "Judgment tone: ") + ToneLabel(request.Tone));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Legitimacy", "Legitimacy: ") + LegitimacyLabel(request.LegitimacyTier));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Method", "Execution method: ") + OrUnknown(ExecutionPromptDefinitionText.Project(request.Method?.GetName()?.ToString())));
-        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Town", "Town: ") + OrUnknown(request.Venue?.Name?.ToString()));
+        builder.AppendLine(request.IsFieldCamp
+            ? LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_FieldCamp", "Place: the player's field camp in the open country.")
+            : LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Town", "Town: ") + OrUnknown(request.Venue?.Name?.ToString()));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Custody", "Custody: ") + (request.PrisonerSource == PrisonerSource.TownDungeon ? LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Dungeon", "town dungeon") : LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_PlayerParty", "player party")));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_PresentHeading", "[Present]"));
-        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Executioner", "Executioner: the town executioner, with no personal name or clan."));
-        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Crowd", "Onlookers: local townspeople, with no named nobles."));
+        builder.AppendLine(request.IsFieldCamp
+            ? LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_FieldCampExecutioner", "Executioner: a soldier of the player's party, with no personal name or clan.")
+            : LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Executioner", "Executioner: the town executioner, with no personal name or clan."));
+        builder.AppendLine(request.IsFieldCamp
+            ? LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_FieldCampCrowd", "Onlookers: soldiers of the player's camp, with no named nobles.")
+            : LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Crowd", "Onlookers: local townspeople, with no named nobles."));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Overseer", "Overseer: ") + OrUnknown(request.Executor?.Name?.ToString()) + LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_SilentOverseer", ", present but does not speak."));
         string body = builder.ToString();
         int caseStart = body.IndexOf(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_CaseHeading", "[Case]"), StringComparison.Ordinal);

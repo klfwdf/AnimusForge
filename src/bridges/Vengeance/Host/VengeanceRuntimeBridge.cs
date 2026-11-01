@@ -34,6 +34,7 @@ internal static class VengeanceRuntimeBridge
         try
         {
             ExecutionContinuation.EscortedHeroesProvider = NoblePrisonerEscortBehavior.GetEscortedHeroesForExecution;
+            FieldCampMissionLogic.RegisterVengeanceHooks();
             ExecutionAddressLlm.Register();
             SubscribeExecutionMemoryFacts();
             RexLog.Info("Vengeance claimed the AnimusForge-hosted feature.");
@@ -43,6 +44,7 @@ internal static class VengeanceRuntimeBridge
         catch
         {
             UnsubscribeExecutionMemoryFacts();
+            FieldCampMissionLogic.UnregisterVengeanceHooks();
             ExecutionContinuation.EscortedHeroesProvider = null;
             VengeanceIntegration.ReleaseEmbeddedHost();
             ModuleFrameworkRuntime.ReportHostedExtensionState(HostedExtensionCatalog.Vengeance,
@@ -219,6 +221,7 @@ internal static class VengeanceRuntimeBridge
 
         ExecutionAddressLlm.Unregister();
         UnsubscribeExecutionMemoryFacts();
+        FieldCampMissionLogic.UnregisterVengeanceHooks();
         ExecutionContinuation.EscortedHeroesProvider = null;
         VengeanceIntegration.ReleaseEmbeddedHost();
         RexLog.Info("Released the AnimusForge-hosted Vengeance feature.");

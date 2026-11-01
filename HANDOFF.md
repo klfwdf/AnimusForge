@@ -1,3 +1,15 @@
+# 大地图扎营：营地自定义刑场与完整处决仪式（2026-11-01）
+
+用户确认：营地处决要和城镇一样（按 B 开刑场编辑器、完整仪式）；营地去掉城镇后果；营地士兵围观。
+- 入口：扎营菜单新增“在营地举行公开审判与处决（自定义刑场）……”（`FieldCampBehavior.Menu.cs`）。先在 Vengeance 准备临时会话，再打开营地场景；打开失败即取消会话。没有可处决的英雄俘虏时选项置灰。
+- Vengeance（`Vengeance/Source`）：`ExecutionRequest` 新增营地请求（`IsFieldCamp`，`Venue` 为 null，`VenueId/VenueName/VenueCulture/VenueColor1/2` 兜底），旧构造函数和公开 ABI 不变。校验只看营地是否在场与俘虏是否在玩家队伍；后果只改荣誉/仁慈特质，不扣影响力、不改城镇治安忠诚、不改当地领主与名流关系；受刑者家族/王国关系仍由原版处决动作处理；历史记录 settlement id 写 `rex_field_camp`。协调器按宿主探针认领营地 mission；营地不登记 LocationCharacter、不刷镇民；没有 MissionConversationLogic 时，对刽子手按 F 直接下令行刑。
+- 宿主钩子 `VengeanceIntegration.FieldCampMissionProbe/FieldCampCeremonyStaged/FieldCampCeremonyReleased`，由 `VengeanceRuntimeBridge` 启停时注册（`FieldCampMissionLogic.Execution.cs`）。仪式布置时：藏起营地里那份受刑者，最近的 16 名空闲士兵站到刑场前方围观，刑场 9 米内的其他人让开，营地日常暂停；仪式交还后平息敌对，士兵被放回 AI 后走回原位（60 秒兜底）。
+- 刑场编辑器视图沿用 `[DefaultView]` 自动挂载，营地 ViewMethod 未改。
+- 文本：`vengeance_strings` 中英新增 5 条，`af_ui_strings` 中英新增 3 条，`LlmPromptTexts` 中英新增 3 条（营地地点、士兵刽子手、士兵围观）。
+
+验证：HEAD 临时 worktree，1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1174、1.4 PASS 1230；ExecutionCrowdDispersalTests TOTAL 105、ConversationCacheTests 164、IntradayContextTests 26 通过。ExecutionMemoryContractTests 在 HEAD 上本来就编不过（缺 `WorldBulletinParticipant`），与本轮无关。未部署、未实机：营地 B 键编辑器、DefaultView 在营地是否挂载、各刑罚方式在野外地形、士兵围观与回岗、存档后果都未在游戏内验证。
+回滚：`git revert` 本提交。
+
 # 大地图扎营：搬到逻辑模块 AF.Module.FieldCamp（2026-11-01）
 
 用户确认扎营代码从适配层搬到逻辑模块，纯搬家、行为不变；仍编进同一个 `AnimusForge.dll`，不是独立子模组。

@@ -1266,8 +1266,8 @@ public sealed partial class TownExecutionMissionBehavior
             .NoHorses(true)
             .NoWeapons(noWeapons)
             .CivilianEquipment(civilianEquipment)
-            .ClothingColor1(clothingColor1Override ?? Request.Venue.MapFaction.Color)
-            .ClothingColor2(clothingColor2Override ?? Request.Venue.MapFaction.Color2)
+            .ClothingColor1(clothingColor1Override ?? Request.VenueColor1)
+            .ClothingColor2(clothingColor2Override ?? Request.VenueColor2)
             .CanSpawnOutsideOfMissionBoundary(false);
         if (playerFormation is not null)
         {
@@ -1332,7 +1332,8 @@ public sealed partial class TownExecutionMissionBehavior
         // Victims keep their dedicated battlefield origin; real heroes keep
         // their existing campaign identity. Ordinary temporary actors must be
         // visible to native door/flee checks before returning control to AI.
-        if (originOverride == null)
+        // A field camp has no town location; its actors are never handed to town AI.
+        if (originOverride == null && !Request.IsFieldCamp)
             _sceneLocationCharacters.Register(agent, CampaignMission.Current?.Location,
                 Request.Venue.LocationComplex, civilianEquipment);
         _occupiedSpawnPositions.Add(position);
@@ -1361,8 +1362,8 @@ public sealed partial class TownExecutionMissionBehavior
             {
                 playerTeam = Mission.Teams.Add(
                     BattleSideEnum.Attacker,
-                    Request.Venue.MapFaction.Color,
-                    Request.Venue.MapFaction.Color2,
+                    Request.VenueColor1,
+                    Request.VenueColor2,
                     banner: null,
                     isPlayerGeneral: true,
                     isPlayerSergeant: false,
@@ -1407,8 +1408,8 @@ public sealed partial class TownExecutionMissionBehavior
             {
                 existingEnemy = Mission.Teams.Add(
                     oppositeSide,
-                    Request.Venue.MapFaction.Color,
-                    Request.Venue.MapFaction.Color2,
+                    Request.VenueColor1,
+                    Request.VenueColor2,
                     banner: null,
                     isPlayerGeneral: false,
                     isPlayerSergeant: false,

@@ -21,6 +21,7 @@ public sealed partial class FieldCampBehavior
 	{
 		starter.AddGameMenu(MenuId, "{=!}{AF_FC_STATUS}", OnCampMenuInit);
 		starter.AddGameMenuOption(MenuId, "af_fc_patrol", "{=AF_FC_Menu_Patrol}Walk the camp", OnPatrolCondition, OnPatrolConsequence);
+		starter.AddGameMenuOption(MenuId, "af_fc_execution", "{=AF_FC_Menu_Execution}Hold a public trial and execution in camp (custom site)...", OnExecutionCondition, OnExecutionConsequence);
 		starter.AddGameMenuOption(MenuId, "af_fc_rest", "{=AF_FC_Menu_Rest}Rest and wait", OnRestCondition, OnRestConsequence);
 		starter.AddGameMenuOption(MenuId, "af_fc_strike", "{=AF_FC_Menu_Strike}Strike camp", OnStrikeCondition, OnStrikeConsequence);
 		starter.AddGameMenuOption(MenuId, "af_fc_leave", "{=AF_FC_Menu_Leave}Return to the map", OnLeaveCondition, OnLeaveConsequence, isLeave: true);
@@ -111,6 +112,58 @@ public sealed partial class FieldCampBehavior
 		if (!FieldCampMissionLauncher.TryOpen(_parties, out string failure))
 		{
 			Logger.Log(LogSource, "camp mission open failed: " + failure);
+			AnimusForgeQuickInfo.Show(FieldCampText.PatrolFailed());
+			return;
+		}
+		BeginPatrol();
+	}
+
+	/// <summary>Shown while camped with Vengeance active; the prisoner check runs only when the menu is drawn.</summary>
+	private bool OnExecutionCondition(MenuCallbackArgs args)
+	{
+		if (_state != (int)CampState.Camped || !FieldCampMissionLogic.IsExecutionCeremonyAvailable)
+		{
+			return false;
+		}
+		args.optionLeaveType = GameMenuOption.LeaveType.Mission;
+		args.Tooltip = FieldCampText.ExecutionTooltip();
+		if (Hero.MainHero?.IsWounded == true)
+		{
+			args.IsEnabled = false;
+			args.Tooltip = FieldCampText.PatrolWounded();
+		}
+		else if (!RichExecutions.Campaign.RichExecutionCampaignBehavior.HasFieldCampPrisoner())
+		{
+			args.IsEnabled = false;
+			args.Tooltip = FieldCampText.ExecutionNoPrisoner();
+		}
+		return true;
+	}
+
+	/// <summary>
+	/// Prepares a provisional Vengeance session first, then opens the camp scene; the session
+	/// is claimed by that mission. A failed open cancels the session (nothing spent, nobody harmed).
+	/// </summary>
+	private void OnExecutionConsequence(MenuCallbackArgs args)
+	{
+		var behavior = Campaign.Current?.GetCampaignBehavior<RichExecutions.Campaign.RichExecutionCampaignBehavior>();
+		if (behavior == null)
+		{
+			AnimusForgeQuickInfo.Show(FieldCampText.PatrolFailed());
+			return;
+		}
+		if (!behavior.TryBeginFieldCampDeployment(out TaleWorlds.Localization.TextObject reason))
+		{
+			AnimusForgeQuickInfo.Show(reason);
+			return;
+		}
+		EnsureParties();
+		_resting = false;
+		if (!FieldCampMissionLauncher.TryOpen(_parties, out string failure))
+		{
+			Logger.Log(LogSource, "camp execution mission open failed: " + failure);
+			RichExecutions.Scene.ExecutionSessionCoordinator.CancelPending(
+				RichExecutions.Core.ExecutionFailureReason.ScenePlacementFailed, FieldCampText.PatrolFailed());
 			AnimusForgeQuickInfo.Show(FieldCampText.PatrolFailed());
 			return;
 		}

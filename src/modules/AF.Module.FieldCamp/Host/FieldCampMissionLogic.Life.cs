@@ -62,7 +62,7 @@ public sealed partial class FieldCampMissionLogic
 	/// <summary>Idempotent: several speakers may emit the same order in one shout.</summary>
 	internal bool Assemble()
 	{
-		if (!_spawned || _assembled || SlaughterBusy || _duelists.Count > 0)
+		if (!_spawned || _assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive)
 		{
 			return false;
 		}
@@ -86,7 +86,7 @@ public sealed partial class FieldCampMissionLogic
 
 	internal bool Dismiss()
 	{
-		if (!_spawned || !_assembled || SlaughterBusy || _duelists.Count > 0)
+		if (!_spawned || !_assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive)
 		{
 			return false;
 		}
@@ -206,7 +206,7 @@ public sealed partial class FieldCampMissionLogic
 			_upkeepCursor = (_upkeepCursor + 1) % count;
 			CampAgent entry = _agents[_upkeepCursor];
 			Agent agent = entry.Agent;
-			if (agent == null || !agent.IsActive() || IsDuelist(agent))
+			if (agent == null || !agent.IsActive() || IsDuelist(agent) || (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(entry)))
 			{
 				continue;
 			}

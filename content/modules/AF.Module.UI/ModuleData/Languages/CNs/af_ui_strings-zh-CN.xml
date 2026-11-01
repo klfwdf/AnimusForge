@@ -3497,6 +3497,9 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_FieldCamp_PatrolHours" text="巡视营地耗时（小时）" />
   <string id="AF_MCM_FieldCamp_PatrolHours_Hint" text="每次离开营地场景时扣除一次的游戏时间，期间休整效果照常生效。默认：1。" />
   <string id="AF_FC_Menu_Patrol" text="巡视营地" />
+  <string id="AF_FC_Menu_Execution" text="在营地举行公开审判与处决（自定义刑场）……" />
+  <string id="AF_FC_ExecutionTooltip" text="进入营地后选好位置，按 B 键布置刑场。营地处决不消耗影响力，也不影响任何城镇；你的特质、受刑者的家族和王国仍会对此作出反应。" />
+  <string id="AF_FC_ExecutionNoPrisoner" text="你的队伍里没有可以处决的成年英雄俘虏。" />
   <string id="AF_FC_PatrolTooltip" text="在营帐与部队间巡视。离开营地场景时约耗费 {HOURS} 小时。" />
   <string id="AF_FC_PatrolWounded" text="你伤势太重，无法巡视营地。" />
   <string id="AF_FC_PatrolFailed" text="此处无法打开营地场景。" />

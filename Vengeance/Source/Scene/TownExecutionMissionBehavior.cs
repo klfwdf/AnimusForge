@@ -529,6 +529,8 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
     private bool _victimConversationBlockApplied;
     private bool _aftermathSessionReleased;
     private bool _aftermathSpeechPlayed;
+    private bool _fieldCampCeremonyStaged;
+    private bool _fieldCampCeremonyReleased;
     private EquipmentIndex _playerPrimaryWieldedBeforeCeremony = EquipmentIndex.None;
     private EquipmentIndex _playerOffhandWieldedBeforeCeremony = EquipmentIndex.None;
     private readonly MissionWeapon[] _playerWeaponsBeforeCeremony =
@@ -1008,9 +1010,6 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
             if (TryBindPlayerForCustomBuilder())
             {
                 EnsureCustomSiteBuilderCreated();
-                InformationManager.DisplayMessage(new InformationMessage(
-                    new TextObject(
-                        "{=REX_Builder_Enter}Choose a place in town, then press B to open the custom execution-site deployment studio.").ToString()));
             }
 
             return;
@@ -1037,6 +1036,8 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         return EnsureBoundPlayerRemainsMainAgent();
     }
 
+    // Called only after the player Agent is bound. A field camp spawns its
+    // player a moment after AfterStart, so the hint is shown on first binding.
     private void EnsureCustomSiteBuilderCreated()
     {
         if (_customSiteBuilder is null && IsCustomSiteBuilderActive)
@@ -1044,6 +1045,12 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
             _customSiteBuilder = new ExecutionSiteBuilderController(this, Mission);
             RexLog.Info(
                 $"Session {Request.SessionId} entered custom-site state WaitingForBuilder; no prisoner, apparatus or ceremony personnel were spawned.");
+            InformationManager.DisplayMessage(new InformationMessage(
+                (Request.IsFieldCamp
+                    ? new TextObject(
+                        "{=REX_Builder_Enter_FieldCamp}Choose a place in the camp, then press B to open the custom execution-site deployment studio.")
+                    : new TextObject(
+                        "{=REX_Builder_Enter}Choose a place in town, then press B to open the custom execution-site deployment studio.")).ToString()));
         }
     }
 

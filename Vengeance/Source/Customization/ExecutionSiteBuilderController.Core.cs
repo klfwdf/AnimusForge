@@ -365,10 +365,10 @@ internal sealed partial class ExecutionSiteBuilderController
     private string FormatPrisonerOrigin()
     {
         var source = _selectedPrisoner?.Source ?? _host.Request.PrisonerSource;
-        var custody = source == PrisonerSource.PlayerParty
+        var custody = source == PrisonerSource.PlayerParty || _host.Request.IsFieldCamp
             ? T("{=REX_Source_Party}Player party")
             : T("{=REX_Source_Dungeon}Town dungeon");
-        var venue = _host.Request.Venue?.Name?.ToString();
+        var venue = _host.Request.VenueName?.ToString();
         if (string.IsNullOrWhiteSpace(venue))
         {
             return custody;

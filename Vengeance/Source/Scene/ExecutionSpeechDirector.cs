@@ -233,7 +233,7 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
         return new SpeechContext(request.SessionId, request.Victim.Name.ToString(),
             request.Executor.Name.ToString(), request.Charge.GetName().ToString(),
             request.Method.GetName().ToString(), request.Method.StringId, request.Charge.StringId,
-            request.Venue.Name.ToString(), evidencePlace, request.Evidence, request.Tone,
+            request.VenueName.ToString(), evidencePlace, request.Evidence, request.Tone,
             request.LegitimacyTier, valor, honor, relation, crowdCount);
     }
 

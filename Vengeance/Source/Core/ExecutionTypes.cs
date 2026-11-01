@@ -139,10 +139,54 @@ public sealed class ExecutionRequest
         ExecutionSceneMode sceneMode,
         Guid? customPresetId = null,
         Guid? sessionId = null)
+        : this(
+            victim,
+            executor,
+            venue ?? throw new ArgumentNullException(nameof(venue)),
+            method,
+            charge,
+            tone,
+            evidence,
+            legitimacyTier,
+            legitimacyScore,
+            influenceCost,
+            prisonerSource,
+            venueAuthority,
+            victimStatus,
+            victimIsNoble,
+            sceneMode,
+            customPresetId,
+            sessionId,
+            isFieldCamp: false)
+    {
+    }
+
+    // A field-camp ceremony has no settlement: Venue stays null and the
+    // Venue* helpers below supply the camp's name, culture and colors.
+    private ExecutionRequest(
+        Hero victim,
+        Hero executor,
+        Settlement? venue,
+        ExecutionMethodDefinition method,
+        ExecutionChargeDefinition charge,
+        ExecutionTone tone,
+        EvidenceStrength evidence,
+        LegitimacyTier legitimacyTier,
+        int legitimacyScore,
+        int influenceCost,
+        PrisonerSource prisonerSource,
+        VenueAuthority venueAuthority,
+        VictimPoliticalStatus victimStatus,
+        bool victimIsNoble,
+        ExecutionSceneMode sceneMode,
+        Guid? customPresetId,
+        Guid? sessionId,
+        bool isFieldCamp)
     {
         Victim = victim ?? throw new ArgumentNullException(nameof(victim));
         Executor = executor ?? throw new ArgumentNullException(nameof(executor));
-        Venue = venue ?? throw new ArgumentNullException(nameof(venue));
+        Venue = venue!;
+        IsFieldCamp = isFieldCamp;
         Method = method ?? throw new ArgumentNullException(nameof(method));
         Charge = charge ?? throw new ArgumentNullException(nameof(charge));
         Tone = tone;
@@ -159,10 +203,51 @@ public sealed class ExecutionRequest
         SessionId = sessionId ?? Guid.NewGuid();
     }
 
+    public const string FieldCampVenueId = "rex_field_camp";
+
+    internal static ExecutionRequest CreateFieldCamp(
+        Hero victim,
+        Hero executor,
+        ExecutionMethodDefinition method,
+        ExecutionChargeDefinition charge,
+        ExecutionTone tone,
+        EvidenceStrength evidence,
+        LegitimacyTier legitimacyTier,
+        int legitimacyScore,
+        VictimPoliticalStatus victimStatus,
+        bool victimIsNoble,
+        ExecutionSceneMode sceneMode) =>
+        new(
+            victim,
+            executor,
+            null,
+            method,
+            charge,
+            tone,
+            evidence,
+            legitimacyTier,
+            legitimacyScore,
+            influenceCost: 0,
+            PrisonerSource.PlayerParty,
+            VenueAuthority.OwnTown,
+            victimStatus,
+            victimIsNoble,
+            sceneMode,
+            customPresetId: null,
+            sessionId: null,
+            isFieldCamp: true);
+
     public Guid SessionId { get; }
     public Hero Victim { get; }
     public Hero Executor { get; }
+    // Null when IsFieldCamp; use the Venue* helpers for names, culture and colors.
     public Settlement Venue { get; }
+    public bool IsFieldCamp { get; }
+    public string VenueId => Venue?.StringId ?? FieldCampVenueId;
+    public TextObject VenueName => Venue?.Name ?? new TextObject("{=REX_FieldCamp_Name}the field camp");
+    public CultureObject? VenueCulture => Venue?.Culture ?? Executor.Culture;
+    public uint VenueColor1 => (Venue?.MapFaction ?? Executor.MapFaction)?.Color ?? uint.MaxValue;
+    public uint VenueColor2 => (Venue?.MapFaction ?? Executor.MapFaction)?.Color2 ?? uint.MaxValue;
     public ExecutionMethodDefinition Method { get; }
     public ExecutionChargeDefinition Charge { get; }
     public ExecutionTone Tone { get; }

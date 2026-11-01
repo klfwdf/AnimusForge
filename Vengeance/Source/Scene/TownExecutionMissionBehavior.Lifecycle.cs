@@ -361,6 +361,7 @@ public sealed partial class TownExecutionMissionBehavior
             RexLog.Error("Execution-session release failed during final cleanup.", exception);
         }
 
+        NotifyFieldCampCeremonyReleased();
         _cleanupComplete = completed;
         if (!completed)
         {

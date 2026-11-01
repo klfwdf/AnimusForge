@@ -33,6 +33,14 @@ public sealed partial class TownExecutionMissionBehavior
 
         if (agent == _executionerAgent)
         {
+            if (Mission.GetMissionBehavior<SandBox.Conversation.MissionLogics.MissionConversationLogic>() is null)
+            {
+                // Missions without native conversation (the field camp): the
+                // executioner takes F as the order to carry out the sentence.
+                TryBeginExecution(ExecutionActor.Executioner);
+                return;
+            }
+
             try
             {
                 ConversationMission.StartConversationWithAgent(agent);

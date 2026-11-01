@@ -89,7 +89,7 @@ public sealed class ExecutionService
         bool requireCustody)
     {
         if (request is null || request.Victim is null || request.Executor is null ||
-            request.Venue is null || request.Method is null || request.Charge is null)
+            (request.Venue is null && !request.IsFieldCamp) || request.Method is null || request.Charge is null)
         {
             return Invalid(
                 ExecutionFailureReason.InvalidRequest,
@@ -139,6 +139,21 @@ public sealed class ExecutionService
                 "{=REX_Error_Invalid_Executor}Only the player may authorize this public sentence.");
         }
 
+        if (request.IsFieldCamp)
+        {
+            // The mission-exit commit runs while the camp mission is being torn
+            // down; the visual death already happened, so only earlier stages
+            // require the live camp.
+            if (stage != ExecutionValidationStage.LethalFrame && !VengeanceIntegration.IsFieldCampAvailable())
+            {
+                return Invalid(
+                    ExecutionFailureReason.VenueUnavailable,
+                    "{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now.");
+            }
+
+            return ValidateVictim(request, requireCustody);
+        }
+
         if (request.Venue != Settlement.CurrentSettlement || !request.Venue.IsTown ||
             request.Venue.IsUnderSiege)
         {
@@ -180,6 +195,11 @@ public sealed class ExecutionService
                 "{=REX_Tooltip_Influence_Low}Your clan lacks the influence required to use an allied town's square.");
         }
 
+        return ValidateVictim(request, requireCustody);
+    }
+
+    private static ExecutionValidationResult ValidateVictim(ExecutionRequest request, bool requireCustody)
+    {
         if (requireCustody && !IsVictimInRequiredCustody(request))
         {
             return Invalid(
@@ -417,7 +437,7 @@ public sealed class ExecutionService
             var effects = new ExecutionEffectContext(request);
             try
             {
-                effects.ChangePlayerInfluence(-request.InfluenceCost);
+                if (!request.IsFieldCamp) effects.ChangePlayerInfluence(-request.InfluenceCost);
             }
             catch (Exception exception)
             {
@@ -532,7 +552,7 @@ public sealed class ExecutionService
     private static bool IsVictimInRequiredCustody(ExecutionRequest request)
     {
         var prisonerParty = request.Victim.PartyBelongedToAsPrisoner;
-        if (request.PrisonerSource == PrisonerSource.PlayerParty)
+        if (request.PrisonerSource == PrisonerSource.PlayerParty || request.IsFieldCamp)
         {
             return prisonerParty == MobileParty.MainParty?.Party;
         }

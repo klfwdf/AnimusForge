@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace RichExecutions.Core;
@@ -19,6 +22,27 @@ public static class VengeanceIntegration
     private static bool _embeddedHostActive;
 
     public static bool IsEnabled { get; private set; } = true;
+
+    // Field-camp host hooks. A field camp has no town, location or townspeople:
+    // the host says whether the given mission is a camp, hides its own copy of
+    // the condemned hero when the ceremony is staged, brings its soldiers to
+    // watch, and sends them back when the ceremony releases the scene. All are
+    // called once per ceremony, never per tick.
+    public static Func<Mission?, bool>? FieldCampMissionProbe { get; set; }
+    public static Action<Hero, Vec3, Vec2>? FieldCampCeremonyStaged { get; set; }
+    public static Action? FieldCampCeremonyReleased { get; set; }
+
+    public static bool IsFieldCampAvailable()
+    {
+        try
+        {
+            return FieldCampMissionProbe?.Invoke(Mission.Current) == true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     public static bool IsEmbeddedHostActive
     {

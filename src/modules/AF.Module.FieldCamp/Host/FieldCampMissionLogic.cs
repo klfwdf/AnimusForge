@@ -150,7 +150,12 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		if (_upkeepTimer <= 0f)
 		{
 			_upkeepTimer = UpkeepIntervalSeconds;
-			UpkeepBatchOfAgents();
+			TickCeremonyReturn();
+			if (!_ceremonyActive)
+			{
+				// Camp life pauses while an execution ceremony holds the camp.
+				UpkeepBatchOfAgents();
+			}
 		}
 	}
 
