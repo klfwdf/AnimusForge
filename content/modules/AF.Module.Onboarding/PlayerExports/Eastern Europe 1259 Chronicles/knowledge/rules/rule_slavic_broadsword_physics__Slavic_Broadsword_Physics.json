@@ -1,22 +1,20 @@
 {
   "Id": "rule_slavic_broadsword_physics",
   "Keywords": [
-    "Slavic Broadsword Physics",
-    "Slavic Broadsword Physics Lore",
-    "Slavic Broadsword Physics Chronicles",
-    "AD1259 Slavic Broadsword Physics"
+    "Double-edged swords in Rus",
+    "Sword edges and grips",
+    "Swords in mounted and foot combat"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Slavic Broadsword Physics in 1259 Eastern ",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Slavic Broadswo",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Slavic Broadsw"
+    "Grip, edge and balance affect sword control; armor, shields and distance shape opportunities.",
+    "A sword is valuable equipment requiring repair and a sound scabbard as well as purchase money."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Slavic Broadsword Physics represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Rus retainers and prosperous fighters may carry double-edged swords of varied origins and forms. Cutting or thrusting depends on distance, position and opposing shields and armor, not blade width or weight alone. Guard, grip and edge must work together. Scabbards protect costly weapons from neglect during wet journeys, riding and storage."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Slavic Broadsword Physics feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A swordsman needs controlled movements around shields and crowded men; mounted use also depends on balance and reins. Chipped edges, twisting grips and wet scabbards need attention at rest. Forceful swings against armor can upset balance. Position, companions and space to step back preserve the ability to keep fighting."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Slavic Broadsword Physics in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A gift sword expresses trust while adding purchase and maintenance costs. A new retainer also needs practice, a suitable scabbard and protection; price cannot replace experience. When trade routes fail, repairing old blades and maintaining spears and shields may sustain a force better than decorated hilts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A smith repairing a sword examines fittings and grip as well as the edge; a bright surface alone does not restore it. Households purchasing a blade also bear upkeep costs and may struggle to replace a loss. Returning fighters bring damaged swords and armor to the same limited forges, fuel supplies and craftsmen."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

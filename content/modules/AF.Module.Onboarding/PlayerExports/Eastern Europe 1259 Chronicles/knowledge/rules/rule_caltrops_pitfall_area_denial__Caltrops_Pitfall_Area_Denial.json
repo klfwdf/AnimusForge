@@ -1,22 +1,20 @@
 {
   "Id": "rule_caltrops_pitfall_area_denial",
   "Keywords": [
-    "Caltrops Pitfall Area Denial",
-    "Caltrops Pitfall Area Denial Lore",
-    "Caltrops Pitfall Area Denial Chronicles",
-    "AD1259 Caltrops Pitfall Area Denial"
+    "Caltrops and movement obstacles",
+    "Caltrop road warning",
+    "Obstacle marking and friendly passage"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Caltrops Pitfall Area Denial in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Caltrops Pitfal",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Caltrops Pitfa"
+    "Caltrops injure feet and obstruct passage, requiring precautions against friendly movement.",
+    "Road obstacles need guards and marking; mud and clearance change their effect."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Caltrops Pitfall Area Denial represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Caltrop points make a road hazardous to horses and pedestrians. Around Rus crossings or fort approaches, obstacles must leave provision for food carts, messengers and withdrawal. Mud can conceal points while slowing clearance. Guards matter: an opponent with time may detour or clear a passage."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Caltrops Pitfall Area Denial feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "Road guards need to know obstacle boundaries and reserved passages and explain them at relief. A pursuit or night withdrawal into friendly caltrops can block those behind as well as injure mounts. Encountering obstacles calls for checking detours and clearance rather than trusting rumor about the ground."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Caltrops Pitfall Area Denial in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A leader needs iron, transport and guards for caltrops and must inform carriers and messengers. Closing a road may delay enemy riders or sever friendly markets and withdrawal. Reserved passages and responsibility for removal let obstacles work with strongpoints and infantry warning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers and drivers need to know where animals can still pass. Iron left in mud or grass after fighting injures workers and livestock, and removal consumes labor. When a lord closes a road without arranging clearance, roadside households bear the costs of restoring markets and cultivation."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

@@ -1,22 +1,20 @@
 {
   "Id": "rule_morningstar_flail_concussion",
   "Keywords": [
-    "Morningstar Flail Concussion",
-    "Morningstar Flail Concussion Lore",
-    "Morningstar Flail Concussion Chronicles",
-    "AD1259 Morningstar Flail Concussion"
+    "Short striking weapons",
+    "Clearance for striking weapons",
+    "Striking weapon haft upkeep"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Morningstar Flail Concussion in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Morningstar Fla",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Morningstar Fl"
+    "Short striking weapons need grip and clearance; linked implements are harder to recover.",
+    "Heads and hafts need inspection; fatigue, loads and nearby companions affect use."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Morningstar Flail Concussion represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Close weapons in Rus and neighboring forces can pair a solid head with a wooden haft. Grip, fittings and clearance shape control. Linked implements have less predictable recovery and are awkward beside shields or horses. Armor changes results, while balance, stamina and friendly spacing remain essential."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Morningstar Flail Concussion feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A fighter checks cracked hafts, loose heads and slippery grips and must recover after a blow. Doors, close ranks and mounted contact require attention to companions. Fatigue slows control, and weight cannot provide balance. Repairs at rest help prevent failure in the next encounter."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Morningstar Flail Concussion in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A lord should assess training, mounted or foot use and repairs rather than weight or spikes alone. Hafts, fittings and secondary weapons need supply. Close forces need operating room. Improvised tools and familiar fighting weapons demand different habits, affecting assignment of duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Smiths and woodworkers need material and fuel for heads and hafts. Requisitioned household tools reduce ordinary work. Lost or damaged equipment requires new resources after return. Military and civilian demands share craftsmen, making payment and return arrangements important to continued supply."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

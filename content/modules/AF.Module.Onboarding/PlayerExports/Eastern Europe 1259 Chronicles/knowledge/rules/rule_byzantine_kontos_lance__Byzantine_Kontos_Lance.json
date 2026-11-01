@@ -1,22 +1,20 @@
 {
   "Id": "rule_byzantine_kontos_lance",
   "Keywords": [
-    "Byzantine Kontos Lance",
-    "Byzantine Kontos Lance Lore",
-    "Byzantine Kontos Lance Chronicles",
-    "AD1259 Byzantine Kontos Lance"
+    "Mounted lances and regional borrowing",
+    "Mounted lance spacing",
+    "Lance rider and tack"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Byzantine Kontos Lance in 1259 Eastern Eur",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Byzantine Konto",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Byzantine Kont"
+    "Mounted lance use depends on horses, handling and spacing; mud and narrow roads limit a charge.",
+    "Rus and Balkan mounted forces share weapon forms while maintaining distinct equipment and training."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Byzantine Kontos Lance represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Mounted lances in the Balkans and Rus must work with tack, shields and riders' habits. An approach needs room to adjust speed and spacing; long shafts become awkward in lanes or soft riverbanks. Broken lances and close fighting require other weapons. Training, stamina and care of horses shape endurance as much as the lance itself."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Byzantine Kontos Lance feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A mounted lancer must preserve shaft and tack, know his companions' positions and inspect the approach. Ditches separate riders and tired horses disrupt coordination. In close fighting a usable secondary weapon and a way to rejoin companions matter beyond the courage of one thrust."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Byzantine Kontos Lance in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A Rus or Balkan lord needs horses, fodder, tack repairs and training for lancers. Newly assembled strangers do not immediately become a coordinated body. The chosen ground needs assembly and recovery space; a narrow bridge can reduce a force to a line unable to support itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Estates keeping warhorses need fodder, experienced carers and tack workers. Excess requisition harms transport and cultivation, while returning riders may bring injured animals and damaged equipment. Household supply and repairs determine whether the following can leave again with serviceable mounts."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

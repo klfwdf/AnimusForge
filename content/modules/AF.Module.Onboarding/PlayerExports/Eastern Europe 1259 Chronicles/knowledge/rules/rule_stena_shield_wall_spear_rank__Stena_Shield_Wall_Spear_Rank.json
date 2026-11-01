@@ -1,22 +1,20 @@
 {
   "Id": "rule_stena_shield_wall_spear_rank",
   "Keywords": [
-    "Stena Shield Wall Spear Rank",
-    "Stena Shield Wall Spear Rank Lore",
-    "Stena Shield Wall Spear Rank Chronicles",
-    "AD1259 Stena Shield Wall Spear Rank"
+    "Shields and spears in close order",
+    "Footing and gaps in a shield line",
+    "Supporting infantry at a narrow approach"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Stena Shield Wall Spear Rank in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Stena Shield Wa",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Stena Shield W"
+    "Mutual support steadies shield-bearing infantry; footing, gaps and flanks still matter.",
+    "A shield line needs practice and relief; spears require room around friendly men."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Stena Shield Wall Spear Rank represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Shield-bearing infantry in Rus and Baltic lands can support one another at narrow roads, slopes and gates, making individual encirclement harder. Spears need usable positions, and shield edges affect sight and movement. Mud, roots and fallen men disturb footing. Flank threats require adjustment; holding a front does not ensure an unchecked advance over any ground."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Stena Shield Wall Spear Rank feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A man in a shield line watches his footing and neighbors and avoids opening a gap to chase one enemy. A trapped spear, a change of place or recovery of a casualty needs cooperation. Holding position tires arms and legs, so relief, water and shield repairs affect how long the line remains dependable."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Stena Shield Wall Spear Rank in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A commander can use narrow ground to reduce encirclement but needs withdrawal space and flank watchers. Unfamiliar men assembled together require clear, manageable tasks. Those holding an approach need provisions and relief. Cavalry moving around the position calls for a new arrangement rather than simply tighter ranks at the front."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Townsmen assigned to a gate need a leader, relief time and a route for water carriers. Damaged shields require timber, leather and skilled repair that households may lack. Excessive guard demands also weaken grain carriage and firefighting. Organized relief allows men at the entrance to concentrate on what lies outside."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

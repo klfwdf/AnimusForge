@@ -1,22 +1,20 @@
 {
   "Id": "rule_mongol_saber_draw_slash",
   "Keywords": [
-    "Mongol Saber Draw Slash",
-    "Mongol Saber Draw Slash Lore",
-    "Mongol Saber Draw Slash Chronicles",
-    "AD1259 Mongol Saber Draw Slash"
+    "Mounted saber use",
+    "Saber clearance among riders",
+    "Saber edge and scabbard care"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Mongol Saber Draw Slash in 1259 Eastern Eu",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Mongol Saber Dr",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Mongol Saber D"
+    "Mounted saber use depends on skill, clearance and edge condition as speed and crowding change.",
+    "Scabbards and grips need reliable handling; damage and fatigue require attention."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Mongol Saber Draw Slash represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Steppe riders carry sabers for close contact and cutting actions. Effect depends on the mount's path, grip and opposing protection. Crowded weapons and bows can obstruct drawing. Chipped edges, loose grips and damp scabbards reduce reliability; shape alone does not replace practice."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Mongol Saber Draw Slash feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A rider needs clearance from companions and horses. Contact with a shield or clothing still requires control of body and mount, while fatigue slows recovery. Checking edge, grip and scabbard afterward helps ensure the weapon can be drawn and held when needed."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Mongol Saber Draw Slash in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "Equipping a following requires smiths, grip materials, scabbards and sharpening. Familiarity matters beyond decoration. Close fighting needs rally and support arrangements. Rest for tired people and mounts remains necessary; another blade does not restore an exhausted force."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sword repairs consume fuel, tools and time, while scabbard work competes with daily goods. Decoration may not buy urgent food or mounts, and returning damage still needs payment. Long requisition of craftsmen delays agricultural and transport repairs too."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

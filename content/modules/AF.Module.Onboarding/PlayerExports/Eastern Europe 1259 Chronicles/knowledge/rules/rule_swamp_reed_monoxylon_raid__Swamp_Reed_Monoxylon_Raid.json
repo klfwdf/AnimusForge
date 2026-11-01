@@ -1,22 +1,20 @@
 {
   "Id": "rule_swamp_reed_monoxylon_raid",
   "Keywords": [
-    "Swamp Reed Monoxylon Raid",
-    "Swamp Reed Monoxylon Raid Lore",
-    "Swamp Reed Monoxylon Raid Chronicles",
-    "AD1259 Swamp Reed Monoxylon Raid"
+    "Dugouts in marsh waterways",
+    "Guides through reed channels",
+    "Loading and landing a shallow boat"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Swamp Reed Monoxylon Raid in 1259 Eastern ",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Swamp Reed Mono",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Swamp Reed Mon"
+    "Dugouts suit some shallow channels, but loads, wind, waves and landing places limit movement.",
+    "Reeds and branching channels conceal and confuse; local boatmen and shore support matter."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Swamp Reed Monoxylon Raid represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Small craft in Baltic waters and Rus river networks carry people and goods through narrow channels, including boats hollowed from logs. Shallows and reeds impede mounted pursuers but obscure direction and activity ashore. Armor, weapons and food compete for limited capacity. Deep mud or steep banks can prevent an arriving party from deploying quickly."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Swamp Reed Monoxylon Raid feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "Soldiers in a small boat distribute weight carefully; standing or reaching ashore can upset it. Strings and food need protection from water. A guide identifies channels and reception points. Sending everyone into the same muddy landing can block it, and withdrawal requires finding and retaining access to the boats."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Swamp Reed Monoxylon Raid in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A leader using waterways needs trustworthy boatmen, seasonal knowledge, landings and a return route. Requisitioned fishing craft reduce local food and transport, while crews and porters need maintenance. A small party's route may not support an army's supplies. Waterborne and land parties need a meeting place if contact fails."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fishing households know reed channels and usable landing places but need boats to feed their families. Hull repairs, paddles and portage take labor; a lost paddle or damaged hull can strand newcomers. Owners care whether crews and craft return and whether passing troops have ruined nets along the water."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

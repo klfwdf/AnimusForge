@@ -1,22 +1,20 @@
 {
   "Id": "rule_teutonic_gambeson_padding",
   "Keywords": [
-    "Teutonic Gambeson Padding",
-    "Teutonic Gambeson Padding Lore",
-    "Teutonic Gambeson Padding Chronicles",
-    "AD1259 Teutonic Gambeson Padding"
+    "Padded clothing beneath armor",
+    "Mending and drying armor padding",
+    "Fitting clothes for armored service"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Teutonic Gambeson Padding in 1259 Eastern ",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Teutonic Gambes",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Teutonic Gambe"
+    "Padding reduces rubbing and helps support armor, while cut and thickness must allow movement.",
+    "Sweat and rain slow drying; changes, mending and rest matter on long armored journeys."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Teutonic Gambeson Padding represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "A wearer of mail or other armor needs padding fitted for raised arms and riding. Layers and stuffing reduce rubbing and some impact but add heat and weight; excessive bulk restricts shoulders and elbows. After damp Baltic journeys, sweat and rain remain in the layers. Drying, changing and mending keep the whole equipment usable."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Teutonic Gambeson Padding feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A soldier checks seams and lumps around the shoulders before armoring; sweat aggravates chafing already caused by marching. Sleeping in wet clothing before another armored day compounds fatigue. Removing the outer armor, airing the padding and mending seams at rest supports the next shield duty, ride and watch."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Teutonic Gambeson Padding in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A lord equipping retainers also needs fitted padding and replacement clothes rather than spending everything on metal. Makers require the wearer's measurements and movement needs; campaigns need sewing supplies, drying space and time for changes. Neglect can leave an armored man unable to serve effectively through chafing and restricted movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families sewing padding need cloth, filling and strong thread, with room at shoulders and elbows. Concentrated military orders delay ordinary clothes and bedding. Old padding can be repaired but needs drying and attention to worn patches. Those sending it care about fit, rain and whether their relative can change out of wet clothing."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

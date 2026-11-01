@@ -1,22 +1,20 @@
 {
   "Id": "rule_mongol_nakkara_kettle_drum_command",
   "Keywords": [
-    "Mongol Nakkara Kettle Drum Com",
-    "Mongol Nakkara Kettle Drum Com Lore",
-    "Mongol Nakkara Kettle Drum Com Chronicles",
-    "AD1259 Mongol Nakkara Kettle Drum Com"
+    "Mongol drums and signals",
+    "Drums flags and messengers",
+    "Hearing signals and rallying"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Mongol Nakkara Kettle Drum Com in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Mongol Nakkara ",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Mongol Nakkara"
+    "Drums, flags and messengers coordinate forces, limited by distance, noise and visibility.",
+    "Signals need prior agreement and a rally arrangement for vanguard, rear and baggage."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Mongol Nakkara Kettle Drum Com represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Steppe forces use drums, flags and mounted messengers for assembly and movement. Sound reaches places beyond a flag's sight but can be masked by wind, hooves and fighting. Parties need agreed meanings and rally points, with messengers to confirm orders when visibility fails."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Mongol Nakkara Kettle Drum Com feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A fighter listens with attention to his own flag and nearby leader. A distant similar sound may not be his order. After woods or a crossing, a known rendezvous matters. Following a moving herd blindly can leave stores, casualties and slower mounts on another route."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Mongol Nakkara Kettle Drum Com in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "Commanders need practice in signals and message handovers, with instructions for lost contact. Messengers require mounts, guides and relief rather than every fast horse joining pursuit. Signals work with reserves, visible routes and defined responsibilities, not in isolation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Drum makers, leatherworkers, flag makers and horse carers sustain communication. Equipment needs repairs after damp or damage. Families and drivers may miss vanguard orders and need guides to assembly. Miscommunication often burdens slower travelers first with detours and extra lodging and food."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

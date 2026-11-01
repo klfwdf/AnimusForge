@@ -1,22 +1,20 @@
 {
   "Id": "rule_riveted_chainmail_mesh",
   "Keywords": [
-    "Riveted Chainmail Mesh",
-    "Riveted Chainmail Mesh Lore",
-    "Riveted Chainmail Mesh Chronicles",
-    "AD1259 Riveted Chainmail Mesh"
+    "Riveted mail links",
+    "Repairing broken mail rings",
+    "Mail padding and carried weight"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Riveted Chainmail Mesh in 1259 Eastern Eur",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Riveted Chainma",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Riveted Chainm"
+    "Linked metal rings need repairs at breaks and seams; padding affects wear and protection.",
+    "Mail takes skilled labor and upkeep beyond the means of many ordinary fighters."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Riveted Chainmail Mesh represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Mail could protect Rus retainers, wealthy knights and steppe elites, with ownership shaped by wealth and supply. Small linked rings place strain on rivets and seams, and a break burdens neighboring links. Flexible armor still weighs on its wearer and needs fitted clothing and padding; a protected fighter can still suffer injury from a blow."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Riveted Chainmail Mesh feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A wearer checks armpits, shoulders and openings, where broken links can snag cloth and enlarge a tear. Sweat and rain leave mail damp, requiring care and repairs at rest; wet padding chafes. After fighting, bruising and restricted movement matter alongside penetration when deciding whether a man can ride on."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Riveted Chainmail Mesh in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "Equipping retainers means paying for ring making, riveting, fitting and repair as well as iron. Reused armor may fit poorly, hindering riding or shield use; craftsmen and spare links burden transport. A lord must maintain those regularly exposed to close combat before extending armor provision beyond available pay and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Repairers replace damaged links one by one, and haste misses weakened edges. Families selling grain for armor also need padding and repair money; inherited mail can become disputed property. Military repair demands compete with farm tools, cart fittings and harness for a smith's fuel and working time."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

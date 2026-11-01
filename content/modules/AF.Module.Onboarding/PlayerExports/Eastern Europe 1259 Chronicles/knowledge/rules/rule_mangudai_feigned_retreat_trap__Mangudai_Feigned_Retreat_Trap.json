@@ -1,22 +1,20 @@
 {
   "Id": "rule_mangudai_feigned_retreat_trap",
   "Keywords": [
-    "Mangudai Feigned Retreat Trap",
-    "Mangudai Feigned Retreat Trap Lore",
-    "Mangudai Feigned Retreat Trap Chronicles",
-    "AD1259 Mangudai Feigned Retreat Trap"
+    "Feigned retreat and pursuit risks",
+    "Rallying after a feigned retreat",
+    "Pursuit beyond friendly support"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Mangudai Feigned Retreat Trap in 1259 East",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Mangudai Feigne",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Mangudai Feign"
+    "Feigned withdrawal needs communication and a rally point; pursuit can separate support.",
+    "Mounts, terrain and rearward pace shape a return; a feint may become uncontrolled flight."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Mangudai Feigned Retreat Trap represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Steppe withdrawal can tempt opponents to leave companions and positions, exposing pursuit to returning riders or another force. Those withdrawing need to know when and where to rally. Horses, visibility and terrain affect communication. Disorder or a confined route can turn an intended feint into genuine flight."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Mangudai Feigned Retreat Trap feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A fighter seeing retreating riders must still know where support remains. Tired mounts, infantry and wagons cannot all keep pace. Beyond sight of the original position, the return may be blocked. A withdrawing rider needs a rally signal and strength to turn rather than simply ride away."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Mangudai Feigned Retreat Trap in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A commander needs positions, communication and a rally arrangement rather than reliance on enemy eagerness. Reserves, ground and remounts need room. Followers who distrust orders may interpret the plan as abandonment. Resisting a feint likewise requires limits on pursuit and mutually supporting bodies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Riders leaving a field may move faster than dependants, stores and herds. Nearby households unable to judge events may flee and abandon crops. Requisitioned guides and drivers need a destination and assistance, not a rally plan known only to the vanguard."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

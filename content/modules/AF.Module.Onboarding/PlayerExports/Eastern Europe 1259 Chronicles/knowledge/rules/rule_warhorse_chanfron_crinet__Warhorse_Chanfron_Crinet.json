@@ -1,22 +1,20 @@
 {
   "Id": "rule_warhorse_chanfron_crinet",
   "Keywords": [
-    "Warhorse Chanfron Crinet",
-    "Warhorse Chanfron Crinet Lore",
-    "Warhorse Chanfron Crinet Chronicles",
-    "AD1259 Warhorse Chanfron Crinet"
+    "Horse protection and harness",
+    "Fitting protective horse equipment",
+    "Maintaining a protected warhorse"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Warhorse Chanfron Crinet in 1259 Eastern E",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Warhorse Chanfr",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Warhorse Chanf"
+    "Horse protection needs fit and freedom of sense and movement; weight and rubbing matter.",
+    "Horse protection depends on wealth and supply, alongside fodder, rest and harness care."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Warhorse Chanfron Crinet represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Wealthy cavalrymen may protect a horse's body or selected parts, with coverage, material and weight varying by equipment. Around the head and neck, eyes, ears, nostrils and bridle movement need clearance; loose fittings strike and tight ones chafe. Rus, steppe and western riders draw on different supplies. An expensive mount's equipment does not describe every rider's provision, and protection never removes care needs."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Warhorse Chanfron Crinet feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A rider leads and turns the horse and tests the reins after fitting protection, checking around eyes, ears and neck for contact. After sweating, fatigue or fright, movement and skin matter alongside visible damage to coverings. Adjusting equipment, watering and clearing wet areas at rest help the animal continue carrying rider and load."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Warhorse Chanfron Crinet in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A lord protecting valuable mounts budgets for fitting, repair, fodder and spare harness. More coverage increases carriage and care, especially on poor campaign roads. Limited money may be better spent maintaining healthy riding horses, saddles, bridles and pack animals than allowing costly protection to displace the force's means of continued movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Handlers feed, clean and inspect for sores, while leatherworkers and smiths must fit repairs to existing tack. Military demands for fodder and harness burden cultivation, transport and winter stores. Returned damaged fittings still need labor. Households need animals healthy enough for carts and fields, regardless of the decoration they carried away."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

@@ -1,22 +1,20 @@
 {
   "Id": "rule_kite_shield_rawhide_rim",
   "Keywords": [
-    "Kite Shield Rawhide Rim",
-    "Kite Shield Rawhide Rim Lore",
-    "Kite Shield Rawhide Rim Chronicles",
-    "AD1259 Kite Shield Rawhide Rim"
+    "Kite shields and material upkeep",
+    "Rus shield board and cover repairs",
+    "Shield grips and marching straps"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Kite Shield Rawhide Rim in 1259 Eastern Eu",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Kite Shield Raw",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Kite Shield Ra"
+    "Boards, covers and straps shape shield use; damp and splits need maintenance.",
+    "Rus shields differ in shape and grip; loads and friendly spacing affect endurance."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Kite Shield Rawhide Rim represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Long and other wooden shields in Rus depend on boards, joints, covers and straps. Damaged edges and splits need repair, while damp affects weight and fittings. Covering one side does not protect every direction. Shield, spear and marching load must work together; a large shield can also catch neighbors or trees on narrow paths."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Kite Shield Rawhide Rim feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A shield user needs to lift, turn and see his footing. A loose strap can disable a sound board. Carrying it on the march frees hands but requires timely preparation. Close companions need room for shields and spears; damaged edges, splits and worn straps should be checked at rest."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Kite Shield Rawhide Rim in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A lord needs boards, leather, straps and repair skills as well as new shields. Followings have different equipment habits, so sudden replacement affects cooperation. Craftsmen must be available during movement and defense, preventing an apparently sound shield failing through an old split or loose fitting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Woodworkers, leatherworkers and households maintain shields. Requisitioned dry wood and straps reduce reserves for carts and doors. Returning fighters may bring damage without money for repairs. Relatives and workshops bear the work, linking serviceable shields to local materials and labor."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

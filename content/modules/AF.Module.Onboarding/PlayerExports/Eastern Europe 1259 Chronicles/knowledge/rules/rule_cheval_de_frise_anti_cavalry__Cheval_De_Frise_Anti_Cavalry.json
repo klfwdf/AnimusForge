@@ -1,22 +1,20 @@
 {
   "Id": "rule_cheval_de_frise_anti_cavalry",
   "Keywords": [
-    "Cheval De Frise Anti Cavalry",
-    "Cheval De Frise Anti Cavalry Lore",
-    "Cheval De Frise Anti Cavalry Chronicles",
-    "AD1259 Cheval De Frise Anti Cavalry"
+    "Timber barriers and access",
+    "Camp gate timber barriers",
+    "Guarding and moving wooden obstacles"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Cheval De Frise Anti Cavalry in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Cheval De Frise",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Cheval De Fris"
+    "Timber barriers restrict movement but need guards, anchoring and friendly exits.",
+    "Weight, mud and timber supply shape barriers; food carts and withdrawal still need passage."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Cheval De Frise Anti Cavalry represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Rus camps and Baltic approaches can use branches, stakes and beams to narrow access. Barriers make riders slow, detour or dismount, but guards must observe and prevent removal. Soft ground impedes anchoring and heavy timber consumes labor and animals. Exits for food, messages and withdrawal must remain, or the defenders also become trapped."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Cheval De Frise Anti Cavalry feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A barrier guard needs to know the exit and watch for removal in darkness. Riders halted outside can still shoot, so cover requires shields and support. Relief and night movement need a known passage; wounded men and carriers find piled timber especially difficult to cross."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Cheval De Frise Anti Cavalry in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "A leader needs felling, transport, anchoring and guards rather than an order to pile more trunks. Distant timber competes with food for vehicles and animals. The layout must accommodate gates, supply carts and reserves, creating a defensible approach without sealing the camp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Nearby households may supply cutting, carts and timber while still needing fuel, repairs and cultivation. Beams blocking a market road force goods and animals to detour. Someone must remove barriers and restore access afterward so defensive labor does not become a prolonged closure."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }

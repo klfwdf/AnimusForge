@@ -1,22 +1,20 @@
 {
   "Id": "rule_cuman_bodkin_arrow",
   "Keywords": [
-    "Cuman Bodkin Arrow",
-    "Cuman Bodkin Arrow Lore",
-    "Cuman Bodkin Arrow Chronicles",
-    "AD1259 Cuman Bodkin Arrow"
+    "Cuman arrows and their upkeep",
+    "Cuman arrowheads and shafts",
+    "Resupplying mounted archers quivers"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Cuman Bodkin Arrow in 1259 Eastern Europe.",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Cuman Bodkin Ar",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Cuman Bodkin A"
+    "Cuman arrowheads, shafts and feathers work together; mounted archers need replenished quivers.",
+    "Range, angle, armor and mounts change results; recovered arrows require inspection."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial craftsmanship and physical mechanics of Cuman Bodkin Arrow represent an advanced technological solution to the lethal realities of 13th-century armored combat. Master armorers and smiths forged high-carbon spring steel, flexible ash wood, and reinforced horn laminates, optimizing the weapon's center of gravity and leverage to maximize penetrating impact. Engineered to shatter interlocking chainmail rivets or pierce heavy coat-of-plates armor, this specialized wargear proved indispensable during close-quarters breaches and brutal cavalry melee across the freezing marshes of the eastern front."
+      "Content": "Cuman arrows must suit the archer's bow, with reliable heads, shafts, feathers and nocks. Range and different armor change the shot; a sharp point does not guarantee passage through iron rings. After an encounter, arrows need replacement and shafts need attention. Damp, impacts and poor fitting can spoil the next shot."
     },
     {
       "Priority": 0,
@@ -26,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Arms-men binding leather cords tightly around the hilt of Cuman Bodkin Arrow feel the reassuring balance in their calloused palms. In the frantic press of shield-walls where spears shatter and men wrestle in muck, having a trustworthy blade that will bite deep into enemy iron without snapping is the sole margin between survival and a nameless grave."
+      "Content": "A Cuman rider checks quiver, string and mount before contact and needs room to withdraw and replenish. Recovered arrows may have split shafts or damaged feathers. Pursuit can consume missiles, horses and grazing for the return together."
     },
     {
       "Priority": 0,
@@ -36,8 +34,20 @@
           "notable"
         ]
       },
-      "Content": "Feudal marshals oversee weapon shipments of Cuman Bodkin Arrow in the castle armory, inspecting import receipts from Baltic foundries. Equipping a frontline banner requires immense outlays of treasury bullion, yet securing superior arms for household guards remains the paramount guarantee of survival against neighboring belligerents and steppe invaders."
+      "Content": "Supporting Cuman archers requires smiths, shaft workers, feathers and portable stocks. A count of arrows does not establish sustained fire without transport and rested mounts. Ground needs approaches, exits and replenishment rather than crowding supplied riders into a place where they cannot move."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Arrow making joins ironwork, woodworking, feather supply and transport. Material contributions reduce what households can use for tools and repairs. Broken arrows return some resources but need further work. Shortage therefore brings more labor and requisition, not merely fewer prizes for riders."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Military"
 }
